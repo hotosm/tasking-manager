@@ -259,7 +259,11 @@ class ProjectService:
     @staticmethod
     def get_project_user_stats(project_id: int, username: str) -> ProjectUserStatsDTO:
         """ Gets the user stats for a specific project """
-        print(project_id)
         project = ProjectService.get_project_by_id(project_id)
         user = UserService.get_user_by_username(username)
         return project.get_project_user_stats(user.id)
+
+    @staticmethod
+    def get_all_countries():
+        """ Gets the list of countries """
+        return Project.get_all_countries()

@@ -152,7 +152,11 @@ def init_flask_restful_routes(app):
         StatsProjectUserAPI,
         StatsContributionsByDayAPI,
     )
-    from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
+    from server.api.tags_apis import (
+        CampaignsTagsAPI,
+        OrganisationTagsAPI,
+        CountryTagsAPI,
+    )
     from server.api.mapping_issues_apis import (
         MappingIssueCategoryAPI,
         MappingIssueCategoriesAPI,
@@ -169,7 +173,6 @@ def init_flask_restful_routes(app):
         UserSearchFilterAPI,
         UserSearchAllAPI,
         UserUpdateAPI,
-        UserContributionsAPI,
     )
     from server.api.validator_apis import (
         LockTasksForValidationAPI,
@@ -307,10 +310,6 @@ def init_flask_restful_routes(app):
         StatsContributionsAPI, "/api/v1/stats/project/<int:project_id>/contributions"
     )
     api.add_resource(
-        StatsContributionsByDayAPI,
-        "/api/v1/stats/project/<int:project_id>/contributions/day",
-    )
-    api.add_resource(
         TaskAnnotationsAPI,
         "/api/v1/project/<int:project_id>/task-annotations/<string:annotation_type>",
         "/api/v1/project/<int:project_id>/task-annotations",
@@ -328,6 +327,7 @@ def init_flask_restful_routes(app):
     api.add_resource(HomePageStatsAPI, "/api/v1/stats/summary")
     api.add_resource(CampaignsTagsAPI, "/api/v1/tags/campaigns")
     api.add_resource(OrganisationTagsAPI, "/api/v1/tags/organisations")
+    api.add_resource(CountryTagsAPI, "/api/v1/tags/countries")
     api.add_resource(
         MappingIssueCategoryAPI,
         "/api/v1/mapping-issue-category",
@@ -364,7 +364,6 @@ def init_flask_restful_routes(app):
     )
     api.add_resource(UserAcceptLicense, "/api/v1/user/accept-license/<int:license_id>")
     api.add_resource(UserIdAPI, "/api/v1/user-id/<int:userid>")
-    api.add_resource(UserContributionsAPI, "/api/v1/user-id/<int:userid>/contributions")
     api.add_resource(IntersectingTilesAPI, "/api/v1/grid/intersecting-tiles")
     api.add_resource(
         SplitTaskAPI, "/api/v1/project/<int:project_id>/task/<int:task_id>/split"

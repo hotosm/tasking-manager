@@ -11,3 +11,8 @@ class TagsService:
     def get_all_campaign_tags(preferred_locale):
         """ Get all campaign tags"""
         return Project.get_all_campaign_tag(preferred_locale=preferred_locale)
+
+    @staticmethod
+    def get_all_countries():
+        """ Get all countries"""
+        return Project.get_all_countries()

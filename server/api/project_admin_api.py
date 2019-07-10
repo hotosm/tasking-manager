@@ -232,6 +232,11 @@ class ProjectAdminAPI(Resource):
                       organisationTag:
                           type: string
                           default: red cross
+                      countryTag:
+                          type: array
+                          items:
+                              type: string
+                          default: []
                       licenseId:
                           type: integer
                           default: 1

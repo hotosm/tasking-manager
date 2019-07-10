@@ -59,8 +59,10 @@
         // Tags
         vm.organisationTags = [];
         vm.campaignsTags = [];
+        vm.countryTags = [];
         vm.projectOrganisationTag = [];
         vm.projectCampaignTag = [];
+        vm.projectCountryTag = [];
 
         vm.project = {};
         vm.project.defaultLocale = 'en';
@@ -75,7 +77,7 @@
         // Delete
         vm.showDeleteConfirmationModal = false;
 
-        // Transfer 
+        // Transfer
         vm.showTransferConfirmationModal = false;
         vm.transferProjectTo= []; //it's a list because it uses the tag input
 
@@ -144,6 +146,7 @@
             addInteractions();
             setOrganisationTags();
             setCampaignTags();
+            setCountryTags();
 
             getProjectMetadata(id);
 
@@ -178,11 +181,17 @@
             // Only one tag is allowed at the moment so get the first item
             vm.project.organisationTag = null;
             vm.project.campaignTag = null;
+            vm.project.countryTag = [];
             if (vm.projectOrganisationTag[0]) {
                 vm.project.organisationTag = vm.projectOrganisationTag[0].text;
             }
             if (vm.projectCampaignTag[0]) {
                 vm.project.campaignTag = vm.projectCampaignTag[0].text;
+            }
+            if (vm.projectCountryTag) {
+                angular.forEach(vm.projectCountryTag, function(value, index){
+                  vm.project.countryTag.push(value.text)
+                })
             }
             if (vm.projectLicense){
                 vm.project.licenseId = vm.projectLicense.licenseId;
@@ -344,7 +353,7 @@
         };
 
         /**
-         * Navigate to the project detail 
+         * Navigate to the project detail
          */
         vm.goToProjectDetail = function(){
             $location.path('/project/' + vm.project.projectId);
@@ -614,6 +623,16 @@
         };
 
         /**
+         * Get Countries
+         * @returns {Array|*}
+         */
+        vm.getCountryTags = function(query){
+            return vm.countryTags.filter(function (item) {
+                return (item && item.toLowerCase().indexOf(query.toLowerCase()) > -1);
+            });
+        };
+
+        /**
          * Get organisation tags
          * @returns {Array|*}
          */
@@ -722,12 +741,15 @@
                     if (typeof vm.projectOrganisationTag == 'undefined' || vm.projectOrganisationTag.length === 0 ){
                         vm.organisationTagMissing = true;
                     }
+                    if (typeof vm.projectCountryTag == 'undefined' || vm.projectCountryTag.length === 0 ){
+                        vm.countryTagMissing = true;
+                    }
 
                     break;
                 }
             }
             vm.mappingTypeMissing = getMappingTypesArray().length === 0;
-            var somethingMissing = vm.name || vm.descriptionMissing || vm.shortDescriptionMissing || vm.instructionsMissing || vm.organisationTagMissing || vm.mappingTypeMissing;
+            var somethingMissing = vm.name || vm.descriptionMissing || vm.shortDescriptionMissing || vm.instructionsMissing || vm.organisationTagMissing || vm.mappingTypeMissing || vm.countryTagMissing;
             return somethingMissing;
         }
 
@@ -882,6 +904,9 @@
                 }
                 if (vm.project.campaignTag) {
                     vm.projectCampaignTag = [vm.project.campaignTag];
+                }
+                if (vm.project.countryTag) {
+                    vm.projectCountryTag = vm.project.countryTag;
                 }
             }, function(){
                 vm.errorReturningProjectMetadata = true;
@@ -1079,6 +1104,20 @@
             }
             return validationEditorsArray;
         }
+
+        /**
+        * Set countries
+        */
+       function setCountryTags() {
+           var resultsPromise = tagService.getCountryTags();
+           resultsPromise.then(function (data) {
+               // On success, set the projects results
+               vm.countryTags = data.tags;
+           }, function () {
+               // On error
+               vm.countryTags = [];
+           });
+       }
 
          /**
          * Set organisation tags

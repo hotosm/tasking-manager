@@ -12,7 +12,8 @@
 
         var service = {
             getOrganisationTags: getOrganisationTags,
-            getCampaignTags: getCampaignTags
+            getCampaignTags: getCampaignTags,
+            getCountryTags: getCountryTags
         };
 
         return service;
@@ -46,6 +47,26 @@
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/tags/campaigns'
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get the countries
+         * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function getCountryTags(){
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/tags/countries'
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available

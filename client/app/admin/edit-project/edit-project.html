@@ -335,6 +335,15 @@
                                     </label>
                                 </div>
                                 <div class="form__group form__group--section">
+                                   <label class="form__label">{{ 'Countries' | translate }} *</label>
+                                   <p>{{ 'Tag related Countries.' | translate }}</p>
+                                   <tags-input ng-model="editProjectCtrl.projectCountryTag"
+                                       name="country" placeholder="{{ 'choose from existing countries' | translate }}"
+                                       replace-spaces-with-dashes="false">
+                                       <auto-complete source="editProjectCtrl.getCountryTags($query)"></auto-complete>
+                                   </tags-input>
+                               </div>
+                                <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Organisation Tag' | translate }} *</label>
                                     <p>{{ 'Only one organisation tag is allowed.' | translate }}</p>
                                     <tags-input ng-model="editProjectCtrl.projectOrganisationTag"
@@ -599,7 +608,7 @@
                                         <tags-input ng-model="editProjectCtrl.transferProjectTo"
                                         name="projectTransferTo" placeholder="{{ 'Search for username' | translate }}"
                                         replace-spaces-with-dashes="false" max-tags="1">
-                                        <auto-complete source="editProjectCtrl.getUser($query, true)"></auto-complete> 
+                                        <auto-complete source="editProjectCtrl.getUser($query, true)"></auto-complete>
                                         <p class="error" ng-show="!editProjectCtrl.editForm.projectTransferTo.$valid">
                                             {{ 'Please make sure you only have one user.' | translate }}
                                         </p>
