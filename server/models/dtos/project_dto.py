@@ -134,6 +134,7 @@ class ProjectSearchDTO(Model):
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
     project_statuses = ListType(StringType, validators=[is_known_project_status])
     organisation_tag = StringType()
+    username = StringType()
     campaign_tag = StringType()
     page = IntType(required=True)
     text_search = StringType()

@@ -5,8 +5,11 @@ from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchResult
     Pagination, ProjectSearchBBoxDTO
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.statuses import ProjectStatus, MappingLevel, MappingTypes, ProjectPriority
+from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import NotFound, ST_Intersects, ST_MakeEnvelope, ST_Transform, ST_Area
+from server.services.users.user_service import UserService
 from server import db
+from sqlalchemy import or_
 from flask import current_app
 from geoalchemy2 import shape
 import math
@@ -142,8 +145,17 @@ class ProjectSearchService:
             or_search = search_dto.text_search.replace(' ', ' | ')
             query = query.filter(ProjectInfo.text_searchable.match(or_search, postgresql_regconfig='english'))
 
+        if search_dto.username:
+            user = UserService.get_user_by_username(search_dto.username)
+            # Get all projects that user has contributed.
+            sq = TaskHistory.query.with_entities(TaskHistory.project_id.label('project_id'))\
+                .distinct(TaskHistory.project_id).filter(TaskHistory.user_id==user.id).subquery()
+
+            query = query.filter(or_(Project.author_id == user.id, Project.id == sq.c.project_id))
+
         all_results = query.order_by(Project.priority, Project.id.desc()) \
             .distinct(Project.priority, Project.id).all()
+
         paginated_results = query.order_by(Project.priority, Project.id.desc()) \
             .distinct(Project.priority, Project.id).paginate(search_dto.page, 14, True)
 

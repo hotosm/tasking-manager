@@ -305,6 +305,10 @@ class ProjectSearchAPI(Resource):
               type: string
               default: serbia
             - in: query
+              name: userName
+              description: search by user contributions or author
+              type: string
+            - in: query
               name: projectStatuses
               description: Authenticated PMs can search for archived or draft statuses
               type: string
@@ -320,6 +324,7 @@ class ProjectSearchAPI(Resource):
             search_dto = ProjectSearchDTO()
             search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
             search_dto.mapper_level = request.args.get('mapperLevel')
+            search_dto.username = request.args.get('userName')
             search_dto.organisation_tag = request.args.get('organisationTag')
             search_dto.campaign_tag = request.args.get('campaignTag')
             search_dto.page = int(request.args.get('page')) if request.args.get('page') else 1
