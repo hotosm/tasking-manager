@@ -187,8 +187,8 @@ class StatsService:
             .filter(Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))).count()
         dto.tasks_validated = Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value).count()
 
-        org_proj_count = db.session.query(Project.organisation_tag, func.count(Project.organisation_tag))\
-            .group_by(Project.organisation_tag).all()
+        org_proj_count = db.session.query(Project.organisation, func.count(Project.organisation))\
+            .group_by(Project.organisation).all()
 
         untagged_count = 0
 

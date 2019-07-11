@@ -150,6 +150,9 @@ class TaskInvalidationHistory(db.Model):
         TaskInvalidationHistory.close_all_for_task(project_id, task_id)
 
         last_mapped = TaskHistory.get_last_mapped_action(project_id, task_id)
+        if last_mapped is None:
+            return
+
         entry = TaskInvalidationHistory(project_id, task_id)
         entry.invalidation_history_id = history.id
         entry.mapper_id = last_mapped.user_id
@@ -655,8 +658,10 @@ class Task(db.Model):
             TaskInvalidationHistory.record_invalidation(self.project_id, self.id, user_id, history)
             self.mapped_by = None
             self.validated_by = None
-            self.assigned_to = TaskHistory.get_last_mapped_action(self.project_id, self.id).user_id
-            TaskAssignmentHistory.record_assignment(self.project_id, self.id, history, user_id, self.assigned_to, new_state.value)
+            last_mapped = TaskHistory.get_last_mapped_action(self.project_id, self.id)
+            if last_mapped is not None:
+                self.assigned_to = last_mapped.user_id
+                TaskAssignmentHistory.record_assignment(self.project_id, self.id, history, user_id, self.assigned_to, new_state.value)
 
         if not undo:
             # Using a slightly evil side effect of Actions and Statuses having the same name here :)
