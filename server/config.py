@@ -2,12 +2,13 @@ import logging
 import os
 from dotenv import load_dotenv
 
+
 class EnvironmentConfig:
     """ Base class for configuration. """
     """ Most settings can be defined through environment variables. """
 
     # Load configuration from file
-    load_dotenv(os.path.join(os.path.dirname(__file__), 'local.env'))
+    load_dotenv(os.path.join(os.path.dirname(__file__), os.path.pardir, 'local.env'))
 
     # The base url the application is reachable
     APP_BASE_URL = os.getenv('TM_APP_BASE_URL', 'http://127.0.0.1:5000')
@@ -32,9 +33,9 @@ class EnvironmentConfig:
         SQLALCHEMY_DATABASE_URI = os.getenv('TM_DB', None)
     else:
         SQLALCHEMY_DATABASE_URI = f'postgresql://{POSTGRES_USER}' +  \
-                                        f':{POSTGRES_PASSWORD}' + \
-                                            f'@{POSTGRES_ENDPOINT}' + \
-                                                f'/{POSTGRES_DB}'
+                                    f':{POSTGRES_PASSWORD}' + \
+                                    f'@{POSTGRES_ENDPOINT}' + \
+                                    f'/{POSTGRES_DB}'
    
     # Logging settings
     LOG_LEVEL = os.getenv('TM_LOG_LEVEL', logging.DEBUG)
