@@ -1,3 +1,4 @@
+import logging
 import smtplib
 import urllib.parse
 from email.mime.multipart import MIMEMultipart
@@ -71,11 +72,14 @@ class SMTPService:
         msg.attach(part1)
         msg.attach(part2)
 
-        sender = SMTPService._init_smtp_client()
-
         current_app.logger.debug(f'Sending email via SMTP {to_address}')
-        sender.sendmail(from_address, to_address, msg.as_string())
-        sender.quit()
+
+        if current_app.config['LOG_LEVEL'] == logging.DEBUG:
+            current_app.logger.debug(msg.as_string())
+        else:
+            sender = SMTPService._init_smtp_client()
+            sender.sendmail(from_address, to_address, msg.as_string())
+            sender.quit()
         current_app.logger.debug(f'Email sent {to_address}')
 
     @staticmethod
