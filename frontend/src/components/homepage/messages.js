@@ -1,8 +1,7 @@
-import { defineMessages } from 'react-intl'
-
+import { defineMessages } from 'react-intl';
 
 /**
- * Internationalized messages for use on header.
+ * Internationalized messages for use on homepage.
  */
 export default defineMessages({
   jumbotronTitle: {
@@ -64,5 +63,49 @@ export default defineMessages({
   mappingFlowHeadline: {
     id: 'home.mappingFlow.headLine',
     defaultMessage: "Through the Tasking Manager this mapping  projects are divided into smaller tasks allowing them to be completed by many different people working in the same area in a more streamlined and quick way."
+  },
+  mappingCardTitle: {
+    id: 'home.mappingFlow.cards.mapping.title',
+    defaultMessage: "Mapping"
+  },
+  validationCardTitle: {
+    id: 'home.mappingFlow.cards.validation.title',
+    defaultMessage: "Validation"
+  },
+  usingDataCardTitle: {
+    id: 'home.mappingFlow.cards.usingData.title',
+    defaultMessage: "Using the data"
+  },
+  mappingCardDescription: {
+    id: 'home.mappingFlow.cards.mapping.description',
+    defaultMessage: "Volunteers trace satellite imagery into OpenStreetMap using Tasking Manager."
+  },
+  validationCardDescription: {
+    id: 'home.mappingFlow.cards.validation.description',
+    defaultMessage: "Afterwards, seasoned volunteers double check the data entered assuring its quality."
+  },
+  usingDataCardDescription: {
+    id: 'home.mappingFlow.cards.usingData.description',
+    defaultMessage: "Humanitarian organizations use mapped data to plan risk reduction and disaster response activities."
+  },
+  whoIsMappingTitle: {
+    id: 'home.whoIsMapping.title',
+    defaultMessage: "Who's mapping"
+  },
+  whoIsMappingHeadline: {
+    id: 'home.whoIsMapping.headline',
+    defaultMessage: "Global trusted organizations use Tasking Manager to reach those in need through maps."
+  },
+  organizationContactTitle: {
+    id: 'home.whoIsMapping.contact.title',
+    defaultMessage: "Does your organization want to work with us?"
+  },
+  organizationContactHeadline: {
+    id: 'home.whoIsMapping.contact.headline',
+    defaultMessage: "Contact us to find out how we can work together."
+  },
+  organizationContactButton: {
+    id: 'home.whoIsMapping.contact.button',
+    defaultMessage: "Contact us"
   }
 });
