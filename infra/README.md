@@ -54,3 +54,13 @@ stream.
 ```
 $ ssh -i ec2_amazon-ebs.pem ubunut@<PUBLIC_IP>
 ```
+
+## References
+
+- https://wiki.debian.org/Cloud/AmazonEC2Image/Stretch
+- https://wiki.debian.org/Cloud/AmazonEC2Image
+- https://cloud-images.ubuntu.com/locator/ec2/
+
+## TODO
+
+1. Pip upgrade ( pip install --upgrade pip )

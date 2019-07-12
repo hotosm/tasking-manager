@@ -13,10 +13,13 @@ export LC_CTYPE="en_US.UTF-8"
 export LC_ALL=C
 sudo dpkg-reconfigure --frontend=noninteractive locales
 
+sudo apt-get -y install \
+    make build-essential \
+    libssl-dev zlib1g-dev libbz2-dev \
+    libreadline-dev libsqlite3-dev \
+    llvm libncurses5-dev libncursesw5-dev \
+    xz-utils tk-dev libffi-dev liblzma-dev
 
-# Add Third-party repository for Python 3.6 distribution 
-# Ubuntu 16.04 does not provide via repos.
-sudo add-apt-repository ppa:jonathonf/python-3.6 -y
 sudo apt-get -y update
 
 echo "Upgrade Ubuntu packages.."
@@ -34,19 +37,21 @@ sudo apt-get -y install \
     wget \
     grub kpartx             # Dependencies for ec2-ami-tools
 
-sudo apt-get -y install \
-    python3.6 python3.6-dev \
-    python3.6-venv \
-    python-pip                 # Default python pip (why?)
+# Install Python3.6
+wget https://www.python.org/ftp/python/3.6.9/Python-3.6.9.tgz
+tar -xf Python-3.6.9.tgz && \
+    cd Python-3.6.9 && \
+    sudo ./configure --enable-optimizations --with-ensurepip=install && \
+    sudo make altinstall
 
 # Install mapping related stuff
-# libgdal1* - Geospatial Data Abstraction Library (GDAL)
+# libgdal* - Geospatial Data Abstraction Library (GDAL)
 # libgeos* - Geometry engine
 # libproj* - Cartographic projects & translations between CRS
 sudo apt-get -y install \
-    libgdal1-dev \
-    libgeos-3.5.0 libgeos-dev \
-    libproj9 libproj-dev \
+    libgdal-dev \
+    libgeos-3.5.1 libgeos-dev \
+    libproj12 libproj-dev \
     libxml2 libxml2-dev \
     libjson-c-dev
 
