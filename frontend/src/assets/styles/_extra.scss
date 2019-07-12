@@ -10,9 +10,18 @@
   }
 }
 
+@media screen and (min-width: 60em) {
+  .bg-split-blue-white {
+    background: -webkit-linear-gradient(left, $blue-dark, $blue-dark 75%, white 25%, white);
+  }
+}
+
 @media screen and (max-width: 60em) {
   .mw-20rem {
     max-width: 20rem;
+  }
+  .bg-split-blue-white {
+    background: -webkit-linear-gradient(top, $blue-dark, $blue-dark 80%, white 10%, white);
   }
 }
 
@@ -29,4 +38,26 @@
   .f-4rem-l {
     font-size: 4rem;
   }
+  .mw-36rem-l {
+    max-width: 36rem;
+  }
+}
+
+.org-unicef {
+  background: no-repeat center url('../img/unicef.png');
+}
+.org-usaid {
+  background: no-repeat center url('../img/usaid.png');
+}
+.org-gfdrr {
+  background: no-repeat center url('../img/gfdrr.png');
+}
+.org-aws {
+  background: no-repeat center url('../img/aws.png');
+}
+.org-redcross {
+  background: no-repeat center url('../img/redcross.png');
+}
+.org-msf {
+  background: no-repeat center url('../img/msf.png');
 }
