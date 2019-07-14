@@ -28,6 +28,24 @@ class EnvironmentConfig:
     # A freely definable secret key for connecting the front end with the back end
     SECRET_KEY = os.getenv("TM_SECRET", None)
 
+    ML_ENABLER_URL = os.getenv("TM_ML_ENABLER_URL", None)
+    ML_ENABLER_BUILDING_API_ENDPOINT = os.getenv(
+        "TM_ML_ENABLER_BUILDING_API_ENDPOINT", None
+    )
+    ML_ENABLER_LOOKING_GLASS_ENDPOINT = os.getenv(
+        "TM_ML_ENABLER_LOOKING_GLASS_ENDPOINT", None
+    )
+    ML_ENABLER_MAPBOX_TOKEN = os.getenv("TM_ML_ENABLER_MAPBOX_TOKEN", None)
+    ML_ENABLER_AGGREGATOR_CLASS = os.getenv(
+        "TM_ML_ENABLER_AGGREGATOR_CLASS", "looking_glass"
+    )
+    ML_ENABLER_ENDPOINTS = {
+        "looking_glass": ML_ENABLER_LOOKING_GLASS_ENDPOINT,
+        "building_api": ML_ENABLER_BUILDING_API_ENDPOINT,
+    }
+    ML_TILE_URL = os.getenv("TM_ML_ENABLER_TILE_URL", None)
+    ML_OVERPASS_URL = os.getenv("TM_ML_ENABLER_OVERPASS_URL", None)
+
     # Database connection
     POSTGRES_USER = os.getenv("POSTGRES_USER", None)
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", None)

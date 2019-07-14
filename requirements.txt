@@ -60,3 +60,5 @@ Unidecode==1.1.1
 urllib3==1.24.2
 webencodings==0.5.1
 Werkzeug==0.15.5
+#ml-enabler
+-e git://github.com/hotosm/ml-enabler-cli.git#egg=ml_enabler

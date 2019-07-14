@@ -3,6 +3,7 @@ import json
 import geojson
 from flask import current_app
 
+from server import db
 from server.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
@@ -11,10 +12,19 @@ from server.models.dtos.project_dto import (
 from server.models.postgis.project import Project, Task, ProjectStatus
 from server.models.postgis.statuses import TaskCreationMode, UserRole
 from server.models.postgis.task import TaskHistory, TaskStatus, TaskAction
-from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
+from server.models.postgis.utils import (
+    NotFound,
+    InvalidData,
+    InvalidGeoJson,
+    parse_box,
+    ST_Extent,
+)
 from server.services.grid.grid_service import GridService
 from server.services.license_service import LicenseService
 from server.services.users.user_service import UserService
+from server.services.ml_enabler_service import MLEnablerService
+from server.services.task_annotations_service import TaskAnnotationsService
+from server.services.project_search_service import ProjectSearchService
 
 
 class ProjectAdminServiceError(Exception):
@@ -35,7 +45,9 @@ class ProjectStoreError(Exception):
 
 class ProjectAdminService:
     @staticmethod
-    def create_draft_project(draft_project_dto: DraftProjectDTO) -> int:
+    def create_draft_project(
+        draft_project_dto: DraftProjectDTO, ml_enabled: bool = False
+    ) -> int:
         """
         Validates and then persists draft projects in the DB
         :param draft_project_dto: Draft Project DTO with data from API
@@ -68,9 +80,51 @@ class ProjectAdminService:
         else:
             draft_project.create()  # Create the new project
 
+        # Maybe move this out to another call?
+        if ml_enabled:
+            ProjectAdminService.add_annotations_from_ml(draft_project)
+
         draft_project.set_default_changeset_comment()
         draft_project.set_country_info()
         return draft_project.id
+
+    @staticmethod
+    def add_annotations_from_ml(project: Project):
+        # makes one request to ML-enabler for the whole project and not for each tasks
+        # to see if the project has predictions
+        bbox = parse_box(db.engine.execute(ST_Extent(project.geometry)).scalar())
+        response = MLEnablerService.get_prediction_from_bbox("looking_glass", bbox)
+        if response.get("status") != "ok":
+            return
+
+        task_query = Task.query.filter(Task.project_id == project.id)
+        for task in task_query.all():
+            bbox = parse_box(db.engine.execute(ST_Extent(task.geometry)).scalar())
+            bbox_list = [float(a) for a in bbox.split(",")]
+            task_polygon = ProjectSearchService._make_4326_polygon_from_bbox(
+                bbox_list, 4326
+            )
+            response = MLEnablerService.get_prediction_from_bbox("looking_glass", bbox)
+            if response.get("status") == "ok":
+                for pred_id in response["prediction_ids"]:
+                    for prediction in response["predictions"][pred_id]:
+                        polygon = ProjectSearchService._make_4326_polygon_from_bbox(
+                            prediction["bbox"], 3857
+                        )
+                        if task_polygon.intersects(polygon):
+                            properties = {
+                                "building_area_osm": prediction["osm_building_area"],
+                                "building_area_ml_pred": prediction["ml_prediction"],
+                                "building_area_diff": prediction["building_area_diff"],
+                            }
+                            annotation = {
+                                "taskId": task.id,
+                                "annotationSource": "ml-enabler",
+                                "properties": properties,
+                            }
+                            TaskAnnotationsService.add_or_update_annotation(
+                                annotation, project.id, "ml"
+                            )
 
     @staticmethod
     def _set_default_changeset_comment(draft_project: Project):
