@@ -55,6 +55,10 @@
         vm.drawAndSelectPolygon = null;
         vm.drawAndSelectPoint = null;
 
+        //ML split task
+        vm.drawAndSelectPolygonML = null;
+        vm.mlPredictionsEnabled = false;
+
         // Draw interactions
         vm.modifyInteraction = null;
         vm.drawPolygonInteraction = null;
@@ -237,7 +241,6 @@
          */
         vm.trimTaskGrid = function () {
 
-            var taskGrid = projectService.getTaskGrid();
             vm.waiting = true;
             var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi);
             trimTaskGridPromise.then(function (data) {
@@ -292,7 +295,7 @@
             // Create a task grid
             if (vm.isDrawnAOI || vm.isImportedAOI) {
                 var aoiExtent = drawService.getSource().getExtent();
-                var taskGrid = projectService.createTaskGrid(aoiExtent, vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+                var taskGrid = projectService.createTaskGrid(aoiExtent, vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset, vm.mlPredictionsEnabled);
                 projectService.setTaskGrid(taskGrid);
                 projectService.addTaskGridToMap();
 
@@ -442,6 +445,15 @@
         };
 
         /**
+         *  Lets the user draw an area (polygon) using ML helpers.
+         *  After drawing it, the polygon is validated before splitting the intersecting
+         *  tasks into smaller tasks
+         */
+        vm.drawAndSplitAreaPolygonML =  function(){
+            //vm.drawAndSelectPolygon.setActive(true);
+        };
+
+        /**
          *  Lets the user draw point.
          *  After drawing it, the point is validated before splitting the intersecting
          *  tasks into smaller tasks
@@ -520,5 +532,14 @@
         vm.toggleClipTasksToAoi = function () {
             vm.clipTasksToAoi = !vm.clipTasksToAoi;
         };
+
+        /**
+         * Makes a query for the ML-enabler API to run the prediction for a bounding box.
+         */
+        vm.displayMLLayer = function(){
+            //TODO: make this a toggle button?
+            vm.mlPredictionsEnabled = true;
+            vm.createTaskGrid();
+        } 
     }
 })();

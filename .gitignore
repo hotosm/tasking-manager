@@ -9,6 +9,9 @@ client/app/taskingmanager.config.js
 client/package-lock.json
 client/yarn.lock
 
+#for redesign branch remove when new frontend is live
+frontend/
+
 # Ignore dist folder as this contains the minimized build for deploy
 server/web/static/dist
 server/web/static/dist/
