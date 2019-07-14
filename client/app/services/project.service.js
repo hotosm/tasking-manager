@@ -22,6 +22,8 @@
         var map = null;
         var taskGrid = null;
         var aoi = null;
+        var mlEnabled = false;
+        var mlModel= false;
 
         // OpenLayers source for the task grid
         var taskGridSource = null;
@@ -57,7 +59,10 @@
             getMyProjects: getMyProjects,
             trimTaskGrid: trimTaskGrid,
             getProjectSummary: getProjectSummary,
-            getTaskAnnotations: getTaskAnnotations
+            getTaskAnnotations: getTaskAnnotations,
+            getPrediction: getPrediction,
+            setMLEnabled: setMLEnabled, 
+            getMlEnabled: getMLEnabled 
         };
 
         return service;
@@ -83,13 +88,32 @@
             map.addLayer(vector);
         }
 
+        function setMLEnabled(val){
+            mlEnabled = val;
+        }
+
+        function getMLEnabled(){
+            return mlEnabled;
+        }
+
+        function setMLModel(val){
+            mlModel = val;
+        }
+
+        function getMLModel(){
+            return mlModel;
+        }
+
         /**
          * Creates a task grid with features for a polygon feature.
          * It snaps to the OSM grid
          * @param areaOfInterestExtent (ol.Extent) - this should be a polygon
          * @param zoomLevel - the OSM zoom level the task squares will align with
          */
-        function createTaskGrid(areaOfInterestExtent, zoomLevel) {
+        function createTaskGrid(areaOfInterestExtent, zoomLevel, mlEnabled, mlModel) {
+
+            setMLEnabled(mlEnabled);
+            setMLModel(mlModel);
 
             var xmin = Math.ceil(areaOfInterestExtent[0]);
             var ymin = Math.ceil(areaOfInterestExtent[1]);
@@ -104,6 +128,9 @@
             var xmaxstep = parseInt(Math.ceil((xmax + AXIS_OFFSET) / step));
             var yminstep = parseInt(Math.floor((ymin + AXIS_OFFSET) / step));
             var ymaxstep = parseInt(Math.ceil((ymax + AXIS_OFFSET) / step));
+            
+
+            
 
             var taskFeatures = [];
             // Generate an array of task features
@@ -120,6 +147,65 @@
                 }
             }
 
+            if (getMLEnabled()){
+                var extent = ol.proj.transformExtent(areaOfInterestExtent, 'EPSG:3857', 'EPSG:4326');
+                var promise = getPrediction(extent, zoomLevel, mlModel);
+                promise.then(function(data){
+                    if (data.status === "ok"){
+                        taskFeatures = drawMLLayer(data, taskFeatures);
+                    } else { 
+                        alert("No prediction for this area");
+                    }
+                });
+            } 
+
+            return taskFeatures;
+        }
+
+        function drawMLLayer(predictionData, taskFeatures){
+            var predictionList = [];
+            var domain = []
+            Object.values(predictionData.predictions).forEach(function(item) {
+                item.forEach(function(element) {
+                    domain.push(element.building_area_diff);
+                    predictionList.push(element);
+                });
+            });
+
+            domain.sort(function(a, b){ return a - b;});
+            domain = [domain[0], domain[domain.length -1 ]]
+            var d3Scale = d3.scaleQuantile().domain(domain).range(d3.schemeReds[5]);
+
+            //check intercecption here 
+            taskFeatures.forEach(function(feature, index, thearray) {
+                predictionList.forEach(function(prediction) {
+                    if (ol.extent.intersects(feature.getGeometry().getExtent(), prediction.bbox)){
+                        feature.set('building_area_diff', prediction.building_area_diff);
+                        feature.set('building_area_diff_percent', prediction.building_area_diff_percent);
+                        feature.setStyle(getTaskAnnotationStyle(feature, d3Scale));
+                        thearray[index] = feature;
+                    }
+                });
+            });
+
+            function getTaskAnnotationStyle(feature, d3Scale) {
+                var STROKE_COLOUR = [84, 84, 84, 0.7]; //grey, 0.7 opacity
+                var STROKE_WIDTH = 1;
+    
+                // Pick the color from the scale.
+                var fillColor = d3Scale(feature.get('building_area_diff'));
+    
+                return new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: fillColor
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: STROKE_COLOUR,
+                        width: STROKE_WIDTH
+                    })
+                });
+            } 
+            
             return taskFeatures;
         }
 
@@ -345,7 +431,7 @@
         function getSplitTasks(task) {
             // For smaller tasks, increase the zoom level by 1
             var zoomLevel = task.getProperties().zoom + 1;
-            var grid = createTaskGrid(task.getGeometry().getExtent(), zoomLevel);
+            var grid = createTaskGrid(task.getGeometry().getExtent(), zoomLevel, getMLEnabled(), getMLModel());
             return grid;
         }
 
@@ -372,7 +458,7 @@
          * @param cloneProjectId - the ID of the project to clone
          * @returns {*|!jQuery.Promise|!jQuery.jqXHR|!jQuery.deferred}
          */
-        function createProject(projectName, isTaskGrid, cloneProjectId) {
+        function createProject(projectName, isTaskGrid, cloneProjectId, mlEnabled) {
 
             var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi);
             var taskGridGeoJSON = isTaskGrid?geospatialService.getGeoJSONObjectFromFeatures(taskGrid):null;
@@ -382,7 +468,8 @@
                 areaOfInterest: areaOfInterestGeoJSON,
                 projectName: projectName,
                 tasks: taskGridGeoJSON,
-                arbitraryTasks: !isTaskGrid
+                arbitraryTasks: !isTaskGrid,
+                mlEnabled: mlEnabled
             };
 
             if (cloneProjectId){
@@ -827,6 +914,23 @@
                 } else {
                     return $q.reject("error");
                 }
+            });
+        }
+        function getPrediction(bbox, zoom, model) {
+            // Returns a promise
+            var params = "?bbox=" + bbox + "&zoom=" + zoom + "&aggregator=" + model;
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/prediction' + params,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
             });
         }
     }
