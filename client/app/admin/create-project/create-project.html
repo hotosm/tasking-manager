@@ -147,8 +147,12 @@
                             </div>
                         </div>
                         <div class="form__group form__group--section">
-                            <p>{{ 'Split a specific area into smaller tasks by drawing an area or point:' | translate }}</p>
+                            <p>{{ 'Split a specific area into smaller tasks by drawing an area or point or use ML' | translate }}</p>
                             <div class="button-group button-group--horizontal" role="group">
+                                <button class="button button--achromic" type="button"
+                                        ng-disabled="createProjectCtrl.mlPredictionsEnabled ? false : true"
+                                        ng-click="createProjectCtrl.splitAreaML()">{{ 'Split (ML)' | translate }}
+                                </button>
                                 <button class="button button--achromic" type="button"
                                         ng-class="createProjectCtrl.drawAndSelectPolygon.getActive() ? 'button--active' : ''"
                                         ng-click="createProjectCtrl.drawAndSplitAreaPolygon()">{{ 'Split (polygon)' | translate }}
@@ -317,12 +321,18 @@
                 </div>
             </div>
             <div id="map" class="map-container">
+                    <div class="ml-project-button">
+                        <button class="button" ng-click="createProjectCtrl.displayMLLayer()" ng-show="createProjectCtrl.currentStep === 'taskSize'" >
+                            {{ 'ML Layer' | translate }}
+                        </button>
+                    </div>
                 <div class="add-layer-control ol-control">
                     <button type="button"
                             ng-click="createProjectCtrl.isVisible = !createProjectCtrl.isVisible">
-                        Add layer
+                        Add layer 
                     </button>
                 </div>
+                
                 <div class="show-other-projects">
                     <show-project-aois your-projects='false'></show-project-aois>
                 </div>

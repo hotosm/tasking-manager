@@ -55,6 +55,9 @@
         vm.drawAndSelectPolygon = null;
         vm.drawAndSelectPoint = null;
 
+        //ML split task
+        vm.mlPredictionsEnabled = false;
+
         // Draw interactions
         vm.modifyInteraction = null;
         vm.drawPolygonInteraction = null;
@@ -237,7 +240,6 @@
          */
         vm.trimTaskGrid = function () {
 
-            var taskGrid = projectService.getTaskGrid();
             vm.waiting = true;
             var trimTaskGridPromise = projectService.trimTaskGrid(vm.clipTasksToAoi);
             trimTaskGridPromise.then(function (data) {
@@ -292,7 +294,7 @@
             // Create a task grid
             if (vm.isDrawnAOI || vm.isImportedAOI) {
                 var aoiExtent = drawService.getSource().getExtent();
-                var taskGrid = projectService.createTaskGrid(aoiExtent, vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset);
+                var taskGrid = projectService.createTaskGrid(aoiExtent, vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset, vm.mlPredictionsEnabled, false);
                 projectService.setTaskGrid(taskGrid);
                 projectService.addTaskGridToMap();
 
@@ -442,6 +444,32 @@
         };
 
         /**
+         *  Lets the user draw an area (polygon) using ML helpers.
+         *  After drawing it, the polygon is validated before splitting the intersecting
+         *  tasks into smaller tasks
+         */
+        vm.splitAreaML = function(){
+            if ( vm.mlPredictionsEnabled ){
+                setSplitToolsActive_(false);
+                var taskGrid = projectService.getTaskGrid();
+                var tasks_to_split = []
+                taskGrid.forEach(function(feature) {
+                   if (feature.get('building_area_diff_percent') > 80){
+                    tasks_to_split.push(feature);
+                   }  
+                });
+                tasks_to_split.forEach(function(feature) {
+                    taskGrid = projectService.getTaskGrid() 
+                    if (taskGrid.includes(feature)){
+                        projectService.splitTasks(feature);
+                    }
+                });
+                vm.numberOfTasks = projectService.getNumberOfTasks();
+                setSplitToolsActive_(true);
+            }
+        };
+
+        /**
          *  Lets the user draw point.
          *  After drawing it, the point is validated before splitting the intersecting
          *  tasks into smaller tasks
@@ -464,7 +492,7 @@
                         projectService.splitTasks(event.feature);
                         // Get the number of tasks in project
                         vm.numberOfTasks = projectService.getNumberOfTasks();
-                    });
+                    });   
                 });
             }
             vm.drawAndSelectPoint.setActive(true);
@@ -482,7 +510,7 @@
             vm.createProjectSuccess = false;
             if (vm.projectNameForm.$valid) {
                 vm.waiting = true;
-                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId);
+                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId, vm.mlPredictionsEnabled, false);
                 resultsPromise.then(function (data) {
                     vm.waiting = false;
                     // Project created successfully
@@ -520,5 +548,13 @@
         vm.toggleClipTasksToAoi = function () {
             vm.clipTasksToAoi = !vm.clipTasksToAoi;
         };
+
+        /**
+         * Makes a query for the ML-enabler API to run the prediction for a bounding box.
+         */
+        vm.displayMLLayer = function(){
+            vm.mlPredictionsEnabled = !vm.mlPredictionsEnabled;
+            vm.createTaskGrid();
+        } 
     }
 })();

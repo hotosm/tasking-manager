@@ -83,10 +83,23 @@ class ST_MakeEnvelope(GenericFunction):
     name = 'ST_MakeEnvelope'
     type = Geometry
 
+  
+class ST_Extent(GenericFunction):
+    """ Exposes PostGIS ST_Extent function """
+    name = 'ST_Extent'
+    type = None
 
 def timestamp():
     """ Used in SQL Alchemy models to ensure we refresh timestamp when new models initialised"""
     return datetime.datetime.utcnow()
+
+
+def parse_box(box_str: str):   
+    box_str = box_str.replace('BOX(', '').replace(')', '')
+    first, second = box_str.split(',')
+    left, bottom = first.split(' ')
+    right, top = second.split(' ')
+    return ','.join([left, bottom, right, top])
 
 
 # Based on https://stackoverflow.com/a/51916936
