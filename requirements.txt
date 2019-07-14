@@ -41,7 +41,7 @@ python-editor==1.0.3
 python-slugify==1.2.6
 pytz==2018.9
 PyYAML==5.1
-requests==2.21.0
+requests==2.22.0
 requests-oauthlib==0.8.0
 schematics==2.0.0a1
 Shapely==1.6.4.post2
@@ -54,3 +54,5 @@ webencodings==0.5.1
 Werkzeug==0.12.2
 newrelic==3.2.0.91
 pyproj==1.9.6
+#ml-enabler
+-e git://github.com/hotosm/ml-enabler-cli.git#egg=ml_enabler
