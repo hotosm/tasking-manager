@@ -32,19 +32,22 @@
 }
 
 /** Add layer control **/
-.add-layer-control {
+.add-layer-control,
+.ml-layer-control {
   top: 0.5rem;
   right: 0.5rem;
   position: absolute;
   z-index: 1000;
 }
-.add-layer-control {
+.add-layer-control,
+.ml-layer-control {
   button {
     width: 115px;
   }
 }
 
-.add-layer-wrapper {
+.add-layer-wrapper,
+.ml-layer-wrapper {
   input {
     width: 100%;
   }
@@ -53,6 +56,12 @@
 .add-layer-panel {
   top: 3rem;
   right: 0.5rem;
+  position: absolute;
+  z-index: 5;
+}
+
+.ml-layer-panel {
+  top: 4rem;
   position: absolute;
   z-index: 5;
 }
@@ -68,7 +77,8 @@
 }
 
 
-.add-layer-wrapper {
+.add-layer-wrapper,
+.ml-layer-wrapper {
   background: rgba(255, 255, 255, 0.9);
   padding: 1rem;
   border-radius: 0.5rem;

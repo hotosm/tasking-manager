@@ -181,6 +181,7 @@ def init_flask_restful_routes(app):
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
+    from server.api.ml_enabler_apis import PredictionAPI 
 
     api.add_resource(SwaggerDocsAPI, "/api/docs")
     api.add_resource(HealthCheckAPI, "/api/health-check")
@@ -370,3 +371,4 @@ def init_flask_restful_routes(app):
         SplitTaskAPI, "/api/v1/project/<int:project_id>/task/<int:task_id>/split"
     )
     api.add_resource(LanguagesAPI, "/api/v1/settings")
+    api.add_resource(PredictionAPI, "/api/v1/prediction")

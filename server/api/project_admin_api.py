@@ -45,6 +45,9 @@ class ProjectAdminAPI(Resource):
                       projectName:
                           type: string
                           default: HOT Project
+                      mlEnabled:
+                          type: bool 
+                          default: false 
                       areaOfInterest:
                             schema:
                                 properties:
@@ -80,7 +83,10 @@ class ProjectAdminAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        ml_enabled = False 
         try:
+            request_data = request.get_json()
+            ml_enabled = request_data.pop('mlEnabled') 
             draft_project_dto = DraftProjectDTO(request.get_json())
             draft_project_dto.user_id = tm.authenticated_user_id
             draft_project_dto.validate()
@@ -90,7 +96,7 @@ class ProjectAdminAPI(Resource):
 
         try:
             draft_project_id = ProjectAdminService.create_draft_project(
-                draft_project_dto
+                draft_project_dto, ml_enabled
             )
             return {"projectId": draft_project_id}, 201
         except (InvalidGeoJson, InvalidData) as e:
