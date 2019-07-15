@@ -60,6 +60,7 @@
         vm.organisationTags = [];
         vm.projectOrganisationTag = [];
 
+        vm.filteredCampaigns = [];
         vm.projectCampaigns = [];
         vm.projectCampaign = '';
         vm.campaign = '';
@@ -226,22 +227,49 @@
          /**
          *  Delete campaign for the project
          */
-        vm.deleteProjectCampaign = function(){   
+        vm.deleteProjectCampaign = function(){
             var campaign_id = null;
-            Object.keys(vm.projectCampaigns).map(function(key) {
-                if(vm.projectCampaigns[key] === vm.projectCampaign)
-                    campaign_id = key;
-            });
-            
-            if(campaign_id != null){    
-                var resultsPromise = campaignService.deleteProjectCampaign(vm.project.projectId, campaign_id);
-                resultsPromise.then(function (data) {
-                    // On success, set the projects results
-                    vm.projectCampaigns = data.campaigns;
-                }, function () {
-                    // On error
-                });
+            if(vm.projectCampaign != "All"){
+                vm.campaigns.map(function(cam){
+                    if(cam.name === vm.projectCampaign)
+                        campaign_id = cam.id;
+                })
+                if(campaign_id != null){
+                    var resultsPromise = campaignService.deleteProjectCampaign(vm.project.projectId, campaign_id);
+                    resultsPromise.then(function (data) {
+                        // On success, set the projects results
+                        vm.projectCampaigns = data.campaigns;
+                    }, function () {
+                        // On error
+                    });
+                }
             }
+            else{
+                var resultsPromise = campaignService.deleteAllProjectCampaign(vm.project.projectId, vm.projectCampaigns);
+                    resultsPromise.then(function (data) {
+                        // On success, set the projects results
+                        vm.projectCampaigns = [];
+                    }, function () {
+                        // On error
+                    });
+            }
+            
+        }
+
+        vm.selectCampaign = function(filterCampaign){
+            vm.campaign = filterCampaign; 
+            vm.filteredCampaigns=[];
+        }
+        /**
+         *  Show filtered campaigns
+         */
+        vm.filterCampaigns = function(){   
+            vm.filteredCampaigns = [];
+            if(vm.campaign!="")
+            vm.campaigns.map(function(cam){
+                if(cam.name.toLowerCase().indexOf(vm.campaign) == 0)
+                    vm.filteredCampaigns.push(cam.name);
+            })
         }
 
         /**
@@ -249,12 +277,18 @@
          */
         vm.setCampaign = function(){   
             var campaign_id = null;
-            Object.keys(vm.campaigns).map(function(key) {
-                if(vm.campaigns[key] === vm.campaign)
-                    campaign_id = key;
-            });
+            vm.campaigns.map(function(cam){
+                if(cam.name === vm.campaign)
+                    campaign_id = cam.id;
+            })
             if(campaign_id != null){
                 var resultsPromise = campaignService.setCampaignForProject(campaign_id, vm.project.projectId);
+                resultsPromise.then(function(data){
+                    vm.projectCampaigns = data.campaigns;
+                })
+            }
+            else{
+                var resultsPromise = campaignService.createAndSetCampaignForProject(vm.campaign, vm.project.projectId);
                 resultsPromise.then(function(data){
                     vm.projectCampaigns = data.campaigns;
                 })
@@ -723,8 +757,6 @@
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.campaigns = data.campaigns;
-                console.log(vm.project);
-                console.log(data);
             }, function () {
                 // On error
                 vm.campaigns = [];
@@ -739,9 +771,6 @@
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.projectCampaigns = data.campaigns;
-                console.log(vm.project);
-                console.log(vm.project.projectId);
-                console.log(vm.projectCampaigns);
             }, function () {
                 // On error
                 vm.projectCampaigns = [];

@@ -156,6 +156,26 @@
   }
 }
 
+.list--filter {
+  position: absolute;  
+  z-index: 1;
+  width: 46%;
+  li{
+    border-width: 0 0.5px 0.5px 0.5px;
+    border-style: solid;
+    border-color: grey;
+    border-radius: 3px;
+    padding: .5em .8em;
+    background: #FFF;
+    margin-top:0;
+    margin-bottom: 0;
+
+    &:hover{
+      cursor: pointer;
+    }
+  }
+}
+
 .list--zebra {
   &:nth-child(odd) {
     background-color: rgba($lightgrey, 0.15);

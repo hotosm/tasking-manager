@@ -96,7 +96,7 @@
                                                   ng-model="contributeCtrl.searchCampaign">
                                                       <option value="">{{ 'All' | translate }}</option>
                                                       <option ng-repeat="campaign in contributeCtrl.campaigns"
-                                                              value="{{ campaign }}">{{ campaign }}</option>
+                                                              value="{{ campaign.name }}">{{ campaign.name }}</option>
                                                   </select>
                                               </div>
                                               <div class="form__group search-option">
@@ -166,7 +166,7 @@
 
                                                         <dt>{{ 'Campaigns' | translate }}:</dt>
                                                         <dd ng-show="!project.campaigns">{{ 'N/A' | translate }}</dd>
-                                                        <dd ng-show="project.campaigns" ng-repeat="campaign in project.campaigns">{{ campaign }}
+                                                        <dd ng-show="project.campaigns" ng-repeat=  "campaign in project.campaigns">{{ campaign.name }}
                                                             {{$last ? null : ',&nbsp;'}}
                                                             </dd>
 

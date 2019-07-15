@@ -87,7 +87,6 @@ class ProjectSearchService:
                                                                          project.tasks_bad_imagery)
             list_dto.status = ProjectStatus(project.status).name
             list_dto.active_mappers = Project.get_active_mappers(project.id)
-            print(list_dto.campaigns)
             dto.results.append(list_dto)
 
         dto.pagination = Pagination(paginated_results)

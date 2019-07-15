@@ -347,32 +347,25 @@
                                     </p>
                                 </div>
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Available campaigns' | translate }}</label>
-                                    <select class="form__control form__control--medium"
-                                                  ng-model="editProjectCtrl.campaign">
-                                        <option value="" disabled>{{ 'Select' | translate }}</option>
-                                        <option ng-repeat="campaign in editProjectCtrl.campaigns"
-                                                value="{{ campaign }}">{{ campaign }}</option>
-                                    </select>
-                                    <button ng-click="editProjectCtrl.setCampaign()">Add</button>
-                                    <br/>
+                                    <label class="form__label">{{ 'Add campaign' | translate }}</label>
+                                    <p>{{ 'Assign new or existing campaign' | translate }}</p>
+                                    <input type="text" name="campaign" class="form__control" ng-model="editProjectCtrl.campaign" autocomplete="off"
+                                            ng-keyup="editProjectCtrl.filterCampaigns()"/><button ng-click="editProjectCtrl.setCampaign()">Add</button>
+                                    <ul ng-show="editProjectCtrl.filterCampaigns" class="list--filter form__standard">
+                                        <li ng-repeat="filterCampaign in editProjectCtrl.filteredCampaigns"
+                                        ng-click="editProjectCtrl.selectCampaign(filterCampaign)">
+                                            {{ filterCampaign }}</li>
+                                    </ul>
+                                </div>
+                                <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Current campaigns' | translate }}</label>
                                     <select class="form__control form__control--medium"
-                                                  ng-model="editProjectCtrl.projectCampaign">
-                                        <option value="" disabled>{{ 'Select' | translate }}</option>
+                                                  ng-model="editProjectCtrl.projectCampaign" value="All">
+                                        <option value="All" selected>{{ 'All' | translate }}</option>
                                         <option ng-repeat="campaign in editProjectCtrl.projectCampaigns"
-                                                value="{{ campaign }}">{{ campaign }}</option>
+                                                value="{{ campaign.name }}">{{ campaign.name }}</option>
                                     </select>
                                     <button ng-click="editProjectCtrl.deleteProjectCampaign()">Delete</button>
-                                    <!-- <p>{{ 'Only one campaign tag is allowed.' | translate }}</p>
-                                    <tags-input ng-model="editProjectCtrl.projectCampaignTag"
-                                        name="campaignTag" placeholder="{{ 'choose from existing tags or create a new one' | translate }}"
-                                                replace-spaces-with-dashes="false" max-tags="1">
-                                        <auto-complete source="editProjectCtrl.getCampaignTags($query)"></auto-complete>
-                                    </tags-input> -->
-                                    <!-- <p class="error" ng-show="!editProjectCtrl.editForm.campaignTag.$valid">
-                                        {{ 'Please make sure you only have one campaign tag.' | translate }}
-                                    </p> -->
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'OSMCha Filter Id' | translate }}</label>

@@ -31,16 +31,10 @@ class CampaignService:
         return campaign.as_dto()
 
     @staticmethod
-    def get_project_campaigns_as_dto(project_id: int):
+    def get_project_campaigns_as_dto(project_id: int)-> CampaignListDTO:
         """ Gets all the campaigns for a specified project """
-        query = db.session.query(Campaign.id, Campaign.name)\
-            .join(campaign_projects).filter(campaign_projects.c.project_id==project_id)
-        campaign_dto = CampaignListDTO()
-        campaign_dto.campaigns = {} 
-        for r in query:
-            str(r[0])
-            campaign_dto.campaigns.update({r[0]:r[1]})
-        return campaign_dto
+        
+        return Campaign.get_project_campaigns_as_dto(project_id)
 
     @staticmethod
     def delete_project_campaign(project_id: int, campaign_id: int):
@@ -53,7 +47,7 @@ class CampaignService:
         return new_campaigns
                 
     @staticmethod
-    def get_all_campaigns():
+    def get_all_campaigns() -> CampaignListDTO:
         """ Get all campaign tags"""
         return Campaign.get_all_campaigns()
 

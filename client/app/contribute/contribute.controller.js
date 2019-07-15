@@ -133,6 +133,7 @@
                 searchParams.organisationTag = vm.searchOrganisation;
             }
             if (vm.searchCampaign) {
+                console.log(vm.searchCampaign);
                 searchParams.campaign = vm.searchCampaign;
             }
             if (vm.searchText) {
@@ -197,10 +198,12 @@
          * Set campaign tags
          */
         function setCampaigns() {
+            vm.campaigns = [];
             var resultsPromise = campaignService.getCampaigns();
             resultsPromise.then(function (data) {
                 // On success, set the projects results
                 vm.campaigns = data.campaigns;
+                console.log(vm.campaigns);
             }, function () {
                 // On error
                 vm.campaigns = [];

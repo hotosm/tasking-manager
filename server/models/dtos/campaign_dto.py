@@ -1,14 +1,14 @@
 from schematics import Model
-from schematics.types import StringType, IntType, DictType
+from schematics.types import StringType, IntType, ListType, ModelType
 
 
 class CampaignDTO(Model):
     """ DTO used to define a campaign"""
-    id = IntType()
-    name = StringType()
-    logo = StringType()
-    url = StringType()
-    description = StringType()
+    id = IntType(serialize_when_none=False)
+    name = StringType(serialize_when_none=False)
+    logo = StringType(serialize_when_none=False)
+    url = StringType(serialize_when_none=False)
+    description = StringType(serialize_when_none=False)
 
 class CampaignProjectDTO(Model):
     """ DTO used to define avaliable campaign connnected projects"""
@@ -17,4 +17,9 @@ class CampaignProjectDTO(Model):
     
 class CampaignListDTO(Model):
     """ DTO used to define available campaigns """
-    campaigns = DictType(StringType)
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.campaigns = []
+
+    campaigns = ListType(ModelType(CampaignDTO))

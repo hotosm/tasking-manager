@@ -6,15 +6,17 @@
 
     angular
         .module('taskingManager')
-        .service('campaignService', ['$http', '$q','configService', campaignService]);
+        .service('campaignService', ['$http', '$q','configService', 'authService', 'languageService', campaignService]);
 
-    function campaignService($http, $q, configService) {
+    function campaignService($http, $q, configService, authService, languageService) {
 
         var service = {
             getCampaigns: getCampaigns,
             getProjectCampaigns: getProjectCampaigns,
             setCampaignForProject: setCampaignForProject,
             deleteProjectCampaign: deleteProjectCampaign,
+            deleteAllProjectCampaign: deleteAllProjectCampaign,
+            createAndSetCampaignForProject: createAndSetCampaignForProject,
         };
 
         return service;
@@ -71,7 +73,32 @@
                 data:{
                     campaign_id: campaign_id,
                     project_id: project_id
-                }
+                },
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Create and Set campaign to the project
+         * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function createAndSetCampaignForProject(campaign_name, project_id){
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                url: configService.tmAPI + '/project/campaign/create/'+project_id,
+                data:{
+                    name: campaign_name,
+                },
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
@@ -93,6 +120,32 @@
             return $http({
                 method: 'DELETE',
                 url: configService.tmAPI + '/project/campaign?project_id='+project_id+'&campaign_id='+campaign_id,
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
+         * Deletes a project
+         * @param id
+         * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function deleteAllProjectCampaign(project_id, campaigns) {
+            // Returns a promise
+            return $http({
+                method: 'DELETE',
+                url: configService.tmAPI + '/project/campaigns/delete/'+project_id,
+                data:{
+                    campaigns: campaigns,
+                },
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available

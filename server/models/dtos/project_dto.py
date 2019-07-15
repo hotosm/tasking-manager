@@ -5,6 +5,7 @@ from schematics.types.compound import ListType, ModelType, DictType
 from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
+from server.models.dtos.campaign_dto import CampaignDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode, Editors
 
 
@@ -180,7 +181,7 @@ class ListSearchResultDTO(Model):
     mapper_level = StringType(required=True, serialized_name='mapperLevel')
     priority = StringType(required=True)
     organisation_tag = StringType(serialized_name='organisationTag')
-    campaigns = DictType(StringType, serialized_name='campaigns')
+    campaigns = ListType(ModelType(CampaignDTO), serialized_name='campaigns')
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
     status = StringType(serialized_name='status')

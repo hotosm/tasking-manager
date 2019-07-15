@@ -56,7 +56,12 @@ class Campaign(db.Model):
         """ Creates and saves the current model to the DB """
         db.session.add(self)
         db.session.commit()
-    
+   
+    def delete(self):
+	    """ Deletes the current model from the DB """
+	    db.session.delete(self)
+	    db.session.commit()
+
     def save(self):
         db.session.commit()
 
@@ -69,14 +74,32 @@ class Campaign(db.Model):
         db.session.commit()
 
     @staticmethod
-    def get_all_campaigns():
-        query = db.session.query(Campaign.id, Campaign.name).distinct()
-        campaign_dto = CampaignListDTO()
-        campaign_dto.campaigns = {} 
-        for r in query:
-            str(r[0])
-            campaign_dto.campaigns.update({r[0]:r[1]})
-        return campaign_dto
+    def get_all_campaigns() -> CampaignListDTO:
+        query = Campaign.query.distinct() 
+        campaign_list_dto = CampaignListDTO()
+        for campaign in query:
+            campaign_dto = CampaignDTO()
+            campaign_dto.id = campaign.id
+            campaign_dto.name = campaign.name
+            
+            campaign_list_dto.campaigns.append(campaign_dto)
+
+        return campaign_list_dto
+
+    @staticmethod
+    def get_project_campaigns_as_dto(project_id: int) -> CampaignListDTO:
+
+        query = Campaign.query.join(campaign_projects).\
+            filter(campaign_projects.c.project_id==project_id).all()
+        campaign_list_dto = CampaignListDTO()
+        for campaign in query:
+            campaign_dto = CampaignDTO()
+            campaign_dto.id = campaign.id
+            campaign_dto.name = campaign.name
+            
+            campaign_list_dto.campaigns.append(campaign_dto)
+
+        return campaign_list_dto
 
     @classmethod
     def from_dto(cls, dto: CampaignDTO):

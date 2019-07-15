@@ -346,7 +346,6 @@ class ProjectSearchAPI(Resource):
 
         try:
             results_dto = ProjectSearchService.search_projects(search_dto)
-            # print(results_dto.campaign)
             return results_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "No projects found"}, 404
