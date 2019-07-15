@@ -861,10 +861,10 @@
                                     </div>
 
                                     <div ng-if="projectCtrl.user.isExpert" class="mapping-issues form__group form__group--section">
-                                        <h6>{{ 'Note Mapping Issues (optional)' | translate }}</h6>
+                                        <h6>{{ 'Label mapping issues (optional)' | translate }}</h6>
                                         <div class="form__input-group padding-at-bottom">
                                           <input type="text" ng-model="projectCtrl.selectedIssueCategory"
-                                                placeholder="{{ 'Note an issue (space to see options)' | translate }}"
+                                                placeholder="{{ 'Report an issue (space to see options)' | translate }}"
                                                 class="form__control form__control--medium"
                                                 uib-typeahead="issueCategory as issueCategory.name for issueCategory in projectCtrl.availableMappingIssueCategories | filter:{name:$viewValue}"
                                                 typeahead-min-length="0"
@@ -884,7 +884,7 @@
                                     </div>
 
                                     <div class="form__group form__group--section">
-                                        <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
+                                        <h6>{{ 'Done editing? Share a comment and mark the task with one of the buttons below.' | translate }}</h6>
                                         <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
