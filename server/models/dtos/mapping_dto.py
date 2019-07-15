@@ -1,9 +1,11 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, DateTimeType, BooleanType
+from schematics.types import StringType, IntType, \
+    DateTimeType, BooleanType, DictType
 from schematics.types.compound import ListType, ModelType
 from server.models.postgis.statuses import TaskStatus
-
+from server.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
+from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 
 def is_valid_mapped_status(value):
     """ Validates that Task Status is in correct range for after mapping """
@@ -53,6 +55,7 @@ class TaskHistoryDTO(Model):
     action_text = StringType(serialized_name='actionText')
     action_date = DateTimeType(serialized_name='actionDate')
     action_by = StringType(serialized_name='actionBy')
+    issues = ListType(ModelType(TaskMappingIssueDTO))
 
 
 class TaskDTO(Model):
@@ -62,6 +65,7 @@ class TaskDTO(Model):
     task_status = StringType(serialized_name='taskStatus')
     lock_holder = StringType(serialized_name='lockHolder', serialize_when_none=False)
     task_history = ListType(ModelType(TaskHistoryDTO), serialized_name='taskHistory')
+    task_annotations = ListType(ModelType(TaskAnnotationDTO), serialized_name='taskAnnotation')
     per_task_instructions = StringType(serialized_name='perTaskInstructions', serialize_when_none=False)
     is_undoable = BooleanType(serialized_name='isUndoable', default=False)
     auto_unlock_seconds = IntType(serialized_name='autoUnlockSeconds')
@@ -70,6 +74,7 @@ class TaskDTO(Model):
 class TaskDTOs(Model):
     """ Describes an array of Task DTOs"""
     tasks = ListType(ModelType(TaskDTO))
+
 
 class TaskCommentDTO(Model):
     """ Describes the model used to add a standalone comment to a task outside of mapping/validation """

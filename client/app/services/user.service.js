@@ -169,10 +169,22 @@
          * Search a user
          * @returns {!jQuery.jqXHR|*|!jQuery.deferred|!jQuery.Promise}
          */
-        function searchUser(username, projectId){
+        function searchUser(username, projectId, isProjectManager){
+            if (typeof isProjectManager === undefined){
+                isProjectManager = false;
+            }
+            
             var params = '';
             if (typeof projectId === "number" && !isNaN(projectId)) {
               params = '?projectId=' + projectId;
+            }
+
+            if (typeof isProjectManager === "boolean" && isProjectManager) {
+                if (params){
+                    params += "&isProjectManager="  + isProjectManager;
+                } else {
+                    params += "?isProjectManager="  + isProjectManager;
+                }
             }
 
             // Returns a promise

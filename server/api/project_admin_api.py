@@ -17,7 +17,7 @@ class ProjectAdminAPI(Resource):
         Creates a tasking-manager project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -100,7 +100,7 @@ class ProjectAdminAPI(Resource):
         Retrieves a Tasking-Manager project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -143,7 +143,7 @@ class ProjectAdminAPI(Resource):
         Updates a Tasking-Manager project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -288,7 +288,7 @@ class ProjectAdminAPI(Resource):
         Deletes a Tasking-Manager project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -336,7 +336,7 @@ class ProjectCommentsAPI(Resource):
         Gets all comments for project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -376,7 +376,7 @@ class ProjectInvalidateAll(Resource):
         Invalidate all mapped tasks on a project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -418,7 +418,7 @@ class ProjectValidateAll(Resource):
         Validate all mapped tasks on a project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -459,7 +459,7 @@ class ProjectResetAll(Resource):
         Reset all tasks on project back to ready, preserving history.
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -501,7 +501,7 @@ class ProjectMapAll(Resource):
         Map all tasks on a project
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -543,7 +543,7 @@ class ProjectResetBadImagery(Resource):
         Mark all bad imagery tasks ready for mapping
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -585,7 +585,7 @@ class ProjectsForAdminAPI(Resource):
         Get all projects for logged in admin
         ---
         tags:
-            - project-admin
+            - project admin
         produces:
             - application/json
         parameters:
@@ -621,3 +621,55 @@ class ProjectsForAdminAPI(Resource):
             error_msg = f'Project GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class ProjectTransfer(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Transfers a project to a new user.
+        ---
+        tags:
+            - project admin
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: the username of the new owner
+              schema:
+                  properties:
+                      username:
+                        type: string
+        responses:
+            200:
+                description: All tasks reset
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            username = request.get_json()['username']
+            ProjectAdminService.transfer_project_to(project_id, tm.authenticated_user_id, username)
+            return {"Success": "Project Transfered"}, 200
+        except Exception as e:
+            error_msg = f'Project GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+

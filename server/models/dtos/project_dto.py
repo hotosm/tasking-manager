@@ -1,7 +1,8 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, BaseType, FloatType, IntType, BooleanType, DateTimeType, FloatType
-from schematics.types.compound import ListType, ModelType
+from schematics.types import StringType, BaseType, IntType, BooleanType, DateTimeType, FloatType
+from schematics.types.compound import ListType, ModelType, DictType
+from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode, Editors
@@ -92,6 +93,7 @@ class ProjectDTO(Model):
     project_priority = StringType(required=True, serialized_name='projectPriority',
                                   validators=[is_known_project_priority], serialize_when_none=False)
     area_of_interest = BaseType(serialized_name='areaOfInterest')
+    aoi_bbox = ListType(FloatType, serialized_name='aoiBBOX')
     tasks = BaseType(serialize_when_none=False)
     default_locale = StringType(required=True, serialized_name='defaultLocale', serialize_when_none=False)
     project_info = ModelType(ProjectInfoDTO, serialized_name='projectInfo', serialize_when_none=False)
@@ -100,10 +102,12 @@ class ProjectDTO(Model):
     mapper_level = StringType(required=True, serialized_name='mapperLevel', validators=[is_known_mapping_level])
     enforce_mapper_level = BooleanType(required=True, default=False, serialized_name='enforceMapperLevel')
     enforce_validator_role = BooleanType(required=True, default=False, serialized_name='enforceValidatorRole')
+    enforce_random_task_selection = BooleanType(required=True, default=False, serialized_name='enforceRandomTaskSelection')
     allow_non_beginners = BooleanType(required=False, default=False, serialized_name='allowNonBeginners')
     private = BooleanType(required=True)
     entities_to_map = StringType(serialized_name='entitiesToMap')
     changeset_comment = StringType(serialized_name='changesetComment')
+    osmcha_filter_id = StringType(serialized_name='osmchaFilterId')
     due_date = DateTimeType(serialized_name='dueDate')
     imagery = StringType()
     josm_preset = StringType(serialized_name='josmPreset', serialize_when_none=False)
@@ -241,15 +245,6 @@ class ProjectSummary(Model):
     mapper_level_enforced = BooleanType(serialized_name='mapperLevelEnforced')
     validator_level_enforced = BooleanType(serialized_name='validatorLevelEnforced')
     short_description = StringType(serialized_name='shortDescription')
-    total_mappers = IntType(serialized_name='totalMappers')
-    total_tasks = IntType(serialized_name='totalTasks')
-    total_comments = IntType(serialized_name='totalComments')
-    total_mapping_time = IntType(serialized_name='totalMappingTime')
-    total_validation_time = IntType(serialized_name='totalValidationTime')
-    total_time_spent = StringType(serialized_name='totalTimeSpent')
-    average_mapping_time=StringType(serialized_name='averageMappingTime')
-    average_validation_time=StringType(serialized_name='averageValidationTime')
-
     status = StringType()
 
 
@@ -265,3 +260,38 @@ class PMDashboardDTO(Model):
     draft_projects = ListType(ModelType(ProjectSummary), serialized_name='draftProjects')
     active_projects = ListType(ModelType(ProjectSummary), serialized_name='activeProjects')
     archived_projects = ListType(ModelType(ProjectSummary), serialized_name='archivedProjects')
+
+class ProjectTaskAnnotationsDTO(Model):
+    """ DTO for task annotations of a project """
+
+    def __init__(self):
+        """ DTO constructor set task arrays to empty """
+        super().__init__()
+        self.tasks = []
+
+    project_id = IntType(required=True, serialized_name='projectId')
+    tasks = ListType(ModelType(TaskAnnotationDTO), required=True, serialized_name='tasks')
+
+class ProjectStatsDTO(Model):
+    """ DTO for detailed stats on a project """
+    project_id = IntType(required=True, serialized_name='projectId')
+    area = FloatType(serialized_name='projectArea(in sq.km)')
+    total_mappers = IntType(serialized_name='totalMappers')
+    total_tasks = IntType(serialized_name='totalTasks')
+    total_comments = IntType(serialized_name='totalComments')
+    total_mapping_time = IntType(serialized_name='totalMappingTime')
+    total_validation_time = IntType(serialized_name='totalValidationTime')
+    total_time_spent = IntType(serialized_name='totalTimeSpent')
+    average_mapping_time = IntType(serialized_name='averageMappingTime')
+    average_validation_time = IntType(serialized_name='averageValidationTime')
+    percent_mapped = IntType(serialized_name='percentMapped')
+    percent_validated = IntType(serialized_name='percentValidated')
+    percent_bad_imagery = IntType(serialized_name='percentBadImagery')
+    aoi_centroid = BaseType(serialized_name='aoiCentroid')
+
+
+class ProjectUserStatsDTO(Model):
+    """ DTO for time spent by users on a project """
+    time_spent_mapping = IntType(serialized_name='timeSpentMapping')
+    time_spent_validating = IntType(serialized_name='timeSpentValidating')
+    total_time_spent = IntType(serialized_name='totalTimeSpent')

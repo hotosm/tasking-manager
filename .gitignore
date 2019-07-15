@@ -17,6 +17,9 @@ server/web/static/dist/
 logs/
 *.log
 
+# Ignore some translation stuff
+.tx/tasking-manager.master/
+
 #python
 venv/
 *pyc

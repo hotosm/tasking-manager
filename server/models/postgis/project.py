@@ -1,10 +1,13 @@
 import json
+import re
 from typing import Optional
 from cachetools import TTLCache, cached
 
 import geojson
 from flask import current_app
 from geoalchemy2 import Geometry
+from sqlalchemy import text
+from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2.shape import to_shape
@@ -16,7 +19,7 @@ import dateutil.parser
 import datetime
 
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO
+from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO, ProjectStatsDTO, ProjectUserStatsDTO
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
@@ -56,10 +59,12 @@ class Project(db.Model):
     mapper_level = db.Column(db.Integer, default=1, nullable=False, index=True)  # Mapper level project is suitable for
     enforce_mapper_level = db.Column(db.Boolean, default=False)
     enforce_validator_role = db.Column(db.Boolean, default=False)  # Means only users with validator role can validate
+    enforce_random_task_selection = db.Column(db.Boolean, default=False)  # Force users to edit at random to avoid mapping "easy" tasks
     allow_non_beginners = db.Column(db.Boolean, default=False)
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
     entities_to_map = db.Column(db.String)
     changeset_comment = db.Column(db.String)
+    osmcha_filter_id = db.Column(db.String)  # Optional custom filter id for filtering on OSMCha
     due_date = db.Column(db.DateTime)
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
@@ -185,6 +190,7 @@ class Project(db.Model):
         cloned_project.mapper_level = original_project.mapper_level
         cloned_project.enforce_mapper_level = original_project.enforce_mapper_level
         cloned_project.enforce_validator_role = original_project.enforce_validator_role
+        cloned_project.enforce_random_task_selection = original_project.enforce_random_task_selection
         cloned_project.private = original_project.private
         cloned_project.entities_to_map = original_project.entities_to_map
         cloned_project.due_date = original_project.due_date
@@ -227,6 +233,7 @@ class Project(db.Model):
         self.default_locale = project_dto.default_locale
         self.enforce_mapper_level = project_dto.enforce_mapper_level
         self.enforce_validator_role = project_dto.enforce_validator_role
+        self.enforce_random_task_selection = project_dto.enforce_random_task_selection
         self.allow_non_beginners = project_dto.allow_non_beginners
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
@@ -237,6 +244,13 @@ class Project(db.Model):
         self.josm_preset = project_dto.josm_preset
         self.last_updated = timestamp()
         self.license_id = project_dto.license_id
+
+        if project_dto.osmcha_filter_id:
+            # Support simple extraction of OSMCha filter id from OSMCha URL
+            match = re.search('aoi=([\w-]+)', project_dto.osmcha_filter_id)
+            self.osmcha_filter_id = match.group(1) if match else project_dto.osmcha_filter_id
+        else:
+            self.osmcha_filter_id = None
 
         if project_dto.organisation_tag:
             org_tag = Tags.upsert_organistion_tag(project_dto.organisation_tag)
@@ -349,6 +363,107 @@ class Project(db.Model):
 
         return admin_projects_dto
 
+    def get_project_user_stats(self, user_id: int) -> ProjectUserStatsDTO:
+        """Compute project specific stats for a given user"""
+        stats_dto = ProjectUserStatsDTO()
+        stats_dto.time_spent_mapping = 0
+        stats_dto.time_spent_validating = 0
+        stats_dto.total_time_spent = 0
+
+        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                   WHERE action='LOCKED_FOR_MAPPING'
+                   and user_id = :user_id and project_id = :project_id;"""
+        total_mapping_time = db.engine.execute(text(query), user_id=user_id, project_id=self.id)
+        for time in total_mapping_time:
+            total_mapping_time = time[0]
+            if total_mapping_time:
+                stats_dto.time_spent_mapping = total_mapping_time.total_seconds()
+                stats_dto.total_time_spent += stats_dto.time_spent_mapping
+
+        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                   WHERE action='LOCKED_FOR_VALIDATION'
+                   and user_id = :user_id and project_id = :project_id;"""
+        total_validation_time = db.engine.execute(text(query), user_id=user_id, project_id=self.id)
+        for time in total_validation_time:
+            total_validation_time = time[0]
+            if total_validation_time:
+                stats_dto.time_spent_validating = total_validation_time.total_seconds()
+                stats_dto.total_time_spent += stats_dto.time_spent_validating
+
+        return stats_dto
+
+    def get_project_stats(self) -> ProjectStatsDTO:
+        """ Create Project Summary model for postgis project object"""
+        project_stats = ProjectStatsDTO()
+        project_stats.project_id = self.id
+        polygon = to_shape(self.geometry)
+        polygon_aea = transform(
+                            partial(
+                            pyproj.transform,
+                            pyproj.Proj(init='EPSG:4326'),
+                            pyproj.Proj(
+                                proj='aea',
+                                lat1=polygon.bounds[1],
+                                lat2=polygon.bounds[3])),
+                            polygon)
+        area = polygon_aea.area/1000000
+        project_stats.area = area
+        project_stats.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
+        project_stats.total_tasks = self.total_tasks
+        project_stats.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
+        project_stats.percent_mapped = Project.calculate_tasks_percent('mapped', self.total_tasks,
+                                                                       self.tasks_mapped, self.tasks_validated,
+                                                                       self.tasks_bad_imagery)
+        project_stats.percent_validated = Project.calculate_tasks_percent('validated', self.total_tasks,
+                                                                          self.tasks_mapped, self.tasks_validated,
+                                                                          self.tasks_bad_imagery)
+        project_stats.percent_bad_imagery = Project.calculate_tasks_percent('bad_imagery', self.total_tasks,
+                                                                            self.tasks_mapped, self.tasks_validated,
+                                                                            self.tasks_bad_imagery)
+        centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
+        project_stats.aoi_centroid = geojson.loads(centroid_geojson)
+        unique_mappers = TaskHistory.query.filter(
+                TaskHistory.action == 'LOCKED_FOR_MAPPING',
+                TaskHistory.project_id == self.id
+            ).distinct(TaskHistory.user_id).count()
+        unique_validators = TaskHistory.query.filter(
+                TaskHistory.action == 'LOCKED_FOR_VALIDATION',
+                TaskHistory.project_id == self.id
+            ).distinct(TaskHistory.user_id).count()
+        project_stats.total_time_spent = 0
+        project_stats.total_mapping_time = 0
+        project_stats.total_validation_time = 0
+        project_stats.average_mapping_time = 0
+        project_stats.average_validation_time = 0
+
+        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                   WHERE action='LOCKED_FOR_MAPPING' and project_id = :project_id;"""
+        total_mapping_time = db.engine.execute(text(query), project_id=self.id)
+        for row in total_mapping_time:
+            total_mapping_time = row[0]
+            if total_mapping_time:
+                total_mapping_seconds = total_mapping_time.total_seconds()
+                project_stats.total_mapping_time = total_mapping_seconds
+                project_stats.total_time_spent += project_stats.total_mapping_time
+                if unique_mappers:
+                    average_mapping_time = total_mapping_seconds/unique_mappers
+                    project_stats.average_mapping_time = average_mapping_time
+
+        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                   WHERE action='LOCKED_FOR_VALIDATION' and project_id = :project_id;"""
+        total_validation_time = db.engine.execute(text(query), project_id=self.id)
+        for row in total_validation_time:
+            total_validation_time = row[0]
+            if total_validation_time:
+                total_validation_seconds = total_validation_time.total_seconds()
+                project_stats.total_validation_time = total_validation_seconds
+                project_stats.total_time_spent += project_stats.total_validation_time
+                if unique_validators:
+                    average_validation_time = total_validation_seconds/unique_validators
+                    project_stats.average_validation_time = average_validation_time
+
+        return project_stats
+
     def get_project_summary(self, preferred_locale) -> ProjectSummary:
         """ Create Project Summary model for postgis project object"""
         summary = ProjectSummary()
@@ -385,60 +500,24 @@ class Project(db.Model):
         summary.validator_level_enforced = self.enforce_validator_role
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
-        summary.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
-        unique_mappers = TaskHistory.query.filter(
-                TaskHistory.action == 'LOCKED_FOR_MAPPING',
-                TaskHistory.project_id == self.id
-            ).distinct(TaskHistory.user_id).count()
-        unique_validators = TaskHistory.query.filter(
-                TaskHistory.action == 'LOCKED_FOR_VALIDATION',
-                TaskHistory.project_id == self.id
-            ).distinct(TaskHistory.user_id).count()
-        summary.total_tasks = self.total_tasks
-        summary.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
-
         summary.entities_to_map = self.entities_to_map
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
-        summary.percent_mapped = int(((self.tasks_mapped + self.tasks_bad_imagery) / self.total_tasks) * 100)
-        summary.percent_validated = int((self.tasks_validated / self.total_tasks) * 100)
-        summary.percent_bad_imagery = int((self.tasks_bad_imagery / self.total_tasks) * 100)
+        summary.percent_mapped = Project.calculate_tasks_percent('mapped', self.total_tasks,
+                                                                 self.tasks_mapped, self.tasks_validated,
+                                                                 self.tasks_bad_imagery)
+        summary.percent_validated = Project.calculate_tasks_percent('validated', self.total_tasks,
+                                                                    self.tasks_mapped, self.tasks_validated,
+                                                                    self.tasks_bad_imagery)
+        summary.percent_bad_imagery = Project.calculate_tasks_percent('bad_imagery', self.total_tasks,
+                                                                      self.tasks_mapped, self.tasks_validated,
+                                                                      self.tasks_bad_imagery)
+
         project_info = ProjectInfo.get_dto_for_locale(self.id, preferred_locale, self.default_locale)
         summary.name = project_info.name
         summary.short_description = project_info.short_description
-        summary.total_time_spent = 0
-        summary.total_mapping_time = 0
-        summary.total_validation_time = 0
-        summary.average_mapping_time = 0
-        summary.average_validation_time = 0
-
-        sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                 WHERE action='LOCKED_FOR_MAPPING'and project_id = {0};'''.format(self.id)
-        total_mapping_time = db.engine.execute(sql)
-        for row in total_mapping_time:
-            total_mapping_time = row[0]
-            if total_mapping_time:
-                total_mapping_seconds = total_mapping_time.total_seconds()
-                summary.total_mapping_time = total_mapping_seconds
-                summary.total_time_spent += summary.total_mapping_time
-                if unique_mappers:
-                    average_mapping_time = total_mapping_seconds/unique_mappers
-                    summary.average_mapping_time = average_mapping_time
-
-        sql = '''SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE action='LOCKED_FOR_VALIDATION' and project_id = {0};'''.format(self.id)
-        total_validation_time = db.engine.execute(sql)
-        for row in total_validation_time:
-            total_validation_time = row[0]
-            if total_validation_time:
-                total_validation_seconds = total_validation_time.total_seconds()
-                summary.total_validation_time = total_validation_seconds
-                summary.total_time_spent += summary.total_validation_time
-                if unique_validators:
-                    average_validation_time = total_validation_seconds/unique_validators
-                    summary.average_validation_time = average_validation_time
 
         return summary
 
@@ -471,13 +550,16 @@ class Project(db.Model):
         base_dto.default_locale = self.default_locale
         base_dto.project_priority = ProjectPriority(self.priority).name
         base_dto.area_of_interest = self.get_aoi_geometry_as_geojson()
+        base_dto.aoi_bbox = shape(base_dto.area_of_interest).bounds
         base_dto.enforce_mapper_level = self.enforce_mapper_level
         base_dto.enforce_validator_role = self.enforce_validator_role
+        base_dto.enforce_random_task_selection = self.enforce_random_task_selection
         base_dto.allow_non_beginners = self.allow_non_beginners
         base_dto.private = self.private
         base_dto.mapper_level = MappingLevel(self.mapper_level).name
         base_dto.entities_to_map = self.entities_to_map
         base_dto.changeset_comment = self.changeset_comment
+        base_dto.osmcha_filter_id = self.osmcha_filter_id
         base_dto.due_date = self.due_date
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset
@@ -578,6 +660,16 @@ class Project(db.Model):
         tags_dto = TagsDTO()
         tags_dto.tags = [r[1] for r in query]
         return tags_dto
+
+    @staticmethod
+    def calculate_tasks_percent(target, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery):
+        """ Calculates percentages of contributions """
+        if target == 'mapped':
+            return int((tasks_mapped + tasks_validated) / (total_tasks - tasks_bad_imagery) * 100)
+        elif target == 'validated':
+            return int(tasks_validated / (total_tasks - tasks_bad_imagery) * 100)
+        elif target == 'bad_imagery':
+            return int((tasks_bad_imagery / total_tasks) * 100)
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """

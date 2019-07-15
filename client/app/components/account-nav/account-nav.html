@@ -51,6 +51,11 @@
                     </a>
                 </li>
                 <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
+                    <a title="{{ 'Manage mapping-issue categories' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToManageMappingIssueCategories()">
+                        {{ 'Manage issues' | translate }}
+                    </a>
+                </li>
+                <li ng-show="accountNavCtrl.account.role === 'PROJECT_MANAGER' || accountNavCtrl.account.role === 'ADMIN'">
                     <a title="{{ 'Project dashboard' | translate }}" class="drop__menu-item" ng-click="accountNavCtrl.goToProjectDashboard()">
                         {{ 'Project dashboard' | translate }}
                     </a>
