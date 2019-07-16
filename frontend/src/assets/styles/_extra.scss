@@ -12,7 +12,13 @@
 
 @media screen and (min-width: 60em) {
   .bg-split-blue-white {
-    background: -webkit-linear-gradient(left, $blue-dark, $blue-dark 75%, white 25%, white);
+    background: linear-gradient(to right, $blue-dark, $blue-dark 80%, white 20%, white);
+  }
+  .f-4rem-l {
+    font-size: 4rem;
+  }
+  .mw-36rem-l {
+    max-width: 36rem;
   }
 }
 
@@ -21,7 +27,7 @@
     max-width: 20rem;
   }
   .bg-split-blue-white {
-    background: -webkit-linear-gradient(top, $blue-dark, $blue-dark 80%, white 10%, white);
+    background: linear-gradient(to bottom, $blue-dark, $blue-dark 80%, white 20%, white);
   }
 }
 
@@ -32,32 +38,4 @@
 .bg-sec-jumbotron {
   background: rgba(0, 0, 0, .5) url('../img/children.jpg') left;
   background-blend-mode: darken;
-}
-
-@media screen and (min-width: 60em) {
-  .f-4rem-l {
-    font-size: 4rem;
-  }
-  .mw-36rem-l {
-    max-width: 36rem;
-  }
-}
-
-.org-unicef {
-  background: no-repeat center url('../img/unicef.png');
-}
-.org-usaid {
-  background: no-repeat center url('../img/usaid.png');
-}
-.org-gfdrr {
-  background: no-repeat center url('../img/gfdrr.png');
-}
-.org-aws {
-  background: no-repeat center url('../img/aws.png');
-}
-.org-redcross {
-  background: no-repeat center url('../img/redcross.png');
-}
-.org-msf {
-  background: no-repeat center url('../img/msf.png');
 }
