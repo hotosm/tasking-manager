@@ -86,8 +86,10 @@ class ProjectAdminService:
         return project.as_dto_for_admin(project_id)
 
     @staticmethod
-    def update_project(project_dto: ProjectDTO):
+    def update_project(project_dto: ProjectDTO, authenticated_user_id: int):
         project = ProjectAdminService._get_project_by_id(project_dto.project_id)
+        is_admin = UserService.is_user_admin(authenticated_user_id)
+        is_pm = UserService.is_user_a_project_manager(authenticated_user_id)
 
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
             ProjectAdminService._validate_default_locale(project_dto.default_locale, project_dto.project_info_locales)
@@ -98,7 +100,14 @@ class ProjectAdminService:
         if project_dto.private:
             ProjectAdminService._validate_allowed_users(project_dto)
 
-        project.update(project_dto)
+        if not is_admin:
+            if is_pm and project.author_id == authenticated_user_id:
+                project.update(project_dto)
+            else:
+                raise ProjectAdminServiceError('Project can only be updated by admins or by the owner')
+        else:
+            project.update(project_dto)
+
         return project
 
     @staticmethod
@@ -126,14 +135,28 @@ class ProjectAdminService:
             raise ProjectAdminServiceError(f'allowedUsers contains an unknown username {user}')
 
     @staticmethod
-    def delete_project(project_id: int):
+    def delete_project(project_id: int, authenticated_user_id: int):
         """ Deletes project if it has no completed tasks """
+        
         project = ProjectAdminService._get_project_by_id(project_id)
+        is_admin = UserService.is_user_admin(authenticated_user_id)
+        is_pm = UserService.is_user_a_project_manager(authenticated_user_id)
 
-        if project.can_be_deleted():
-            project.delete()
+        if is_pm and not is_admin: 
+            if project.author_id != authenticated_user_id:
+                raise ProjectAdminServiceError('Project can only be deleted by admins or by the owner')
+            else:
+                if project.can_be_deleted():
+                    project.delete()
+                else:
+                    raise ProjectAdminServiceError('Project has mapped tasks, cannot be deleted')
+        elif is_admin:
+            if project.can_be_deleted():
+                project.delete()
+            else:
+                raise ProjectAdminServiceError('Project has mapped tasks, cannot be deleted')
         else:
-            raise ProjectAdminServiceError('Project has mapped tasks, cannot be deleted')
+            raise ProjectAdminServiceError('User does not have permissions to delete project')
 
     @staticmethod
     def reset_all_tasks(project_id: int, user_id: int):
