@@ -11,8 +11,11 @@ from server.services.project_admin_service import (
     NotFound,
     LicenseService,
 )
+
+from server.models.postgis.statuses import ProjectPriority, MappingLevel
 from server.models.dtos.project_dto import ProjectInfoDTO
 from server.models.postgis.task import Task
+from server.models.postgis.user import User, UserRole
 from server import create_app
 
 
@@ -68,9 +71,10 @@ class TestProjectAdminService(unittest.TestCase):
         with self.assertRaises(NotFound):
             ProjectAdminService._get_project_by_id(12)
 
+    @patch.object(User, "get_by_id")
     @patch.object(Project, "get")
     def test_published_project_with_incomplete_default_locale_raises_error(
-        self, mock_project
+        self, mock_project, mock_user
     ):
         # Arrange
         stub_project = Project()
@@ -90,13 +94,19 @@ class TestProjectAdminService(unittest.TestCase):
         dto.project_info_locales = locales
         dto.project_status = ProjectStatus.PUBLISHED.name
 
+        stub_admin_user = User()
+        stub_admin_user.username = "admin"
+        stub_admin_user.role = UserRole.ADMIN.value
+
+        mock_user.return_value = stub_admin_user
         # Act / Assert
         with self.assertRaises(ProjectAdminServiceError):
-            ProjectAdminService.update_project(dto)
+            ProjectAdminService.update_project(dto, mock_user.id)
 
+    @patch.object(User, "get_by_id")
     @patch.object(Project, "get")
     def test_updating_a_private_project_with_no_allowed_users_causes_an_error(
-        self, mock_project
+        self, mock_project, mock_user
     ):
         # Arrange
         mock_project.return_value = Project()
@@ -105,8 +115,78 @@ class TestProjectAdminService(unittest.TestCase):
         dto.private = True
         dto.allowed_usernames = []
 
+        stub_user = User()
+        stub_user.username = "admin"
+        stub_user.role = UserRole.ADMIN.value
+
+        mock_user.return_value = stub_user
+
         with self.assertRaises(ProjectAdminServiceError):
-            ProjectAdminService.update_project(dto)
+            ProjectAdminService.update_project(dto, mock_user.id)
+
+    @patch.object(User, "get_by_id")
+    @patch.object(Project, "update")
+    @patch.object(Project, "get")
+    def test_updating_a_project_with_different_roles(
+        self, mock_project, mock_project2, mock_user
+    ):
+        stub_project = Project()
+        stub_project.status = ProjectStatus.DRAFT.value
+
+        mock_project.return_value = stub_project
+
+        locales = []
+        info = ProjectInfoDTO()
+        info.locale = "en"
+        info.name = "Test"
+        locales.append(info)
+
+        dto = ProjectDTO()
+        dto.project_id = 1
+        dto.default_locale = "en"
+        dto.project_status = ProjectStatus.DRAFT.name
+        dto.project_priority = ProjectPriority.LOW.name
+        dto.mapper_level = MappingLevel.BEGINNER.name
+        dto.mapping_types = ["ROADS"]
+        dto.mapping_editors = ["ID"]
+        dto.validation_editors = ["ID"]
+        dto.project_info_locales = locales
+
+        stub_user = User()
+        stub_user.username = "mapper"
+        stub_user.role = UserRole.MAPPER.value
+
+        mock_user.return_value = stub_user
+
+        with self.assertRaises(ProjectAdminServiceError):
+            ProjectAdminService.update_project(dto, mock_user.id)
+
+        stub_user.username = "pm"
+        stub_user.role = UserRole.PROJECT_MANAGER.value
+        mock_user.return_value = stub_user
+
+        with self.assertRaises(ProjectAdminServiceError):
+            ProjectAdminService.update_project(dto, mock_user.id)
+
+        stub_project.author_id = mock_user.id
+
+        stub_user.username = "admin"
+        stub_user.role = UserRole.ADMIN.value
+        mock_user.return_value = stub_user
+
+        try:
+            ProjectAdminService.update_project(dto, mock_user.id)
+        except ProjectAdminServiceError:
+            self.fail("update_project raised an exception with admin role")
+
+        stub_user.username = "pm"
+        stub_user.role = UserRole.PROJECT_MANAGER.value
+        mock_user.return_value = stub_user
+
+        try:
+            ProjectAdminService.update_project(dto, mock_user.id)
+        except ProjectAdminServiceError:
+            self.fail("update_project raised an exception with pm role")
 
     def test_no_project_info_for_default_locale_raises_error(self):
         # Arrange
