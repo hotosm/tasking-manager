@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from "react-router-dom";
+import { Router } from "@reach/router";
 
 import './assets/styles/index.scss';
 import { Header } from './components/header';
@@ -13,9 +13,11 @@ function App() {
     <div className="App w-100 base-font">
       <Header />
       <div className="cf w-100 base-font">
-        <Route exact path="/" component={ Home } />
-        <Route path="/about" component={ AboutPage } />
-        <Route path="/login" component={ Login } />
+        <Router>
+          <Home path="/" />
+          <AboutPage path="about" />
+          <Login path="login" />
+        </Router>
       </div>
       <Footer />
     </div>
