@@ -10,6 +10,7 @@ from server.models.dtos.stats_dto import (
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User, Task
+from server.models.postgis.campaign import Campaign, campaign_projects
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService
@@ -200,22 +201,23 @@ class StatsService:
 
         dto.total_validated_area = tasks_validated_result.fetchone()['sum']
 
-        campaign_count = db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))\
-            .group_by(Project.campaign_tag).all()
-        no_campaign_count = 0
-        unique_campaigns = 0
+        unique_campaigns = db.session.query(func.count(Campaign.name)).all()[0][0]
+        
+        linked_campaigns_count = db.session.query(Campaign.name, func.count(campaign_projects.c.campaign_id))\
+            .join(Campaign, Campaign.id == campaign_projects.c.campaign_id)\
+                .group_by(Campaign.id, campaign_projects.c.campaign_id).all()
+        
+        no_campaign_count_sql = "select count(*) as project_count from projects where id not in (select distinct project_id from campaign_projects order by project_id)"
+        no_campaign_count = db.engine.execute(no_campaign_count_sql).fetchone()['project_count']
 
-        for tup in campaign_count:
+        for tup in linked_campaigns_count:
             campaign_stats = CampaignStatsDTO(tup)
-            if campaign_stats.tag:
-                dto.campaigns.append(campaign_stats)
-                unique_campaigns += 1
-            else:
-                no_campaign_count += campaign_stats.projects_created
+            dto.campaigns.append(campaign_stats)
 
         if no_campaign_count:
-            no_campaign_proj = CampaignStatsDTO(('Untagged', no_campaign_count))
+            no_campaign_proj = CampaignStatsDTO(('Unassociated', no_campaign_count))
             dto.campaigns.append(no_campaign_proj)
+        
         dto.total_campaigns = unique_campaigns
 
         org_proj_count = db.session.query(Project.organisation_tag, func.count(Project.organisation_tag))\

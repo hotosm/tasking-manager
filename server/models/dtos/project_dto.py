@@ -5,6 +5,7 @@ from schematics.types.compound import ListType, ModelType, DictType
 from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
+from server.models.dtos.campaign_dto import CampaignDTO
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode, Editors
 
 
@@ -112,7 +113,7 @@ class ProjectDTO(Model):
     imagery = StringType()
     josm_preset = StringType(serialized_name='josmPreset', serialize_when_none=False)
     mapping_types = ListType(StringType, serialized_name='mappingTypes', validators=[is_known_mapping_type])
-    campaign_tag = StringType(serialized_name='campaignTag')
+    campaign = ListType(ModelType(CampaignDTO), serialized_name='campaign')
     organisation_tag = StringType(serialized_name='organisationTag')
     license_id = IntType(serialized_name='licenseId')
     allowed_usernames = ListType(StringType(), serialized_name='allowedUsernames', default=[])
@@ -134,7 +135,7 @@ class ProjectSearchDTO(Model):
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
     project_statuses = ListType(StringType, validators=[is_known_project_status])
     organisation_tag = StringType()
-    campaign_tag = StringType()
+    campaign = StringType()
     page = IntType(required=True)
     text_search = StringType()
     is_project_manager = BooleanType(required=True, default=False)
@@ -161,7 +162,7 @@ class ProjectSearchDTO(Model):
                 hashable_validation_editors = hashable_validation_editors + validation_editor
 
         return hash((self.preferred_locale, self.mapper_level, hashable_mapping_types, hashable_project_statuses,
-                     self.organisation_tag, self.campaign_tag, self.page, self.text_search, self.is_project_manager, hashable_mapping_editors, hashable_validation_editors))
+                     self.organisation_tag, self.campaign, self.page, self.text_search, self.is_project_manager, hashable_mapping_editors, hashable_validation_editors))
 
 
 class ProjectSearchBBoxDTO(Model):
@@ -180,7 +181,7 @@ class ListSearchResultDTO(Model):
     mapper_level = StringType(required=True, serialized_name='mapperLevel')
     priority = StringType(required=True)
     organisation_tag = StringType(serialized_name='organisationTag')
-    campaign_tag = StringType(serialized_name='campaignTag')
+    campaigns = ListType(ModelType(CampaignDTO), serialized_name='campaigns')
     percent_mapped = IntType(serialized_name='percentMapped')
     percent_validated = IntType(serialized_name='percentValidated')
     status = StringType(serialized_name='status')
@@ -233,7 +234,6 @@ class ProjectSummary(Model):
     due_date = DateTimeType()
     last_updated = DateTimeType(serialized_name='lastUpdated')
     priority = StringType(serialized_name='projectPriority')
-    campaign_tag = StringType(serialized_name='campaignTag')
     organisation_tag = StringType(serialized_name='organisationTag')
     entities_to_map = StringType(serialized_name='entitiesToMap')
     changeset_comment = StringType(serialized_name='changesetComment')

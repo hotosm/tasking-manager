@@ -117,6 +117,7 @@ def init_flask_restful_routes(app):
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
+    from server.api.campaign_apis import CampaignAPI, GetAllCampaignsAPI, CampaignProjectAPI,  DeleteAllProjectCampaignsAPI,  CreateAndSetCampaignAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
     api.add_resource(HealthCheckAPI,                '/api/health-check')
@@ -145,6 +146,13 @@ def init_flask_restful_routes(app):
     api.add_resource(MessagesAPI,                   '/api/v1/messages/<int:message_id>')
     api.add_resource(DeleteMultipleMessages,        '/api/v1/messages/delete-multiple', methods=['DELETE'])
     api.add_resource(ResendEmailValidationAPI,      '/api/v1/messages/resend-email-verification')
+    api.add_resource(CampaignAPI,                   '/api/v1/campaign/create', endpoint='create_campaign', methods=['POST'])
+    api.add_resource(CampaignProjectAPI,            '/api/v1/project/campaign', endpoint='assign_campaign_to_project', methods=['POST', 'DELETE'])
+    api.add_resource(CreateAndSetCampaignAPI,       '/api/v1/project/campaign/create/<int:project_id>', endpoint='create_and_assign_campaign_to_project', methods=['POST'])
+    api.add_resource(CampaignProjectAPI,            '/api/v1/project/campaigns/<int:project_id>', endpoint='get_all_project_campaigns', methods=['GET'])
+    api.add_resource(DeleteAllProjectCampaignsAPI,  '/api/v1/project/campaigns/delete/<int:project_id>', endpoint='delete_all_project_campaigns', methods=['DELETE'])
+    api.add_resource(GetAllCampaignsAPI,            '/api/v1/campaigns', endpoint='get_all_campaign', methods=['GET'])
+    api.add_resource(CampaignAPI,                   '/api/v1/campaign/<int:campaign_id>', endpoint='get_update_campaign', methods=['GET', 'PUT'])
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectSearchBBoxAPI,          '/api/v1/projects/within-bounding-box')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')

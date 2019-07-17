@@ -67,10 +67,10 @@ class OrganizationStatsDTO(Model):
 class CampaignStatsDTO(Model):
     def __init__(self, tup):
         super().__init__()
-        self.tag = tup[0]
+        self.campaign = tup[0]
         self.projects_created = tup[1]
 
-    tag = StringType()
+    campaign = StringType()
     projects_created = IntType(serialized_name='projectsCreated')
 
 class HomePageStatsDTO(Model):

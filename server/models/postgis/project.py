@@ -28,6 +28,7 @@ from server.models.postgis.statuses import ProjectStatus, ProjectPriority, Mappi
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task, TaskHistory
 from server.models.postgis.user import User
+from server.models.postgis.campaign import Campaign, campaign_projects
 
 from server.models.postgis.utils import ST_SetSRID, ST_GeomFromGeoJSON, timestamp, ST_Centroid, NotFound, ST_Area, ST_Transform
 from server.services.grid.grid_service import GridService
@@ -77,7 +78,6 @@ class Project(db.Model):
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
     organisation_tag = db.Column(db.String, index=True)
-    campaign_tag = db.Column(db.String, index=True)
 
     # Editors
     mapping_editors = db.Column(ARRAY(db.Integer), default=[
@@ -107,6 +107,7 @@ class Project(db.Model):
     allowed_users = db.relationship(User, secondary=project_allowed_users)
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
                                      single_parent=True)
+    campaign = db.relationship(Campaign, secondary=campaign_projects, backref='project')
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
@@ -199,7 +200,6 @@ class Project(db.Model):
         cloned_project.license_id = original_project.license_id
         cloned_project.mapping_types = original_project.mapping_types
         cloned_project.organisation_tag = original_project.organisation_tag
-        cloned_project.campaign_tag = original_project.campaign_tag
 
         # We try to remove the changeset comment referencing the old project. This
         #  assumes the default changeset comment has not changed between the old
@@ -257,12 +257,6 @@ class Project(db.Model):
             self.organisation_tag = org_tag
         else:
             self.organisation_tag = None  # Set to none, for cases where a tag could have been removed
-
-        if project_dto.campaign_tag:
-            camp_tag = Tags.upsert_campaign_tag(project_dto.campaign_tag)
-            self.campaign_tag = camp_tag
-        else:
-            self.campaign_tag = None  # Set to none, for cases where a tag could have been removed
 
         # Cast MappingType strings to int array
         type_array = []
@@ -490,7 +484,6 @@ class Project(db.Model):
                             polygon)
         area = polygon_aea.area/1000000
         summary.area = area
-        summary.campaign_tag = self.campaign_tag
         summary.changeset_comment = self.changeset_comment
         summary.created = self.created
         summary.last_updated = self.last_updated
@@ -563,7 +556,6 @@ class Project(db.Model):
         base_dto.due_date = self.due_date
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset
-        base_dto.campaign_tag = self.campaign_tag
         base_dto.organisation_tag = self.organisation_tag
         base_dto.license_id = self.license_id
         base_dto.created = self.created
@@ -640,23 +632,6 @@ class Project(db.Model):
             .filter(Project.organisation_tag != '')
         query = query.distinct(Project.organisation_tag)
         query = query.order_by(Project.organisation_tag)
-        tags_dto = TagsDTO()
-        tags_dto.tags = [r[1] for r in query]
-        return tags_dto
-
-    @staticmethod
-    def get_all_campaign_tag(preferred_locale='en'):
-        query = db.session.query(Project.id,
-                                 Project.campaign_tag,
-                                 Project.private,
-                                 Project.status)\
-            .join(ProjectInfo)\
-            .filter(ProjectInfo.locale.in_([preferred_locale, 'en'])) \
-            .filter(Project.private != True)\
-            .filter(Project.campaign_tag.isnot(None))\
-            .filter(Project.campaign_tag != '')
-        query = query.distinct(Project.campaign_tag)
-        query = query.order_by(Project.campaign_tag)
         tags_dto = TagsDTO()
         tags_dto.tags = [r[1] for r in query]
         return tags_dto
