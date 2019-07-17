@@ -28,9 +28,9 @@ export default defineMessages({
     id: 'header.buttons.logIn',
     defaultMessage: 'Log in'
   },
-  signIn: {
-    id: 'header.buttons.signIn',
-    defaultMessage: 'Sign in'
+  signUp: {
+    id: 'header.buttons.signUp',
+    defaultMessage: 'Sign up'
   },
   slogan: {
     id: 'header.topBar.slogan',

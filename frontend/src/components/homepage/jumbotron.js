@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from "react-router-dom";
+import { Link } from "@reach/router";
 import { FormattedMessage } from 'react-intl';
 
 import { Button } from '../button';
@@ -9,10 +9,10 @@ import messages from './messages';
 function JumbotronButtons() {
   return(
     <p>
-      <Link to={"/contribute"}>
+      <Link to={"contribute"}>
         <Button className="bg-red white mr3"><FormattedMessage {...messages.startButton} /></Button>
       </Link>
-      <Link to={"/sign-in"}>
+      <Link to={"sign-up"}>
         <Button className="bg-white blue-dark mt3 mt0-ns"><FormattedMessage {...messages.joinButton} /></Button>
       </Link>
     </p>
@@ -44,7 +44,7 @@ export function SecondaryJumbotron() {
         </h3>
         <p className="pr2 f5 f4-ns mw6">
           <FormattedMessage {...messages.secJumbotronHeadLine}
-            values={{link: <Link to={"/learn"} className="link white"><FormattedMessage {...messages.howItWorks}/></Link>}}
+            values={{link: <Link to={"learn"} className="link white"><FormattedMessage {...messages.howItWorks}/></Link>}}
           />
         </p>
         <p className="pr2 f5 f4-ns mw6 mb4">

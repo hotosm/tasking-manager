@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from "react-router-dom";
+import { Link } from "@reach/router";
 import { FormattedMessage } from 'react-intl';
 
 import {
@@ -44,7 +44,7 @@ export function Footer() {
       </div>
       <div className="cf">
         <div className="pt2 mb2 f7 w-50-l w-100 fl">
-          <Link to={"/about"} className="link white">
+          <Link to={"about"} className="link white">
             <FormattedMessage {...messages.credits} />
           </Link>
         </div>
