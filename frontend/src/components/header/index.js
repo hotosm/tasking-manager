@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link } from "@reach/router";
 import Popup from "reactjs-popup";
 import { FormattedMessage } from 'react-intl';
 
@@ -14,10 +14,10 @@ import { BurgerMenu } from './burgerMenu';
 
 
 const menuItems = [
-  {label: messages.exploreProjects, link: "/contribute"},
-  {label: messages.howItWorks, link: "/learn"},
-  {label: messages.about, link: "/about"},
-  {label: messages.help, link: "/help"}
+  {label: messages.exploreProjects, link: "contribute"},
+  {label: messages.howItWorks, link: "learn"},
+  {label: messages.about, link: "about"},
+  {label: messages.help, link: "help"}
 ];
 
 class Header extends React.Component {
@@ -49,7 +49,7 @@ class Header extends React.Component {
         <a href={`${API_URL}auth/login?redirect_to=/login/`} className="mh1 mv2 dib">
           <Button className="bg-red white"><FormattedMessage {...messages.logIn}/></Button>
         </a>
-        <Button className="bg-blue-dark white mh1 mv2 dib"><FormattedMessage {...messages.signIn}/></Button>
+        <Button className="bg-blue-dark white mh1 mv2 dib"><FormattedMessage {...messages.signUp}/></Button>
       </div>
     );
   }
@@ -96,7 +96,7 @@ class Header extends React.Component {
             <a href={`${API_URL}auth/login?redirect_to=/login/`} className="mh1 v-mid dn dib-ns">
               <Button className="blue-dark bg-white"><FormattedMessage {...messages.logIn}/></Button>
             </a>
-            <Button className="bg-blue-dark white ml1 v-mid dn dib-ns"><FormattedMessage {...messages.signIn}/></Button>
+            <Button className="bg-blue-dark white ml1 v-mid dn dib-ns"><FormattedMessage {...messages.signUp}/></Button>
             <div className="dib v-mid dn-l">
               <Popup
                 trigger={<BurgerMenu />}

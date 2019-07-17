@@ -1,7 +1,4 @@
-import { applyMiddleware, createStore, compose } from "redux";
-import { createBrowserHistory } from "history";
-import { routerMiddleware } from "react-router-redux";
-import thunk from "redux-thunk";
+import { createStore, compose } from "redux";
 
 import * as safeStorage from '../utils/safe_storage';
 import reducers from "./reducers";
@@ -18,8 +15,6 @@ const persistedState = {
   }
 };
 
-export const history = createBrowserHistory();
-const middleware = [thunk, routerMiddleware(history)];
 const enhancers = [];
 
 if (process.env.NODE_ENV === 'development') {
@@ -30,7 +25,7 @@ if (process.env.NODE_ENV === 'development') {
   }
 }
 
-const composedEnhancers = compose(applyMiddleware(...middleware), ...enhancers);
+const composedEnhancers = compose(...enhancers);
 
 const store = createStore(
   reducers,

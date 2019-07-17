@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router } from "react-router-dom";
 import { Provider } from "react-redux";
-import { createBrowserHistory } from "history";
 import WebFont from 'webfontloader';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import de from 'react-intl/locale-data/de';
@@ -17,8 +15,6 @@ import App from './App';
 import { store } from './store';
 import getTranslatedMessages from './utils/translatedMessages';
 import * as serviceWorker from './serviceWorker';
-
-const history = createBrowserHistory();
 
 
 WebFont.load({
@@ -39,11 +35,9 @@ const ConnectedIntl = props => (
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={history}>
-      <ConnectedIntl locale={navigator.language} >
-        <App />
-      </ConnectedIntl>
-    </Router>
+    <ConnectedIntl locale={navigator.language} >
+      <App />
+    </ConnectedIntl>
   </Provider>,
   document.getElementById('root')
 );
