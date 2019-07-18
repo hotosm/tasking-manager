@@ -10,9 +10,24 @@
   }
 }
 
+@media screen and (min-width: 60em) {
+  .bg-split-blue-white {
+    background: linear-gradient(to right, $blue-dark, $blue-dark 80%, white 20%, white);
+  }
+  .f-4rem-l {
+    font-size: 4rem;
+  }
+  .mw-36rem-l {
+    max-width: 36rem;
+  }
+}
+
 @media screen and (max-width: 60em) {
   .mw-20rem {
     max-width: 20rem;
+  }
+  .bg-split-blue-white {
+    background: linear-gradient(to bottom, $blue-dark, $blue-dark 80%, white 20%, white);
   }
 }
 
@@ -23,10 +38,4 @@
 .bg-sec-jumbotron {
   background: rgba(0, 0, 0, .5) url('../img/children.jpg') left;
   background-blend-mode: darken;
-}
-
-@media screen and (min-width: 60em) {
-  .f-4rem-l {
-    font-size: 4rem;
-  }
 }
