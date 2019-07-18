@@ -8,6 +8,7 @@ from server import create_app, init_counters
 from server.services.users.authentication_service import AuthenticationService
 from server.services.users.user_service import UserService
 from server.services.translation_service import TranslationService
+from server.services.interests_service import InterestService
 
 import os
 import warnings
@@ -54,6 +55,11 @@ def refresh_levels():
 def refresh_translatables():
     print('Exporting translatable strings')
     TranslationService.refresh_translatables()
+
+
+@manager.option('-f', '--file', help='JSON file')
+def import_interests(file):
+    InterestService.load_from_file(file)
 
 
 if __name__ == '__main__':

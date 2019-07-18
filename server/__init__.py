@@ -117,6 +117,7 @@ def init_flask_restful_routes(app):
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
+    from server.api.interests_api import InterestAPI, UserInterestRelationshipAPI, ProjectInterestRelationshipAPI
 
     api.add_resource(SwaggerDocsAPI,                '/api/docs')
     api.add_resource(HealthCheckAPI,                '/api/health-check')
@@ -145,6 +146,10 @@ def init_flask_restful_routes(app):
     api.add_resource(MessagesAPI,                   '/api/v1/messages/<int:message_id>')
     api.add_resource(DeleteMultipleMessages,        '/api/v1/messages/delete-multiple', methods=['DELETE'])
     api.add_resource(ResendEmailValidationAPI,      '/api/v1/messages/resend-email-verification')
+    api.add_resource(InterestAPI,                   '/api/v1/interests',endpoint="create_interest", methods=['POST'])
+    api.add_resource(InterestAPI,                   '/api/v1/interests/<int:interest_id>', methods=['GET', 'PUT', 'DELETE'])
+    api.add_resource(UserInterestRelationshipAPI,   '/api/v1/interests/user', methods=['POST'])
+    api.add_resource(ProjectInterestRelationshipAPI,'/api/v1/interests/project', methods=['POST'])
     api.add_resource(ProjectSearchAPI,              '/api/v1/project/search')
     api.add_resource(ProjectSearchBBoxAPI,          '/api/v1/projects/within-bounding-box')
     api.add_resource(ProjectAPI,                    '/api/v1/project/<int:project_id>')
