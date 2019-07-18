@@ -1,8 +1,7 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { FormattedMessage } from "react-intl";
+import { Link } from "@reach/router";
+import { FormattedMessage, FormattedRelative } from "react-intl";
 
-import { Button } from "../button";
 import messages from "./messages";
 
 
@@ -13,13 +12,13 @@ function PriorityBox({ priority }: Object) {
     color = "red";
     borderColor = "b--red";
   }
-  return <div className={`pa1 fr w-33 tc br1 mt3 mr2 f7 ttu ba ${borderColor} ${color}`}>{priority}</div>;
+  return <div className={`pa1 fr w-33 tc br1 mt3 mr2 f7 ttu ba ${borderColor} ${color}`}><FormattedMessage {...messages["projectPriority"+priority]} /></div>;
 }
 
 
 function ProjectTeaser({ lastUpdated, totalMappers }: Object) {
     if (totalMappers < 5) {
-        return (<p className="db tl f7 blue-grey truncate" >Last contribution {lastUpdated.toString()}</p>)
+        return (<p className="db tl f7 blue-grey truncate" >Last contribution <FormattedRelative value={lastUpdated} /></p>)
 
     } else {
         return (<p className="f7 tl blue-grey" ><span className="b">{totalMappers}</span> total contributors</p>)
@@ -151,8 +150,6 @@ export function ProjectCard({
   percentValidated,
   totalMappers
 }: Object) {
-  console.log(arguments[0])
-  const lowercaseMapperLevel = mapperLevel.toLowerCase();
   return (
     <a href={`#project=${projectId}`}>
     <div className="ma2 w-20-l w-40-m w-100 fl pv2 ph3 bg-white blue-dark outline">
@@ -171,7 +168,7 @@ export function ProjectCard({
           <ProjectTeaser totalMappers={totalMappers} lastUpdated={lastUpdated} />
           <ProjectProgressBar percentMapped={percentMapped} percentValidated={percentValidated} />
           <p className="cf"> {/* what to call this box? */}
-            <span className="fl f7 mt1 ttc fw5 blue-grey">{lowercaseMapperLevel}</span>
+            <span className="fl f7 mt1 ttc fw5 blue-grey"><FormattedMessage {...messages["projectMapperLevel"+mapperLevel]} /></span>
             <a className="fr w-50 f7 tc link ph2 pv1 bg-light-gray blue-grey">2 days left</a>
           </p>
         </div>
