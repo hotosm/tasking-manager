@@ -1,16 +1,26 @@
 import React from 'react';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
-import { MappingIcon, ValidationIcon, DataUseIcon } from '../svgIcons';
+import { MappingIcon, RightIcon, LeftIcon } from '../svgIcons';
 import { ProjectCard } from '../../components/projectcard/projectCard';
+import { useState, useEffect } from 'react';
 
 import messages from './messages';
 
-function ScrollArrows() {
-    /* TODO: .red-light for disabled arrow, also use correct arrows from design*/
-    return(
-      <div className="red dim fr dib f2 mr2 pv3 pr2">
-⃪⃪          →
-      </div>
+function FeaturedProjectPaginateArrows({pages, activeProjectCardPage, setProjectCardPage}: Object) {
+
+    let enableLeft = false;
+    let enableRight = false;
+    if (pages.length - 1 > activeProjectCardPage) {
+        enableRight = true;
+    }
+    if (activeProjectCardPage !== 0) {
+        enableLeft = true;
+    } 
+    return (
+        <div className="fr dib f2 mr2 pv3 pr6">
+            <div className={`dib mr2 dim ${enableLeft ? 'red' : 'light-red'}`} onClick={() => enableLeft && setProjectCardPage(activeProjectCardPage - 1)}><LeftIcon /></div>
+            <div className={`dib dim ${enableRight ? 'red' : 'light-red'}`} onClick={() => enableRight && setProjectCardPage(activeProjectCardPage + 1)}><RightIcon /></div>
+        </div>
     );
 }
 
@@ -26,6 +36,8 @@ const chunkArray = chunkSize => array => {
 const projectPaginate = chunkArray(4);
 
 export function FeaturedProjects() {
+  const [activeProjectCardPage, setProjectCardPage] = useState(0);
+
   const imageHeight = "5rem";
   /* quoted keys are from project activity API */
   const cards = [
@@ -178,10 +190,8 @@ export function FeaturedProjects() {
         "averageMappingTime": 8912.666666666666,
         "averageValidationTime": 114685.25,
         "status": "PUBLISHED"
-      }
-  
-
-  ];
+      }];
+      const paginatedProjectCards = projectPaginate(cards)
   return(
     <div className="bg-white black">
       <div className="pt4-l pb5 ph5-l ph4 cf">
@@ -192,10 +202,10 @@ export function FeaturedProjects() {
         </h3>
       </div>
       <div className=" fl w-25 pa3 mb4 mw6">
-        <ScrollArrows />
+        <FeaturedProjectPaginateArrows pages={paginatedProjectCards} activeProjectCardPage={activeProjectCardPage} setProjectCardPage={setProjectCardPage}/>
       </div>
         <div className="cf ">
-          {cards.map((card, n) => <ProjectCard { ...card } key={n} />)}
+          {paginatedProjectCards[activeProjectCardPage].map((card, n) => <ProjectCard { ...card } key={n} />)}
         </div>
       </div>
     </div>
