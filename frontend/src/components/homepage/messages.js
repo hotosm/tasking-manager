@@ -24,6 +24,10 @@ export default defineMessages({
     id: 'home.callToAction.secondLeadLine',
     defaultMessage: "Seasoned mapper? Pick up one of our many projects and start contributing."
   },
+  featuredProjects: {
+    id: 'home.featuredProjects.title',
+    defaultMessage: 'Featured Projects'
+  },
   howItWorks: {
     id: 'home.callToAction.learnLink',
     defaultMessage: 'How it works'
