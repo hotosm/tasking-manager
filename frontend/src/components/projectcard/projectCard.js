@@ -138,7 +138,6 @@ function tachyonsWidthClass(percent: Number) {
     return tachyonsWidths.slice().reverse().find((a) => a.value <= percent ).className
 }
 
-/* TODO: truncation plan for title/description (tachyons only supports single line) */
 export function ProjectCard({
   projectId,
   image,
@@ -152,6 +151,7 @@ export function ProjectCard({
   percentValidated,
   totalMappers
 }: Object) {
+  console.log(arguments[0])
   const lowercaseMapperLevel = mapperLevel.toLowerCase();
   return (
     <a href={`#project=${projectId}`}>
