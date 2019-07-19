@@ -9,7 +9,7 @@ if (isProd) {
 } else if (isStaging) {
   api_url = 'https://tasks-stage.hotosm.org/api/v1/';
 } else {
-  api_url = process.env.API_URL || 'http://localhost:5000/api/v1/';
+  api_url = process.env.API_URL || 'http://127.0.0.1:5000/api/v1/';
 }
 export const API_URL = api_url;
 

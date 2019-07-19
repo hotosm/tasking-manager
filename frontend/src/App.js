@@ -6,7 +6,9 @@ import { Header } from './components/header';
 import { Footer } from './components/footer';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
+import { Authorized } from './views/authorized';
 import { Login } from './views/login';
+
 
 function App() {
   return (
@@ -16,7 +18,8 @@ function App() {
         <Router>
           <Home path="/" />
           <AboutPage path="about" />
-          <Login path="login" />
+          <Authorized path="authorized" />
+          <Login path="/login" />
         </Router>
       </div>
       <Footer />

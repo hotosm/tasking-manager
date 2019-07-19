@@ -54,6 +54,37 @@ class Header extends React.Component {
     );
   }
 
+  renderAuthenticationButtons() {
+    return(
+      this.props.username ?
+        <Dropdown
+          onAdd={() => {}}
+          onRemove={() => {}}
+          onChange={() => {}}
+          value={this.props.userPreferences.language || 'English'}
+          options={[{label: 'Settings'}, {label: 'Logout'}]}
+          display={this.props.username}
+          className="blue-dark bg-white mr1 v-mid dn dib-66rem"
+        />
+        :
+        <div className="dib">
+          <Dropdown
+            onAdd={() => {}}
+            onRemove={() => {}}
+            onChange={() => {}}
+            value={this.props.userPreferences.language || 'English'}
+            options={[{label: 'English'}, {label: 'Portuguese (pt)'}]}
+            display={this.props.userPreferences.language || <FormattedMessage {...messages.language}/>}
+            className="ba b--grey-light blue-dark bg-white mr1 v-mid dn dib-66rem"
+          />
+          <a href={`${API_URL}auth/login?redirect_to=/login/`} className="mh1 v-mid dn dib-ns">
+            <Button className="blue-dark bg-white"><FormattedMessage {...messages.logIn}/></Button>
+          </a>
+          <Button className="bg-blue-dark white ml1 v-mid dn dib-ns"><FormattedMessage {...messages.signUp}/></Button>
+        </div>
+    );
+  }
+
   render() {
     return (
       <header className="w-100 mb1 mb2-ns">
@@ -84,19 +115,7 @@ class Header extends React.Component {
           </nav>
 
           <div className="fr dib tr">
-            <Dropdown
-              onAdd={() => {}}
-              onRemove={() => {}}
-              onChange={() => {}}
-              value={this.props.userPreferences.language || 'English'}
-              options={[{label: 'English'}, {label: 'Portuguese (pt)'}]}
-              display={this.props.userPreferences.language || <FormattedMessage {...messages.language}/>}
-              className="blue-dark bg-white mr1 v-mid dn dib-66rem"
-            />
-            <a href={`${API_URL}auth/login?redirect_to=/login/`} className="mh1 v-mid dn dib-ns">
-              <Button className="blue-dark bg-white"><FormattedMessage {...messages.logIn}/></Button>
-            </a>
-            <Button className="bg-blue-dark white ml1 v-mid dn dib-ns"><FormattedMessage {...messages.signUp}/></Button>
+            { this.renderAuthenticationButtons() }
             <div className="dib v-mid dn-l">
               <Popup
                 trigger={<BurgerMenu />}
@@ -114,7 +133,9 @@ class Header extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  userPreferences: state.preferences
+  userPreferences: state.preferences,
+  username: state.auth.userDetails.username,
+  token: state.auth.userDetails.token
 });
 
 Header = connect(mapStateToProps)(Header);

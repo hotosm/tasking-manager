@@ -134,7 +134,7 @@ export class _Dropdown extends React.PureComponent {
   };
   render() {
     return (
-      <div className={`dib pointer ba b--grey-light ${this.props.className || ''}`}>
+      <div className={`dib pointer ${this.props.className || ''}`}>
         <Button
           onClick={this.toggleDropdown}
           className={`${this.props.className || ''}`}
