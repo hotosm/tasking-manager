@@ -43,5 +43,9 @@ export default defineMessages({
   projectPriorityLOW: {
     id: 'project.card.projectPriorityLow',
     defaultMessage: 'Low' 
+  },
+  dueDateRelativeRemainingDays: {
+    id: 'project.card.dueDateLeft',
+    defaultMessage: '{daysLeftHumanize} left'  
   }
 });

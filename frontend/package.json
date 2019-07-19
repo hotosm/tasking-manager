@@ -6,6 +6,7 @@
   "dependencies": {
     "@reach/router": "^1.2.1",
     "immutable": "^4.0.0-rc.12",
+    "humanize-duration": "^3.20.0",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",
     "react-click-outside": "^3.0.1",
