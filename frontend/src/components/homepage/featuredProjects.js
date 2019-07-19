@@ -1,8 +1,8 @@
 import React from 'react';
-import { FormattedMessage, FormattedNumber } from 'react-intl';
+import { FormattedMessage} from 'react-intl';
 import { MappingIcon, RightIcon, LeftIcon } from '../svgIcons';
 import { ProjectCard } from '../../components/projectcard/projectCard';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import messages from './messages';
 
@@ -38,11 +38,9 @@ const projectPaginate = chunkArray(4);
 export function FeaturedProjects() {
   const [activeProjectCardPage, setProjectCardPage] = useState(0);
 
-  const imageHeight = "5rem";
   /* quoted keys are from project activity API */
   const cards = [
     {
-      image: <MappingIcon style={{height: imageHeight}} />,
       projectId: 6106,
       projectStatus: "PUBLISHED",
       projectPriority: "URGENT",
@@ -67,7 +65,6 @@ export function FeaturedProjects() {
       "status": "PUBLISHED"
     },
     {
-        image: <MappingIcon style={{height: imageHeight}} />,
         projectId: 5001,
         projectStatus: "PUBLISHED",
         projectPriority: "MEDIUM",
@@ -75,6 +72,7 @@ export function FeaturedProjects() {
         title: "Prepare for the influx of Venezuelan refugees into Colombia",
         shortDescription: "Refugee Response · AyudaVenezuela · Colombia",
         created: new Date("2019-04-23T14:49:23.809743"),
+        dueDate: new Date("2019-09-17T18:50:28.081458"),
         lastUpdated: new Date("2019-07-17T18:50:28.081458"),
         "campaignTag": "American Red Cross",
         "organisationTag": "American Red Cross",
@@ -92,7 +90,6 @@ export function FeaturedProjects() {
         "status": "PUBLISHED"
       },
       {
-        image: <MappingIcon style={{height: imageHeight}} />,
         projectId: 5707,
         projectStatus: "PUBLISHED",
         projectPriority: "MEDIUM",
@@ -101,6 +98,7 @@ export function FeaturedProjects() {
         shortDescription: "Public Health · Ebola · DRC",
         created: new Date("2019-04-23T14:49:23.809743"),
         lastUpdated: new Date("2019-07-17T18:50:28.081458"),
+        dueDate: new Date("2019-07-25T18:50:28.081458"),
         "campaignTag": "#Allpeopleonmap",
         "organisationTag": "Médecins Sans Frontières",
         "percentMapped": 66,
@@ -117,13 +115,13 @@ export function FeaturedProjects() {
         "status": "PUBLISHED"
       },
       {
-        image: <MappingIcon style={{height: imageHeight}} />,
         projectId: 6106,
         projectStatus: "PUBLISHED",
         projectPriority: "LOW",
         mapperLevel: "INTERMEDIATE",
         title: "Mapping mosquito net coverage",
         shortDescription: "Public Health · Malaria2018 · Mozambique",
+        dueDate: new Date("2019-07-10T18:50:28.081458"),
         created: new Date("2019-04-23T14:49:23.809743"),
         lastUpdated: new Date("2019-07-17T18:50:28.081458"),
         "campaignTag": "#Allpeopleonmap",
@@ -142,7 +140,6 @@ export function FeaturedProjects() {
         "status": "PUBLISHED"
       },
         {
-          image: <MappingIcon style={{height: imageHeight}} />,
           projectId: 6106,
           projectStatus: "PUBLISHED",
           projectPriority: "LOW",
@@ -167,7 +164,6 @@ export function FeaturedProjects() {
           "status": "PUBLISHED"
         },
       {
-        image: <MappingIcon style={{height: imageHeight}} />,
         projectId: 6106,
         projectStatus: "PUBLISHED",
         projectPriority: "LOW",
@@ -191,23 +187,28 @@ export function FeaturedProjects() {
         "averageValidationTime": 114685.25,
         "status": "PUBLISHED"
       }];
-      const paginatedProjectCards = projectPaginate(cards)
+  const pagedProjs = projectPaginate(cards)
   return(
-    <div className="bg-white black">
-      <div className="pt4-l pb5 ph5-l ph4 cf">
-
-      <div className=" w-75 fl">
-      <h3 className=" f2 ttu barlow-condensed fw8">
-          <FormattedMessage {...messages.featuredProjects} />
-        </h3>
-      </div>
-      <div className=" fl w-25 pa3 mb4 mw6">
-        <FeaturedProjectPaginateArrows pages={paginatedProjectCards} activeProjectCardPage={activeProjectCardPage} setProjectCardPage={setProjectCardPage}/>
-      </div>
-        <div className="cf ">
-          {paginatedProjectCards[activeProjectCardPage].map((card, n) => <ProjectCard { ...card } key={n} />)}
+      <>
+    <section className="outline h2" style={{'width':'60em'}}>&nbsp;</section>
+    <section className="pt4-l pb5 pl5-l pr1-l pl3 bg-white black">
+      <div className="cf">
+        <div className="w-75-l w-50 fl">
+        <h3 className="f2 ttu barlow-condensed fw8">
+            <FormattedMessage {...messages.featuredProjects} />
+            </h3>
+        </div>
+        <div className="fl w-25-l w-50 pa3 mb4 mw6">
+            <FeaturedProjectPaginateArrows 
+                pages={pagedProjs}
+                activeProjectCardPage={activeProjectCardPage}
+                setProjectCardPage={setProjectCardPage} />
         </div>
       </div>
-    </div>
+      <div className="cf">
+          {pagedProjs[activeProjectCardPage].map((card, n) => <ProjectCard { ...card } key={n} />)}
+        </div>
+    </section>
+    </>
   );
 }
