@@ -150,7 +150,7 @@
                             <p>{{ 'Split a specific area into smaller tasks by drawing an area or point or use ML' | translate }}</p>
                             <div class="button-group button-group--horizontal" role="group">
                                 <button class="button button--achromic" type="button"
-                                        ng-class="createProjectCtrl.drawAndSelectPolygonML.getActive() ? 'button--active' : ''"
+                                        ng-disabled="createProjectCtrl.mlPredictionsEnabled ? false : true"
                                         ng-click="createProjectCtrl.drawAndSplitAreaPolygonML()">{{ 'Split (ML)' | translate }}
                                 </button>
                                 <button class="button button--achromic" type="button"
@@ -322,7 +322,7 @@
             </div>
             <div id="map" class="map-container">
                     <div class="ml-project-button">
-                        <button class="button" ng-click="createProjectCtrl.displayMLLayer()" >
+                        <button class="button" ng-click="createProjectCtrl.displayMLLayer()" ng-show="createProjectCtrl.currentStep === 'taskSize'" >
                             {{ 'ML Layer' | translate }}
                         </button>
                     </div>

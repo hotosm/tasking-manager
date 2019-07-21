@@ -51,7 +51,13 @@ class PredictionAPI(Resource):
         """
         body_content = request.get_json()
         bounding_box = body_content.get('bbox')
+        if type(bounding_box) == list:
+            bounding_box = ','.join([str(a) for a in bounding_box])
         zoom = body_content.get('zoom', 18)
+        zoom = int(zoom)
+        if zoom > 19:
+            zoom = 19    
+
         if not bounding_box:
             return {"error": 'bounding box not found'}, 404
         else:
@@ -73,7 +79,12 @@ class PredictionAPI(Resource):
     @token_auth.login_required
     def get(self):
         bbox = request.args.get('bbox')
-        zoom = request.args.get('zoom', 18)
+        try:
+            zoom = int(request.args.get('zoom', 18).split('.')[0])
+            if zoom > 19:
+                zoom = 19
+        except:
+            return {"error": "Invalid zoom value"}, 500
         
         if not bbox:
             return {"error": 'bounding box not found'}, 404

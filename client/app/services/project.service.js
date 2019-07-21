@@ -125,61 +125,76 @@
             }
 
             if (mlEnabled){
-                var d3Scale = null;
                 let extent = ol.proj.transformExtent(areaOfInterestExtent, 'EPSG:3857', 'EPSG:4326');
                 //TODO: do a post prediction here
                 var promise = getPrediction(extent, zoomLevel);
                 promise.then(function(data){
-                    console.log('got the prediction');
-                    var predictionList = [];
-                    var building_area_diff = 0;
-                    Object.values(data).forEach(item=> {
-                        item.forEach(element => {
-                            building_area_diff = element.ml_prediction - element.osm_building_area;
-                            predictionList.push({building_area_diff: building_area_diff, 
-                                                 bbox: element.bbox,
-                                                 zoom: element.zoom,
-                                                 quadkey: element.quadkey});
-                        });
-                    });
-                    //check intercecption here 
-                    var domain = predictionList.map(function (prediction) {
-                        return prediction.building_area_diff;
-                    });
-                    domain.sort(function(a, b){ return a - b;});
-                    domain = [domain[0], domain[domain.length -1 ]]
-                    d3Scale = d3.scaleQuantile().domain(domain).range(d3.schemeReds[5]);
-
-                    predictionList.forEach(prediction => {
-                        taskFeatures.forEach((feature, index, thearray) => {
-                            if (ol.extent.intersects(feature.getGeometry().getExtent(), prediction.bbox)){
-                                feature.set('building_area_diff', prediction.building_area_diff);
-                                feature.setStyle(getTaskAnnotationStyle(feature, d3Scale));
-                                thearray[index] = feature;
-                            }
-                        });
-                    });
-
-                    function getTaskAnnotationStyle(feature, d3Scale) {
-                        var STROKE_COLOUR = [84, 84, 84, 0.7]; //grey, 0.7 opacity
-                        var STROKE_WIDTH = 1;
-            
-                        // Pick the color from the scale.
-                        var fillColor = d3Scale(feature.get('building_area_diff'));
-            
-                        return new ol.style.Style({
-                            fill: new ol.style.Fill({
-                                color: fillColor
-                            }),
-                            stroke: new ol.style.Stroke({
-                                color: STROKE_COLOUR,
-                                width: STROKE_WIDTH
-                            })
+                    if (data.status === "ok"){
+                        taskFeatures = drawMLLayer(data, taskFeatures);
+                    } else {
+                        //Posting a prediction for processing
+                        var promise = postPrediction(extent, zoomLevel);
+                        alert("fetching new prediction for this area, this could take a while");
+                        promise.then(function(data){
+                            if (data.status === 'ok')
+                            var innerPromise = getPrediction(extent, zoomLevel);
+                            innerPromise.then(function(responseData){
+                                if (responseData.status === "ok"){
+                                    taskFeatures = drawMLLayer(data, taskFeatures);
+                                }
+                            });
                         });
                     }
                 });
             } 
 
+            return taskFeatures;
+        }
+
+        function drawMLLayer(predictionData, taskFeatures){
+            var predictionList = [];
+            var domain = []
+            Object.values(predictionData.predictions).forEach(item=> {
+                item.forEach(element => {
+                    domain.push(element.building_area_diff);
+                    predictionList.push(element);
+                });
+            });
+
+            domain.sort(function(a, b){ return a - b;});
+            domain = [domain[0], domain[domain.length -1 ]]
+            var d3Scale = d3.scaleQuantile().domain(domain).range(d3.schemeReds[5]);
+
+            //check intercecption here 
+            taskFeatures.forEach((feature, index, thearray) => {
+                predictionList.forEach(prediction => {
+                    if (ol.extent.intersects(feature.getGeometry().getExtent(), prediction.bbox)){
+                        feature.set('building_area_diff', prediction.building_area_diff);
+                        feature.set('building_area_diff_percent', prediction.building_area_diff_percent);
+                        feature.setStyle(getTaskAnnotationStyle(feature, d3Scale));
+                        thearray[index] = feature;
+                    }
+                });
+            });
+
+            function getTaskAnnotationStyle(feature, d3Scale) {
+                var STROKE_COLOUR = [84, 84, 84, 0.7]; //grey, 0.7 opacity
+                var STROKE_WIDTH = 1;
+    
+                // Pick the color from the scale.
+                var fillColor = d3Scale(feature.get('building_area_diff'));
+    
+                return new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: fillColor
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: STROKE_COLOUR,
+                        width: STROKE_WIDTH
+                    })
+                });
+            } 
+            
             return taskFeatures;
         }
 
@@ -886,7 +901,7 @@
             // Returns a promise
             return $http({
                 method: 'POST',
-                url: configService.tmAPI + '/prediction/',
+                url: configService.tmAPI + '/prediction',
                 data: {bbox: bbox, zoom: zoom},
                 headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {

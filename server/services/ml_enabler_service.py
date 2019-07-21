@@ -12,24 +12,31 @@ from ml_enabler.utils.api import get_model_id, post_prediction, post_prediction_
 class MLEnablerService:
 
     @staticmethod
-    def get_prediction_from_bbox(model_id:int, bbox: str, zoom=18):
+    def get_prediction_from_bbox(model_id:int, bbox: str, zoom: int=18):
         """Sends requests to create a new prediction for a bounding box from a model id"""
         url = f'{current_app.config["ML_ENABLER_URL"]}/model/{model_id}/tiles' 
-        params = dict(bbox=bbox, zoom=18)
+        params = dict(bbox=bbox, zoom=zoom)
         response = requests.get(url, params=params)
         data = response.json()
         if not data.get('error'):
+            main_response = {'status': 'ok', 'prediction_ids': [], 'error': ''}
             for k in data.keys():
+                main_response['prediction_ids'].append(k)
                 new_list = []
                 for pred in data[k]:
-                    tile = mercantile.quadkey_to_tile('032202321212100120')
+                    tile = mercantile.quadkey_to_tile(pred['quadkey'])
                     bbox = mercantile.xy_bounds(tile)
                     pred['bbox'] = (bbox.left, bbox.bottom, bbox.right, bbox.top)
                     pred['zoom'] = tile.z
+                    pred['building_area_diff'] = pred['ml_prediction'] - pred['osm_building_area']
+                    pred['building_area_diff_percent'] = 100 - ((pred['osm_building_area'] * 100) / pred['ml_prediction'])
                     new_list.append(pred)
                 data[k] = new_list
+            main_response['predictions'] = data
+        else:
+            main_response = {'status': 'error', 'error': data.get('error')}
 
-        return data
+        return main_response 
 
 
     @staticmethod

@@ -56,7 +56,6 @@
         vm.drawAndSelectPoint = null;
 
         //ML split task
-        vm.drawAndSelectPolygonML = null;
         vm.mlPredictionsEnabled = false;
 
         // Draw interactions
@@ -449,8 +448,24 @@
          *  After drawing it, the polygon is validated before splitting the intersecting
          *  tasks into smaller tasks
          */
-        vm.drawAndSplitAreaPolygonML =  function(){
-            //vm.drawAndSelectPolygon.setActive(true);
+        vm.drawAndSplitAreaPolygonML = function(){
+            if ( vm.mlPredictionsEnabled ){
+                setSplitToolsActive_(false);
+                var taskGrid = projectService.getTaskGrid();
+                var tasks_to_split = []
+                taskGrid.forEach(feature => {
+                   if (feature.get('building_area_diff_percent') > 80){
+                    console.log('spliting feature');
+                    tasks_to_split.push(feature);
+                   }  
+                });
+                tasks_to_split.forEach(feature => {
+                    projectService.splitTasks(feature);
+                });
+                // Get the number of tasks in project
+                vm.numberOfTasks = projectService.getNumberOfTasks();
+                setSplitToolsActive_(true);
+            }
         };
 
         /**
