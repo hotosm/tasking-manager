@@ -186,7 +186,7 @@ class StatsProjectUserAPI(Resource):
 
     def get(self, project_id, username):
         """
-        Get detailed stats about user
+        Get detailed stats about user for a specific project
         ---
         tags:
           - user
