@@ -64,8 +64,8 @@ class TestCampaignService(unittest.TestCase):
         self.assertIsNotNone(self.campaign_projects, 'Test campaign is assigned\
         to the test project')
         
+        # Delete campaign project association
         CampaignService.delete_project_campaign(self.test_project.id, self.test_campaign.id)
-        self.test_campaign.delete()
 
     def test_get_all_campaigns(self):
         if self.skip_tests:
@@ -77,3 +77,5 @@ class TestCampaignService(unittest.TestCase):
         # Assert
         self.assertNotEqual(self.campaign_list_dto.campaigns, [])
         
+        # Delete campaign
+        self.test_campaign.delete()

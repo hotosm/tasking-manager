@@ -201,11 +201,14 @@ class StatsService:
 
         dto.total_validated_area = tasks_validated_result.fetchone()['sum']
 
-        unique_campaigns = db.session.query(func.count(Campaign.name)).all()[0][0]
+        unique_campaigns_sql = "select count(name) as sum from Campaign"
+
+        unique_campaigns = db.engine.execute(unique_campaigns_sql).fetchone()['sum']
         
-        linked_campaigns_count = db.session.query(Campaign.name, func.count(campaign_projects.c.campaign_id))\
-            .join(Campaign, Campaign.id == campaign_projects.c.campaign_id)\
-                .group_by(Campaign.id, campaign_projects.c.campaign_id).all()
+        linked_campaigns_sql = "select Campaign.name, count(campaign_projects.campaign_id) from Campaign INNER JOIN campaign_projects\
+	ON Campaign.id=campaign_projects.campaign_id group by Campaign.id"
+
+        linked_campaigns_count = db.engine.execute(linked_campaigns_sql).fetchall()
         
         no_campaign_count_sql = "select count(*) as project_count from projects where id not in (select distinct project_id from campaign_projects order by project_id)"
         no_campaign_count = db.engine.execute(no_campaign_count_sql).fetchone()['project_count']
