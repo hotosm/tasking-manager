@@ -19,7 +19,7 @@ function App() {
           <Home path="/" />
           <AboutPage path="about" />
           <Authorized path="authorized" />
-          <Login path="/login" />
+          <Login path="login" />
         </Router>
       </div>
       <Footer />

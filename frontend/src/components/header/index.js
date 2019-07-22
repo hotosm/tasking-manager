@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { Link } from "@reach/router";
+import { Link, navigate } from "@reach/router";
 import Popup from "reactjs-popup";
 import { FormattedMessage } from 'react-intl';
 
@@ -11,6 +11,7 @@ import { LinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 import { BurgerMenu } from './burgerMenu';
+import { logout } from '../../store/actions/auth';
 
 
 const menuItems = [
@@ -46,13 +47,34 @@ class Header extends React.Component {
             </Link>
           </p>
         )}
-        <a href={`${API_URL}auth/login?redirect_to=/login/`} className="mh1 mv2 dib">
-          <Button className="bg-red white"><FormattedMessage {...messages.logIn}/></Button>
-        </a>
-        <Button className="bg-blue-dark white mh1 mv2 dib"><FormattedMessage {...messages.signUp}/></Button>
+        {this.props.username ?
+          <Button className="bg-blue-dark white" onClick={() => this.props.logout()}>
+            <FormattedMessage {...messages.logout}/>
+          </Button>
+          :
+          <div>
+            <a href={`${API_URL}auth/login?redirect_to=/login/`} className="mh1 mv2 dib">
+            <Button className="bg-red white"><FormattedMessage {...messages.logIn}/></Button>
+            </a>
+            <Button className="bg-blue-dark white mh1 mv2 dib"><FormattedMessage {...messages.signUp}/></Button>
+          </div>
+        }
       </div>
     );
   }
+
+  onUserMenuSelect = (arr) => {
+    if (arr.length === 1) {
+      if (arr[0].url === 'logout') {
+        this.props.logout();
+      } else {
+        console.log(this.props.push);
+        navigate(arr[0].url);
+      }
+    } else if (arr.length > 1) {
+      throw new Error('filter select array is big');
+    }
+  };
 
   renderAuthenticationButtons() {
     return(
@@ -60,9 +82,12 @@ class Header extends React.Component {
         <Dropdown
           onAdd={() => {}}
           onRemove={() => {}}
-          onChange={() => {}}
-          value={this.props.userPreferences.language || 'English'}
-          options={[{label: 'Settings'}, {label: 'Logout'}]}
+          onChange={this.onUserMenuSelect}
+          value={[]}
+          options={[
+            {label: <FormattedMessage {...messages.settings}/>, url: 'settings'},
+            {label: <FormattedMessage {...messages.logout}/>, url: 'logout'}
+          ]}
           display={this.props.username}
           className="blue-dark bg-white mr1 v-mid dn dib-66rem"
         />
@@ -134,10 +159,10 @@ class Header extends React.Component {
 
 const mapStateToProps = state => ({
   userPreferences: state.preferences,
-  username: state.auth.userDetails.username,
-  token: state.auth.userDetails.token
+  username: state.auth.getIn(['userDetails', 'username']),
+  token: state.auth.get('token')
 });
 
-Header = connect(mapStateToProps)(Header);
+Header = connect(mapStateToProps, { logout })(Header);
 
 export { Header , menuItems };
