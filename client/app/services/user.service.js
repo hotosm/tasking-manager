@@ -142,6 +142,30 @@
         }
 
         /**
+        * Gets recommended projects for an user
+        * @param username
+        * @returns {!jQuery.jqXHR|!jQuery.deferred|*|!jQuery.Promise}
+        */
+       function getRecommendedProjects(username){
+            // Returns a promise
+           return $http({
+               method: 'GET',
+               url: configService.tmAPI + '/user/' + username + '/recommended-projects',
+               headers: {
+                   'Content-Type': 'application/json; charset=UTF-8'
+               }
+           }).then(function successCallback(response) {
+               // this callback will be called asynchronously
+               // when the response is available
+               return response.data;
+           }, function errorCallback() {
+               // called asynchronously if an error occurs
+               // or server returns response with an error status.
+               return $q.reject("error");
+           })
+       }
+
+        /**
          * Get detailed stats about the user
          * @param username
          * @returns {!jQuery.jqXHR|!jQuery.deferred|*|!jQuery.Promise}
@@ -173,7 +197,7 @@
             if (typeof isProjectManager === undefined){
                 isProjectManager = false;
             }
-            
+
             var params = '';
             if (typeof projectId === "number" && !isNaN(projectId)) {
               params = '?projectId=' + projectId;

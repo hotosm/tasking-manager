@@ -394,6 +394,60 @@ class UserMappedProjects(Resource):
             return {"error": error_msg}, 500
 
 
+class UserRecommendedProjects(Resource):
+    @token_auth.login_required
+    def get(self, username):
+        """
+        Gets recommended projects for user
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: username
+              in: path
+              description: The users username
+              required: true
+              type: string
+              default: Thinkwhere
+        responses:
+            200:
+                description: Recommended projects found
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
+            404:
+                description: No recommended projects found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            locale = request.environ.get('HTTP_ACCEPT_LANGUAGE') if request.environ.get(
+                'HTTP_ACCEPT_LANGUAGE') else 'en'
+            user_dto = UserService.get_recommended_projects(username, locale)
+            return user_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User or mapping not found"}, 404
+        except Exception as e:
+            error_msg = f'User GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
 class UserSetRole(Resource):
     @tm.pm_only()
     @token_auth.login_required

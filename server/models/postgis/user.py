@@ -1,17 +1,8 @@
 import geojson
 from server import db
 from sqlalchemy import desc, text
-from server.models.dtos.user_dto import (
-    UserDTO,
-    UserMappedProjectsDTO,
-    MappedProject,
-    UserFilterDTO,
-    Pagination,
-    UserSearchQuery,
-    UserSearchDTO,
-    ProjectParticipantUser,
-    ListedUser,
-)
+from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, UserRecommendedProjectsDTO, MappedProject, UserFilterDTO, Pagination, \
+    UserSearchQuery, UserSearchDTO, ProjectParticipantUser, ListedUser
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
@@ -130,9 +121,8 @@ class User(db.Model):
         return db.session.query(User.id).all()
 
     @staticmethod
-    def filter_users(
-        user_filter: str, project_id: int, page: int, is_project_manager: bool = False
-    ) -> UserFilterDTO:
+    def filter_users(user_filter: str, project_id: int, page: int,
+                     is_project_manager:bool=False) -> UserFilterDTO:
         """ Finds users that matches first characters, for auto-complete.
 
         Users who have participated (mapped or validated) in the project, if given, will be
@@ -242,6 +232,11 @@ class User(db.Model):
             mapped_projects_dto.mapped_projects.append(mapped_project)
 
         return mapped_projects_dto
+
+    @staticmethod
+    def get_recommended_projects(user_id: int, preferred_locale: str) -> UserRecommendedProjectsDTO:
+        """ Get recommended projects for a user """
+        return User.get_mapped_projects(user_id, preferred_locale)
 
     def set_user_role(self, role: UserRole):
         """ Sets the supplied role on the user """
