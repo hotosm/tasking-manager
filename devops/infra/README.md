@@ -28,13 +28,13 @@ $ export AWS_SECRET_ACCESS_KEY=bGo2H....FVD
 2. Test if the bootstrap script is valid
 
 ```
-$ bash -n bootstrap.sh
+$ bash -n infra/bootstrap.sh
 ```
 
-3. Run packer
+3. Run packer from the root directory.
 
 ```
-$ packer build ami.json
+$ packer build infra/ami.json
 ...
 Build `amazon-ebs` finished
 ```
@@ -44,7 +44,7 @@ Build `amazon-ebs` finished
 Run packer with debug flag
 
 ```
-$ packer build -debug ami.json
+$ packer build -debug infra/ami.json
 ```
 
 You can login to the machine using the temporary SSH key to figure out what's
