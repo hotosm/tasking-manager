@@ -224,6 +224,23 @@ class ProjectCommentsDTO(Model):
     comments = ListType(ModelType(ProjectComment))
 
 
+class ProjectContribDTO(Model):
+    date = StringType(required=True)
+    mapped = IntType(required=True)
+    validated = IntType(required=True)
+
+
+class ProjectContribsDTO(Model):
+    """ Contains all contributions on a project by day"""
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.mapping = []
+        self.validation = []
+
+    stats = ListType(ModelType(ProjectContribDTO))
+
+
 class ProjectSummary(Model):
     """ Model used for PM dashboard """
     project_id = IntType(required=True, serialized_name='projectId')
