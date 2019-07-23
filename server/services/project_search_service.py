@@ -77,6 +77,7 @@ class ProjectSearchService:
             list_dto.organisation_tag = project.organisation_tag
             list_dto.last_updated = project.last_updated
             list_dto.campaign_tag = project.campaign_tag
+            list_dto.due_date = project.due_date
             list_dto.percent_mapped = Project.calculate_tasks_percent('mapped', project.total_tasks,
                                                                       project.tasks_mapped, project.tasks_validated,
                                                                       project.tasks_bad_imagery)
@@ -106,7 +107,8 @@ class ProjectSearchService:
                                  Project.tasks_validated,
                                  Project.status,
                                  Project.total_tasks,
-                                 Project.last_updated).join(ProjectInfo) \
+                                 Project.last_updated,
+                                 Project.due_date).join(ProjectInfo) \
             .filter(ProjectInfo.locale.in_([search_dto.preferred_locale, 'en'])) \
             .filter(Project.private != True)
 
