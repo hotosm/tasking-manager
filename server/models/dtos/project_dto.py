@@ -196,7 +196,7 @@ class ListSearchResultDTO(Model):
     status = StringType(serialized_name='status')
     active_mappers = IntType(serialized_name='activeMappers')
     last_updated = DateTimeType(serialized_name='lastUpdated')
-
+    due_date = DateTimeType(serialized_name='dueDate')
 
 class ProjectSearchResultsDTO(Model):
     """ Contains all results for the search criteria """
