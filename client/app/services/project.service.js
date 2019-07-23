@@ -22,6 +22,7 @@
         var map = null;
         var taskGrid = null;
         var aoi = null;
+        var mlEnabled = false;
 
         // OpenLayers source for the task grid
         var taskGridSource = null;
@@ -58,7 +59,9 @@
             getProjectSummary: getProjectSummary,
             getTaskAnnotations: getTaskAnnotations,
             getPrediction: getPrediction,
-            postPrediction: postPrediction
+            postPrediction: postPrediction,
+            setMLEnabled: setMLEnabled, 
+            getMlEnabled: getMLEnabled 
         };
 
         return service;
@@ -84,13 +87,23 @@
             map.addLayer(vector);
         }
 
+        function setMLEnabled(val){
+            mlEnabled = val;
+        }
+
+        function getMLEnabled(){
+            return mlEnabled;
+        }
+
         /**
          * Creates a task grid with features for a polygon feature.
          * It snaps to the OSM grid
          * @param areaOfInterestExtent (ol.Extent) - this should be a polygon
          * @param zoomLevel - the OSM zoom level the task squares will align with
          */
-        function createTaskGrid(areaOfInterestExtent, zoomLevel, mlEnabled=false) {
+        function createTaskGrid(areaOfInterestExtent, zoomLevel, mlEnabled=false, disablePrediction=false) {
+
+            setMLEnabled(mlEnabled);
 
             var xmin = Math.ceil(areaOfInterestExtent[0]);
             var ymin = Math.ceil(areaOfInterestExtent[1]);
@@ -124,25 +137,22 @@
                 }
             }
 
-            if (mlEnabled){
+            if (getMLEnabled()){
                 let extent = ol.proj.transformExtent(areaOfInterestExtent, 'EPSG:3857', 'EPSG:4326');
                 //TODO: do a post prediction here
                 var promise = getPrediction(extent, zoomLevel);
                 promise.then(function(data){
                     if (data.status === "ok"){
                         taskFeatures = drawMLLayer(data, taskFeatures);
-                    } else {
+                    } else if (!disablePrediction) {
                         //Posting a prediction for processing
-                        var promise = postPrediction(extent, zoomLevel);
+                        var innerPromise = postPrediction(extent, zoomLevel);
                         alert("fetching new prediction for this area, this could take a while");
-                        promise.then(function(data){
-                            if (data.status === 'ok')
-                            var innerPromise = getPrediction(extent, zoomLevel);
-                            innerPromise.then(function(responseData){
-                                if (responseData.status === "ok"){
-                                    taskFeatures = drawMLLayer(data, taskFeatures);
-                                }
-                            });
+                        innerPromise.then(function(data){
+                            var tg = createTaskGrid(areaOfInterestExtent, zoomLevel, mlEnabled, true);
+                            //forces redraw
+                            setTaskGrid(tg);
+                            addTaskGridToMap();
                         });
                     }
                 });
@@ -420,7 +430,7 @@
         function getSplitTasks(task) {
             // For smaller tasks, increase the zoom level by 1
             var zoomLevel = task.getProperties().zoom + 1;
-            var grid = createTaskGrid(task.getGeometry().getExtent(), zoomLevel);
+            var grid = createTaskGrid(task.getGeometry().getExtent(), zoomLevel, getMLEnabled(), true);
             return grid;
         }
 

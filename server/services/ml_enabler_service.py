@@ -29,7 +29,11 @@ class MLEnablerService:
                     pred['bbox'] = (bbox.left, bbox.bottom, bbox.right, bbox.top)
                     pred['zoom'] = tile.z
                     pred['building_area_diff'] = pred['ml_prediction'] - pred['osm_building_area']
-                    pred['building_area_diff_percent'] = 100 - ((pred['osm_building_area'] * 100) / pred['ml_prediction'])
+                    try:
+                        pred['building_area_diff_percent'] = 100 - ((pred['osm_building_area'] * 100) / pred['ml_prediction'])
+                    except ZeroDivisionError:
+                        #zerodivisionerror
+                        pred['building_area_diff_percent'] = 0 
                     new_list.append(pred)
                 data[k] = new_list
             main_response['predictions'] = data

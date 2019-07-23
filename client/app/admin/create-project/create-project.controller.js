@@ -448,21 +448,25 @@
          *  After drawing it, the polygon is validated before splitting the intersecting
          *  tasks into smaller tasks
          */
-        vm.drawAndSplitAreaPolygonML = function(){
+        vm.splitAreaML = function(){
             if ( vm.mlPredictionsEnabled ){
                 setSplitToolsActive_(false);
                 var taskGrid = projectService.getTaskGrid();
                 var tasks_to_split = []
                 taskGrid.forEach(feature => {
                    if (feature.get('building_area_diff_percent') > 80){
-                    console.log('spliting feature');
                     tasks_to_split.push(feature);
                    }  
                 });
                 tasks_to_split.forEach(feature => {
-                    projectService.splitTasks(feature);
+                    taskGrid = projectService.getTaskGrid() 
+                    if (taskGrid.includes(feature)){
+                        console.log('spliting feature');
+                        projectService.splitTasks(feature);
+                    } else {
+                        console.log('feature not included');
+                    }
                 });
-                // Get the number of tasks in project
                 vm.numberOfTasks = projectService.getNumberOfTasks();
                 setSplitToolsActive_(true);
             }
@@ -491,7 +495,7 @@
                         projectService.splitTasks(event.feature);
                         // Get the number of tasks in project
                         vm.numberOfTasks = projectService.getNumberOfTasks();
-                    });
+                    });   
                 });
             }
             vm.drawAndSelectPoint.setActive(true);
@@ -552,8 +556,7 @@
          * Makes a query for the ML-enabler API to run the prediction for a bounding box.
          */
         vm.displayMLLayer = function(){
-            //TODO: make this a toggle button?
-            vm.mlPredictionsEnabled = true;
+            vm.mlPredictionsEnabled = !vm.mlPredictionsEnabled;
             vm.createTaskGrid();
         } 
     }
