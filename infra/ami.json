@@ -36,7 +36,7 @@
   "provisioners": [
     {
     "type": "shell",
-    "script": "bootstrap.sh"
+    "script": "infra/bootstrap.sh"
     }
   ]
 }
