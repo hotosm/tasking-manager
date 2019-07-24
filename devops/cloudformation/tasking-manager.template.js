@@ -89,13 +89,20 @@ const Parameters = {
   SSLCertificateIdentifier: {
     Type: 'String',
     Description: 'SSL certificate for HTTPS protocol'
+  },
+  AutoscalingType: {
+    Type: 'String',
+    Description: 'Only applies to production environments. Sets number of instances in ASG policy',
+    AllowedValues: ['1-4', '3-12'],
+    Default: '1-4'
   }
 };
 
 const Conditions = {
   UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
   DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
-  IsTaskingManagerProduction: cf.equals(cf.stackName, 'tasking-manager-production')
+  IsTaskingManagerProduction: cf.equals(cf.ref('Environment'), 'production'),
+  IsAutoscalingLarge: cf.equals(cf.ref('AutoscalingType'), '3-12')
 };
 
 const Resources = {
@@ -105,9 +112,9 @@ const Resources = {
     Properties: {
       AutoScalingGroupName: cf.stackName,
       Cooldown: 300,
-      MinSize: cf.if('IsTaskingManagerProduction', 3, 1),
-      DesiredCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
-      MaxSize: cf.if('IsTaskingManagerProduction', 12, 1),
+      MinSize: cf.if('IsTaskingManagerProduction', cf.if('IsAutoscalingLarge', 3, 1), 1),
+      DesiredCapacity: cf.if('IsTaskingManagerProduction', cf.if('IsAutoscalingLarge', 3, 1), 1),
+      MaxSize: cf.if('IsTaskingManagerProduction', cf.if('IsAutoscalingLarge', 12, 4), 1),
       HealthCheckGracePeriod: 300,
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
