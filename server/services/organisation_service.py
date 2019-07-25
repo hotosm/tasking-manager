@@ -1,8 +1,10 @@
 from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
+from server import db
 from server.models.dtos.organisation_dto import OrganisationDTO, NewOrganisationDTO
 from server.models.postgis.organisation import Organisation
+from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.utils import NotFound
 from server.services.users.user_service import UserService
 
@@ -16,6 +18,19 @@ class OrganisationServiceError(Exception):
 
 
 class OrganisationService:
+    @staticmethod
+    def get_projects_by_organisation_id(organisation_id: int) -> Organisation:
+        projects = (
+            db.session.query(Project.id, ProjectInfo.name)
+            .join(ProjectInfo)
+            .filter(Project.organisation_id == organisation_id)
+            .all()
+        )
+
+        if projects is None:
+            raise NotFound()
+
+        return projects
 
     @staticmethod
     def get_organisation_by_id(organisation_id: int) -> Organisation:
@@ -65,8 +80,10 @@ class OrganisationService:
         try:
             org = Organisation().create_from_dto(new_organisation_dto)
             return org.id
-        except IntegrityError as e:
-            raise OrganisationServiceError(f'Organisation name already exists: {new_organisation_dto.name}')
+        except IntegrityError:
+            raise OrganisationServiceError(
+                f"Organisation name already exists: {new_organisation_dto.name}"
+            )
 
     @staticmethod
     def update_organisation(organisation_dto: OrganisationDTO) -> Organisation:
@@ -75,7 +92,9 @@ class OrganisationService:
         :param organisation_dto: DTO with updated info
         :returns updated Organisation
         """
-        org = OrganisationService.get_organisation_by_id(organisation_dto.organisation_id)
+        org = OrganisationService.get_organisation_by_id(
+            organisation_dto.organisation_id
+        )
 
         OrganisationService.assert_validate_name(org, organisation_dto.name)
 
@@ -88,20 +107,20 @@ class OrganisationService:
     def assert_validate_name(org: Organisation, name: str):
         """ Validates that the organisation name doesn't exist """
         if org.name != name and Organisation.get_organisation_by_name(name) is not None:
-            raise OrganisationServiceError(f'Organisation name already exists: {name}')
+            raise OrganisationServiceError(f"Organisation name already exists: {name}")
 
     @staticmethod
     def assert_validate_users(organisation_dto: OrganisationDTO):
         """ Validates that the users exist"""
         if len(organisation_dto.admins) == 0:
-            raise OrganisationServiceError('Must have at least one admin')
+            raise OrganisationServiceError("Must have at least one admin")
 
             admins = []
             for user in organisation_dto.admins:
                 try:
                     admin = UserService.get_user_by_username(user)
                 except NotFound:
-                    raise NotFound(f'User {user} does not exist')
+                    raise NotFound(f"User {user} does not exist")
 
                 admins.append(admin.username)
 
@@ -115,13 +134,24 @@ class OrganisationService:
         if org.can_be_deleted():
             org.delete()
         else:
-            raise OrganisationServiceError('Organisation has projects, cannot be deleted')
+            raise OrganisationServiceError(
+                "Organisation has projects, cannot be deleted"
+            )
 
     @staticmethod
     def user_is_admin(organisation_id: int, user_id: int):
         """ Check that the user is an admin for the org or a global admin"""
         if UserService.is_user_an_admin(user_id):
             return True
+
+        org = Organisation.get(organisation_id)
+        user = UserService.get_user_by_id(user_id)
+
+        return user in org.admins
+
+    @staticmethod
+    def is_user_an_org_admin(organisation_id: int, user_id: int):
+        """ Check that the user is an admin for the org """
 
         org = Organisation.get(organisation_id)
         user = UserService.get_user_by_id(user_id)

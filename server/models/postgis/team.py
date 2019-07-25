@@ -8,35 +8,56 @@ from server.models.postgis.utils import NotFound
 
 
 class TeamMembers(db.Model):
-    __tablename__ = 'team_members'
-    team_id = db.Column(db.Integer, db.ForeignKey('teams.id', name='fk_teams'), primary_key=True)
-    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), primary_key=True)
+    __tablename__ = "team_members"
+    team_id = db.Column(
+        db.Integer, db.ForeignKey("teams.id", name="fk_teams"), primary_key=True
+    )
+    user_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", name="fk_users"), primary_key=True
+    )
     function = db.Column(db.Integer, nullable=False)  # either 'editor' or 'manager'
 
     member = db.relationship(
-        User,
-        backref=db.backref('teams', cascade='all, delete-orphan')
+        User, backref=db.backref("teams", cascade="all, delete-orphan")
     )
     team = db.relationship(
-        'Team',
-        backref=db.backref('members', cascade='all, delete-orphan')
+        "Team", backref=db.backref("members", cascade="all, delete-orphan")
     )
+
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
+
+    def get_team_member(team_id, user_id):
+        return (
+            TeamMembers.query.filter_by(team_id=team_id)
+            .filter_by(user_id=user_id)
+            .first()
+        )
 
 
 class Team(db.Model):
     """ Describes a team """
-    __tablename__ = 'teams'
+
+    __tablename__ = "teams"
 
     # Columns
     id = db.Column(db.Integer, primary_key=True)
-    organisation_id = db.Column(db.Integer, db.ForeignKey('organisations.id', name='fk_organisations'), nullable=False)
+    organisation_id = db.Column(
+        db.Integer,
+        db.ForeignKey("organisations.id", name="fk_organisations"),
+        nullable=False,
+    )
     name = db.Column(db.String(512), nullable=False)
     logo = db.Column(db.String)  # URL of a logo
     description = db.Column(db.String)
     invite_only = db.Column(db.Boolean, default=False, nullable=False)
-    visibility = db.Column(db.Integer, default=TeamVisibility.PUBLIC.value, nullable=False)
+    visibility = db.Column(
+        db.Integer, default=TeamVisibility.PUBLIC.value, nullable=False
+    )
 
-    organisation = db.relationship(Organisation, backref='teams')
+    organisation = db.relationship(Organisation, backref="teams")
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -70,7 +91,7 @@ class Team(db.Model):
 
     def update(self, team_dto: TeamDTO):
         """ Updates Team from DTO """
-        self.organisation = Organisation().get_organisation_by_name(team_dto.organisation)
+        self.organisation_id = team_dto.organisation_id
         self.name = team_dto.name
         self.logo = team_dto.logo
         self.description = team_dto.description
@@ -82,15 +103,14 @@ class Team(db.Model):
                 db.session.delete(member)
 
             for member in team_dto.members:
-                user = User().get_by_username(member['userName'])
-
+                user = User().get_by_username(member["username"])
                 if user is None:
-                    raise NotFound('User not found')
+                    raise NotFound("User not found")
 
                 new_team_member = TeamMembers()
                 new_team_member.team = self
                 new_team_member.member = user
-                new_team_member.function = TeamMemberFunctions[member['function']].value
+                new_team_member.function = TeamMemberFunctions[member["function"]].value
 
         db.session.commit()
 
@@ -137,9 +157,11 @@ class Team(db.Model):
         """ Helper to get JSON serialized members """
         members = []
         for mem in self.members:
-            members.append({
-                'name': mem.member.username,
-                'function': TeamMemberFunctions(mem.function).name
-            })
+            members.append(
+                {
+                    "name": mem.member.username,
+                    "function": TeamMemberFunctions(mem.function).name,
+                }
+            )
 
         return members

@@ -152,6 +152,20 @@ class MessageService:
             SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
+    def send_request_to_join_team(
+        from_user: int, from_username: str, to_user: int, team_name: str
+    ) -> Message:
+        message = Message()
+        message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
+        message.from_user_id = from_user
+        message.to_user_id = to_user
+        message.subject = "Request to join team"
+        message.message = f'<a href="http://127.0.0.1:5000/user/{from_username}">{from_username}\
+            </a> has requested to join the {team_name} team'
+        message.add_message()
+        message.save()
+
+    @staticmethod
     def send_message_after_chat(chat_from: int, chat: str, project_id: int):
         """ Send alert to user if they were @'d in a chat message """
         current_app.logger.debug("Sending Message After Chat")

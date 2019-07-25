@@ -96,6 +96,7 @@ class Editors(Enum):
 
 class OrganisationVisibility(Enum):
     """ Describes the visibility associated with an Organisation """
+
     PUBLIC = 0
     PRIVATE = 1
     SECRET = 2
@@ -103,6 +104,7 @@ class OrganisationVisibility(Enum):
 
 class TeamVisibility(Enum):
     """ Describes the visibility associated with an Team """
+
     PUBLIC = 0
     PRIVATE = 1
     SECRET = 2
@@ -110,6 +112,7 @@ class TeamVisibility(Enum):
 
 class TeamRoles(Enum):
     """ Describes the role a Team has within a Project """
+
     READ_ONLY = -1
     MAPPER = 0
     VALIDATOR = 1
@@ -118,5 +121,6 @@ class TeamRoles(Enum):
 
 class TeamMemberFunctions(Enum):
     """ Describes the function a member can hold within a team """
+
     EDITOR = 0
     MANAGER = 1

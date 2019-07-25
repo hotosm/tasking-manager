@@ -21,6 +21,15 @@ class MessageType(Enum):
     INVALIDATION_NOTIFICATION = (
         5
     )  # Notification that user's mapped task was invalidated
+    REQUEST_TEAM_NOTIFICATION = (
+        6
+    )  # Notification that a user has send request to join the team
+    REQUEST_ACCEPTED_NOTIFICATION = (
+        7
+    )  # Notification that user's request to join the team is accepted
+    REQUEST_REJECTED_NOTIFICATION = (
+        8
+    )  # Notification that user's request to join the team is rejected
 
 
 class Message(db.Model):

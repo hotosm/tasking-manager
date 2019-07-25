@@ -165,22 +165,42 @@ class ProjectDTO(Model):
     osmcha_filter_id = StringType(serialized_name="osmchaFilterId")
     due_date = DateTimeType(serialized_name="dueDate")
     imagery = StringType()
-    josm_preset = StringType(serialized_name='josmPreset', serialize_when_none=False)
-    mapping_types = ListType(StringType, serialized_name='mappingTypes', validators=[is_known_mapping_type])
-    campaign_tag = StringType(serialized_name='campaignTag')
+    josm_preset = StringType(serialized_name="josmPreset", serialize_when_none=False)
+    mapping_types = ListType(
+        StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
+    )
+    campaign_tag = StringType(serialized_name="campaignTag")
     organisation = StringType()
-    license_id = IntType(serialized_name='licenseId')
-    allowed_usernames = ListType(StringType(), serialized_name='allowedUsernames', default=[])
-    priority_areas = BaseType(serialized_name='priorityAreas')
+    license_id = IntType(serialized_name="licenseId")
+    allowed_usernames = ListType(
+        StringType(), serialized_name="allowedUsernames", default=[]
+    )
+    priority_areas = BaseType(serialized_name="priorityAreas")
     created = DateTimeType()
     last_updated = DateTimeType(serialized_name="lastUpdated")
     author = StringType()
-    active_mappers = IntType(serialized_name='activeMappers')
-    task_creation_mode = StringType(required=True, serialized_name='taskCreationMode',
-                                    validators=[is_known_task_creation_mode], serialize_when_none=False)
-    project_teams = BaseType(serialized_name='projectTeams')
-    mapping_editors = ListType(StringType, min_size=1, required=True, serialized_name='mappingEditors', validators=[is_known_editor])
-    validation_editors = ListType(StringType, min_size=1, required=True, serialized_name='validationEditors', validators=[is_known_editor])
+    active_mappers = IntType(serialized_name="activeMappers")
+    task_creation_mode = StringType(
+        required=True,
+        serialized_name="taskCreationMode",
+        validators=[is_known_task_creation_mode],
+        serialize_when_none=False,
+    )
+    project_teams = BaseType(serialized_name="projectTeams")
+    mapping_editors = ListType(
+        StringType,
+        min_size=1,
+        required=True,
+        serialized_name="mappingEditors",
+        validators=[is_known_editor],
+    )
+    validation_editors = ListType(
+        StringType,
+        min_size=1,
+        required=True,
+        serialized_name="validationEditors",
+        validators=[is_known_editor],
+    )
 
 
 class ProjectSearchDTO(Model):
@@ -205,36 +225,41 @@ class ProjectSearchDTO(Model):
         if self.mapping_types:
             for mapping_type in self.mapping_types:
                 hashable_mapping_types += mapping_type
-        hashable_project_statuses = ''
+        hashable_project_statuses = ""
         if self.project_statuses:
             for project_status in self.project_statuses:
                 hashable_project_statuses += project_status
-        hashable_teams = ''
+        hashable_teams = ""
         if self.teams:
             for team in self.teams:
                 hashable_teams += team
-        hashable_mapping_editors = ''
+        hashable_mapping_editors = ""
         if self.mapping_editors:
             for mapping_editor in self.mapping_editors:
                 hashable_mapping_editors = hashable_mapping_editors + mapping_editor
         hashable_validation_editors = ""
         if self.validation_editors:
             for validation_editor in self.validation_editors:
-                hashable_validation_editors = hashable_validation_editors + validation_editor
+                hashable_validation_editors = (
+                    hashable_validation_editors + validation_editor
+                )
 
-        return hash((
-            self.preferred_locale,
-            self.mapper_level,
-            hashable_mapping_types,
-            hashable_project_statuses,
-            hashable_teams,
-            self.organisation,
-            self.campaign_tag,
-            self.page,
-            self.text_search,
-            self.is_project_manager,
-            hashable_mapping_editors,
-            hashable_validation_editors))
+        return hash(
+            (
+                self.preferred_locale,
+                self.mapper_level,
+                hashable_mapping_types,
+                hashable_project_statuses,
+                hashable_teams,
+                self.organisation,
+                self.campaign_tag,
+                self.page,
+                self.text_search,
+                self.is_project_manager,
+                hashable_mapping_editors,
+                hashable_validation_editors,
+            )
+        )
 
 
 class ProjectSearchBBoxDTO(Model):
@@ -254,12 +279,12 @@ class ListSearchResultDTO(Model):
     mapper_level = StringType(required=True, serialized_name="mapperLevel")
     priority = StringType(required=True)
     organisation = StringType()
-    campaign_tag = StringType(serialized_name='campaignTag')
-    percent_mapped = IntType(serialized_name='percentMapped')
-    percent_validated = IntType(serialized_name='percentValidated')
-    status = StringType(serialized_name='status')
-    active_mappers = IntType(serialized_name='activeMappers')
-    last_updated = DateTimeType(serialized_name='lastUpdated')
+    campaign_tag = StringType(serialized_name="campaignTag")
+    percent_mapped = IntType(serialized_name="percentMapped")
+    percent_validated = IntType(serialized_name="percentValidated")
+    status = StringType(serialized_name="status")
+    active_mappers = IntType(serialized_name="activeMappers")
+    last_updated = DateTimeType(serialized_name="lastUpdated")
 
 
 class ProjectSearchResultsDTO(Model):
@@ -329,20 +354,20 @@ class ProjectSummary(Model):
     author = StringType(serialized_name="createdBy")
     created = DateTimeType()
     due_date = DateTimeType()
-    last_updated = DateTimeType(serialized_name='lastUpdated')
-    priority = StringType(serialized_name='projectPriority')
-    campaign_tag = StringType(serialized_name='campaignTag')
+    last_updated = DateTimeType(serialized_name="lastUpdated")
+    priority = StringType(serialized_name="projectPriority")
+    campaign_tag = StringType(serialized_name="campaignTag")
     organisation = StringType()
-    entities_to_map = StringType(serialized_name='entitiesToMap')
-    changeset_comment = StringType(serialized_name='changesetComment')
-    percent_mapped = IntType(serialized_name='percentMapped')
-    percent_validated = IntType(serialized_name='percentValidated')
-    percent_bad_imagery = IntType(serialized_name='percentBadImagery')
-    aoi_centroid = BaseType(serialized_name='aoiCentroid')
-    mapper_level = StringType(serialized_name='mapperLevel')
-    mapper_level_enforced = BooleanType(serialized_name='mapperLevelEnforced')
-    validator_level_enforced = BooleanType(serialized_name='validatorLevelEnforced')
-    short_description = StringType(serialized_name='shortDescription')
+    entities_to_map = StringType(serialized_name="entitiesToMap")
+    changeset_comment = StringType(serialized_name="changesetComment")
+    percent_mapped = IntType(serialized_name="percentMapped")
+    percent_validated = IntType(serialized_name="percentValidated")
+    percent_bad_imagery = IntType(serialized_name="percentBadImagery")
+    aoi_centroid = BaseType(serialized_name="aoiCentroid")
+    mapper_level = StringType(serialized_name="mapperLevel")
+    mapper_level_enforced = BooleanType(serialized_name="mapperLevelEnforced")
+    validator_level_enforced = BooleanType(serialized_name="validatorLevelEnforced")
+    short_description = StringType(serialized_name="shortDescription")
     status = StringType()
 
 
