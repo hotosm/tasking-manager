@@ -18,11 +18,11 @@ export default defineMessages({
   },
   percentMapped: {
     id: 'project.card.percentMapped',
-    defaultMessage: '% Mapped'
+    defaultMessage: ' Mapped'
   },
   percentValidated: {
     id: 'project.card.percentValidated',
-    defaultMessage: '% Validated' 
+    defaultMessage: ' Validated' 
   },
   projectMapperLevelBEGINNER: {
     id: 'project.card.mapperLevelBeginner',
