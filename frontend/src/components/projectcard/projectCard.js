@@ -1,9 +1,10 @@
 import React from "react";
 import { FormattedMessage, FormattedRelative } from "react-intl";
-import humanizeDuration from 'humanize-duration'
+import DueDateBox from "./dueDateBox"
 
 import messages from "./messages";
 
+import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
 
 function PriorityBox({ priority }: Object) {
   let color = "blue-grey";
@@ -12,22 +13,21 @@ function PriorityBox({ priority }: Object) {
     color = "red";
     borderColor = "b--red";
   }
-  return <div className={`pa1 fr w-33 tc br1 mt3 mr2 f7 ttu ba ${borderColor} ${color}`}>
+  return <div className={`pa1 fr w-33 tc br1 mt3 f7 ttu ba ${borderColor} ${color}`}>
     <FormattedMessage {...messages["projectPriority"+priority]} />
     </div>;
 }
 
-
 function ProjectTeaser({ lastUpdated, totalMappers }: Object) {
-    if (totalMappers < 5) {
-        return (<p className="db tl f7 blue-grey truncate" >
-          Last contribution <FormattedRelative value={lastUpdated} />
-          </p>)
+    if (totalMappers < PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD) {
+        return (<div className="db tl f7 blue-grey truncate mv2" >
+           <FormattedMessage  {...messages["projectLastContribution"]} /> <FormattedRelative value={lastUpdated} />
+          </div>)
 
     } else {
-        return (<p className="f7 tl blue-grey" ><span className="b">
-        {totalMappers}</span> total contributors
-        </p>)
+        return (<div className="f7 tl blue-light mv2" ><span className="blue-grey b">
+        {totalMappers}</span> <FormattedMessage {...messages["projectTotalContributors"]} />
+        </div>)
     }
   }
 
@@ -57,8 +57,8 @@ function ProjectProgressBar({ percentMapped, percentValidated }: Object) {
 
 function ProjectOrgLogo(organisationTag) {
   return (
-      <div className="bg-black pa1">
-          <div className={`contain ${getLogoClass(organisationTag)} w-auto h3`}></div>
+      <div className="bg-black pa1" style={{'filter':'invert(1)'}}>
+          <div className={`contain ${getLogoClass(organisationTag)} w-auto h2`}></div>
       </div>);
 }
 
@@ -88,28 +88,6 @@ function getLogoClass(organisationTag: String) {
   
 }
 
-export function DueDateBox({dueDate}: Object) {
-  if (dueDate === undefined) {
-    return null;
-  }
-  const milliDifference = (dueDate - Date.now());
-
-  if (milliDifference > 0) {
-    return (
-    <span className="fr w-50 f7 tc link ph1 pv1 bg-grey-light blue-grey">
-      <FormattedMessage
-        {...messages["dueDateRelativeRemainingDays"]}
-        values={{
-          daysLeft: (<FormattedRelative value={dueDate} />),
-          daysLeftHumanize: humanizeDuration(milliDifference, { largest: 1 }) 
-        }}
-      />
-    </span>
-    );
-   } else {
-     return null;
-   }
-}
 
 function tachyonsWidthClass(percent: Number) {
    const tachyonsWidths =  [
@@ -181,8 +159,8 @@ export function ProjectCard({
 }: Object) {
   return (
     <a href={`#project=${projectId}`}>
-    <article className="fl w-25-l w-50-m w-100 ph2 blue-dark ">
-      <div className="pv3 ba b--blue-grey ph3"  >
+    <article className="fl w-25-l base-font w-50-m w-100 ph2 blue-dark mw5">
+      <div className="pv3 ba br1  b--grey-light ph3"  >
         <PriorityBox priority={projectPriority} />
         <div className="w-50 red dib"><ProjectOrgLogo organisationTag={organisationTag} /></div>
         <div className="ma1 w-100">
@@ -191,13 +169,13 @@ export function ProjectCard({
             {title}
           </h3>
           <div className="tc f6">
-            <p className="w-100 tl pr2 f7 dib lh-title mb2 h2 overflow-y-hidden">
+            <div className="w-100 tl pr2 f7 blue-light dib lh-title mb2 h2 overflow-y-hidden">
               {shortDescription}
-            </p>
+            </div>
             <ProjectTeaser totalMappers={totalMappers} lastUpdated={lastUpdated} />
             <ProjectProgressBar percentMapped={percentMapped} percentValidated={percentValidated} />
             <p className="cf">
-              <span className="fl f7 mt1 ttc fw5 blue-grey"><FormattedMessage {...messages["projectMapperLevel"+mapperLevel]} /></span>
+              <span className="fl f7 mt1 ttc fw5 blue-grey h2"><FormattedMessage {...messages["projectMapperLevel"+mapperLevel]} /></span>
               <DueDateBox dueDate={dueDate} />          
             </p>
           </div>
