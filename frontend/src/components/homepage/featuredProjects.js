@@ -17,7 +17,7 @@ function FeaturedProjectPaginateArrows({pages, activeProjectCardPage, setProject
         enableLeft = true;
     } 
     return (
-        <div className="fr dib f2 mr2 pv3 pr6">
+        <div className="fr dib f2 mr2 pv3 pr6-l pr3">
             <div className={`dib mr2 dim ${enableLeft ? 'red' : 'light-red'}`} onClick={() => enableLeft && setProjectCardPage(activeProjectCardPage - 1)}><LeftIcon /></div>
             <div className={`dib dim ${enableRight ? 'red' : 'light-red'}`} onClick={() => enableRight && setProjectCardPage(activeProjectCardPage + 1)}><RightIcon /></div>
         </div>
@@ -34,9 +34,13 @@ const chunkArray = chunkSize => array => {
     []);
 }
 const projectPaginate = chunkArray(4);
+const projectPaginateMobile = chunkArray(2);
+
 
 export function FeaturedProjects() {
   const [activeProjectCardPage, setProjectCardPage] = useState(0);
+  const [activeProjectCardPageMobile, setProjectCardPageMobile] = useState(0);
+
 
   /* quoted keys are from project activity API */
   const cards = [
@@ -188,27 +192,35 @@ export function FeaturedProjects() {
         "status": "PUBLISHED"
       }];
   const pagedProjs = projectPaginate(cards)
+  const pagedProjsMobile = projectPaginateMobile(cards)
+
   return(
-      <>
-    <section className="outline h2" style={{'width':'60em'}}>&nbsp;</section>
     <section className="pt4-l pb5 pl5-l pr1-l pl3 bg-white black">
       <div className="cf">
-        <div className="w-75-l w-50 fl">
+        <div className="w-75-l w-60 fl">
         <h3 className="f2 ttu barlow-condensed fw8">
             <FormattedMessage {...messages.featuredProjects} />
             </h3>
         </div>
-        <div className="fl w-25-l w-50 pa3 mb4 mw6">
+        <div className="fl w-25-l pa3 mb4 mw6 dn db-l">
             <FeaturedProjectPaginateArrows 
                 pages={pagedProjs}
                 activeProjectCardPage={activeProjectCardPage}
                 setProjectCardPage={setProjectCardPage} />
         </div>
+        <div className="fl w-40 pa3 mb4 mw6 db dn-l">
+            <FeaturedProjectPaginateArrows 
+                pages={pagedProjsMobile}
+                activeProjectCardPage={activeProjectCardPageMobile}
+                setProjectCardPage={setProjectCardPageMobile} />
+        </div>
       </div>
-      <div className="cf">
+      <div className="cf dn db-l">
           {pagedProjs[activeProjectCardPage].map((card, n) => <ProjectCard { ...card } key={n} />)}
         </div>
+        <div className="cf db dn-l">
+          {pagedProjsMobile[activeProjectCardPageMobile].map((card, n) => <ProjectCard { ...card } key={n} />)}
+        </div>
     </section>
-    </>
   );
 }
