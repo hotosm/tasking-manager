@@ -38,7 +38,7 @@ def api():
     Route for API Docs welcome page
     """
     api_url = current_app.config['API_DOCS_URL']
-    return render_template('welcome.html', doc_link=api_url)
+    return render_template('swagger.html', doc_link=api_url)
 
 
 @main.route('/', defaults={'path': 'index.html'})
