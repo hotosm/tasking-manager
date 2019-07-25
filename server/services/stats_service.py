@@ -244,8 +244,11 @@ class StatsService:
             dto.campaigns.append(no_campaign_proj)
         dto.total_campaigns = unique_campaigns
 
-        org_proj_count = db.session.query(Project.organisation, func.count(Project.organisation))\
-            .group_by(Project.organisation).all()
+        org_proj_count = (
+            db.session.query(Project.organisation, func.count(Project.organisation))
+            .group_by(Project.organisation)
+            .all()
+        )
         no_org_count = 0
         unique_orgs = 0
 

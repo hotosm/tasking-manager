@@ -2,12 +2,15 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
 from server.models.dtos.organisation_dto import OrganisationDTO, NewOrganisationDTO
-from server.services.organisation_service import OrganisationService, OrganisationServiceError, NotFound
+from server.services.organisation_service import (
+    OrganisationService,
+    OrganisationServiceError,
+    NotFound,
+)
 from server.services.users.authentication_service import token_auth, tm
 
 
 class OrganisationAPI(Resource):
-
     @token_auth.login_required
     def put(self):
         """
@@ -59,7 +62,7 @@ class OrganisationAPI(Resource):
             org_dto.admins = [tm.authenticated_user_id]
             org_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'error validating request: {str(e)}')
+            current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -68,7 +71,7 @@ class OrganisationAPI(Resource):
         except OrganisationServiceError as e:
             return str(e), 402
         except Exception as e:
-            error_msg = f'Organisation PUT - unhandled error: {str(e)}'
+            error_msg = f"Organisation PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -106,7 +109,9 @@ class OrganisationAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not OrganisationService.user_is_admin(organisation_id, tm.authenticated_user_id):
+        if not OrganisationService.user_is_admin(
+            organisation_id, tm.authenticated_user_id
+        ):
             return {"Error": "User is not an admin for the org"}, 401
         try:
             OrganisationService.delete_organisation(organisation_id)
@@ -116,7 +121,7 @@ class OrganisationAPI(Resource):
         except NotFound:
             return {"Error": "Organisation Not Found"}, 404
         except Exception as e:
-            error_msg = f'Organisation DELETE - unhandled error: {str(e)}'
+            error_msg = f"Organisation DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -153,12 +158,14 @@ class OrganisationAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            org_dto = OrganisationService.get_organisation_dto_by_name(organisation_name)
+            org_dto = OrganisationService.get_organisation_dto_by_name(
+                organisation_name
+            )
             return org_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Organisation Not Found"}, 404
         except Exception as e:
-            error_msg = f'Organisation GET - unhandled error: {str(e)}'
+            error_msg = f"Organisation GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -220,14 +227,16 @@ class OrganisationAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not OrganisationService.user_is_admin(organisation_id, tm.authenticated_user_id):
+        if not OrganisationService.user_is_admin(
+            organisation_id, tm.authenticated_user_id
+        ):
             return {"Error": "User is not an admin for the org"}, 401
         try:
             org_dto = OrganisationDTO(request.get_json())
             org_dto.organisation_id = organisation_id
             org_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'error validating request: {str(e)}')
+            current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -238,6 +247,6 @@ class OrganisationAPI(Resource):
         except OrganisationServiceError as e:
             return str(e), 402
         except Exception as e:
-            error_msg = f'Organisation POST - unhandled error: {str(e)}'
+            error_msg = f"Organisation POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500

@@ -289,7 +289,7 @@ class ProjectAdminAPI(Resource):
         except ProjectAdminServiceError as e:
             return {"error": str(e)}, 400
         except Exception as e:
-            error_msg = f'Project POST - unhandled error: {str(e)}'
+            error_msg = f"Project POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 

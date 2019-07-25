@@ -37,7 +37,7 @@ from server.models.postgis.statuses import (
     MappingTypes,
     TaskCreationMode,
     Editors,
-    TeamRoles
+    TeamRoles,
 )
 from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task, TaskHistory
@@ -63,19 +63,31 @@ project_allowed_users = db.Table(
 
 
 class ProjectTeams(db.Model):
-    __tablename__ = 'project_teams'
-    team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), primary_key=True)
+    __tablename__ = "project_teams"
+    team_id = db.Column(db.Integer, db.ForeignKey("teams.id"), primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), primary_key=True)
     role = db.Column(db.Integer, nullable=False)
 
     project = db.relationship(
-        'Project',
-        backref=db.backref('teams', cascade='all, delete-orphan')
+        "Project", backref=db.backref("teams", cascade="all, delete-orphan")
     )
     team = db.relationship(
-        Team,
-        backref=db.backref('projects', cascade='all, delete-orphan')
+        Team, backref=db.backref("projects", cascade="all, delete-orphan")
     )
+
+    def create(self):
+        """ Creates and saves the current model to the DB """
+        db.session.add(self)
+        db.session.commit()
+
+    def save(self):
+        """ Save changes to db"""
+        db.session.commit()
+
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
 
 
 # cache mapper counts for 30 seconds
@@ -126,7 +138,11 @@ class Project(db.Model):
         db.Integer, default=TaskCreationMode.GRID.value, nullable=False
     )
 
-    organisation_id = db.Column(db.Integer, db.ForeignKey('organisations.id', name='fk_organisations'), index=True)
+    organisation_id = db.Column(
+        db.Integer,
+        db.ForeignKey("organisations.id", name="fk_organisations"),
+        index=True,
+    )
 
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
@@ -170,9 +186,13 @@ class Project(db.Model):
     project_chat = db.relationship(ProjectChat, lazy="dynamic", cascade="all")
     author = db.relationship(User)
     allowed_users = db.relationship(User, secondary=project_allowed_users)
-    priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
-                                     single_parent=True)
-    organisation = db.relationship(Organisation, backref='projects')
+    priority_areas = db.relationship(
+        PriorityArea,
+        secondary=project_priority_areas,
+        cascade="all, delete-orphan",
+        single_parent=True,
+    )
+    organisation = db.relationship(Organisation, backref="projects")
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
@@ -374,15 +394,15 @@ class Project(db.Model):
 
             for project_team in project_dto.project_teams:
 
-                team = Team.get(project_team['teamId'])
+                team = Team.get(project_team["teamId"])
 
                 if team is None:
-                    raise NotFound(f'Team not found')
+                    raise NotFound(f"Team not found")
 
                 new_project_team = ProjectTeams()
                 new_project_team.project = self
                 new_project_team.team = team
-                new_project_team.role = TeamRoles[project_team['role']].value
+                new_project_team.role = TeamRoles[project_team["role"]].value
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
@@ -674,11 +694,13 @@ class Project(db.Model):
         """ Helper to return teams with members so we can handle permissions """
         project_teams = []
         for t in self.teams:
-            project_teams.append({
-                'name': t.team.name,
-                'role': t.role,
-                'members': [m.member.username for m in t.team.members]
-            })
+            project_teams.append(
+                {
+                    "name": t.team.name,
+                    "role": t.role,
+                    "members": [m.member.username for m in t.team.members],
+                }
+            )
 
         return project_teams
 
@@ -792,16 +814,17 @@ class Project(db.Model):
         return project_tasks
 
     @staticmethod
-    def get_all_campaign_tag(preferred_locale='en'):
-        query = db.session.query(Project.id,
-                                 Project.campaign_tag,
-                                 Project.private,
-                                 Project.status)\
-            .join(ProjectInfo)\
-            .filter(ProjectInfo.locale.in_([preferred_locale, 'en'])) \
-            .filter(Project.private != True)\
-            .filter(Project.campaign_tag.isnot(None))\
-            .filter(Project.campaign_tag != '')
+    def get_all_campaign_tag(preferred_locale="en"):
+        query = (
+            db.session.query(
+                Project.id, Project.campaign_tag, Project.private, Project.status
+            )
+            .join(ProjectInfo)
+            .filter(ProjectInfo.locale.in_([preferred_locale, "en"]))
+            .filter(Project.private.is_(True))
+            .filter(Project.campaign_tag.isnot(None))
+            .filter(Project.campaign_tag != "")
+        )
         query = query.distinct(Project.campaign_tag)
         query = query.order_by(Project.campaign_tag)
         tags_dto = TagsDTO()
