@@ -1,5 +1,5 @@
 import React from "react";
-import { FormattedMessage, FormattedRelative, injectIntl } from "react-intl";
+import { FormattedMessage, FormattedRelative, injectIntl, intlShape } from "react-intl";
 import humanizeDuration from 'humanize-duration'
 
 import messages from "./messages";
@@ -27,6 +27,10 @@ export function DueDateBox({intl, dueDate}: Object) {
        return null;
      }
   }
+
+DueDateBox.propTypes = {
+    intl: intlShape.isRequired
+};
 
 //decorator pattern to provide the intl object from IntlProvider into function props.
 export default injectIntl(DueDateBox)
