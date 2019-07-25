@@ -76,13 +76,12 @@ export function ProjectCard({
   projectPriority,
   percentMapped,
   percentValidated,
-  totalMappers,
-  intl
+  totalMappers
 }: Object) {
   return (
     <a href={`#project=${projectId}`}>
-    <article className="fl w-25-l base-font w-50-m w-100 ph2 blue-dark mw5">
-      <div className="pt3 ba br1  b--grey-light ph3">
+    <article className="fl w-25-l base-font w-50-m w-100 mb3 ph2 blue-dark mw5">
+      <div className="pv3 ba br1  b--grey-light ph3">
         <PriorityBox priority={projectPriority} />
         <div className="w-50 red dib"><ProjectOrgLogo organisationTag={organisationTag} /></div>
         <div className="ma1 w-100">
@@ -96,10 +95,10 @@ export function ProjectCard({
             </div>
             <ProjectTeaser totalMappers={totalMappers} lastUpdated={lastUpdated} />
             <ProjectProgressBar percentMapped={percentMapped} percentValidated={percentValidated} />
-            <p className="cf">
-              <span className="fl f7 mt1 ttc fw5 blue-grey h2"><FormattedMessage {...messages["projectMapperLevel"+mapperLevel]} /></span>
+            <div className="cf pt2 h2">
+              <span className="fl f7 mt1 ttc fw5 blue-grey"><FormattedMessage {...messages["projectMapperLevel"+mapperLevel]} /></span>
               <DueDateBox dueDate={dueDate} />          
-            </p>
+            </div>
           </div>
         </div>
       </div>
