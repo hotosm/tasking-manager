@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage} from 'react-intl';
-import { MappingIcon, RightIcon, LeftIcon } from '../svgIcons';
+import { RightIcon, LeftIcon } from '../svgIcons';
 import { ProjectCard } from '../../components/projectcard/projectCard';
 import { useState } from 'react';
 

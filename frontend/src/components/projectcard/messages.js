@@ -12,6 +12,10 @@ export default defineMessages({
     id: 'project.card.contributorCount',
     defaultMessage: ' total contributors'
   },
+  projectLastContribution: {
+    id: 'project.card.lastContribution',
+    defaultMessage: 'Last contribution'
+  },
   percentMapped: {
     id: 'project.card.percentMapped',
     defaultMessage: '% Mapped'
