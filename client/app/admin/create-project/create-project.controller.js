@@ -294,7 +294,7 @@
             // Create a task grid
             if (vm.isDrawnAOI || vm.isImportedAOI) {
                 var aoiExtent = drawService.getSource().getExtent();
-                var taskGrid = projectService.createTaskGrid(aoiExtent, vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset, vm.mlPredictionsEnabled);
+                var taskGrid = projectService.createTaskGrid(aoiExtent, vm.zoomLevelForTaskGridCreation + vm.userZoomLevelOffset, vm.mlPredictionsEnabled, false);
                 projectService.setTaskGrid(taskGrid);
                 projectService.addTaskGridToMap();
 
@@ -453,12 +453,12 @@
                 setSplitToolsActive_(false);
                 var taskGrid = projectService.getTaskGrid();
                 var tasks_to_split = []
-                taskGrid.forEach(feature => {
+                taskGrid.forEach(function(feature) {
                    if (feature.get('building_area_diff_percent') > 80){
                     tasks_to_split.push(feature);
                    }  
                 });
-                tasks_to_split.forEach(feature => {
+                tasks_to_split.forEach(function(feature) {
                     taskGrid = projectService.getTaskGrid() 
                     if (taskGrid.includes(feature)){
                         projectService.splitTasks(feature);
@@ -510,7 +510,7 @@
             vm.createProjectSuccess = false;
             if (vm.projectNameForm.$valid) {
                 vm.waiting = true;
-                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId, vm.mlPredictionsEnabled);
+                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId, vm.mlPredictionsEnabled, false);
                 resultsPromise.then(function (data) {
                     vm.waiting = false;
                     // Project created successfully

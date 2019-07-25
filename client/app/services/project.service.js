@@ -11,7 +11,7 @@
      * The task grid matches up with OSM's grid.
      * Code is similar to Tasking Manager 2 (where this was written server side in Python)
      */
-    function projectService($http, $q, configService, authService, geospatialService, languageService ) {
+    function projectService($http, $q, configService, authService, geospatialService, languageService) {
 
         // Maximum resolution of OSM
         var MAXRESOLUTION = 156543.0339;
@@ -102,7 +102,7 @@
          * @param areaOfInterestExtent (ol.Extent) - this should be a polygon
          * @param zoomLevel - the OSM zoom level the task squares will align with
          */
-        function createTaskGrid(areaOfInterestExtent, zoomLevel, mlEnabled=false, disablePrediction=false) {
+        function createTaskGrid(areaOfInterestExtent, zoomLevel, mlEnabled, disablePrediction) {
 
             setMLEnabled(mlEnabled);
 
@@ -139,7 +139,7 @@
             }
 
             if (getMLEnabled()){
-                let extent = ol.proj.transformExtent(areaOfInterestExtent, 'EPSG:3857', 'EPSG:4326');
+                var extent = ol.proj.transformExtent(areaOfInterestExtent, 'EPSG:3857', 'EPSG:4326');
                 //TODO: do a post prediction here
                 var promise = getPrediction(extent, zoomLevel);
                 promise.then(function(data){
@@ -165,8 +165,8 @@
         function drawMLLayer(predictionData, taskFeatures){
             var predictionList = [];
             var domain = []
-            Object.values(predictionData.predictions).forEach(item=> {
-                item.forEach(element => {
+            Object.values(predictionData.predictions).forEach(function(item) {
+                item.forEach(function(element) {
                     domain.push(element.building_area_diff);
                     predictionList.push(element);
                 });
@@ -177,8 +177,8 @@
             var d3Scale = d3.scaleQuantile().domain(domain).range(d3.schemeReds[5]);
 
             //check intercecption here 
-            taskFeatures.forEach((feature, index, thearray) => {
-                predictionList.forEach(prediction => {
+            taskFeatures.forEach(function(feature, index, thearray) {
+                predictionList.forEach(function(prediction) {
                     if (ol.extent.intersects(feature.getGeometry().getExtent(), prediction.bbox)){
                         feature.set('building_area_diff', prediction.building_area_diff);
                         feature.set('building_area_diff_percent', prediction.building_area_diff_percent);
@@ -916,9 +916,9 @@
                 }
             });
         }
-        function getPrediction(bbox, zoom=18) {
+        function getPrediction(bbox, zoom) {
             // Returns a promise
-            let params = "?bbox=" + bbox + "&zoom=" + zoom;
+            var params = "?bbox=" + bbox + "&zoom=" + zoom;
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/prediction' + params,
