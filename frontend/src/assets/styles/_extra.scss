@@ -1,0 +1,32 @@
+@media screen and (min-width: 66rem) {
+  .dib-66rem {
+    display: inline-block;
+  }
+}
+
+@media screen and (min-width: 90em) {
+  .pl6-xl {
+    padding-left: 8rem;
+  }
+}
+
+@media screen and (max-width: 60em) {
+  .mw-20rem {
+    max-width: 20rem;
+  }
+}
+
+.bg-jumbotron {
+  background: url('../img/hero_banner.jpg') left;
+}
+
+.bg-sec-jumbotron {
+  background: rgba(0, 0, 0, .5) url('../img/children.jpg') left;
+  background-blend-mode: darken;
+}
+
+@media screen and (min-width: 60em) {
+  .f-4rem-l {
+    font-size: 4rem;
+  }
+}

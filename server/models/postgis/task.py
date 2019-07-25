@@ -4,17 +4,21 @@ import geojson
 import json
 from enum import Enum
 from flask import current_app
+from sqlalchemy import text
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
 from server import db
 from typing import List
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
+from server.models.dtos.task_annotation_dto import TaskAnnotationDTO 
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks, InvalidatedTask, InvalidatedTasks
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
+from server.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
 from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, parse_duration, NotFound
+from server.models.postgis.task_annotation import TaskAnnotation
 
 
 class TaskAction(Enum):
@@ -103,6 +107,37 @@ class TaskInvalidationHistory(db.Model):
         entry.updated_date = timestamp()
 
 
+class TaskMappingIssue(db.Model):
+    """ Describes an issue (along with an occurrence count) with a task mapping that contributed to invalidation of the task """
+    __tablename__ = "task_mapping_issues"
+    id = db.Column(db.Integer, primary_key=True)
+    task_history_id = db.Column(db.Integer, db.ForeignKey('task_history.id'), nullable=False, index=True)
+    issue = db.Column(db.String, nullable=False)
+    mapping_issue_category_id = db.Column(db.Integer, db.ForeignKey('mapping_issue_categories.id', name='fk_issue_category'), nullable=False)
+    count = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, issue, count, mapping_issue_category_id, task_history_id=None):
+        self.task_history_id = task_history_id
+        self.issue = issue
+        self.count = count
+        self.mapping_issue_category_id = mapping_issue_category_id
+
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
+
+    def as_dto(self):
+        issue_dto = TaskMappingIssueDTO()
+        issue_dto.category_id = self.mapping_issue_category_id
+        issue_dto.name = self.issue
+        issue_dto.count = self.count
+        return issue_dto
+
+    def __repr__(self):
+        return "{0}: {1}".format(self.issue, self.count)
+
+
 class TaskHistory(db.Model):
     """ Describes the history associated with a task """
     __tablename__ = "task_history"
@@ -117,6 +152,7 @@ class TaskHistory(db.Model):
     invalidation_history = db.relationship(TaskInvalidationHistory, lazy='dynamic', cascade='all')
 
     actioned_by = db.relationship(User)
+    task_mapping_issues = db.relationship(TaskMappingIssue, cascade="all")
 
     __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_tasks'),
                       db.Index('idx_task_history_composite', 'task_id', 'project_id'), {})
@@ -300,6 +336,7 @@ class TaskHistory(db.Model):
             project_id, task_id,
             [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name,
              TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION.name])
+
     def get_last_mapped_action(project_id: int, task_id: int):
         """Gets the most recent mapped action, if any, in the task history"""
         return db.session.query(TaskHistory) \
@@ -308,6 +345,7 @@ class TaskHistory(db.Model):
                     TaskHistory.action == TaskAction.STATE_CHANGE.name,
                     TaskHistory.action_text.in_([TaskStatus.BADIMAGERY.name, TaskStatus.MAPPED.name])) \
             .order_by(TaskHistory.action_date.desc()).first()
+
 
 class Task(db.Model):
     """ Describes an individual mapping Task """
@@ -330,6 +368,7 @@ class Task(db.Model):
 
     # Mapped objects
     task_history = db.relationship(TaskHistory, cascade="all")
+    task_annotations = db.relationship(TaskAnnotation, cascade="all")
     lock_holder = db.relationship(User, foreign_keys=[locked_by])
     mapper = db.relationship(User, foreign_keys=[mapped_by])
 
@@ -425,11 +464,11 @@ class Task(db.Model):
             AND t.task_status IN (1,3)
             AND th.action IN ( 'LOCKED_FOR_VALIDATION','LOCKED_FOR_MAPPING' )
             AND th.action_text IS NULL
-            AND t.project_id = {0}
-            AND th.action_date <= '{1}'
-            '''.format(project_id, str(expiry_date))
+            AND t.project_id = :project_id
+            AND th.action_date <= :expiry_date
+            '''
 
-        old_tasks = db.engine.execute(old_locks_query)
+        old_tasks = db.engine.execute(text(old_locks_query), project_id=project_id, expiry_date=str(expiry_date))
 
         if old_tasks.rowcount == 0:
             # no tasks older than the delta found, return without further processing
@@ -454,7 +493,7 @@ class Task(db.Model):
 
         return True
 
-    def set_task_history(self, action, user_id, comment=None, new_state=None):
+    def set_task_history(self, action, user_id, comment=None, new_state=None, mapping_issues=None):
         """
         Sets the task history for the action that the user has just performed
         :param task: Task in scope
@@ -462,6 +501,7 @@ class Task(db.Model):
         :param action: Action the user has performed
         :param comment: Comment user has added
         :param new_state: New state of the task
+        :param mapping_issues: Identified issues leading to invalidation
         """
         history = TaskHistory(self.id, self.project_id, user_id)
 
@@ -473,6 +513,9 @@ class Task(db.Model):
             history.set_state_change_action(new_state)
         elif action in [TaskAction.AUTO_UNLOCKED_FOR_MAPPING, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION]:
             history.set_auto_unlock_action(action)
+
+        if mapping_issues is not None:
+            history.task_mapping_issues = mapping_issues
 
         self.task_history.append(history)
         return history
@@ -526,12 +569,13 @@ class Task(db.Model):
         auto_unlocked.action_text = lock_duration
         self.update()
 
-    def unlock_task(self, user_id, new_state=None, comment=None, undo=False):
+    def unlock_task(self, user_id, new_state=None, comment=None, undo=False, issues=None):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:
-            self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
+            self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id, mapping_issues=issues)
 
-        history = self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state, user_id=user_id)
+        history = self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state,
+                                        user_id=user_id, mapping_issues=issues)
 
         if new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY] and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
             # Don't set mapped if state being set back to mapped after validation
@@ -623,12 +667,12 @@ class Task(db.Model):
                      where t.project_id = th.project_id
                        and t.id = th.task_id
                        and t.mapped_by = u.id
-                       and t.project_id = {0}
+                       and t.project_id = :project_id
                        and t.task_status = 2
                        and th.action_text = 'MAPPED'
-                     group by u.username, u.mapping_level, u.date_registered, u.last_validation_date""".format(project_id)
+                     group by u.username, u.mapping_level, u.date_registered, u.last_validation_date"""
 
-        results = db.engine.execute(sql)
+        results = db.engine.execute(text(sql), project_id=project_id)
         if results.rowcount == 0:
             raise NotFound()
 
@@ -650,8 +694,8 @@ class Task(db.Model):
     @staticmethod
     def get_max_task_id_for_project(project_id: int):
         """Gets the nights task id currently in use on a project"""
-        sql = """select max(id) from tasks where project_id = {0} GROUP BY project_id""".format(project_id)
-        result = db.engine.execute(sql)
+        sql = """select max(id) from tasks where project_id = :project_id GROUP BY project_id"""
+        result = db.engine.execute(text(sql), project_id=project_id)
         if result.rowcount == 0:
             raise NotFound()
         for row in result:
@@ -667,6 +711,8 @@ class Task(db.Model):
             history.action_text = action.action_text
             history.action_date = action.action_date
             history.action_by = action.actioned_by.username if action.actioned_by else None
+            if action.task_mapping_issues:
+                history.issues = [issue.as_dto() for issue in action.task_mapping_issues]
 
             task_history.append(history)
 
@@ -684,7 +730,14 @@ class Task(db.Model):
         task_dto.per_task_instructions = per_task_instructions if per_task_instructions else self.get_per_task_instructions(
             self.projects.default_locale)
 
+        annotations = self.get_per_task_annotations()
+        task_dto.task_annotations = annotations if annotations else  [] 
+
         return task_dto
+
+    def get_per_task_annotations(self):
+        result = [ta.get_dto() for ta in self.task_annotations]
+        return result
 
     def get_per_task_instructions(self, search_locale: str) -> str:
         """ Gets any per task instructions attached to the project """

@@ -2,6 +2,7 @@ import logging
 import os
 from dotenv import load_dotenv
 
+
 class EnvironmentConfig:
     """ Base class for configuration. """
     """ Most settings can be defined through environment variables. """
@@ -13,7 +14,7 @@ class EnvironmentConfig:
     APP_BASE_URL = os.getenv('TM_APP_BASE_URL', 'http://127.0.0.1:5000')
     
     # The default tag used in the OSM changeset comment
-    DEFAULT_CHANGESET_COMMENT = os.getenv('TM_DEFAULT_CHANGESET_COMMENT', '#tm-project')
+    DEFAULT_CHANGESET_COMMENT = os.getenv('TM_DEFAULT_CHANGESET_COMMENT', None)
     
     # The address to use as the sender on auto generated emails
     EMAIL_FROM_ADDRESS = os.getenv('TM_EMAIL_FROM_ADDRESS', None)
@@ -69,8 +70,8 @@ class EnvironmentConfig:
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
     SUPPORTED_LANGUAGES = {
-        'codes': os.getenv('TM_SUPPORTED_LANGUAGES_CODES', 'ar, cs, da, de, en, es, fa_IR, fi, fr, hu, gl, id, it, ja, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, ta, uk, vi, zh_TW'),
-        'languages': os.getenv('TM_SUPPORTED_LANGUAGES', 'Arabic, Česky, Dansk, Deutsch, English, Español, Persian (Iran), Suomi, Français, Magyar, Galician, Indonesia, Italiano, 日本語, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, tiếng Việt, 中文')
+        'codes': os.getenv('TM_SUPPORTED_LANGUAGES_CODES', 'ar, cs, da, de, en, es, fa_IR, fi, fr, hu, gl, id, it, ja, ko, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, ta, uk, vi, zh_TW'),
+        'languages': os.getenv('TM_SUPPORTED_LANGUAGES', 'Arabic, Česky, Dansk, Deutsch, English, Español, Persian (Iran), Suomi, Français, Magyar, Galician, Indonesia, Italiano, 日本語, 한국어, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, tiếng Việt, 中文')
     }
 
     # Connection to OSM authentification system

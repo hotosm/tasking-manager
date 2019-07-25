@@ -15,12 +15,22 @@
                             #{{ projectCtrl.projectData.projectId }}
                             - {{ projectCtrl.projectData.projectInfo.name }}
                         </h2>
-                        <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'"
-                            class="edit-project-button">
-                            <a ng-href="/admin/edit-project/{{ projectCtrl.id }}"
-                            class="button button--secondary">{{ 'Edit project' | translate }}
-                            </a>
-                        </div>
+                        <ul class="list-type--none buttons--sidebyside">
+                            <li ng-show="projectCtrl.user.role === 'ADMIN' || projectCtrl.projectData.author === projectCtrl.user.username">
+                                <div class="edit-project-button">
+                                    <a ng-href="/admin/edit-project/{{ projectCtrl.id }}"
+                                      class="button button--secondary">{{ 'Edit project' | translate }}
+                                    </a>
+                                </div>
+                            </li>
+                            <li ng-show="projectCtrl.showOSMCha">
+                                <button class="button"
+                                        title="{{ 'See the changesets in OSMCha for this project' | translate }}"
+                                        ng-click="projectCtrl.viewProjectOSMCha()">
+                                    {{ 'View in OSMCha' | translate }}
+                                </button>
+                            </li>
+                        </ul>
                         <div ng-show="projectCtrl.user.role === 'PROJECT_MANAGER' || projectCtrl.user.role === 'ADMIN'">
                             <p>
                                 {{ 'Download:' | translate }} {{ 'AoI as' | translate }}
@@ -78,7 +88,7 @@
                     <dd><a href="/user/{{ projectCtrl.projectData.author }}">{{ projectCtrl.projectData.author }}</a></dd>
 
                     <dt>{{ 'Last updated' | translate }}: </dt>
-                    <dd am-time-ago="projectCtrl.projectData.lastUpdated | amUtc | amLocal"></dd>
+                    <dd tm-timestamp="projectCtrl.projectData.lastUpdated"></dd>
 
                     <dt>{{ 'Difficulty' | translate }}: </dt>
                     <dd>{{ projectCtrl.projectData.mapperLevel }}</dd>
@@ -123,7 +133,7 @@
             <div ng-hide="projectCtrl.errorGetProject || projectCtrl.loaded === false">
                 <div class="form__group" >
                     <ul class="tab--wrapper">
-                        <li ng-click="projectCtrl.currentTab = 'instructions'"
+                        <li ng-click="projectCtrl.currentTab = 'instructions'; projectCtrl.showWarning = false"
                             title="{{ 'Go to the instructions tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
@@ -131,7 +141,7 @@
                                 {{ 'Instructions' | translate }}
                             </a>
                         </li>
-                        <li ng-click="projectCtrl.currentTab = 'mapping'"
+                        <li ng-click="projectCtrl.currentTab = 'mapping'; projectCtrl.showWarning = false"
                             title="{{ 'Go to the mapping tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
@@ -139,7 +149,7 @@
                                 {{ 'Map' | translate }}
                             </a>
                         </li>
-                        <li ng-click="projectCtrl.currentTab = 'validation'"
+                        <li ng-click="projectCtrl.currentTab = 'validation'; projectCtrl.showWarning = false"
                             title="{{ 'Go to the validation tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'validation'? 'active':''">
@@ -147,7 +157,7 @@
                                 {{ 'Validate' | translate }}
                             </a>
                         </li>
-                        <li ng-click="projectCtrl.currentTab = 'chat'"
+                        <li ng-click="projectCtrl.currentTab = 'chat'; projectCtrl.showWarning = false"
                             title="{{ 'Go to the chat tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
@@ -252,7 +262,7 @@
                                                 role="alert">
                                             <p>{{ 'You cannot select tasks for mapping on this project because you do not have the required mapper experience level.' | translate }}</p>
                                         </div>
-                                        <div ng-show="projectCtrl.user && projectCtrl.userCanMap">
+                                        <div ng-show="projectCtrl.user && projectCtrl.userCanMap && !projectCtrl.enforceRandomTaskSelection()">
                                             <p>{{ 'Choose a task for mapping:' | translate }}</p>
 
                                             <dl class="definition-list--options">
@@ -272,6 +282,13 @@
                                                     <p>{{ 'There are no tasks currently available for mapping.' | translate }}</p>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div ng-show="projectCtrl.user && projectCtrl.userCanMap && projectCtrl.enforceRandomTaskSelection()">
+                                            <p>{{ 'You must randomly select tasks' | translate }}</p>
+                                            <button ng-click="projectCtrl.selectRandomTaskMap()"
+                                                    class="button pull-center">
+                                            {{ 'Select a random task' | translate }}
+                                            </button>
                                         </div>
                                         <div ng-show="projectCtrl.taskErrorMapping === 'task-get-error'"
                                                 class="alert alert--danger"
@@ -337,7 +354,7 @@
                                         </div>
                                         <div ng-hide="projectCtrl.taskLockError">
                                             <div ng-show="projectCtrl.selectedTaskData ">
-                                                <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
+                                                <div ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap && !projectCtrl.enforceRandomTaskSelection()"
                                                         class="alert alert--success"
                                                         role="alert">
                                                     <p>{{ 'This task is available for mapping.' | translate }}</p>
@@ -370,7 +387,11 @@
                                         </div>
                                         <!-- task action buttons -->
                                         <div class="form__group form__group--section">
-                                            <div>
+                                            <div ng-show="!(projectCtrl.enforceRandomTaskSelection() && projectCtrl.randomTaskSelectionError)">
+                                                <div ng-show="projectCtrl.showWarning">
+                                                    <p class="error"><a class="email-warning" href="/user/{{projectCtrl.user.username}}">{{ 'Add your email address' | translate }}</a>
+                                                        {{ 'to continue mapping' | translate }}</p>
+                                                </div>
                                                 <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
                                                         class="button button--large"
                                                         ng-click="projectCtrl.lockSelectedTaskMapping()">
@@ -383,7 +404,8 @@
                                             </div>
                                             <div>
                                                 <div class="button-group button-group--horizontal" role="group"
-                                                        aria-label="{{ 'Other options' | translate }}">
+                                                        aria-label="{{ 'Other options' | translate }}"
+                                                        ng-show="!projectCtrl.enforceRandomTaskSelection()">
                                                     <button ng-hide="projectCtrl.taskErrorMapping === 'none-available' || !projectCtrl.userCanMap"
                                                             ng-click="projectCtrl.selectRandomTaskMap()"
                                                             class="button button--achromic">
@@ -400,6 +422,13 @@
                                                     </button> -->
                                                 </div>
                                             </div>
+                                            <div ng-show="projectCtrl.randomTaskSelectionError">
+                                                <p class="error" role="alert">{{ 'Tasks must be randomly selected' | translate }}</p>
+                                                <button ng-click="projectCtrl.selectRandomTaskMap()"
+                                                        class="button pull-center">
+                                                {{ 'Select a random task' | translate }}
+                                                </button>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -451,7 +480,7 @@
                                     <div class="form__group form__group--section">
                                         <div>
                                             <h6 style="width:84%">Task too big to complete quickly? Or is the satellite imagery not good? Choose split task or mark as bad imagery.</h6>
-                                            
+
                                         </div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
@@ -496,7 +525,7 @@
                                                         {{ ' Mark as Bad Imagery' | translate }}
                                                 </button>
                                             </li>
-                                            
+
                                             </ul>
                                         <div>
                                             <h6 style="width:84%">Can't finish but need to stop mapping? Or have you completely mapped the area? Leave a comment and select one of the options below that matches your editing status.</h6>
@@ -516,7 +545,7 @@
                                                         {{ ' Stop Mapping' | translate }}
                                                 </button>
                                             </li>
-                                                    
+
                                             <li>
                                                 <button id="complete-mapping-btn" class="button"
                                                         ng-click="projectCtrl.unLockTaskMapping(projectCtrl.comment, 'MAPPED')"
@@ -531,9 +560,9 @@
                                                         {{ ' Mark as Completely Mapped' | translate }}
                                                 </button>
                                             </li>
-                                            
+
                                         </ul>
-                                        
+
                                         <div ng-show="projectCtrl.taskUnLockError">
                                             <div>
                                                 <div class="error" role="alert">
@@ -565,7 +594,11 @@
                                             role="alert">
                                         <p>{{ 'You cannot select tasks for validation on this project because you do not have the Validator role.' | translate }}</p>
                                     </div>
-                                    <div ng-show="projectCtrl.userCanValidate">
+                                    <div ng-show="projectCtrl.showWarning">
+                                            <p class="error"><a class="email-warning" href="/user/{{projectCtrl.user.username}}">{{'Add your email address' | translate}}</a>
+                                                {{ 'to continue validation' | translate }}</p>
+                                    </div>
+                                    <div ng-show="projectCtrl.userCanValidate && !project.showWarning">
                                         <p class="description--block">{{ 'Find a task for validation through one of the options below.' | translate }}</p>
                                         <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
                                             <div class="error" role="alert">
@@ -666,10 +699,10 @@
                                                 <td ng-show="doneTasks.mappingLevel === 'INTERMEDIATE'">{{ 'Intermediate' | translate }}</td>
                                                 <td ng-show="doneTasks.mappingLevel === 'ADVANCED'">{{ 'Advanced' | translate }}</td>
                                                 <td>{{ doneTasks.mappedTaskCount }}</td>
-                                                <td><span am-time-ago="doneTasks.dateRegistered | amUtc | amLocal"></span>
+                                                <td><span tm-timestamp="doneTasks.dateRegistered"></span>
                                                 </td>
                                                 <td><span
-                                                        am-time-ago="doneTasks.lastValidationDate | amUtc | amLocal"></span>
+                                                        tm-timestamp="doneTasks.lastValidationDate"></span>
                                                 </td>
                                                 <td>
                                                     <a class="normallink"
@@ -746,6 +779,10 @@
                                     <!-- task action buttons -->
                                     <div class="form__group form__group--section">
                                         <div>
+                                            <div ng-show="projectCtrl.showWarning">
+                                                <p class="error"><a class="email-warning" href="/user/{{projectCtrl.user.username}}">{{'Add your email address' | translate}}</a>
+                                                    {{ 'to continue validation' | translate }}</p>
+                                            </div>
                                             <button ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError && projectCtrl.userCanValidate"
                                                     class="button button--large"
                                                     ng-click="projectCtrl.lockSelectedTaskValidation()">
@@ -822,8 +859,32 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div ng-if="projectCtrl.user.isExpert" class="mapping-issues form__group form__group--section">
+                                        <h6>{{ 'Label mapping issues (optional)' | translate }}</h6>
+                                        <div class="form__input-group padding-at-bottom">
+                                          <input type="text" ng-model="projectCtrl.selectedIssueCategory"
+                                                placeholder="{{ 'Report an issue (space to see options)' | translate }}"
+                                                class="form__control form__control--medium"
+                                                uib-typeahead="issueCategory as issueCategory.name for issueCategory in projectCtrl.availableMappingIssueCategories | filter:{name:$viewValue}"
+                                                typeahead-min-length="0"
+                                                typeahead-click-open
+                                                typeahead-on-select="projectCtrl.addMappingIssue()">
+                                          </span>
+                                        </div>
+
+                                        <div class="form__input-group">
+                                            <div class="form-field" ng-repeat="mappingIssue in projectCtrl.mappingIssues">
+                                                <label>{{ mappingIssue.issue }}</label>
+                                                <input type="number" min="1" ng-model="mappingIssue.count" />
+                                                <i class="hot-ds-icon-sm-xmark" role="button"
+                                                  ng-click="projectCtrl.removeMappingIssue(mappingIssue)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="form__group form__group--section">
-                                        <h6>{{ 'Done editing? Leave a comment and select one of the options below that matches your editing status.' | translate }}</h6>
+                                        <h6>{{ 'Done editing? Share a comment and mark the task with one of the buttons below.' | translate }}</h6>
                                         <div ng-include="'/app/project/comment-box.html'"></div>
                                         <ul class="list-type--none buttons--sidebyside">
                                             <li>
@@ -857,7 +918,6 @@
                                             {{ 'Cancel' | translate }}
                                         </button> -->
                                     </div>
-
                                 </div>
                                 <div ng-show="projectCtrl.validatingStep === 'multi-locked'">
                                     <p>Multiple Tasks are locked for you for validation.</p>
@@ -940,13 +1000,20 @@
                         </div>
                         <div ng-show="projectCtrl.currentTab === 'chat'">
                             <h3>{{ 'Project Questions and Comments' | translate }}</h3>
-                            <project-chat project-id="projectCtrl.id"
-                                            project-author="projectCtrl.projectData.author"></project-chat>
+                            <div ng-show="projectCtrl.user.isEmailVerified">
+                                <project-chat project-id="projectCtrl.id"
+                                            project-author="projectCtrl.projectData.author" role="projectCtrl.user.role"></project-chat>
+                            </div>
+                            <div class='error' ng-hide="projectCtrl.user.isEmailVerified">
+                                <a class="email-warning" href="/user/{{ projectCtrl.user.username }}">{{ 'Add your email address' | translate }}</a>
+                                {{ 'to continue' | translate }}
+                            </div>
                         </div>
                         <!-- advanced options UI -->
 
                         <div ng-init="showAdvanced=false"
                                 ng-show="projectCtrl.selectedTaskData && (projectCtrl.currentTab === 'mapping' || projectCtrl.currentTab === 'validation') ">
+                            
                             <div>
                                 <h5>{{ 'History' | translate }}</h5>
                                 <div class="history">
@@ -968,13 +1035,13 @@
                                                     <span class="status-marker-auto-unlocked-for-validation" ng-show="item.action === 'AUTO_UNLOCKED_FOR_VALIDATION'">{{ 'Automatically unlocked for validation' | translate }}</span>
                                                     <span class="status-marker-badimagery" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'BADIMAGERY'">{{ 'Marked as bad imagery' | translate }}</span>
                                                     <span class="status-marker-mapped" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'MAPPED'">{{ 'Mapped' | translate }}</span>
-                                                    <span class="status-marker-validated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Validated' | translate }}</span>
+                                                    <span class="status-marker-validated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'VALIDATED'">{{ 'Validated' | translate }} {{ (item.issues ? '(with fixes)' : '') | translate }}</span>
                                                     <span class="status-marker-invalidated" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'INVALIDATED'">{{ 'Invalidated' | translate }}</span>
                                                     <span class="status-marker-split" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'SPLIT'">{{ 'Split' | translate }}</span>
                                                     <span class="status-marker-ready" ng-show="item.action === 'STATE_CHANGE' && item.actionText === 'READY'">{{ 'Marked as ready' | translate }}</span>
                                                 </td>
-                                                <td>
-                                                    <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
+                                                <td class="timestamp">
+                                                    <span tm-timestamp="item.actionDate"></span>
                                                     <span ng-if="projectCtrl.user.isExpert">
                                                     <a ng-show="projectCtrl.isAtticDateLive(item)" class="diff-control {{projectCtrl.selectedItem.actionDate === item.actionDate ? 'selected' : ''}}" ng-click="projectCtrl.selectItemForDiff(item)" title="{{ 'Choose two entries for diff or same once twice for attic data' | translate }}"></a>
                                                     </span>
@@ -985,8 +1052,56 @@
                                                 <span markdown-to-html="item.actionText" ng-click="projectCtrl.onShortCodeClick($event)"></span>
                                             </td>
                                             </tr>
+                                            <tr ng-show="item.issues && item.actionText === 'INVALIDATED'"
+                                                class="{{ projectCtrl.user.isExpert && $index % 2 !== 0 ? 'odd' : '' }}">
+                                                <td colspan="2" class="issue-summary">
+                                                    <div class="issue-summary__heading">
+                                                        <span class="fa fa-exclamation-circle issue-summary__marker">
+                                                        </span> {{ 'Noted Mapping Issues' | translate }}
+                                                    </div>
+                                                    <ul>
+                                                        <li ng-repeat="issue in item.issues">
+                                                            {{ issue.name }}: {{issue.count}}
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                            <tr ng-show="item.issues && item.actionText === 'VALIDATED'"
+                                                class="{{ projectCtrl.user.isExpert && $index % 2 !== 0 ? 'odd' : '' }}">
+                                                <td colspan="2" class="issue-summary issue-summary--fixed">
+                                                    <div class="issue-summary__heading">
+                                                        <span class="fa fa-info-circle issue-summary__marker">
+                                                        </span> {{ 'Fixed Mapping Issues' | translate }}
+                                                    </div>
+                                                    <ul>
+                                                        <li ng-repeat="issue in item.issues">
+                                                            {{ issue.name }}: {{issue.count}}
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                <div ng-show="projectCtrl.selectedTaskData.taskAnnotation">
+                                    <h5>{{ 'ML prediction details' | translate }}</h5>
+                                    <div  class="history">
+                                        <table border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td><span class="ng-binding">OSM building area (m^2) :</span></td>
+                                                        <td align="right"><strong class="ng-binding">{{ projectCtrl.selectedTaskData.taskAnnotation[0].properties.building_area_osm }}</strong></td> </tr>
+                                                    <tr>
+                                                        <td><span class="ng-binding">ML predicted building area :</span></td>
+                                                        <td align="right"><strong class="ng-binding">{{ projectCtrl.selectedTaskData.taskAnnotation[0].properties.building_area_ml_pred }}</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="ng-binding">Estimated missing building area :</span></td>
+                                                        <td align="right"><strong class="ng-binding">{{ projectCtrl.selectedTaskData.taskAnnotation[0].properties.building_area_diff }}</strong></td>
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                             <div>
@@ -1030,8 +1145,16 @@
                                                 {{ 'View in Overpass Turbo' | translate }}
                                             </button>
                                         </li>
+                                        <li>
+                                            <button class="button button--achromic"
+                                                    title="{{ 'See the changesets in OSMCha for this area.' | translate }}"
+                                                    ng-click="projectCtrl.viewTaskOSMCha()">
+                                                {{ 'View in OSMCha' | translate }}
+                                            </button>
+                                        </li>
                                     </ul>
                                 </div>
+                               
                             </div>
                         </div>
                     </div>

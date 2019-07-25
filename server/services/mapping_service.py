@@ -4,9 +4,7 @@ import xml.etree.ElementTree as ET
 from flask import current_app
 from geoalchemy2 import shape
 
-from server import db
 from server.models.dtos.mapping_dto import TaskDTO, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO, TaskCommentDTO
-from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed
 from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
 from server.models.postgis.utils import NotFound, UserLicenseError
@@ -95,8 +93,10 @@ class MappingService:
         if new_state not in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY, TaskStatus.READY]:
             raise MappingServiceError('Can only set status to MAPPED, BADIMAGERY, READY after mapping')
 
-        StatsService.update_stats_after_task_state_change(mapped_task.project_id, mapped_task.user_id, new_state,
-                                                          mapped_task.task_id)
+        # Update stats around the change of state
+        last_state = TaskHistory.get_last_status(mapped_task.project_id, mapped_task.task_id, True)
+        StatsService.update_stats_after_task_state_change(mapped_task.project_id, mapped_task.user_id,
+                                                          last_state, new_state)
 
         if mapped_task.comment:
             # Parses comment to see if any users have been @'d
@@ -242,7 +242,12 @@ class MappingService:
         current_state = TaskStatus(task.task_status)
         undo_state = TaskHistory.get_last_status(project_id, task_id, True)
 
-        StatsService.set_counters_after_undo(project_id, user_id, current_state, undo_state)
+        # Refer to last action for user of it.
+        last_action = TaskHistory.get_last_action(project_id, task_id)
+
+        StatsService.update_stats_after_task_state_change(project_id, last_action.user_id,
+                                                          current_state, undo_state, 'undo')
+       
         task.unlock_task(user_id, undo_state,
                          f'Undo state from {current_state.name} to {undo_state.name}', True)
 

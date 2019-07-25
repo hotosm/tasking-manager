@@ -9,11 +9,12 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', '$q', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', projectController]);
+        .controller('projectController', ['$timeout', '$interval', '$scope', '$location', '$routeParams', '$window', '$q', 'moment', 'configService', 'mapService', 'projectService', 'styleService', 'taskService', 'mappingIssueService', 'geospatialService', 'editorService', 'authService', 'accountService', 'userService', 'licenseService', 'messageService', 'drawService', 'languageService', 'userPreferencesService', 'osmchaService', projectController]);
 
-    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, $q, moment, configService, mapService, projectService, styleService, taskService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService) {
+    function projectController($timeout, $interval, $scope, $location, $routeParams, $window, $q, moment, configService, mapService, projectService, styleService, taskService, mappingIssueService, geospatialService, editorService, authService, accountService, userService, licenseService, messageService, drawService, languageService, userPreferencesService, osmchaService) {
         var vm = this;
         vm.id = 0;
+        vm.selectedIssueCategory = null;
         vm.loaded = false;
         vm.projectData = null;
         vm.taskVectorLayer = null;
@@ -30,6 +31,7 @@
         vm.validatingStep = '';
         vm.userCanMap = true;
         vm.userCanValidate = true;
+        vm.showOSMCha = false;
 
         //error control
         vm.taskErrorMapping = '';
@@ -43,9 +45,13 @@
         vm.taskCommentError = false;
         vm.taskCommentErrorMessage = '';
         vm.wasAutoUnlocked = false;
+        vm.randomTaskSelectionError = false;
 
         //authorization
         vm.isAuthorized = false;
+
+        //Email warning modal
+        vm.showWarning = false;
 
         //status flags
         vm.isSelectedMappable = false;
@@ -57,6 +63,9 @@
         vm.lockTime = {};
         vm.multiSelectedTasksData = [];
         vm.multiLockedTasks = [];
+        vm.mappingIssueCategories = [];
+        vm.availableMappingIssueCategories = [];
+        vm.mappingIssues = [];
 
         //editor
         vm.editorStartError = '';
@@ -99,7 +108,7 @@
         activate();
 
         function activate() {
-
+            vm.showWarning = false;
             vm.currentTab = 'instructions';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
@@ -109,6 +118,12 @@
             mapService.addOverviewMap();
             vm.map = mapService.getOSMMap();
             vm.loaded = false;
+
+            mappingIssueService.getMappingIssueCategories().then(function(data) {
+              vm.mappingIssueCategories = data.categories;
+              vm.availableMappingIssueCategories = vm.remainingMappingIssueCategories();
+            });
+
             vm.id = $routeParams.id;
             vm.highlightHistory = $routeParams.history ? parseInt($routeParams.history, 10) : null;
 
@@ -168,6 +183,76 @@
         }
 
         /**
+         * Returns array of mapping issue categories for which no issues have
+         * been noted as of yet
+         */
+        vm.remainingMappingIssueCategories = function() {
+            return vm.mappingIssueCategories.filter(function(category) {
+                return !vm.isMappingIssueCategoryInUse(category);
+            });
+        };
+
+        /**
+         * Returns true if mapping issues have already been noted in the given
+         * issue category
+         */
+        vm.isMappingIssueCategoryInUse = function(category) {
+            return !!vm.mappingIssues.find(function(issue) {
+                return issue.mappingIssueCategoryId === category.categoryId;
+            });
+        };
+
+        /**
+         * Add the currently selected mapping issue to the list of noted issues
+         * with an initial count of 1 issue
+         */
+        vm.addMappingIssue = function() {
+            if (!vm.selectedIssueCategory) {
+                return;
+            }
+
+            vm.mappingIssues.push({
+                mappingIssueCategoryId: vm.selectedIssueCategory.categoryId,
+                issue: vm.selectedIssueCategory.name,
+                count: 1,
+            });
+
+            vm.availableMappingIssueCategories = vm.remainingMappingIssueCategories();
+            vm.selectedIssueCategory = null;
+        };
+
+        /**
+         * Removes the given issue from the array of current mapping issues
+         */
+        vm.removeMappingIssue = function(issueToRemove) {
+            vm.mappingIssues = vm.mappingIssues.filter(function(issue) {
+                return issue.mappingIssueCategoryId !== issueToRemove.mappingIssueCategoryId;
+            });
+
+            // Now that we've freed up an additional issue category, update the
+            // available categories
+            vm.availableMappingIssueCategories = vm.remainingMappingIssueCategories();
+        };
+
+        /**
+         * Determines if any mapping issues are currently set
+         */
+        vm.hasMappingIssues = function () {
+            return !!vm.mappingIssues.find(function(issue) {
+                return issue.count > 0;
+            });
+        };
+
+        /**
+         * Reset mapping issue properties
+         */
+        vm.resetMappingIssues = function() {
+            vm.mappingIssues = [];
+            vm.selectedIssueCategory = null;
+            vm.availableMappingIssueCategories = vm.remainingMappingIssueCategories();
+        };
+
+        /**
          * convenience method to reset task data controller properties
          */
         vm.resetTaskData = function () {
@@ -176,6 +261,7 @@
             vm.multiSelectedTasksData = [];
             vm.multiLockedTasks = [];
             vm.lockedTasksForCurrentUser = [];
+            vm.resetMappingIssues();
         };
 
         vm.updatePreferedEditor = function () {
@@ -250,6 +336,10 @@
                 vm.taskErrorMapping = 'none-available';
                 vm.mappingStep = 'selecting';
                 vm.validatingStep = 'selecting';
+            }
+
+            if (vm.enforceRandomTaskSelection()) {
+                vm.randomTaskSelectionError = false;
             }
         };
 
@@ -328,6 +418,9 @@
             vm.map.addInteraction(vm.selectInteraction);
             vm.selectInteraction.on('select', function (event) {
                 $scope.$apply(function () {
+                    if (vm.enforceRandomTaskSelection()) {
+                        vm.randomTaskSelectionError = true;
+                    }
                     var feature = event.selected[0];
                     onTaskSelection(feature);
                 });
@@ -456,6 +549,9 @@
                 vm.selectedValidationEditor = vm.validationEditors[0].value;
                 vm.userCanMap = vm.user && projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
                 vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.user.mappingLevel, vm.projectData.enforceValidatorRole, vm.projectData.allowNonBeginners);
+                // If validator role enforced, show validator+ OSMCha buttons; otherwise show experts too
+                vm.showOSMCha = vm.projectData.enforceValidatorRole ? vm.userCanValidate :
+                                (projectService.userCanValidateProject(vm.user.role, true) || vm.user.isExpert);
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
@@ -506,6 +602,10 @@
 
                 if ($location.search().task) {
                     selectTaskById($location.search().task);
+                }
+
+                if (vm.projectData.enforceRandomTaskSelection && vm.user.role !== 'ADMIN' && vm.user.role !== 'PROJECT_MANAGER') {
+                    vm.randomTaskSelectionError = true;
                 }
             }, function () {
                 // project not returned successfully
@@ -667,6 +767,10 @@
             }
             // for each task in features, update source
         }
+
+        vm.enforceRandomTaskSelection = function() {
+            return vm.projectData && vm.projectData.enforceRandomTaskSelection && vm.user.role !== 'ADMIN' && vm.user.role !== 'PROJECT_MANAGER';
+        };
 
         /**
          * Updates the data for mapped tasks by user
@@ -950,6 +1054,7 @@
                 vm.lockedTaskData = null;
                 vm.multiSelectedTasksData = [];
                 vm.multiLockedTasks = [];
+                vm.resetMappingIssues();
                 vm.resetErrors();
                 vm.resetStatusFlags();
                 vm.clearCurrentSelection();
@@ -979,6 +1084,7 @@
                 vm.lockedTaskData = null;
                 vm.multiSelectedTasksData = [];
                 vm.multiLockedTasks = [];
+                vm.resetMappingIssues();
                 setUpSelectedTask(data);
                 // TODO: This is a bit icky.  Need to find something better.  Maybe when roles are in place.
                 // Need to make a decision on what tab to go to if user has clicked map but is not on mapping or validating
@@ -1198,7 +1304,8 @@
             var tasks = [{
                 comment: comment,
                 status: status,
-                taskId: taskId
+                taskId: taskId,
+                validationIssues: vm.mappingIssues,
             }];
             var unLockPromise = taskService.unLockTaskValidation(projectId, tasks);
             vm.comment = '';
@@ -1340,34 +1447,40 @@
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskMapping = function () {
-            vm.lockingReason = 'MAPPING';
-            var projectId = vm.projectData.projectId;
-            var taskId = vm.selectedTaskData.taskId;
-            // - try to lock the task, call returns a promise
-            var lockPromise = taskService.lockTaskMapping(projectId, taskId);
-            lockPromise.then(function (data) {
-                //TODO - The following reset lines are repeated in several places in this file.
-                //Refactoring to a single function call was considered, however it was decided that the ability to
-                //call the resets individually was desirable and would help readability.
-                //The downside is that any change will have to be replicated in several places.
-                //A fundamental refactor of this controller should be considered at some stage.
-                vm.resetErrors();
-                vm.resetStatusFlags();
-                vm.resetTaskData();
-                // refresh the project, to ensure we catch up with any status changes that have happened meantime
-                // on the server
-                refreshProject(projectId);
-                updateMappedTaskPerUser(projectId);
-                vm.currentTab = 'mapping';
-                vm.mappingStep = 'locked';
-                vm.selectedTaskData = data;
-                vm.isSelectedMappable = true;
-                vm.lockedTaskData = data;
-                vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
-                formatHistoryComments(vm.selectedTaskData.taskHistory);
-            }, function (error) {
-                onLockError(projectId, error);
-            });
+            console.log(vm.user);
+            if(vm.user.isEmailVerified){
+                vm.lockingReason = 'MAPPING';
+                var projectId = vm.projectData.projectId;
+                var taskId = vm.selectedTaskData.taskId;
+                // - try to lock the task, call returns a promise
+                var lockPromise = taskService.lockTaskMapping(projectId, taskId);
+                lockPromise.then(function (data) {
+                    //TODO - The following reset lines are repeated in several places in this file.
+                    //Refactoring to a single function call was considered, however it was decided that the ability to
+                    //call the resets individually was desirable and would help readability.
+                    //The downside is that any change will have to be replicated in several places.
+                    //A fundamental refactor of this controller should be considered at some stage.
+                    vm.resetErrors();
+                    vm.resetStatusFlags();
+                    vm.resetTaskData();
+                    // refresh the project, to ensure we catch up with any status changes that have happened meantime
+                    // on the server
+                    refreshProject(projectId);
+                    updateMappedTaskPerUser(projectId);
+                    vm.currentTab = 'mapping';
+                    vm.mappingStep = 'locked';
+                    vm.selectedTaskData = data;
+                    vm.isSelectedMappable = true;
+                    vm.lockedTaskData = data;
+                    vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
+                    vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
+                    formatHistoryComments(vm.selectedTaskData.taskHistory);
+                }, function (error) {
+                    onLockError(projectId, error);
+                });
+            }
+            else
+                vm.showWarning = true;
         };
 
 
@@ -1405,35 +1518,39 @@
          * Call api to lock currently selected task for validation.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
-            vm.lockingReason = 'VALIDATION';
-            var projectId = vm.projectData.projectId;
-            var taskId = vm.selectedTaskData.taskId;
-            var taskIds = [taskId];
-            // - try to lock the task, call returns a promise
-            var lockPromise = taskService.lockTasksValidation(projectId, taskIds);
-            lockPromise.then(function (tasks) {
-                //TODO - The following reset lines are repeated in several places in this file.
-                //Refactoring to a single function call was considered, however it was decided that the ability to
-                //call the resets individually was desirable and would help readability.
-                //The downside is that any change will have to be replicated in several places.
-                //A fundamental refactor of this controller should be considered at some stage.
-                vm.resetErrors();
-                vm.resetStatusFlags();
-                vm.resetTaskData();
-                // refresh the project, to ensure we catch up with any status changes that have happened meantime
-                // on the server
-                refreshProject(projectId);
-                updateMappedTaskPerUser(projectId);
-                vm.currentTab = 'validation';
-                vm.validatingStep = 'locked';
-                vm.selectedTaskData = tasks[0];
-                vm.isSelectedValidatable = true;
-                vm.lockedTaskData = tasks[0];
-                vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
-                formatHistoryComments(vm.selectedTaskData.taskHistory);
-            }, function (error) {
-                onLockError(projectId, error);
-            });
+            if(vm.user.isEmailVerified){
+                vm.lockingReason = 'VALIDATION';
+                var projectId = vm.projectData.projectId;
+                var taskId = vm.selectedTaskData.taskId;
+                var taskIds = [taskId];
+                // - try to lock the task, call returns a promise
+                var lockPromise = taskService.lockTasksValidation(projectId, taskIds);
+                lockPromise.then(function (tasks) {
+                    //TODO - The following reset lines are repeated in several places in this file.
+                    //Refactoring to a single function call was considered, however it was decided that the ability to
+                    //call the resets individually was desirable and would help readability.
+                    //The downside is that any change will have to be replicated in several places.
+                    //A fundamental refactor of this controller should be considered at some stage.
+                    vm.resetErrors();
+                    vm.resetStatusFlags();
+                    vm.resetTaskData();
+                    // refresh the project, to ensure we catch up with any status changes that have happened meantime
+                    // on the server
+                    refreshProject(projectId);
+                    updateMappedTaskPerUser(projectId);
+                    vm.currentTab = 'validation';
+                    vm.validatingStep = 'locked';
+                    vm.selectedTaskData = tasks[0];
+                    vm.isSelectedValidatable = true;
+                    vm.lockedTaskData = tasks[0];
+                    vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
+                    formatHistoryComments(vm.selectedTaskData.taskHistory);
+                }, function (error) {
+                    onLockError(projectId, error);
+                });
+            }
+            else
+                vm.showWarning = true;
         };
 
         vm.josmBBoxFromViewport = function(zoom, lat, lon) {
@@ -1468,6 +1585,36 @@
          */
         vm.viewOSMChangesets = function () {
             $window.open('http://www.openstreetmap.org/history?bbox=' + vm.osmBBox());
+        };
+
+        /**
+         * View task-level changesets in OSMCha filtered by task bbox, start
+         * date of first edit, changeset comment, and participating usernames.
+         * We don't support a custom filter for tasks because we can't override
+         * the filter settings and provide a smaller bbox
+         */
+        vm.viewTaskOSMCha = function () {
+            osmchaService.viewOSMCha({
+                bbox: vm.osmBBox(),
+                usernames: vm.participantUsernames(),
+                startDate: vm.earliestHistoryActionDate(),
+                comment: vm.projectData.changesetComment,
+            });
+        };
+
+        /**
+         * View project-level changesets in OSMCha filtered by project AOI,
+         * creation date, and changeset comment -- or instead by custom filter
+         * id, if one has been set on the project
+         */
+        vm.viewProjectOSMCha = function() {
+            osmchaService.viewOSMCha({
+                filterId: vm.projectData.osmchaFilterId,
+                bbox: vm.projectData.aoiBBOX,
+                bboxSize: 2,  // Filter out global-scale changesets
+                startDate: moment.utc(vm.projectData.created),
+                comment: vm.projectData.changesetComment,
+            });
         };
 
         /**
@@ -1650,6 +1797,22 @@
 
             return userList;
         }
+
+        /**
+         * Inspects the task history of the currently selected task and, if
+         * available, returns a moment instance representing the earliest
+         * action date in the history or null otherwise
+         */
+        vm.earliestHistoryActionDate = function() {
+            var history = vm.selectedTaskData.taskHistory;
+            if (history && history.length > 0) {
+                return moment.min(history.map(function(entry) {
+                    return moment.utc(entry.actionDate);
+                }));
+            }
+
+            return null;
+        };
 
         /**
          * Returns a Moment instance representing the action date of the given
@@ -1881,46 +2044,50 @@
          * @param doneTaskIds - array of task ids
          */
         vm.lockTasksForValidation = function (doneTaskIds) {
-            vm.selectInteraction.getFeatures().clear();
+            if(vm.user.isEmailVerified){
+                vm.selectInteraction.getFeatures().clear();
 
-            //use doneTaskIds to get corresponding subset of tasks for selection from the project
-            var tasksForSelection = vm.projectData.tasks.features.filter(function (task) {
-                var i = doneTaskIds.indexOf(task.properties.taskId);
-                if (i !== -1)
-                    return doneTaskIds[i];
-            });
-
-            //select each one by one
-            tasksForSelection.forEach(function (feature) {
-                var feature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), feature.properties.taskId);
-                vm.selectInteraction.getFeatures().push(feature);
-            });
-
-            //put the UI in to locked for multi validation mode
-            var lockPromise = taskService.lockTasksValidation(vm.projectData.projectId, doneTaskIds);
-            lockPromise.then(function (tasks) {
-                // refresh the project, to ensure we catch up with any status changes that have happened meantime
-                // on the server
-                // TODO - The following reset lines are repeated in several places in this file.
-                // Refactoring to a single function call was considered, however it was decided that the ability to
-                // call the resets individually was desirable and would help readability.
-                // The downside is that any change will have to be replicated in several places.
-                // A fundamental refactor of this controller should be considered at some stage.
-                vm.resetErrors();
-                vm.resetStatusFlags();
-                vm.resetTaskData();
-                refreshProject(vm.projectData.projectId);
-                vm.currentTab = 'validation';
-                vm.validatingStep = 'multi-locked';
-                vm.multiSelectedTasksData = tasks;
-                vm.multiLockedTasks = tasks;
-                vm.isSelectedValidatable = true;
-                vm.multiLockedTasks.forEach(function(task) {
-                    vm.lockTime[task.taskId] = getLastLockedAction(task).actionDate;
+                //use doneTaskIds to get corresponding subset of tasks for selection from the project
+                var tasksForSelection = vm.projectData.tasks.features.filter(function (task) {
+                    var i = doneTaskIds.indexOf(task.properties.taskId);
+                    if (i !== -1)
+                        return doneTaskIds[i];
                 });
-            }, function (error) {
-                onLockError(vm.projectData.projectId, error);
-            });
+
+                //select each one by one
+                tasksForSelection.forEach(function (feature) {
+                    var feature = taskService.getTaskFeatureById(vm.taskVectorLayer.getSource().getFeatures(), feature.properties.taskId);
+                    vm.selectInteraction.getFeatures().push(feature);
+                });
+
+                //put the UI in to locked for multi validation mode
+                var lockPromise = taskService.lockTasksValidation(vm.projectData.projectId, doneTaskIds);
+                lockPromise.then(function (tasks) {
+                    // refresh the project, to ensure we catch up with any status changes that have happened meantime
+                    // on the server
+                    // TODO - The following reset lines are repeated in several places in this file.
+                    // Refactoring to a single function call was considered, however it was decided that the ability to
+                    // call the resets individually was desirable and would help readability.
+                    // The downside is that any change will have to be replicated in several places.
+                    // A fundamental refactor of this controller should be considered at some stage.
+                    vm.resetErrors();
+                    vm.resetStatusFlags();
+                    vm.resetTaskData();
+                    refreshProject(vm.projectData.projectId);
+                    vm.currentTab = 'validation';
+                    vm.validatingStep = 'multi-locked';
+                    vm.multiSelectedTasksData = tasks;
+                    vm.multiLockedTasks = tasks;
+                    vm.isSelectedValidatable = true;
+                    vm.multiLockedTasks.forEach(function(task) {
+                        vm.lockTime[task.taskId] = getLastLockedAction(task).actionDate;
+                    });
+                }, function (error) {
+                    onLockError(vm.projectData.projectId, error);
+                });
+            }
+            else
+                vm.showWarning = true;
         };
 
         vm.resetToSelectingStep = function () {

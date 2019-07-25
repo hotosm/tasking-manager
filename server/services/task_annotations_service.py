@@ -12,8 +12,9 @@ class TaskAnnotationsService:
         """ Takes a json of tasks and create annotations in the db """
 
         task_id = annotation['taskId']
-        source = annotation['annotationSource'] if 'annotationSource' in annotation.keys() else None
-        task_annotation = TaskAnnotation(task_id, project_id, annotation_type, source, annotation['properties'])
+        source = annotation.get('annotationSource', None)
+        markdown = annotation.get('annotationMarkdown', None)
+        task_annotation = TaskAnnotation(task_id, project_id, annotation_type, annotation['properties'], source, markdown)
 
         # check if the task has this annotation_type
         existing_annotation = TaskAnnotation.get_task_annotation(task_id, project_id, annotation_type)

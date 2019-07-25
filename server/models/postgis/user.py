@@ -2,7 +2,7 @@ import geojson
 import datetime
 import dateutil.parser
 from server import db
-from sqlalchemy import desc
+from sqlalchemy import desc, text
 from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, UserFilterDTO, Pagination, \
     UserSearchQuery, UserSearchDTO, ProjectParticipantUser, ListedUser
 from server.models.postgis.licenses import License, users_licenses_table
@@ -114,16 +114,23 @@ class User(db.Model):
 
 
     @staticmethod
-    def filter_users(user_filter: str, project_id: int, page: int) -> UserFilterDTO:
+    def filter_users(user_filter: str, project_id: int, page: int, 
+                     is_project_manager:bool=False) -> UserFilterDTO:
         """ Finds users that matches first characters, for auto-complete.
 
         Users who have participated (mapped or validated) in the project, if given, will be
         returned ahead of those who have not.
         """
         # Note that the projects_mapped column includes both mapped and validated projects.
-        results = db.session.query(User.username, User.projects_mapped.any(project_id).label("participant")) \
+        query = db.session.query(User.username, User.projects_mapped.any(project_id).label("participant")) \
             .filter(User.username.ilike(user_filter.lower() + '%')) \
-            .order_by(desc("participant").nullslast(), User.username).paginate(page, 20, True)
+            .order_by(desc("participant").nullslast(), User.username)
+
+        if is_project_manager:
+            query = query.filter(User.role.in_([UserRole.ADMIN.value, UserRole.PROJECT_MANAGER.value]))
+
+        results = query.paginate(page, 20, True)
+            
         if results.total == 0:
             raise NotFound()
 
@@ -143,17 +150,17 @@ class User(db.Model):
     @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):
         """ Adds projects to mapped_projects if it doesn't exist """
-        sql = "select * from users where id = {0} and projects_mapped @> '{{{1}}}'".format(user_id, project_id)
-        result = db.engine.execute(sql)
+        sql = "select * from users where id = :user_id and projects_mapped @> '{{:project_id}}'"
+        result = db.engine.execute(text(sql), user_id=user_id, project_id=project_id)
 
         if result.rowcount > 0:
             return  # User has previously mapped this project so return
 
         sql = '''update users
-                    set projects_mapped = array_append(projects_mapped, {0})
-                  where id = {1}'''.format(project_id, user_id)
+                    set projects_mapped = array_append(projects_mapped, :project_id)
+                  where id = :user_id'''
 
-        db.engine.execute(sql)
+        db.engine.execute(text(sql), project_id=project_id, user_id=user_id)
 
     @staticmethod
     def get_mapped_projects(user_id: int, preferred_locale: str) -> UserMappedProjectsDTO:
@@ -175,20 +182,20 @@ class User(db.Model):
                           FROM (SELECT t.project_id,
                                        count (t.validated_by) validated
                                   FROM tasks t
-                                 WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = {0})
-                                   AND t.validated_by = {0}
+                                 WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = :user_id)
+                                   AND t.validated_by = :user_id
                                  GROUP BY t.project_id, t.validated_by) v
                          FULL OUTER JOIN
                         (SELECT t.project_id,
                                 count(t.mapped_by) mapped
                            FROM tasks t
-                          WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = {0})
-                            AND t.mapped_by = {0}
+                          WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = :user_id)
+                            AND t.mapped_by = :user_id
                           GROUP BY t.project_id, t.mapped_by) m
                          ON v.project_id = m.project_id) c
-                   WHERE p.id = c.project_id ORDER BY p.id DESC'''.format(user_id)
+                   WHERE p.id = c.project_id ORDER BY p.id DESC'''
 
-        results = db.engine.execute(sql)
+        results = db.engine.execute(text(sql), user_id=user_id)
 
         if results.rowcount == 0:
             raise NotFound()
@@ -260,50 +267,34 @@ class User(db.Model):
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
         user_dto.validation_message = self.validation_message
-        
-        sql = """select action, action_text
-                      from task_history
-                     where user_id = {0}
-                       and action != 'STATE_CHANGE'
-                       and action != 'COMMENT'""".format(self.id)
+        user_dto.total_time_spent = 0
+        user_dto.time_spent_mapping = 0
+        user_dto.time_spent_validating = 0
 
-        results = db.engine.execute(sql)
-        total_time = datetime.datetime.min
-        total_mapping_time = datetime.datetime.min
-        total_validation_time = datetime.datetime.min
+        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_VALIDATION'
+                and user_id = :user_id;"""
+        total_validation_time = db.engine.execute(text(sql), user_id=self.id)
+        for row in total_validation_time:
+            total_validation_time = row[0]
+            if total_validation_time:
+                total_validation_seconds = total_validation_time.total_seconds()
+                user_dto.time_spent_validating = total_validation_seconds
+                user_dto.total_time_spent += user_dto.time_spent_validating
 
-        for row in results:
-            try:
-                if row[0] == 'LOCKED_FOR_MAPPING':
-                    duration = dateutil.parser.parse(row[1])
-                    total_mapping_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)
-                    total_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)                                            
-                elif row[0] == 'LOCKED_FOR_VALIDATION':
-                    duration = dateutil.parser.parse(row[1])
-                    total_validation_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)
-                    total_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)
-            except:
-                pass
-           
+        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_MAPPING'
+                and user_id = :user_id;"""
+        total_mapping_time = db.engine.execute(text(sql), user_id=self.id)
+        for row in total_mapping_time:
+            total_mapping_time = row[0]
+            if total_mapping_time:
+                total_mapping_seconds = total_mapping_time.total_seconds()
+                user_dto.time_spent_mapping = total_mapping_seconds
+                user_dto.total_time_spent += user_dto.time_spent_mapping
+
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile
             user_dto.email_address = self.email_address
             user_dto.is_email_verified = self.is_email_verified
-        
-        user_dto.total_time_spent = total_time.time().strftime('%H:%M:%S')
-        user_dto.time_spent_mapping = total_mapping_time.time().strftime('%H:%M:%S')
-        user_dto.time_spent_validating = total_validation_time.time().strftime('%H:%M:%S')
-        
         return user_dto

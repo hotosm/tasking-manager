@@ -46,6 +46,7 @@
             getProjectMetadata: getProjectMetadata,
             updateProject: updateProject,
             deleteProject: deleteProject,
+            transferProject: transferProject,
             mapAllTasks: mapAllTasks,
             resetBadImageryTasks: resetBadImageryTasks,
             invalidateAllTasks: invalidateAllTasks,
@@ -593,6 +594,31 @@
         }
 
         /**
+         * Transfers a project to another user
+         * @param id
+         * @param user_id
+         * @returns {*|!jQuery.Promise|!jQuery.deferred|!jQuery.jqXHR}
+         */
+        function transferProject(id, username) {
+
+            // Returns a promise
+            return $http({
+                method: 'POST',
+                data: {username: username},
+                url: configService.tmAPI + '/admin/project/' + id + '/transfer',
+                headers: authService.getAuthenticatedHeader()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            })
+        }
+
+        /**
          * Map all tasks on the project
          * @param projectId
          * @returns {!jQuery.deferred|*|!jQuery.jqXHR|!jQuery.Promise}
@@ -774,7 +800,7 @@
             if (enforceValidateRole) {
                 var validatorRoles = ['ADMIN', 'PROJECT_MANAGER', 'VALIDATOR'];
                 userCanValidate = (validatorRoles.indexOf(userRole) != -1);
-            } 
+            }
             if (allowNonBeginners) {
                 var allowedLevels = ['INTERMEDIATE','ADVANCED']
                 userCanValidate = (allowedLevels.indexOf(mappingLevel) != -1);

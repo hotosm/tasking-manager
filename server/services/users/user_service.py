@@ -4,6 +4,9 @@ from functools import reduce
 import dateutil.parser
 import datetime
 
+from sqlalchemy import text
+
+from server import db
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO, \
     UserStatsDTO
 from server.models.dtos.message_dto import MessageDTO
@@ -57,7 +60,7 @@ class UserService:
     @staticmethod
     def register_user(osm_id, username, changeset_count):
         """
-        Creates user in DB 
+        Creates user in DB
         :param osm_id: Unique OSM user id
         :param username: OSM Username
         :param changeset_count: OSM changeset count
@@ -118,47 +121,39 @@ class UserService:
             TaskHistory.action == 'STATE_CHANGE'
         ).distinct(TaskHistory.project_id).count()
 
-        total_time = datetime.datetime.min
-        total_mapping_time = datetime.datetime.min
-        total_validation_time = datetime.datetime.min
-        
-        for action in actions:
-            try:
-                if action.action == 'LOCKED_FOR_MAPPING':
-                    duration = dateutil.parser.parse(action.action_text)
-                    total_mapping_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)
-                    total_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)                                            
-                elif action.action == 'LOCKED_FOR_VALIDATION':
-                    duration = dateutil.parser.parse(action.action_text)
-                    total_validation_time += datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond)
-                    total_time +=  datetime.timedelta(hours=duration.hour,
-                                             minutes=duration.minute,
-                                             seconds=duration.second,
-                                             microseconds=duration.microsecond) 
-            except:
-                pass
-
-        stats_dto.total_time_spent = total_time.time().strftime('%H:%M:%S')
-        stats_dto.time_spent_mapping = total_mapping_time.time().strftime('%H:%M:%S')
-        stats_dto.time_spent_validating = total_validation_time.time().strftime('%H:%M:%S')
         stats_dto.tasks_mapped = tasks_mapped
         stats_dto.tasks_validated = tasks_validated
         stats_dto.projects_mapped = projects_mapped
+        stats_dto.total_time_spent = 0
+        stats_dto.time_spent_mapping = 0
+        stats_dto.time_spent_validating = 0
+
+        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_VALIDATION'
+                and user_id = :user_id;"""
+        total_validation_time = db.engine.execute(text(sql), user_id=user.id)
+        for time in total_validation_time:
+            total_validation_time = time[0]
+            if total_validation_time:
+                stats_dto.time_spent_validating = total_validation_time.total_seconds()
+                stats_dto.total_time_spent += stats_dto.time_spent_validating
+
+        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+                WHERE action='LOCKED_FOR_MAPPING'
+                and user_id = :user_id;"""
+        total_mapping_time = db.engine.execute(text(sql), user_id=user.id)
+        for time in total_mapping_time:
+            total_mapping_time = time[0]
+            if total_mapping_time:
+                stats_dto.time_spent_mapping = total_mapping_time.total_seconds()
+                stats_dto.total_time_spent += stats_dto.time_spent_mapping
+
         return stats_dto
 
-    
+
     @staticmethod
     def update_user_details(user_id: int, user_dto: UserDTO) -> dict:
-        """ Update user with info supplied by user, if they add or change their email address a verification mail 
+        """ Update user with info supplied by user, if they add or change their email address a verification mail
             will be sent """
         user = UserService.get_user_by_id(user_id)
 
@@ -180,9 +175,10 @@ class UserService:
 
     @staticmethod
     @cached(user_filter_cache)
-    def filter_users(username: str, project_id: int, page: int) -> UserFilterDTO:
+    def filter_users(username: str, project_id: int, 
+                     page: int, is_project_manager: bool = False) -> UserFilterDTO:
         """ Gets paginated list of users, filtered by username, for autocomplete """
-        return User.filter_users(username, project_id, page)
+        return User.filter_users(username, project_id, page, is_project_manager)
 
     @staticmethod
     def is_user_a_project_manager(user_id: int) -> bool:
@@ -235,7 +231,7 @@ class UserService:
     def add_role_to_user(admin_user_id: int, username: str, role: str):
         """
         Add role to user
-        :param admin_user_id: ID of admin attempting to add the role 
+        :param admin_user_id: ID of admin attempting to add the role
         :param username: Username of user the role should be added to
         :param role: The requested role
         :raises UserServiceError
@@ -261,7 +257,7 @@ class UserService:
     def set_user_mapping_level(username: str, level: str) -> User:
         """
         Sets the users mapping level
-        :raises: UserServiceError 
+        :raises: UserServiceError
         """
         try:
             requested_level = MappingLevel[level.upper()]
@@ -337,11 +333,11 @@ class UserService:
 
         user.save()
         return user
-        
+
     def notify_level_upgrade(user_id: int, username: str, level: str):
         text_template = get_template('level_upgrade_message_en.txt')
 
-        if username is not None: 
+        if username is not None:
             text_template = text_template.replace('[USERNAME]', username)
 
         text_template = text_template.replace('[LEVEL]', level)
