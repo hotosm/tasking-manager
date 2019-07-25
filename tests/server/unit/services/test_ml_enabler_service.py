@@ -18,11 +18,8 @@ class TestMLEnablerService(unittest.TestCase):
         self.app = create_app()
         self.ctx = self.app.app_context()
         self.ctx.push()
-        self.model = 2
-        self.bbox = [-86.3001904518,
-                     12.1460982787,
-                     -86.2963900131,
-                     12.1492471534]
+        self.model = 'looking_glass'
+        self.bbox = '-86.3001904518,12.1460982787,-86.2963900131,12.1492471534'
 
     @classmethod
     def clean_files(cls):
@@ -37,11 +34,11 @@ class TestMLEnablerService(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.clean_files()
-        
+
     @classmethod
     def setUpClass(cls):
         cls.clean_files()
-        
+
 
     def test_get_all_models(self):
         json = MLEnablerService.get_all_models()
@@ -52,14 +49,14 @@ class TestMLEnablerService(unittest.TestCase):
         self.assertEqual(type(json), dict)
 
     def test_send_a_prediction_job(self):
-        MLEnablerService.send_prediction_job(self.bbox, 18, self.out_file, 
-                                             self.err_file)        
+        MLEnablerService.send_prediction_job(self.bbox, 18, self.out_file,
+                                             self.err_file)
 
         self.assertTrue(os.path.exists(self.err_file))
         self.assertTrue(os.path.exists(self.out_file))
 
         with open(self.out_file, 'r') as out:
-            obj = json.loads(out.read()) 
+            obj = json.loads(out.read())
             self.assertEqual(type(obj), dict)
             self.assertGreater(len(obj['predictions']), 0)
 
@@ -68,21 +65,21 @@ class TestMLEnablerService(unittest.TestCase):
         #this file is produced by the other test
         if not os.path.exists(self.out_file):
             self.test_send_a_prediction_job()
-            
-        MLEnablerService.send_aggregation_job(18, self.out_file, 
-                                             self.agg_out_file)        
+
+        MLEnablerService.send_aggregation_job(18, self.out_file,
+                                             self.agg_out_file)
 
         self.assertTrue(os.path.exists(self.agg_out_file))
 
         with open(self.agg_out_file, 'r') as out:
-            obj = json.loads(out.read()) 
+            obj = json.loads(out.read())
             self.assertEqual(type(obj), dict)
             self.assertGreater(len(obj['predictions']), 0)
 
     def test_upload_prediction(self):
         #this test needs the aggregated file first to work
-        #this file is produced by the test_send_aggregation_job test 
+        #this file is produced by the test_send_aggregation_job test
         if not os.path.exists(self.agg_out_file):
             self.test_send_aggregation_job()
 
-        MLEnablerService.upload_prediction(self.agg_out_file)        
+        MLEnablerService.upload_prediction(self.agg_out_file)

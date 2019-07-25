@@ -12,9 +12,11 @@ from ml_enabler.utils.api import get_model_id, post_prediction, post_prediction_
 class MLEnablerService:
 
     @staticmethod
-    def get_prediction_from_bbox(model_id:int, bbox: str, zoom: int=18):
+    def get_prediction_from_bbox(model_name:str, bbox: str, zoom: int=18):
         """Sends requests to create a new prediction for a bounding box from a model id"""
-        url = f'{current_app.config["ML_ENABLER_URL"]}/model/{model_id}/tiles' 
+        api_url = current_app.config['ML_ENABLER_URL']
+        model_id = get_model_id(api_url, model_name)
+        url = f'{api_url}/model/{model_id}/tiles' 
         params = dict(bbox=bbox, zoom=zoom)
         response = requests.get(url, params=params)
         data = response.json()

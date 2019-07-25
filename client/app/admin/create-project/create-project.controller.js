@@ -461,10 +461,7 @@
                 tasks_to_split.forEach(feature => {
                     taskGrid = projectService.getTaskGrid() 
                     if (taskGrid.includes(feature)){
-                        console.log('spliting feature');
                         projectService.splitTasks(feature);
-                    } else {
-                        console.log('feature not included');
                     }
                 });
                 vm.numberOfTasks = projectService.getNumberOfTasks();
@@ -513,7 +510,7 @@
             vm.createProjectSuccess = false;
             if (vm.projectNameForm.$valid) {
                 vm.waiting = true;
-                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId);
+                var resultsPromise = projectService.createProject(vm.projectName, vm.isTaskGrid, cloneProjectId, vm.mlPredictionsEnabled);
                 resultsPromise.then(function (data) {
                     vm.waiting = false;
                     // Project created successfully

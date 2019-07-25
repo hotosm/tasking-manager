@@ -89,6 +89,6 @@ class PredictionAPI(Resource):
         if not bbox:
             return {"error": 'bounding box not found'}, 404
         else:
-            response = MLEnablerService.get_prediction_from_bbox(2, bbox, zoom)
+            response = MLEnablerService.get_prediction_from_bbox('looking_glass', bbox, zoom)
             return response, 200
             

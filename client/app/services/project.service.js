@@ -457,7 +457,7 @@
          * @param cloneProjectId - the ID of the project to clone
          * @returns {*|!jQuery.Promise|!jQuery.jqXHR|!jQuery.deferred}
          */
-        function createProject(projectName, isTaskGrid, cloneProjectId) {
+        function createProject(projectName, isTaskGrid, cloneProjectId, mlEnabled) {
 
             var areaOfInterestGeoJSON = geospatialService.getGeoJSONObjectFromFeatures(aoi);
             var taskGridGeoJSON = isTaskGrid?geospatialService.getGeoJSONObjectFromFeatures(taskGrid):null;
@@ -467,7 +467,8 @@
                 areaOfInterest: areaOfInterestGeoJSON,
                 projectName: projectName,
                 tasks: taskGridGeoJSON,
-                arbitraryTasks: !isTaskGrid
+                arbitraryTasks: !isTaskGrid,
+                mlEnabled: mlEnabled
             };
 
             if (cloneProjectId){
