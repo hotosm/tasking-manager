@@ -29,8 +29,11 @@
     "build": "react-scripts build",
     "lint": "eslint src",
     "test": "npm run lint && react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   },
+  
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -47,8 +50,13 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^5.1.9",
+    "@storybook/addon-links": "^5.1.9",
+    "@storybook/addons": "^5.1.9",
+    "@storybook/react": "^5.1.9",
     "combine-react-intl-messages": "^2.0.2",
     "eslint-plugin-react-hooks": "^1.6.1",
     "react-test-renderer": "^16.8.6"
+    "storybook-addon-intl": "^2.4.1"
   }
 }
