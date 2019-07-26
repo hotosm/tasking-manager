@@ -52,6 +52,7 @@
   "project.card.mapperLevelIntermediate": "Intermediate",
   "project.card.mapperLevelAdvanced": "Advanced",
   "project.card.projectPriorityUrgent": "Urgent",
+  "project.card.projectPriorityHigh": "High",
   "project.card.projectPriorityMedium": "Medium",
   "project.card.projectPriorityLow": "Low",
   "project.card.dueDateLeft": "{daysLeftHumanize} left"

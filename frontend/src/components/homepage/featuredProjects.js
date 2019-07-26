@@ -2,7 +2,11 @@ import React from 'react';
 import { FormattedMessage} from 'react-intl';
 import { RightIcon, LeftIcon } from '../svgIcons';
 import { ProjectCard } from '../../components/projectcard/projectCard';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { API_URL } from '../../config';
+import axios from 'axios';
+
+import cards from '../projectcard/demoProjectCardsData';
 
 import messages from './messages';
 
@@ -10,16 +14,16 @@ function FeaturedProjectPaginateArrows({pages, activeProjectCardPage, setProject
 
     let enableLeft = false;
     let enableRight = false;
-    if (pages.length - 1 > activeProjectCardPage) {
-        enableRight = true;
-    }
     if (activeProjectCardPage !== 0) {
         enableLeft = true;
     } 
+    if (pages.length - 1 > activeProjectCardPage && pages.length !== 1) {
+        enableRight = true;
+    }
     return (
         <div className="fr dib f2 mr2 pv3 pr6-l pr3">
-            <div className={`dib mr2 dim ${enableLeft ? 'red' : 'light-red'}`} onClick={() => enableLeft && setProjectCardPage(activeProjectCardPage - 1)}><LeftIcon /></div>
-            <div className={`dib dim ${enableRight ? 'red' : 'light-red'}`} onClick={() => enableRight && setProjectCardPage(activeProjectCardPage + 1)}><RightIcon /></div>
+            <div className={`dib mr2  ${enableLeft ? 'red dim' : 'light-red'}`} onClick={() => enableLeft && setProjectCardPage(activeProjectCardPage - 1)}><LeftIcon /></div>
+            <div className={`dib dim ${enableRight ? 'red dim' : 'light-red'}`} onClick={() => enableRight && setProjectCardPage(activeProjectCardPage + 1)}><RightIcon /></div>
         </div>
     );
 }
@@ -38,163 +42,41 @@ const projectPaginateMobile = chunkArray(2);
 
 
 export function FeaturedProjects() {
+  const blankAPI = {mapResults:{features: [],type:"FeatureCollection"}, results:[], pagination: {hasNext: false, hasPrev: false, page: 1}};
+  const [projects, setProjects] = useState(blankAPI);
   const [activeProjectCardPage, setProjectCardPage] = useState(0);
   const [activeProjectCardPageMobile, setProjectCardPageMobile] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setIsError(false);
+
+      try {
+      const result = await axios(
+        `${API_URL}project/search?mapperLevel=ALL`,
+      );
+      
+      setProjects(result.data);
+
+      } catch (error) {
+        setIsError(true);
+      } 
+      setIsLoading(false);
+    };
+
+    fetchData();
+  },[]);
 
 
-  /* quoted keys are from project activity API */
-  const cards = [
-    {
-      projectId: 6106,
-      projectStatus: "PUBLISHED",
-      projectPriority: "URGENT",
-      mapperLevel: "BEGINNER",
-      title: "Response to the impact of Cyclone Idai in Mozambique",
-      shortDescription: "Disaster Response · Cyclone Idai · Mozambique",
-      created: new Date("2019-04-23T14:49:23.809743"),
-      lastUpdated: new Date("2019-07-17T18:50:28.081458"),
-      "campaignTag": "#UNICEF",
-      "organisationTag": "UNICEF",
-      "percentMapped": 100,
-      "percentValidated": 96,
-      "percentBadImagery": 1,
-      "totalMappers": 10,
-      "totalTasks": 152,
-      "totalComments": 0,
-      "totalMappingTime": 80214,
-      "totalValidationTime": 458741,
-      "totalTimeSpent": 538955,
-      "averageMappingTime": 8912.666666666666,
-      "averageValidationTime": 114685.25,
-      "status": "PUBLISHED"
-    },
-    {
-        projectId: 5001,
-        projectStatus: "PUBLISHED",
-        projectPriority: "MEDIUM",
-        mapperLevel: "ADVANCED",
-        title: "Prepare for the influx of Venezuelan refugees into Colombia",
-        shortDescription: "Refugee Response · AyudaVenezuela · Colombia",
-        created: new Date("2019-04-23T14:49:23.809743"),
-        dueDate: new Date("2019-09-17T18:50:28.081458"),
-        lastUpdated: new Date("2019-07-17T18:50:28.081458"),
-        "campaignTag": "American Red Cross",
-        "organisationTag": "American Red Cross",
-        "percentMapped": 50,
-        "percentValidated": 30,
-        "percentBadImagery": 1,
-        "totalMappers": 20,
-        "totalTasks": 152,
-        "totalComments": 0,
-        "totalMappingTime": 80214,
-        "totalValidationTime": 458741,
-        "totalTimeSpent": 538955,
-        "averageMappingTime": 8912.666666666666,
-        "averageValidationTime": 114685.25,
-        "status": "PUBLISHED"
-      },
-      {
-        projectId: 5707,
-        projectStatus: "PUBLISHED",
-        projectPriority: "MEDIUM",
-        mapperLevel: "INTERMEDIATE",
-        title: "Tracing borderlands to contain Ebola outbreak",
-        shortDescription: "Public Health · Ebola · DRC",
-        created: new Date("2019-04-23T14:49:23.809743"),
-        lastUpdated: new Date("2019-07-17T18:50:28.081458"),
-        dueDate: new Date("2019-07-25T18:50:28.081458"),
-        "campaignTag": "#Allpeopleonmap",
-        "organisationTag": "Médecins Sans Frontières",
-        "percentMapped": 66,
-        "percentValidated": 50,
-        "percentBadImagery": 1,
-        "totalMappers": 2,
-        "totalTasks": 152,
-        "totalComments": 0,
-        "totalMappingTime": 80214,
-        "totalValidationTime": 458741,
-        "totalTimeSpent": 538955,
-        "averageMappingTime": 8912.666666666666,
-        "averageValidationTime": 114685.25,
-        "status": "PUBLISHED"
-      },
-      {
-        projectId: 6106,
-        projectStatus: "PUBLISHED",
-        projectPriority: "LOW",
-        mapperLevel: "INTERMEDIATE",
-        title: "Mapping mosquito net coverage",
-        shortDescription: "Public Health · Malaria2018 · Mozambique",
-        dueDate: new Date("2019-07-10T18:50:28.081458"),
-        created: new Date("2019-04-23T14:49:23.809743"),
-        lastUpdated: new Date("2019-07-17T18:50:28.081458"),
-        "campaignTag": "#Allpeopleonmap",
-        "organisationTag": "#YouthMappers",
-        "percentMapped": 70,
-        "percentValidated": 20,
-        "percentBadImagery": 1,
-        "totalMappers": 50,
-        "totalTasks": 152,
-        "totalComments": 0,
-        "totalMappingTime": 80214,
-        "totalValidationTime": 458741,
-        "totalTimeSpent": 538955,
-        "averageMappingTime": 8912.666666666666,
-        "averageValidationTime": 114685.25,
-        "status": "PUBLISHED"
-      },
-        {
-          projectId: 6106,
-          projectStatus: "PUBLISHED",
-          projectPriority: "LOW",
-          mapperLevel: "INTERMEDIATE",
-          title: "Mapping mosquito net coverage",
-          shortDescription: "Public Health · Malaria2018 · Mozambique",
-          created: new Date("2019-04-23T14:49:23.809743"),
-          lastUpdated: new Date("2019-07-17T18:50:28.081458"),
-          "campaignTag": "#Allpeopleonmap",
-          "organisationTag": "#YouthMappers",
-          "percentMapped": 70,
-          "percentValidated": 20,
-          "percentBadImagery": 1,
-          "totalMappers": 50,
-          "totalTasks": 152,
-          "totalComments": 0,
-          "totalMappingTime": 80214,
-          "totalValidationTime": 458741,
-          "totalTimeSpent": 538955,
-          "averageMappingTime": 8912.666666666666,
-          "averageValidationTime": 114685.25,
-          "status": "PUBLISHED"
-        },
-      {
-        projectId: 6106,
-        projectStatus: "PUBLISHED",
-        projectPriority: "LOW",
-        mapperLevel: "INTERMEDIATE",
-        title: "Mapping mosquito net coverage",
-        shortDescription: "Public Health · Malaria2018 · Mozambique",
-        created: new Date("2019-04-23T14:49:23.809743"),
-        lastUpdated: new Date("2019-07-17T18:50:28.081458"),
-        "campaignTag": "#Allpeopleonmap",
-        "organisationTag": "#YouthMappers",
-        "percentMapped": 70,
-        "percentValidated": 20,
-        "percentBadImagery": 1,
-        "totalMappers": 50,
-        "totalTasks": 152,
-        "totalComments": 0,
-        "totalMappingTime": 80214,
-        "totalValidationTime": 458741,
-        "totalTimeSpent": 538955,
-        "averageMappingTime": 8912.666666666666,
-        "averageValidationTime": 114685.25,
-        "status": "PUBLISHED"
-      }];
-  const pagedProjs = projectPaginate(cards)
-  const pagedProjsMobile = projectPaginateMobile(cards)
+  const apiResults = projects.results.length > 0 ? projects.results: cards 
+  const pagedProjs = projectPaginate(apiResults)
+  const pagedProjsMobile = projectPaginateMobile(apiResults)
 
   return(
+    <>
     <section className="pt4-l pb5 pl5-l pr1-l pl3 bg-white black">
       <div className="cf">
         <div className="w-75-l w-60 fl">
@@ -215,12 +97,20 @@ export function FeaturedProjects() {
                 setProjectCardPage={setProjectCardPageMobile} />
         </div>
       </div>
-      <div className="cf dn db-l">
+        {isLoading ? (
+          <div>Loading ...</div>
+        ) : null}
+        {isError ? (
+          <div class="bg-tan">Error loading the featured projects.</div>
+        ) : null}
+        <div className="cf dn db-l">
           {pagedProjs[activeProjectCardPage].map((card, n) => <ProjectCard { ...card } key={n} />)}
         </div>
         <div className="cf db dn-l">
           {pagedProjsMobile[activeProjectCardPageMobile].map((card, n) => <ProjectCard { ...card } key={n} />)}
         </div>
     </section>
+
+      </>
   );
 }
