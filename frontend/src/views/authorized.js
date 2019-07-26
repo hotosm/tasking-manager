@@ -1,28 +1,43 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from "@reach/router";
 import { connect } from "react-redux";
-import { setAuthDetails } from '../store/actions/authorize';
+import { setAuthDetails } from '../store/actions/auth';
 
-class Authorized extends React.Component {
-  render() {
+
+ class Authorized extends React.Component {
+  state = {
+    redirectUrl: '/',
+    isReadyToRedirect: false
+  }
+  componentDidMount() {
     const params = new URLSearchParams(this.props.location.search);
     const username = params.get('username');
     const session_token = params.get('session_token');
-    const redirect_url = params.get('redirect_to') ? params.get('redirect_to') : '/';
-    this.props.setAuthDetails(username, session_token);
-
-    return(
-       <Redirect to={redirect_url} />
+    this.props.authenticateUser(username, session_token);
+    this.setState({
+      redirect_url: params.get('redirect_to') ? params.get('redirect_to') : '/',
+      isReadyToRedirect: true
+    });
+  }
+  render() {
+    return (
+      this.state.isReadyToRedirect ? <Redirect to={this.state.redirectUrl} noThrow /> : <div>redirecting</div>
     );
   }
 }
 
-let mapStateToProps = (state, props) => ({
+ let mapStateToProps = (state, props) => ({
     location: props.location,
 });
 
-Authorized = connect(
+ const mapDispatchToProps = (dispatch) => {
+  return {
+    authenticateUser: (username, token) => dispatch(setAuthDetails(username, token))
+  };
+};
+
+ Authorized = connect(
     mapStateToProps,
-    {setAuthDetails}
+    mapDispatchToProps
 )(Authorized);
 export { Authorized };

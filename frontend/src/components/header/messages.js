@@ -35,5 +35,13 @@ export default defineMessages({
   slogan: {
     id: 'header.topBar.slogan',
     defaultMessage: 'Mapping our world together'
+  },
+  settings: {
+    id: 'header.nav.settings',
+    defaultMessage: 'Settings'
+  },
+  logout: {
+    id: 'header.nav.logout',
+    defaultMessage: 'Logout'
   }
 });

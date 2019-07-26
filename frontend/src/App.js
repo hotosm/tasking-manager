@@ -7,21 +7,20 @@ import { Footer } from './components/footer';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
 import { Authorized } from './views/authorized';
-import { API_URL } from './config';
+import { Login } from './views/login';
+
 
 function App() {
-  let login_url = API_URL + 'auth/login'; 
   return (
     <div className="App w-100 base-font">
       <Header />
       <div className="cf w-100 base-font">
-        <Route exact path="/" component={ Home } />
-        <Route path="/about" component={ AboutPage } />
-        <Route path="/authorized" component={ Authorized } />
-        <Route path="/login" component={() => {
-          window.location.href = login_url;
-          return null; 
-        }} />
+        <Router>
+          <Home path="/" />
+          <AboutPage path="about" />
+          <Authorized path="authorized" />
+          <Login path="login" />
+        </Router>
       </div>
       <Footer />
     </div>
