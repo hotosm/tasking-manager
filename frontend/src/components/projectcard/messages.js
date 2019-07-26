@@ -40,6 +40,10 @@ export default defineMessages({
     id: 'project.card.projectPriorityUrgent',
     defaultMessage: 'Urgent' 
   }, 
+  projectPriorityHIGH: {
+    id: 'project.card.projectPriorityHigh',
+    defaultMessage: 'High' 
+  }, 
   projectPriorityMEDIUM: {
     id: 'project.card.projectPriorityMedium',
     defaultMessage: 'Medium' 
