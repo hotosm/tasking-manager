@@ -12,6 +12,7 @@ class EnvironmentConfig:
 
     # The base url the application is reachable
     APP_BASE_URL = os.getenv('TM_APP_BASE_URL', 'http://127.0.0.1:5000')
+    FRONTEND_BASE_URL = os.getenv('TM_FRONTEND_BASE_URL', 'http://127.0.0.1:3000')
     
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv('TM_DEFAULT_CHANGESET_COMMENT', None)
