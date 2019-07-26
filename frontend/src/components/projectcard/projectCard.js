@@ -89,6 +89,14 @@ export function MapperLevelLabel({mapperLevel}: Object) {
   </span>);
 }
 
+export function MapperLevelLabel({mapperLevel}: Object) {
+  const translated = mapperLevel ? <FormattedMessage {...messages["projectMapperLevel"+mapperLevel]} /> : "";
+  return (
+  <span className="fl f7 mt1 ttc fw5 blue-grey">
+    {translated}
+    </span>);
+}
+
 export function ProjectCard({
   projectId,
   name,

@@ -160,6 +160,8 @@ export function FeaturedProjects() {
         </ReactPlaceholder>
       </div>
     </section>
+
+      </>
   );
 }
 
