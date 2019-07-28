@@ -24,6 +24,10 @@ export default defineMessages({
     id: 'project.card.percentValidated',
     defaultMessage: ' Validated'
   },
+  mappingDifficulty: {
+    id: 'project.nav.mappingDifficulty',
+    defaultMessage: 'Mapping Difficulty'
+  },
   projectMapperLevelBEGINNER: {
     id: 'project.card.mapperLevelBeginner',
     defaultMessage: 'Beginner'
@@ -55,5 +59,17 @@ export default defineMessages({
   dueDateRelativeRemainingDays: {
     id: 'project.card.dueDateLeft',
     defaultMessage: '{daysLeftHumanize} left'
-  }
+  },
+  moreFilters: {
+    id: 'project.nav.moreFilters',
+    defaultMessage: 'More Filters'
+  },
+  campaign: {
+    id: 'project.nav.campaign',
+    defaultMessage: 'Campaign'
+  },
+  showMapToggle: {
+    id: 'project.nav.showMapToggle',
+    defaultMessage: 'Show map'
+  },
 });

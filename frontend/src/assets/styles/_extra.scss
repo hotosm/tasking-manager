@@ -51,4 +51,16 @@
 
 .shadow-hover::after {
   box-shadow: 0 7px 20px 0 rgba(0,0,0,0.08);
+
+/* TOGGLE for Show Map*/
+.t-cb { transition: all .3s cubic-bezier(.33, 1, .66, 1); } // Custom class
+
+.checkbox:checked + .checkbox-wrapper {
+  background-color: $red; // @extend .bg-green;
+
+  .checkbox-toggle { 
+    left: 2rem; // @extend .left-2;
+    background-color: #fff; // @extend .bg-moon-gray;
+    border-color: $red;
+  }
 }
