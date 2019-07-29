@@ -9,7 +9,7 @@ const initialState = Map({
   userPicture: ''
 });
 
-export function authorizationReducer (state = initialState, action) {
+export function authorizationReducer(state = initialState, action) {
   switch (action.type) {
     case types.SET_USER_DETAILS: {
       return state.set('userDetails', action.userDetails);
