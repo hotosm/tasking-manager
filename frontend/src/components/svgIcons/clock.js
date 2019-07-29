@@ -1,7 +1,7 @@
 import React from 'react';
 
 export class ClockIcon extends React.PureComponent {
-  render() {return <svg width="15px" height="16px" viewBox="0 0 15 16" version="1.1">
+  render() {return <svg className={this.props.className} width="15px" height="21px" viewBox="0 0 15 16" version="1.1">
       <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g transform="translate(-573.000000, -297.000000)" fill="currentColor" fill-rule="nonzero">
               <g transform="translate(573.000000, 297.000000)">
