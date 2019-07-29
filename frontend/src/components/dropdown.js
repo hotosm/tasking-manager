@@ -1,16 +1,14 @@
 import React from 'react';
 import onClickOutside from 'react-click-outside';
 
-import { ChevronDownIcon } from './svgIcons';
+import { ChevronDownIcon, CheckIcon } from './svgIcons';
 import { CustomButton } from './button';
 
 
 class DropdownContent extends React.PureComponent {
   isActive = (obj: Object) => {
-    for (let v of this.props.value) {
-      if (v.label === obj.label) {
-        return true;
-      }
+    if (this.props.value === obj.label) {
+      return true;
     }
     return false;
   };
@@ -52,7 +50,7 @@ class DropdownContent extends React.PureComponent {
           <span
             key={k}
             onClick={this.handleClick.bind(null, i)}
-            className="pa3 bg-white bg-animate hover-bg-red-light"
+            className="pa3 bg-animate bg-white hover-bg-tan"
           >
             {this.props.multi &&
               <input
@@ -68,15 +66,13 @@ class DropdownContent extends React.PureComponent {
                   target={'_blank'}
                   href={i.href}
                   onClick={this.props.toggleDropdown}
-                  className={`${this.isActive(i) && 'b'}`}
                 >
-                  {i.label}
+                  {i.label}{this.isActive(i) && <span className="red pl4"><CheckIcon /></span>}
                 </a>
               : <span
                   onClick={this.props.toggleDropdown}
-                  className={`${this.isActive(i) && 'b'}`}
                 >
-                  {i.label}
+                  {i.label}{this.isActive(i) && <span className="red pl4"><CheckIcon /></span>}
                 </span>
             }
             {this.props.deletable &&

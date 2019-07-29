@@ -1,4 +1,12 @@
 {
-  "header.buttons.signIn": "Registrar",
-  "header.buttons.logIn": "Entrar"
+  "header.nav.projectsLink": "Explorar projetos",
+  "header.nav.learnLink": "Como colaborar",
+  "header.nav.aboutLink": "Sobre",
+  "header.nav.helpLink": "Ajuda",
+  "header.buttons.languageSelector": "Idioma",
+  "header.buttons.logIn": "Entrar",
+  "header.buttons.signUp": "Cadastrar",
+  "header.topBar.slogan": "Mapping our world together",
+  "header.nav.settings": "Configurações",
+  "header.nav.logout": "Sair"
 }
