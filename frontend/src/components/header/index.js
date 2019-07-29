@@ -21,17 +21,31 @@ const menuItems = [
   {label: messages.help, link: "help"}
 ];
 
+
+const ActiveNavLink = (props) => {
+  const {isActive, ...otherProps} = props;
+  return(
+    <Link getProps={isActive} {...otherProps}>
+      {props.children}
+    </Link>
+  );
+};
+
+
 class Header extends React.Component {
   menuItems = menuItems;
-  linkCombo = "link ph3 barlow-condensed blue-dark f4 ttu";
+  linkCombo = "link mh3 barlow-condensed blue-dark f4 ttu";
+  isActive = ({ isPartiallyCurrent }) => {
+    return isPartiallyCurrent ? {className: `${this.linkCombo} bb b--blue-dark bw1 pv2`} : {className: this.linkCombo};
+  }
 
   renderMenuItems() {
     return(
       <div className="v-mid">
         {this.menuItems.map((item, n) =>
-          <Link to={item.link} key={n} className={ this.linkCombo }>
-            <FormattedMessage {...item.label} />
-          </Link>
+          <ActiveNavLink to={item.link} key={n} isActive={this.isActive}>
+            <FormattedMessage {...item.label}/>
+          </ActiveNavLink>
         )}
       </div>
     );
