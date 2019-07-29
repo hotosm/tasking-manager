@@ -1,14 +1,22 @@
+import datetime
+
 from cachetools import TTLCache, cached
 from flask import current_app
 
+from server import db
+
 from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary, ProjectStatsDTO, ProjectUserStatsDTO
+from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary, ProjectStatsDTO, ProjectUserStatsDTO, \
+    ProjectContribsDTO, ProjectContribDTO
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
-from server.models.postgis.task import Task
+from server.models.postgis.task import Task, TaskHistory, TaskAction
 from server.models.postgis.task_annotation import TaskAnnotation
 from server.models.postgis.utils import NotFound
 from server.services.users.user_service import UserService
+
+from sqlalchemy import func, or_, cast
+from sqlalchemy.types import Interval
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -34,6 +42,44 @@ class ProjectService:
     @staticmethod
     def auto_unlock_tasks(project_id: int):
         Task.auto_unlock_tasks(project_id)
+
+    @staticmethod
+    def get_contribs_by_day(project_id: int) -> ProjectContribsDTO:
+        # Validate that project exists.
+        project = ProjectService.get_project_by_id(project_id)
+
+        stats = TaskHistory.query.with_entities(
+            TaskHistory.action.label('action'),
+            func.DATE(TaskHistory.action_date).label('day'),
+            func.count(TaskHistory.action_date).label('cnt')
+        )\
+        .filter(TaskHistory.project_id==project_id)\
+        .filter(or_(
+            TaskHistory.action==TaskAction.LOCKED_FOR_MAPPING.name,
+            TaskHistory.action==TaskAction.LOCKED_FOR_VALIDATION.name))\
+        .filter(func.DATE(TaskHistory.action_date) > datetime.date.today() - datetime.timedelta(days=365))\
+        .group_by('action', 'day')\
+        .order_by('day')
+
+        # Filter tasks by user_id only.
+
+        contribs_dto = ProjectContribsDTO()
+        dates = list(set(r[1] for r in stats))
+        dates.sort(reverse=True)
+        dates_list = []
+        for date in dates:
+            dto = ProjectContribDTO({'date': str(date), 'mapped': 0, 'validated': 0})
+            values = [(s[0], s[2]) for s in stats if date == s[1]]
+            for val in values:
+                if val[0] == TaskAction.LOCKED_FOR_MAPPING.name:
+                    dto.mapped = val[1]
+                elif val[0] == TaskAction.LOCKED_FOR_VALIDATION.name:
+                    dto.validated = val[1]
+            dates_list.append(dto)
+
+        contribs_dto.stats = dates_list
+
+        return contribs_dto
 
     @staticmethod
     def get_project_dto_for_mapper(project_id, locale='en', abbrev=False) -> ProjectDTO:
