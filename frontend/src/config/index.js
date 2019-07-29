@@ -33,3 +33,7 @@ export const ORG_GITHUB = process.env.ORG_GITHUB || 'https://github.com/hotosm/'
 
 // DEFAULT locale
 export const DEFAULT_LOCALE = process.env.TM_DEFAULT_LOCALE || 'en';
+
+
+// PROJECT CARD CONFIG
+export const PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD = process.env.PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD || 5;
