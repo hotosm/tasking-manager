@@ -1,5 +1,6 @@
 import React from "react";
 import { FormattedMessage, FormattedRelative, injectIntl, intlShape } from "react-intl";
+import { ClockIcon } from '../svgIcons';
 import humanizeDuration from 'humanize-duration'
 
 import messages from "./messages";
@@ -13,8 +14,10 @@ export function DueDateBox({intl, dueDate}: Object) {
 
     if (milliDifference > 0) {
       return (
-      <span className="fr w-50 f7 tc br1 link ph1 pv1 bg-grey-light blue-grey truncate mw4">
-        <FormattedMessage
+        
+      <span className="fr relative w-40 lh-solid f7 tr br1 link ph1 pv2 bg-grey-light blue-grey truncate mw4">
+        <span ><ClockIcon className="absolute pl1 top-0 pt1 left-0"/></span>
+        <FormattedMessage className="indent"
           {...messages["dueDateRelativeRemainingDays"]}
           values={{
             daysLeft: (<FormattedRelative value={dueDate} />),
