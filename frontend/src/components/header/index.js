@@ -13,6 +13,8 @@ import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 import { BurgerMenu } from './burgerMenu';
 import { logout } from '../../store/actions/auth';
+import { setLocale } from '../../store/actions/userPreferences';
+import { supportedLocales } from '../../utils/internationalization';
 
 
 const menuItems = [
@@ -110,6 +112,25 @@ class Header extends React.Component {
     }
   };
 
+  onLocaleSelect = (arr) => {
+    if (arr.length === 1) {
+      this.props.setLocale(arr[0].value);
+    } else if (arr.length > 1) {
+      throw new Error('filter select array is big');
+    }
+  };
+
+  getActiveLanguageNames() {
+    const locales = [this.props.userPreferences.locale, navigator.language, navigator.language.substr(0,2)];
+    let supportedLocaleNames = [];
+    locales.forEach(locale =>
+      supportedLocales.filter(
+        i=> i.value === locale
+      ).forEach(i => supportedLocaleNames.push(i.label))
+    );
+    return supportedLocaleNames[0] || 'English';
+  }
+
   renderAuthenticationButtons() {
     return(
       this.props.username ?
@@ -130,10 +151,10 @@ class Header extends React.Component {
           <Dropdown
             onAdd={() => {}}
             onRemove={() => {}}
-            onChange={() => {}}
-            value={this.props.userPreferences.language || 'English'}
-            options={[{label: 'English'}, {label: 'Portuguese (pt)'}]}
-            display={this.props.userPreferences.language || <FormattedMessage {...messages.language}/>}
+            onChange={this.onLocaleSelect}
+            value={this.getActiveLanguageNames()}
+            options={supportedLocales}
+            display={<FormattedMessage {...messages.language}/>}
             className="blue-dark bg-white mr1 v-mid dn dib-66rem pv1 ph3 bn"
           />
           <a href={`${API_URL}auth/login?redirect_to=/login/`} className="mh1 v-mid dn dib-ns">
@@ -198,6 +219,6 @@ const mapStateToProps = state => ({
   userPicture: state.auth.get('userPicture')
 });
 
-Header = connect(mapStateToProps, { logout })(Header);
+Header = connect(mapStateToProps, { logout, setLocale })(Header);
 
 export { Header , menuItems };

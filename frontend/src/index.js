@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from "react-redux";
 import WebFont from 'webfontloader';
-import { IntlProvider, addLocaleData } from 'react-intl';
+import { addLocaleData } from 'react-intl';
 import de from 'react-intl/locale-data/de';
 import en from 'react-intl/locale-data/en';
 import es from 'react-intl/locale-data/es';
@@ -13,7 +13,7 @@ import pt from 'react-intl/locale-data/pt';
 
 import App from './App';
 import { store } from './store';
-import getTranslatedMessages from './utils/translatedMessages';
+import { ConnectedIntl } from './utils/internationalization';
 import * as serviceWorker from './serviceWorker';
 
 
@@ -27,15 +27,10 @@ WebFont.load({
 
 
 addLocaleData([...en, ...fr, ...es, ...de, ...ja, ...ko, ...pt]);
-const ConnectedIntl = props => (
-  <IntlProvider key={props.locale} locale={props.locale} messages={getTranslatedMessages(props.locale)}>
-    {props.children}
-  </IntlProvider>
-);
 
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedIntl locale={navigator.language} >
+    <ConnectedIntl>
       <App />
     </ConnectedIntl>
   </Provider>,
