@@ -169,16 +169,15 @@
             }
         });
 
-
-        /**
-         * calculates padding number to makes sure there is plenty of clear space around feature on map to keep visual
-         * context of feature location
-         * @returns {number} - padding number
-         */
-        function getPaddingSize() {
-            // padding to makes sure there is plenty of clear space around feature on map to keep visual
-            // context of feature location
-            return vm.map.getSize()[1] * 0.3;
+        /**	
+         * calculates padding number to makes sure there is plenty of clear space around feature on map to keep visual	
+         * context of feature location	
+         * @returns {number} - padding number	
+         */	
+        function getPaddingSize() {	
+            // padding to makes sure there is plenty of clear space around feature on map to keep visual	
+            // context of feature location	
+            return vm.map.getSize()[1] * 0.3;	
         }
 
         /**
@@ -701,7 +700,7 @@
             if (task) {
                 selectFeature(task);
                 var padding = getPaddingSize();
-                vm.map.getView().fit(task.getGeometry().getExtent(), {padding: [padding, padding, padding, padding]});
+                vm.map.getView().fit(task.getGeometry().getExtent(), {size: vm.map.getSize(), padding: [padding, padding, padding, padding]});
             }
         }
 
