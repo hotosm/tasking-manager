@@ -10,10 +10,10 @@ class TestUser(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('CI', 'false')
+        env = os.getenv("CI", "false")
 
         # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == 'true':
+        if env == "true":
             cls.skip_tests = True
 
     def setUp(self):
@@ -22,8 +22,8 @@ class TestUser(unittest.TestCase):
         test_user.role = UserRole.MAPPER.value
         test_user.id = 12
         test_user.mapping_level = MappingLevel.BEGINNER.value
-        test_user.username = 'mrtest'
-        test_user.email_address = 'test@test.com'
+        test_user.username = "mrtest"
+        test_user.email_address = "test@test.com"
 
         self.test_user = test_user
 
@@ -47,7 +47,7 @@ class TestUser(unittest.TestCase):
         if self.skip_tests:
             return
         # Act
-        user_dto = self.test_user.as_dto('mastertest')
+        user_dto = self.test_user.as_dto("mastertest")
 
         # Assert
         self.assertFalse(user_dto.email_address)
@@ -57,7 +57,7 @@ class TestUser(unittest.TestCase):
             return
 
         # Act
-        user_dto = self.test_user.as_dto('mrtest')
+        user_dto = self.test_user.as_dto("mrtest")
 
         # Assert
         self.assertTrue(user_dto.email_address)

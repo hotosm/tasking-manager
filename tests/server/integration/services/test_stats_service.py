@@ -12,10 +12,10 @@ class TestStatsService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('CI', 'false')
+        env = os.getenv("CI", "false")
 
         # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == 'true':
+        if env == "true":
             cls.skip_tests = True
 
     def setUp(self):
@@ -47,4 +47,3 @@ class TestStatsService(unittest.TestCase):
         self.assertGreaterEqual(stats.mappers_online, 0)
         self.assertGreater(stats.tasks_mapped, 0)
         self.assertGreater(stats.total_mappers, 0)
-
