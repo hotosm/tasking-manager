@@ -43,6 +43,7 @@
         // Editors for mapping
         vm.mappingEditors = {
             id: false,
+            rapid: false,
             josm: false,
             potlatch2: false,
             fieldpapers: false
@@ -51,6 +52,7 @@
         // Editors for validation
         vm.validationEditors = {
             id: false,
+            rapid: false,
             josm: false,
             potlatch2: false,
             fieldpapers: false
@@ -1112,6 +1114,7 @@
         function populateEditorsForMapping(){
             if (vm.project.mappingEditors) {
                 vm.mappingEditors.id = vm.project.mappingEditors.indexOf("ID") != -1;
+                vm.mappingEditors.rapid = vm.project.mappingEditors.indexOf("RAPID") != -1;
                 vm.mappingEditors.josm = vm.project.mappingEditors.indexOf("JOSM") != -1;
                 vm.mappingEditors.potlatch2 = vm.project.mappingEditors.indexOf("POTLATCH_2") != -1;
                 vm.mappingEditors.fieldpapers = vm.project.mappingEditors.indexOf("FIELD_PAPERS") != -1;
@@ -1125,6 +1128,9 @@
             var mappingEditorsArray = [];
             if (vm.mappingEditors.id){
                 mappingEditorsArray.push("ID");
+            }
+            if (vm.mappingEditors.rapid){
+                mappingEditorsArray.push("RAPID");
             }
             if (vm.mappingEditors.josm){
                 mappingEditorsArray.push("JOSM");
@@ -1146,6 +1152,7 @@
         function populateEditorsForValidation(){
             if (vm.project.validationEditors) {
                 vm.validationEditors.id = vm.project.validationEditors.indexOf("ID") != -1;
+                vm.validationEditors.rapid = vm.project.validationEditors.indexOf("RAPID") != -1;
                 vm.validationEditors.josm = vm.project.validationEditors.indexOf("JOSM") != -1;
                 vm.validationEditors.potlatch2 = vm.project.validationEditors.indexOf("POTLATCH_2") != -1;
                 vm.validationEditors.fieldpapers = vm.project.validationEditors.indexOf("FIELD_PAPERS") != -1;
@@ -1159,6 +1166,9 @@
             var validationEditorsArray = [];
             if (vm.validationEditors.id){
                 validationEditorsArray.push("ID");
+            }
+            if (vm.validationEditors.rapid){
+                validationEditorsArray.push("RAPID");
             }
             if (vm.validationEditors.josm){
                 validationEditorsArray.push("JOSM");
