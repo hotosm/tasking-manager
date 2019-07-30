@@ -3,12 +3,11 @@ from server.services.translation_service import TranslationService
 
 
 class TestTranslationService(unittest.TestCase):
-
     def test_translation_source_file_contains_all_translatables(self):
         # Arrange
 
         # Read the strings from language file
-        current_file = open('client/locale/en.json', 'r')
+        current_file = open("client/locale/en.json", "r")
         current_strings = current_file.readlines()[1:-1]
         current_file.close()
 
