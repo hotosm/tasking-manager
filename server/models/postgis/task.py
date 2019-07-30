@@ -11,18 +11,26 @@ from geoalchemy2 import Geometry
 from server import db
 from typing import List
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
-from server.models.dtos.task_annotation_dto import TaskAnnotationDTO 
-from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks, InvalidatedTask, InvalidatedTasks
+from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
 from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
 from server.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
-from server.models.postgis.utils import InvalidData, InvalidGeoJson, ST_GeomFromGeoJSON, ST_SetSRID, timestamp, parse_duration, NotFound
+from server.models.postgis.utils import (
+    InvalidData,
+    InvalidGeoJson,
+    ST_GeomFromGeoJSON,
+    ST_SetSRID,
+    timestamp,
+    parse_duration,
+    NotFound,
+)
 from server.models.postgis.task_annotation import TaskAnnotation
 
 
 class TaskAction(Enum):
     """ Describes the possible actions that can happen to to a task, that we'll record history for """
+
     LOCKED_FOR_MAPPING = 1
     LOCKED_FOR_VALIDATION = 2
     STATE_CHANGE = 3
@@ -33,25 +41,40 @@ class TaskAction(Enum):
 
 class TaskInvalidationHistory(db.Model):
     """ Describes the most recent history of task invalidation and subsequent validation """
+
     __tablename__ = "task_invalidation_history"
     id = db.Column(db.Integer, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), nullable=False)
     task_id = db.Column(db.Integer, nullable=False)
     is_closed = db.Column(db.Boolean, default=False)
-    mapper_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_mappers'))
+    mapper_id = db.Column(db.BigInteger, db.ForeignKey("users.id", name="fk_mappers"))
     mapped_date = db.Column(db.DateTime)
-    invalidator_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_invalidators'))
+    invalidator_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", name="fk_invalidators")
+    )
     invalidated_date = db.Column(db.DateTime)
-    invalidation_history_id = db.Column(db.Integer, db.ForeignKey('task_history.id', name='fk_invalidation_history'))
-    validator_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_validators'))
+    invalidation_history_id = db.Column(
+        db.Integer, db.ForeignKey("task_history.id", name="fk_invalidation_history")
+    )
+    validator_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", name="fk_validators")
+    )
     validated_date = db.Column(db.DateTime)
     updated_date = db.Column(db.DateTime, default=timestamp)
 
-    __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_tasks'),
-                      db.Index('idx_task_validation_history_composite', 'task_id', 'project_id'),
-                      db.Index('idx_task_validation_mapper_status_composite', 'invalidator_id', 'is_closed'),
-                      db.Index('idx_task_validation_mapper_status_composite', 'mapper_id', 'is_closed'),
-                      {})
+    __table_args__ = (
+        db.ForeignKeyConstraint(
+            [task_id, project_id], ["tasks.id", "tasks.project_id"], name="fk_tasks"
+        ),
+        db.Index("idx_task_validation_history_composite", "task_id", "project_id"),
+        db.Index(
+            "idx_task_validation_mapper_status_composite", "invalidator_id", "is_closed"
+        ),
+        db.Index(
+            "idx_task_validation_mapper_status_composite", "mapper_id", "is_closed"
+        ),
+        {},
+    )
 
     def __init__(self, project_id, task_id):
         self.project_id = project_id
@@ -65,12 +88,15 @@ class TaskInvalidationHistory(db.Model):
 
     @staticmethod
     def get_open_for_task(project_id, task_id):
-        return TaskInvalidationHistory.query.filter_by(task_id=task_id, project_id=project_id, is_closed=False).one_or_none()
+        return TaskInvalidationHistory.query.filter_by(
+            task_id=task_id, project_id=project_id, is_closed=False
+        ).one_or_none()
 
     @staticmethod
     def close_all_for_task(project_id, task_id):
-        TaskInvalidationHistory.query.filter_by(task_id=task_id, project_id=project_id, is_closed=False) \
-                               .update({"is_closed": True})
+        TaskInvalidationHistory.query.filter_by(
+            task_id=task_id, project_id=project_id, is_closed=False
+        ).update({"is_closed": True})
 
     @staticmethod
     def record_invalidation(project_id, task_id, invalidator_id, history):
@@ -108,12 +134,20 @@ class TaskInvalidationHistory(db.Model):
 
 
 class TaskMappingIssue(db.Model):
-    """ Describes an issue (along with an occurrence count) with a task mapping that contributed to invalidation of the task """
+    """ Describes an issue (along with an occurrence count) with a
+    task mapping that contributed to invalidation of the task """
+
     __tablename__ = "task_mapping_issues"
     id = db.Column(db.Integer, primary_key=True)
-    task_history_id = db.Column(db.Integer, db.ForeignKey('task_history.id'), nullable=False, index=True)
+    task_history_id = db.Column(
+        db.Integer, db.ForeignKey("task_history.id"), nullable=False, index=True
+    )
     issue = db.Column(db.String, nullable=False)
-    mapping_issue_category_id = db.Column(db.Integer, db.ForeignKey('mapping_issue_categories.id', name='fk_issue_category'), nullable=False)
+    mapping_issue_category_id = db.Column(
+        db.Integer,
+        db.ForeignKey("mapping_issue_categories.id", name="fk_issue_category"),
+        nullable=False,
+    )
     count = db.Column(db.Integer, nullable=False)
 
     def __init__(self, issue, count, mapping_issue_category_id, task_history_id=None):
@@ -140,22 +174,32 @@ class TaskMappingIssue(db.Model):
 
 class TaskHistory(db.Model):
     """ Describes the history associated with a task """
+
     __tablename__ = "task_history"
 
     id = db.Column(db.Integer, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), index=True)
     task_id = db.Column(db.Integer, nullable=False)
     action = db.Column(db.String, nullable=False)
     action_text = db.Column(db.String)
     action_date = db.Column(db.DateTime, nullable=False, default=timestamp)
-    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
-    invalidation_history = db.relationship(TaskInvalidationHistory, lazy='dynamic', cascade='all')
+    user_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", name="fk_users"), nullable=False
+    )
+    invalidation_history = db.relationship(
+        TaskInvalidationHistory, lazy="dynamic", cascade="all"
+    )
 
     actioned_by = db.relationship(User)
     task_mapping_issues = db.relationship(TaskMappingIssue, cascade="all")
 
-    __table_args__ = (db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_tasks'),
-                      db.Index('idx_task_history_composite', 'task_id', 'project_id'), {})
+    __table_args__ = (
+        db.ForeignKeyConstraint(
+            [task_id, project_id], ["tasks.id", "tasks.project_id"], name="fk_tasks"
+        ),
+        db.Index("idx_task_history_composite", "task_id", "project_id"),
+        {},
+    )
 
     def __init__(self, task_id, project_id, user_id):
         self.task_id = task_id
@@ -163,14 +207,19 @@ class TaskHistory(db.Model):
         self.user_id = user_id
 
     def set_task_locked_action(self, task_action: TaskAction):
-        if task_action not in [TaskAction.LOCKED_FOR_MAPPING, TaskAction.LOCKED_FOR_VALIDATION]:
-            raise ValueError('Invalid Action')
+        if task_action not in [
+            TaskAction.LOCKED_FOR_MAPPING,
+            TaskAction.LOCKED_FOR_VALIDATION,
+        ]:
+            raise ValueError("Invalid Action")
 
         self.action = task_action.name
 
     def set_comment_action(self, comment):
         self.action = TaskAction.COMMENT.name
-        clean_comment = bleach.clean(comment)  # Bleach input to ensure no nefarious script tags etc
+        clean_comment = bleach.clean(
+            comment
+        )  # Bleach input to ensure no nefarious script tags etc
         self.action_text = clean_comment
 
     def set_state_change_action(self, new_state):
@@ -186,7 +235,9 @@ class TaskHistory(db.Model):
         db.session.commit()
 
     @staticmethod
-    def update_task_locked_with_duration(task_id: int, project_id: int, lock_action: TaskStatus, user_id: int):
+    def update_task_locked_with_duration(
+        task_id: int, project_id: int, lock_action: TaskStatus, user_id: int
+    ):
         """
         Calculates the duration a task was locked for and sets it on the history record
         :param task_id: Task in scope
@@ -196,8 +247,13 @@ class TaskHistory(db.Model):
         :return:
         """
         try:
-            last_locked = TaskHistory.query.filter_by(task_id=task_id, project_id=project_id, action=lock_action.name,
-                                                      action_text=None, user_id=user_id).one()
+            last_locked = TaskHistory.query.filter_by(
+                task_id=task_id,
+                project_id=project_id,
+                action=lock_action.name,
+                action_text=None,
+                user_id=user_id,
+            ).one()
         except NoResultFound:
             # We suspect there's some kind or race condition that is occasionally deleting history records
             # prior to user unlocking task. Most likely stemming from auto-unlock feature. However, given that
@@ -208,32 +264,48 @@ class TaskHistory(db.Model):
             # Again race conditions may mean we have multiple rows within the Task History.  Here we attempt to
             # remove the oldest duplicate rows, and update the newest on the basis that this was the last action
             # the user was attempting to make.
-            TaskHistory.remove_duplicate_task_history_rows(task_id, project_id, lock_action, user_id)
+            TaskHistory.remove_duplicate_task_history_rows(
+                task_id, project_id, lock_action, user_id
+            )
 
             # Now duplicate is removed, we recursively call ourself to update the duration on the remaining row
-            TaskHistory.update_task_locked_with_duration(task_id, project_id, lock_action, user_id)
+            TaskHistory.update_task_locked_with_duration(
+                task_id, project_id, lock_action, user_id
+            )
             return
 
         duration_task_locked = datetime.datetime.utcnow() - last_locked.action_date
         # Cast duration to isoformat for later transmission via api
-        last_locked.action_text = (datetime.datetime.min + duration_task_locked).time().isoformat()
+        last_locked.action_text = (
+            (datetime.datetime.min + duration_task_locked).time().isoformat()
+        )
         db.session.commit()
 
     @staticmethod
-    def remove_duplicate_task_history_rows(task_id: int, project_id: int, lock_action: TaskStatus, user_id: int):
+    def remove_duplicate_task_history_rows(
+        task_id: int, project_id: int, lock_action: TaskStatus, user_id: int
+    ):
         """ Method used in rare cases where we have duplicate task history records for a given action by a user
             This method will remove the oldest duplicate record, on the basis that the newest record was the
             last action the user was attempting to perform
         """
-        dupe = TaskHistory.query.filter(TaskHistory.project_id == project_id,
-                                        TaskHistory.task_id == task_id,
-                                        TaskHistory.action == lock_action.name,
-                                        TaskHistory.user_id == user_id).order_by(TaskHistory.id.asc()).first()
+        dupe = (
+            TaskHistory.query.filter(
+                TaskHistory.project_id == project_id,
+                TaskHistory.task_id == task_id,
+                TaskHistory.action == lock_action.name,
+                TaskHistory.user_id == user_id,
+            )
+            .order_by(TaskHistory.id.asc())
+            .first()
+        )
 
         dupe.delete()
 
     @staticmethod
-    def update_expired_and_locked_actions(project_id: int, task_id: int, expiry_date: datetime, action_text: str):
+    def update_expired_and_locked_actions(
+        project_id: int, task_id: int, expiry_date: datetime, action_text: str
+    ):
         """
         Sets auto unlock state to all not finished actions, that are older then the expiry date.
         Action is considered as a not finished, when it is in locked state and doesn't have action text
@@ -247,12 +319,21 @@ class TaskHistory(db.Model):
             TaskHistory.task_id == task_id,
             TaskHistory.project_id == project_id,
             TaskHistory.action_text.is_(None),
-            TaskHistory.action.in_([TaskAction.LOCKED_FOR_VALIDATION.name, TaskAction.LOCKED_FOR_MAPPING.name]),
-            TaskHistory.action_date <= expiry_date).all()
+            TaskHistory.action.in_(
+                [
+                    TaskAction.LOCKED_FOR_VALIDATION.name,
+                    TaskAction.LOCKED_FOR_MAPPING.name,
+                ]
+            ),
+            TaskHistory.action_date <= expiry_date,
+        ).all()
 
         for task_history in all_expired:
-            unlock_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING if task_history.action == 'LOCKED_FOR_MAPPING' \
+            unlock_action = (
+                TaskAction.AUTO_UNLOCKED_FOR_MAPPING
+                if task_history.action == "LOCKED_FOR_MAPPING"
                 else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
+            )
 
             task_history.set_auto_unlock_action(unlock_action)
             task_history.action_text = action_text
@@ -263,12 +344,20 @@ class TaskHistory(db.Model):
     def get_all_comments(project_id: int) -> ProjectCommentsDTO:
         """ Gets all comments for the supplied project_id"""
 
-        comments = db.session.query(TaskHistory.task_id,
-                                    TaskHistory.action_date,
-                                    TaskHistory.action_text,
-                                    User.username) \
-            .join(User) \
-            .filter(TaskHistory.project_id == project_id, TaskHistory.action == TaskAction.COMMENT.name).all()
+        comments = (
+            db.session.query(
+                TaskHistory.task_id,
+                TaskHistory.action_date,
+                TaskHistory.action_text,
+                User.username,
+            )
+            .join(User)
+            .filter(
+                TaskHistory.project_id == project_id,
+                TaskHistory.action == TaskAction.COMMENT.name,
+            )
+            .all()
+        )
 
         comments_dto = ProjectCommentsDTO()
         for comment in comments:
@@ -284,11 +373,16 @@ class TaskHistory(db.Model):
     @staticmethod
     def get_last_status(project_id: int, task_id: int, for_undo: bool = False):
         """ Get the status the task was set to the last time the task had a STATUS_CHANGE"""
-        result = db.session.query(TaskHistory.action_text) \
-            .filter(TaskHistory.project_id == project_id,
-                    TaskHistory.task_id == task_id,
-                    TaskHistory.action == TaskAction.STATE_CHANGE.name) \
-            .order_by(TaskHistory.action_date.desc()).all()
+        result = (
+            db.session.query(TaskHistory.action_text)
+            .filter(
+                TaskHistory.project_id == project_id,
+                TaskHistory.task_id == task_id,
+                TaskHistory.action == TaskAction.STATE_CHANGE.name,
+            )
+            .order_by(TaskHistory.action_date.desc())
+            .all()
+        )
 
         if not result:
             return TaskStatus.READY  # No result so default to ready status
@@ -297,7 +391,10 @@ class TaskHistory(db.Model):
             # We're looking for the previous status, however, there isn't any so we'll return Ready
             return TaskStatus.READY
 
-        if for_undo and result[0][0] in [TaskStatus.MAPPED.name, TaskStatus.BADIMAGERY.name]:
+        if for_undo and result[0][0] in [
+            TaskStatus.MAPPED.name,
+            TaskStatus.BADIMAGERY.name,
+        ]:
             # We need to return a READY when last status of the task is badimagery or mapped.
             return TaskStatus.READY
 
@@ -310,61 +407,96 @@ class TaskHistory(db.Model):
     @staticmethod
     def get_last_action(project_id: int, task_id: int):
         """Gets the most recent task history record for the task"""
-        return TaskHistory.query.filter(TaskHistory.project_id == project_id,
-                                        TaskHistory.task_id == task_id) \
-            .order_by(TaskHistory.action_date.desc()).first()
+        return (
+            TaskHistory.query.filter(
+                TaskHistory.project_id == project_id, TaskHistory.task_id == task_id
+            )
+            .order_by(TaskHistory.action_date.desc())
+            .first()
+        )
 
     @staticmethod
-    def get_last_action_of_type(project_id: int, task_id: int, allowed_task_actions: list):
+    def get_last_action_of_type(
+        project_id: int, task_id: int, allowed_task_actions: list
+    ):
         """Gets the most recent task history record having provided TaskAction"""
-        return TaskHistory.query.filter(TaskHistory.project_id == project_id,
-                                        TaskHistory.task_id == task_id,
-                                        TaskHistory.action.in_(allowed_task_actions)) \
-            .order_by(TaskHistory.action_date.desc()).first()
+        return (
+            TaskHistory.query.filter(
+                TaskHistory.project_id == project_id,
+                TaskHistory.task_id == task_id,
+                TaskHistory.action.in_(allowed_task_actions),
+            )
+            .order_by(TaskHistory.action_date.desc())
+            .first()
+        )
 
     @staticmethod
     def get_last_locked_action(project_id: int, task_id: int):
         """Gets the most recent task history record with locked action for the task"""
         return TaskHistory.get_last_action_of_type(
-            project_id, task_id,
-            [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name])
+            project_id,
+            task_id,
+            [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name],
+        )
 
     @staticmethod
     def get_last_locked_or_auto_unlocked_action(project_id: int, task_id: int):
         """Gets the most recent task history record with locked or auto unlocked action for the task"""
         return TaskHistory.get_last_action_of_type(
-            project_id, task_id,
-            [TaskAction.LOCKED_FOR_MAPPING.name, TaskAction.LOCKED_FOR_VALIDATION.name,
-             TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION.name])
+            project_id,
+            task_id,
+            [
+                TaskAction.LOCKED_FOR_MAPPING.name,
+                TaskAction.LOCKED_FOR_VALIDATION.name,
+                TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name,
+                TaskAction.AUTO_UNLOCKED_FOR_VALIDATION.name,
+            ],
+        )
 
     def get_last_mapped_action(project_id: int, task_id: int):
         """Gets the most recent mapped action, if any, in the task history"""
-        return db.session.query(TaskHistory) \
-            .filter(TaskHistory.project_id == project_id,
-                    TaskHistory.task_id == task_id,
-                    TaskHistory.action == TaskAction.STATE_CHANGE.name,
-                    TaskHistory.action_text.in_([TaskStatus.BADIMAGERY.name, TaskStatus.MAPPED.name])) \
-            .order_by(TaskHistory.action_date.desc()).first()
+        return (
+            db.session.query(TaskHistory)
+            .filter(
+                TaskHistory.project_id == project_id,
+                TaskHistory.task_id == task_id,
+                TaskHistory.action == TaskAction.STATE_CHANGE.name,
+                TaskHistory.action_text.in_(
+                    [TaskStatus.BADIMAGERY.name, TaskStatus.MAPPED.name]
+                ),
+            )
+            .order_by(TaskHistory.action_date.desc())
+            .first()
+        )
 
 
 class Task(db.Model):
     """ Describes an individual mapping Task """
+
     __tablename__ = "tasks"
 
     # Table has composite PK on (id and project_id)
     id = db.Column(db.Integer, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, primary_key=True)
+    project_id = db.Column(
+        db.Integer, db.ForeignKey("projects.id"), index=True, primary_key=True
+    )
     x = db.Column(db.Integer)
     y = db.Column(db.Integer)
     zoom = db.Column(db.Integer)
     extra_properties = db.Column(db.Unicode)
     # Tasks need to be split differently if created from an arbitrary grid or were clipped to the edge of the AOI
     is_square = db.Column(db.Boolean, default=True)
-    geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
+    geometry = db.Column(Geometry("MULTIPOLYGON", srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
-    locked_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_locked'))
-    mapped_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_mapper'))
-    validated_by = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users_validator'))
+    locked_by = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", name="fk_users_locked")
+    )
+    mapped_by = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", name="fk_users_mapper")
+    )
+    validated_by = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", name="fk_users_validator")
+    )
 
     # Mapped objects
     task_history = db.relationship(TaskHistory, cascade="all")
@@ -395,29 +527,32 @@ class Task(db.Model):
         :raises InvalidGeoJson, InvalidData
         """
         if type(task_feature) is not geojson.Feature:
-            raise InvalidGeoJson('Task: Invalid GeoJson should be a feature')
+            raise InvalidGeoJson("Task: Invalid GeoJson should be a feature")
 
         task_geometry = task_feature.geometry
 
         if type(task_geometry) is not geojson.MultiPolygon:
-            raise InvalidGeoJson('Task: Geometry must be a MultiPolygon')
+            raise InvalidGeoJson("Task: Geometry must be a MultiPolygon")
 
         is_valid_geojson = geojson.is_valid(task_geometry)
-        if is_valid_geojson['valid'] == 'no':
-            raise InvalidGeoJson(f"Task: Invalid MultiPolygon - {is_valid_geojson['message']}")
+        if is_valid_geojson["valid"] == "no":
+            raise InvalidGeoJson(
+                f"Task: Invalid MultiPolygon - {is_valid_geojson['message']}"
+            )
 
         task = cls()
         try:
-            task.x = task_feature.properties['x']
-            task.y = task_feature.properties['y']
-            task.zoom = task_feature.properties['zoom']
-            task.is_square = task_feature.properties['isSquare']
+            task.x = task_feature.properties["x"]
+            task.y = task_feature.properties["y"]
+            task.zoom = task_feature.properties["zoom"]
+            task.is_square = task_feature.properties["isSquare"]
         except KeyError as e:
-            raise InvalidData(f'Task: Expected property not found: {str(e)}')
+            raise InvalidData(f"Task: Expected property not found: {str(e)}")
 
-        if 'extra_properties' in task_feature.properties:
+        if "extra_properties" in task_feature.properties:
             task.extra_properties = json.dumps(
-                task_feature.properties['extra_properties'])
+                task_feature.properties["extra_properties"]
+            )
 
         task.id = task_id
         task_geojson = geojson.dumps(task_geometry)
@@ -440,7 +575,9 @@ class Task(db.Model):
     @staticmethod
     def get_tasks(project_id: int, task_ids: List[int]):
         """ Get all tasks that match supplied list """
-        return Task.query.filter(Task.project_id == project_id, Task.id.in_(task_ids)).all()
+        return Task.query.filter(
+            Task.project_id == project_id, Task.id.in_(task_ids)
+        ).all()
 
     @staticmethod
     def get_all_tasks(project_id: int):
@@ -449,7 +586,7 @@ class Task(db.Model):
 
     @staticmethod
     def auto_unlock_delta():
-      return parse_duration(current_app.config['TASK_AUTOUNLOCK_AFTER'])
+        return parse_duration(current_app.config["TASK_AUTOUNLOCK_AFTER"])
 
     @staticmethod
     def auto_unlock_tasks(project_id: int):
@@ -457,7 +594,7 @@ class Task(db.Model):
         expiry_delta = Task.auto_unlock_delta()
         lock_duration = (datetime.datetime.min + expiry_delta).time().isoformat()
         expiry_date = datetime.datetime.utcnow() - expiry_delta
-        old_locks_query = '''SELECT t.id
+        old_locks_query = """SELECT t.id
             FROM tasks t, task_history th
             WHERE t.id = th.task_id
             AND t.project_id = th.project_id
@@ -466,9 +603,11 @@ class Task(db.Model):
             AND th.action_text IS NULL
             AND t.project_id = :project_id
             AND th.action_date <= :expiry_date
-            '''
+            """
 
-        old_tasks = db.engine.execute(text(old_locks_query), project_id=project_id, expiry_date=str(expiry_date))
+        old_tasks = db.engine.execute(
+            text(old_locks_query), project_id=project_id, expiry_date=str(expiry_date)
+        )
 
         if old_tasks.rowcount == 0:
             # no tasks older than the delta found, return without further processing
@@ -480,20 +619,32 @@ class Task(db.Model):
 
     def auto_unlock_expired_tasks(self, expiry_date, lock_duration):
         """Unlock all tasks locked before expiry date. Clears task lock if needed"""
-        TaskHistory.update_expired_and_locked_actions(self.project_id, self.id, expiry_date, lock_duration)
+        TaskHistory.update_expired_and_locked_actions(
+            self.project_id, self.id, expiry_date, lock_duration
+        )
 
-        last_action = TaskHistory.get_last_locked_or_auto_unlocked_action(self.project_id, self.id)
-        if last_action.action in ['AUTO_UNLOCKED_FOR_MAPPING', 'AUTO_UNLOCKED_FOR_VALIDATION']:
+        last_action = TaskHistory.get_last_locked_or_auto_unlocked_action(
+            self.project_id, self.id
+        )
+        if last_action.action in [
+            "AUTO_UNLOCKED_FOR_MAPPING",
+            "AUTO_UNLOCKED_FOR_VALIDATION",
+        ]:
             self.clear_lock()
 
     def is_mappable(self):
         """ Determines if task in scope is in suitable state for mapping """
-        if TaskStatus(self.task_status) not in [TaskStatus.READY, TaskStatus.INVALIDATED]:
+        if TaskStatus(self.task_status) not in [
+            TaskStatus.READY,
+            TaskStatus.INVALIDATED,
+        ]:
             return False
 
         return True
 
-    def set_task_history(self, action, user_id, comment=None, new_state=None, mapping_issues=None):
+    def set_task_history(
+        self, action, user_id, comment=None, new_state=None, mapping_issues=None
+    ):
         """
         Sets the task history for the action that the user has just performed
         :param task: Task in scope
@@ -511,7 +662,10 @@ class Task(db.Model):
             history.set_comment_action(comment)
         elif action == TaskAction.STATE_CHANGE:
             history.set_state_change_action(new_state)
-        elif action in [TaskAction.AUTO_UNLOCKED_FOR_MAPPING, TaskAction.AUTO_UNLOCKED_FOR_VALIDATION]:
+        elif action in [
+            TaskAction.AUTO_UNLOCKED_FOR_MAPPING,
+            TaskAction.AUTO_UNLOCKED_FOR_VALIDATION,
+        ]:
             history.set_auto_unlock_action(action)
 
         if mapping_issues is not None:
@@ -533,7 +687,10 @@ class Task(db.Model):
         self.update()
 
     def reset_task(self, user_id: int):
-        if TaskStatus(self.task_status) in [TaskStatus.LOCKED_FOR_MAPPING, TaskStatus.LOCKED_FOR_VALIDATION]:
+        if TaskStatus(self.task_status) in [
+            TaskStatus.LOCKED_FOR_MAPPING,
+            TaskStatus.LOCKED_FOR_VALIDATION,
+        ]:
             self.record_auto_unlock()
 
         self.set_task_history(TaskAction.STATE_CHANGE, user_id, None, TaskStatus.READY)
@@ -559,8 +716,11 @@ class Task(db.Model):
     def record_auto_unlock(self, lock_duration):
         locked_user = self.locked_by
         last_action = TaskHistory.get_last_locked_action(self.project_id, self.id)
-        next_action = TaskAction.AUTO_UNLOCKED_FOR_MAPPING if last_action.action == 'LOCKED_FOR_MAPPING' \
+        next_action = (
+            TaskAction.AUTO_UNLOCKED_FOR_MAPPING
+            if last_action.action == "LOCKED_FOR_MAPPING"
             else TaskAction.AUTO_UNLOCKED_FOR_VALIDATION
+        )
 
         self.clear_task_lock()
 
@@ -569,28 +729,48 @@ class Task(db.Model):
         auto_unlocked.action_text = lock_duration
         self.update()
 
-    def unlock_task(self, user_id, new_state=None, comment=None, undo=False, issues=None):
+    def unlock_task(
+        self, user_id, new_state=None, comment=None, undo=False, issues=None
+    ):
         """ Unlock task and ensure duration task locked is saved in History """
         if comment:
-            self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id, mapping_issues=issues)
+            self.set_task_history(
+                action=TaskAction.COMMENT,
+                comment=comment,
+                user_id=user_id,
+                mapping_issues=issues,
+            )
 
-        history = self.set_task_history(action=TaskAction.STATE_CHANGE, new_state=new_state,
-                                        user_id=user_id, mapping_issues=issues)
+        history = self.set_task_history(
+            action=TaskAction.STATE_CHANGE,
+            new_state=new_state,
+            user_id=user_id,
+            mapping_issues=issues,
+        )
 
-        if new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY] and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION:
+        if (
+            new_state in [TaskStatus.MAPPED, TaskStatus.BADIMAGERY]
+            and TaskStatus(self.task_status) != TaskStatus.LOCKED_FOR_VALIDATION
+        ):
             # Don't set mapped if state being set back to mapped after validation
             self.mapped_by = user_id
         elif new_state == TaskStatus.VALIDATED:
-            TaskInvalidationHistory.record_validation(self.project_id, self.id, user_id, history)
+            TaskInvalidationHistory.record_validation(
+                self.project_id, self.id, user_id, history
+            )
             self.validated_by = user_id
         elif new_state == TaskStatus.INVALIDATED:
-            TaskInvalidationHistory.record_invalidation(self.project_id, self.id, user_id, history)
+            TaskInvalidationHistory.record_invalidation(
+                self.project_id, self.id, user_id, history
+            )
             self.mapped_by = None
             self.validated_by = None
 
         if not undo:
             # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-            TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status), user_id)
+            TaskHistory.update_task_locked_with_duration(
+                self.id, self.project_id, TaskStatus(self.task_status), user_id
+            )
 
         self.task_status = new_state.value
         self.locked_by = None
@@ -599,10 +779,14 @@ class Task(db.Model):
     def reset_lock(self, user_id, comment=None):
         """ Removes a current lock from a task, resets to last status and updates history with duration of lock """
         if comment:
-            self.set_task_history(action=TaskAction.COMMENT, comment=comment, user_id=user_id)
+            self.set_task_history(
+                action=TaskAction.COMMENT, comment=comment, user_id=user_id
+            )
 
         # Using a slightly evil side effect of Actions and Statuses having the same name here :)
-        TaskHistory.update_task_locked_with_duration(self.id, self.project_id, TaskStatus(self.task_status), user_id)
+        TaskHistory.update_task_locked_with_duration(
+            self.id, self.project_id, TaskStatus(self.task_status), user_id
+        )
         self.clear_lock()
 
     def clear_lock(self):
@@ -618,17 +802,35 @@ class Task(db.Model):
         :param project_id: Owning project ID
         :return: geojson.FeatureCollection
         """
-        project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status,
-                             Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
+        project_tasks = (
+            db.session.query(
+                Task.id,
+                Task.x,
+                Task.y,
+                Task.zoom,
+                Task.is_square,
+                Task.task_status,
+                Task.geometry.ST_AsGeoJSON().label("geojson"),
+            )
+            .filter(Task.project_id == project_id)
+            .all()
+        )
 
         tasks_features = []
         for task in project_tasks:
             task_geometry = geojson.loads(task.geojson)
-            task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
-                                   taskIsSquare=task.is_square, taskStatus=TaskStatus(task.task_status).name)
+            task_properties = dict(
+                taskId=task.id,
+                taskX=task.x,
+                taskY=task.y,
+                taskZoom=task.zoom,
+                taskIsSquare=task.is_square,
+                taskStatus=TaskStatus(task.task_status).name,
+            )
 
-            feature = geojson.Feature(geometry=task_geometry, properties=task_properties)
+            feature = geojson.Feature(
+                geometry=task_geometry, properties=task_properties
+            )
             tasks_features.append(feature)
 
         return geojson.FeatureCollection(tasks_features)
@@ -640,14 +842,24 @@ class Task(db.Model):
         :param project_id: Owning project ID
         :return: geojson.FeatureCollection
         """
-        project_tasks = \
-            db.session.query(Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status) \
-                             .filter(Task.project_id == project_id).all()
+        project_tasks = (
+            db.session.query(
+                Task.id, Task.x, Task.y, Task.zoom, Task.is_square, Task.task_status
+            )
+            .filter(Task.project_id == project_id)
+            .all()
+        )
 
         tasks_features = []
         for task in project_tasks:
-            task_properties = dict(taskId=task.id, taskX=task.x, taskY=task.y, taskZoom=task.zoom,
-                                   taskIsSquare=task.is_square, taskStatus=TaskStatus(task.task_status).name)
+            task_properties = dict(
+                taskId=task.id,
+                taskX=task.x,
+                taskY=task.y,
+                taskZoom=task.zoom,
+                taskIsSquare=task.is_square,
+                taskStatus=TaskStatus(task.task_status).name,
+            )
 
             feature = geojson.Feature(properties=task_properties)
             tasks_features.append(feature)
@@ -701,7 +913,7 @@ class Task(db.Model):
         for row in result:
             return row[0]
 
-    def as_dto_with_instructions(self, preferred_locale: str = 'en') -> TaskDTO:
+    def as_dto_with_instructions(self, preferred_locale: str = "en") -> TaskDTO:
         """ Get dto with any task instructions """
         task_history = []
         for action in self.task_history:
@@ -710,9 +922,13 @@ class Task(db.Model):
             history.action = action.action
             history.action_text = action.action_text
             history.action_date = action.action_date
-            history.action_by = action.actioned_by.username if action.actioned_by else None
+            history.action_by = (
+                action.actioned_by.username if action.actioned_by else None
+            )
             if action.task_mapping_issues:
-                history.issues = [issue.as_dto() for issue in action.task_mapping_issues]
+                history.issues = [
+                    issue.as_dto() for issue in action.task_mapping_issues
+                ]
 
             task_history.append(history)
 
@@ -727,11 +943,14 @@ class Task(db.Model):
         per_task_instructions = self.get_per_task_instructions(preferred_locale)
 
         # If we don't have instructions in preferred locale try again for default locale
-        task_dto.per_task_instructions = per_task_instructions if per_task_instructions else self.get_per_task_instructions(
-            self.projects.default_locale)
+        task_dto.per_task_instructions = (
+            per_task_instructions
+            if per_task_instructions
+            else self.get_per_task_instructions(self.projects.default_locale)
+        )
 
         annotations = self.get_per_task_annotations()
-        task_dto.task_annotations = annotations if annotations else  [] 
+        task_dto.task_annotations = annotations if annotations else []
 
         return task_dto
 
@@ -750,16 +969,16 @@ class Task(db.Model):
     def format_per_task_instructions(self, instructions) -> str:
         """ Format instructions by looking for X, Y, Z tokens and replacing them with the task values """
         if not instructions:
-            return ''  # No instructions so return empty string
+            return ""  # No instructions so return empty string
 
         properties = {}
 
         if self.x:
-            properties['x'] = str(self.x)
+            properties["x"] = str(self.x)
         if self.y:
-            properties['y'] = str(self.y)
+            properties["y"] = str(self.y)
         if self.zoom:
-            properties['z'] = str(self.zoom)
+            properties["z"] = str(self.zoom)
         if self.extra_properties:
             properties.update(json.loads(self.extra_properties))
 

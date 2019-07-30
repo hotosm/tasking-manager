@@ -1,9 +1,7 @@
-from server.models.postgis.tags import Tags
 from server.models.postgis.project import Project
 
 
 class TagsService:
-
     @staticmethod
     def get_all_organisation_tags(preferred_locale):
         """ Get all org tags"""

@@ -4,7 +4,6 @@ from server.models.postgis.utils import NotFound
 
 
 class LicenseService:
-
     @staticmethod
     def get_license(license_id: int) -> License:
         """

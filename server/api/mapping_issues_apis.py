@@ -50,14 +50,16 @@ class MappingIssueCategoryAPI(Resource):
             category_dto = MappingIssueCategoryDTO(request.get_json())
             category_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
-            new_category_id = MappingIssueCategoryService.create_mapping_issue_category(category_dto)
+            new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
+                category_dto
+            )
             return {"categoryId": new_category_id}, 200
         except Exception as e:
-            error_msg = f'Mapping-issue category POST - unhandled error: {str(e)}'
+            error_msg = f"Mapping-issue category POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -90,7 +92,7 @@ class MappingIssueCategoryAPI(Resource):
         except NotFound:
             return {"Error": "Mapping-issue category Not Found"}, 404
         except Exception as e:
-            error_msg = f'Mapping-issue category PUT - unhandled error: {str(e)}'
+            error_msg = f"Mapping-issue category PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -142,16 +144,18 @@ class MappingIssueCategoryAPI(Resource):
             category_dto.category_id = category_id
             category_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
-            updated_category = MappingIssueCategoryService.update_mapping_issue_category(category_dto)
+            updated_category = MappingIssueCategoryService.update_mapping_issue_category(
+                category_dto
+            )
             return updated_category.to_primitive(), 200
         except NotFound:
             return {"Error": "Mapping-issue category Not Found"}, 404
         except Exception as e:
-            error_msg = f'Mapping-issue category PUT - unhandled error: {str(e)}'
+            error_msg = f"Mapping-issue category PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -197,13 +201,12 @@ class MappingIssueCategoryAPI(Resource):
         except NotFound:
             return {"Error": "Mapping-issue category Not Found"}, 404
         except Exception as e:
-            error_msg = f'Mapping-issue category DELETE - unhandled error: {str(e)}'
+            error_msg = f"Mapping-issue category DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class MappingIssueCategoriesAPI(Resource):
-
     def get(self):
         """
         Gets all mapping issue categories
@@ -225,10 +228,12 @@ class MappingIssueCategoriesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            include_archived = request.args.get('includeArchived') == 'true'
-            categories = MappingIssueCategoryService.get_all_mapping_issue_categories(include_archived)
+            include_archived = request.args.get("includeArchived") == "true"
+            categories = MappingIssueCategoryService.get_all_mapping_issue_categories(
+                include_archived
+            )
             return categories.to_primitive(), 200
         except Exception as e:
-            error_msg = f'User GET - unhandled error: {str(e)}'
+            error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500

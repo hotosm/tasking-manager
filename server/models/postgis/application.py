@@ -6,10 +6,13 @@ from server.services.users.authentication_service import AuthenticationService
 
 class Application(db.Model):
     """ Describes an application that is authorized to access the TM """
+
     __tablename__ = "application_keys"
 
     id = db.Column(db.BigInteger, primary_key=True)
-    user = db.Column(db.BigInteger, db.ForeignKey('users.id', name='fk_users'), nullable=False)
+    user = db.Column(
+        db.BigInteger, db.ForeignKey("users.id", name="fk_users"), nullable=False
+    )
     app_key = db.Column(db.String, nullable=False)
     created = db.Column(db.DateTime, default=timestamp)
 
@@ -38,7 +41,11 @@ class Application(db.Model):
 
     @staticmethod
     def get_token(appkey: str):
-        return db.session.query(Application).filter(Application.app_key == appkey).one_or_none()
+        return (
+            db.session.query(Application)
+            .filter(Application.app_key == appkey)
+            .one_or_none()
+        )
 
     @staticmethod
     def get_all_for_user(user: int):

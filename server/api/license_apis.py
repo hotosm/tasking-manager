@@ -8,7 +8,6 @@ from server.services.users.authentication_service import token_auth, tm
 
 
 class LicenseAPI(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def put(self):
@@ -55,14 +54,14 @@ class LicenseAPI(Resource):
             license_dto = LicenseDTO(request.get_json())
             license_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
             new_license_id = LicenseService.create_licence(license_dto)
             return {"licenseId": new_license_id}, 200
         except Exception as e:
-            error_msg = f'License PUT - unhandled error: {str(e)}'
+            error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -95,7 +94,7 @@ class LicenseAPI(Resource):
         except NotFound:
             return {"Error": "License Not Found"}, 404
         except Exception as e:
-            error_msg = f'License PUT - unhandled error: {str(e)}'
+            error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -152,7 +151,7 @@ class LicenseAPI(Resource):
             license_dto.license_id = license_id
             license_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -161,7 +160,7 @@ class LicenseAPI(Resource):
         except NotFound:
             return {"Error": "License Not Found"}, 404
         except Exception as e:
-            error_msg = f'License POST - unhandled error: {str(e)}'
+            error_msg = f"License POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -204,13 +203,12 @@ class LicenseAPI(Resource):
         except NotFound:
             return {"Error": "License Not Found"}, 404
         except Exception as e:
-            error_msg = f'License DELETE - unhandled error: {str(e)}'
+            error_msg = f"License DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class LicenceListAPI(Resource):
-
     def get(self):
         """
         Get all imagery licenses
@@ -233,6 +231,6 @@ class LicenceListAPI(Resource):
         except NotFound:
             return {"Error": "License Not Found"}, 404
         except Exception as e:
-            error_msg = f'License PUT - unhandled error: {str(e)}'
+            error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500

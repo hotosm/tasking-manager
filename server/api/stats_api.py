@@ -5,7 +5,6 @@ from server.services.users.user_service import UserService
 
 
 class StatsContributionsAPI(Resource):
-
     def get(self, project_id):
         """
         Get all user contributions on a project
@@ -34,13 +33,12 @@ class StatsContributionsAPI(Resource):
         except NotFound:
             return {"Error": "No contributions on project"}, 404
         except Exception as e:
-            error_msg = f'User GET - unhandled error: {str(e)}'
+            error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class StatsContributionsByDayAPI(Resource):
-
     def get(self, project_id):
         """
         Get contributions by day of a project
@@ -69,13 +67,12 @@ class StatsContributionsByDayAPI(Resource):
         except NotFound:
             return {"Error": "Project not found"}, 404
         except Exception as e:
-            error_msg = f'Project contributions GET - unhandled error: {str(e)}'
+            error_msg = f"Project contributions GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class StatsActivityAPI(Resource):
-
     def get(self, project_id):
         """
         Get user actvity on a project
@@ -103,19 +100,18 @@ class StatsActivityAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            page = int(request.args.get('page')) if request.args.get('page') else 1
+            page = int(request.args.get("page")) if request.args.get("page") else 1
             activity = StatsService.get_latest_activity(project_id, page)
             return activity.to_primitive(), 200
         except NotFound:
             return {"Error": "No activity on project"}, 404
         except Exception as e:
-            error_msg = f'User GET - unhandled error: {str(e)}'
+            error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class StatsProjectAPI(Resource):
-
     def get(self, project_id):
         """
         Get Project Stats
@@ -145,19 +141,18 @@ class StatsProjectAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            # preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             summary = ProjectService.get_project_stats(project_id)
             return summary.to_primitive(), 200
         except NotFound:
             return {"Error": "Project not found"}, 404
         except Exception as e:
-            error_msg = f'Project Summary GET - unhandled error: {str(e)}'
+            error_msg = f"Project Summary GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class HomePageStatsAPI(Resource):
-
     def get(self):
         """
         Get HomePage Stats
@@ -176,13 +171,12 @@ class HomePageStatsAPI(Resource):
             stats = StatsService.get_homepage_stats()
             return stats.to_primitive(), 200
         except Exception as e:
-            error_msg = f'Unhandled error: {str(e)}'
+            error_msg = f"Unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class StatsUserAPI(Resource):
-
     def get(self, username):
         """
         Get detailed stats about user
@@ -212,13 +206,12 @@ class StatsUserAPI(Resource):
         except NotFound:
             return {"Error": "User not found"}, 404
         except Exception as e:
-            error_msg = f'User GET - unhandled error: {str(e)}'
+            error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class StatsProjectUserAPI(Resource):
-
     def get(self, project_id, username):
         """
         Get detailed stats about user
@@ -253,6 +246,6 @@ class StatsProjectUserAPI(Resource):
         except NotFound:
             return {"Error": "User not found"}, 404
         except Exception as e:
-            error_msg = f'User GET - unhandled error: {str(e)}'
+            error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500

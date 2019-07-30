@@ -1,13 +1,21 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from server.models.dtos.validator_dto import LockForValidationDTO, UnlockAfterValidationDTO, StopValidationDTO
+from server.models.dtos.validator_dto import (
+    LockForValidationDTO,
+    UnlockAfterValidationDTO,
+    StopValidationDTO,
+)
 from server.services.users.authentication_service import token_auth, tm
-from server.services.validator_service import ValidatorService, NotFound, ValidatatorServiceError, UserLicenseError
+from server.services.validator_service import (
+    ValidatorService,
+    NotFound,
+    ValidatatorServiceError,
+    UserLicenseError,
+)
 
 
 class LockTasksForValidationAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
@@ -69,10 +77,10 @@ class LockTasksForValidationAPI(Resource):
             validator_dto = LockForValidationDTO(request.get_json())
             validator_dto.project_id = project_id
             validator_dto.user_id = tm.authenticated_user_id
-            validator_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            validator_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             validator_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -85,13 +93,12 @@ class LockTasksForValidationAPI(Resource):
         except UserLicenseError:
             return {"Error": "User not accepted license terms"}, 409
         except Exception as e:
-            error_msg = f'Validator Lock API - unhandled error: {str(e)}'
+            error_msg = f"Validator Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class StopValidatingAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
@@ -150,10 +157,10 @@ class StopValidatingAPI(Resource):
             validated_dto = StopValidationDTO(request.get_json())
             validated_dto.project_id = project_id
             validated_dto.user_id = tm.authenticated_user_id
-            validated_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            validated_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             validated_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -164,13 +171,12 @@ class StopValidatingAPI(Resource):
         except NotFound as e:
             return {"Error": str(e)}, 404
         except Exception as e:
-            error_msg = f'Stop Validating API - unhandled error: {str(e)}'
+            error_msg = f"Stop Validating API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class UnlockTasksAfterValidationAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
@@ -229,10 +235,10 @@ class UnlockTasksAfterValidationAPI(Resource):
             validated_dto = UnlockAfterValidationDTO(request.get_json())
             validated_dto.project_id = project_id
             validated_dto.user_id = tm.authenticated_user_id
-            validated_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            validated_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             validated_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -243,13 +249,12 @@ class UnlockTasksAfterValidationAPI(Resource):
         except NotFound as e:
             return {"Error": str(e)}, 404
         except Exception as e:
-            error_msg = f'Validator Lock API - unhandled error: {str(e)}'
+            error_msg = f"Validator Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class MappedTasksByUser(Resource):
-
     def get(self, project_id):
         """
         Get mapped tasks grouped by user
@@ -279,13 +284,12 @@ class MappedTasksByUser(Resource):
         except NotFound:
             return {"Error": "No mapped tasks"}, 404
         except Exception as e:
-            error_msg = f'Task Lock API - unhandled error: {str(e)}'
+            error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class UserInvalidatedTasks(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self, username):
@@ -351,43 +355,40 @@ class UserInvalidatedTasks(Resource):
                 description: Internal Server Error
         """
         try:
-            sort_column = {
-                'updatedDate': 'updated_date',
-                'projectId': 'project_id'
-            }
-            if request.args.get('sortBy','updatedDate') in sort_column:
-                sort_column = sort_column[request.args.get('SortBy','updatedDate')]
+            sort_column = {"updatedDate": "updated_date", "projectId": "project_id"}
+            if request.args.get("sortBy", "updatedDate") in sort_column:
+                sort_column = sort_column[request.args.get("SortBy", "updatedDate")]
             else:
-                sort_column = sort_column['updatedDate']
+                sort_column = sort_column["updatedDate"]
 
             # closed needs to be set to True, False, or None
             closed = None
-            if request.args.get('closed') == 'true':
+            if request.args.get("closed") == "true":
                 closed = True
-            elif request.args.get('closed') == 'false':
+            elif request.args.get("closed") == "false":
                 closed = False
 
             # sort direction should only be desc or asc
-            if request.args.get('sortDirection') in ['asc','desc']:
-                sort_direction = request.args.get('sortDirection')
+            if request.args.get("sortDirection") in ["asc", "desc"]:
+                sort_direction = request.args.get("sortDirection")
             else:
-                sort_direction = 'desc'
+                sort_direction = "desc"
 
             invalidated_tasks = ValidatorService.get_user_invalidated_tasks(
-                request.args.get('asValidator') == 'true',
+                request.args.get("asValidator") == "true",
                 username,
-                request.environ.get('HTTP_ACCEPT_LANGUAGE'),
+                request.environ.get("HTTP_ACCEPT_LANGUAGE"),
                 closed,
-                request.args.get('project', None, type=int),
-                request.args.get('page', None, type=int),
-                request.args.get('pageSize', None, type=int),
+                request.args.get("project", None, type=int),
+                request.args.get("page", None, type=int),
+                request.args.get("pageSize", None, type=int),
                 sort_column,
-                sort_direction
+                sort_direction,
             )
             return invalidated_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "No invalidated tasks"}, 404
         except Exception as e:
-            error_msg = f'Invalidated Tasks API - unhandled error: {str(e)}'
+            error_msg = f"Invalidated Tasks API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500

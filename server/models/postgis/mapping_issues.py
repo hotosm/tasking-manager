@@ -1,8 +1,14 @@
 from server import db
-from server.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO, MappingIssueCategoriesDTO
+from server.models.dtos.mapping_issues_dto import (
+    MappingIssueCategoryDTO,
+    MappingIssueCategoriesDTO,
+)
+from werkzeug.exceptions import NotFound
+
 
 class MappingIssueCategory(db.Model):
     """ Represents a category of task mapping issues identified during validaton """
+
     __tablename__ = "mapping_issue_categories"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
@@ -45,7 +51,7 @@ class MappingIssueCategory(db.Model):
     def get_all_categories(include_archived):
         category_query = MappingIssueCategory.query.order_by(MappingIssueCategory.name)
         if not include_archived:
-          category_query = category_query.filter_by(archived=False)
+            category_query = category_query.filter_by(archived=False)
 
         results = category_query.all()
         if len(results) == 0:

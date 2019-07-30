@@ -7,26 +7,34 @@ from server.models.dtos.project_dto import ProjectInfoDTO
 
 class ProjectInfo(db.Model):
     """ Contains all project info localized into supported languages """
-    __tablename__ = 'project_info'
 
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), primary_key=True)
+    __tablename__ = "project_info"
+
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), primary_key=True)
     locale = db.Column(db.String(10), primary_key=True)
     name = db.Column(db.String(512))
     short_description = db.Column(db.String)
     description = db.Column(db.String)
     instructions = db.Column(db.String)
     project_id_str = db.Column(db.String)
-    text_searchable = db.Column(TSVECTOR)  # This contains searchable text and is populated by a DB Trigger
+    text_searchable = db.Column(
+        TSVECTOR
+    )  # This contains searchable text and is populated by a DB Trigger
     per_task_instructions = db.Column(db.String)
 
-    __table_args__ = (db.Index('idx_project_info_composite', 'locale', 'project_id'),
-                      db.Index('textsearch_idx', 'text_searchable'), {})
+    __table_args__ = (
+        db.Index("idx_project_info_composite", "locale", "project_id"),
+        db.Index("textsearch_idx", "text_searchable"),
+        {},
+    )
 
     @classmethod
     def create_from_name(cls, name: str):
         """ Creates a new ProjectInfo class from name, used when creating draft projects """
         new_info = cls()
-        new_info.locale = 'en'  # Draft project default to english, PMs can change this prior to publication
+        new_info.locale = (
+            "en"
+        )  # Draft project default to english, PMs can change this prior to publication
         new_info.name = name
         return new_info
 
@@ -50,7 +58,7 @@ class ProjectInfo(db.Model):
         self.per_task_instructions = dto.per_task_instructions
 
     @staticmethod
-    def get_dto_for_locale(project_id, locale, default_locale='en') -> ProjectInfoDTO:
+    def get_dto_for_locale(project_id, locale, default_locale="en") -> ProjectInfoDTO:
         """
         Gets the projectInfoDTO for the project for the requested locale. If not found, then the default locale is used
         :param project_id: ProjectID in scope
@@ -58,22 +66,27 @@ class ProjectInfo(db.Model):
         :param default_locale: default locale of project
         :raises: ValueError if no info found for Default Locale
         """
-        project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=locale).one_or_none()
+        project_info = ProjectInfo.query.filter_by(
+            project_id=project_id, locale=locale
+        ).one_or_none()
 
         if project_info is None:
             # If project is none, get default locale and don't worry about empty translations
-            project_info = ProjectInfo.query.filter_by(project_id=project_id, locale=default_locale).one_or_none()
+            project_info = ProjectInfo.query.filter_by(
+                project_id=project_id, locale=default_locale
+            ).one_or_none()
             return project_info.get_dto()
 
         if locale == default_locale:
             # If locale == default_locale don't need to worry about empty translations
             return project_info.get_dto()
 
-        default_locale = ProjectInfo.query.filter_by(project_id=project_id, locale=default_locale).one_or_none()
+        default_locale = ProjectInfo.query.filter_by(
+            project_id=project_id, locale=default_locale
+        ).one_or_none()
 
         if default_locale is None:
-            error_message = \
-                f'BAD DATA - no info found for project {project_id}, locale: {locale}, default {default_locale}'
+            error_message = f"BAD DATA: no info for project {project_id}, locale: {locale}, default {default_locale}"
             current_app.logger.critical(error_message)
             raise ValueError(error_message)
 
@@ -88,10 +101,22 @@ class ProjectInfo(db.Model):
         project_info_dto = ProjectInfoDTO()
         project_info_dto.locale = self.locale
         project_info_dto.name = self.name if self.name else default_locale.name
-        project_info_dto.description = self.description if self.description else default_locale.description
-        project_info_dto.short_description = self.short_description if self.short_description else default_locale.short_description
-        project_info_dto.instructions = self.instructions if self.instructions else default_locale.instructions
-        project_info_dto.per_task_instructions = self.per_task_instructions if self.per_task_instructions else default_locale.per_task_instructions
+        project_info_dto.description = (
+            self.description if self.description else default_locale.description
+        )
+        project_info_dto.short_description = (
+            self.short_description
+            if self.short_description
+            else default_locale.short_description
+        )
+        project_info_dto.instructions = (
+            self.instructions if self.instructions else default_locale.instructions
+        )
+        project_info_dto.per_task_instructions = (
+            self.per_task_instructions
+            if self.per_task_instructions
+            else default_locale.per_task_instructions
+        )
 
         return project_info_dto
 

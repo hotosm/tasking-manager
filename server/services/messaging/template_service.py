@@ -10,15 +10,17 @@ def get_template(template_name: str) -> str:
     :return: Template as a string
     """
     try:
-        template_location = os.path.join(os.path.dirname(__file__), 'templates/{0}'.format(template_name))
-        with open(template_location, mode='r', encoding='utf-8') as template:
+        template_location = os.path.join(
+            os.path.dirname(__file__), "templates/{0}".format(template_name)
+        )
+        with open(template_location, mode="r", encoding="utf-8") as template:
             return template.read()
     except FileNotFoundError:
-        current_app.logger.error('Unable open file {0}'.format(template_location))
-        raise ValueError('Unable open file {0}'.format(template_location))
+        current_app.logger.error("Unable open file {0}".format(template_location))
+        raise ValueError("Unable open file {0}".format(template_location))
 
 
 def get_profile_url(username: str):
     """ Helper function returns the URL of the supplied users profile """
-    base_url = current_app.config['APP_BASE_URL']
-    return f'{base_url}/user/{urllib.parse.quote(username)}'
+    base_url = current_app.config["APP_BASE_URL"]
+    return f"{base_url}/user/{urllib.parse.quote(username)}"
