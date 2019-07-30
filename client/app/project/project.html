@@ -133,7 +133,8 @@
             <div ng-hide="projectCtrl.errorGetProject || projectCtrl.loaded === false">
                 <div class="form__group" >
                     <ul class="tab--wrapper">
-                        <li ng-click="projectCtrl.currentTab = 'instructions'; projectCtrl.showWarning = false"
+                        <!-- <li ng-click="projectCtrl.currentTab = 'instructions'; projectCtrl.showWarning = false" -->
+                        <li ng-click="projectCtrl.currentTab = 'instructions'"
                             title="{{ 'Go to the instructions tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'instructions'? 'active':''">
@@ -141,7 +142,8 @@
                                 {{ 'Instructions' | translate }}
                             </a>
                         </li>
-                        <li ng-click="projectCtrl.currentTab = 'mapping'; projectCtrl.showWarning = false"
+                        <!-- <li ng-click="projectCtrl.currentTab = 'mapping'; projectCtrl.showWarning = false" -->
+                        <li ng-click="projectCtrl.currentTab = 'instructions'"
                             title="{{ 'Go to the mapping tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'mapping'? 'active':''">
@@ -149,7 +151,8 @@
                                 {{ 'Map' | translate }}
                             </a>
                         </li>
-                        <li ng-click="projectCtrl.currentTab = 'validation'; projectCtrl.showWarning = false"
+                        <!-- <li ng-click="projectCtrl.currentTab = 'validation'; projectCtrl.showWarning = false" -->
+                        <li ng-click="projectCtrl.currentTab = 'instructions'"
                             title="{{ 'Go to the validation tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'validation'? 'active':''">
@@ -157,7 +160,8 @@
                                 {{ 'Validate' | translate }}
                             </a>
                         </li>
-                        <li ng-click="projectCtrl.currentTab = 'chat'; projectCtrl.showWarning = false"
+                        <!-- <li ng-click="projectCtrl.currentTab = 'chat'; projectCtrl.showWarning = false" -->
+                        <li ng-click="projectCtrl.currentTab = 'instructions'"
                             title="{{ 'Go to the chat tab' | translate }}"
                             class='tab--item'
                             ng-class="projectCtrl.currentTab == 'chat'? 'active':''">
@@ -404,8 +408,7 @@
                                         <!-- task action buttons -->
                                         <div class="form__group form__group--section">
                                             <div ng-show="!(projectCtrl.enforceRandomTaskSelection() && projectCtrl.randomTaskSelectionError)">
-                                                <!--
-                                                <div ng-hide="projectCtrl.user.emailAddress">
+                                                <div ng-hide="projectCtrl.user.emailAddress || true">
                                                     <p>
                                                         {{ 'When you contribute on the Tasking Manager, it is important that notifications around the tasks and projects you participated are reaching you. Thus we require your email address.' | translate }}
                                                         <a href="/user/{{ projectCtrl.user.username }}">{{ 'Please go to your profile and add your email address' | translate }}</a>.<br /><br />
@@ -413,7 +416,6 @@
                                                         <a href="https://hotosm.org/privacy">{{ 'how we handle your data' | translate }}</a>.
                                                     </p>
                                                 </div>
-                                                -->
                                                 <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap && projectCtrl.user.emailAddress"
                                                         class="button button--large"
                                                         ng-click="projectCtrl.lockSelectedTaskMapping()">
@@ -632,16 +634,14 @@
                                             role="alert">
                                         <p>{{ 'You cannot select tasks for validation on this project because you do not have the Validator role.' | translate }}</p>
                                     </div>
-                                    <!--
-                                    <div ng-hide="!projectCtrl.user || projectCtrl.user.emailAddress">
+                                    <div ng-hide="projectCtrl.user.emailAddress || true">
                                         <p>
                                             {{ 'When you contribute to the Tasking Manager, it is important that notifications about the tasks and projects you contributed to are reaching you.' | translate }} {{ 'Before you begin mapping:' | translate }}
                                             <a href="/user/{{ projectCtrl.user.username }}">{{ 'Please go to your profile and add your email address' | translate }}</a>.<br /><br />
                                             <a href="https://hotosm.org/privacy">{{ 'See here' | translate }}</a> {{ 'for more information about how HOT will use and share your data.' | translate }}
                                         </p>
                                     </div>
-                                    -->
-                                    <div ng-show="projectCtrl.userCanValidate && !project.showWarning">
+                                    <div ng-show="projectCtrl.userCanValidate && (!project.showWarning || true)">
                                         <p class="description--block">{{ 'Find a task for validation through one of the options below.' | translate }}</p>
                                         <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
                                             <div class="error" role="alert">
@@ -822,16 +822,14 @@
                                     <!-- task action buttons -->
                                     <div class="form__group form__group--section">
                                         <div>
-                                            <!--
-                                            <div ng-hide="!projectCtrl.user || projectCtrl.user.emailAddress">
+                                            <div ng-hide="projectCtrl.user.emailAddress || true">
                                                 <p>
                                                     {{ 'When you contribute to the Tasking Manager, it is important that notifications about the tasks and projects you contributed to are reaching you.' | translate }} {{ 'Before you begin mapping:' | translate }}
                                                     <a href="/user/{{ projectCtrl.user.username }}">{{ 'Please go to your profile and add your email address' | translate }}</a>.<br /><br />
                                                     <a href="https://hotosm.org/privacy">{{ 'See here' | translate }}</a> {{ 'for more information about how HOT will use and share your data.' | translate }}
                                                 </p>
                                             </div>
-                                            -->
-                                            <button ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError && projectCtrl.userCanValidate && projectCtrl.user.emailAddress"
+                                            <button ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError && projectCtrl.userCanValidate && (projectCtrl.user.emailAddress || true)"
                                                     class="button button--large"
                                                     ng-click="projectCtrl.lockSelectedTaskValidation()">
                                                 {{ 'Start Validating' | translate }}
@@ -1088,12 +1086,11 @@
                         </div>
                         <div ng-show="projectCtrl.currentTab === 'chat'">
                             <h3>{{ 'Project Questions and Comments' | translate }}</h3>
-                            <div ng-show="projectCtrl.user.emailAddress">
+                            <div ng-show="projectCtrl.user.emailAddress || true">
                                 <project-chat project-id="projectCtrl.id"
                                             project-author="projectCtrl.projectData.author" role="projectCtrl.user.role"></project-chat>
                             </div>
-                            <!--
-                            <div ng-hide="!projectCtrl.user || projectCtrl.user.emailAddress">
+                            <div ng-hide="projectCtrl.user.emailAddress || true">
                                 <p>
                                     {{ 'When you contribute to the Tasking Manager, it is important that notifications about the tasks and projects you contributed to are reaching you.' | translate }} {{ 'Before you begin mapping:' | translate }}
                                     <a href="/user/{{ projectCtrl.user.username }}">{{ 'Please go to your profile and add your email address' | translate }}</a>.<br /><br />
