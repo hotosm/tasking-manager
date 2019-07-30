@@ -1,8 +1,0 @@
-<div ng-if="mapperLevelCtrl.mapperLevel()"
-     class="mapper-level-indicator {{ mapperLevelCtrl.mapperLevel() | lowercase }}">
-    <span class="mapper-level-indicator__icon fa fa-trophy" ng-click="mapperLevelCtrl.goToProfile()"
-          title="{{ mapperLevelCtrl.mapperLevel() | lowercase | translate }} {{ 'mapper' | translate }}"></span>
-    <span ng-if="mapperLevelCtrl.label" class="mapper-level-indicator__label">
-        {{ mapperLevelCtrl.mapperLevel() | lowercase | translate }} {{ 'Mapper' | translate }}
-    </span>
-</div>
