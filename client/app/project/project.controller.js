@@ -51,7 +51,7 @@
         vm.isAuthorized = false;
 
         //Email warning modal
-        vm.showWarning = false;
+        // vm.showWarning = false;
 
         //status flags
         vm.isSelectedMappable = false;
@@ -108,7 +108,7 @@
         activate();
 
         function activate() {
-            vm.showWarning = false;
+            // vm.showWarning = false;
             vm.currentTab = 'instructions';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
@@ -1446,8 +1446,8 @@
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskMapping = function () {
-            console.log(vm.user);
-            if(vm.user.isEmailVerified){
+            // console.log(vm.user);
+            // if(vm.user.isEmailVerified){
                 vm.lockingReason = 'MAPPING';
                 var projectId = vm.projectData.projectId;
                 var taskId = vm.selectedTaskData.taskId;
@@ -1477,9 +1477,9 @@
                 }, function (error) {
                     onLockError(projectId, error);
                 });
-            }
-            else
-                vm.showWarning = true;
+            // }
+            // else
+            //     vm.showWarning = true;
         };
 
 
@@ -1517,7 +1517,7 @@
          * Call api to lock currently selected task for validation.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
-            if(vm.user.isEmailVerified){
+            // if(vm.user.isEmailVerified){
                 vm.lockingReason = 'VALIDATION';
                 var projectId = vm.projectData.projectId;
                 var taskId = vm.selectedTaskData.taskId;
@@ -1547,9 +1547,9 @@
                 }, function (error) {
                     onLockError(projectId, error);
                 });
-            }
-            else
-                vm.showWarning = true;
+            // }
+            // else
+            //     vm.showWarning = true;
         };
 
         vm.josmBBoxFromViewport = function(zoom, lat, lon) {
@@ -2043,7 +2043,7 @@
          * @param doneTaskIds - array of task ids
          */
         vm.lockTasksForValidation = function (doneTaskIds) {
-            if(vm.user.isEmailVerified){
+            // if(vm.user.isEmailVerified){
                 vm.selectInteraction.getFeatures().clear();
 
                 //use doneTaskIds to get corresponding subset of tasks for selection from the project
@@ -2084,9 +2084,9 @@
                 }, function (error) {
                     onLockError(vm.projectData.projectId, error);
                 });
-            }
-            else
-                vm.showWarning = true;
+            // }
+            // else
+            //     vm.showWarning = true;
         };
 
         vm.resetToSelectingStep = function () {
