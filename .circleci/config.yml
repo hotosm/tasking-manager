@@ -40,13 +40,13 @@ jobs:
           ${CIRCLE_WORKING_DIRECTORY}/env/bin/pip install --upgrade pip
           ${CIRCLE_WORKING_DIRECTORY}/env/bin/pip install -r requirements.txt
     - run:
-        name: Run server python code linting
+        name: Run backend code checks
         command: |
           cd ${CIRCLE_WORKING_DIRECTORY}
           mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/server/lint
           . ${CIRCLE_WORKING_DIRECTORY}/env/bin/activate
-          black --check manage.py server tests
-          flake8 manage.py server tests
+          black --check manage.py server tests migrations
+          flake8 manage.py server tests migrations
     - run:
         name: Run JS Unit tests
         command: |
