@@ -62,10 +62,14 @@ function getLogoClass(organisationTag: String) {
       organisationTag: "Médecins Sans Frontières"
     }];
   if (organisationTag.organisationTag) {
-    return orgs.find((a) => a.organisationTag === organisationTag.organisationTag).className
+    console.log(organisationTag.organisationTag)
+    const searchResult = orgs.find((a) => a.organisationTag === organisationTag.organisationTag)
+    return searchResult && searchResult.className
   } else {
     return null
   }
+  
+
   
 }
 
@@ -99,7 +103,7 @@ export function ProjectCard({
         <div className="w-50 red dib"><ProjectOrgLogo organisationTag={organisationTag} /></div>
         <div className="ma1 w-100">
           <div className="f7 blue-grey">#{projectId}</div>
-          <h3 className="pb2 f5 fw6 h3 lh-title overflow-y-visible">
+          <h3 title={name} className="pb2 f5 fw6 h3 block-with-text lh-title overflow-y-hidden">
             {name}
           </h3>
           <div className="tc f6">
