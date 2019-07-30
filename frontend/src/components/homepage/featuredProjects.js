@@ -160,8 +160,6 @@ export function FeaturedProjects() {
         </ReactPlaceholder>
       </div>
     </section>
-
-      </>
   );
 }
 
@@ -178,7 +176,7 @@ const useFeaturedProjectAPI = (initialData) => {
     isLoading: true,
     isError: false,
     activeProjectCardPageMobile: 0,
-    activeProjectCardPage: 0,
+    activeProjectCardPage: 0, 
     projects: initialData,
   });
 
