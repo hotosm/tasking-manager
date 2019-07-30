@@ -8,10 +8,13 @@ from server.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO, Pagin
 
 class ProjectChat(db.Model):
     """ Contains all project info localized into supported languages """
-    __tablename__ = 'project_chat'
+
+    __tablename__ = "project_chat"
     id = db.Column(db.BigInteger, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), index=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    project_id = db.Column(
+        db.Integer, db.ForeignKey("projects.id"), index=True, nullable=False
+    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     time_stamp = db.Column(db.DateTime, nullable=False, default=timestamp)
     message = db.Column(db.String, nullable=False)
 
@@ -21,7 +24,7 @@ class ProjectChat(db.Model):
     @classmethod
     def create_from_dto(cls, dto: ChatMessageDTO):
         """ Creates a new ProjectInfo class from dto, used from project edit """
-        current_app.logger.debug('Create chat message from DTO')
+        current_app.logger.debug("Create chat message from DTO")
         new_message = cls()
         new_message.project_id = dto.project_id
         new_message.user_id = dto.user_id
@@ -38,9 +41,11 @@ class ProjectChat(db.Model):
     def get_messages(project_id: int, page: int) -> ProjectChatDTO:
         """ Get all messages on the project """
 
-        project_messages = ProjectChat.query.filter_by(project_id=project_id).order_by(
-            ProjectChat.time_stamp.desc()).paginate(
-            page, 50, True)
+        project_messages = (
+            ProjectChat.query.filter_by(project_id=project_id)
+            .order_by(ProjectChat.time_stamp.desc())
+            .paginate(page, 50, True)
+        )
 
         if project_messages.total == 0:
             raise NotFound()

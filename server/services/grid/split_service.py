@@ -1,5 +1,11 @@
 import geojson
-from shapely.geometry import mapping, Polygon, MultiPolygon, LineString, Point, shape as shapely_shape
+from shapely.geometry import (
+    mapping,
+    Polygon,
+    MultiPolygon,
+    LineString,
+    shape as shapely_shape,
+)
 from shapely.ops import split
 from server import db
 from flask import current_app
@@ -37,8 +43,9 @@ class SplitService:
             task_geojson = False
 
             if task and not task.is_square:
-                query = db.session.query(Task.id, Task.geometry.ST_AsGeoJSON().label('geometry')) \
-                    .filter(Task.id == task.id, Task.project_id == task.project_id)
+                query = db.session.query(
+                    Task.id, Task.geometry.ST_AsGeoJSON().label("geometry")
+                ).filter(Task.id == task.id, Task.project_id == task.project_id)
 
                 task_geojson = geojson.loads(query[0].geometry)
             split_geoms = []
@@ -52,9 +59,13 @@ class SplitService:
                     feature.geometry = new_square
                     feature_shape = shapely_shape(feature.geometry)
                     if task and not task.is_square:
-                        intersection = shapely_shape(task_geojson).intersection(feature_shape)
+                        intersection = shapely_shape(task_geojson).intersection(
+                            feature_shape
+                        )
                         multipolygon = MultiPolygon([intersection])
-                        feature.geometry = geojson.loads(geojson.dumps(mapping(multipolygon)))
+                        feature.geometry = geojson.loads(
+                            geojson.dumps(mapping(multipolygon))
+                        )
 
                     if task and not task.is_square:
                         is_square = False
@@ -62,18 +73,18 @@ class SplitService:
                         is_square = True
 
                     feature.properties = {
-                        'x': new_x,
-                        'y': new_y,
-                        'zoom': new_zoom,
-                        'isSquare': is_square
+                        "x": new_x,
+                        "y": new_y,
+                        "zoom": new_zoom,
+                        "isSquare": is_square,
                     }
 
-                    if (len(feature.geometry.coordinates) > 0):
+                    if len(feature.geometry.coordinates) > 0:
                         split_geoms.append(feature)
 
             return split_geoms
         except Exception as e:
-            raise SplitServiceError(f'unhandled error splitting tile: {str(e)}')
+            raise SplitServiceError(f"unhandled error splitting tile: {str(e)}")
 
     @staticmethod
     def _create_square(x, y, zoom) -> geojson.MultiPolygon:
@@ -98,14 +109,17 @@ class SplitService:
         ymax = (y + 1) * step - max
 
         # make a shapely multipolygon
-        multipolygon = MultiPolygon([Polygon([(xmin, ymin), (xmax, ymin),
-                                              (xmax, ymax), (xmin, ymax)])])
+        multipolygon = MultiPolygon(
+            [Polygon([(xmin, ymin), (xmax, ymin), (xmax, ymax), (xmin, ymax)])]
+        )
 
         # use the database to transform the geometry from 3857 to 4326
         transformed_geometry = ST_Transform(shape.from_shape(multipolygon, 3857), 4326)
 
         # use DB to get the geometry as geojson
-        return geojson.loads(db.engine.execute(transformed_geometry.ST_AsGeoJSON()).scalar())
+        return geojson.loads(
+            db.engine.execute(transformed_geometry.ST_AsGeoJSON()).scalar()
+        )
 
     @staticmethod
     def _create_split_tasks_from_geometry(task) -> list:
@@ -115,8 +129,9 @@ class SplitService:
         :return: list of {geojson.Feature}
         """
         # Load the task's geometry and calculate its centroid and bbox
-        query = db.session.query(Task.id, Task.geometry.ST_AsGeoJSON().label('geometry')) \
-            .filter(Task.id == task.id, Task.project_id == task.project_id)
+        query = db.session.query(
+            Task.id, Task.geometry.ST_AsGeoJSON().label("geometry")
+        ).filter(Task.id == task.id, Task.project_id == task.project_id)
         task_geojson = geojson.loads(query[0].geometry)
         geometry = shapely_shape(task_geojson)
         centroid = geometry.centroid
@@ -127,9 +142,13 @@ class SplitService:
         vertical_dividing_line = LineString([(centroid.x, miny), (centroid.x, maxy)])
         horizontal_dividing_line = LineString([(minx, centroid.y), (maxx, centroid.y)])
 
-        vertical_halves = SplitService._as_halves(split(geometry, vertical_dividing_line), centroid, 'x')
+        vertical_halves = SplitService._as_halves(
+            split(geometry, vertical_dividing_line), centroid, "x"
+        )
         for half in vertical_halves:
-            split_geometries += SplitService._as_halves(split(half, horizontal_dividing_line), centroid, 'y')
+            split_geometries += SplitService._as_halves(
+                split(half, horizontal_dividing_line), centroid, "y"
+            )
 
         # convert split geometries into GeoJSON features expected by Task
         split_features = []
@@ -137,11 +156,13 @@ class SplitService:
             feature = geojson.Feature()
             # Tasks expect multipolygons. Convert and use the database to get as GeoJSON
             multipolygon_geometry = shape.from_shape(split_geometry, 4326)
-            feature.geometry = geojson.loads(db.engine.execute(multipolygon_geometry.ST_AsGeoJSON()).scalar())
-            feature.properties['x'] = None
-            feature.properties['y'] = None
-            feature.properties['zoom'] = None
-            feature.properties['isSquare'] = False
+            feature.geometry = geojson.loads(
+                db.engine.execute(multipolygon_geometry.ST_AsGeoJSON()).scalar()
+            )
+            feature.properties["x"] = None
+            feature.properties["y"] = None
+            feature.properties["zoom"] = None
+            feature.properties["isSquare"] = False
             split_features.append(feature)
         return split_features
 
@@ -153,8 +174,14 @@ class SplitService:
         with geometries greater than the centroid position -- and returns a tuple
         of two MultiPolygons
         """
-        first_half = [g for g in geometries if getattr(g.centroid, axis) <= getattr(centroid, axis)]
-        second_half = [g for g in geometries if getattr(g.centroid, axis) > getattr(centroid, axis)]
+        first_half = [
+            g
+            for g in geometries
+            if getattr(g.centroid, axis) <= getattr(centroid, axis)
+        ]
+        second_half = [
+            g for g in geometries if getattr(g.centroid, axis) > getattr(centroid, axis)
+        ]
         return (MultiPolygon(first_half), MultiPolygon(second_half))
 
     @staticmethod
@@ -173,17 +200,18 @@ class SplitService:
 
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
-            raise SplitServiceError('Status must be LOCKED_FOR_MAPPING to split')
+            raise SplitServiceError("Status must be LOCKED_FOR_MAPPING to split")
 
         if original_task.locked_by != split_task_dto.user_id:
-            raise SplitServiceError('Attempting to split a task owned by another user')
+            raise SplitServiceError("Attempting to split a task owned by another user")
 
         # create new geometries from the task geometry
         try:
-            new_tasks_geojson = SplitService._create_split_tasks(original_task.x, original_task.y, original_task.zoom,
-                                                                 original_task)
+            new_tasks_geojson = SplitService._create_split_tasks(
+                original_task.x, original_task.y, original_task.zoom, original_task
+            )
         except Exception as e:
-            raise SplitServiceError(f'Error splitting task{str(e)}')
+            raise SplitServiceError(f"Error splitting task{str(e)}")
 
         # create new tasks from the new geojson
         i = Task.get_max_task_id_for_project(split_task_dto.project_id)
@@ -197,12 +225,18 @@ class SplitService:
             new_task.create()
             new_task.task_history.extend(original_task.copy_task_history())
             if new_task.task_history:
-                new_task.clear_task_lock() # since we just copied the lock
-            new_task.set_task_history(TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.SPLIT)
-            new_task.set_task_history(TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.READY)
+                new_task.clear_task_lock()  # since we just copied the lock
+            new_task.set_task_history(
+                TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.SPLIT
+            )
+            new_task.set_task_history(
+                TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.READY
+            )
             new_task.task_status = TaskStatus.READY.value
             new_task.update()
-            new_tasks_dto.append(new_task.as_dto_with_instructions(split_task_dto.preferred_locale))
+            new_tasks_dto.append(
+                new_task.as_dto_with_instructions(split_task_dto.preferred_locale)
+            )
 
         # delete original task from the database
         original_task.delete()
@@ -211,7 +245,9 @@ class SplitService:
         project = Project.get(split_task_dto.project_id)
         project.total_tasks = project.tasks.count()
         # update bad imagery because we may have split a bad imagery tile
-        project.tasks_bad_imagery = project.tasks.filter(Task.task_status == TaskStatus.BADIMAGERY.value).count()
+        project.tasks_bad_imagery = project.tasks.filter(
+            Task.task_status == TaskStatus.BADIMAGERY.value
+        ).count()
         project.save()
 
         # return the new tasks in a DTO

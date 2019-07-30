@@ -1,14 +1,16 @@
-from server.models.postgis.utils import InvalidData, InvalidGeoJson, timestamp, NotFound
+from server.models.postgis.utils import timestamp, NotFound
 from server import db
 from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from server.models.dtos.project_dto import ProjectTaskAnnotationsDTO
 
+
 class TaskAnnotation(db.Model):
     """ Describes Task annotaions like derived ML attributes """
+
     __tablename__ = "task_annotations"
 
     id = db.Column(db.Integer, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'),  index=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), index=True)
     task_id = db.Column(db.Integer, nullable=False)
     annotation_type = db.Column(db.String, nullable=False)
     annotation_source = db.Column(db.String)
@@ -17,9 +19,24 @@ class TaskAnnotation(db.Model):
     properties = db.Column(db.JSON, nullable=False)
 
     __table_args__ = (
-        db.ForeignKeyConstraint([task_id, project_id], ['tasks.id', 'tasks.project_id'], name='fk_task_annotations'), db.Index('idx_task_annotations_composite', 'task_id', 'project_id'), {})
+        db.ForeignKeyConstraint(
+            [task_id, project_id],
+            ["tasks.id", "tasks.project_id"],
+            name="fk_task_annotations",
+        ),
+        db.Index("idx_task_annotations_composite", "task_id", "project_id"),
+        {},
+    )
 
-    def __init__(self, task_id, project_id, annotation_type, properties, annotation_source=None, annotation_markdown=None):
+    def __init__(
+        self,
+        task_id,
+        project_id,
+        annotation_type,
+        properties,
+        annotation_source=None,
+        annotation_markdown=None,
+    ):
         self.task_id = task_id
         self.project_id = project_id
         self.annotation_type = annotation_type
@@ -45,7 +62,8 @@ class TaskAnnotation(db.Model):
     def get_task_annotation(task_id, project_id, annotation_type):
         """ Get annotations for a task with supplied type """
         return TaskAnnotation.query.filter_by(
-            project_id=project_id, task_id=task_id, annotation_type=annotation_type).one_or_none()
+            project_id=project_id, task_id=task_id, annotation_type=annotation_type
+        ).one_or_none()
 
     def get_dto(self):
         task_annotation_dto = TaskAnnotationDTO()
@@ -59,7 +77,9 @@ class TaskAnnotation(db.Model):
     @staticmethod
     def get_task_annotations_by_project_id_type(project_id, annotation_type):
         """ Get annotatiols for a project with the supplied type """
-        project_task_annotations = TaskAnnotation.query.filter_by(project_id=project_id, annotation_type=annotation_type).all()
+        project_task_annotations = TaskAnnotation.query.filter_by(
+            project_id=project_id, annotation_type=annotation_type
+        ).all()
 
         if project_task_annotations:
             project_task_annotations_dto = ProjectTaskAnnotationsDTO()
@@ -70,7 +90,7 @@ class TaskAnnotation(db.Model):
                 task_annotation_dto.properties = row.properties
                 task_annotation_dto.annotation_type = row.annotation_type
                 task_annotation_dto.annotation_source = row.annotation_source
-                task_annotation_dto.annotation_markdown = self.annotation_markdown
+                task_annotation_dto.annotation_markdown = row.annotation_markdown
                 project_task_annotations_dto.tasks.append(task_annotation_dto)
 
             return project_task_annotations_dto
@@ -80,7 +100,9 @@ class TaskAnnotation(db.Model):
     @staticmethod
     def get_task_annotations_by_project_id(project_id):
         """ Get annotatiols for a project with the supplied type """
-        project_task_annotations = TaskAnnotation.query.filter_by(project_id=project_id).all()
+        project_task_annotations = TaskAnnotation.query.filter_by(
+            project_id=project_id
+        ).all()
 
         if project_task_annotations:
             project_task_annotations_dto = ProjectTaskAnnotationsDTO()

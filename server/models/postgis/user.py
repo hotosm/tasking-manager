@@ -1,17 +1,26 @@
 import geojson
-import datetime
-import dateutil.parser
 from server import db
 from sqlalchemy import desc, text
-from server.models.dtos.user_dto import UserDTO, UserMappedProjectsDTO, MappedProject, UserFilterDTO, Pagination, \
-    UserSearchQuery, UserSearchDTO, ProjectParticipantUser, ListedUser
+from server.models.dtos.user_dto import (
+    UserDTO,
+    UserMappedProjectsDTO,
+    MappedProject,
+    UserFilterDTO,
+    Pagination,
+    UserSearchQuery,
+    UserSearchDTO,
+    ProjectParticipantUser,
+    ListedUser,
+)
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
 from server.models.postgis.utils import NotFound, timestamp
 
+
 class User(db.Model):
     """ Describes the history associated with a task """
+
     __tablename__ = "users"
 
     id = db.Column(db.BigInteger, primary_key=True, index=True)
@@ -60,10 +69,16 @@ class User(db.Model):
 
     def update(self, user_dto: UserDTO):
         """ Update the user details """
-        self.email_address = user_dto.email_address.lower() if user_dto.email_address else None
+        self.email_address = (
+            user_dto.email_address.lower() if user_dto.email_address else None
+        )
         self.twitter_id = user_dto.twitter_id.lower() if user_dto.twitter_id else None
-        self.facebook_id = user_dto.facebook_id.lower() if user_dto.facebook_id else None
-        self.linkedin_id = user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
+        self.facebook_id = (
+            user_dto.facebook_id.lower() if user_dto.facebook_id else None
+        )
+        self.linkedin_id = (
+            user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
+        )
         self.validation_message = user_dto.validation_message
         db.session.commit()
 
@@ -86,9 +101,11 @@ class User(db.Model):
 
         # Add filter to query as required
         if query.mapping_level:
-            base = base.filter(User.mapping_level == MappingLevel[query.mapping_level.upper()].value)
+            base = base.filter(
+                User.mapping_level == MappingLevel[query.mapping_level.upper()].value
+            )
         if query.username:
-            base = base.filter(User.username.ilike(query.username.lower() + '%'))
+            base = base.filter(User.username.ilike(query.username.lower() + "%"))
         if query.role:
             base = base.filter(User.role == UserRole[query.role.upper()].value)
 
@@ -112,25 +129,31 @@ class User(db.Model):
         """ Get all users in DB"""
         return db.session.query(User.id).all()
 
-
     @staticmethod
-    def filter_users(user_filter: str, project_id: int, page: int, 
-                     is_project_manager:bool=False) -> UserFilterDTO:
+    def filter_users(
+        user_filter: str, project_id: int, page: int, is_project_manager: bool = False
+    ) -> UserFilterDTO:
         """ Finds users that matches first characters, for auto-complete.
 
         Users who have participated (mapped or validated) in the project, if given, will be
         returned ahead of those who have not.
         """
         # Note that the projects_mapped column includes both mapped and validated projects.
-        query = db.session.query(User.username, User.projects_mapped.any(project_id).label("participant")) \
-            .filter(User.username.ilike(user_filter.lower() + '%')) \
+        query = (
+            db.session.query(
+                User.username, User.projects_mapped.any(project_id).label("participant")
+            )
+            .filter(User.username.ilike(user_filter.lower() + "%"))
             .order_by(desc("participant").nullslast(), User.username)
+        )
 
         if is_project_manager:
-            query = query.filter(User.role.in_([UserRole.ADMIN.value, UserRole.PROJECT_MANAGER.value]))
+            query = query.filter(
+                User.role.in_([UserRole.ADMIN.value, UserRole.PROJECT_MANAGER.value])
+            )
 
         results = query.paginate(page, 20, True)
-            
+
         if results.total == 0:
             raise NotFound()
 
@@ -156,20 +179,22 @@ class User(db.Model):
         if result.rowcount > 0:
             return  # User has previously mapped this project so return
 
-        sql = '''update users
+        sql = """update users
                     set projects_mapped = array_append(projects_mapped, :project_id)
-                  where id = :user_id'''
+                  where id = :user_id"""
 
         db.engine.execute(text(sql), project_id=project_id, user_id=user_id)
 
     @staticmethod
-    def get_mapped_projects(user_id: int, preferred_locale: str) -> UserMappedProjectsDTO:
+    def get_mapped_projects(
+        user_id: int, preferred_locale: str
+    ) -> UserMappedProjectsDTO:
         """ Get all projects a user has mapped on """
 
         # This query looks scary, but we're really just creating an outer join between the query that gets the
         # counts of all mapped tasks and the query that gets counts of all validated tasks.  This is necessary to
         # handle cases where users have only validated tasks on a project, or only mapped on a project.
-        sql = '''SELECT p.id,
+        sql = """SELECT p.id,
                         p.status,
                         p.default_locale,
                         c.mapped,
@@ -193,7 +218,7 @@ class User(db.Model):
                             AND t.mapped_by = :user_id
                           GROUP BY t.project_id, t.mapped_by) m
                          ON v.project_id = m.project_id) c
-                   WHERE p.id = c.project_id ORDER BY p.id DESC'''
+                   WHERE p.id = c.project_id ORDER BY p.id DESC"""
 
         results = db.engine.execute(text(sql), user_id=user_id)
 
@@ -209,7 +234,9 @@ class User(db.Model):
             mapped_project.tasks_validated = row[4]
             mapped_project.centroid = geojson.loads(row[5])
 
-            project_info = ProjectInfo.get_dto_for_locale(row[0], preferred_locale, row[2])
+            project_info = ProjectInfo.get_dto_for_locale(
+                row[0], preferred_locale, row[2]
+            )
             mapped_project.name = project_info.name
 
             mapped_projects_dto.mapped_projects.append(mapped_project)
@@ -258,7 +285,7 @@ class User(db.Model):
         try:
             user_dto.projects_mapped = len(self.projects_mapped)
         # Handle users that haven't touched a project yet.
-        except:
+        except Exception:
             user_dto.projects_mapped = 0
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated

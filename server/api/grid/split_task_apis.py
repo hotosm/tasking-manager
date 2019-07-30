@@ -62,10 +62,12 @@ class SplitTaskAPI(Resource):
             split_task_dto.user_id = tm.authenticated_user_id
             split_task_dto.project_id = project_id
             split_task_dto.task_id = task_id
-            split_task_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            split_task_dto.preferred_locale = request.environ.get(
+                "HTTP_ACCEPT_LANGUAGE"
+            )
             split_task_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
         try:
             tasks = SplitService.split_task(split_task_dto)
@@ -75,6 +77,6 @@ class SplitTaskAPI(Resource):
         except SplitServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
-            error_msg = f'Task Split API - unhandled error: {str(e)}'
+            error_msg = f"Task Split API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500

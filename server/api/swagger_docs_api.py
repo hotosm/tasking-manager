@@ -107,8 +107,8 @@ class SwaggerDocsAPI(Resource):
 
         """
         swag = swagger(current_app)
-        swag['info']['title'] = "Tasking Manager API"
-        swag['info']['description'] = "API endpoints for the backend"
-        swag['info']['version'] = "0.0.1"
+        swag["info"]["title"] = "Tasking Manager API"
+        swag["info"]["description"] = "API endpoints for the backend"
+        swag["info"]["version"] = "0.0.1"
 
         return jsonify(swag)
