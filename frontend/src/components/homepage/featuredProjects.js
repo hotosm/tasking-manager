@@ -2,16 +2,65 @@ import React from 'react';
 import { FormattedMessage} from 'react-intl';
 import { RightIcon, LeftIcon } from '../svgIcons';
 import { ProjectCard } from '../../components/projectcard/projectCard';
-import { useState, useEffect } from 'react';
+import { useEffect, useReducer } from 'react';
 import { API_URL } from '../../config';
 import axios from 'axios';
+
+import ReactPlaceholder from 'react-placeholder';
+import "react-placeholder/lib/reactPlaceholder.css";
 
 import cards from '../projectcard/demoProjectCardsData';
 
 import messages from './messages';
 
-function FeaturedProjectPaginateArrows({pages, activeProjectCardPage, setProjectCardPage}: Object) {
+const dataFetchReducer = (state, action) => {
+  switch (action.type) {
+    case 'FETCH_INIT':
+      return {
+        ...state,
+        isLoading: true,
+        isError: false
+      };
+    case 'FETCH_SUCCESS':
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        projects: action.payload
+      };
+    case 'FETCH_FAILURE':
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+      };
+    case 'NEXT_PAGE':
+      return {
+        ...state,
+        activeProjectCardPage: state.activeProjectCardPage + 1
+    };
+    case 'LAST_PAGE':
+      return {
+          ...state,
+          activeProjectCardPage: state.activeProjectCardPage - 1
+      };
+    case 'NEXT_PAGE_MOBILE':
+        return {
+          ...state,
+          activeProjectCardPageMobile: state.activeProjectCardPageMobile + 1,
+      };
+      case 'LAST_PAGE_MOBILE':
+        return {
+            ...state,
+            activeProjectCardPageMobile: state.activeProjectCardPageMobile - 1,
+        };
+    default:
+      console.log(action)
+      throw new Error();
+  }
+};
 
+function FeaturedProjectPaginateArrows({pages, activeProjectCardPage, mobile, dispatch}: Object) {
     let enableLeft = false;
     let enableRight = false;
     if (activeProjectCardPage !== 0) {
@@ -20,10 +69,17 @@ function FeaturedProjectPaginateArrows({pages, activeProjectCardPage, setProject
     if (pages.length - 1 > activeProjectCardPage && pages.length !== 1) {
         enableRight = true;
     }
+    const mobileActionType = mobile ? "_MOBILE" : "";
     return (
         <div className="fr dib f2 mr2 pv3 pr6-l pr3">
-            <div className={`dib mr2  ${enableLeft ? 'red dim' : 'light-red'}`} onClick={() => enableLeft && setProjectCardPage(activeProjectCardPage - 1)}><LeftIcon /></div>
-            <div className={`dib dim ${enableRight ? 'red dim' : 'light-red'}`} onClick={() => enableRight && setProjectCardPage(activeProjectCardPage + 1)}><RightIcon /></div>
+            <div className={`dib mr2  ${enableLeft ? 'red dim' : 'light-red'}`}
+                 onClick={() => enableLeft && dispatch({ 'type': `LAST_PAGE${mobileActionType}`  })}>
+               <LeftIcon />
+            </div>
+            <div className={`dib  ${enableRight ? 'red dim' : 'light-red'}`}
+                 onClick={() => enableRight && dispatch({ 'type': `NEXT_PAGE${mobileActionType}`})}>
+               <RightIcon />
+            </div>
         </div>
     );
 }
@@ -42,41 +98,14 @@ const projectPaginateMobile = chunkArray(2);
 
 
 export function FeaturedProjects() {
-  const blankAPI = {mapResults:{features: [],type:"FeatureCollection"}, results:[], pagination: {hasNext: false, hasPrev: false, page: 1}};
-  const [projects, setProjects] = useState(blankAPI);
-  const [activeProjectCardPage, setProjectCardPage] = useState(0);
-  const [activeProjectCardPageMobile, setProjectCardPageMobile] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const initialData = {mapResults:{features: [],type:"FeatureCollection"}, results:[], pagination: {hasNext: false, hasPrev: false, page: 1}};
+  const [state, dispatch] = useFeaturedProjectAPI(initialData)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setIsError(false);
-
-      try {
-      const result = await axios(
-        `${API_URL}project/search?mapperLevel=ALL`,
-      );
-      
-      setProjects(result.data);
-
-      } catch (error) {
-        setIsError(true);
-      } 
-      setIsLoading(false);
-    };
-
-    fetchData();
-  },[]);
-
-
-  const apiResults = projects.results.length > 0 ? projects.results: cards 
+  const apiResults = state.projects && state.projects.results
   const pagedProjs = projectPaginate(apiResults)
   const pagedProjsMobile = projectPaginateMobile(apiResults)
 
   return(
-    <>
     <section className="pt4-l pb5 pl5-l pr1-l pl3 bg-white black">
       <div className="cf">
         <div className="w-75-l w-60 fl">
@@ -85,32 +114,91 @@ export function FeaturedProjects() {
             </h3>
         </div>
         <div className="fl w-25-l pa3 mb4 mw6 dn db-l">
+          {!state.isLoading &&
             <FeaturedProjectPaginateArrows 
                 pages={pagedProjs}
-                activeProjectCardPage={activeProjectCardPage}
-                setProjectCardPage={setProjectCardPage} />
+                activeProjectCardPage={state.activeProjectCardPage}
+                mobile={false}
+                dispatch={dispatch} />
+              }
         </div>
         <div className="fl w-40 pa3 mb4 mw6 db dn-l">
-            <FeaturedProjectPaginateArrows 
+            { !state.isLoading && <FeaturedProjectPaginateArrows 
                 pages={pagedProjsMobile}
-                activeProjectCardPage={activeProjectCardPageMobile}
-                setProjectCardPage={setProjectCardPageMobile} />
+                mobile={true}
+                activeProjectCardPage={state.activeProjectCardPageMobile}
+                dispatch={dispatch} /> }
         </div>
       </div>
-        {isLoading ? (
-          <div>Loading ...</div>
-        ) : null}
-        {isError ? (
+        {state.isError ? (
           <div class="bg-tan">Error loading the featured projects.</div>
         ) : null}
         <div className="cf dn db-l">
-          {pagedProjs[activeProjectCardPage].map((card, n) => <ProjectCard { ...card } key={n} />)}
+          <ReactPlaceholder type='media' rows={10} ready={!state.isLoading}>
+          <FeaturedProjectCards 
+            pageOfCards={pagedProjs}
+            pageNum={state.activeProjectCardPage}
+            ready={!state.isLoading} />
+          </ReactPlaceholder> 
         </div>
         <div className="cf db dn-l">
-          {pagedProjsMobile[activeProjectCardPageMobile].map((card, n) => <ProjectCard { ...card } key={n} />)}
+          <ReactPlaceholder type='media' rows={10} ready={!state.isLoading}>
+          <FeaturedProjectCards 
+            pageOfCards={pagedProjsMobile}
+            pageNum={state.activeProjectCardPageMobile}
+             />
+          </ReactPlaceholder>
         </div>
     </section>
-
-      </>
   );
+}
+
+function FeaturedProjectCards({pageOfCards, pageNum}: Object) {
+  if (pageOfCards && pageOfCards.length === 0) {
+    return null
+  } 
+  return pageOfCards[pageNum].map((card, n) => <ProjectCard { ...card } key={n} />)
+
+}
+
+
+const useFeaturedProjectAPI = (initialData) => {
+  const [state, dispatch] = useReducer(dataFetchReducer, {
+    isLoading: true,
+    isError: false,
+    activeProjectCardPageMobile: 0,
+    activeProjectCardPage: 0, 
+    projects: initialData,
+  });
+
+  useEffect(() => {
+    let didCancel = false;
+
+    const fetchData = async () => {
+      dispatch({ type: 'FETCH_INIT' });
+
+      try {
+        /* TODO: finalize API for featured projects, 
+        for now, this just gets first page of all projects */
+      const result = await axios(
+        `${API_URL}project/search?mapperLevel=ALL`,
+      );
+
+        if (!didCancel) {
+          dispatch({ type: 'FETCH_SUCCESS', payload: result.data});
+        }
+      } catch (error) {
+        dispatch({ type: 'FETCH_FAILURE' });
+      } 
+    };
+
+    fetchData();
+
+    return () => {
+      didCancel = true;
+    };
+    
+  },[]);
+
+  return [state, dispatch]
 }
