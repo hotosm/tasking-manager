@@ -35,7 +35,7 @@ services:
 
   # Database
   postgresql:
-    image: mdillon/postgis:9.6
+    image: mdillon/postgis:11
     container_name: postgresql
     env_file: tasking-manager.env
     # logging:

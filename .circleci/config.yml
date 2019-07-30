@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: circleci/python:3-stretch-browsers
+    - image: circleci/python:3-buster-browsers
     steps:
     - checkout
     - setup_remote_docker
@@ -11,8 +11,7 @@ jobs:
         name: Install Node and modules
         command: |
           sudo apt-get update
-          curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
-          sudo apt-get install -y nodejs libgeos-dev # Required for shapely
+          sudo apt-get install -y nodejs npm libgeos-dev # Required for shapely
           sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
           sudo pip3 install awscli --upgrade
     - run:
@@ -130,7 +129,7 @@ jobs:
         type: env_var_name
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: circleci/python:3-stretch
+    - image: circleci/python:3-buster
     steps:
     - checkout
     - setup_remote_docker
@@ -142,8 +141,7 @@ jobs:
         name: Install Node and modules
         command: |
           sudo apt-get update
-          curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
-          sudo apt-get install -y nodejs libgeos-dev # Required for shapely
+          sudo apt-get install -y nodejs npm libgeos-dev # Required for shapely
           sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
           npm install
           sudo pip3 install awscli --upgrade
@@ -206,7 +204,7 @@ jobs:
           echo $JSON_CONFIG > $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
     - deploy:
         name: Deploy to << parameters.stack_name >>
-        command: cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/devops/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
+        command: cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
         when: always

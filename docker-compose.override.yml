@@ -5,7 +5,7 @@ services:
 
   # Main application
   app:
-    build: ./devops/docker/tasking-manager
+    build: ./scripts/docker/tasking-manager
     volumes:
       - .:/usr/src/app
     ports:
@@ -13,6 +13,6 @@ services:
 
   # Migration service
   migration:
-    build: ./devops/docker/tasking-manager
+    build: ./scripts/docker/tasking-manager
     volumes:
       - .:/usr/src/app
