@@ -1,13 +1,12 @@
 import unittest
 from unittest.mock import patch
 from server.models.postgis.user import User
-from server.services.users.user_service import UserService, UserServiceError, UserRole, OSMService, MappingLevel, UserOSMDTO
+from server.services.users.user_service import UserService, UserServiceError, UserRole
 from server.models.postgis.project import Project
 
 
 class TestUserService(unittest.TestCase):
-
-    @patch.object(UserService, 'get_user_by_id')
+    @patch.object(UserService, "get_user_by_id")
     def test_user_correctly_identified_as_pm(self, mock_user):
         # Arrange
         test_proj = Project()
@@ -20,7 +19,7 @@ class TestUserService(unittest.TestCase):
         self.assertTrue(UserService.is_user_a_project_manager(123))
         self.assertTrue(test_proj)
 
-    @patch.object(UserService, 'get_user_by_id')
+    @patch.object(UserService, "get_user_by_id")
     def test_user_not_identified_as_pm(self, mock_user):
         # Arrange
         test_user = User()
@@ -31,7 +30,7 @@ class TestUserService(unittest.TestCase):
         # Act / Assert
         self.assertFalse(UserService.is_user_a_project_manager(123))
 
-    @patch.object(UserService, 'get_user_by_id')
+    @patch.object(UserService, "get_user_by_id")
     def test_mapper_role_is_not_recognized_as_a_validator(self, mock_user):
         # Arrange
         stub_user = User()
@@ -41,7 +40,7 @@ class TestUserService(unittest.TestCase):
         # Act / Assert
         self.assertFalse(UserService.is_user_validator(123))
 
-    @patch.object(UserService, 'get_user_by_id')
+    @patch.object(UserService, "get_user_by_id")
     def test_admin_role_is_recognized_as_a_validator(self, mock_user):
         # Arrange
         stub_user = User()
@@ -54,9 +53,9 @@ class TestUserService(unittest.TestCase):
     def test_unknown_role_raise_error_when_setting_role(self):
         # Act / Assert
         with self.assertRaises(UserServiceError):
-            UserService.add_role_to_user(1, 'test', 'TEST')
+            UserService.add_role_to_user(1, "test", "TEST")
 
-    @patch.object(UserService, 'get_user_by_id')
+    @patch.object(UserService, "get_user_by_id")
     def test_pm_not_allowed_to_add_admin_role_when_setting_role(self, mock_admin):
         # Arrange
         admin = User()
@@ -65,9 +64,9 @@ class TestUserService(unittest.TestCase):
 
         # Act
         with self.assertRaises(UserServiceError):
-            UserService.add_role_to_user(1, 'test', 'ADMIN')
+            UserService.add_role_to_user(1, "test", "ADMIN")
 
     def test_unknown_level_raise_error_when_setting_level(self):
         # Act / Assert
         with self.assertRaises(UserServiceError):
-            UserService.set_user_mapping_level('test', 'TEST')
+            UserService.set_user_mapping_level("test", "TEST")

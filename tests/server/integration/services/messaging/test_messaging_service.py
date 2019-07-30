@@ -13,10 +13,10 @@ class TestMessageService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('CI', 'false')
+        env = os.getenv("CI", "false")
 
         # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == 'true':
+        if env == "true":
             cls.skip_tests = True
 
     def setUp(self):
@@ -45,7 +45,7 @@ class TestMessageService(unittest.TestCase):
         message = MessageService.get_message(message_id, self.test_user.id)
 
         # Assert
-        self.assertTrue(message, 'Message should be saved to DB')
+        self.assertTrue(message, "Message should be saved to DB")
 
         # Tidyup
         MessageService.delete_message(message_id, self.test_user.id)

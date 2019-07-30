@@ -45,8 +45,8 @@ jobs:
           cd ${CIRCLE_WORKING_DIRECTORY}
           mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/server/lint
           . ${CIRCLE_WORKING_DIRECTORY}/env/bin/activate
-          black --check manage.py server
-          flake8 manage.py server
+          black --check manage.py server tests
+          flake8 manage.py server tests
     - run:
         name: Run JS Unit tests
         command: |
