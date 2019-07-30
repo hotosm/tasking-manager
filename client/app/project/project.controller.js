@@ -1381,7 +1381,8 @@
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskMapping = function () {
-            if (vm.user.emailAddress || true) {
+            // console.log(vm.user);
+            // if(vm.user.isEmailVerified){
                 vm.lockingReason = 'MAPPING';
                 var projectId = vm.projectData.projectId;
                 var taskId = vm.selectedTaskData.taskId;
@@ -1411,9 +1412,9 @@
                 }, function (error) {
                     onLockError(projectId, error);
                 });
-            }
-            else
-                vm.showWarning = true;
+            // }
+            // else
+            //     vm.showWarning = true;
         };
 
 
@@ -1451,7 +1452,7 @@
          * Call api to lock currently selected task for validation.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
-            if (vm.user.emailAddress || true) {
+            // if(vm.user.isEmailVerified){
                 vm.lockingReason = 'VALIDATION';
                 var projectId = vm.projectData.projectId;
                 var taskId = vm.selectedTaskData.taskId;
@@ -1481,9 +1482,9 @@
                 }, function (error) {
                     onLockError(projectId, error);
                 });
-            }
-            else
-                vm.showWarning = true;
+            // }
+            // else
+            //     vm.showWarning = true;
         };
 
         vm.josmBBoxFromViewport = function(zoom, lat, lon) {
@@ -2156,7 +2157,7 @@
          * @param doneTaskIds - array of task ids
          */
         vm.lockTasksForValidation = function (doneTaskIds) {
-            if(vm.user.isEmailVerified || true) {
+            // if(vm.user.isEmailVerified){
                 vm.selectInteraction.getFeatures().clear();
 
                 //use doneTaskIds to get corresponding subset of tasks for selection from the project
@@ -2197,9 +2198,9 @@
                 }, function (error) {
                     onLockError(vm.projectData.projectId, error);
                 });
-            }
-            else
-                vm.showWarning = true;
+            // }
+            // else
+            //     vm.showWarning = true;
         };
 
         vm.resetToSelectingStep = function () {
