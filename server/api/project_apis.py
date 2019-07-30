@@ -7,8 +7,16 @@ from distutils.util import strtobool
 from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDTO
 from server.models.postgis.task import Task
 from server.models.postgis.task_annotation import TaskAnnotation
-from server.services.project_search_service import ProjectSearchService, ProjectSearchServiceError, BBoxTooBigError
-from server.services.project_service import ProjectService, ProjectServiceError, NotFound
+from server.services.project_search_service import (
+    ProjectSearchService,
+    ProjectSearchServiceError,
+    BBoxTooBigError,
+)
+from server.services.project_service import (
+    ProjectService,
+    ProjectServiceError,
+    NotFound,
+)
 from server.services.users.user_service import UserService
 from server.services.users.authentication_service import token_auth, tm, verify_token
 from server.services.task_annotations_service import TaskAnnotationsService
@@ -58,16 +66,29 @@ class ProjectAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
-            abbreviated = strtobool(request.args.get('abbreviated')) if request.args.get('abbreviated') else False
+            as_file = (
+                strtobool(request.args.get("as_file"))
+                if request.args.get("as_file")
+                else False
+            )
+            abbreviated = (
+                strtobool(request.args.get("abbreviated"))
+                if request.args.get("abbreviated")
+                else False
+            )
 
-            project_dto = ProjectService.get_project_dto_for_mapper(project_id,
-                                                                    request.environ.get('HTTP_ACCEPT_LANGUAGE'), abbreviated)
+            project_dto = ProjectService.get_project_dto_for_mapper(
+                project_id, request.environ.get("HTTP_ACCEPT_LANGUAGE"), abbreviated
+            )
             project_dto = project_dto.to_primitive()
 
             if as_file:
-                return send_file(io.BytesIO(geojson.dumps(project_dto).encode('utf-8')), mimetype='application/json',
-                                 as_attachment=True, attachment_filename=f'project_{str(project_id)}.json')
+                return send_file(
+                    io.BytesIO(geojson.dumps(project_dto).encode("utf-8")),
+                    mimetype="application/json",
+                    as_attachment=True,
+                    attachment_filename=f"project_{str(project_id)}.json",
+                )
 
             return project_dto, 200
         except NotFound:
@@ -75,7 +96,7 @@ class ProjectAPI(Resource):
         except ProjectServiceError as e:
             return {"error": str(e)}, 403
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
         finally:
@@ -87,7 +108,6 @@ class ProjectAPI(Resource):
 
 
 class ProjectSummaryAPI(Resource):
-
     def get(self, project_id: int):
         """
         Gets project summary
@@ -118,13 +138,13 @@ class ProjectSummaryAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             summary = ProjectService.get_project_summary(project_id, preferred_locale)
             return summary.to_primitive(), 200
         except NotFound:
             return {"Error": "Project not found"}, 404
         except Exception as e:
-            error_msg = f'Project Summary GET - unhandled error: {str(e)}'
+            error_msg = f"Project Summary GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -161,13 +181,21 @@ class ProjectAOIAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else True
+            as_file = (
+                strtobool(request.args.get("as_file"))
+                if request.args.get("as_file")
+                else True
+            )
 
             project_aoi = ProjectService.get_project_aoi(project_id)
 
             if as_file:
-                return send_file(io.BytesIO(geojson.dumps(project_aoi).encode('utf-8')), mimetype='application/json',
-                                 as_attachment=True, attachment_filename=f'{str(project_id)}.geoJSON')
+                return send_file(
+                    io.BytesIO(geojson.dumps(project_aoi).encode("utf-8")),
+                    mimetype="application/json",
+                    as_attachment=True,
+                    attachment_filename=f"{str(project_id)}.geoJSON",
+                )
 
             return project_aoi, 200
         except NotFound:
@@ -175,13 +203,12 @@ class ProjectAOIAPI(Resource):
         except ProjectServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class ProjectSearchBBoxAPI(Resource):
-
     @tm.pm_only(True)
     @token_auth.login_required
     def get(self):
@@ -234,15 +261,19 @@ class ProjectSearchBBoxAPI(Resource):
         """
         try:
             search_dto = ProjectSearchBBoxDTO()
-            search_dto.bbox = map(float, request.args.get('bbox').split(','))
-            search_dto.input_srid = request.args.get('srid')
-            search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            createdByMe = strtobool(request.args.get('createdByMe')) if request.args.get('createdByMe') else False
+            search_dto.bbox = map(float, request.args.get("bbox").split(","))
+            search_dto.input_srid = request.args.get("srid")
+            search_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            createdByMe = (
+                strtobool(request.args.get("createdByMe"))
+                if request.args.get("createdByMe")
+                else False
+            )
             if createdByMe:
                 search_dto.project_author = tm.authenticated_user_id
             search_dto.validate()
         except Exception as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
         try:
             geojson = ProjectSearchService.get_projects_geojson(search_dto)
@@ -252,7 +283,7 @@ class ProjectSearchBBoxAPI(Resource):
         except ProjectSearchServiceError as e:
             return {"error": str(e)}, 400
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -318,30 +349,36 @@ class ProjectSearchAPI(Resource):
         """
         try:
             search_dto = ProjectSearchDTO()
-            search_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            search_dto.mapper_level = request.args.get('mapperLevel')
-            search_dto.organisation_tag = request.args.get('organisationTag')
-            search_dto.campaign_tag = request.args.get('campaignTag')
-            search_dto.page = int(request.args.get('page')) if request.args.get('page') else 1
-            search_dto.text_search = request.args.get('textSearch')
+            search_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            search_dto.mapper_level = request.args.get("mapperLevel")
+            search_dto.organisation_tag = request.args.get("organisationTag")
+            search_dto.campaign_tag = request.args.get("campaignTag")
+            search_dto.page = (
+                int(request.args.get("page")) if request.args.get("page") else 1
+            )
+            search_dto.text_search = request.args.get("textSearch")
 
             # See https://github.com/hotosm/tasking-manager/pull/922 for more info
             try:
-                verify_token(request.environ.get('HTTP_AUTHORIZATION').split(None, 1)[1])
+                verify_token(
+                    request.environ.get("HTTP_AUTHORIZATION").split(None, 1)[1]
+                )
                 if UserService.is_user_a_project_manager(tm.authenticated_user_id):
                     search_dto.is_project_manager = True
-            except:
+            except Exception:
                 pass
 
-            mapping_types_str = request.args.get('mappingTypes')
+            mapping_types_str = request.args.get("mappingTypes")
             if mapping_types_str:
-                search_dto.mapping_types = map(str, mapping_types_str.split(','))  # Extract list from string
-            project_statuses_str = request.args.get('projectStatuses')
+                search_dto.mapping_types = map(
+                    str, mapping_types_str.split(",")
+                )  # Extract list from string
+            project_statuses_str = request.args.get("projectStatuses")
             if project_statuses_str:
-                search_dto.project_statuses = map(str, project_statuses_str.split(','))
+                search_dto.project_statuses = map(str, project_statuses_str.split(","))
             search_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -350,13 +387,12 @@ class ProjectSearchAPI(Resource):
         except NotFound:
             return {"Error": "No projects found"}, 404
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class HasUserTaskOnProject(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self, project_id):
@@ -391,17 +427,19 @@ class HasUserTaskOnProject(Resource):
                 description: Internal Server Error
         """
         try:
-            locked_tasks = ProjectService.get_task_for_logged_in_user(project_id, tm.authenticated_user_id)
+            locked_tasks = ProjectService.get_task_for_logged_in_user(
+                project_id, tm.authenticated_user_id
+            )
             return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
-            error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
+            error_msg = f"HasUserTaskOnProject - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-class HasUserTaskOnProjectDetails(Resource):
 
+class HasUserTaskOnProjectDetails(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self, project_id):
@@ -442,13 +480,15 @@ class HasUserTaskOnProjectDetails(Resource):
                 description: Internal Server Error
         """
         try:
-            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            locked_tasks = ProjectService.get_task_details_for_logged_in_user(project_id, tm.authenticated_user_id, preferred_locale)
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            locked_tasks = ProjectService.get_task_details_for_logged_in_user(
+                project_id, tm.authenticated_user_id, preferred_locale
+            )
             return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
-            error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
+            error_msg = f"HasUserTaskOnProject - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -482,16 +522,20 @@ class TaskAnnotationsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            project = ProjectService.get_project_by_id(project_id)
+            ProjectService.get_project_by_id(project_id)
         except NotFound as e:
-            current_app.logger.error(f'Error validating project: {str(e)}')
+            current_app.logger.error(f"Error validating project: {str(e)}")
             return {"Error": "Project not found"}, 404
 
         try:
             if annotation_type:
-                annotations = TaskAnnotation.get_task_annotations_by_project_id_type(project_id, annotation_type)
+                annotations = TaskAnnotation.get_task_annotations_by_project_id_type(
+                    project_id, annotation_type
+                )
             else:
-                annotations = TaskAnnotation.get_task_annotations_by_project_id(project_id)
+                annotations = TaskAnnotation.get_task_annotations_by_project_id(
+                    project_id
+                )
             return annotations.to_primitive(), 200
         except NotFound:
             return {"Error": "Annotations not found"}, 404
@@ -562,40 +606,44 @@ class TaskAnnotationsAPI(Resource):
                 description: Internal Server Error
         """
 
-        if 'Application-Token' in request.headers:
-            application_token = request.headers['Application-Token']
+        if "Application-Token" in request.headers:
+            application_token = request.headers["Application-Token"]
             try:
-                is_valid_token = ApplicationService.check_token(application_token)
-            except NotFound as e:
-                current_app.logger.error(f'Invalid token')
+                is_valid_token = ApplicationService.check_token(  # noqa
+                    application_token
+                )
+            except NotFound:
+                current_app.logger.error(f"Invalid token")
                 return {"error": "Invalid token"}, 500
         else:
-            current_app.logger.error(f'No token supplied')
+            current_app.logger.error(f"No token supplied")
             return {"error": "No token supplied"}, 500
 
         try:
             annotations = request.get_json() or {}
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
 
         try:
-            project = ProjectService.get_project_by_id(project_id)
+            ProjectService.get_project_by_id(project_id)
         except NotFound as e:
-            current_app.logger.error(f'Error validating project: {str(e)}')
+            current_app.logger.error(f"Error validating project: {str(e)}")
 
-        task_ids = [t['taskId'] for t in annotations['tasks']]
+        task_ids = [t["taskId"] for t in annotations["tasks"]]
 
         # check if task ids are valid
         tasks = Task.get_tasks(project_id, task_ids)
         tasks_ids_db = [t.id for t in tasks]
-        if (len(task_ids) != len(tasks_ids_db)):
-            return {"error": 'Invalid task id'}, 500
+        if len(task_ids) != len(tasks_ids_db):
+            return {"error": "Invalid task id"}, 500
 
-        for annotation in annotations['tasks']:
+        for annotation in annotations["tasks"]:
             try:
-                TaskAnnotationsService.add_or_update_annotation(annotation, project_id, annotation_type)
+                TaskAnnotationsService.add_or_update_annotation(
+                    annotation, project_id, annotation_type
+                )
             except DataError as e:
-                current_app.logger.error(f'Error creating annotations: {str(e)}')
+                current_app.logger.error(f"Error creating annotations: {str(e)}")
                 return {"Error": "Error creating annotations"}, 500
 
         return project_id, 200

@@ -12,16 +12,17 @@ chat_cache = TTLCache(maxsize=64, ttl=10)
 
 
 class ChatService:
-
     @staticmethod
     def post_message(chat_dto: ChatMessageDTO) -> ProjectChatDTO:
         """ Save message to DB and return latest chat"""
-        current_app.logger.debug('Posting Chat Message')
+        current_app.logger.debug("Posting Chat Message")
         if UserService.is_user_blocked(tm.authenticated_user_id):
-            return 'User is on read only mode', 403
+            return "User is on read only mode", 403
 
         chat_message = ProjectChat.create_from_dto(chat_dto)
-        MessageService.send_message_after_chat(chat_dto.user_id, chat_message.message, chat_dto.project_id)
+        MessageService.send_message_after_chat(
+            chat_dto.user_id, chat_message.message, chat_dto.project_id
+        )
         db.session.commit()
         # Ensure we return latest messages after post
         return ProjectChat.get_messages(chat_dto.project_id, 1)

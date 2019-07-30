@@ -3,7 +3,7 @@ from server.models.postgis.utils import NotFound
 from server.services.users.authentication_service import AuthenticationService
 
 
-class ApplicationService():
+class ApplicationService:
     @staticmethod
     def create_token(user_id: int) -> Application:
         application = Application().create(user_id)
@@ -31,7 +31,7 @@ class ApplicationService():
         if not valid_token:
             return False
 
-        valid_token, user_id = AuthenticationService.is_valid_token(token, 86400*30)
+        valid_token, user_id = AuthenticationService.is_valid_token(token, 86400 * 30)
 
         if not valid_token:
             return False

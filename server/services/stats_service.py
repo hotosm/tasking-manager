@@ -167,7 +167,7 @@ class StatsService:
 
         contrib_dto = ProjectContributionsDTO()
         for row in results:
-            user_id = row[0] or row[3]
+            # user_id = row[0] or row[3]
             user_contrib = UserContribution()
             user_contrib.username = row[1] if row[1] else row[4]
             user_contrib.mapped = row[2] if row[2] else 0
@@ -208,14 +208,10 @@ class StatsService:
             .all()
         )
 
-        untagged_count = 0
-
+        # untagged_count = 0
         # total_area = 0
-
         # dto.total_area = 0
-
         # total_area_sql = """select sum(ST_Area(geometry)) from public.projects as area"""
-
         # total_area_result = db.engine.execute(total_area_sql)
         # current_app.logger.debug(total_area_result)
         # for rowproxy in total_area_result:
@@ -225,14 +221,16 @@ class StatsService:
         # current_app.logger.debug(total_area)
         # dto.total_area = total_area
 
-        tasks_mapped_sql = "select coalesce(sum(ST_Area(geometry)), 0) as sum from public.tasks where task_status = :task_status"
+        tasks_mapped_sql = """select coalesce(sum(ST_Area(geometry)), 0) as sum
+                              from public.tasks where task_status = :task_status"""
         tasks_mapped_result = db.engine.execute(
             text(tasks_mapped_sql), task_status=TaskStatus.MAPPED.value
         )
 
         dto.total_mapped_area = tasks_mapped_result.fetchone()["sum"]
 
-        tasks_validated_sql = "select coalesce(sum(ST_Area(geometry)), 0) as sum from public.tasks where task_status = :task_status"
+        tasks_validated_sql = """select coalesce(sum(ST_Area(geometry)), 0) as sum
+                                 from public.tasks where task_status = :task_status"""
         tasks_validated_result = db.engine.execute(
             text(tasks_validated_sql), task_status=TaskStatus.VALIDATED.value
         )

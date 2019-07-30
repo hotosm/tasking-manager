@@ -3,7 +3,6 @@ from server.services.settings_service import SettingsService
 
 
 class LanguagesAPI(Resource):
-
     def get(self):
         """
         Gets all supported languages
@@ -22,6 +21,6 @@ class LanguagesAPI(Resource):
             languages = SettingsService.get_settings()
             return languages.to_primitive(), 200
         except Exception as e:
-            error_msg = f'Languages GET - unhandled error: {str(e)}'
+            error_msg = f"Languages GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500

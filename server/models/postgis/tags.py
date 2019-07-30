@@ -4,6 +4,7 @@ from server.models.dtos.tags_dto import TagsDTO
 
 class Tags(db.Model):
     """ Describes an individual mapping Task """
+
     __tablename__ = "tags"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -20,7 +21,9 @@ class Tags(db.Model):
 
         tag = Tags()
         tag.organisations = organisation_tag
-        db.session.add(tag)  # Note no commit here, done as part of project update transaction
+        db.session.add(
+            tag
+        )  # Note no commit here, done as part of project update transaction
         return organisation_tag
 
     @staticmethod
@@ -33,13 +36,17 @@ class Tags(db.Model):
 
         tag = Tags()
         tag.campaigns = campaign_tag
-        db.session.add(tag)  # Note no commit here, done as part of project update transaction
+        db.session.add(
+            tag
+        )  # Note no commit here, done as part of project update transaction
         return campaign_tag
 
     @staticmethod
     def get_all_organisations():
         """ Get all org tags in DB """
-        result = db.session.query(Tags.organisations).filter(Tags.organisations.isnot(None))
+        result = db.session.query(Tags.organisations).filter(
+            Tags.organisations.isnot(None)
+        )
 
         dto = TagsDTO()
         dto.tags = [r for r, in result]

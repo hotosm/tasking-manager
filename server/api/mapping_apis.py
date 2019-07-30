@@ -5,15 +5,24 @@ from flask import send_file, Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from server.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO, TaskCommentDTO
-from server.services.mapping_service import MappingService, MappingServiceError, NotFound, UserLicenseError
+from server.models.dtos.mapping_dto import (
+    MappedTaskDTO,
+    LockTaskDTO,
+    StopMappingTaskDTO,
+    TaskCommentDTO,
+)
+from server.services.mapping_service import (
+    MappingService,
+    MappingServiceError,
+    NotFound,
+    UserLicenseError,
+)
 from server.services.project_service import ProjectService, ProjectServiceError
 from server.services.users.authentication_service import token_auth, tm, verify_token
 from server.services.users.user_service import UserService
 
 
 class MappingTaskAPI(Resource):
-
     def get(self, project_id, task_id):
         """
         Get task for mapping
@@ -56,8 +65,8 @@ class MappingTaskAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            token = request.environ.get('HTTP_AUTHORIZATION')
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            token = request.environ.get("HTTP_AUTHORIZATION")
 
             # Login isn't required here, but if we have a token we can find out if the user can undo the task
             if token:
@@ -65,18 +74,19 @@ class MappingTaskAPI(Resource):
 
             user_id = tm.authenticated_user_id
 
-            task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale, user_id)
+            task = MappingService.get_task_as_dto(
+                task_id, project_id, preferred_locale, user_id
+            )
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
         except Exception as e:
-            error_msg = f'Task GET API - unhandled error: {str(e)}'
+            error_msg = f"Task GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class LockTaskForMappingAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
@@ -133,10 +143,10 @@ class LockTaskForMappingAPI(Resource):
             lock_task_dto.user_id = tm.authenticated_user_id
             lock_task_dto.project_id = project_id
             lock_task_dto.task_id = task_id
-            lock_task_dto.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            lock_task_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             lock_task_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -149,7 +159,7 @@ class LockTaskForMappingAPI(Resource):
         except UserLicenseError:
             return {"Error": "User not accepted license terms"}, 409
         except Exception as e:
-            error_msg = f'Task Lock API - unhandled error: {str(e)}'
+            error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -220,10 +230,10 @@ class StopMappingAPI(Resource):
             stop_task.user_id = tm.authenticated_user_id
             stop_task.task_id = task_id
             stop_task.project_id = project_id
-            stop_task.preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            stop_task.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             stop_task.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -234,13 +244,12 @@ class StopMappingAPI(Resource):
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
-            error_msg = f'Task Lock API - unhandled error: {str(e)}'
+            error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class UnlockTaskForMappingAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
@@ -308,7 +317,7 @@ class UnlockTaskForMappingAPI(Resource):
             mapped_task.project_id = project_id
             mapped_task.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -319,15 +328,15 @@ class UnlockTaskForMappingAPI(Resource):
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
-            error_msg = f'Task Lock API - unhandled error: {str(e)}'
+            error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
         finally:
             # Refresh mapper level after mapping
             UserService.check_and_update_mapper_level(tm.authenticated_user_id)
 
-class CommentOnTaskAPI(Resource):
 
+class CommentOnTaskAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
@@ -390,7 +399,7 @@ class CommentOnTaskAPI(Resource):
             task_comment.project_id = project_id
             task_comment.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -401,13 +410,12 @@ class CommentOnTaskAPI(Resource):
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
-            error_msg = f'Task Comment API - unhandled error: {str(e)}'
+            error_msg = f"Task Comment API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class TasksAsJson(Resource):
-
     def get(self, project_id):
         """
         Get tasks as JSON
@@ -439,14 +447,22 @@ class TasksAsJson(Resource):
                 description: Internal Server Error
         """
         try:
-            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else True
+            as_file = (
+                strtobool(request.args.get("as_file"))
+                if request.args.get("as_file")
+                else True
+            )
 
             tasks = ProjectService.get_project_tasks(int(project_id))
 
             if as_file:
-                tasks = str(tasks).encode('utf-8')
-                return send_file(io.BytesIO(tasks), mimetype='application/json', as_attachment=True,
-                                 attachment_filename=f'{str(project_id)}-tasks.geoJSON')
+                tasks = str(tasks).encode("utf-8")
+                return send_file(
+                    io.BytesIO(tasks),
+                    mimetype="application/json",
+                    as_attachment=True,
+                    attachment_filename=f"{str(project_id)}-tasks.geoJSON",
+                )
 
             return tasks, 200
         except NotFound:
@@ -454,13 +470,12 @@ class TasksAsJson(Resource):
         except ProjectServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(e)
             return {"Error": error_msg}, 500
 
 
 class TasksAsGPX(Resource):
-
     def get(self, project_id):
         """
         Get tasks as GPX
@@ -497,27 +512,37 @@ class TasksAsGPX(Resource):
                 description: Internal Server Error
         """
         try:
-            current_app.logger.debug('GPX Called')
-            tasks = request.args.get('tasks')
-            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
+            current_app.logger.debug("GPX Called")
+            tasks = request.args.get("tasks")
+            as_file = (
+                strtobool(request.args.get("as_file"))
+                if request.args.get("as_file")
+                else False
+            )
 
             xml = MappingService.generate_gpx(project_id, tasks)
 
             if as_file:
-                return send_file(io.BytesIO(xml), mimetype='text.xml', as_attachment=True,
-                                 attachment_filename=f'HOT-project-{project_id}.gpx')
+                return send_file(
+                    io.BytesIO(xml),
+                    mimetype="text.xml",
+                    as_attachment=True,
+                    attachment_filename=f"HOT-project-{project_id}.gpx",
+                )
 
-            return Response(xml, mimetype='text/xml', status=200)
+            return Response(xml, mimetype="text/xml", status=200)
         except NotFound:
-            return {"Error": "Not found; please check the project and task numbers."}, 404
+            return (
+                {"Error": "Not found; please check the project and task numbers."},
+                404,
+            )
         except Exception as e:
-            error_msg = f'Task as GPX API - unhandled error: {str(e)}'
+            error_msg = f"Task as GPX API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class TasksAsOSM(Resource):
-
     def get(self, project_id):
         """
         Get tasks as OSM XML
@@ -554,26 +579,36 @@ class TasksAsOSM(Resource):
                 description: Internal Server Error
         """
         try:
-            tasks = request.args.get('tasks') if request.args.get('tasks') else None
-            as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
+            tasks = request.args.get("tasks") if request.args.get("tasks") else None
+            as_file = (
+                strtobool(request.args.get("as_file"))
+                if request.args.get("as_file")
+                else False
+            )
 
             xml = MappingService.generate_osm_xml(project_id, tasks)
 
             if as_file:
-                return send_file(io.BytesIO(xml), mimetype='text.xml', as_attachment=True,
-                                 attachment_filename=f'HOT-project-{project_id}.osm')
+                return send_file(
+                    io.BytesIO(xml),
+                    mimetype="text.xml",
+                    as_attachment=True,
+                    attachment_filename=f"HOT-project-{project_id}.osm",
+                )
 
-            return Response(xml, mimetype='text/xml', status=200)
+            return Response(xml, mimetype="text/xml", status=200)
         except NotFound:
-            return {"Error": "Not found; please check the project and task numbers."}, 404
+            return (
+                {"Error": "Not found; please check the project and task numbers."},
+                404,
+            )
         except Exception as e:
-            error_msg = f'Task as OSM API - unhandled error: {str(e)}'
+            error_msg = f"Task as OSM API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class UndoMappingAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
@@ -620,14 +655,16 @@ class UndoMappingAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            task = MappingService.undo_mapping(project_id, task_id, tm.authenticated_user_id, preferred_locale)
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            task = MappingService.undo_mapping(
+                project_id, task_id, tm.authenticated_user_id, preferred_locale
+            )
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
         except MappingServiceError:
             return {"Error": "User not permitted to undo task"}, 403
         except Exception as e:
-            error_msg = f'Task GET API - unhandled error: {str(e)}'
+            error_msg = f"Task GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500

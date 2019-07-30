@@ -4,12 +4,15 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
 from server.models.dtos.message_dto import MessageDTO
-from server.services.messaging.message_service import MessageService, NotFound, MessageServiceError
+from server.services.messaging.message_service import (
+    MessageService,
+    NotFound,
+    MessageServiceError,
+)
 from server.services.users.authentication_service import token_auth, tm
 
 
 class ProjectsMessageAll(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
@@ -60,22 +63,23 @@ class ProjectsMessageAll(Resource):
             message_dto.from_user_id = tm.authenticated_user_id
             message_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
-            threading.Thread(target=MessageService.send_message_to_all_contributors,
-                             args=(project_id, message_dto)).start()
+            threading.Thread(
+                target=MessageService.send_message_to_all_contributors,
+                args=(project_id, message_dto),
+            ).start()
 
             return {"Success": "Messages started"}, 200
         except Exception as e:
-            error_msg = f'Send message all - unhandled error: {str(e)}'
+            error_msg = f"Send message all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class HasNewMessages(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self):
@@ -100,16 +104,17 @@ class HasNewMessages(Resource):
                 description: Internal Server Error
         """
         try:
-            unread_messages = MessageService.has_user_new_messages(tm.authenticated_user_id)
+            unread_messages = MessageService.has_user_new_messages(
+                tm.authenticated_user_id
+            )
             return unread_messages, 200
         except Exception as e:
-            error_msg = f'User GET - unhandled error: {str(e)}'
+            error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class GetAllMessages(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self):
@@ -168,29 +173,37 @@ class GetAllMessages(Resource):
                 description: Internal Server Error
         """
         try:
-            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            page = request.args.get('page', 1, int)
-            page_size = request.args.get('pageSize', 10, int)
-            sort_by = request.args.get('sortBy')
-            sort_direction = request.args.get('sortDirection')
-            message_type = request.args.get('messageType', None, int)
-            from_username = request.args.get('from')
-            project = request.args.get('project')
-            task_id = request.args.get('taskId', None, int)
-            user_messages = MessageService.get_all_messages(tm.authenticated_user_id, preferred_locale,
-                                                            page, page_size, sort_by, sort_direction,
-                                                            message_type, from_username, project, task_id)
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            page = request.args.get("page", 1, int)
+            page_size = request.args.get("pageSize", 10, int)
+            sort_by = request.args.get("sortBy")
+            sort_direction = request.args.get("sortDirection")
+            message_type = request.args.get("messageType", None, int)
+            from_username = request.args.get("from")
+            project = request.args.get("project")
+            task_id = request.args.get("taskId", None, int)
+            user_messages = MessageService.get_all_messages(
+                tm.authenticated_user_id,
+                preferred_locale,
+                page,
+                page_size,
+                sort_by,
+                sort_direction,
+                message_type,
+                from_username,
+                project,
+                task_id,
+            )
             return user_messages.to_primitive(), 200
         except NotFound:
             return {"Error": "No messages found"}, 404
         except Exception as e:
-            error_msg = f'Messages GET all - unhandled error: {str(e)}'
+            error_msg = f"Messages GET all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class DeleteMultipleMessages(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def delete(self):
@@ -225,19 +238,20 @@ class DeleteMultipleMessages(Resource):
                 description: Internal Server Error
         """
         try:
-            message_ids = request.get_json()['messageIds']
+            message_ids = request.get_json()["messageIds"]
             if message_ids:
-                MessageService.delete_multiple_messages(message_ids, tm.authenticated_user_id)
+                MessageService.delete_multiple_messages(
+                    message_ids, tm.authenticated_user_id
+                )
 
             return {"Success": "Messages deleted"}, 200
         except Exception as e:
-            error_msg = f'DeleteMultipleMessages - unhandled error: {str(e)}'
+            error_msg = f"DeleteMultipleMessages - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class MessagesAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def get(self, message_id):
@@ -272,14 +286,16 @@ class MessagesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_message = MessageService.get_message_as_dto(message_id, tm.authenticated_user_id)
+            user_message = MessageService.get_message_as_dto(
+                message_id, tm.authenticated_user_id
+            )
             return user_message.to_primitive(), 200
         except MessageServiceError as e:
             return {"Error": str(e)}, 403
         except NotFound:
             return {"Error": "No messages found"}, 404
         except Exception as e:
-            error_msg = f'Messages GET all - unhandled error: {str(e)}'
+            error_msg = f"Messages GET all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -324,13 +340,12 @@ class MessagesAPI(Resource):
         except NotFound:
             return {"Error": "No messages found"}, 404
         except Exception as e:
-            error_msg = f'Messages GET all - unhandled error: {str(e)}'
+            error_msg = f"Messages GET all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class ResendEmailValidationAPI(Resource):
-
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self):
@@ -358,6 +373,6 @@ class ResendEmailValidationAPI(Resource):
             MessageService.resend_email_validation(tm.authenticated_user_id)
             return {"Success": "Verification email resent"}, 200
         except Exception as e:
-            error_msg = f'User GET - unhandled error: {str(e)}'
+            error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500

@@ -2,8 +2,13 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
-from server.services.project_admin_service import ProjectAdminService, InvalidGeoJson, InvalidData, \
-    ProjectAdminServiceError, NotFound
+from server.services.project_admin_service import (
+    ProjectAdminService,
+    InvalidGeoJson,
+    InvalidData,
+    ProjectAdminServiceError,
+    NotFound,
+)
 from server.services.users.authentication_service import token_auth, tm
 from server.services.mapping_service import MappingService
 from server.services.validator_service import ValidatorService
@@ -36,7 +41,7 @@ class ProjectAdminAPI(Resource):
                       cloneFromProjectId:
                           type: int
                           default: 1
-                          description: Specify this value if you want to clone a project, otherwise leave out of request
+                          description: Specify this value if you want to clone a project, otherwise avoid information
                       projectName:
                           type: string
                           default: HOT Project
@@ -80,16 +85,18 @@ class ProjectAdminAPI(Resource):
             draft_project_dto.user_id = tm.authenticated_user_id
             draft_project_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'error validating request: {str(e)}')
+            current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
 
         try:
-            draft_project_id = ProjectAdminService.create_draft_project(draft_project_dto)
+            draft_project_id = ProjectAdminService.create_draft_project(
+                draft_project_dto
+            )
             return {"projectId": draft_project_id}, 201
         except (InvalidGeoJson, InvalidData) as e:
-            return {"error": f'{str(e)}'}, 400
+            return {"error": f"{str(e)}"}, 400
         except Exception as e:
-            error_msg = f'Project PUT - unhandled error: {str(e)}'
+            error_msg = f"Project PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -132,7 +139,7 @@ class ProjectAdminAPI(Resource):
         except NotFound:
             return {"Error": "Project Not Found"}, 404
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -264,7 +271,7 @@ class ProjectAdminAPI(Resource):
             project_dto.project_id = project_id
             project_dto.validate()
         except DataError as e:
-            current_app.logger.error(f'Error validating request: {str(e)}')
+            current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
 
         try:
@@ -277,7 +284,7 @@ class ProjectAdminAPI(Resource):
         except ProjectAdminServiceError as e:
             return {"error": str(e)}, 400
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
@@ -324,13 +331,12 @@ class ProjectAdminAPI(Resource):
         except NotFound:
             return {"Error": "Project Not Found"}, 404
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class ProjectCommentsAPI(Resource):
-
     def get(self, project_id):
         """
         Gets all comments for project
@@ -362,13 +368,12 @@ class ProjectCommentsAPI(Resource):
         except NotFound:
             return {"Error": "No comments found"}, 404
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class ProjectInvalidateAll(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
@@ -404,13 +409,12 @@ class ProjectInvalidateAll(Resource):
             ValidatorService.invalidate_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks invalidated"}, 200
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class ProjectValidateAll(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
@@ -446,12 +450,12 @@ class ProjectValidateAll(Resource):
             ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks validated"}, 200
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
-class ProjectResetAll(Resource):
 
+class ProjectResetAll(Resource):
     @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
@@ -487,13 +491,12 @@ class ProjectResetAll(Resource):
             ProjectAdminService.reset_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks reset"}, 200
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class ProjectMapAll(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
@@ -529,13 +532,12 @@ class ProjectMapAll(Resource):
             MappingService.map_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks mapped"}, 200
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class ProjectResetBadImagery(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
@@ -571,13 +573,12 @@ class ProjectResetBadImagery(Resource):
             MappingService.reset_all_badimagery(project_id, tm.authenticated_user_id)
             return {"Success": "All bad imagery tasks marked ready for mapping"}, 200
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class ProjectsForAdminAPI(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def get(self):
@@ -612,19 +613,19 @@ class ProjectsForAdminAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            admin_projects = ProjectAdminService.get_projects_for_admin(tm.authenticated_user_id,
-                                                                        request.environ.get('HTTP_ACCEPT_LANGUAGE'))
+            admin_projects = ProjectAdminService.get_projects_for_admin(
+                tm.authenticated_user_id, request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            )
             return admin_projects.to_primitive(), 200
         except NotFound:
             return {"Error": "No comments found"}, 404
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
 
 class ProjectTransfer(Resource):
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
@@ -665,11 +666,12 @@ class ProjectTransfer(Resource):
                 description: Internal Server Error
         """
         try:
-            username = request.get_json()['username']
-            ProjectAdminService.transfer_project_to(project_id, tm.authenticated_user_id, username)
+            username = request.get_json()["username"]
+            ProjectAdminService.transfer_project_to(
+                project_id, tm.authenticated_user_id, username
+            )
             return {"Success": "Project Transfered"}, 200
         except Exception as e:
-            error_msg = f'Project GET - unhandled error: {str(e)}'
+            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
-
