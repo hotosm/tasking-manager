@@ -1,4 +1,4 @@
-FROM python:3-stretch
+FROM python:3-buster
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -24,8 +24,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 ## CLIENT CONFIGURATION
 
 # Install nodejs.
-RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-  && apt-get install -y nodejs
+RUN apt-get install -y nodejs npm
 
 RUN npm install -g gulp-cli karma karma-jasmine karma-chrome-launcher
 
