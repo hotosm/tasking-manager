@@ -112,7 +112,8 @@ def init_flask_restful_routes(app):
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
     from server.api.mapping_issues_apis import MappingIssueCategoryAPI, MappingIssueCategoriesAPI
     from server.api.users.user_apis import UserAPI, UserIdAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
-        UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
+        UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI,\
+        UserContributionsAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
         MappedTasksByUser, UserInvalidatedTasks
     from server.api.grid.grid_apis import IntersectingTilesAPI
@@ -192,6 +193,7 @@ def init_flask_restful_routes(app):
     api.add_resource(UserSetLevel,                  '/api/v1/user/<string:username>/set-level/<string:level>')
     api.add_resource(UserAcceptLicense,             '/api/v1/user/accept-license/<int:license_id>')
     api.add_resource(UserIdAPI,                     '/api/v1/user-id/<int:userid>')
+    api.add_resource(UserContributionsAPI,          '/api/v1/user-id/<int:userid>/contributions')
     api.add_resource(IntersectingTilesAPI,          '/api/v1/grid/intersecting-tiles')
     api.add_resource(SplitTaskAPI,                  '/api/v1/project/<int:project_id>/task/<int:task_id>/split')
     api.add_resource(LanguagesAPI,                  '/api/v1/settings')
