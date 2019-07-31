@@ -92,6 +92,49 @@ class UserIdAPI(Resource):
             return {"error": error_msg}, 500
 
 
+class UserContributionsAPI(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def get(self, userid):
+        """
+        Gets daily amount of user contributions by id
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded sesesion token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: userid
+              in: path
+              description: The users user id
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: User found
+            404:
+                description: User not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            contributions = UserService.get_contributions_by_day(userid)
+            return contributions.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except Exception as e:
+            error_msg = f'Userid GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
 class UserUpdateAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required

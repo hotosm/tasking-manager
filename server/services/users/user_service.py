@@ -4,14 +4,15 @@ from functools import reduce
 import dateutil.parser
 import datetime
 
-from sqlalchemy import text
+from sqlalchemy import text, func, cast, or_, desc
+from sqlalchemy.types import Interval
 
 from server import db
 from server.models.dtos.user_dto import UserDTO, UserOSMDTO, UserFilterDTO, UserSearchQuery, UserSearchDTO, \
-    UserStatsDTO
+    UserStatsDTO, UserContributionDTO, UserContributionsDTO
 from server.models.dtos.message_dto import MessageDTO
 from server.models.postgis.message import Message
-from server.models.postgis.task import TaskHistory
+from server.models.postgis.task import TaskHistory, TaskAction
 from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
@@ -48,6 +49,31 @@ class UserService:
             raise NotFound()
 
         return user
+
+    @staticmethod
+    def get_contributions_by_day(user_id: int) -> UserContributionsDTO:
+        # Validate that user exists.
+        user = UserService.get_user_by_id(user_id)
+
+
+        stats = TaskHistory.query.with_entities(
+            func.DATE(TaskHistory.action_date).label('day'),
+            func.count(TaskHistory.action_date).label('cnt')
+        )\
+        .filter(TaskHistory.user_id==user_id)\
+        .filter(or_(
+            TaskHistory.action==TaskAction.LOCKED_FOR_MAPPING.name,
+            TaskHistory.action==TaskAction.LOCKED_FOR_VALIDATION.name))\
+        .filter(func.DATE(TaskHistory.action_date) > datetime.date.today() - datetime.timedelta(days=365))\
+        .group_by('day')\
+        .order_by(desc('day'))
+
+        contributions = [UserContributionDTO(dict(date=str(s[0]), count=s[1]))
+            for s in stats]
+        dto = UserContributionsDTO()
+        dto.contributions = contributions
+
+        return dto
 
     @staticmethod
     def update_username(user_id: int, osm_username: str) -> User:
