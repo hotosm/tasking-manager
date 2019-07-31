@@ -10,7 +10,7 @@ export default defineMessages({
   },
   projectTotalContributors: {
     id: 'project.card.contributorCount',
-    defaultMessage: ' total contributors'
+    defaultMessage: '{number} total contributors'
   },
   projectLastContribution: {
     id: 'project.card.lastContribution',
@@ -22,7 +22,7 @@ export default defineMessages({
   },
   percentValidated: {
     id: 'project.card.percentValidated',
-    defaultMessage: ' Validated' 
+    defaultMessage: ' Validated'
   },
   projectMapperLevelBEGINNER: {
     id: 'project.card.mapperLevelBeginner',
@@ -35,25 +35,25 @@ export default defineMessages({
   projectMapperLevelADVANCED: {
     id: 'project.card.mapperLevelAdvanced',
     defaultMessage: 'Advanced'
-  }, 
+  },
   projectPriorityURGENT: {
     id: 'project.card.projectPriorityUrgent',
-    defaultMessage: 'Urgent' 
-  }, 
+    defaultMessage: 'Urgent'
+  },
   projectPriorityHIGH: {
     id: 'project.card.projectPriorityHigh',
-    defaultMessage: 'High' 
-  }, 
+    defaultMessage: 'High'
+  },
   projectPriorityMEDIUM: {
     id: 'project.card.projectPriorityMedium',
-    defaultMessage: 'Medium' 
-  }, 
+    defaultMessage: 'Medium'
+  },
   projectPriorityLOW: {
     id: 'project.card.projectPriorityLow',
-    defaultMessage: 'Low' 
+    defaultMessage: 'Low'
   },
   dueDateRelativeRemainingDays: {
     id: 'project.card.dueDateLeft',
-    defaultMessage: '{daysLeftHumanize} left'  
+    defaultMessage: '{daysLeftHumanize} left'
   }
 });

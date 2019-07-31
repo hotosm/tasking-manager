@@ -44,7 +44,7 @@
   "footer.feedback": "Give feedback on GitHub.",
   "footer.learn": "Learn more about OpenStreetMap.",
   "project.mainSection.title": "Generic project",
-  "project.card.contributorCount": "total contributors",
+  "project.card.contributorCount": "{number} total contributors",
   "project.card.lastContribution": "Last contribution",
   "project.card.percentMapped": "Mapped",
   "project.card.percentValidated": "Validated",
