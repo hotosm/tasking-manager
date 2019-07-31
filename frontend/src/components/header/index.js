@@ -59,7 +59,7 @@ class Header extends React.Component {
     return(
       <div className="v-mid">
         {this.menuItems.map((item, n) =>
-          <ActiveNavLink to={item.link} key={n} isActive={this.isActive}>
+          <TopNavLink to={item.link} key={n} isActive={this.isActive}>
             <FormattedMessage {...item.label}/>
           </ActiveNavLink>
         )}
