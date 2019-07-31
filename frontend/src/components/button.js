@@ -14,3 +14,17 @@ export function Button({ onClick, children, className }: Object) {
     </button>
   );
 }
+
+
+export function CustomButton({ onClick, children, className }: Object) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed="false"
+      focusindex="0"
+      className={`${className || ''} br1 f5 bn pointer`}
+    >
+      { children }
+    </button>
+  );
+}
