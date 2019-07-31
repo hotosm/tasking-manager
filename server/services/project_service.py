@@ -1,22 +1,22 @@
 import datetime
-
 from cachetools import TTLCache, cached
 from flask import current_app
-
-from server import db
-
 from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary, ProjectStatsDTO, ProjectUserStatsDTO, \
-    ProjectContribsDTO, ProjectContribDTO
+from server.models.dtos.project_dto import (
+    ProjectDTO,
+    LockedTasksForUser,
+    ProjectSummary,
+    ProjectStatsDTO,
+    ProjectUserStatsDTO,
+    ProjectContribsDTO,
+    ProjectContribDTO,
+)
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task, TaskHistory, TaskAction
-from server.models.postgis.task_annotation import TaskAnnotation
 from server.models.postgis.utils import NotFound
 from server.services.users.user_service import UserService
-
-from sqlalchemy import func, or_, cast
-from sqlalchemy.types import Interval
+from sqlalchemy import func, or_
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -46,20 +46,28 @@ class ProjectService:
     @staticmethod
     def get_contribs_by_day(project_id: int) -> ProjectContribsDTO:
         # Validate that project exists.
-        project = ProjectService.get_project_by_id(project_id)
+        # project = ProjectService.get_project_by_id(project_id)
 
-        stats = TaskHistory.query.with_entities(
-            TaskHistory.action.label('action'),
-            func.DATE(TaskHistory.action_date).label('day'),
-            func.count(TaskHistory.action_date).label('cnt')
-        )\
-        .filter(TaskHistory.project_id==project_id)\
-        .filter(or_(
-            TaskHistory.action==TaskAction.LOCKED_FOR_MAPPING.name,
-            TaskHistory.action==TaskAction.LOCKED_FOR_VALIDATION.name))\
-        .filter(func.DATE(TaskHistory.action_date) > datetime.date.today() - datetime.timedelta(days=365))\
-        .group_by('action', 'day')\
-        .order_by('day')
+        stats = (
+            TaskHistory.query.with_entities(
+                TaskHistory.action.label("action"),
+                func.DATE(TaskHistory.action_date).label("day"),
+                func.count(TaskHistory.action_date).label("cnt"),
+            )
+            .filter(TaskHistory.project_id == project_id)
+            .filter(
+                or_(
+                    TaskHistory.action == TaskAction.LOCKED_FOR_MAPPING.name,
+                    TaskHistory.action == TaskAction.LOCKED_FOR_VALIDATION.name,
+                )
+            )
+            .filter(
+                func.DATE(TaskHistory.action_date)
+                > datetime.date.today() - datetime.timedelta(days=365)
+            )
+            .group_by("action", "day")
+            .order_by("day")
+        )
 
         # Filter tasks by user_id only.
 
@@ -68,7 +76,7 @@ class ProjectService:
         dates.sort(reverse=True)
         dates_list = []
         for date in dates:
-            dto = ProjectContribDTO({'date': str(date), 'mapped': 0, 'validated': 0})
+            dto = ProjectContribDTO({"date": str(date), "mapped": 0, "validated": 0})
             values = [(s[0], s[2]) for s in stats if date == s[1]]
             for val in values:
                 if val[0] == TaskAction.LOCKED_FOR_MAPPING.name:
@@ -82,7 +90,7 @@ class ProjectService:
         return contribs_dto
 
     @staticmethod
-    def get_project_dto_for_mapper(project_id, locale='en', abbrev=False) -> ProjectDTO:
+    def get_project_dto_for_mapper(project_id, locale="en", abbrev=False) -> ProjectDTO:
         """
         Get the project DTO for mappers
         :param project_id: ID of the Project mapper has requested
@@ -117,7 +125,9 @@ class ProjectService:
         return tasks_dto
 
     @staticmethod
-    def get_task_details_for_logged_in_user(project_id: int, user_id: int, preferred_locale: str):
+    def get_task_details_for_logged_in_user(
+        project_id: int, user_id: int, preferred_locale: str
+    ):
         """ if the user is working on a task in the project return it """
         project = ProjectService.get_project_by_id(project_id)
 
@@ -144,7 +154,11 @@ class ProjectService:
 
         project = ProjectService.get_project_by_id(project_id)
 
-        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(user_id):
+        if ProjectStatus(
+            project.status
+        ) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(
+            user_id
+        ):
             return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
 
         tasks = project.get_locked_tasks_for_user(user_id)
@@ -153,8 +167,9 @@ class ProjectService:
             return False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
         if project.enforce_mapper_level:
-            if not ProjectService._is_user_mapping_level_at_or_above_level_requests(MappingLevel(project.mapper_level),
-                                                                                    user_id):
+            if not ProjectService._is_user_mapping_level_at_or_above_level_requests(
+                MappingLevel(project.mapper_level), user_id
+            ):
                 return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
 
         if project.license_id:
@@ -168,7 +183,7 @@ class ProjectService:
             except StopIteration:
                 return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
-        return True, 'User allowed to map'
+        return True, "User allowed to map"
 
     @staticmethod
     def _is_user_mapping_level_at_or_above_level_requests(requested_level, user_id):
@@ -176,7 +191,10 @@ class ProjectService:
         user_mapping_level = UserService.get_mapping_level(user_id)
 
         if requested_level == MappingLevel.INTERMEDIATE:
-            if user_mapping_level not in [MappingLevel.INTERMEDIATE, MappingLevel.ADVANCED]:
+            if user_mapping_level not in [
+                MappingLevel.INTERMEDIATE,
+                MappingLevel.ADVANCED,
+            ]:
                 return False
         elif requested_level == MappingLevel.ADVANCED:
             if user_mapping_level != MappingLevel.ADVANCED:
@@ -192,10 +210,16 @@ class ProjectService:
 
         project = ProjectService.get_project_by_id(project_id)
 
-        if ProjectStatus(project.status) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(user_id):
+        if ProjectStatus(
+            project.status
+        ) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(
+            user_id
+        ):
             return False, ValidatingNotAllowed.PROJECT_NOT_PUBLISHED
 
-        if project.enforce_validator_role and not UserService.is_user_validator(user_id):
+        if project.enforce_validator_role and not UserService.is_user_validator(
+            user_id
+        ):
             return False, ValidatingNotAllowed.USER_NOT_VALIDATOR
 
         if project.license_id:
@@ -209,17 +233,19 @@ class ProjectService:
             except StopIteration:
                 return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
-        return True, 'User allowed to validate'
+        return True, "User allowed to validate"
 
     @staticmethod
     @cached(summary_cache)
-    def get_project_summary(project_id: int, preferred_locale: str = 'en') -> ProjectSummary:
+    def get_project_summary(
+        project_id: int, preferred_locale: str = "en"
+    ) -> ProjectSummary:
         """ Gets the project summary DTO """
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_summary(preferred_locale)
 
     @staticmethod
-    def get_project_title(project_id: int, preferred_locale: str = 'en') -> str:
+    def get_project_title(project_id: int, preferred_locale: str = "en") -> str:
         """ Gets the project title DTO """
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_title(preferred_locale)

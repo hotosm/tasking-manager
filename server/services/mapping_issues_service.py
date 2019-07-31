@@ -1,8 +1,9 @@
 from server.models.postgis.mapping_issues import MappingIssueCategory
 from server.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
+from werkzeug.exceptions import NotFound
+
 
 class MappingIssueCategoryService:
-
     @staticmethod
     def get_mapping_issue_category(category_id: int) -> MappingIssueCategory:
         """
@@ -25,13 +26,19 @@ class MappingIssueCategoryService:
     @staticmethod
     def create_mapping_issue_category(category_dto: MappingIssueCategoryDTO) -> int:
         """ Create MappingIssueCategory in DB """
-        new_mapping_issue_category_id = MappingIssueCategory.create_from_dto(category_dto)
+        new_mapping_issue_category_id = MappingIssueCategory.create_from_dto(
+            category_dto
+        )
         return new_mapping_issue_category_id
 
     @staticmethod
-    def update_mapping_issue_category(category_dto: MappingIssueCategoryDTO) -> MappingIssueCategoryDTO:
+    def update_mapping_issue_category(
+        category_dto: MappingIssueCategoryDTO
+    ) -> MappingIssueCategoryDTO:
         """ Create MappingIssueCategory in DB """
-        category = MappingIssueCategoryService.get_mapping_issue_category(category_dto.category_id)
+        category = MappingIssueCategoryService.get_mapping_issue_category(
+            category_dto.category_id
+        )
         category.update_category(category_dto)
         return category.as_dto()
 

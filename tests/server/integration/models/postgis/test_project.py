@@ -3,7 +3,13 @@ import os
 import unittest
 import geojson
 from server import create_app
-from server.models.postgis.project import Task, ProjectDTO, ProjectStatus, ProjectPriority, Project
+from server.models.postgis.project import (
+    Task,
+    ProjectDTO,
+    ProjectStatus,
+    ProjectPriority,
+    Project,
+)
 from server.models.postgis.project_info import ProjectInfoDTO
 from tests.server.helpers.test_helpers import create_canned_project
 
@@ -15,10 +21,10 @@ class TestProject(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('CI', 'false')
+        env = os.getenv("CI", "false")
 
         # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == 'true':
+        if env == "true":
             cls.skip_tests = True
 
     def setUp(self):
@@ -47,14 +53,18 @@ class TestProject(unittest.TestCase):
             return
 
         # Checks that code we ran in setUp actually created a project in the DB
-        self.assertIsNotNone(self.test_project.id, 'ID should be set if project successfully persisted')
+        self.assertIsNotNone(
+            self.test_project.id, "ID should be set if project successfully persisted"
+        )
 
     def test_task_can_generate_valid_feature_collection(self):
         if self.skip_tests:
             return
 
         # Act
-        feature_collection = Task.get_tasks_as_geojson_feature_collection(self.test_project.id)
+        feature_collection = Task.get_tasks_as_geojson_feature_collection(
+            self.test_project.id
+        )
 
         # Assert
         self.assertIsInstance(feature_collection, geojson.FeatureCollection)
@@ -68,7 +78,7 @@ class TestProject(unittest.TestCase):
         self.update_project_with_info()
 
         # Act
-        project_dto = self.test_project.as_dto_for_mapping('en', False)
+        project_dto = self.test_project.as_dto_for_mapping("en", False)
 
         # Assert
         self.assertIsInstance(project_dto.area_of_interest, geojson.MultiPolygon)
@@ -87,8 +97,8 @@ class TestProject(unittest.TestCase):
         # Assert
         self.assertEqual(self.test_project.status, ProjectStatus.PUBLISHED.value)
         self.assertEqual(self.test_project.priority, ProjectPriority.MEDIUM.value)
-        self.assertEqual(self.test_project.default_locale, 'en')
-        self.assertEqual(self.test_project.project_info[0].name, 'Thinkwhere Test')
+        self.assertEqual(self.test_project.default_locale, "en")
+        self.assertEqual(self.test_project.project_info[0].name, "Thinkwhere Test")
 
     def test_partial_translation_uses_default_trans_for_empty_fields(self):
         if self.skip_tests:
@@ -99,26 +109,29 @@ class TestProject(unittest.TestCase):
 
         locales = []
         test_info = ProjectInfoDTO()
-        test_info.locale = 'it'
+        test_info.locale = "it"
         locales.append(test_info)
 
         test_dto = ProjectDTO()
         test_dto.project_status = ProjectStatus.PUBLISHED.name
         test_dto.project_priority = ProjectPriority.MEDIUM.name
-        test_dto.default_locale = 'en'
+        test_dto.default_locale = "en"
         test_dto.project_info_locales = locales
-        test_dto.mapper_level = 'BEGINNER'
-        test_dto.mapping_types = ['ROADS']
-        test_dto.mapping_editors = ['JOSM', 'ID']
-        test_dto.validation_editors = ['JOSM']
+        test_dto.mapper_level = "BEGINNER"
+        test_dto.mapping_types = ["ROADS"]
+        test_dto.mapping_editors = ["JOSM", "ID"]
+        test_dto.validation_editors = ["JOSM"]
 
         # Act - Create empty italian translation
         self.test_project.update(test_dto)
-        dto = self.test_project.as_dto_for_mapping('it', False)
+        dto = self.test_project.as_dto_for_mapping("it", False)
 
         # Assert
-        self.assertEqual(dto.project_info['name'], 'Thinkwhere Test',
-                         'English translation should be returned as Italian name was not provided')
+        self.assertEqual(
+            dto.project_info["name"],
+            "Thinkwhere Test",
+            "English translation should be returned as Italian name was not provided",
+        )
 
     def test_project_can_be_cloned(self):
 
@@ -133,31 +146,33 @@ class TestProject(unittest.TestCase):
         cloned_project = Project.clone(original_id, self.test_user.id)
 
         self.assertTrue(cloned_project)
-        self.assertEqual(cloned_project.project_info[0].name, 'Thinkwhere Test')
+        self.assertEqual(cloned_project.project_info[0].name, "Thinkwhere Test")
 
         # Tidy Up
         cloned_project.delete()
-        original_project = Project.get(original_id)  # SQLAlchemy is hanging on to a ref to the old project
+        original_project = Project.get(
+            original_id
+        )  # SQLAlchemy is hanging on to a ref to the old project
         original_project.delete()
 
     def update_project_with_info(self):
 
         locales = []
         test_info = ProjectInfoDTO()
-        test_info.locale = 'en'
-        test_info.name = 'Thinkwhere Test'
-        test_info.description = 'Test Description'
-        test_info.short_description = 'Short description'
-        test_info.instructions = 'Instructions'
+        test_info.locale = "en"
+        test_info.name = "Thinkwhere Test"
+        test_info.description = "Test Description"
+        test_info.short_description = "Short description"
+        test_info.instructions = "Instructions"
         locales.append(test_info)
 
         test_dto = ProjectDTO()
         test_dto.project_status = ProjectStatus.PUBLISHED.name
         test_dto.project_priority = ProjectPriority.MEDIUM.name
-        test_dto.default_locale = 'en'
+        test_dto.default_locale = "en"
         test_dto.project_info_locales = locales
-        test_dto.mapper_level = 'BEGINNER'
-        test_dto.mapping_types = ['ROADS']
-        test_dto.mapping_editors = ['JOSM', 'ID']
-        test_dto.validation_editors = ['JOSM']
+        test_dto.mapper_level = "BEGINNER"
+        test_dto.mapping_types = ["ROADS"]
+        test_dto.mapping_editors = ["JOSM", "ID"]
+        test_dto.validation_editors = ["JOSM"]
         self.test_project.update(test_dto)

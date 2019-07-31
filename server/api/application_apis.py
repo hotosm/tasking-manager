@@ -5,7 +5,6 @@ from server.services.users.authentication_service import token_auth, tm
 
 
 class ApplicationAPI(Resource):
-
     @token_auth.login_required
     def get(self):
         """
@@ -31,12 +30,14 @@ class ApplicationAPI(Resource):
             description: A problem occurred
         """
         try:
-            tokens = ApplicationService.get_all_tokens_for_logged_in_user(tm.authenticated_user_id)
+            tokens = ApplicationService.get_all_tokens_for_logged_in_user(
+                tm.authenticated_user_id
+            )
             if len(tokens) == 0:
                 return 400
             return tokens.to_primitive(), 200
         except Exception as e:
-            error_msg = f'Application GET API - unhandled error: {str(e)}'
+            error_msg = f"Application GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -68,7 +69,7 @@ class ApplicationAPI(Resource):
             token = ApplicationService.create_token(tm.authenticated_user_id)
             return token.to_primitive(), 200
         except Exception as e:
-            error_msg = f'Application POST API - unhandled error: {str(e)}'
+            error_msg = f"Application POST API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -102,10 +103,9 @@ class ApplicationAPI(Resource):
             else:
                 return 302
         except Exception as e:
-            error_msg = f'Application PUT API - unhandled error: {str(e)}'
+            error_msg = f"Application PUT API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
-
 
     @token_auth.login_required
     def delete(self, application_key):
@@ -128,7 +128,7 @@ class ApplicationAPI(Resource):
             description: Application key to remove
             type: string
             required: true
-            default: 1 
+            default: 1
         responses:
           200:
             description: Key deleted successfully
@@ -149,6 +149,6 @@ class ApplicationAPI(Resource):
         except NotFound:
             return {"Error": "Key does not exist for user"}, 404
         except Exception as e:
-            error_msg = f'Application DELETE API - unhandled error: {str(e)}'
+            error_msg = f"Application DELETE API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500

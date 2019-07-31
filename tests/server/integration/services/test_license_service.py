@@ -9,10 +9,10 @@ class TestLicenseService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('CI', 'false')
+        env = os.getenv("CI", "false")
 
         # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == 'true':
+        if env == "true":
             cls.skip_tests = True
 
     def setUp(self):
@@ -36,8 +36,8 @@ class TestLicenseService(unittest.TestCase):
         # Arrange
         license_dto = LicenseDTO()
         license_dto.name = "thinkWhere"
-        license_dto.description = 'thinkWhere test'
-        license_dto.plain_text = 'thinkWhere test'
+        license_dto.description = "thinkWhere test"
+        license_dto.plain_text = "thinkWhere test"
 
         # Act
         license_id = LicenseService.create_licence(license_dto)
@@ -49,7 +49,7 @@ class TestLicenseService(unittest.TestCase):
             self.assertEqual(actual_license.name, license_dto.name)
 
             license_dto.license_id = license_id
-            license_dto.name = 'Updated name'
+            license_dto.name = "Updated name"
             LicenseService.update_licence(license_dto)
             updated_license = LicenseService.get_license_as_dto(license_id)
 

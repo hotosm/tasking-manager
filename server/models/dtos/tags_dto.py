@@ -5,4 +5,5 @@ from schematics.types.compound import ListType
 
 class TagsDTO(Model):
     """ DTO used to define available tags """
+
     tags = ListType(StringType)

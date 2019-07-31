@@ -13,10 +13,10 @@ class TestValidationService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('CI', 'false')
+        env = os.getenv("CI", "false")
 
         # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == 'true':
+        if env == "true":
             cls.skip_tests = True
 
     def setUp(self):
@@ -45,7 +45,9 @@ class TestValidationService(unittest.TestCase):
         ValidatorService.validate_all_tasks(self.test_project.id, self.test_user.id)
 
         # Assert
-        self.assertEqual(self.test_project.tasks_validated, self.test_project.total_tasks)
+        self.assertEqual(
+            self.test_project.tasks_validated, self.test_project.total_tasks
+        )
         self.assertEqual(self.test_project.tasks_mapped, self.test_project.total_tasks)
 
     def test_invalidate_all_sets_counters_correctly(self):

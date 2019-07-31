@@ -21,10 +21,10 @@ class TestSplitService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        env = os.getenv('CI', 'false')
+        env = os.getenv("CI", "false")
 
         # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == 'true':
+        if env == "true":
             cls.skip_tests = True
 
     def setUp(self):
@@ -54,7 +54,7 @@ class TestSplitService(unittest.TestCase):
         x = 1010
         y = 1399
         zoom = 11
-        expected = geojson.loads(json.dumps(get_canned_json('split_task.json')))
+        expected = geojson.loads(json.dumps(get_canned_json("split_task.json")))
 
         # act
         result = SplitService._create_split_tasks(x, y, zoom, None)
@@ -68,17 +68,25 @@ class TestSplitService(unittest.TestCase):
         with self.assertRaises(SplitServiceError):
             SplitService._create_split_tasks("foo", "bar", "dum", None)
 
-    @patch.object(Task, 'get_per_task_instructions')
-    @patch.object(Project, 'tasks')
-    @patch.object(Project, 'save')
-    @patch.object(Project, 'get')
-    @patch.object(Task, 'delete')
-    @patch.object(Task, 'create')
-    @patch.object(Task, 'get_max_task_id_for_project')
-    @patch.object(Task, 'get')
-    def test_split_task_helper(self, mock_task_get, mock_task_get_max_task_id_for_project,
-                               mock_task_create, mock_task_delete, mock_project_get, mock_project_save,
-                               mock_project_tasks, mock_instructions):
+    @patch.object(Task, "get_per_task_instructions")
+    @patch.object(Project, "tasks")
+    @patch.object(Project, "save")
+    @patch.object(Project, "get")
+    @patch.object(Task, "delete")
+    @patch.object(Task, "create")
+    @patch.object(Task, "get_max_task_id_for_project")
+    @patch.object(Task, "get")
+    def test_split_task_helper(
+        self,
+        mock_task_get,
+        mock_task_get_max_task_id_for_project,
+        mock_task_create,
+        mock_task_delete,
+        mock_project_get,
+        mock_project_save,
+        mock_project_tasks,
+        mock_instructions,
+    ):
         if self.skip_tests:
             return
 
@@ -108,7 +116,7 @@ class TestSplitService(unittest.TestCase):
         # assert
         self.assertEqual(4, len(result.tasks))
 
-    @patch.object(Task, 'get_tasks')
+    @patch.object(Task, "get_tasks")
     def test_split_non_square_task(self, mock_task):
         if self.skip_tests:
             return
@@ -123,10 +131,9 @@ class TestSplitService(unittest.TestCase):
         splitTaskDTO.task_id = 2
 
         # Split tasks
-        expected = geojson.loads(json.dumps(get_canned_json('non_square_split_results.json')))
+        expected = geojson.loads(
+            json.dumps(get_canned_json("non_square_split_results.json"))
+        )
         result = SplitService._create_split_tasks(task.x, task.y, task.zoom, task)
 
         self.assertEqual(str(expected), str(result))
-
-
-

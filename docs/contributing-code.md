@@ -60,9 +60,11 @@ other commits, namely:
 For simple commits the one line summary is often enough and the body
 of the commit message can be left out.
 
-In case you have introduced new strings on the frontend, the translation source file must be updated
-this can be done via `make refresh-translatables` or `python3 manage.py refresh_translatables`.
-Please make sure you run the commend and include the changes into your commit.
+Before sending a PR, make sure you run the following commands and include the changes into your commit.
+
+* Code formatting: Format all code correctly by running [Black](https://pypi.org/project/black/): `black manage.py server tests migrations`
+* Coding standards: Make sure you adhere to the coding standards eventually risen by [Flake8](http://flake8.pycqa.org/en/latest/): `flake8 manage.py server tests migrations`
+* Prepare for translations: In case you have introduced new strings on the frontend, the translation source file must be updated this can be done via `make refresh-translatables` or `python3 manage.py refresh_translatables`.
 
 If you have forked this project on GitHub then the best way to submit your patches is to
 push your changes back to your GitHub repository and then send a "pull request" via GitHub to the main repository.

@@ -5,7 +5,6 @@ from server.models.postgis.user import User
 
 
 class TestStatsService(unittest.TestCase):
-
     def test_update_after_mapping_increments_counter(self):
         # Arrange
         test_project = Project()
@@ -15,7 +14,9 @@ class TestStatsService(unittest.TestCase):
         test_user.tasks_mapped = 0
 
         # Act
-        StatsService._update_tasks_stats(test_project, test_user, TaskStatus.READY, TaskStatus.MAPPED)
+        StatsService._update_tasks_stats(
+            test_project, test_user, TaskStatus.READY, TaskStatus.MAPPED
+        )
 
         # Assert
         self.assertEqual(test_project.tasks_mapped, 1)
@@ -31,7 +32,9 @@ class TestStatsService(unittest.TestCase):
         test_user.tasks_validated = 0
 
         # Act
-        StatsService._update_tasks_stats(test_project, test_user, TaskStatus.MAPPED, TaskStatus.VALIDATED)
+        StatsService._update_tasks_stats(
+            test_project, test_user, TaskStatus.MAPPED, TaskStatus.VALIDATED
+        )
 
         # Assert
         self.assertEqual(test_project.tasks_mapped, 0)
@@ -47,7 +50,9 @@ class TestStatsService(unittest.TestCase):
         test_user.tasks_invalidated = 0
 
         # Act
-        StatsService._update_tasks_stats(test_project, test_user, TaskStatus.READY, TaskStatus.BADIMAGERY)
+        StatsService._update_tasks_stats(
+            test_project, test_user, TaskStatus.READY, TaskStatus.BADIMAGERY
+        )
 
         # Assert
         self.assertEqual(test_project.tasks_bad_imagery, 1)
@@ -61,7 +66,9 @@ class TestStatsService(unittest.TestCase):
         test_user.tasks_invalidated = 0
 
         # Act
-        StatsService._update_tasks_stats(test_project, test_user, TaskStatus.MAPPED, TaskStatus.INVALIDATED)
+        StatsService._update_tasks_stats(
+            test_project, test_user, TaskStatus.MAPPED, TaskStatus.INVALIDATED
+        )
 
         # Assert
         self.assertEqual(test_project.tasks_mapped, 0)
@@ -76,7 +83,9 @@ class TestStatsService(unittest.TestCase):
         test_user.tasks_invalidated = 0
 
         # Act
-        StatsService._update_tasks_stats(test_project, test_user, TaskStatus.BADIMAGERY, TaskStatus.INVALIDATED)
+        StatsService._update_tasks_stats(
+            test_project, test_user, TaskStatus.BADIMAGERY, TaskStatus.INVALIDATED
+        )
 
         # Assert
         self.assertEqual(test_project.tasks_bad_imagery, 0)
@@ -91,7 +100,9 @@ class TestStatsService(unittest.TestCase):
         test_user.tasks_invalidated = 0
 
         # Act
-        StatsService._update_tasks_stats(test_project, test_user, TaskStatus.VALIDATED, TaskStatus.INVALIDATED)
+        StatsService._update_tasks_stats(
+            test_project, test_user, TaskStatus.VALIDATED, TaskStatus.INVALIDATED
+        )
 
         # Assert
         self.assertEqual(test_project.tasks_validated, 0)
@@ -121,29 +132,45 @@ class TestStatsService(unittest.TestCase):
         test_admin.tasks_invalidated = 0
 
         # Mapper marks task as mapped
-        StatsService._update_tasks_stats(test_project, test_mapper, TaskStatus.READY, TaskStatus.MAPPED)
+        StatsService._update_tasks_stats(
+            test_project, test_mapper, TaskStatus.READY, TaskStatus.MAPPED
+        )
 
         # Validator marks task as bad imagery
-        StatsService._update_tasks_stats(test_project, test_validator, TaskStatus.MAPPED, TaskStatus.BADIMAGERY)
+        StatsService._update_tasks_stats(
+            test_project, test_validator, TaskStatus.MAPPED, TaskStatus.BADIMAGERY
+        )
 
         # Admin undos marking task as bad imagery
-        StatsService._update_tasks_stats(test_project, test_admin, TaskStatus.BADIMAGERY, TaskStatus.MAPPED, 'undo')
+        StatsService._update_tasks_stats(
+            test_project, test_admin, TaskStatus.BADIMAGERY, TaskStatus.MAPPED, "undo"
+        )
 
         # Validator marks task as invalid
-        StatsService._update_tasks_stats(test_project, test_validator, TaskStatus.MAPPED, TaskStatus.INVALIDATED)
+        StatsService._update_tasks_stats(
+            test_project, test_validator, TaskStatus.MAPPED, TaskStatus.INVALIDATED
+        )
 
         # Mapper marks task as mapped
-        StatsService._update_tasks_stats(test_project, test_mapper, TaskStatus.INVALIDATED, TaskStatus.MAPPED)
+        StatsService._update_tasks_stats(
+            test_project, test_mapper, TaskStatus.INVALIDATED, TaskStatus.MAPPED
+        )
 
         # Admin undos marking task as mapped (test_mapper is given to the function though, as the author of the
         # last_change - compare with MappingServer.undo_mapping() method)
-        StatsService._update_tasks_stats(test_project, test_mapper, TaskStatus.MAPPED, TaskStatus.INVALIDATED, 'undo')
+        StatsService._update_tasks_stats(
+            test_project, test_mapper, TaskStatus.MAPPED, TaskStatus.INVALIDATED, "undo"
+        )
 
         # Mapper marks task as mapped
-        StatsService._update_tasks_stats(test_project, test_mapper, TaskStatus.INVALIDATED, TaskStatus.MAPPED)
+        StatsService._update_tasks_stats(
+            test_project, test_mapper, TaskStatus.INVALIDATED, TaskStatus.MAPPED
+        )
 
         # Validator marks task as valid
-        StatsService._update_tasks_stats(test_project, test_validator, TaskStatus.MAPPED, TaskStatus.VALIDATED)
+        StatsService._update_tasks_stats(
+            test_project, test_validator, TaskStatus.MAPPED, TaskStatus.VALIDATED
+        )
 
         # Assert
         self.assertEqual(test_project.tasks_mapped, 0)
