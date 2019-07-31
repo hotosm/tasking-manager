@@ -18,15 +18,12 @@ sudo apt update && sudo apt -y upgrade &&
 # Install general tools
 sudo apt install -y build-essential curl git &&
 
-# Install Python
-sudo apt install -y python3 python3-dev python3-venv &&
+# Install Python and Node
+curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+sudo apt install -y python3 python3-dev python3-venv nodejs &&
 
 # Install the database
 sudo apt install -y postgresql-10 libpq-dev postgresql-server-dev-10 postgresql-10-postgis-2.4 postgresql-10-postgis-scripts &&
-
-# Install Node
-sudo apt -y install nodejs npm &&
-sudo npm install -g gulp gulp-cli karma karma-jasmine karma-chrome-launcher &&
 
 ## Obtain the tasking manager
 git clone https://github.com/hotosm/tasking-manager.git &&
@@ -53,9 +50,9 @@ sudo -u postgres psql -d tasking-manager -c "CREATE EXTENSION postgis;" &&
 ./venv/bin/python3 manage.py db upgrade &&
 
 # Assamble the tasking manager interface
-cd client/ &&
+cd frontend/ &&
 npm install &&
-gulp build &&
+npm run build &&
 cd ../ &&
 
 ## Please edit the tasking-manager.env as indicated in the README.md ##

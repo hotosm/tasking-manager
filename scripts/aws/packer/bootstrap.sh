@@ -59,10 +59,6 @@ sudo apt-get -y install \
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get -y install nodejs
 
-# Install dependencies
-sudo npm install gulp -g
-sudo npm install browser-sync --save # Probably add this to package.json?
-
 # sudo git clone --recursive https://github.com/hotosm/tasking-manager.git /tasking-manager
 sudo git clone --recursive --single-branch \
     --branch deployment/hot-tasking-manager \

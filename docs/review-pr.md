@@ -50,10 +50,10 @@ and ask the person to check on the error.
 
 1. Test behaviour and edge cases
   Install the PR on your local setup, make sure you run
-  a. backend dependency installation: `pip install requirements.txt`
+  a. backend dependency installation: `pip install -r requirements.txt`
   b. introduced database migrations: `python manage.py db upgrade`
-  c. frontend dependency installation: `cd client && npm install && cd ..`
-  d. rebuild the frontend: `cd client && gulp build && cd ..`
+  c. frontend dependency installation: `cd frontend && npm install && cd ..`
+  d. rebuild the frontend: `cd frontend && npm run build && cd ..`
 
   Then test the behaviour of the introduced changes. Try to hack it! Use edge cases and find where the new changes will cause errors.
 
@@ -105,9 +105,9 @@ Make sure that python dependencies are up to date:
 Rebuild the frontend client:
 
 ```
-cd client
+cd frontend
 npm install
-gulp build
+npm run build
 cd ...
 ```
 
@@ -155,7 +155,7 @@ python manage.py db downgrade
 #   know what the version is pointing to.
 
 git checkout develop
-cd client
-gulp build
+cd frontend
+npm run build
 cd ../
 ```

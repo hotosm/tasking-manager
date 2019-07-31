@@ -157,7 +157,7 @@ class AuthenticationService:
         if user_picture:
             picture_query = f"&picture={user_picture}"
 
-        # Trailing & added as Angular a bit flaky with parsing querystring
+        # Trailing & added as frontend might be a bit flaky with parsing querystring
         authorized_url = "{}/authorized?username={}&session_token={}&ng=0{}{}".format(
             base_url,
             urllib.parse.quote(username),

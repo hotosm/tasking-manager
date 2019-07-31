@@ -22,7 +22,7 @@ list:
 	docker-compose ps
 
 refresh-translatables:
-	docker-compose exec app sh -c "python manage.py refresh_translatables"
+	docker-compose exec app sh -c "cd frontend && yarn build-locales"
 
 refresh-translations:
 	docker-compose exec app sh -c "tx pull -af"
@@ -30,7 +30,7 @@ refresh-translations:
 tests:test-client test-server
 
 test-client:
-	docker-compose exec app sh -c "cd /usr/src/app/tests/client && ../../client/node_modules/.bin/karma start ./karma.conf.js --single-run --browsers PhantomJS"
+	docker-compose exec app sh -c "cd /usr/src/app/frontend && CI=true npm test"
 
 test-server:
 	docker-compose exec app sh -c "python -m unittest discover tests/server"

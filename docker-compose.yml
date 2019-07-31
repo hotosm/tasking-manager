@@ -18,7 +18,7 @@ services:
     links:
       - postgresql
     volumes:
-      - node_modules:/usr/src/app/client/node_modules
+      - node_modules:/usr/src/app/frontend/node_modules
 
   # Migration service
   migration:
