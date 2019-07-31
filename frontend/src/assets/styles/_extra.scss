@@ -84,3 +84,12 @@
   /* bg color = bg color under block */
   background: white;
 }
+
+/* 
+   Add shadow on hover, building on what is already in Tachyons
+   adjust for the lighter shadow from design
+*/
+
+.shadow-hover::after {
+  box-shadow: 0 7px 20px 0 rgba(0,0,0,0.08);
+}
