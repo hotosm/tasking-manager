@@ -2,7 +2,7 @@ import React from 'react';
 import onClickOutside from 'react-click-outside';
 
 import { ChevronDownIcon } from './svgIcons';
-import { Button } from './button';
+import { CustomButton } from './button';
 
 
 class DropdownContent extends React.PureComponent {
@@ -135,12 +135,12 @@ export class _Dropdown extends React.PureComponent {
   render() {
     return (
       <div className={`dib pointer ba b--grey-light ${this.props.className || ''}`}>
-        <Button
+        <CustomButton
           onClick={this.toggleDropdown}
           className={`${this.props.className || ''}`}
         >
-          {this.props.display} <ChevronDownIcon style={{height: "20px"}} className="pl2 v-btm"/>
-        </Button>
+          {this.props.display} <ChevronDownIcon style={{height: "14px"}} className="pl2 v-mid"/>
+        </CustomButton>
         {this.state.display &&
           <DropdownContent
             {...this.props}
