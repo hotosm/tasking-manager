@@ -96,9 +96,9 @@ export function ProjectCard({
   totalMappers
 }: Object) {
   return (
-    <a href={`#project=${projectId}`}>
+    <a className="" href={`#project=${projectId}`}>
     <article className="fl w-25-l base-font w-50-m w-100 mb3 ph2 blue-dark mw5">
-      <div className="pv3 ba br1  b--grey-light ph3">
+      <div className="pv3 ph3 ba br1 b--grey-light shadow-hover ">
         <PriorityBox priority={priority} />
         <div className="w-50 red dib"><ProjectOrgLogo organisationTag={organisationTag} /></div>
         <div className="ma1 w-100">
