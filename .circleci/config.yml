@@ -302,7 +302,7 @@ workflows:
               - deployment/assisted-tasking-manager
         requires:
           - build
-        stack_name: "assisted"
+        stack_name: "assistedv2"
         environment_name: "staging"
         postgres_db: POSTGRES_DB_ASSISTED
         postgres_password: POSTGRES_PASSWORD_ASSISTED
