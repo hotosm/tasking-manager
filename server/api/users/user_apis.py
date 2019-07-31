@@ -97,7 +97,7 @@ class UserContributionsAPI(Resource):
     @token_auth.login_required
     def get(self, userid):
         """
-        Gets daiy user contributions by id
+        Gets daily amount of user contributions by id
         ---
         tags:
           - user
