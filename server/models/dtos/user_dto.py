@@ -97,6 +97,20 @@ class UserSearchQuery(Model):
         return hash((self.username, self.role, self.mapping_level, self.page))
 
 
+class UserContributionDTO(Model):
+    date = StringType()
+    count = IntType()
+
+
+class UserContributionsDTO(Model):
+    """ DTO for projects a user has mapped """
+    def __init__(self):
+        super().__init__()
+        self.contributions = []
+
+    contributions = ListType(ModelType(UserContributionDTO), serialized_name='contributions')
+
+
 class ListedUser(Model):
     """ Describes a user within the User List """
     id = LongType()
