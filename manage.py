@@ -1,19 +1,17 @@
+import os
+import warnings
 import base64
-
 from flask_migrate import MigrateCommand
 from flask_script import Manager
 from dotenv import load_dotenv
-
-from server import create_app, init_counters
+from server import create_app, initialise_counters
 from server.services.users.authentication_service import AuthenticationService
 from server.services.users.user_service import UserService
 from server.services.translation_service import TranslationService
 from server.services.stats_service import StatsService
 
-import os
-import warnings
 
-# Load configuration from file
+# Load configuration from file into environment
 load_dotenv(os.path.join(os.path.dirname(__file__), "tasking-manager.env"))
 
 # Check that required environmental variables are set
@@ -32,12 +30,15 @@ for key in [
 
 # Initialise the flask app object
 application = create_app()
+
+# Initialize homepage counters
 try:
-    init_counters(application)
+    initialise_counters(application)
 except Exception:
     warnings.warn("Homepage counters not initialized.")
-manager = Manager(application)
 
+# Add management commands
+manager = Manager(application)
 
 # Enable db migrations to be run via the command line
 manager.add_command("db", MigrateCommand)
@@ -65,7 +66,6 @@ def refresh_translatables():
     TranslationService.refresh_translatables()
 
 
-<<<<<<< HEAD
 @manager.command
 def refresh_project_stats():
     print("Started updating project stats...")
@@ -73,7 +73,5 @@ def refresh_project_stats():
     print("Project stats updated")
 
 
-=======
->>>>>>> Add code checks for backend, linting with black and flake8
 if __name__ == "__main__":
     manager.run()

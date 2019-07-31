@@ -25,20 +25,20 @@ The .tx folder contains the Transifex config file. This is where you can find th
 
 ### Extract strings for translation
 
-* ```make refresh-translatables``` -  Collects translatable strings and moves them into `client/locale/en.json`.
+* ```make refresh-translatables``` -  Collects translatable strings and moves them into `frontend/src/locales/en.json`.
 * Push to the `develop` branch and it will be automatically picked up by Transifex (twice a day).
 
 ### Update with latest translations
 
 * Before a release new translations need to be pulled in:
-* ```tx pull -af``` -  Gets all translations from Transifex and puts them into `client/locale`.
+* ```tx pull -af``` -  Gets all translations from Transifex and puts them into `frontend/locale`.
 
 ### Adding a new language
 
 In this example we are adding support for German.
 
 * Add a new .json file with the appropriate language code as the name of the file, so in this case de.json.
-* Configure local mapping by using Transifex's set command: ```tx set -r tasking-manager.master -l de client/locale/de.json```
+* Configure local mapping by using Transifex's set command: ```tx set -r tasking-manager.master -l de frontend/src/locales/de.json```
 * Add the new language and language code to the config file so it shows up in dropdowns etc. in server/config.py
 
 ### Pushing translations
