@@ -23,7 +23,7 @@ const menuItems = [
 ];
 
 
-const ActiveNavLink = (props) => {
+const TopNavLink = (props) => {
   const {isActive, ...otherProps} = props;
   return(
     <Link getProps={isActive} {...otherProps}>
