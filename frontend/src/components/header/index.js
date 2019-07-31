@@ -61,7 +61,7 @@ class Header extends React.Component {
         {this.menuItems.map((item, n) =>
           <TopNavLink to={item.link} key={n} isActive={this.isActive}>
             <FormattedMessage {...item.label}/>
-          </ActiveNavLink>
+          </TopNavLink>
         )}
       </div>
     );
