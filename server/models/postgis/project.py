@@ -468,17 +468,10 @@ class Project(db.Model):
         """ Create Project Summary model for postgis project object"""
         project_stats = ProjectStatsDTO()
         project_stats.project_id = self.id
-        polygon = to_shape(self.geometry)
-        polygon_aea = transform(
-            partial(
-                pyproj.transform,
-                pyproj.Proj(init="EPSG:4326"),
-                pyproj.Proj(proj="aea", lat1=polygon.bounds[1], lat2=polygon.bounds[3]),
-            ),
-            polygon,
-        )
-        area = polygon_aea.area / 1000000
-        project_stats.area = area
+        project_area_sql = "select ST_Area(geometry, true)/1000000 as area from public.projects where id = :id"
+        project_area_result = db.engine.execute(text(project_area_sql), id=self.id)
+
+        project_stats.area = project_area_result.fetchone()["area"]
         project_stats.total_mappers = (
             db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
         )

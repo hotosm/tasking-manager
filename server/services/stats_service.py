@@ -201,29 +201,22 @@ class StatsService:
             .all()
         )
 
-        # untagged_count = 0
-        # total_area = 0
-        # dto.total_area = 0
-        # total_area_sql = """select sum(ST_Area(geometry)) from public.projects as area"""
-        # total_area_result = db.engine.execute(total_area_sql)
-        # current_app.logger.debug(total_area_result)
-        # for rowproxy in total_area_result:
-        # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
-        # for tup in rowproxy.items():
-        # total_area += tup[1]
-        # current_app.logger.debug(total_area)
-        # dto.total_area = total_area
+        total_area_sql = """select coalesce(sum(ST_Area(geometry,true)/1000000),0) as sum
+                              from public.projects as area"""
+        total_area_result = db.engine.execute(total_area_sql)
 
-        tasks_mapped_sql = """select coalesce(sum(ST_Area(geometry)), 0) as sum
-                              from public.tasks where task_status = :task_status"""
+        dto.total_area = total_area_result.fetchone()["sum"]
+
+        tasks_mapped_sql = """select coalesce(sum(ST_Area(geometry, true)/1000000), 0) as sum from public.tasks
+                             where task_status = :task_status"""
         tasks_mapped_result = db.engine.execute(
             text(tasks_mapped_sql), task_status=TaskStatus.MAPPED.value
         )
 
         dto.total_mapped_area = tasks_mapped_result.fetchone()["sum"]
 
-        tasks_validated_sql = """select coalesce(sum(ST_Area(geometry)), 0) as sum
-                                 from public.tasks where task_status = :task_status"""
+        tasks_validated_sql = """select coalesce(sum(ST_Area(geometry, true)/1000000), 0) as sum from public.tasks
+                                 where task_status = :task_status"""
         tasks_validated_result = db.engine.execute(
             text(tasks_validated_sql), task_status=TaskStatus.VALIDATED.value
         )
