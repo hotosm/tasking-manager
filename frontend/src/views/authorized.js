@@ -12,8 +12,9 @@ import { setAuthDetails } from '../store/actions/auth';
   componentDidMount() {
     const params = new URLSearchParams(this.props.location.search);
     const username = params.get('username');
-    const session_token = params.get('session_token');
-    this.props.authenticateUser(username, session_token);
+    const sessionToken = params.get('session_token');
+    const userPicture = params.get('picture');
+    this.props.authenticateUser(username, sessionToken, userPicture);
     this.setState({
       redirect_url: params.get('redirect_to') ? params.get('redirect_to') : '/',
       isReadyToRedirect: true
@@ -32,7 +33,9 @@ import { setAuthDetails } from '../store/actions/auth';
 
  const mapDispatchToProps = (dispatch) => {
   return {
-    authenticateUser: (username, token) => dispatch(setAuthDetails(username, token))
+    authenticateUser: (username, token, userPicture) => dispatch(
+      setAuthDetails(username, token, userPicture)
+    )
   };
 };
 

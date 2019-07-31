@@ -68,6 +68,11 @@ class AuthenticationService:
 
         osm_id = int(osm_user.attrib['id'])
         username = osm_user.attrib['display_name']
+        try:
+            # get gravatar profile picture file name
+            user_picture = osm_user.find('img').attrib['href'].split('/avatar/')[1].split('?s=')[0]
+        except (AttributeError, IndexError):
+            user_picture = None
 
         try:
             UserService.get_user_by_id(osm_id)
@@ -80,7 +85,9 @@ class AuthenticationService:
             MessageService.send_welcome_message(new_user)
 
         session_token = AuthenticationService.generate_session_token_for_user(osm_id)
-        authorized_url = AuthenticationService.generate_authorized_url(username, session_token, redirect_to)
+        authorized_url = AuthenticationService.generate_authorized_url(
+            username, session_token, redirect_to, user_picture
+            )
 
         return authorized_url
 
@@ -134,17 +141,25 @@ class AuthenticationService:
         return serializer.dumps(osm_id)
 
     @staticmethod
-    def generate_authorized_url(username, session_token, redirect_to):
+    def generate_authorized_url(username, session_token, redirect_to, user_picture):
         """ Generate URL that we'll redirect the user to once authenticated """
         base_url = current_app.config['FRONTEND_BASE_URL']
 
         redirect_query = ''
+        picture_query = ''
         if redirect_to:
             redirect_query = f'&redirect_to={urllib.parse.quote(redirect_to)}'
+        if user_picture:
+            picture_query = f'&picture={user_picture}'
 
         # Trailing & added as Angular a bit flaky with parsing querystring
-        authorized_url = f'{base_url}/authorized?username={urllib.parse.quote(username)}&session_token={session_token}&ng=0' \
-                         f'{redirect_query}'
+        authorized_url = '{}/authorized?username={}&session_token={}&ng=0{}{}'.format(
+            base_url,
+            urllib.parse.quote(username),
+            session_token,
+            redirect_query,
+            picture_query
+        )
         return authorized_url
 
     @staticmethod
