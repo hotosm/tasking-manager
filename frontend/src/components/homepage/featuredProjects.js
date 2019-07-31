@@ -1,17 +1,15 @@
-import React from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { FormattedMessage} from 'react-intl';
-import { RightIcon, LeftIcon } from '../svgIcons';
-import { ProjectCard } from '../../components/projectcard/projectCard';
-import { useEffect, useReducer } from 'react';
-import { API_URL } from '../../config';
 import axios from 'axios';
-
 import ReactPlaceholder from 'react-placeholder';
 import "react-placeholder/lib/reactPlaceholder.css";
 
-import cards from '../projectcard/demoProjectCardsData';
+import { RightIcon, LeftIcon } from '../svgIcons';
+import { ProjectCard } from '../../components/projectcard/projectCard';
+import { API_URL } from '../../config';
 
 import messages from './messages';
+
 
 const dataFetchReducer = (state, action) => {
   switch (action.type) {
@@ -65,7 +63,7 @@ function FeaturedProjectPaginateArrows({pages, activeProjectCardPage, mobile, di
     let enableRight = false;
     if (activeProjectCardPage !== 0) {
         enableLeft = true;
-    } 
+    }
     if (pages.length - 1 > activeProjectCardPage && pages.length !== 1) {
         enableRight = true;
     }
@@ -85,80 +83,91 @@ function FeaturedProjectPaginateArrows({pages, activeProjectCardPage, mobile, di
 }
 
 const chunkArray = chunkSize => array => {
-    return array.reduce((acc, each, index, src) => {
-        if (!(index % chunkSize)) { 
-            return [...acc, src.slice(index, index + chunkSize)];
-        } 
-        return acc;
-        },
-    []);
+  return array.reduce((acc, each, index, src) => {
+    if (!(index % chunkSize)) {
+      return [...acc, src.slice(index, index + chunkSize)];
+    }
+    return acc;
+    },
+  []);
 }
 const projectPaginate = chunkArray(4);
 const projectPaginateMobile = chunkArray(2);
 
 
 export function FeaturedProjects() {
-  const initialData = {mapResults:{features: [],type:"FeatureCollection"}, results:[], pagination: {hasNext: false, hasPrev: false, page: 1}};
-  const [state, dispatch] = useFeaturedProjectAPI(initialData)
+  const initialData = {
+    mapResults: {
+      features: [],
+      type:"FeatureCollection"
+    },
+    results:[],
+    pagination: {hasNext: false, hasPrev: false, page: 1}
+  };
+  const [state, dispatch] = useFeaturedProjectAPI(initialData);
 
-  const apiResults = state.projects && state.projects.results
-  const pagedProjs = projectPaginate(apiResults)
-  const pagedProjsMobile = projectPaginateMobile(apiResults)
+  const apiResults = state.projects && state.projects.results;
+  const pagedProjs = projectPaginate(apiResults);
+  const pagedProjsMobile = projectPaginateMobile(apiResults);
 
   return(
     <section className="pt4-l pb5 pl5-l pr1-l pl3 bg-white black">
       <div className="cf">
         <div className="w-75-l w-60 fl">
-        <h3 className="f2 ttu barlow-condensed fw8">
+          <h3 className="f2 ttu barlow-condensed fw8">
             <FormattedMessage {...messages.featuredProjects} />
-            </h3>
+          </h3>
         </div>
         <div className="fl w-25-l pa3 mb4 mw6 dn db-l">
           {!state.isLoading &&
-            <FeaturedProjectPaginateArrows 
-                pages={pagedProjs}
-                activeProjectCardPage={state.activeProjectCardPage}
-                mobile={false}
-                dispatch={dispatch} />
-              }
+            <FeaturedProjectPaginateArrows
+              pages={pagedProjs}
+              activeProjectCardPage={state.activeProjectCardPage}
+              mobile={false}
+              dispatch={dispatch}
+            />
+          }
         </div>
         <div className="fl w-40 pa3 mb4 mw6 db dn-l">
-            { !state.isLoading && <FeaturedProjectPaginateArrows 
-                pages={pagedProjsMobile}
-                mobile={true}
-                activeProjectCardPage={state.activeProjectCardPageMobile}
-                dispatch={dispatch} /> }
+          { !state.isLoading &&
+            <FeaturedProjectPaginateArrows
+              pages={pagedProjsMobile}
+              mobile={true}
+              activeProjectCardPage={state.activeProjectCardPageMobile}
+              dispatch={dispatch}
+            />
+          }
         </div>
       </div>
-        {state.isError ? (
-          <div class="bg-tan">Error loading the featured projects.</div>
-        ) : null}
-        <div className="cf dn db-l">
-          <ReactPlaceholder type='media' rows={10} ready={!state.isLoading}>
-          <FeaturedProjectCards 
+      {state.isError ? (
+        <div class="bg-tan">Error loading the featured projects.</div>
+      ) : null}
+      <div className="cf dn db-l">
+        <ReactPlaceholder type='media' rows={10} ready={!state.isLoading}>
+          <FeaturedProjectCards
             pageOfCards={pagedProjs}
             pageNum={state.activeProjectCardPage}
-            ready={!state.isLoading} />
-          </ReactPlaceholder> 
-        </div>
-        <div className="cf db dn-l">
-          <ReactPlaceholder type='media' rows={10} ready={!state.isLoading}>
-          <FeaturedProjectCards 
+            ready={!state.isLoading}
+          />
+        </ReactPlaceholder>
+      </div>
+      <div className="cf db dn-l">
+        <ReactPlaceholder type='media' rows={10} ready={!state.isLoading}>
+          <FeaturedProjectCards
             pageOfCards={pagedProjsMobile}
             pageNum={state.activeProjectCardPageMobile}
-             />
-          </ReactPlaceholder>
-        </div>
+          />
+        </ReactPlaceholder>
+      </div>
     </section>
   );
 }
 
 function FeaturedProjectCards({pageOfCards, pageNum}: Object) {
   if (pageOfCards && pageOfCards.length === 0) {
-    return null
-  } 
-  return pageOfCards[pageNum].map((card, n) => <ProjectCard { ...card } key={n} />)
-
+    return null;
+  }
+  return pageOfCards[pageNum].map((card, n) => <ProjectCard { ...card } key={n} />);
 }
 
 
@@ -167,7 +176,7 @@ const useFeaturedProjectAPI = (initialData) => {
     isLoading: true,
     isError: false,
     activeProjectCardPageMobile: 0,
-    activeProjectCardPage: 0, 
+    activeProjectCardPage: 0,
     projects: initialData,
   });
 
@@ -176,28 +185,25 @@ const useFeaturedProjectAPI = (initialData) => {
 
     const fetchData = async () => {
       dispatch({ type: 'FETCH_INIT' });
-
       try {
-        /* TODO: finalize API for featured projects, 
+        /* TODO: finalize API for featured projects,
         for now, this just gets first page of all projects */
-      const result = await axios(
-        `${API_URL}project/search?mapperLevel=ALL`,
-      );
+        const result = await axios(
+          `${API_URL}project/search?mapperLevel=ALL`,
+        );
 
         if (!didCancel) {
           dispatch({ type: 'FETCH_SUCCESS', payload: result.data});
         }
       } catch (error) {
         dispatch({ type: 'FETCH_FAILURE' });
-      } 
+      }
     };
 
     fetchData();
-
     return () => {
       didCancel = true;
     };
-    
   },[]);
 
   return [state, dispatch]
