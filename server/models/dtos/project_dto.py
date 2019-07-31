@@ -287,6 +287,7 @@ class ListSearchResultDTO(Model):
     active_mappers = IntType(serialized_name="activeMappers")
     last_updated = DateTimeType(serialized_name="lastUpdated")
     due_date = DateTimeType(serialized_name="dueDate")
+    total_contributors = IntType(serialized_name="totalContributors")
 
 
 class ProjectSearchResultsDTO(Model):
