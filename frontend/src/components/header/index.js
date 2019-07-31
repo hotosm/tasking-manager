@@ -42,7 +42,7 @@ const UserDisplay = (props) => {
         />
         : <img className={imgClass} src={profilePic} alt={'user avatar'} />
       }
-      <span className="pl 2">{props.username}</span>
+      <span className="pl2">{props.username}</span>
     </span>
   );
 };
