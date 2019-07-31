@@ -15,6 +15,7 @@ from server.models.postgis.statuses import (
     MappingTypes,
     ProjectPriority,
 )
+from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import (
     NotFound,
     ST_Intersects,
@@ -25,6 +26,7 @@ from server.models.postgis.utils import (
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
+from sqlalchemy import func, distinct
 import math
 
 
@@ -86,7 +88,6 @@ class ProjectSearchService:
             project_info_dto = ProjectInfo.get_dto_for_locale(
                 project.id, search_dto.preferred_locale, project.default_locale
             )
-
             list_dto = ListSearchResultDTO()
             list_dto.project_id = project.id
             list_dto.locale = project_info_dto.locale
@@ -114,6 +115,7 @@ class ProjectSearchService:
             )
             list_dto.status = ProjectStatus(project.status).name
             list_dto.active_mappers = Project.get_active_mappers(project.id)
+            list_dto.total_contributors = project.total_contributors
 
             dto.results.append(list_dto)
 
@@ -139,7 +141,9 @@ class ProjectSearchService:
                 Project.total_tasks,
                 Project.last_updated,
                 Project.due_date,
+                func.count(distinct(TaskHistory.user_id)).label("total_contributors"),
             )
+            .join(TaskHistory, TaskHistory.project_id == Project.id)
             .join(ProjectInfo)
             .filter(ProjectInfo.locale.in_([search_dto.preferred_locale, "en"]))
             .filter(Project.private is not True)
@@ -187,6 +191,8 @@ class ProjectSearchService:
                     or_search, postgresql_regconfig="english"
                 )
             )
+
+        query = query.group_by(Project.id)
 
         all_results = (
             query.order_by(Project.priority, Project.id.desc())
