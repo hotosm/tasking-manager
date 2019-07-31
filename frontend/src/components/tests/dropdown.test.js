@@ -2,7 +2,7 @@ import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
 import { Dropdown } from '../dropdown';
-import { Button } from '../button';
+import { CustomButton } from '../button';
 
 
 const createTestDropdown = (options) => {
@@ -46,7 +46,7 @@ it('dropdown-content show/hide with clicks', () => {
   let elementInstance = createTestDropdown(
     [{label: 'English'}, {label: 'Portuguese (pt)'}]
   );
-  elementInstance.findByType(Button).props.onClick();
+  elementInstance.findByType(CustomButton).props.onClick();
   expect(
     elementInstance.findByProps(
       {'className': 'di tl mt1 ba b--grey-light br1 fixed shadow-1 z-1 flex flex-column'}
@@ -70,7 +70,7 @@ it('dropdown-content show/hide with clicks', () => {
     )[0].children[0].children
   ).toEqual(["English"]);
   // dropdown-content should disappear after another button click
-  elementInstance.findByType(Button).props.onClick();
+  elementInstance.findByType(CustomButton).props.onClick();
   expect(
     () => elementInstance.findByProps({'className': 'di tl mt1 ba b--grey-light br1 fixed shadow-1 z-1 flex flex-column'})
   ).toThrow(
@@ -85,7 +85,7 @@ it('dropdown-content disappear after click on option', () => {
   const elementInstance = createTestDropdown(
     [{label: 'English'}, {label: 'Portuguese (pt)'}]
   );
-  elementInstance.findByType(Button).props.onClick();
+  elementInstance.findByType(CustomButton).props.onClick();
   elementInstance.findAllByProps(
     {'className': 'pa3 bg-white bg-animate hover-bg-red-light'}
   )[0].children[0].props.onClick();
@@ -106,7 +106,7 @@ it('dropdown behaviour with href props', () => {
     {label: 'B', href: 'http://b.co'},
     {label: 'C', href: 'http://c.co'}
   ]);
-  elementInstance.findByType(Button).props.onClick();
+  elementInstance.findByType(CustomButton).props.onClick();
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps(
@@ -145,7 +145,7 @@ it('dropdown behaviour with multi enabled', () => {
     />
   );
   const elementInstance = testElement.root;
-  elementInstance.findByType(Button).props.onClick();
+  elementInstance.findByType(CustomButton).props.onClick();
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps(

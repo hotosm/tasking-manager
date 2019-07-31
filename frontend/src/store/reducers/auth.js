@@ -5,7 +5,8 @@ import { types } from '../actions/auth';
 
 const initialState = Map({
   userDetails: {},
-  token: ''
+  token: '',
+  userPicture: ''
 });
 
 export function authorizationReducer (state = initialState, action) {
@@ -15,6 +16,9 @@ export function authorizationReducer (state = initialState, action) {
     }
     case types.SET_TOKEN: {
       return state.set('token', action.token)
+    }
+    case types.SET_PICTURE: {
+      return state.set('userPicture', action.userPicture)
     }
     case types.CLEAR_SESSION: {
       return initialState;
