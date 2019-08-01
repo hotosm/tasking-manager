@@ -2,7 +2,7 @@ import React from 'react';
 import TestRenderer from 'react-test-renderer';
 import { IntlProvider } from 'react-intl';
 
-import { DueDateBox, ProjectCard } from '../../components/projectcard/projectCard';
+import DueDateBox from '../../../components/projectcard/dueDateBox';
 
 const createComponentWithIntl = (children, props = {locale: 'en'}) => {
   return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
@@ -16,10 +16,10 @@ it('test relative date formatting in English', () => {
   expect(
     testInstance.findByType(DueDateBox).props.dueDate
   ).toBe(sixDaysOut);
-  console.log(testInstance.findAllByType('span')[1].children);
+  // console.log(testInstance.findAllByType('span')[1].children);
 
   expect(
     //find the span inside the span
-    testInstance.findAllByType('span')[1].children
+    testInstance.findAllByType('span')[2].children
   ).toContain("6 days left");
 });
