@@ -1,14 +1,15 @@
 import { types } from '../actions/userPreferences';
 
+
 const initialState = {
-  language: 'english'
+  locale: 'en'
 };
 
 export function preferencesReducer(state = initialState, action) {
   switch (action.type) {
-    case types.SET_LANGUAGE: {
+    case types.SET_LOCALE: {
       return {
-        'language': action.language
+        'locale': action.locale
       };
     }
     default:
