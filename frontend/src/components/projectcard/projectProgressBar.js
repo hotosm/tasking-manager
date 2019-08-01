@@ -8,10 +8,7 @@ export default function ProjectProgressBar({ percentMapped, percentValidated }: 
     <div className="cf db">
       <div className="relative">
         <div className={`absolute bg-blue-grey br-pill hhalf hide-child ${tachyonsWidthClass(percentMapped)}`} >
-          <span className="db absolute top-2 z-1 w3 w4-m w4-l bg-black ba br2 b--moon-gray pa2 shadow-5 child">
-          <p className="f6 lh-copy near-black ma0 white f7 fw4"> <span className="fw8">{percentMapped}%</span> <FormattedMessage {...messages["percentMapped"]} /></p>
-          <span className="absolute top-0 center-2 nt2 w1 h1 bg-black bl bt b--moon-gray rotate-45"></span>
-          </span>
+
         </div>
         <div className={`absolute bg-red br-pill hhalf hide-child ${tachyonsWidthClass(percentValidated)}`} >
           <span className="db absolute top-2 z-1 w3 w4-m w4-l bg-black ba br2 b--blue-dark pa2 shadow-5 child">
@@ -19,7 +16,12 @@ export default function ProjectProgressBar({ percentMapped, percentValidated }: 
           <span className="absolute top-0 left-2 nt2 w1 h1 bg-black bl bt b--blue-dark rotate-45"></span>
           </span>
         </div>
-        <div className={`bg-grey-light br-pill hhalf overflow-y-hidden`}></div>
+        <div className={`bg-grey-light br-pill hhalf hide-child overflow-y-hidden`}>
+          <span className="db absolute top-2 z-1 w3 w4-m w4-l bg-black ba br2 b--moon-gray pa2 shadow-5 child">
+          <p className="f6 lh-copy near-black ma0 white f7 fw4"> <span className="fw8">{percentMapped}%</span> <FormattedMessage {...messages["percentMapped"]} /></p>
+          <span className="absolute top-0 center-2 nt2 w1 h1 bg-black bl bt b--moon-gray rotate-45"></span>
+          </span>
+        </div>
     </div>
   </div>
   </>);
@@ -31,6 +33,10 @@ function tachyonsWidthClass(percent: Number) {
       {
         className: "",
         value: 0},
+
+      {
+         className: "w-10",
+         value: 5},
       {
          className: "w-10",
          value: 10},
