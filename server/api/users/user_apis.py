@@ -436,14 +436,17 @@ class UserRecommendedProjects(Resource):
                 description: Internal Server Error
         """
         try:
-            locale = request.environ.get('HTTP_ACCEPT_LANGUAGE') if request.environ.get(
-                'HTTP_ACCEPT_LANGUAGE') else 'en'
+            locale = (
+                request.environ.get("HTTP_ACCEPT_LANGUAGE")
+                if request.environ.get("HTTP_ACCEPT_LANGUAGE")
+                else "en"
+            )
             user_dto = UserService.get_recommended_projects(username, locale)
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User or mapping not found"}, 404
         except Exception as e:
-            error_msg = f'User GET - unhandled error: {str(e)}'
+            error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
