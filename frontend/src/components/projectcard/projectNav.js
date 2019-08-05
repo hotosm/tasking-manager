@@ -45,30 +45,31 @@ const RenderMenuItems = ({navMenuItems}: Object) => {
   );
 }
 
-const PaginationsPage = ({Data}: Object) => {
-  const pagerStyle = "link fl ph2 blue-grey br2 f6 pv2 mh1 ba b--blue-grey";
-  const activeStyle = "bg-blue-dark grey-light"
-  //Mockup for styling
-  return (
-    <div className="db ma2 cf">
-      <div className={`${pagerStyle} ${activeStyle}`}>
-        1
-      </div>
-      <div className={pagerStyle}>
-        2
-      </div>
-      <div className={pagerStyle}>
-       …
-      </div>
-      <div className={pagerStyle}>
-        6
-      </div>
-      <div className={pagerStyle}>
-        7
-      </div>
-    </div>
-  )
+
+const PaginationsPageFlex = ({Data}: Object) => {
+  const pagerStyle = "f5 items-center br2 justify-center no-underline  bg-animate hover-bg-blue-grey hover-white inline-flex items-center w2 h2 ba ma1 border-box";
+  const activeStyle = "bg-blue-dark white"
+  const inactiveStyle = "blue-grey"
+return (
+<div className="flex items-center justify-center pa4">
+  <a href="#0" className={`${pagerStyle} ${activeStyle}`}>
+    <span >1</span>
+  </a>
+  <a href="#0" className={`${inactiveStyle} ${pagerStyle} `}>
+    <span >2</span>
+  </a>
+  <a href="#0" className={`${inactiveStyle} ${pagerStyle} `}>
+    <span >…</span>
+  </a>
+  <a href="#0" className={`${inactiveStyle} ${pagerStyle} `}>
+    <span >6</span>
+  </a>
+  <a href="#0" className={`${inactiveStyle} ${pagerStyle} `}>
+    <span >7</span>
+  </a>
+</div>)
 }
+
 
 export const ProjectNav = props => {
 
@@ -109,13 +110,14 @@ export const ProjectNav = props => {
           </div>         
            <ShowMapToggle />
         </div>
+        {props.children}
       </header>
       
-      <p className="blue-grey ml2 f7">Showing x projects {props.children}</p>
+      <p className="blue-grey ml2 f7">Showing x projects</p>
       <div className="cf">
           {cards.map((card, n) => <ProjectCard { ...card } key={n} />)}
         </div>
-      <PaginationsPage/>
+      <PaginationsPageFlex/>
       </>
     );
 }
