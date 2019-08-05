@@ -140,7 +140,7 @@ export function FeaturedProjects() {
         </div>
       </div>
       {state.isError ? (
-        <div class="bg-tan">Error loading the featured projects.</div>
+        <div className="bg-tan">Error loading the featured projects.</div>
       ) : null}
       <div className="cf dn db-l">
         <ReactPlaceholder type='media' rows={10} ready={!state.isLoading}>
