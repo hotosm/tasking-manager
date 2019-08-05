@@ -15,7 +15,16 @@ WebFont.load({
   }
 });
 
-Object.keys(Icons).forEach((n, i) => {
+const allIconNames = Object.keys(Icons)
+const allIconsArr = Object.keys(Icons).map(n => Icons[n]);
+
+storiesOf('Icons', module)
+.add('all icons', () => <div className="">
+{allIconsArr.map((EachIcon, key) => (<div class="dib ma2 ba red hover-blue-dark b--grey-light" title={allIconNames[key]}><EachIcon key={key} /></div>))}
+</div>)
+
+//add one entry for each icon
+allIconNames.forEach((n, i) => {
   const NthIcon = Icons[n];
   storiesOf('Icons', module)
 .add(n, () => <NthIcon/>);}
