@@ -48,6 +48,7 @@
   "project.card.lastContribution": "Last contribution",
   "project.card.percentMapped": "Mapped",
   "project.card.percentValidated": "Validated",
+  "project.nav.mappingDifficulty": "Mapping Difficulty",
   "project.card.mapperLevelBeginner": "Beginner",
   "project.card.mapperLevelIntermediate": "Intermediate",
   "project.card.mapperLevelAdvanced": "Advanced",
@@ -55,5 +56,8 @@
   "project.card.projectPriorityHigh": "High",
   "project.card.projectPriorityMedium": "Medium",
   "project.card.projectPriorityLow": "Low",
-  "project.card.dueDateLeft": "{daysLeftHumanize} left"
+  "project.card.dueDateLeft": "{daysLeftHumanize} left",
+  "project.nav.moreFilters": "More Filters",
+  "project.nav.campaign": "Campaign",
+  "project.nav.showMapToggle": "Show map"
 }
