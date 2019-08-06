@@ -14,6 +14,7 @@
   "home.callToAction.title": "We can't do it without you",
   "home.callToAction.firstLeadLine": "If you have never mapped before and would like to help, don't worry it's easy. Visit our {link} page to get started mapping in less than 30 minutes.",
   "home.callToAction.secondLeadLine": "Seasoned mapper? Pick up one of our many projects and start contributing.",
+  "home.featuredProjects.title": "Featured Projects",
   "home.callToAction.learnLink": "How it works",
   "home.mainSection.button.start": "Start mapping",
   "home.mainSection.button.join": "Join the community",
@@ -41,5 +42,18 @@
   "foooter.definition": "Tasking Manager is a platform where people can help humanitarian causes by mapping in OpenStreetMap.",
   "footer.credits": "Made by HOTOSM Community. Get in touch.",
   "footer.feedback": "Give feedback on GitHub.",
-  "footer.learn": "Learn more about OpenStreetMap."
+  "footer.learn": "Learn more about OpenStreetMap.",
+  "project.mainSection.title": "Generic project",
+  "project.card.contributorCount": "{number} total contributors",
+  "project.card.lastContribution": "Last contribution",
+  "project.card.percentMapped": "Mapped",
+  "project.card.percentValidated": "Validated",
+  "project.card.mapperLevelBeginner": "Beginner",
+  "project.card.mapperLevelIntermediate": "Intermediate",
+  "project.card.mapperLevelAdvanced": "Advanced",
+  "project.card.projectPriorityUrgent": "Urgent",
+  "project.card.projectPriorityHigh": "High",
+  "project.card.projectPriorityMedium": "Medium",
+  "project.card.projectPriorityLow": "Low",
+  "project.card.dueDateLeft": "{daysLeftHumanize} left"
 }
