@@ -196,7 +196,11 @@ const useFeaturedProjectAPI = (initialData) => {
           dispatch({ type: 'FETCH_SUCCESS', payload: result.data});
         }
       } catch (error) {
-        dispatch({ type: 'FETCH_FAILURE' });
+        /* if cancelled, this setting state of unmounted
+         * component would be a memory leak */
+        if (!didCancel) {
+          dispatch({ type: 'FETCH_FAILURE' });
+        }
       }
     };
 
