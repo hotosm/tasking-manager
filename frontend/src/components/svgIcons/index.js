@@ -11,6 +11,7 @@ export { ViewIcon } from "./view";
 export { LinkIcon } from "./link";
 export { ChevronUpIcon } from "./chevron-up";
 export { ChevronDownIcon } from "./chevron-down";
+export { ClockIcon } from "./clock";
 export { ChevronRightIcon } from "./chevron-right";
 export { ShareIcon } from "./share";
 export { FacebookIcon } from "./facebook";
