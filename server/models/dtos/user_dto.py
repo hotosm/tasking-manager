@@ -58,6 +58,15 @@ class UserDTO(Model):
     twitter_id = StringType(serialized_name="twitterId")
     facebook_id = StringType(serialized_name="facebookId")
     linkedin_id = StringType(serialized_name="linkedinId")
+    slack_id = StringType(serialized_name="slackId")
+    irc_id = StringType(serialized_name="ircId")
+    skype_id = StringType(serialized_name="skypeId")
+    city = StringType(serialized_name="city")
+    country = StringType(serialized_name="country")
+    name = StringType(serialized_name="name")
+    # these are read only
+    missing_maps_profile = StringType(serialized_name="missingMapsProfile")
+    osm_profile = StringType(serialized_name="osmProfile")
 
 
 class UserStatsDTO(Model):
