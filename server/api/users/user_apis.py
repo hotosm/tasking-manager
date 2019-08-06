@@ -158,21 +158,30 @@ class UserUpdateAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for creating draft project
+              description: JSON object to update a user
               schema:
                   properties:
+                      name:
+                          type: string
+                          default: Your Name
+                      city:
+                          type: string
+                          default: Your City
+                      country:
+                          type: string
+                          default: Your Country
                       emailAddress:
                           type: string
                           default: test@test.com
                       twitterId:
                           type: string
-                          default: tweeter
+                          default: twitter handle without @
                       facebookId:
                           type: string
-                          default: fbme
+                          default: facebook username
                       linkedinId:
                           type: string
-                          default: linkme
+                          default: linkedin username
         responses:
             200:
                 description: Details saved
