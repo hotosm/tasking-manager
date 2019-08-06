@@ -2,6 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import { FormattedMessage} from 'react-intl';
 import axios from 'axios';
 import ReactPlaceholder from 'react-placeholder';
+import {TextBlock, MediaBlock, RectShape} from 'react-placeholder/lib/placeholders';
 import "react-placeholder/lib/reactPlaceholder.css";
 
 import { RightIcon, LeftIcon } from '../svgIcons';
@@ -70,11 +71,11 @@ function FeaturedProjectPaginateArrows({pages, activeProjectCardPage, mobile, di
     const mobileActionType = mobile ? "_MOBILE" : "";
     return (
         <div className="fr dib f2 mr2 pv3 pr6-l pr3">
-            <div className={`dib mr2  ${enableLeft ? 'red dim' : 'light-red'}`}
+            <div className={`dib mr2 red ${enableLeft ? 'dim' : 'o-50'}`}
                  onClick={() => enableLeft && dispatch({ 'type': `LAST_PAGE${mobileActionType}`  })}>
                <LeftIcon />
             </div>
-            <div className={`dib  ${enableRight ? 'red dim' : 'light-red'}`}
+            <div className={`dib red ${enableRight ? 'dim' : 'o-50'}`}
                  onClick={() => enableRight && dispatch({ 'type': `NEXT_PAGE${mobileActionType}`})}>
                <RightIcon />
             </div>
@@ -110,6 +111,19 @@ export function FeaturedProjects() {
   const pagedProjs = projectPaginate(apiResults);
   const pagedProjsMobile = projectPaginateMobile(apiResults);
 
+  const cardPlaceholder = [0,1,2,3].map((n)=>
+    <div className='fl w-25-l base-font w-50-m w-100 mb3 ph2 blue-dark mw5 mt2' key={n}>
+      <div className="pv3 ph3 ba br1 b--grey-light shadow-hover">
+      <div className="w-50 red dib"> <MediaBlock rows={1} color='#DDD' style={{width: 60, height: 30}}/> </div>
+      <div className={`fr w-33 tc pr4 f7 ttu`}> <RectShape color='#DDD' style={{width: 60, height: 30}}/>   </div>
+      <h3 className="pb2 f5 fw6 h3 lh-title overflow-y-hidden">
+        <TextBlock rows={3} color='#CCC'/>
+      </h3>
+      <TextBlock rows={4} color='#CCC'/>
+      </div>
+    </div>
+  );
+
   return(
     <section className="pt4-l pb5 pl5-l pr1-l pl3 black">
       <div className="cf">
@@ -143,7 +157,7 @@ export function FeaturedProjects() {
         <div class="bg-tan">Error loading the featured projects.</div>
       ) : null}
       <div className="cf dn db-l">
-        <ReactPlaceholder type='media' rows={10} ready={!state.isLoading}>
+        <ReactPlaceholder showLoadingAnimation={true} customPlaceholder={cardPlaceholder}  ready={!state.isLoading}>
           <FeaturedProjectCards
             pageOfCards={pagedProjs}
             pageNum={state.activeProjectCardPage}
@@ -196,7 +210,11 @@ const useFeaturedProjectAPI = (initialData) => {
           dispatch({ type: 'FETCH_SUCCESS', payload: result.data});
         }
       } catch (error) {
-        dispatch({ type: 'FETCH_FAILURE' });
+        /* if cancelled, this setting state of unmounted
+         * component would be a memory leak */
+        if (!didCancel) {
+          dispatch({ type: 'FETCH_FAILURE' });
+        }
       }
     };
 
