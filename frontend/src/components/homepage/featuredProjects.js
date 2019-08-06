@@ -111,10 +111,10 @@ export function FeaturedProjects() {
   const pagedProjs = projectPaginate(apiResults);
   const pagedProjsMobile = projectPaginateMobile(apiResults);
 
-  const cardPlaceholder = [0,1,2,3].map(()=>
-    <div className='fl w-25-l base-font w-50-m w-100 mb3 ph2 blue-dark mw5 mt2'>
+  const cardPlaceholder = [0,1,2,3].map((n)=>
+    <div className='fl w-25-l base-font w-50-m w-100 mb3 ph2 blue-dark mw5 mt2' key={n}>
       <div className="pv3 ph3 ba br1 b--grey-light shadow-hover">
-      <div className="w-50 red dib"> <MediaBlock color='#DDD' style={{width: 60, height: 30}}/> </div>
+      <div className="w-50 red dib"> <MediaBlock rows={1} color='#DDD' style={{width: 60, height: 30}}/> </div>
       <div className={`fr w-33 tc pr4 f7 ttu`}> <RectShape color='#DDD' style={{width: 60, height: 30}}/>   </div>
       <h3 className="pb2 f5 fw6 h3 lh-title overflow-y-hidden">
         <TextBlock rows={3} color='#CCC'/>
