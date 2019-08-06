@@ -54,11 +54,11 @@ class User(db.Model):
 
     @property
     def missing_maps_profile_url(self):
-        return f'http://www.missingmaps.org/users/#/{self.username}'
+        return f"http://www.missingmaps.org/users/#/{self.username}"
 
     @property
     def osm_profile_url(self):
-        return f'https://www.openstreetmap.org/user/{self.username}'
+        return f"https://www.openstreetmap.org/user/{self.username}"
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -87,8 +87,12 @@ class User(db.Model):
             user_dto.email_address.lower() if user_dto.email_address else None
         )
         self.twitter_id = user_dto.twitter_id.lower() if user_dto.twitter_id else None
-        self.facebook_id = user_dto.facebook_id.lower() if user_dto.facebook_id else None
-        self.linkedin_id = user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
+        self.facebook_id = (
+            user_dto.facebook_id.lower() if user_dto.facebook_id else None
+        )
+        self.linkedin_id = (
+            user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
+        )
         self.irc_id = user_dto.irc_id.lower() if user_dto.irc_id else None
         self.skype_id = user_dto.skype_id.lower() if user_dto.skype_id else None
         self.slack_id = user_dto.slack_id.lower() if user_dto.slack_id else None
