@@ -39,12 +39,26 @@ class User(db.Model):
     twitter_id = db.Column(db.String)
     facebook_id = db.Column(db.String)
     linkedin_id = db.Column(db.String)
+    slack_id = db.Column(db.String)
+    skype_id = db.Column(db.String)
+    irc_id = db.Column(db.String)
+    name = db.Column(db.String)
+    city = db.Column(db.String)
+    country = db.Column(db.String)
     date_registered = db.Column(db.DateTime, default=timestamp)
     # Represents the date the user last had one of their tasks validated
     last_validation_date = db.Column(db.DateTime, default=timestamp)
 
     # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)
+
+    @property
+    def missing_maps_profile_url(self):
+        return f'http://www.missingmaps.org/users/#/{self.username}'
+
+    @property
+    def osm_profile_url(self):
+        return f'https://www.openstreetmap.org/user/{self.username}'
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -73,12 +87,14 @@ class User(db.Model):
             user_dto.email_address.lower() if user_dto.email_address else None
         )
         self.twitter_id = user_dto.twitter_id.lower() if user_dto.twitter_id else None
-        self.facebook_id = (
-            user_dto.facebook_id.lower() if user_dto.facebook_id else None
-        )
-        self.linkedin_id = (
-            user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
-        )
+        self.facebook_id = user_dto.facebook_id.lower() if user_dto.facebook_id else None
+        self.linkedin_id = user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
+        self.irc_id = user_dto.irc_id.lower() if user_dto.irc_id else None
+        self.skype_id = user_dto.skype_id.lower() if user_dto.skype_id else None
+        self.slack_id = user_dto.slack_id.lower() if user_dto.slack_id else None
+        self.city = user_dto.city
+        self.country = user_dto.country
+        self.name = user_dto.name
         self.validation_message = user_dto.validation_message
         db.session.commit()
 
@@ -293,6 +309,15 @@ class User(db.Model):
         user_dto.twitter_id = self.twitter_id
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
+        user_dto.skype_id = self.skype_id
+        user_dto.slack_id = self.slack_id
+        user_dto.irc_id = self.irc_id
+        user_dto.city = self.city
+        user_dto.country = self.country
+        user_dto.name = self.name
+        user_dto.osm_profile = self.osm_profile_url
+        user_dto.missing_maps_profile = self.missing_maps_profile_url
+
         user_dto.validation_message = self.validation_message
         user_dto.total_time_spent = 0
         user_dto.time_spent_mapping = 0
