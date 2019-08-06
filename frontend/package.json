@@ -5,12 +5,15 @@
   "private": false,
   "dependencies": {
     "@reach/router": "^1.2.1",
+    "axios": "^0.19.0",
+    "humanize-duration": "^3.20.0",
     "immutable": "^4.0.0-rc.12",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",
     "react-click-outside": "^3.0.1",
     "react-dom": "^16.8.6",
     "react-intl": "^2.9.0",
+    "react-placeholder": "^3.0.2",
     "react-redux": "^7.0.3",
     "react-scripts": "3.0.1",
     "reactjs-popup": "^1.4.1",
@@ -45,6 +48,7 @@
   },
   "devDependencies": {
     "combine-react-intl-messages": "^2.0.2",
+    "eslint-plugin-react-hooks": "^1.6.1",
     "react-test-renderer": "^16.8.6"
   }
 }
