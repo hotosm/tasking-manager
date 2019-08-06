@@ -21,6 +21,7 @@
     "redux-thunk": "^2.3.0",
     "short-number": "^1.0.7",
     "tachyons": "^4.11.1",
+    "use-query-params": "^0.3.3",
     "webfontloader": "^1.6.28"
   },
   "scripts": {
@@ -33,7 +34,6 @@
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public"
   },
-  
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -57,7 +57,6 @@
     "combine-react-intl-messages": "^2.0.2",
     "eslint-plugin-react-hooks": "^1.6.1",
     "react-test-renderer": "^16.8.6",
-    "storybook-addon-intl": "^2.4.1",
-    "eslint-plugin-react-hooks": "^1.6.1"
+    "storybook-addon-intl": "^2.4.1"
   }
 }
