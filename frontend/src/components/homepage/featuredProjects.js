@@ -111,7 +111,7 @@ export function FeaturedProjects() {
   const pagedProjsMobile = projectPaginateMobile(apiResults);
 
   return(
-    <section className="pt4-l pb5 pl5-l pr1-l pl3 bg-white black">
+    <section className="pt4-l pb5 pl5-l pr1-l pl3 black">
       <div className="cf">
         <div className="w-75-l w-60 fl">
           <h3 className="f2 ttu barlow-condensed fw8">

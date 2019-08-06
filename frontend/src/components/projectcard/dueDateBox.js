@@ -9,8 +9,10 @@ import messages from "./messages";
 export function DueDateBox({intl, dueDate}: Object) {
     if (dueDate === undefined) {
       return null;
+    } else if (new Date(dueDate) === undefined) {
+      return null
     }
-    const milliDifference = (dueDate - Date.now());
+    const milliDifference = (new Date(dueDate) - Date.now());
     const langCodeOnly = intl.locale.slice(0,2);
 
     if (milliDifference > 0) {

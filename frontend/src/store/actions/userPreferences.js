@@ -1,18 +1,18 @@
 import * as safeStorage from '../../utils/safe_storage';
 
+
 export const types = {
-  LANGUAGE: 'SET_LANGUAGE'
+  SET_LOCALE: 'SET_LOCALE'
 };
 
-
-export function updateLanguage(language) {
+export function updateLocale(locale) {
   return {
-    type: types.SET_LANGUAGE,
-    language: language
+    type: types.SET_LOCALE,
+    locale: locale
   };
 }
 
-export const setLanguage = (language) => dispatch => {
-  safeStorage.setItem('language', language);
-  dispatch(updateLanguage(language));
+export const setLocale = (locale) => dispatch => {
+  safeStorage.setItem('locale', locale);
+  dispatch(updateLocale(locale));
 };

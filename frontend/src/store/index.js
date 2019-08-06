@@ -14,7 +14,7 @@ const persistedState = {
   userPicture: safeStorage.getItem('userPicture')
 }),
   preferences: {
-    language: safeStorage.getItem('language')
+    locale: safeStorage.getItem('locale'),
   }
 };
 

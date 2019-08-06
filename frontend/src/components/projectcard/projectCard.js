@@ -20,8 +20,8 @@ function PriorityBox({ priority }: Object) {
   </div>;
 }
 
-function ProjectTeaser({ lastUpdated, totalMappers }: Object) {
-  if (totalMappers < PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD) {
+function ProjectTeaser({ lastUpdated, totalContributors }: Object) {
+  if (totalContributors < PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD) {
     return (
       <div className="db tl f7 blue-grey truncate mv2" >
         <FormattedMessage  {...messages["projectLastContribution"]} /> <FormattedRelative value={lastUpdated} />
@@ -31,7 +31,7 @@ function ProjectTeaser({ lastUpdated, totalMappers }: Object) {
     return(
       <div className="f7 tl blue-light mv2" >
         <FormattedMessage {...messages["projectTotalContributors"]}
-          values={{number: <span className="blue-grey b f6">{totalMappers||0}</span>}}
+          values={{number: <span className="blue-grey b f6">{totalContributors||0}</span>}}
         />
       </div>
     );
@@ -101,7 +101,7 @@ export function ProjectCard({
   campaignTag,
   percentMapped,
   percentValidated,
-  totalMappers
+  totalContributors
 }: Object) {
   return (
     <a className="" href={`#project=${projectId}`}>
@@ -111,14 +111,14 @@ export function ProjectCard({
           <div className="w-50 red dib"><ProjectOrgLogo organisationTag={organisationTag} /></div>
           <div className="ma1 w-100">
             <div className="f7 blue-grey">#{projectId}</div>
-            <h3 title={name} className="pb2 f5 fw6 h3 block-with-text lh-title overflow-y-hidden">
+            <h3 title={name} className="pb2 f5 fw6 h3 lh-title overflow-y-hidden">
               {name}
             </h3>
             <div className="tc f6">
               <div className="w-100 tl pr2 f7 blue-light dib lh-title mb2 h2 overflow-y-hidden">
                 {shortDescription} {campaignTag ? " · " + campaignTag : ""}
               </div>
-              <ProjectTeaser totalMappers={totalMappers} lastUpdated={lastUpdated} />
+              <ProjectTeaser totalContributors={totalContributors} lastUpdated={lastUpdated} />
               <ProjectProgressBar percentMapped={percentMapped} percentValidated={percentValidated} />
               <div className="cf pt2 h2">
                 <MapperLevelLabel mapperLevel={mapperLevel} />
