@@ -71,11 +71,11 @@ function FeaturedProjectPaginateArrows({pages, activeProjectCardPage, mobile, di
     const mobileActionType = mobile ? "_MOBILE" : "";
     return (
         <div className="fr dib f2 mr2 pv3 pr6-l pr3">
-            <div className={`dib mr2  ${enableLeft ? 'red dim' : 'light-red'}`}
+            <div className={`dib mr2 red ${enableLeft ? 'dim' : 'o-50'}`}
                  onClick={() => enableLeft && dispatch({ 'type': `LAST_PAGE${mobileActionType}`  })}>
                <LeftIcon />
             </div>
-            <div className={`dib  ${enableRight ? 'red dim' : 'light-red'}`}
+            <div className={`dib red ${enableRight ? 'dim' : 'o-50'}`}
                  onClick={() => enableRight && dispatch({ 'type': `NEXT_PAGE${mobileActionType}`})}>
                <RightIcon />
             </div>
