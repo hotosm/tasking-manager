@@ -18,10 +18,10 @@ function App() {
       <div className="cf w-100 base-font">
         <Router>
           <Home path="/" />
-          <ProjectsPage path="contribute">
-            <ProjectsPageIndex path="/" />
-            <MoreFilters path="/moreFilters" />
-          </ProjectsPage>
+            <ProjectsPage path="contribute">
+              <ProjectsPageIndex path="/" />
+              <MoreFilters path="/moreFilters/*" />
+            </ProjectsPage>
           <AboutPage path="about" />
           <Authorized path="authorized" />
           <Login path="login" />

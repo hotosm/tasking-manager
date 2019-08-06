@@ -11,10 +11,15 @@ import ja from 'react-intl/locale-data/ja';
 import ko from 'react-intl/locale-data/ko';
 import pt from 'react-intl/locale-data/pt';
 
+// import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
+
 import App from './App';
 import { store } from './store';
 import { ConnectedIntl } from './utils/internationalization';
 import * as serviceWorker from './serviceWorker';
+
+import { globalHistory } from "@reach/router";
+import { QueryParamProvider } from 'use-query-params';
 
 
 WebFont.load({
@@ -28,11 +33,15 @@ WebFont.load({
 
 addLocaleData([...en, ...fr, ...es, ...de, ...ja, ...ko, ...pt]);
 
+/*TODO(tdk): if QueryParamProvider is not needed elsewhere,
+ *  create special router for Projects page and wrap it only around that */
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedIntl>
-      <App />
-    </ConnectedIntl>
+    <QueryParamProvider reachHistory={globalHistory}>
+      <ConnectedIntl locale={navigator.language} >
+        <App />
+      </ConnectedIntl>
+    </QueryParamProvider>
   </Provider>,
   document.getElementById('root')
 );

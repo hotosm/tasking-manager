@@ -66,3 +66,14 @@
     border-color: $red;
   }
 }
+
+/* mapping type by RADIO BUTTONs
+https://codepen.io/nielsenramon/pen/mLMeLY
+ */
+.radiobutton:checked + .radiobutton-wrapper {
+  background-color: $red; // @extend .bg-white;
+
+  div { 
+    border-color: #fff; // @extend .b--white;
+  }
+}

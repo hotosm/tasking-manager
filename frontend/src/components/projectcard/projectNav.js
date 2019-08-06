@@ -11,6 +11,26 @@ import { Dropdown } from '../dropdown';
 import cards from '../projectcard/demoProjectCardsData';
 import { ProjectCard } from '../../components/projectcard/projectCard';
 
+import {
+  encodeDelimitedArray,
+  decodeDelimitedArray
+} from 'use-query-params';
+import {
+  stringify,
+  useQueryParams,
+  StringParam,
+  NumberParam,
+} from 'use-query-params';
+ 
+/** Uses a comma to delimit entries. e.g. ['a', 'b'] => qp?=a,b */
+const CommaArrayParam = {
+  encode: (array: string[] | null | undefined) => 
+    encodeDelimitedArray(array, ','),
+ 
+  decode: (arrayStr: string | string[] | null | undefined) => 
+    decodeDelimitedArray(arrayStr, ',')
+};
+
 
 function ShowMapToggle() {
   return (
@@ -33,11 +53,19 @@ function ShowMapToggle() {
 }
 
 const RenderMenuItems = ({navMenuItems}: Object) => {
+  const [query, setQuery] = useQueryParams({
+    difficulty: StringParam,
+    organization: StringParam,
+    campaign: StringParam,
+    types: CommaArrayParam,
+    x: NumberParam,
+    });
   const linkCombo = "link ph3 grey-light f6 pv2 mh2 ba b--grey-light";
+  const encodedParams = stringify(query) ? "?"+stringify(query) : ""
   return (
     <div className="v-mid  ">
       {navMenuItems.map((item, n) =>
-        <NavLink to={item.link} key={n} className={ linkCombo }>
+        <NavLink to={item.link+encodedParams} key={n} className={ linkCombo } replace={item.replace}>
           <FormattedMessage {...item.label} />
         </NavLink>
       )}
@@ -75,9 +103,9 @@ export const ProjectNav = props => {
 
   const linkCombo = "link ph3 grey-light f6 pv2 mh2 ba b--grey-light";
   const navMenuItems = [
-    {label: messages.projectTitle, link: "./"},
-    {label: messages.campaign, link: "moreFilters"},
-    {label: messages.moreFilters, link: "./moreFilters"}
+    {label: messages.projectTitle, link: "/contribute", replace: false},
+    {label: messages.campaign, link: "/contribute/moreFilters/"},
+    {label: messages.moreFilters, link: "/contribute/moreFilters/"}
   ];
     return (
      <>
