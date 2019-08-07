@@ -38,7 +38,7 @@ addLocaleData([...en, ...fr, ...es, ...de, ...ja, ...ko, ...pt]);
 ReactDOM.render(
   <Provider store={store}>
     <QueryParamProvider reachHistory={globalHistory}>
-      <ConnectedIntl locale={navigator.language} >
+      <ConnectedIntl>
         <App />
       </ConnectedIntl>
     </QueryParamProvider>
