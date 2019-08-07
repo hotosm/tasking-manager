@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: circleci/python:3-stretch-browsers
+    - image: circleci/python:3-buster-browsers
     steps:
     - checkout
     - setup_remote_docker
@@ -24,15 +24,15 @@ jobs:
         keys:
         - cached-dependencies
         paths:
-        - client/node_modules
+        - frontend/node_modules
         - env
     - run:
         name: Install requirements
         command: |
-          # Install NPM packages and build client from gulpfile
-          cd ${CIRCLE_WORKING_DIRECTORY}/client
+          # Install NPM packages and build frontend
+          cd ${CIRCLE_WORKING_DIRECTORY}/frontend
           npm install
-          ./node_modules/.bin/gulp build
+          npm run build
           cd ${CIRCLE_WORKING_DIRECTORY}
           # Install Python dependencies
           pip install virtualenv
@@ -48,22 +48,13 @@ jobs:
           black --check manage.py server tests migrations
           flake8 manage.py server tests migrations
     - run:
-        name: Run JS Unit tests
+        name: Run frontend tests
         command: |
           # JS Unit Tests
-          cd ${CIRCLE_WORKING_DIRECTORY}/tests/client
-          mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/client/junit
-          ${CIRCLE_WORKING_DIRECTORY}/client/node_modules/.bin/karma start ./karma.conf.js \
-            --single-run --browsers PhantomJS --reporters junit
-        environment:
-            JUNIT_REPORT_PATH: $CIRCLE_WORKING_DIRECTORY/tests/client/junit/
-            JUNIT_REPORT_NAME: test-results.xml
-    - store_test_results:
-        path: tests/client/junit
-    - store_artifacts:
-        path: tests/client/junit
+          cd ${CIRCLE_WORKING_DIRECTORY}/frontend
+          CI=true npm test
     - run:
-        name: Run Python Tests
+        name: Run backend tests
         command: |
           # Run Python tests
           cd ${CIRCLE_WORKING_DIRECTORY}
@@ -80,7 +71,7 @@ jobs:
     - save_cache:
         key: cached-dependencies
         paths:
-        - client/node_modules
+        - frontend/node_modules
         - env
   deploy:
     parameters:
@@ -130,7 +121,7 @@ jobs:
         type: env_var_name
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: circleci/python:3-stretch
+    - image: circleci/python:3-buster
     steps:
     - checkout
     - setup_remote_docker
@@ -206,7 +197,9 @@ jobs:
           echo $JSON_CONFIG > $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
     - deploy:
         name: Deploy to << parameters.stack_name >>
-        command: cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/devops/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
+        command: |
+          export NODE_PATH=/usr/lib/node_modules
+          cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
         when: always

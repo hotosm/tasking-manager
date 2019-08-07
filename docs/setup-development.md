@@ -5,49 +5,53 @@
 
 The Tasking Manager is composed of two parts:
 
-* **Client**: A front-end user interface built using AngularJS.
-* **Server**: A back-end database and API built using python3.
+* **Client**: A front-end user interface built using React.
+* **Server**: A back-end database and API built using Python.
 
 The two parts can be developed independently of each other.
 
-### Client
+### Frontend
 
-The client is the front-end user interface of the Tasking Manager. If you're interested in developing the client alone, you can build it using `gulp`, without having to worry about the server set up. You can point the client at a non-local API url (e.g. a staging environment), by changing the environment in `client/taskingmanager.config.json`. All the files pertaining to the client are available in the `client/` directory.
+The client is the front-end user interface of the Tasking Manager. It is based on the React framework and you can find all files in the `frontend` directory.
 
 **Dependencies**
 
 The following dependencies must be available _globally_ on your system:
-* Download and install [NodeJS LTS v9+](https://nodejs.org/en/) and [NPM](https://www.npmjs.com/)
-* Install [Gulp](http://gulpjs.com/).
-  * `npm install gulp -g`
-* Install [Karma](https://karma-runner.github.io/1.0/index.html)
-  * `npm install -g karma karma-jasmine karma-chrome-launcher`
+* Download and install [NodeJS LTS v10+](https://nodejs.org/en/) and [NPM](https://www.npmjs.com/)
+* Go into the `frontend` directory and execute `npm install`.
 
-**Build**
+#### Available Scripts
 
-Once you have the above dependencies, install and run the client dependencies using `npm` and `gulp`
-```
-cd client
-npm install
-gulp build
-```
+In the project directory, you can run:
 
-**Run**
+##### `npm start`
 
-Once you've built the dependencies, run the client using
-```
-cd client
-gulp run
-```
+Runs the app in the development mode.<br>
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-**Tests**
+The page will reload if you make edits.<br>
+You will also see any lint errors in the console.
 
-The client has a suite of [Jasmine](https://jasmine.github.io/) Unit Tests. These can be run using [Karma](https://karma-runner.github.io/1.0/index.html) as follows
+##### `npm test`
 
-```
- cd client
- karma start ../tests/client/karma.conf.js
-```
+Launches the test runner in the interactive watch mode.<br>
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+##### `npm run build`
+
+Builds the app for production to the `build` folder.<br>
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.<br>
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+#### Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
 
 ### Server
 
@@ -61,7 +65,7 @@ The backend server is made up of a postgres database and an associated API that 
 * [pip](https://pip.pypa.io/en/stable/installing/)
 * [libgeos-dev](https://trac.osgeo.org/geos/)
 
-You can check the [Dockerfile](../devops/docker/tasking-manager/Dockerfile) to have a reference of how to install it in a Debian/Ubuntu system.
+You can check the [Dockerfile](../scripts/docker/tasking-manager/Dockerfile) to have a reference of how to install it in a Debian/Ubuntu system.
 
 #### Configuration
 
@@ -86,9 +90,6 @@ You can check the [Dockerfile](../devops/docker/tasking-manager/Dockerfile) to h
     * Linux/Mac:
         * ```. ./venv/bin/activate```
         * ```pip install -r requirements.txt```
-    * Windows (use installer because of precompiled libs):
-        * ```.\venv\scripts\activate```
-        * ```.\devops\win\install.bat```
 
 #### Tests
 
@@ -101,7 +102,7 @@ python3 -m unittest discover tests/server
 #### Export translatable strings to en.json source file
 
 ```
-python3 manage.py refresh_translatables
+cd frontend && yarn build-locales
 ```
 
 
@@ -117,7 +118,7 @@ python3 manage.py db upgrade
 
 #### Migrating your data from TM2
 
-You can use [this script](../devops/tm2-pg-migration/migrationscripts.sql) to migrate your data from the prior tasking manager version (v2) to the current one. Please see [this documentation page](./migration-tm2-to-tm3.md) for important information about this process.
+You can use [this script](../scripts/tm2-pg-migration/migrationscripts.sql) to migrate your data from the prior tasking manager version (v2) to the current one. Please see [this documentation page](./migration-tm2-to-tm3.md) for important information about this process.
 
 #### Set permissions to create a task
 
@@ -162,7 +163,6 @@ You can get your OSM user id number either by finding it in your local testing/d
 To get your token on the production or staging Tasking Manager instances, after sign in in the browser, inspect a network request and search for the `Authorization` field in the request headers section.
 
 ### DevOps
-If you encounter any issues while setting up a dev environment, please visit our [FAQ ❓ page](./setup-development-faqs.md) to find possible solutions.
 
 # Docker
 
@@ -181,7 +181,7 @@ Following must be available locally:
 1. From the root of the project:
 
 `
-docker build -t tasking-manager-db ./devops/docker/postgis
+docker build -t tasking-manager-db ./scripts/docker/postgis
 `
 
 2. The image should be downloaded and build locally.  Once complete you should see it listed, with

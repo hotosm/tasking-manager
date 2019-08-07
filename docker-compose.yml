@@ -18,7 +18,7 @@ services:
     links:
       - postgresql
     volumes:
-      - node_modules:/usr/src/app/client/node_modules
+      - node_modules:/usr/src/app/frontend/node_modules
 
   # Migration service
   migration:
@@ -35,7 +35,7 @@ services:
 
   # Database
   postgresql:
-    image: mdillon/postgis:9.6
+    image: mdillon/postgis:11
     container_name: postgresql
     env_file: tasking-manager.env
     # logging:
