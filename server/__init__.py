@@ -2,7 +2,7 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, render_template, current_app
+from flask import Flask, render_template, current_app, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
@@ -49,6 +49,10 @@ def create_app(env=None):
     @app.route("/")
     def index():
         return render_template("index.html")
+
+    @app.route("/<path:path>")
+    def assets(path):
+        return send_from_directory(app.template_folder, path)
 
     # Route to Swagger UI
     @app.route("/api-docs/")
