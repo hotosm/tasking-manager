@@ -30,7 +30,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Setup and build frontend
 RUN cd frontend && npm install && npm run build
 
-# DEFINITIONS
+# INITIALIZATION
 
 EXPOSE 5000
 CMD ["python", "manage.py", "runserver", "-h", "0.0.0.0"]

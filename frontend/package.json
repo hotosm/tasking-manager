@@ -25,8 +25,9 @@
   },
   "scripts": {
     "build-locales": "combine-messages -i './src/**/messages.js' -o './src/locales/en.json'",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
+    "start": "npm run preparation && react-scripts start",
+    "build": "npm run preparation && react-scripts build",
     "lint": "eslint src",
     "test": "npm run lint && react-scripts test",
     "eject": "react-scripts eject"

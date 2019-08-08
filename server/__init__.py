@@ -50,9 +50,18 @@ def create_app(env=None):
     def index():
         return render_template("index.html")
 
-    @app.route("/<path:path>")
-    def assets(path):
-        return send_from_directory(app.template_folder, path)
+    @app.route("/<path:text>")
+    def assets(text):
+        if "service-worker.js" in text:
+            return send_from_directory(app.template_folder, text)
+        elif "precache-manifest" in text:
+            return send_from_directory(app.template_folder, text)
+        elif "manifest.json" in text:
+            return send_from_directory(app.template_folder, text)
+        elif "favicon" in text:
+            return send_from_directory(app.template_folder, text)
+        else:
+            return render_template("index.html")
 
     # Route to Swagger UI
     @app.route("/api-docs/")
