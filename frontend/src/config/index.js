@@ -1,24 +1,17 @@
-// API CONFIG
-export const API_URL = process.env.APP_BASE_URL + '/api/v1/';
-export const EDITS_API_URL = process.env.EDITS_API_URL || 'https://osm-stats-production-api.azurewebsites.net/stats/hotosm';
+// API ENDPOINTS
+export const API_URL = process.env.REACT_APP_BASE_URL ? process.env.REACT_APP_BASE_URL + '/api/v1/'  :  'http://127.0.0.1:5000/api/v1/'
+export const EDITS_API_URL = process.env.REACT_APP_EDITS_API_URL || '';
 
+// APPLICATION SETTINGS
+export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
+export const PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD = process.env.REACT_APP_PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD || 5;
 
-// ORGANIZATION CONFIG
-export const ORG_NAME = process.env.ORG_NAME || 'Humanitarian OpenStreetMap Team';
-export const ORG_CODE = process.env.ORG_CODE || 'HOT';
-export const ORG_URL = process.env.ORG_URL || 'hotosm.org'; // don't use http or https on this var
-
-// ORGANIZATION SOCIAL NETWORKS
-export const ORG_TWITTER = process.env.ORG_TWITTER || 'http://twitter.com/hotosm/';
-export const ORG_FB = process.env.ORG_FB || 'https://www.facebook.com/hotosm';
-export const ORG_INSTAGRAM = process.env.ORG_INSTAGRAM || 'https://www.instagram.com/hot.osm/';
-export const ORG_YOUTUBE = process.env.ORG_YOUTUBE || 'https://www.youtube.com/user/hotosm';
-export const ORG_GITHUB = process.env.ORG_GITHUB || 'https://github.com/hotosm/';
-
-
-// DEFAULT locale
-export const DEFAULT_LOCALE = process.env.TM_DEFAULT_LOCALE || 'en';
-
-
-// PROJECT CARD CONFIG
-export const PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD = process.env.PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD || 5;
+// ORGANISATIONAL INFORMATION
+export const ORG_NAME = process.env.REACT_APP_ORG_NAME || '';
+export const ORG_CODE = process.env.REACT_APP_ORG_CODE || '';
+export const ORG_URL = process.env.REACT_APP_ORG_URL || '';
+export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || 'http://twitter.com';
+export const ORG_FB = process.env.REACT_APP_ORG_FB || 'https://www.facebook.com';
+export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || 'https://www.instagram.com';
+export const ORG_YOUTUBE = process.env.REACT_APP_ORG_YOUTUBE || 'https://www.youtube.com';
+export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.com/';

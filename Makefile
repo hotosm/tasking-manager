@@ -21,6 +21,9 @@ down:
 list:
 	docker-compose ps
 
+refresh-frontend:
+	docker-compose exec app sh -c "cd frontend && npm run build"
+
 refresh-translatables:
 	docker-compose exec app sh -c "cd frontend && yarn build-locales"
 
