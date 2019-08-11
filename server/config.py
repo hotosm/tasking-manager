@@ -52,8 +52,8 @@ class EnvironmentConfig:
     LOG_DIR = os.getenv("TM_LOG_DIR", "logs")
 
     # Mapper Level values represent number of OSM changesets
-    MAPPER_LEVEL_INTERMEDIATE = os.getenv("TM_MAPPER_LEVEL_INTERMEDIATE", 250)
-    MAPPER_LEVEL_ADVANCED = os.getenv("TM_MAPPER_LEVEL_ADVANCED", 500)
+    MAPPER_LEVEL_INTERMEDIATE = int(os.getenv("TM_MAPPER_LEVEL_INTERMEDIATE", 250))
+    MAPPER_LEVEL_ADVANCED = int(os.getenv("TM_MAPPER_LEVEL_ADVANCED", 500))
 
     # Time to wait until task auto-unlock (e.g. '2h' or '7d' or '30m' or '1h30m')
     TASK_AUTOUNLOCK_AFTER = os.getenv("TM_TASK_AUTOUNLOCK_AFTER", "2h")
