@@ -1,5 +1,4 @@
 import React from 'react';
-import { navigate } from "@reach/router";
 import NavLink from '../header/NavLink'
 import { FormattedMessage } from 'react-intl';
 
@@ -12,25 +11,14 @@ import cards from '../projectcard/demoProjectCardsData';
 import { ProjectCard } from '../../components/projectcard/projectCard';
 
 import {
-  encodeDelimitedArray,
-  decodeDelimitedArray
-} from 'use-query-params';
-import {
   stringify,
   useQueryParams,
   StringParam,
   NumberParam,
 } from 'use-query-params';
- 
-/** Uses a comma to delimit entries. e.g. ['a', 'b'] => qp?=a,b */
-const CommaArrayParam = {
-  encode: (array: string[] | null | undefined) => 
-    encodeDelimitedArray(array, ','),
- 
-  decode: (arrayStr: string | string[] | null | undefined) => 
-    decodeDelimitedArray(arrayStr, ',')
-};
 
+import { CommaArrayParam } from '../../utils/CommaArrayParam'
+ 
 
 function ShowMapToggle() {
   return (

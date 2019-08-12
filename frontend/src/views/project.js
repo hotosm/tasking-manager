@@ -1,34 +1,23 @@
-import React from 'react';
-import {ProjectNav} from '../components/projectcard/projectNav.js';
+import React  from 'react';
+import {ProjectNav} from '../components/projectcard/projectNav';
 
-import { navigate } from "@reach/router";
-import { HomeIcon, RoadIcon, WavesIcon, TaskIcon, ChevronDownIcon  } from '../components/svgIcons';
+import { useTagAPI } from '../hooks/UseTagAPI'
+import { MappingTypeFilterPicker } from '../components/projectcard/mappingTypeFilterPicker'
+import { TagFilterPicker } from '../components/projectcard/tagFilterPicker'
+import { ShowAllTagFilterButton } from '../components/projectcard/showAllTagFilterButton'
 
-import {
-  encodeDelimitedArray,
-  decodeDelimitedArray
-} from 'use-query-params';
+import { HomeIcon, RoadIcon, WavesIcon, TaskIcon  } from '../components/svgIcons';
 import {
   useQueryParams,
+  useQueryParam,
   StringParam,
-  NumberParam,
   stringify,
 } from 'use-query-params';
- 
-/** Uses a comma to delimit entries. e.g. ['a', 'b'] => qp?=a,b */
-const CommaArrayParam = {
-  encode: (array: string[] | null | undefined) => 
-    encodeDelimitedArray(array, ','),
- 
-  decode: (arrayStr: string | string[] | null | undefined) => 
-    decodeDelimitedArray(arrayStr, ',')
-};
-
-
- 
+import { CommaArrayParam } from '../utils/CommaArrayParam'
 
 
 export const ProjectsPage = props => {
+
   return (
     <div className="pt180 pull-center">
       <ProjectNav>
@@ -41,154 +30,119 @@ export const ProjectsPage = props => {
 export const ProjectsPageIndex = props => {
   return null;
 }
+
 export const MoreFilters = props => {
-  // something like: ?x=123&q=foo&filters=a&filters=b&filters=c in the URL
-  const [query, setQuery] = useQueryParams({
+  /* one useQueryParams for the main form */
+  const [formQuery, setFormQuery] = useQueryParams({
     difficulty: StringParam,
-    organization: StringParam,
+    organisation: StringParam,
     campaign: StringParam,
-    types: CommaArrayParam,
-    x: NumberParam,
+    location: StringParam
     });
-   const pagerStyle = "link br1 h2 w2 pa1 ma1 dib";
-   const activeStyle = "b--red ba bw1";
-   const inactiveStyle = "pb1";
-   const fieldsetStyle = "w-100 bn"
-   const titleStyle = "tc w-100 db ttu fw5 blue-grey";
+    
+   /* dereference the formQuery */
+   const {campaign: campaignInQuery, organisation: orgInQuery } = formQuery;
+   const [campaignAPIState] = useTagAPI([],"campaigns");
+   const [orgAPIState] = useTagAPI([],"organisations");
 
-   const ShowAllCampaignsButton = props => (
-    <button type="button" onClick={() => {}} className="input-reset dim base-font bg-white button-reset f6 bn pn red">
-    <span className="pr2 ttu f6">Show All Campaigns</span>
-    <ChevronDownIcon className="pt2" />
-    </button>
-   )
+   /* another useQueryParam for the second form */
+   const [mappingTypesInQuery, setMappingTypes] = useQueryParam('types', CommaArrayParam);
 
-   const UseQueryParamsExample = ({query, setQuery}) => {
-    const { x: num, organization: searchQuery, types = [] } = query;
-    return (
-      <div>
-        <h4>num is {num}</h4>
-        <button onClick={() => setQuery({ x: Math.random() })}>Change</button>
-        <h4>searchQuery is {searchQuery}</h4>
-        <h4>There are {types.length} filters active.</h4>
-        <button
-          onClick={() =>
-            setQuery(
-              { x: Math.random(), types: [...types, 'foo'], organization: 'bar' },
-              'push'
-            )
-          }
-        >
-          Change All
-        </button>
-      </div>
-    );
-  };
-   
-  
-
-   const inputStyle="inline-flex w-50 items-center mb2";
-
-    const encodedParams = stringify(query) ? "?"+stringify(query) : ""
+   /* These two divs define the More Filters page. */
    /* z-2 is needed because the progress bar hide-child hover popups are z-1.  */
+   const leftpanelDivStyle = "absolute left-0 z-2 mt1 w-40-l w-100 h-100 bg-white h4 pa3";
+   const rightpanelShadowDivStyle = "absolute right-0 z-2 br w-60-l w-0 h-100 bg-blue-dark o-90 h6";
+  
+   const handleInputChange = (event) => {
+    const target = event.target;
+    let value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+    if (name === "types") {
+      //handle mappingTypes toggles in its separate fn inside that component
+      return
+    }
+
+    setFormQuery({
+      ...formQuery,
+      [name]: value
+    }, 'pushIn');
+  }
+  const fieldsetStyle = "w-100 bn"
+  const titleStyle = "tc w-100 db ttu fw5 blue-grey";
+  const inputStyle="inline-flex w-50 items-center mb2";
+
    return (
-     <>
-       <div className="absolute left-0 z-2 mt1 w-40-l w-100 h-100 bg-white h4 pa3">
-        {/* <fieldset id="mappingType" className={fieldsetStyle}> */}
-       <h5 className={titleStyle}>Types of Mapping</h5>
-         <div className="tc ma2 base-font">
-              <RoadIcon title="Roads" className={`${pagerStyle} ${activeStyle}`}/>
-              <HomeIcon title="Buildings" className={`${pagerStyle} ${inactiveStyle}`} />
-              <WavesIcon title="Waterways" className={`${pagerStyle} ${inactiveStyle}`} />
-              <TaskIcon title="Land use" className={`${pagerStyle} ${inactiveStyle}`}/>
-          </div>
-        {/* </fieldset> */}
+    <form className="pa4" onChange={handleInputChange}>
 
-
-        <UseQueryParamsExample query={query} setQuery={setQuery} />
-
-       <form className="pa4">
-        <fieldset id="campaign" className={fieldsetStyle}>
-        <legend className={titleStyle}>Campaigns</legend>
-
-           <label className="relative flex items-center mv2">
-             <input name="campaign" className="absolute z-5 w-100 h-100 o-0 pointerinput-reset pointer radiobutton" type="radio"/>
-             <span className="relative z-4 dib w1 h1 bg-white overflow-hidden b--grey-light ba br-100 v-mid bg-animate bg-center radiobutton-wrapper">
-              <div className="absolute top-0 left-0 w1 h1 ba bw2 b--transparent br-100"></div>
-             </span>
-             <div className="dib ml2 silver lh-solid">
-               Option 1
-               </div></label>
-             <label className="relative flex items-center mv2">
-               <input className="absolute z-5 w-100 h-100 o-0 input-reset pointer radiobutton" name="campaign" type="radio"/>
-               <span className="relative z-4 dib w1 h1 bg-white overflow-hidden b--grey-light ba br-100 v-mid bg-animate bg-center radiobutton-wrapper">
-                <div className="absolute top-0 left-0 w1 h1 ba bw2 b--transparent br-100"></div>
-               </span>
-               <div className="dib ml2 helvetica silver lh-solid">
-                 Option 2
-              </div>
-              </label>
-          <div className={inputStyle}>
-            <input className="mr2" type="radio" name="campaign" id="spacejam" value="spacejam" />
-            <label for="spacejam" className="lh-copy">Space Jam</label>
-          </div>
-          <div className={inputStyle}>
-            <input className="mr2" type="radio" name="campaign" id="airbud" value="airbud" />
-            <label for="airbud" className="lh-copy">Air Bud</label>
-          </div>
-          <div className={inputStyle}>
-            <input className="mr2" type="radio" name="campaign" id="hocuspocus" value="hocuspocus" />
-            <label for="hocuspocus" className="lh-copy">Hocus Pocus</label>
-          </div>
-          <div className={inputStyle}>
-            <input className="mr2" type="radio" name="campaign" id="diehard" value="diehard" />
-            <label for="diehard" className="lh-copy">Die Hard</label>
-          </div>
-          <div className={inputStyle}>
-            <input className="mr2" type="radio" name="campaign" id="primer" value="primer" />
-            <label for="primer" className="lh-copy">Primer</label>
-          </div>
-          <div className={inputStyle}>
-            <input className="mr2" type="radio" name="campaign"  id="proxy" value="proxy" />
-            <label for="proxy" className="lh-copy">Hudsucker Proxy</label>
-          </div>
-        <ShowAllCampaignsButton />
+      <div className={leftpanelDivStyle}>
+        <fieldset id="mappingType" className={fieldsetStyle}>
+        <legend className={titleStyle}>Types of Mapping</legend>
+        <MappingTypeFilterPicker mappingTypes={mappingTypesInQuery} setMappingTypesQuery={setMappingTypes}
+         titledIcons ={[
+          {icon: RoadIcon, title: "Roads", value:'ROADS' },
+          {icon: HomeIcon, title: "Buildings", value: 'BUILDINGS'},
+          {icon: WavesIcon, title: "Waterways", value: 'WATERWAYS'},
+          {icon: TaskIcon, title: "Land use", value: 'LAND_USE'}
+      ]} /> 
         </fieldset>
 
+          <TagFilterPicker 
+           fieldsetTitle="Campaign"
+           fieldsetName="campaign"
+           fieldsetStyle={fieldsetStyle}
+           titleStyle={titleStyle}
+           selectedTag={campaignInQuery}
+           tagOptionsFromAPI={campaignAPIState}
+           />
+
+        {/* Example, may be removed for location as per design */}
+          <TagFilterPicker 
+           fieldsetTitle="Organisation"
+           fieldsetName="organisation"
+           fieldsetStyle={fieldsetStyle}
+           titleStyle={titleStyle}
+           selectedTag={orgInQuery}
+           tagOptionsFromAPI={orgAPIState}
+           />
+
+        {/* Example location field, to be implemented on backend*/}
         <fieldset id="location" className={fieldsetStyle}>
         <legend className={titleStyle}>Location</legend>
           <div className={inputStyle}>
-            <input className="mr2" type="radio" name="location"  id="spacejam2" value="spacejam" />
-            <label for="spacejam2" className="lh-copy">Space Jam</label>
+            <input className="mr2" type="radio" name="location"  id="spacejam2" value="in" />
+            <label htmlFor="spacejam2" className="lh-copy">India</label>
           </div>
           <div className={inputStyle}>
-            <input className="mr2" type="radio" name="location" id="airbud2" value="airbud" />
-            <label for="airbud2" className="lh-copy">Air Bud</label>
+            <input className="mr2" type="radio" name="location" id="airbud2" value="mz" />
+            <label htmlFor="airbud2" className="lh-copy">Mozambique</label>
           </div>
           <div className={inputStyle}>
-            <input className="mr2" type="radio" name="location" id="hocuspocus2" value="hocuspocus" />
-            <label for="hocuspocus2" className="lh-copy">Hocus Pocus</label>
+            <input className="mr2" type="radio" name="location" id="hocuspocus2" value="su" />
+            <label htmlFor="hocuspocus2" className="lh-copy">Sudan</label>
           </div>
           <div className={inputStyle}>
-            <input className="mr2" type="radio" name="location" id="diehard2" value="diehard" />
-            <label for="diehard2" className="lh-copy">Die Hard</label>
+            <input className="mr2" type="radio" name="location" id="diehard2" value="gie" />
+            <label htmlFor="diehard2" className="lh-copy">Guinea</label>
           </div>
           <div className={inputStyle}>
-            <input className="mr2" type="radio" name="location" id="primer2" value="primer" />
-            <label for="primer2" className="lh-copy">Primer</label>
+            <input className="mr2" type="radio" name="location" id="primer2" value="ug" />
+            <label htmlFor="primer2" className="lh-copy">Uganda</label>
           </div>
           <div className={inputStyle}>
-            <input className="mr2" type="radio" name="location" id="proxy2" value="proxy" />
-            <label for="proxy2" className="lh-copy">Hudsucker Proxy</label>
+            <input className="mr2" type="radio" name="location" id="proxy2" value="tz" />
+            <label htmlFor="proxy2" className="lh-copy">Tanzania</label>
           </div>
-        <ShowAllCampaignsButton /> 
-        </fieldset>
-       </form>
-          {props.children}
-         </div>
-       <div onClick={() => navigate(`/contribute?${stringify(query)}`)} className="absolute right-0 z-2 br w-60-l w-0 h-100 bg-blue-dark o-90 h6">
+        <ShowAllTagFilterButton title="Locations" showingToggle={true}>
 
+        </ShowAllTagFilterButton>
+        </fieldset>
+        {props.children}
+      </div>
+
+       <div 
+        onClick={() => props.navigate(`/contribute?${stringify(formQuery)}&${stringify(mappingTypesInQuery)}`)}
+        className={rightpanelShadowDivStyle}>
        </div>
-       </>
+       </form>
    )
 }
