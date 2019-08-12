@@ -11,7 +11,7 @@ from server.services.users.authentication_service import token_auth, tm
 class ProjectChatAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
-    def put(self, project_id):
+    def post(self, project_id):
         """
         Add a message to project chat
         ---
