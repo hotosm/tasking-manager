@@ -136,7 +136,7 @@ class AuthenticationService:
     @staticmethod
     def generate_authorized_url(username, session_token, redirect_to):
         """ Generate URL that we'll redirect the user to once authenticated """
-        base_url = current_app.config['APP_BASE_URL']
+        base_url = current_app.config['APP_BASE_URL'] 
 
         redirect_query = ''
         if redirect_to:
