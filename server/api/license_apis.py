@@ -10,7 +10,7 @@ from server.services.users.authentication_service import token_auth, tm
 class LicenseAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
-    def put(self):
+    def post(self):
         """
         Creates a new mapping license
         ---
@@ -100,9 +100,9 @@ class LicenseAPI(Resource):
 
     @tm.pm_only()
     @token_auth.login_required
-    def post(self, license_id):
+    def patch(self, license_id):
         """
-        Update  a new mapping license
+        Update a specified mapping license
         ---
         tags:
             - licenses
@@ -124,7 +124,7 @@ class LicenseAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for creating a new mapping license
+              description: JSON object for updating a specified mapping license
               schema:
                   properties:
                       name:
@@ -138,7 +138,7 @@ class LicenseAPI(Resource):
                           default: This imagery is in the public domain.
         responses:
             200:
-                description: New license created
+                description: License updated
             400:
                 description: Invalid Request
             401:

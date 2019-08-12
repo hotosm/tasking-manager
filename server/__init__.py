@@ -149,7 +149,6 @@ def add_api_endpoints(app):
     from server.api.messaging.project_chat_apis import ProjectChatAPI
     from server.api.project_admin_api import (
         ProjectAdminAPI,
-        ProjectCommentsAPI,
         ProjectInvalidateAll,
         ProjectValidateAll,
         ProjectMapAll,
@@ -166,6 +165,8 @@ def add_api_endpoints(app):
         HasUserTaskOnProjectDetails,
         ProjectSearchBBoxAPI,
         ProjectSummaryAPI,
+        ProjectNoTasksAPI,
+        ProjectNoGeometriesAPI,
         TaskAnnotationsAPI,
     )
     from server.api.swagger_docs_api import SwaggerDocsAPI
@@ -208,191 +209,217 @@ def add_api_endpoints(app):
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
 
-    api.add_resource(SwaggerDocsAPI, "/api/docs")
-    api.add_resource(HealthCheckAPI, "/api/health-check")
+    api.add_resource(SwaggerDocsAPI, "/api/v2/system/docs/json")
+    api.add_resource(HealthCheckAPI, "/api/v2/system/heartbeat")
     api.add_resource(
-        ProjectAdminAPI,
-        "/api/v1/admin/project",
-        endpoint="create_project",
-        methods=["PUT"],
+        ProjectAdminAPI, "/api/v2/projects", endpoint="create_project", methods=["POST"]
     )
     api.add_resource(
         ProjectAdminAPI,
-        "/api/v1/admin/project/<int:project_id>",
-        methods=["GET", "POST", "DELETE"],
+        "/api/v2/projects/<int:project_id>",
+        methods=["PATCH", "DELETE"],
     )
     api.add_resource(
-        ProjectCommentsAPI, "/api/v1/admin/project/<int:project_id>/comments"
+        ProjectNoTasksAPI, "/api/v2/projects/<int:project_id>/queries/notasks"
     )
     api.add_resource(
-        ProjectInvalidateAll, "/api/v1/admin/project/<int:project_id>/invalidate-all"
+        ProjectInvalidateAll,
+        "/api/v2/projects/<int:project_id>/tasks/actions/invalidate-all",
     )
     api.add_resource(
-        ProjectValidateAll, "/api/v1/admin/project/<int:project_id>/validate-all"
+        ProjectValidateAll,
+        "/api/v2/projects/<int:project_id>/tasks/actions/validate-all",
     )
-    api.add_resource(ProjectMapAll, "/api/v1/admin/project/<int:project_id>/map-all")
+    api.add_resource(
+        ProjectMapAll, "/api/v2/projects/<int:project_id>/tasks/actions/map-all"
+    )
     api.add_resource(
         ProjectResetBadImagery,
-        "/api/v1/admin/project/<int:project_id>/reset-all-badimagery",
+        "/api/v2/projects/<int:project_id>/tasks/actions/reset-all-badimagery",
     )
     api.add_resource(
-        ProjectResetAll, "/api/v1/admin/project/<int:project_id>/reset-all"
+        ProjectResetAll, "/api/v2/projects/<int:project_id>/tasks/actions/reset-all"
     )
     api.add_resource(
-        ProjectsMessageAll, "/api/v1/admin/project/<int:project_id>/message-all"
+        ProjectsMessageAll,
+        "/api/v2/projects/<int:project_id>/actions/message-contributors",
     )
-    api.add_resource(ProjectTransfer, "/api/v1/admin/project/<int:project_id>/transfer")
-    api.add_resource(ProjectsForAdminAPI, "/api/v1/admin/my-projects")
-    api.add_resource(ApplicationAPI, "/api/v1/application", methods=["POST", "GET"])
+    api.add_resource(
+        ProjectTransfer, "/api/v2/projects/<int:project_id>/actions/transfer-ownership"
+    )
+    api.add_resource(ProjectsForAdminAPI, "/api/v2/projects/queries/myself/owner")
     api.add_resource(
         ApplicationAPI,
-        "/api/v1/application/<string:application_key>",
+        "/api/v2/system/authentication/applications",
+        methods=["POST", "GET"],
+    )
+    api.add_resource(
+        ApplicationAPI,
+        "/api/v2/system/authentication/applications/<string:application_key>",
         endpoint="delete_application",
         methods=["DELETE"],
     )
     api.add_resource(
         ApplicationAPI,
-        "/api/v1/application/<string:application_key>",
+        "/api/v2/system/authentication/applications/<string:application_key>",
         endpoint="check_application",
-        methods=["PUT"],
+        methods=["PATCH"],
     )
-    api.add_resource(LoginAPI, "/api/v1/auth/login")
-    api.add_resource(OAuthAPI, "/api/v1/auth/oauth-callback")
-    api.add_resource(AuthEmailAPI, "/api/auth/email")
+    api.add_resource(LoginAPI, "/api/v2/system/authentication/login")
+    api.add_resource(OAuthAPI, "/api/v2/system/authentication/callback")
+    api.add_resource(AuthEmailAPI, "/api/v2/system/authentication/email")
     api.add_resource(
-        LicenseAPI, "/api/v1/license", endpoint="create_license", methods=["PUT"]
+        LicenseAPI, "/api/v2/licenses", endpoint="create_license", methods=["POST"]
     )
     api.add_resource(
         LicenseAPI,
-        "/api/v1/license/<int:license_id>",
-        methods=["GET", "POST", "DELETE"],
+        "/api/v2/licenses/<int:license_id>",
+        methods=["GET", "PATCH", "DELETE"],
     )
-    api.add_resource(LicenceListAPI, "/api/v1/license/list")
-    api.add_resource(HasNewMessages, "/api/v1/messages/has-new-messages")
-    api.add_resource(GetAllMessages, "/api/v1/messages/get-all-messages")
-    api.add_resource(MessagesAPI, "/api/v1/messages/<int:message_id>")
+    api.add_resource(LicenceListAPI, "/api/v2/licenses")
+    api.add_resource(HasNewMessages, "/api/v2/messages/has-new-messages")
+    api.add_resource(GetAllMessages, "/api/v2/messages/get-all-messages")
+    api.add_resource(MessagesAPI, "/api/v2/messages/<int:message_id>")
     api.add_resource(
-        DeleteMultipleMessages, "/api/v1/messages/delete-multiple", methods=["DELETE"]
-    )
-    api.add_resource(
-        ResendEmailValidationAPI, "/api/v1/messages/resend-email-verification"
-    )
-    api.add_resource(ProjectSearchAPI, "/api/v1/project/search")
-    api.add_resource(ProjectSearchBBoxAPI, "/api/v1/projects/within-bounding-box")
-    api.add_resource(ProjectAPI, "/api/v1/project/<int:project_id>")
-    api.add_resource(ProjectAOIAPI, "/api/v1/project/<int:project_id>/aoi")
-    api.add_resource(ProjectChatAPI, "/api/v1/project/<int:project_id>/chat")
-    api.add_resource(
-        HasUserTaskOnProject, "/api/v1/project/<int:project_id>/has-user-locked-tasks"
+        DeleteMultipleMessages, "/api/v2/messages/delete-multiple", methods=["DELETE"]
     )
     api.add_resource(
-        HasUserTaskOnProjectDetails,
-        "/api/v1/project/<int:project_id>/has-user-locked-tasks/details",
+        ResendEmailValidationAPI, "/api/v2/messages/resend-email-verification"
     )
+    api.add_resource(ProjectSearchAPI, "/api/v2/projects")
+    api.add_resource(ProjectSearchBBoxAPI, "/api/v2/projects/bbox")
     api.add_resource(
-        MappedTasksByUser, "/api/v1/project/<int:project_id>/mapped-tasks-by-user"
+        ProjectNoGeometriesAPI, "/api/v2/projects/<int:project_id>/queries/nogeometries"
     )
-    api.add_resource(ProjectSummaryAPI, "/api/v1/project/<int:project_id>/summary")
-    api.add_resource(TasksAsJson, "/api/v1/project/<int:project_id>/tasks")
-    api.add_resource(TasksAsGPX, "/api/v1/project/<int:project_id>/tasks_as_gpx")
-    api.add_resource(TasksAsOSM, "/api/v1/project/<int:project_id>/tasks-as-osm-xml")
+    api.add_resource(ProjectAPI, "/api/v2/projects/<int:project_id>", methods=["GET"])
+    api.add_resource(ProjectAOIAPI, "/api/v2/projects/<int:project_id>/queries/aoi")
     api.add_resource(
-        LockTaskForMappingAPI,
-        "/api/v1/project/<int:project_id>/task/<int:task_id>/lock-for-mapping",
-    )
-    api.add_resource(
-        UndoMappingAPI,
-        "/api/v1/project/<int:project_id>/task/<int:task_id>/undo-mapping",
-    )
-    api.add_resource(
-        MappingTaskAPI, "/api/v1/project/<int:project_id>/task/<int:task_id>"
-    )
-    api.add_resource(
-        UnlockTaskForMappingAPI,
-        "/api/v1/project/<int:project_id>/task/<int:task_id>/unlock-after-mapping",
-    )
-    api.add_resource(
-        StopMappingAPI,
-        "/api/v1/project/<int:project_id>/task/<int:task_id>/stop-mapping",
-    )
-    api.add_resource(
-        CommentOnTaskAPI, "/api/v1/project/<int:project_id>/task/<int:task_id>/comment"
-    )
-    api.add_resource(
-        LockTasksForValidationAPI,
-        "/api/v1/project/<int:project_id>/lock-for-validation",
-    )
-    api.add_resource(
-        UnlockTasksAfterValidationAPI,
-        "/api/v1/project/<int:project_id>/unlock-after-validation",
-    )
-    api.add_resource(
-        StopValidatingAPI, "/api/v1/project/<int:project_id>/stop-validating"
-    )
-    api.add_resource(
-        StatsContributionsAPI, "/api/v1/stats/project/<int:project_id>/contributions"
-    )
-    api.add_resource(
-        StatsContributionsByDayAPI,
-        "/api/v1/stats/project/<int:project_id>/contributions/day",
-    )
-    api.add_resource(
-        TaskAnnotationsAPI,
-        "/api/v1/project/<int:project_id>/task-annotations/<string:annotation_type>",
-        "/api/v1/project/<int:project_id>/task-annotations",
+        ProjectChatAPI,
+        "/api/v2/projects/<int:project_id>/comments",
         methods=["GET", "POST"],
     )
     api.add_resource(
-        StatsActivityAPI, "/api/v1/stats/project/<int:project_id>/activity"
+        HasUserTaskOnProject,
+        "/api/v2/projects/<int:project_id>/tasks/queries/own/locked",
     )
-    api.add_resource(StatsProjectAPI, "/api/v1/stats/project/<int:project_id>")
+    api.add_resource(
+        HasUserTaskOnProjectDetails,
+        "/api/v2/projects/<int:project_id>/tasks/queries/own/locked/details",
+    )
+    api.add_resource(
+        MappedTasksByUser, "/api/v2/projects/<int:project_id>/tasks/queries/own/mapped"
+    )
+    api.add_resource(
+        ProjectSummaryAPI, "/api/v2/projects/<int:project_id>/queries/summary"
+    )
+    api.add_resource(
+        TasksAsJson, "/api/v2/projects/<int:project_id>/tasks/queries/json"
+    )
+    api.add_resource(TasksAsGPX, "/api/v2/projects/<int:project_id>/tasks/queries/gpx")
+    api.add_resource(TasksAsOSM, "/api/v2/projects/<int:project_id>/tasks/queries/xml")
+    api.add_resource(
+        LockTaskForMappingAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/lock-for-mapping/<int:task_id>",
+    )
+    api.add_resource(
+        UndoMappingAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/undo-mapping/<int:task_id>",
+    )
+    api.add_resource(
+        MappingTaskAPI, "/api/v2/projects/<int:project_id>/tasks/<int:task_id>"
+    )
+    api.add_resource(
+        UnlockTaskForMappingAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/unlock-after-mapping/<int:task_id>",
+    )
+    api.add_resource(
+        StopMappingAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/stop-mapping/<int:task_id>",
+    )
+    api.add_resource(
+        CommentOnTaskAPI,
+        "/api/v2/projects/<int:project_id>/comments/tasks/<int:task_id>",
+        methods=["GET", "POST"],
+    )
+    api.add_resource(
+        LockTasksForValidationAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/lock-for-validation",
+    )
+    api.add_resource(
+        UnlockTasksAfterValidationAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/unlock-after-validation",
+    )
+    api.add_resource(
+        StopValidatingAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/stop-validating",
+    )
+    api.add_resource(
+        StatsContributionsAPI, "/api/v2/projects/<int:project_id>/contributions"
+    )
+    api.add_resource(
+        StatsContributionsByDayAPI,
+        "/api/v2/projects/<int:project_id>/contributions/day",
+    )
+    api.add_resource(
+        TaskAnnotationsAPI,
+        "/api/v2/projects/<int:project_id>/annotations/<string:annotation_type>",
+        "/api/v2/projects/<int:project_id>/annotations",
+        methods=["GET", "POST"],
+    )
+    api.add_resource(StatsActivityAPI, "/api/v2/projects/<int:project_id>/activities")
+    api.add_resource(StatsProjectAPI, "/api/v2/projects/<int:project_id>/statistics")
     api.add_resource(
         StatsProjectUserAPI,
-        "/api/v1/stats/project/<int:project_id>/user/<string:username>",
+        "/api/v2/projects/<int:project_id>/statistics/user/<string:username>",
     )
-    api.add_resource(StatsUserAPI, "/api/v1/stats/user/<string:username>")
-    api.add_resource(HomePageStatsAPI, "/api/v1/stats/summary")
-    api.add_resource(CampaignsTagsAPI, "/api/v1/tags/campaigns")
-    api.add_resource(OrganisationTagsAPI, "/api/v1/tags/organisations")
+    api.add_resource(StatsUserAPI, "/api/v2/users/<string:username>/statistics")
+    api.add_resource(HomePageStatsAPI, "/api/v2/system/statistics")
+    api.add_resource(CampaignsTagsAPI, "/api/v2/tags/campaigns")
+    api.add_resource(OrganisationTagsAPI, "/api/v2/tags/organisations")
+    api.add_resource(
+        MappingIssueCategoriesAPI,
+        "/api/v2/tasks/issues/categories",
+        methods=["GET", "POST"],
+    )
     api.add_resource(
         MappingIssueCategoryAPI,
-        "/api/v1/mapping-issue-category",
-        endpoint="create_mapping_issue_category",
-        methods=["POST"],
+        "/api/v2/tasks/issues/categories/<int:category_id>",
+        methods=["GET", "PATCH", "DELETE"],
+    )
+    api.add_resource(UserSearchAllAPI, "/api/v2/users")
+    api.add_resource(
+        UserSearchFilterAPI, "/api/v2/users/queries/filter/<string:username>"
+    )
+    api.add_resource(UserAPI, "/api/v2/users/queries/<string:username>")
+    api.add_resource(UserUpdateAPI, "/api/v2/users/<string:username>")
+    api.add_resource(
+        UserSetExpertMode,
+        "/api/v2/users/<string:username>/actions/set-expert-mode/<string:is_expert>",
     )
     api.add_resource(
-        MappingIssueCategoryAPI,
-        "/api/v1/mapping-issue-category/<int:category_id>",
-        methods=["GET", "PUT", "DELETE"],
-    )
-    api.add_resource(MappingIssueCategoriesAPI, "/api/v1/mapping-issue-categories")
-    api.add_resource(UserSearchAllAPI, "/api/v1/user/search-all")
-    api.add_resource(
-        UserSearchFilterAPI, "/api/v1/user/search/filter/<string:username>"
-    )
-    api.add_resource(UserAPI, "/api/v1/user/<string:username>")
-    api.add_resource(UserUpdateAPI, "/api/v1/user/update-details")
-    api.add_resource(
-        UserSetExpertMode, "/api/v1/user/set-expert-mode/<string:is_expert>"
+        UserMappedProjects, "/api/v2/projects/queries/<string:username>/touched"
     )
     api.add_resource(
-        UserMappedProjects, "/api/v1/user/<string:username>/mapped-projects"
+        UserInvalidatedTasks,
+        "/api/v2/projects/<int:project_id>/tasks/queries/own/invalidated",
+    )
+    api.add_resource(UserOSMAPI, "/api/v2/users/<string:username>/openstreetmap")
+    api.add_resource(
+        UserSetRole, "/api/v2/users/<string:username>/actions/set-role/<string:role>"
     )
     api.add_resource(
-        UserInvalidatedTasks, "/api/v1/user/<string:username>/invalidated-tasks"
-    )
-    api.add_resource(UserOSMAPI, "/api/v1/user/<string:username>/osm-details")
-    api.add_resource(
-        UserSetRole, "/api/v1/user/<string:username>/set-role/<string:role>"
+        UserSetLevel, "/api/v2/users/<string:username>/actions/set-level/<string:level>"
     )
     api.add_resource(
-        UserSetLevel, "/api/v1/user/<string:username>/set-level/<string:level>"
+        UserAcceptLicense, "/api/v2/licenses/<int:license_id>/actions/accept-for-me"
     )
-    api.add_resource(UserAcceptLicense, "/api/v1/user/accept-license/<int:license_id>")
-    api.add_resource(UserIdAPI, "/api/v1/user-id/<int:userid>")
-    api.add_resource(UserContributionsAPI, "/api/v1/user-id/<int:userid>/contributions")
-    api.add_resource(IntersectingTilesAPI, "/api/v1/grid/intersecting-tiles")
+    api.add_resource(UserIdAPI, "/api/v2/users/<int:userid>")
+    api.add_resource(UserContributionsAPI, "/api/v2/users/<int:userid>/contributions")
     api.add_resource(
-        SplitTaskAPI, "/api/v1/project/<int:project_id>/task/<int:task_id>/split"
+        IntersectingTilesAPI, "/api/v2/projects/<int:project_id>/tasks/queries/aoi"
     )
-    api.add_resource(LanguagesAPI, "/api/v1/settings")
+    api.add_resource(
+        SplitTaskAPI,
+        "/api/v2/projects/<int:project_id>/tasks/<int:task_id>/actions/split",
+    )
+    api.add_resource(LanguagesAPI, "/api/v2/system/languages")

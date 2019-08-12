@@ -8,61 +8,6 @@ from server.services.users.authentication_service import token_auth, tm
 
 
 class MappingIssueCategoryAPI(Resource):
-    @tm.pm_only()
-    @token_auth.login_required
-    def post(self):
-        """
-        Creates a new mapping-issue category
-        ---
-        tags:
-            - mapping issues
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - in: body
-              name: body
-              required: true
-              description: JSON object for creating a new mapping-issue category
-              schema:
-                  properties:
-                      name:
-                          type: string
-                          required: true
-                      description:
-                          type: string
-        responses:
-            200:
-                description: New mapping-issue category created
-            400:
-                description: Invalid Request
-            401:
-                description: Unauthorized - Invalid credentials
-            500:
-                description: Internal Server Error
-        """
-        try:
-            category_dto = MappingIssueCategoryDTO(request.get_json())
-            category_dto.validate()
-        except DataError as e:
-            current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
-
-        try:
-            new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
-                category_dto
-            )
-            return {"categoryId": new_category_id}, 200
-        except Exception as e:
-            error_msg = f"Mapping-issue category POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
-
     def get(self, category_id):
         """
         Get specified mapping-issue category
@@ -98,7 +43,7 @@ class MappingIssueCategoryAPI(Resource):
 
     @tm.pm_only()
     @token_auth.login_required
-    def put(self, category_id):
+    def patch(self, category_id):
         """
         Update an existing mapping-issue category
         ---
@@ -235,5 +180,60 @@ class MappingIssueCategoriesAPI(Resource):
             return categories.to_primitive(), 200
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def post(self):
+        """
+        Creates a new mapping-issue category
+        ---
+        tags:
+            - mapping issues
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating a new mapping-issue category
+              schema:
+                  properties:
+                      name:
+                          type: string
+                          required: true
+                      description:
+                          type: string
+        responses:
+            200:
+                description: New mapping-issue category created
+            400:
+                description: Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            category_dto = MappingIssueCategoryDTO(request.get_json())
+            category_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f"Error validating request: {str(e)}")
+            return str(e), 400
+
+        try:
+            new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
+                category_dto
+            )
+            return {"categoryId": new_category_id}, 200
+        except Exception as e:
+            error_msg = f"Mapping-issue category POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
