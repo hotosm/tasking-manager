@@ -1,5 +1,7 @@
 import React  from 'react';
 import { ShowAllTagFilterButton } from './showAllTagFilterButton'
+import ReactPlaceholder from 'react-placeholder';
+import "react-placeholder/lib/reactPlaceholder.css"
 
 export const TagFilterPicker = props => {
 
@@ -11,7 +13,7 @@ export const TagFilterPicker = props => {
     const textStyle = "dib ml2 blue-grey f6 mw4 truncate lh-copy"
 
     const queryParamSelectedTag = props.selectedTag || [];
-    
+    const isLoading = props.tagOptionsFromAPI.isLoading;
     const firstSixTags = props.tagOptionsFromAPI.tags.slice(0,6);
     const firstSixTagsLabeled = firstSixTags.map(n => ({optionValue: n, optionLabel: n}));
 
@@ -19,6 +21,7 @@ export const TagFilterPicker = props => {
     return (
         <fieldset id={props.fieldsetName} className={props.fieldsetStyle}>
         <legend className={props.titleStyle}>{props.fieldsetTitle}</legend>
+        <ReactPlaceholder type='text' rows={3} ready={!isLoading}>
         { firstSixTagsLabeled.map((tagOption, key) => 
           <label className="relative inline-flex w-50 items-center mb2" title={tagOption.optionLabel} key={key}>
             <input name={props.fieldsetName}
@@ -35,7 +38,8 @@ export const TagFilterPicker = props => {
             </div>
           </label>
           )}
-          <ShowAllTagFilterButton title={props.fieldsetTitle}/>
+          <ShowAllTagFilterButton title={props.fieldsetTitlePlural}/>
+          </ReactPlaceholder>
           </fieldset>
     );
   }
