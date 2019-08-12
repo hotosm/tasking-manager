@@ -26,7 +26,7 @@ export default defineMessages({
   },
   mappingDifficulty: {
     id: 'project.nav.mappingDifficulty',
-    defaultMessage: 'Mapping Difficulty'
+    defaultMessage: 'Mapping difficulty'
   },
   projectMapperLevelBEGINNER: {
     id: 'project.card.mapperLevelBeginner',
@@ -71,5 +71,41 @@ export default defineMessages({
   showMapToggle: {
     id: 'project.nav.showMapToggle',
     defaultMessage: 'Show map'
+  },
+  typesOfMapping: {
+    id: 'project.navMoreFilters.typesOfMapping',
+    defaultMessage: "Types of Mapping"
+  },
+  campaigns: {
+    id: 'project.navMoreFilters.campaigns',
+    defaultMessage: 'Campaigns'
+  },
+  showAllXTags: {
+    id: 'project.navMoreFilters.showAllXTags',
+    defaultMessage: 'Show All {typeOfTag}'
+  },
+  organisation: {
+    id: 'project.navMoreFilters.organisation',
+    defaultMessage: 'Organisation'
+  },
+  organisations: {
+    id: 'project.navMoreFilters.organisations',
+    defaultMessage: 'Organisations'
+  },
+  location: {
+    id: 'project.navMoreFilters.location',
+    defaultMessage: 'Location'
+  },
+  locations: {
+    id: 'project.navMoreFilters.locations',
+    defaultMessage: 'Locations'
+  },
+  ErrorLoadingTheXForY: {
+    id: 'project.navMoreFilters.error',
+    defaultMessage: 'Error loading the {xWord} for {yWord}'
+  },
+  Filters: {
+    id: 'project.nav.filters',
+    defaultMessage: 'Filters'
   },
 });

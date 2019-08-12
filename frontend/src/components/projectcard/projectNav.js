@@ -3,22 +3,16 @@ import NavLink from '../header/NavLink'
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { API_URL } from '../../config';
 import { SearchIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 
 import cards from '../projectcard/demoProjectCardsData';
 import { ProjectCard } from '../../components/projectcard/projectCard';
+import { useFullProjectsQuery } from '../../hooks/UseFullProjectFilterQueryParams'
 
 import {
-  stringify,
-  useQueryParams,
-  StringParam,
-  NumberParam,
+  stringify
 } from 'use-query-params';
-
-import { CommaArrayParam } from '../../utils/CommaArrayParam'
- 
 
 function ShowMapToggle() {
   return (
@@ -41,15 +35,9 @@ function ShowMapToggle() {
 }
 
 const RenderMenuItems = ({navMenuItems}: Object) => {
-  const [query, setQuery] = useQueryParams({
-    difficulty: StringParam,
-    organization: StringParam,
-    campaign: StringParam,
-    types: CommaArrayParam,
-    x: NumberParam,
-    });
+  const [fullProjectsQuery] = useFullProjectsQuery()
   const linkCombo = "link ph3 grey-light f6 pv2 mh2 ba b--grey-light";
-  const encodedParams = stringify(query) ? "?"+stringify(query) : ""
+  const encodedParams = stringify(fullProjectsQuery) ? "?"+stringify(fullProjectsQuery) : ""
   return (
     <div className="v-mid  ">
       {navMenuItems.map((item, n) =>

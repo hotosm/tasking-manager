@@ -1,8 +1,7 @@
 import {
   useQueryParams,
-  useQueryParam,
   StringParam,
-  stringify,
+  stringify as stringifyUQP,
 } from 'use-query-params';
 import { CommaArrayParam } from '../utils/CommaArrayParam'
 
@@ -18,3 +17,5 @@ export const useFullProjectsQuery = () => {
     types: CommaArrayParam
     });
 }
+
+export const stringify = () => stringifyUQP;

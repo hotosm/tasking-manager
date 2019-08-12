@@ -9,6 +9,10 @@ import { ShowAllTagFilterButton } from "./showAllTagFilterButton";
 import { useQueryParams, useQueryParam, StringParam } from "use-query-params";
 import { CommaArrayParam } from "../../utils/CommaArrayParam";
 
+import { FormattedMessage } from "react-intl";
+import messages from './messages';
+
+
 export const MoreFiltersForm = props => {
   /* one useQueryParams for the main form */
   const [formQuery, setFormQuery] = useQueryParams({
@@ -54,7 +58,7 @@ export const MoreFiltersForm = props => {
   return (
     <form className="pa4" onChange={handleInputChange}>
       <fieldset id="mappingType" className={fieldsetStyle}>
-        <legend className={titleStyle}>Types of Mapping</legend>
+        <legend className={titleStyle}><FormattedMessage {...messages.typesOfMapping} /></legend>
         <MappingTypeFilterPicker
           mappingTypes={mappingTypesInQuery}
           setMappingTypesQuery={setMappingTypes}
@@ -68,7 +72,8 @@ export const MoreFiltersForm = props => {
       </fieldset>
 
       <TagFilterPicker
-        fieldsetTitle="Campaign"
+        fieldsetTitle=<FormattedMessage {...messages.campaign} />
+        fieldsetTitlePlural=<FormattedMessage {...messages.campaigns} />
         fieldsetName="campaign"
         fieldsetStyle={fieldsetStyle}
         titleStyle={titleStyle}
@@ -78,7 +83,8 @@ export const MoreFiltersForm = props => {
 
       {/* Example, may be removed for location as per design */}
       <TagFilterPicker
-        fieldsetTitle="Organisation"
+        fieldsetTitle=<FormattedMessage {...messages.organisation} />
+        fieldsetTitlePlural=<FormattedMessage {...messages.organisations} />
         fieldsetName="organisation"
         fieldsetStyle={fieldsetStyle}
         titleStyle={titleStyle}
@@ -88,7 +94,7 @@ export const MoreFiltersForm = props => {
 
         {/* Example location field, to be implemented on backend*/}
         <fieldset id="location" className={fieldsetStyle}>
-        <legend className={titleStyle}>Location</legend>
+        <legend className={titleStyle}><FormattedMessage {...messages.location} /></legend>
           <div className={inputStyle}>
             <input className="mr2" type="radio" name="location"  id="spacejam2" value="in" />
             <label htmlFor="spacejam2" className="lh-copy">India</label>
@@ -113,11 +119,11 @@ export const MoreFiltersForm = props => {
             <input className="mr2" type="radio" name="location" id="proxy2" value="tz" />
             <label htmlFor="proxy2" className="lh-copy">Tanzania</label>
           </div>
-        <ShowAllTagFilterButton titlePlural="Locations" showingToggle={true}>
+        <ShowAllTagFilterButton title=<FormattedMessage {...messages.locations} /> showingToggle={true}>
 
         </ShowAllTagFilterButton>
         </fieldset>
-        
+
     </form>
   );
 };
