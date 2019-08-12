@@ -17,7 +17,7 @@ from server.services.validator_service import ValidatorService
 class ProjectAdminAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
-    def put(self):
+    def post(self):
         """
         Creates a tasking-manager project
         ---
@@ -102,7 +102,7 @@ class ProjectAdminAPI(Resource):
 
     @tm.pm_only()
     @token_auth.login_required
-    def get(self, project_id):
+    def head(self, project_id):
         """
         Retrieves a Tasking-Manager project
         ---
@@ -145,7 +145,7 @@ class ProjectAdminAPI(Resource):
 
     @tm.pm_only()
     @token_auth.login_required
-    def post(self, project_id):
+    def patch(self, project_id):
         """
         Updates a Tasking-Manager project
         ---
@@ -330,43 +330,6 @@ class ProjectAdminAPI(Resource):
             return {"Error": "Project has some mapping"}, 403
         except NotFound:
             return {"Error": "Project Not Found"}, 404
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
-
-
-class ProjectCommentsAPI(Resource):
-    def get(self, project_id):
-        """
-        Gets all comments for project
-        ---
-        tags:
-            - project admin
-        produces:
-            - application/json
-        parameters:
-            - name: project_id
-              in: path
-              description: The unique project ID
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: Comments found
-            401:
-                description: Unauthorized - Invalid credentials
-            404:
-                description: No comments found
-            500:
-                description: Internal Server Error
-        """
-        try:
-            comments_dto = ProjectAdminService.get_all_comments(project_id)
-            return comments_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "No comments found"}, 404
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

@@ -90,7 +90,8 @@ class EnvironmentConfig:
     }
 
     # Some more definitions (not overridable)
-    API_DOCS_URL = f"{APP_BASE_URL}/api/docs"
+    API_VERSION = "v2"
+    API_DOCS_URL = f"{APP_BASE_URL}/api/{API_VERSION}/system/docs/json"
     SEND_FILE_MAX_AGE_DEFAULT = 0
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_POOL_SIZE = 10

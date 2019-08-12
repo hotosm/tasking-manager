@@ -73,7 +73,7 @@ class ApplicationAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    def put(self, application_key):
+    def patch(self, application_key):
         """
         Checks the validity of an application key
         ---
