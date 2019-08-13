@@ -17,7 +17,7 @@ class EnvironmentConfig:
 
     # The base url the application is reachable
     APP_BASE_URL = os.getenv("TM_APP_BASE_URL", "http://127.0.0.1:5000")
-    FRONTEND_BASE_URL = os.getenv("TM_FRONTEND_BASE_URL", "http://127.0.0.1:3000")
+    FRONTEND_BASE_URL = os.getenv("TM_FRONTEND_BASE_URL", APP_BASE_URL)
 
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)
@@ -52,8 +52,8 @@ class EnvironmentConfig:
     LOG_DIR = os.getenv("TM_LOG_DIR", "logs")
 
     # Mapper Level values represent number of OSM changesets
-    MAPPER_LEVEL_INTERMEDIATE = os.getenv("TM_MAPPER_LEVEL_INTERMEDIATE", 250)
-    MAPPER_LEVEL_ADVANCED = os.getenv("TM_MAPPER_LEVEL_ADVANCED", 500)
+    MAPPER_LEVEL_INTERMEDIATE = int(os.getenv("TM_MAPPER_LEVEL_INTERMEDIATE", 250))
+    MAPPER_LEVEL_ADVANCED = int(os.getenv("TM_MAPPER_LEVEL_ADVANCED", 500))
 
     # Time to wait until task auto-unlock (e.g. '2h' or '7d' or '30m' or '1h30m')
     TASK_AUTOUNLOCK_AFTER = os.getenv("TM_TASK_AUTOUNLOCK_AFTER", "2h")
