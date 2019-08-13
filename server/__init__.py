@@ -117,7 +117,7 @@ def init_flask_restful_routes(app):
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
-    from server.api.ml_enabler_apis import PredictionAPI 
+    from server.api.ml_enabler_apis import PredictionAPI
 
     api.add_resource(SwaggerDocsAPI, "/api/docs")
     api.add_resource(HealthCheckAPI, "/api/health-check")
@@ -244,10 +244,6 @@ def init_flask_restful_routes(app):
         StatsContributionsAPI, "/api/v1/stats/project/<int:project_id>/contributions"
     )
     api.add_resource(
-        StatsContributionsByDayAPI,
-        "/api/v1/stats/project/<int:project_id>/contributions/day",
-    )
-    api.add_resource(
         TaskAnnotationsAPI,
         "/api/v1/project/<int:project_id>/task-annotations/<string:annotation_type>",
         "/api/v1/project/<int:project_id>/task-annotations",
@@ -301,7 +297,6 @@ def init_flask_restful_routes(app):
     )
     api.add_resource(UserAcceptLicense, "/api/v1/user/accept-license/<int:license_id>")
     api.add_resource(UserIdAPI, "/api/v1/user-id/<int:userid>")
-    api.add_resource(UserContributionsAPI, "/api/v1/user-id/<int:userid>/contributions")
     api.add_resource(IntersectingTilesAPI, "/api/v1/grid/intersecting-tiles")
     api.add_resource(
         SplitTaskAPI, "/api/v1/project/<int:project_id>/task/<int:task_id>/split"
