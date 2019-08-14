@@ -1376,8 +1376,7 @@
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskMapping = function () {
-            console.log(vm.user);
-            if(vm.user.isEmailVerified){
+            if(vm.user.emailAddress){
                 vm.lockingReason = 'MAPPING';
                 var projectId = vm.projectData.projectId;
                 var taskId = vm.selectedTaskData.taskId;
@@ -1447,7 +1446,7 @@
          * Call api to lock currently selected task for validation.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
-            if(vm.user.isEmailVerified){
+            if(vm.user.emailAddress){
                 vm.lockingReason = 'VALIDATION';
                 var projectId = vm.projectData.projectId;
                 var taskId = vm.selectedTaskData.taskId;

@@ -94,7 +94,6 @@
          * @returns {*|!jQuery.deferred|!jQuery.Promise|!jQuery.jqXHR}
          */
         function getHomePageStats(){
-            console.log('In service');
             return $http({
                 method: 'GET',
                 url: configService.tmAPI + '/stats/summary'
