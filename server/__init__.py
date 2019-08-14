@@ -117,63 +117,84 @@ def initialise_counters(app):
 
 def add_api_endpoints(app):
     """
-    Define the routes the API exposes using Flask-Restful.  See docs here
-    http://flask-restful-cn.readthedocs.org/en/0.3.5/quickstart.html#endpoints
+    Define the routes the API exposes using Flask-Restful.
     """
     app.logger.debug("Adding routes to API endpoints")
     api = Api(app)
 
+    # Projects API import
+    from server.api.projects.resources import (
+        ProjectsRestAPI,
+        ProjectsAllAPI,
+        ProjectsQueriesBboxAPI,
+        ProjectsQueriesOwnerAPI,
+        ProjectsQueriesTouchedAPI,
+        ProjectsQueriesSummaryAPI,
+        ProjectsQueriesNoGeometriesAPI,
+        ProjectsQueriesNoTasksAPI,
+        ProjectsQueriesAoiAPI,
+    )
+    from server.api.projects.activities import ProjectsActivitiesAPI
+    from server.api.projects.contributions import ProjectsContributionsAPI
+    from server.api.projects.statistics import ProjectsStatisticsAPI
+    from server.api.projects.actions import (
+        ProjectsActionsTransferAPI,
+        ProjectsActionsMessageContributorsAPI,
+    )
+
+    # Tasks API import
+    from server.api.projects.resources import (
+        TasksRestAPI,
+        TasksAllAPI,
+        TasksQueriesXmlAPI,
+        TasksQueriesGpxAPI,
+        TasksQueriesAoiAPI,
+        TasksQueriesOwnLockedAPI,
+        TasksQueriesOwnLockedDetailsAPI,
+        TasksQueriesOwnMappedAPI,
+        TasksQueriesOwnInvalidatedAPI,
+    )
+    from server.api.projects.actions import (
+        TasksActionsMappingLockAPI,
+        TasksActionsMappingStopAPI,
+        TasksActionsMappingUnlockAPI,
+        TasksActionsMappingUndoAPI,
+        TasksActionsValidationLockAPI,
+        TasksActionsValidatioStopAPI,
+        TasksActionsValidationUnlockAPI,
+        TasksActionsMapAllAPI,
+        TasksActionsValidateAllAPI,
+        TasksActionsInvalidateAllAPI,
+        TasksActionsResetBadImageryAllAPI,
+        TasksActionsResetAllAPI,
+        TasksActionsSplitAPI,
+    )
+
+    from server.api.comments.resources import (
+        CommentsProjectsRestAPI,
+        CommentsTasksRestAPI,
+    )
+
+    # Annotations API import
+    from server.api.annotations import (
+        AnnotationsRestAPI,
+    )
+
+    # Old stuff
     from server.api.application_apis import ApplicationAPI
     from server.api.users.authentication_apis import LoginAPI, OAuthAPI, AuthEmailAPI
     from server.api.health_check_api import HealthCheckAPI
     from server.api.license_apis import LicenseAPI, LicenceListAPI
-    from server.api.mapping_apis import (
-        MappingTaskAPI,
-        LockTaskForMappingAPI,
-        UnlockTaskForMappingAPI,
-        StopMappingAPI,
-        CommentOnTaskAPI,
-        TasksAsJson,
-        TasksAsGPX,
-        TasksAsOSM,
-        UndoMappingAPI,
-    )
     from server.api.messaging.message_apis import (
-        ProjectsMessageAll,
         HasNewMessages,
         GetAllMessages,
         MessagesAPI,
         DeleteMultipleMessages,
         ResendEmailValidationAPI,
     )
-    from server.api.messaging.project_chat_apis import ProjectChatAPI
-    from server.api.project_admin_api import (
-        ProjectAdminAPI,
-        ProjectInvalidateAll,
-        ProjectValidateAll,
-        ProjectMapAll,
-        ProjectResetAll,
-        ProjectResetBadImagery,
-        ProjectsForAdminAPI,
-        ProjectTransfer,
-    )
-    from server.api.project_apis import (
-        ProjectAPI,
-        ProjectAOIAPI,
-        ProjectSearchAPI,
-        HasUserTaskOnProject,
-        HasUserTaskOnProjectDetails,
-        ProjectSearchBBoxAPI,
-        ProjectSummaryAPI,
-        ProjectNoTasksAPI,
-        ProjectNoGeometriesAPI,
-        TaskAnnotationsAPI,
-    )
+
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.stats_api import (
-        StatsContributionsAPI,
-        StatsActivityAPI,
-        StatsProjectAPI,
         HomePageStatsAPI,
         StatsUserAPI,
         StatsProjectUserAPI,
@@ -188,7 +209,6 @@ def add_api_endpoints(app):
         UserAPI,
         UserIdAPI,
         UserOSMAPI,
-        UserMappedProjects,
         UserSetRole,
         UserSetLevel,
         UserSetExpertMode,
@@ -198,56 +218,190 @@ def add_api_endpoints(app):
         UserUpdateAPI,
         UserContributionsAPI,
     )
-    from server.api.validator_apis import (
-        LockTasksForValidationAPI,
-        UnlockTasksAfterValidationAPI,
-        StopValidatingAPI,
-        MappedTasksByUser,
-        UserInvalidatedTasks,
-    )
-    from server.api.grid.grid_apis import IntersectingTilesAPI
-    from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
 
-    api.add_resource(SwaggerDocsAPI, "/api/v2/system/docs/json")
-    api.add_resource(HealthCheckAPI, "/api/v2/system/heartbeat")
+
+    # Projects REST endpoint
+    api.add_resource(ProjectsAllAPI, "/api/v2/projects", methods=["GET"])
     api.add_resource(
-        ProjectAdminAPI, "/api/v2/projects", endpoint="create_project", methods=["POST"]
+        ProjectsRestAPI,
+        "/api/v2/projects", endpoint="create_project", methods=["POST"]
     )
     api.add_resource(
-        ProjectAdminAPI,
+        ProjectsRestAPI,
         "/api/v2/projects/<int:project_id>",
-        methods=["PATCH", "DELETE"],
+        methods=["GET", "PATCH", "DELETE"],
+    )
+
+    # Projects queries endoints (TODO: Refactor them into the REST endpoints)
+    api.add_resource(
+        ProjectsQueriesBboxAPI,
+        "/api/v2/projects/queries/bbox",
     )
     api.add_resource(
-        ProjectNoTasksAPI, "/api/v2/projects/<int:project_id>/queries/notasks"
+        ProjectsQueriesOwnerAPI,
+        "/api/v2/projects/queries/myself/owner",
     )
     api.add_resource(
-        ProjectInvalidateAll,
-        "/api/v2/projects/<int:project_id>/tasks/actions/invalidate-all",
+        ProjectsQueriesTouchedAPI,
+        "/api/v2/projects/queries/<string:username>/touched",
     )
     api.add_resource(
-        ProjectValidateAll,
-        "/api/v2/projects/<int:project_id>/tasks/actions/validate-all",
+        ProjectsQueriesSummaryAPI,
+        "/api/v2/projects/<int:project_id>/queries/summary"
     )
     api.add_resource(
-        ProjectMapAll, "/api/v2/projects/<int:project_id>/tasks/actions/map-all"
+        ProjectsQueriesNoGeometriesAPI,
+        "/api/v2/projects/<int:project_id>/queries/nogeometries"
     )
     api.add_resource(
-        ProjectResetBadImagery,
-        "/api/v2/projects/<int:project_id>/tasks/actions/reset-all-badimagery",
+        ProjectsQueriesNoTasksAPI,
+        "/api/v2/projects/<int:project_id>/queries/notasks",
     )
     api.add_resource(
-        ProjectResetAll, "/api/v2/projects/<int:project_id>/tasks/actions/reset-all"
+        ProjectsQueriesAoiAPI,
+        "/api/v2/projects/<int:project_id>/queries/aoi",
+    )
+
+    # Projects' addtional resources
+    api.add_resource(
+        ProjectsActivitiesAPI,
+        "/api/v2/projects/<int:project_id>/activities"
     )
     api.add_resource(
-        ProjectsMessageAll,
+        ProjectsContributionsAPI,
+        "/api/v2/projects/<int:project_id>/contributions"
+    )
+    api.add_resource(
+        ProjectsStatisticsAPI,
+        "/api/v2/projects/<int:project_id>/statistics")
+
+    # Projects actions endoints
+    api.add_resource(
+        ProjectsActionsMessageContributorsAPI,
         "/api/v2/projects/<int:project_id>/actions/message-contributors",
     )
     api.add_resource(
-        ProjectTransfer, "/api/v2/projects/<int:project_id>/actions/transfer-ownership"
+        ProjectsActionsTransferAPI,
+        "/api/v2/projects/<int:project_id>/actions/transfer-ownership"
     )
-    api.add_resource(ProjectsForAdminAPI, "/api/v2/projects/queries/myself/owner")
+
+    # Tasks REST endpoint
+    api.add_resource(
+        TasksAllAPI,
+        "/api/v2/projects/<int:project_id>/tasks",
+    )
+    api.add_resource(
+        TasksRestAPI,
+        "/api/v2/projects/<int:project_id>/tasks/<int:task_id>"
+    )
+
+    # Tasks queries endoints (TODO: Refactor them into the REST endpoints)
+    api.add_resource(
+        TasksQueriesXmlAPI,
+        "/api/v2/projects/<int:project_id>/tasks/queries/xml"
+    )
+    api.add_resource(
+        TasksQueriesGpxAPI,
+        "/api/v2/projects/<int:project_id>/tasks/queries/gpx",
+    )
+    api.add_resource(
+        TasksQueriesAoiAPI,
+        "/api/v2/projects/<int:project_id>/tasks/queries/aoi"
+    )
+    api.add_resource(
+        TasksQueriesOwnLockedAPI,
+        "/api/v2/projects/<int:project_id>/tasks/queries/own/locked",
+    )
+    api.add_resource(
+        TasksQueriesOwnLockedDetailsAPI,
+        "/api/v2/projects/<int:project_id>/tasks/queries/own/locked/details",
+    )
+    api.add_resource(
+        TasksQueriesOwnMappedAPI,
+        "/api/v2/projects/<int:project_id>/tasks/queries/own/mapped"
+    )
+    api.add_resource(
+        TasksQueriesOwnInvalidatedAPI,
+        "/api/v2/projects/<int:project_id>/tasks/queries/own/invalidated",
+    )
+
+    # Projects actions endoints
+    api.add_resource(
+        TasksActionsMappingLockAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/lock-for-mapping/<int:task_id>",
+    )
+    api.add_resource(
+        TasksActionsMappingStopAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/stop-mapping/<int:task_id>",
+    )
+    api.add_resource(
+        TasksActionsMappingUnlockAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/unlock-after-mapping/<int:task_id>",
+    )
+    api.add_resource(
+        TasksActionsMappingUndoAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/undo-mapping/<int:task_id>",
+    )
+    api.add_resource(
+        TasksActionsValidationLockAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/lock-for-validation",
+    )
+    api.add_resource(
+        TasksActionsValidatioStopAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/stop-validating",
+    )
+    api.add_resource(
+        TasksActionsValidationUnlockAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/unlock-after-validation",
+    )
+    api.add_resource(
+        TasksActionsMapAllAPI, "/api/v2/projects/<int:project_id>/tasks/actions/map-all"
+    )
+    api.add_resource(
+        TasksActionsValidateAllAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/validate-all",
+    )
+    api.add_resource(
+        TasksActionsInvalidateAllAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/invalidate-all",
+    )
+    api.add_resource(
+        TasksActionsResetBadImageryAllAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/reset-all-badimagery",
+    )
+    api.add_resource(
+        TasksActionsResetAllAPI, "/api/v2/projects/<int:project_id>/tasks/actions/reset-all"
+    )
+    api.add_resource(
+        TasksActionsSplitAPI,
+        "/api/v2/projects/<int:project_id>/tasks/<int:task_id>/actions/split",
+    )
+
+    # Comments REST endoints
+    api.add_resource(
+        CommentsProjectsRestAPI,
+        "/api/v2/projects/<int:project_id>/comments",
+        methods=["GET", "POST"],
+    )
+    api.add_resource(
+        CommentsTasksRestAPI,
+        "/api/v2/projects/<int:project_id>/comments/tasks/<int:task_id>",
+        methods=["GET", "POST"],
+    )
+
+    # Annotations REST endoints
+    api.add_resource(
+        AnnotationsRestAPI,
+        "/api/v2/projects/<int:project_id>/annotations/<string:annotation_type>",
+        "/api/v2/projects/<int:project_id>/annotations",
+        methods=["GET", "POST"],
+    )
+
+    # System endpoint
+    api.add_resource(SwaggerDocsAPI, "/api/v2/system/docs/json")
+    api.add_resource(HealthCheckAPI, "/api/v2/system/heartbeat")
+
     api.add_resource(
         ApplicationAPI,
         "/api/v2/system/authentication/applications",
@@ -286,88 +440,13 @@ def add_api_endpoints(app):
     api.add_resource(
         ResendEmailValidationAPI, "/api/v2/messages/resend-email-verification"
     )
-    api.add_resource(ProjectSearchAPI, "/api/v2/projects")
-    api.add_resource(ProjectSearchBBoxAPI, "/api/v2/projects/bbox")
-    api.add_resource(
-        ProjectNoGeometriesAPI, "/api/v2/projects/<int:project_id>/queries/nogeometries"
-    )
-    api.add_resource(ProjectAPI, "/api/v2/projects/<int:project_id>", methods=["GET"])
-    api.add_resource(ProjectAOIAPI, "/api/v2/projects/<int:project_id>/queries/aoi")
-    api.add_resource(
-        ProjectChatAPI,
-        "/api/v2/projects/<int:project_id>/comments",
-        methods=["GET", "POST"],
-    )
-    api.add_resource(
-        HasUserTaskOnProject,
-        "/api/v2/projects/<int:project_id>/tasks/queries/own/locked",
-    )
-    api.add_resource(
-        HasUserTaskOnProjectDetails,
-        "/api/v2/projects/<int:project_id>/tasks/queries/own/locked/details",
-    )
-    api.add_resource(
-        MappedTasksByUser, "/api/v2/projects/<int:project_id>/tasks/queries/own/mapped"
-    )
-    api.add_resource(
-        ProjectSummaryAPI, "/api/v2/projects/<int:project_id>/queries/summary"
-    )
-    api.add_resource(
-        TasksAsJson, "/api/v2/projects/<int:project_id>/tasks/queries/json"
-    )
-    api.add_resource(TasksAsGPX, "/api/v2/projects/<int:project_id>/tasks/queries/gpx")
-    api.add_resource(TasksAsOSM, "/api/v2/projects/<int:project_id>/tasks/queries/xml")
-    api.add_resource(
-        LockTaskForMappingAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/lock-for-mapping/<int:task_id>",
-    )
-    api.add_resource(
-        UndoMappingAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/undo-mapping/<int:task_id>",
-    )
-    api.add_resource(
-        MappingTaskAPI, "/api/v2/projects/<int:project_id>/tasks/<int:task_id>"
-    )
-    api.add_resource(
-        UnlockTaskForMappingAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/unlock-after-mapping/<int:task_id>",
-    )
-    api.add_resource(
-        StopMappingAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/stop-mapping/<int:task_id>",
-    )
-    api.add_resource(
-        CommentOnTaskAPI,
-        "/api/v2/projects/<int:project_id>/comments/tasks/<int:task_id>",
-        methods=["GET", "POST"],
-    )
-    api.add_resource(
-        LockTasksForValidationAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/lock-for-validation",
-    )
-    api.add_resource(
-        UnlockTasksAfterValidationAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/unlock-after-validation",
-    )
-    api.add_resource(
-        StopValidatingAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/stop-validating",
-    )
-    api.add_resource(
-        StatsContributionsAPI, "/api/v2/projects/<int:project_id>/contributions"
-    )
+
+
     api.add_resource(
         StatsContributionsByDayAPI,
         "/api/v2/projects/<int:project_id>/contributions/day",
     )
-    api.add_resource(
-        TaskAnnotationsAPI,
-        "/api/v2/projects/<int:project_id>/annotations/<string:annotation_type>",
-        "/api/v2/projects/<int:project_id>/annotations",
-        methods=["GET", "POST"],
-    )
-    api.add_resource(StatsActivityAPI, "/api/v2/projects/<int:project_id>/activities")
-    api.add_resource(StatsProjectAPI, "/api/v2/projects/<int:project_id>/statistics")
+
     api.add_resource(
         StatsProjectUserAPI,
         "/api/v2/projects/<int:project_id>/statistics/user/<string:username>",
@@ -396,13 +475,6 @@ def add_api_endpoints(app):
         UserSetExpertMode,
         "/api/v2/users/<string:username>/actions/set-expert-mode/<string:is_expert>",
     )
-    api.add_resource(
-        UserMappedProjects, "/api/v2/projects/queries/<string:username>/touched"
-    )
-    api.add_resource(
-        UserInvalidatedTasks,
-        "/api/v2/projects/<int:project_id>/tasks/queries/own/invalidated",
-    )
     api.add_resource(UserOSMAPI, "/api/v2/users/<string:username>/openstreetmap")
     api.add_resource(
         UserSetRole, "/api/v2/users/<string:username>/actions/set-role/<string:role>"
@@ -415,11 +487,5 @@ def add_api_endpoints(app):
     )
     api.add_resource(UserIdAPI, "/api/v2/users/<int:userid>")
     api.add_resource(UserContributionsAPI, "/api/v2/users/<int:userid>/contributions")
-    api.add_resource(
-        IntersectingTilesAPI, "/api/v2/projects/<int:project_id>/tasks/queries/aoi"
-    )
-    api.add_resource(
-        SplitTaskAPI,
-        "/api/v2/projects/<int:project_id>/tasks/<int:task_id>/actions/split",
-    )
+
     api.add_resource(LanguagesAPI, "/api/v2/system/languages")
