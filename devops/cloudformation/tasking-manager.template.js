@@ -112,7 +112,7 @@ const Resources = {
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
-      AvailabilityZones: cf.getAzs(cf.region)
+      AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f']
     },
     UpdatePolicy: {
       AutoScalingRollingUpdate: {
