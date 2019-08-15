@@ -4,30 +4,15 @@ from distutils.util import strtobool
 from flask import send_file, Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-from flask_restful import Resource, current_app, request
-from schematics.exceptions import DataError
 
 from server.models.dtos.grid_dto import GridDTO
 from server.services.grid.grid_service import GridService
 from server.services.project_admin_service import InvalidGeoJson
-from server.services.users.authentication_service import token_auth, tm
-
-
-from server.models.dtos.mapping_dto import (
-    MappedTaskDTO,
-    LockTaskDTO,
-    StopMappingTaskDTO,
-    TaskCommentDTO,
-)
-from server.services.mapping_service import (
-    MappingService,
-    MappingServiceError,
-    NotFound,
-    UserLicenseError,
-)
-from server.services.project_service import ProjectService, ProjectServiceError
 from server.services.users.authentication_service import token_auth, tm, verify_token
-from server.services.users.user_service import UserService
+from server.services.validator_service import ValidatorService
+
+from server.services.mapping_service import MappingService, NotFound
+from server.services.project_service import ProjectService, ProjectServiceError
 
 
 class TasksRestAPI(Resource):
@@ -165,21 +150,21 @@ class TasksQueriesXmlAPI(Resource):
             - application/xml
         parameters:
             - name: project_id
-                in: path
-                description: The ID of the project the task is associated with
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
             - in: query
-                name: tasks
-                type: string
-                description: List of tasks; leave blank to retrieve all
-                default: 1,2
+              name: tasks
+              type: string
+              description: List of tasks; leave blank to retrieve all
+              default: 1,2
             - in: query
-                name: as_file
-                type: boolean
-                description: Set to true if file download preferred
-                default: False
+              name: as_file
+              type: boolean
+              description: Set to true if file download preferred
+              default: False
         responses:
             200:
                 description: OSM XML
@@ -231,21 +216,21 @@ class TasksQueriesGpxAPI(Resource):
             - application/xml
         parameters:
             - name: project_id
-                in: path
-                description: The ID of the project the task is associated with
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
             - in: query
-                name: tasks
-                type: string
-                description: List of tasks; leave blank for all
-                default: 1,2
+              name: tasks
+              type: string
+              description: List of tasks; leave blank for all
+              default: 1,2
             - in: query
-                name: as_file
-                type: boolean
-                description: Set to true if file download preferred
-                default: False
+              name: as_file
+              type: boolean
+              description: Set to true if file download preferred
+              default: False
         responses:
             200:
                 description: GPX XML
@@ -286,7 +271,7 @@ class TasksQueriesGpxAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-            
+
 class TasksQueriesAoiAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
@@ -300,16 +285,16 @@ class TasksQueriesAoiAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: body
-                name: body
-                required: true
-                description: JSON object containing aoi and tasks and bool flag for controlling clip grid to aoi
-                schema:
+              name: body
+              required: true
+              description: JSON object containing aoi and tasks and bool flag for controlling clip grid to aoi
+              schema:
                     properties:
                         clipToAoi:
                         type: boolean
@@ -375,17 +360,17 @@ class TasksQueriesOwnLockedAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The ID of the project the task is associated with
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: Task user is working on
@@ -422,23 +407,23 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: header
-                name: Accept-Language
-                description: Language user is requesting
-                type: string
-                required: true
-                default: en
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
-                in: path
-                description: The ID of the project the task is associated with
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: Task user is working on
