@@ -20,6 +20,18 @@ export default defineMessages({
     id: 'header.nav.helpLink',
     defaultMessage: 'Help'
   },
+  myProjects: {
+    id: 'header.nav.myProjects',
+    defaultMessage: 'My projects'
+  },
+  myTasks: {
+    id: 'header.nav.myTasks',
+    defaultMessage: 'My tasks'
+  },
+  statsBadges: {
+    id: 'header.nav.statsBadges',
+    defaultMessage: 'Stats & Badges'
+  },
   language: {
     id: 'header.buttons.languageSelector',
     defaultMessage: 'Language'
