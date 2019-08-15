@@ -1,11 +1,21 @@
 import React from 'react';
-import { redirectTo } from "@reach/router";
-import { API_URL } from '../config';
+
+import { AuthButtons } from '../components/header';
 
 
 export class Login extends React.Component {
-  componentDidMount() {
-    let loginUrl = API_URL + 'auth/login';
-    redirectTo(loginUrl);
+  render() {
+    return (
+      <div className="cf w-100 pv5">
+        <div className="tc">
+          <AuthButtons
+            aStyle="mh1 v-mid dn dib-ns"
+            logInStyle="blue-dark bg-white"
+            signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
+          />
+        </div>
+      </div>
+
+    );
   }
 }

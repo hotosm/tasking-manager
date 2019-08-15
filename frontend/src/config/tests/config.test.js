@@ -34,3 +34,12 @@ it('exports ORG_GITHUB', () => {
 it('exports DEFAULT locale to be english', () => {
   expect(config.DEFAULT_LOCALE).toBe('en');
 });
+it('exports PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD', () => {
+  expect(typeof(config.PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD)).toBe('number');
+});
+it('exports INTERMEDIATE_LEVEL_COUNT', () => {
+  expect(typeof(config.INTERMEDIATE_LEVEL_COUNT)).toBe('number');
+});
+it('exports ADVANCED_LEVEL_COUNT', () => {
+  expect(typeof(config.ADVANCED_LEVEL_COUNT)).toBe('number');
+});

@@ -20,5 +20,17 @@ export default defineMessages({
   learn: {
     id: 'footer.learn',
     defaultMessage: 'Learn more about OpenStreetMap.'
-  }
+  },
+  mappingLevelADVANCED: {
+    id: 'mapping.level.advanced',
+    defaultMessage: 'Advanced'
+  },
+  mappingLevelINTERMEDIATE: {
+    id: 'mapping.level.intermediate',
+    defaultMessage: 'Intermediate'
+  },
+  mappingLevelBEGINNER: {
+    id: 'mapping.level.beginner',
+    defaultMessage: 'Beginner'
+  },
 });
