@@ -42,3 +42,43 @@ class ProjectsStatisticsAPI(Resource):
             error_msg = f"Project Summary GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class ProjectsStatisticsQueriesUsernameAPI(Resource):
+    def get(self, project_id, username):
+        """
+        Get detailed stats about user
+        ---
+        tags:
+          - projects
+        produces:
+          - application/json
+        parameters:
+            - name: project_id
+              in: path
+              required: true
+              type: integer
+              default: 1
+            - name: username
+              in: path
+              description: The users username
+              required: true
+              type: string
+              default: Thinkwhere
+        responses:
+            200:
+                description: User found
+            404:
+                description: User not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            stats_dto = ProjectService.get_project_user_stats(project_id, username)
+            return stats_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except Exception as e:
+            error_msg = f"User GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

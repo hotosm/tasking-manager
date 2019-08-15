@@ -33,7 +33,7 @@ class TasksActionsMappingLockAPI(Resource):
         Locks the task for mapping
         ---
         tags:
-            - mapping
+            - tasks
         produces:
             - application/json
         parameters:
@@ -111,7 +111,7 @@ class TasksActionsMappingStopAPI(Resource):
         Unlock task that is locked for mapping resetting it to it's last status
         ---
         tags:
-            - mapping
+            - tasks
         produces:
             - application/json
         parameters:
@@ -196,7 +196,7 @@ class TasksActionsMappingUnlockAPI(Resource):
         Unlocks the task after mapping completed
         ---
         tags:
-            - mapping
+            - tasks
         produces:
             - application/json
         parameters:
@@ -283,7 +283,7 @@ class TasksActionsMappingUndoAPI(Resource):
         Get task for mapping
         ---
         tags:
-            - mapping
+            - tasks
         produces:
             - application/json
         parameters:
@@ -345,7 +345,7 @@ class TasksActionsValidationLockAPI(Resource):
         Lock tasks for validation
         ---
         tags:
-            - validation
+            - tasks
         produces:
             - application/json
         parameters:
@@ -428,7 +428,7 @@ class TasksActionsValidatioStopAPI(Resource):
         Unlock tasks that are locked for validation resetting them to their last status
         ---
         tags:
-            - validation
+            - tasks
         produces:
             - application/json
         parameters:
@@ -506,7 +506,7 @@ class TasksActionsValidationUnlockAPI(Resource):
         Unlocks tasks after validation completed
         ---
         tags:
-            - validation
+            - tasks
         produces:
             - application/json
         parameters:
@@ -584,7 +584,7 @@ class ProjectValidateAll(Resource):
         Validate all mapped tasks on a project
         ---
         tags:
-            - project admin
+            - tasks
         produces:
             - application/json
         parameters:
@@ -625,7 +625,7 @@ class ProjectInvalidateAll(Resource):
         Invalidate all mapped tasks on a project
         ---
         tags:
-            - project admin
+            - tasks
         produces:
             - application/json
         parameters:
@@ -666,7 +666,7 @@ class ProjectResetBadImagery(Resource):
         Mark all bad imagery tasks ready for mapping
         ---
         tags:
-            - project admin
+            - tasks
         produces:
             - application/json
         parameters:
@@ -707,7 +707,7 @@ class ProjectResetAll(Resource):
         Reset all tasks on project back to ready, preserving history.
         ---
         tags:
-            - project admin
+            - tasks
         produces:
             - application/json
         parameters:
@@ -748,7 +748,7 @@ class TasksActionsMapAllAPI(Resource):
         Map all tasks on a project
         ---
         tags:
-            - project admin
+            - tasks
         produces:
             - application/json
         parameters:
@@ -789,7 +789,7 @@ class TasksActionsValidateAllAPI(Resource):
         Validate all mapped tasks on a project
         ---
         tags:
-            - project admin
+            - tasks
         produces:
             - application/json
         parameters:
@@ -830,7 +830,7 @@ class TasksActionsInvalidateAllAPI(Resource):
         Invalidate all mapped tasks on a project
         ---
         tags:
-            - project admin
+            - tasks
         produces:
             - application/json
         parameters:
@@ -871,7 +871,7 @@ class TasksActionsResetBadImageryAllAPI(Resource):
         Mark all bad imagery tasks ready for mapping
         ---
         tags:
-            - project admin
+            - tasks
         produces:
             - application/json
         parameters:
@@ -912,7 +912,7 @@ class TasksActionsResetAllAPI(Resource):
         Reset all tasks on project back to ready, preserving history.
         ---
         tags:
-            - project admin
+            - tasks
         produces:
             - application/json
         parameters:
@@ -953,7 +953,7 @@ class TasksActionsSplitAPI(Resource):
         Split a task
         ---
         tags:
-            - grid
+            - tasks
         produces:
             - application/json
         parameters:

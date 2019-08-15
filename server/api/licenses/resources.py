@@ -7,7 +7,7 @@ from server.services.license_service import LicenseService
 from server.services.users.authentication_service import token_auth, tm
 
 
-class LicenseAPI(Resource):
+class LicensesRestAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
     def post(self):
@@ -208,7 +208,7 @@ class LicenseAPI(Resource):
             return {"error": error_msg}, 500
 
 
-class LicenceListAPI(Resource):
+class LicensesAllAPI(Resource):
     def get(self):
         """
         Get all imagery licenses

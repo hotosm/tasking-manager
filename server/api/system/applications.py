@@ -4,14 +4,14 @@ from server.services.application_service import ApplicationService, NotFound
 from server.services.users.authentication_service import token_auth, tm
 
 
-class ApplicationAPI(Resource):
+class SystemApplicationsRestAPI(Resource):
     @token_auth.login_required
     def get(self):
         """
         Gets application keys for a user
         ---
         tags:
-          - application
+          - system
         produces:
           - application/json
         parameters:
@@ -47,7 +47,7 @@ class ApplicationAPI(Resource):
         Creates an application key for the user
         ---
         tags:
-          - application
+          - system
         produces:
           - application/json
         parameters:
@@ -78,7 +78,7 @@ class ApplicationAPI(Resource):
         Checks the validity of an application key
         ---
         tags:
-          - application
+          - system
         produces:
           - application/json
         parameters:
@@ -113,7 +113,7 @@ class ApplicationAPI(Resource):
         Deletes an application key for a user
         ---
         tags:
-          - application
+          - system
         produces:
           - application/json
         parameters:

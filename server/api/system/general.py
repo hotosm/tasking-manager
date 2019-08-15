@@ -1,9 +1,10 @@
-from flask import current_app, jsonify
-from flask_restful import Resource
+from flask import jsonify
+from flask_restful import Resource, current_app
 from flask_swagger import swagger
+from server.services.settings_service import SettingsService
 
 
-class SwaggerDocsAPI(Resource):
+class SystemDocsAPI(Resource):
     """
     This Resource provides a simple endpoint for flask-swagger to generate the API docs,
     https://github.com/gangverk/flask-swagger
@@ -14,7 +15,7 @@ class SwaggerDocsAPI(Resource):
         Generates Swagger UI readable JSON
         ---
         tags:
-          - docs
+          - system
         definitions:
             - schema:
                 id: GeoJsonPolygon
@@ -107,8 +108,52 @@ class SwaggerDocsAPI(Resource):
 
         """
         swag = swagger(current_app)
-        swag["info"]["title"] = "Tasking Manager API"
+        swag["info"]["title"] = "Tasking Manager backend API"
         swag["info"]["description"] = "API endpoints for the backend"
-        swag["info"]["version"] = "0.0.1"
+        swag["info"]["version"] = "2.0.0"
 
         return jsonify(swag)
+
+
+class SystemHeartbeatAPI(Resource):
+    """
+    /api/health-check
+    """
+
+    def get(self):
+        """
+        Simple health-check, if this is unreachable load balancers should be configures to raise an alert
+        ---
+        tags:
+          - system
+        produces:
+          - application/json
+        responses:
+          200:
+            description: Service is Healthy
+        """
+        return {"status": "healthy"}, 200
+
+
+class SystemLanguagesAPI(Resource):
+    def get(self):
+        """
+        Gets all supported languages
+        ---
+        tags:
+          - system
+        produces:
+          - application/json
+        responses:
+            200:
+                description: Supported Languages
+            500:
+                description: Internal Server Error
+        """
+        try:
+            languages = SettingsService.get_settings()
+            return languages.to_primitive(), 200
+        except Exception as e:
+            error_msg = f"Languages GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500

@@ -79,27 +79,27 @@ class TasksRestAPI(Resource):
             return {"Error": error_msg}, 500
 
 
-class TasksAllAPI(Resource):
+class TasksQueriesJsonAPI(Resource):
     def get(self, project_id):
         """
-        Get all tasks of a specified project
+        Get tasks as JSON
         ---
         tags:
-            - tasks
+            - mapping
         produces:
             - application/json
         parameters:
             - name: project_id
-                in: path
-                description: The ID of the project the task is associated with
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
             - in: query
-                name: as_file
-                type: boolean
-                description: Set to true if file download preferred
-                default: True
+              name: as_file
+              type: boolean
+              description: Set to true if file download preferred
+              default: True
         responses:
             200:
                 description: Project found
@@ -211,7 +211,7 @@ class TasksQueriesGpxAPI(Resource):
         Get tasks as GPX
         ---
         tags:
-            - mapping
+            - tasks
         produces:
             - application/xml
         parameters:
@@ -280,7 +280,7 @@ class TasksQueriesAoiAPI(Resource):
         Gets the tiles intersecting the aoi
         ---
         tags:
-            - grid
+            - tasks
         produces:
             - application/json
         parameters:
@@ -295,32 +295,32 @@ class TasksQueriesAoiAPI(Resource):
               required: true
               description: JSON object containing aoi and tasks and bool flag for controlling clip grid to aoi
               schema:
-                    properties:
-                        clipToAoi:
+                  properties:
+                      clipToAoi:
                         type: boolean
                         default: true
-                        areaOfInterest:
-                            schema:
-                                properties:
-                                    type:
-                                        type: string
-                                        default: FeatureCollection
-                                    features:
-                                        type: array
-                                        items:
-                                            schema:
-                                                $ref: "#/definitions/GeoJsonFeature"
-                        grid:
-                            schema:
-                                properties:
-                                    type:
-                                        type: string
-                                        default: FeatureCollection
-                                    features:
-                                        type: array
-                                        items:
-                                            schema:
-                                                $ref: "#/definitions/GeoJsonFeature"
+                      areaOfInterest:
+                          schema:
+                              properties:
+                                  type:
+                                      type: string
+                                      default: FeatureCollection
+                                  features:
+                                      type: array
+                                      items:
+                                          schema:
+                                              $ref: "#/definitions/GeoJsonFeature"
+                      grid:
+                          schema:
+                              properties:
+                                  type:
+                                      type: string
+                                      default: FeatureCollection
+                                  features:
+                                      type: array
+                                      items:
+                                          schema:
+                                              $ref: "#/definitions/GeoJsonFeature"
         responses:
             200:
                 description: Intersecting tasks found successfully
@@ -355,7 +355,7 @@ class TasksQueriesOwnLockedAPI(Resource):
         Gets any locked task on the project from logged in user
         ---
         tags:
-            - mapping
+            - tasks
         produces:
             - application/json
         parameters:
@@ -402,7 +402,7 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
         Gets details of any locked task on the project from logged in user
         ---
         tags:
-            - mapping
+            - tasks
         produces:
             - application/json
         parameters:
@@ -454,7 +454,7 @@ class TasksQueriesOwnMappedAPI(Resource):
         Get mapped tasks grouped by user
         ---
         tags:
-            - validation
+            - tasks
         produces:
             - application/json
         parameters:
@@ -491,7 +491,7 @@ class TasksQueriesOwnInvalidatedAPI(Resource):
         Get invalidated tasks either mapped by user or invalidated by user
         ---
         tags:
-            - validation
+            - tasks
         produces:
             - application/json
         parameters:

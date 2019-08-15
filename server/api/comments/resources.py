@@ -18,7 +18,7 @@ class CommentsProjectsRestAPI(Resource):
         Add a message to project chat
         ---
         tags:
-          - messaging
+          - comments
         produces:
           - application/json
         parameters:
@@ -77,7 +77,7 @@ class CommentsProjectsRestAPI(Resource):
         Get all chat messages for project
         ---
         tags:
-          - messaging
+          - comments
         produces:
           - application/json
         parameters:
@@ -120,7 +120,7 @@ class CommentsTasksRestAPI(Resource):
         Adds a comment to the task outside of mapping/validation
         ---
         tags:
-            - mapping
+            - comments
         produces:
             - application/json
         parameters:
@@ -195,7 +195,7 @@ class CommentsTasksRestAPI(Resource):
         Gets comments for a task
         ---
         tags:
-            - mapping
+            - comments
         produces:
             - application/json
         parameters:
