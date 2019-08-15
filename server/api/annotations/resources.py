@@ -1,27 +1,10 @@
-import geojson
-import io
-from flask import send_file
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
-from distutils.util import strtobool
-from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDTO
 from server.models.postgis.task import Task
 from server.models.postgis.task_annotation import TaskAnnotation
-from server.services.project_search_service import (
-    ProjectSearchService,
-    ProjectSearchServiceError,
-    BBoxTooBigError,
-)
-from server.services.project_service import (
-    ProjectService,
-    ProjectServiceError,
-    NotFound,
-)
-from server.services.users.user_service import UserService
-from server.services.users.authentication_service import token_auth, tm, verify_token
+from server.services.project_service import ProjectService, NotFound
 from server.services.task_annotations_service import TaskAnnotationsService
 from server.services.application_service import ApplicationService
-
 
 
 class AnnotationsRestAPI(Resource):

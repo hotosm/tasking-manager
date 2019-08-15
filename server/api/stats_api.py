@@ -1,4 +1,4 @@
-from flask_restful import Resource, current_app, request
+from flask_restful import Resource, current_app
 from server.services.stats_service import StatsService, NotFound
 from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService
@@ -36,6 +36,7 @@ class StatsContributionsByDayAPI(Resource):
             error_msg = f"Project contributions GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
 
 class HomePageStatsAPI(Resource):
     def get(self):

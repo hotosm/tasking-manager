@@ -2,9 +2,11 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
 from server.models.dtos.message_dto import ChatMessageDTO
+from server.models.dtos.mapping_dto import TaskCommentDTO
 from server.models.postgis.utils import NotFound
 from server.services.messaging.chat_service import ChatService
 from server.services.users.user_service import UserService
+from server.services.mapping_service import MappingService, MappingServiceError
 from server.services.users.authentication_service import token_auth, tm
 
 
@@ -123,35 +125,35 @@ class CommentsTasksRestAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The ID of the project the task is associated with
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
             - name: task_id
-                in: path
-                description: The unique task ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique task ID
+              required: true
+              type: integer
+              default: 1
             - in: body
-                name: body
-                required: true
-                description: JSON object representing the comment
-                schema:
-                    id: TaskComment
-                    required:
-                        - comment
-                    properties:
-                        comment:
-                            type: string
-                            description: user comment about the task
+              name: body
+              required: true
+              description: JSON object representing the comment
+              schema:
+                id: TaskComment
+                required:
+                    - comment
+                properties:
+                    comment:
+                        type: string
+                        description: user comment about the task
         responses:
             200:
                 description: Comment added
@@ -198,35 +200,35 @@ class CommentsTasksRestAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The ID of the project the task is associated with
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
             - name: task_id
-                in: path
-                description: The unique task ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique task ID
+              required: true
+              type: integer
+              default: 1
             - in: body
-                name: body
-                required: true
-                description: JSON object representing the comment
-                schema:
-                    id: TaskComment
-                    required:
-                        - comment
-                    properties:
-                        comment:
-                            type: string
-                            description: user comment about the task
+              name: body
+              required: true
+              description: JSON object representing the comment
+              schema:
+                id: TaskComment
+                required:
+                    - comment
+                properties:
+                    comment:
+                        type: string
+                        description: user comment about the task
         responses:
             200:
                 description: Comment retrieved
@@ -264,4 +266,3 @@ class CommentsTasksRestAPI(Resource):
             error_msg = f"Task Comment API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
-        

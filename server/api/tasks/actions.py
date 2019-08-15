@@ -4,22 +4,25 @@ from schematics.exceptions import DataError
 from server.models.dtos.grid_dto import SplitTaskDTO
 from server.models.postgis.utils import NotFound
 from server.services.grid.split_service import SplitService, SplitServiceError
+from server.services.users.user_service import UserService
+from server.services.project_admin_service import ProjectAdminService
 from server.services.users.authentication_service import token_auth, tm
-from flask_restful import Resource, current_app, request
-from schematics.exceptions import DataError
-
 from server.models.dtos.validator_dto import (
     LockForValidationDTO,
     UnlockAfterValidationDTO,
     StopValidationDTO,
 )
-from server.services.users.authentication_service import token_auth, tm
 from server.services.validator_service import (
     ValidatorService,
-    NotFound,
     ValidatatorServiceError,
     UserLicenseError,
 )
+from server.models.dtos.mapping_dto import (
+    LockTaskDTO,
+    StopMappingTaskDTO,
+    MappedTaskDTO,
+)
+from server.services.mapping_service import MappingService, MappingServiceError
 
 
 class TasksActionsMappingLockAPI(Resource):
@@ -285,29 +288,29 @@ class TasksActionsMappingUndoAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: header
-                name: Accept-Language
-                description: Language user is requesting
-                type: string
-                required: true
-                default: en
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
-                in: path
-                description: The ID of the project the task is associated with
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
             - name: task_id
-                in: path
-                description: The unique task ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique task ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: Task found
@@ -627,17 +630,17 @@ class ProjectInvalidateAll(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: All mapped tasks invalidated
@@ -653,7 +656,8 @@ class ProjectInvalidateAll(Resource):
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
-        
+
+
 class ProjectResetBadImagery(Resource):
     @tm.pm_only()
     @token_auth.login_required
@@ -708,17 +712,17 @@ class ProjectResetAll(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: All tasks reset
@@ -749,17 +753,17 @@ class TasksActionsMapAllAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: All tasks mapped
@@ -790,17 +794,17 @@ class TasksActionsValidateAllAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: All mapped tasks validated
@@ -831,17 +835,17 @@ class TasksActionsInvalidateAllAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: All mapped tasks invalidated
@@ -872,17 +876,17 @@ class TasksActionsResetBadImageryAllAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: All bad imagery tasks marked ready for mapping
@@ -913,17 +917,17 @@ class TasksActionsResetAllAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: All tasks reset
@@ -940,7 +944,6 @@ class TasksActionsResetAllAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
-        
 
 class TasksActionsSplitAPI(Resource):
     @tm.pm_only(False)
@@ -955,29 +958,29 @@ class TasksActionsSplitAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: header
-                name: Accept-Language
-                description: Language user is requesting
-                type: string
-                required: true
-                default: en
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
-                in: path
-                description: The ID of the project the task is associated with
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The ID of the project the task is associated with
+              required: true
+              type: integer
+              default: 1
             - name: task_id
-                in: path
-                description: The unique task ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique task ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: Task split OK
@@ -1015,5 +1018,3 @@ class TasksActionsSplitAPI(Resource):
             error_msg = f"Task Split API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
-
-        
