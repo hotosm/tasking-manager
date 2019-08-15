@@ -7,13 +7,13 @@ from server.services.mapping_issues_service import MappingIssueCategoryService
 from server.services.users.authentication_service import token_auth, tm
 
 
-class MappingIssueCategoryAPI(Resource):
+class IssuesRestAPI(Resource):
     def get(self, category_id):
         """
         Get specified mapping-issue category
         ---
         tags:
-            - mapping issues
+            - issues
         produces:
             - application/json
         parameters:
@@ -48,7 +48,7 @@ class MappingIssueCategoryAPI(Resource):
         Update an existing mapping-issue category
         ---
         tags:
-            - mapping issues
+            - issues
         produces:
             - application/json
         parameters:
@@ -114,7 +114,7 @@ class MappingIssueCategoryAPI(Resource):
         category with its archived flag set to true.
         ---
         tags:
-            - mapping issues
+            - issues
         produces:
             - application/json
         parameters:
@@ -151,13 +151,13 @@ class MappingIssueCategoryAPI(Resource):
             return {"error": error_msg}, 500
 
 
-class MappingIssueCategoriesAPI(Resource):
+class IssuesAllAPI(Resource):
     def get(self):
         """
         Gets all mapping issue categories
         ---
         tags:
-            - mapping issues
+            - issues
         produces:
             - application/json
         parameters:
@@ -190,7 +190,7 @@ class MappingIssueCategoriesAPI(Resource):
         Creates a new mapping-issue category
         ---
         tags:
-            - mapping issues
+            - issues
         produces:
             - application/json
         parameters:

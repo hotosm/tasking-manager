@@ -18,13 +18,13 @@ def get_oauth_token():
         return resp["oauth_token"], resp["oauth_token_secret"]
 
 
-class LoginAPI(Resource):
+class SystemAuthenticationLoginAPI(Resource):
     def get(self):
         """
         Redirects user to OSM to authenticate
         ---
         tags:
-          - authentication
+          - system
         produces:
           - application/json
         parameters:
@@ -48,13 +48,13 @@ class LoginAPI(Resource):
         )
 
 
-class OAuthAPI(Resource):
+class SystemAuthenticationCallbackAPI(Resource):
     def get(self):
         """
         Handles the OSM OAuth callback
         ---
         tags:
-          - authentication
+          - system
         produces:
           - application/json
         responses:
@@ -94,13 +94,13 @@ class OAuthAPI(Resource):
             return {"Error": str(e)}, 500
 
 
-class AuthEmailAPI(Resource):
+class SystemAuthenticationEmailAPI(Resource):
     def get(self):
         """
         Authenticates user owns email address
         ---
         tags:
-          - authentication
+          - system
         produces:
           - application/json
         parameters:
