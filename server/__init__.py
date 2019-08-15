@@ -143,7 +143,7 @@ def add_api_endpoints(app):
     )
 
     # Tasks API import
-    from server.api.projects.resources import (
+    from server.api.tasks.resources import (
         TasksRestAPI,
         TasksAllAPI,
         TasksQueriesXmlAPI,
@@ -154,7 +154,7 @@ def add_api_endpoints(app):
         TasksQueriesOwnMappedAPI,
         TasksQueriesOwnInvalidatedAPI,
     )
-    from server.api.projects.actions import (
+    from server.api.tasks.actions import (
         TasksActionsMappingLockAPI,
         TasksActionsMappingStopAPI,
         TasksActionsMappingUnlockAPI,
@@ -176,9 +176,7 @@ def add_api_endpoints(app):
     )
 
     # Annotations API import
-    from server.api.annotations import (
-        AnnotationsRestAPI,
-    )
+    from server.api.annotations.resources import AnnotationsRestAPI
 
     # Old stuff
     from server.api.application_apis import ApplicationAPI
@@ -220,12 +218,10 @@ def add_api_endpoints(app):
     )
     from server.api.settings_apis import LanguagesAPI
 
-
     # Projects REST endpoint
     api.add_resource(ProjectsAllAPI, "/api/v2/projects", methods=["GET"])
     api.add_resource(
-        ProjectsRestAPI,
-        "/api/v2/projects", endpoint="create_project", methods=["POST"]
+        ProjectsRestAPI, "/api/v2/projects", endpoint="create_project", methods=["POST"]
     )
     api.add_resource(
         ProjectsRestAPI,
@@ -234,47 +230,35 @@ def add_api_endpoints(app):
     )
 
     # Projects queries endoints (TODO: Refactor them into the REST endpoints)
+    api.add_resource(ProjectsQueriesBboxAPI, "/api/v2/projects/queries/bbox")
+    api.add_resource(ProjectsQueriesOwnerAPI, "/api/v2/projects/queries/myself/owner")
     api.add_resource(
-        ProjectsQueriesBboxAPI,
-        "/api/v2/projects/queries/bbox",
+        ProjectsQueriesTouchedAPI, "/api/v2/projects/queries/<string:username>/touched"
     )
     api.add_resource(
-        ProjectsQueriesOwnerAPI,
-        "/api/v2/projects/queries/myself/owner",
-    )
-    api.add_resource(
-        ProjectsQueriesTouchedAPI,
-        "/api/v2/projects/queries/<string:username>/touched",
-    )
-    api.add_resource(
-        ProjectsQueriesSummaryAPI,
-        "/api/v2/projects/<int:project_id>/queries/summary"
+        ProjectsQueriesSummaryAPI, "/api/v2/projects/<int:project_id>/queries/summary"
     )
     api.add_resource(
         ProjectsQueriesNoGeometriesAPI,
-        "/api/v2/projects/<int:project_id>/queries/nogeometries"
+        "/api/v2/projects/<int:project_id>/queries/nogeometries",
     )
     api.add_resource(
-        ProjectsQueriesNoTasksAPI,
-        "/api/v2/projects/<int:project_id>/queries/notasks",
+        ProjectsQueriesNoTasksAPI, "/api/v2/projects/<int:project_id>/queries/notasks"
     )
     api.add_resource(
-        ProjectsQueriesAoiAPI,
-        "/api/v2/projects/<int:project_id>/queries/aoi",
+        ProjectsQueriesAoiAPI, "/api/v2/projects/<int:project_id>/queries/aoi"
     )
 
     # Projects' addtional resources
     api.add_resource(
-        ProjectsActivitiesAPI,
-        "/api/v2/projects/<int:project_id>/activities"
+        ProjectsActivitiesAPI, "/api/v2/projects/<int:project_id>/activities"
     )
     api.add_resource(
-        ProjectsContributionsAPI,
-        "/api/v2/projects/<int:project_id>/contributions"
+        ProjectsContributionsAPI, "/api/v2/projects/<int:project_id>/contributions"
     )
     api.add_resource(
-        ProjectsStatisticsAPI,
-        "/api/v2/projects/<int:project_id>/statistics")
+        ProjectsStatisticsAPI, "/api/v2/projects/<int:project_id>/statistics"
+    )
 
     # Projects actions endoints
     api.add_resource(
@@ -283,31 +267,24 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         ProjectsActionsTransferAPI,
-        "/api/v2/projects/<int:project_id>/actions/transfer-ownership"
+        "/api/v2/projects/<int:project_id>/actions/transfer-ownership",
     )
 
     # Tasks REST endpoint
+    api.add_resource(TasksAllAPI, "/api/v2/projects/<int:project_id>/tasks")
     api.add_resource(
-        TasksAllAPI,
-        "/api/v2/projects/<int:project_id>/tasks",
-    )
-    api.add_resource(
-        TasksRestAPI,
-        "/api/v2/projects/<int:project_id>/tasks/<int:task_id>"
+        TasksRestAPI, "/api/v2/projects/<int:project_id>/tasks/<int:task_id>"
     )
 
     # Tasks queries endoints (TODO: Refactor them into the REST endpoints)
     api.add_resource(
-        TasksQueriesXmlAPI,
-        "/api/v2/projects/<int:project_id>/tasks/queries/xml"
+        TasksQueriesXmlAPI, "/api/v2/projects/<int:project_id>/tasks/queries/xml"
     )
     api.add_resource(
-        TasksQueriesGpxAPI,
-        "/api/v2/projects/<int:project_id>/tasks/queries/gpx",
+        TasksQueriesGpxAPI, "/api/v2/projects/<int:project_id>/tasks/queries/gpx"
     )
     api.add_resource(
-        TasksQueriesAoiAPI,
-        "/api/v2/projects/<int:project_id>/tasks/queries/aoi"
+        TasksQueriesAoiAPI, "/api/v2/projects/<int:project_id>/tasks/queries/aoi"
     )
     api.add_resource(
         TasksQueriesOwnLockedAPI,
@@ -319,7 +296,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksQueriesOwnMappedAPI,
-        "/api/v2/projects/<int:project_id>/tasks/queries/own/mapped"
+        "/api/v2/projects/<int:project_id>/tasks/queries/own/mapped",
     )
     api.add_resource(
         TasksQueriesOwnInvalidatedAPI,
@@ -371,7 +348,8 @@ def add_api_endpoints(app):
         "/api/v2/projects/<int:project_id>/tasks/actions/reset-all-badimagery",
     )
     api.add_resource(
-        TasksActionsResetAllAPI, "/api/v2/projects/<int:project_id>/tasks/actions/reset-all"
+        TasksActionsResetAllAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/reset-all",
     )
     api.add_resource(
         TasksActionsSplitAPI,
@@ -440,7 +418,6 @@ def add_api_endpoints(app):
     api.add_resource(
         ResendEmailValidationAPI, "/api/v2/messages/resend-email-verification"
     )
-
 
     api.add_resource(
         StatsContributionsByDayAPI,

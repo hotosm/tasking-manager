@@ -3,21 +3,13 @@ import threading
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
-from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO
 from server.models.dtos.message_dto import MessageDTO
-from server.services.project_admin_service import (
-    ProjectAdminService,
-    NotFound,
-)
-from server.services.messaging.message_service import (
-    MessageService,
-    NotFound,
-    MessageServiceError,
-)
+from server.services.project_admin_service import ProjectAdminService
+from server.services.messaging.message_service import MessageService
 from server.services.users.authentication_service import token_auth, tm
 
 
-class ProjectTransfer(Resource):
+class ProjectsActionsTransferAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
@@ -82,31 +74,31 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
             - in: body
-                name: body
-                required: true
-                description: JSON object for creating draft project
-                schema:
-                    properties:
-                        subject:
-                            type: string
-                            default: Thanks
-                            required: true
-                        message:
-                            type: string
-                            default: Thanks for your contribution
-                            required: true
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                properties:
+                    subject:
+                        type: string
+                        default: Thanks
+                        required: true
+                    message:
+                        type: string
+                        default: Thanks for your contribution
+                        required: true
         responses:
             200:
                 description: All mapped tasks validated

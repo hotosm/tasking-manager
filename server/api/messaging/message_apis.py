@@ -1,15 +1,11 @@
-import threading
-
 from flask_restful import Resource, request, current_app
-from schematics.exceptions import DataError
-
-from server.models.dtos.message_dto import MessageDTO
 from server.services.messaging.message_service import (
     MessageService,
     NotFound,
     MessageServiceError,
 )
 from server.services.users.authentication_service import token_auth, tm
+
 
 class HasNewMessages(Resource):
     @tm.pm_only(False)

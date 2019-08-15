@@ -4,9 +4,12 @@ from flask import send_file
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from distutils.util import strtobool
-from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDTO
-from server.models.postgis.task import Task
-from server.models.postgis.task_annotation import TaskAnnotation
+from server.models.dtos.project_dto import (
+    DraftProjectDTO,
+    ProjectDTO,
+    ProjectSearchDTO,
+    ProjectSearchBBoxDTO,
+)
 from server.services.project_search_service import (
     ProjectSearchService,
     ProjectSearchServiceError,
@@ -19,8 +22,12 @@ from server.services.project_service import (
 )
 from server.services.users.user_service import UserService
 from server.services.users.authentication_service import token_auth, tm, verify_token
-from server.services.task_annotations_service import TaskAnnotationsService
-from server.services.application_service import ApplicationService
+from server.services.project_admin_service import (
+    ProjectAdminService,
+    ProjectAdminServiceError,
+    InvalidGeoJson,
+    InvalidData,
+)
 
 
 class ProjectsRestAPI(Resource):
@@ -106,7 +113,6 @@ class ProjectsRestAPI(Resource):
             except Exception as e:
                 current_app.logger.critical(str(e))
 
-
     @tm.pm_only()
     @token_auth.login_required
     def post(self):
@@ -119,35 +125,35 @@ class ProjectsRestAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: body
-                name: body
-                required: true
-                description: JSON object for creating draft project
-                schema:
-                    properties:
-                        cloneFromProjectId:
-                            type: int
-                            default: 1
-                            description: Specify this value if you want to clone a project, otherwise avoid information
-                        projectName:
-                            type: string
-                            default: HOT Project
-                        areaOfInterest:
-                            schema:
-                                properties:
-                                    type:
-                                        type: string
-                                        default: FeatureCollection
-                                    features:
-                                        type: array
-                                        items:
-                                            schema:
-                                                $ref: "#/definitions/GeoJsonFeature"
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                properties:
+                    cloneFromProjectId:
+                        type: int
+                        default: 1
+                        description: Specify this value if you want to clone a project, otherwise avoid information
+                    projectName:
+                        type: string
+                        default: HOT Project
+                    areaOfInterest:
+                        schema:
+                            properties:
+                                type:
+                                    type: string
+                                    default: FeatureCollection
+                                features:
+                                    type: array
+                                    items:
+                                        schema:
+                                            $ref: "#/definitions/GeoJsonFeature"
                         tasks:
                             schema:
                                 properties:
@@ -204,17 +210,17 @@ class ProjectsRestAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: Project found
@@ -247,105 +253,105 @@ class ProjectsRestAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
             - in: body
-                name: body
-                required: true
-                description: JSON object for creating draft project
-                schema:
-                    properties:
-                        projectStatus:
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                properties:
+                    projectStatus:
+                        type: string
+                        default: DRAFT
+                    projectPriority:
+                        type: string
+                        default: MEDIUM
+                    defaultLocale:
+                        type: string
+                        default: en
+                    mapperLevel:
+                        type: string
+                        default: BEGINNER
+                    enforceMapperLevel:
+                        type: boolean
+                        default: false
+                    enforceValidatorRole:
+                        type: boolean
+                        default: false
+                    allowNonBeginners:
+                        type: boolean
+                        default: false
+                    private:
+                        type: boolean
+                        default: false
+                    changesetComment:
+                        type: string
+                        default: hotosm-project-1
+                    entitiesToMap:
+                        type: string
+                        default: Buildings only
+                    dueDate:
+                        type: date
+                        default: "2017-04-11T12:38:49"
+                    imagery:
+                        type: string
+                        default: http//www.bing.com/maps/
+                    josmPreset:
+                        type: string
+                        default: josm preset goes here
+                    mappingTypes:
+                        type: array
+                        items:
                             type: string
-                            default: DRAFT
-                        projectPriority:
+                        default: [BUILDINGS, ROADS]
+                    mappingEditors:
+                        type: array
+                        items:
                             type: string
-                            default: MEDIUM
-                        defaultLocale:
+                        default: [ID, JOSM, POTLATCH_2, FIELD_PAPERS]
+                    validationEditors:
+                        type: array
+                        items:
                             type: string
-                            default: en
-                        mapperLevel:
+                        default: [ID, JOSM, POTLATCH_2, FIELD_PAPERS]
+                    campaignTag:
+                        type: string
+                        default: malaria
+                    organisationTag:
+                        type: string
+                        default: red cross
+                    licenseId:
+                        type: integer
+                        default: 1
+                        description: Id of imagery license associated with the project
+                    allowedUsernames:
+                        type: array
+                        items:
                             type: string
-                            default: BEGINNER
-                        enforceMapperLevel:
-                            type: boolean
-                            default: false
-                        enforceValidatorRole:
-                            type: boolean
-                            default: false
-                        allowNonBeginners:
-                            type: boolean
-                            default: false
-                        private:
-                            type: boolean
-                            default: false
-                        changesetComment:
-                            type: string
-                            default: hotosm-project-1
-                        entitiesToMap:
-                            type: string
-                            default: Buildings only
-                        dueDate:
-                            type: date
-                            default: "2017-04-11T12:38:49"
-                        imagery:
-                            type: string
-                            default: http//www.bing.com/maps/
-                        josmPreset:
-                            type: string
-                            default: josm preset goes here
-                        mappingTypes:
-                            type: array
-                            items:
-                                type: string
-                            default: [BUILDINGS, ROADS]
-                        mappingEditors:
-                            type: array
-                            items:
-                                type: string
-                            default: [ID, JOSM, POTLATCH_2, FIELD_PAPERS]
-                        validationEditors:
-                            type: array
-                            items:
-                                type: string
-                            default: [ID, JOSM, POTLATCH_2, FIELD_PAPERS]
-                        campaignTag:
-                            type: string
-                            default: malaria
-                        organisationTag:
-                            type: string
-                            default: red cross
-                        licenseId:
-                            type: integer
-                            default: 1
-                            description: Id of imagery license associated with the project
-                        allowedUsernames:
-                            type: array
-                            items:
-                                type: string
-                            default: ["Iain Hunter", LindaA1]
-                        priorityAreas:
-                            type: array
-                            items:
-                                schema:
-                                    $ref: "#/definitions/GeoJsonPolygon"
-                        projectInfoLocales:
-                            type: array
-                            items:
-                                schema:
-                                    $ref: "#/definitions/ProjectInfo"
-                        taskCreationMode:
-                            type: integer
-                            default: GRID
+                        default: ["Iain Hunter", LindaA1]
+                    priorityAreas:
+                        type: array
+                        items:
+                            schema:
+                                $ref: "#/definitions/GeoJsonPolygon"
+                    projectInfoLocales:
+                        type: array
+                        items:
+                            schema:
+                                $ref: "#/definitions/ProjectInfo"
+                    taskCreationMode:
+                        type: integer
+                        default: GRID
         responses:
             200:
                 description: Project updated
@@ -392,17 +398,17 @@ class ProjectsRestAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: Project deleted
@@ -439,46 +445,46 @@ class ProjectsAllAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              default: Token sessionTokenHere==
             - in: header
-                name: Accept-Language
-                description: Language user is requesting
-                type: string
-                required: true
-                default: en
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - in: query
-                name: mapperLevel
-                type: string
-                default: BEGINNER
+              name: mapperLevel
+              type: string
+              default: BEGINNER
             - in: query
-                name: mappingTypes
-                type: string
-                default: ROADS,BUILDINGS
+              name: mappingTypes
+              type: string
+              default: ROADS,BUILDINGS
             - in: query
-                name: organisationTag
-                type: string
-                default: red cross
+              name: organisationTag
+              type: string
+              default: red cross
             - in: query
-                name: campaignTag
-                type: string
-                default: malaria
+              name: campaignTag
+              type: string
+              default: malaria
             - in: query
-                name: page
-                description: Page of results user requested
-                type: integer
-                default: 1
+              name: page
+              description: Page of results user requested
+              type: integer
+              default: 1
             - in: query
-                name: textSearch
-                description: text to search
-                type: string
-                default: serbia
+              name: textSearch
+              description: text to search
+              type: string
+              default: serbia
             - in: query
-                name: projectStatuses
-                description: Authenticated PMs can search for archived or draft statuses
-                type: string
+              name: projectStatuses
+              description: Authenticated PMs can search for archived or draft statuses
+              type: string
         responses:
             200:
                 description: Projects found
@@ -530,9 +536,9 @@ class ProjectsAllAPI(Resource):
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
-        
 
-class ProjectsQueriesBbox(Resource):
+
+class ProjectsQueriesBboxAPI(Resource):
     @tm.pm_only(True)
     @token_auth.login_required
     def get(self):
@@ -545,33 +551,33 @@ class ProjectsQueriesBbox(Resource):
             - application/json
         parameters:
             - in: header
-                name: Authorization
-                description: Base64 encoded session token
-                required: true
-                type: string
-                default: Token sessionTokenHere==
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: header
-                name: Accept-Language
-                description: Language user is requesting
-                type: string
-                required: true
-                default: en
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - in: query
-                name: bbox
-                description: comma separated list xmin, ymin, xmax, ymax
-                type: string
-                default: 34.404,-1.034, 34.717,-0.624
+              name: bbox
+              description: comma separated list xmin, ymin, xmax, ymax
+              type: string
+              default: 34.404,-1.034, 34.717,-0.624
             - in: query
-                name: srid
-                description: srid of bbox coords
-                type: integer
-                default: 4326
+              name: srid
+              description: srid of bbox coords
+              type: integer
+              default: 4326
             - in: query
-                name: createdByMe
-                description: limit to projects created by authenticated user
-                type: boolean
-                required: true
-                default: false
+              name: createdByMe
+              description: limit to projects created by authenticated user
+              type: boolean
+              required: true
+              default: false
 
         responses:
             200:
@@ -612,7 +618,7 @@ class ProjectsQueriesBbox(Resource):
             return {"error": error_msg}, 500
 
 
-class ProjectsQueriesOwner(Resource):
+class ProjectsQueriesOwnerAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
     def get(self):
@@ -659,7 +665,7 @@ class ProjectsQueriesOwner(Resource):
             return {"error": error_msg}, 500
 
 
-class ProjectsQueriesTouched(Resource):
+class ProjectsQueriesTouchedAPI(Resource):
     def get(self, username):
         """
         Gets projects user has mapped
@@ -716,17 +722,17 @@ class ProjectsQueriesSummaryAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Accept-Language
-                description: Language user is requesting
-                type: string
-                required: true
-                default: en
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
-                in: path
-                description: The ID of the project
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The ID of the project
+              required: true
+              type: integer
+              default: 1
         responses:
             200:
                 description: Project Summary
@@ -758,27 +764,27 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Accept-Language
-                description: Language user is requesting
-                type: string
-                required: true
-                default: en
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
             - in: query
-                name: as_file
-                type: boolean
-                description: Set to true if file download is preferred
-                default: False
+              name: as_file
+              type: boolean
+              description: Set to true if file download is preferred
+              default: False
             - in: query
-                name: abbreviated
-                type: boolean
-                description: Set to true if only state information is desired
-                default: False
+              name: abbreviated
+              type: boolean
+              description: Set to true if only state information is desired
+              default: False
         responses:
             200:
                 description: Project found
@@ -842,27 +848,27 @@ class ProjectsQueriesNoTasksAPI(Resource):
             - application/json
         parameters:
             - in: header
-                name: Accept-Language
-                description: Language user is requesting
-                type: string
-                required: true
-                default: en
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
             - in: query
-                name: as_file
-                type: boolean
-                description: Set to true if file download is preferred
-                default: False
+              name: as_file
+              type: boolean
+              description: Set to true if file download is preferred
+              default: False
             - in: query
-                name: abbreviated
-                type: boolean
-                description: Set to true if only state information is desired
-                default: False
+              name: abbreviated
+              type: boolean
+              description: Set to true if only state information is desired
+              default: False
         responses:
             200:
                 description: Project found
@@ -926,16 +932,16 @@ class ProjectsQueriesAoiAPI(Resource):
             - application/json
         parameters:
             - name: project_id
-                in: path
-                description: The unique project ID
-                required: true
-                type: integer
-                default: 1
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
             - in: query
-                name: as_file
-                type: boolean
-                description: Set to false if file download not preferred
-                default: True
+              name: as_file
+              type: boolean
+              description: Set to false if file download not preferred
+              default: True
         responses:
             200:
                 description: Project found
@@ -972,4 +978,3 @@ class ProjectsQueriesAoiAPI(Resource):
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
-        

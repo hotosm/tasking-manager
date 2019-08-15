@@ -1,10 +1,9 @@
-from flask_restful import Resource, current_app, request
-from server.services.stats_service import StatsService, NotFound
+from flask_restful import Resource, current_app
+from server.services.stats_service import NotFound
 from server.services.project_service import ProjectService
-from server.services.users.user_service import UserService
 
 
-class StatsProjectAPI(Resource):
+class ProjectsStatisticsAPI(Resource):
     def get(self, project_id):
         """
         Get Project Stats
