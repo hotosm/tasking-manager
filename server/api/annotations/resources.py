@@ -13,7 +13,7 @@ class AnnotationsRestAPI(Resource):
         Get all task annotations for a project
         ---
         tags:
-            - task annotations
+            - annotations
         produces:
             - application/json
         parameters:
@@ -59,7 +59,7 @@ class AnnotationsRestAPI(Resource):
         Store new task annotations for tasks of a project
         ---
         tags:
-            - task annotations
+            - annotations
         produces:
             - application/json
         parameters:

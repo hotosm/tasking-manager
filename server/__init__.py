@@ -135,8 +135,14 @@ def add_api_endpoints(app):
         ProjectsQueriesAoiAPI,
     )
     from server.api.projects.activities import ProjectsActivitiesAPI
-    from server.api.projects.contributions import ProjectsContributionsAPI
-    from server.api.projects.statistics import ProjectsStatisticsAPI
+    from server.api.projects.contributions import (
+        ProjectsContributionsAPI,
+        ProjectsContributionsQueriesDayAPI,
+    )
+    from server.api.projects.statistics import (
+        ProjectsStatisticsAPI,
+        ProjectsStatisticsQueriesUsernameAPI,
+    )
     from server.api.projects.actions import (
         ProjectsActionsTransferAPI,
         ProjectsActionsMessageContributorsAPI,
@@ -145,7 +151,7 @@ def add_api_endpoints(app):
     # Tasks API import
     from server.api.tasks.resources import (
         TasksRestAPI,
-        TasksAllAPI,
+        TasksQueriesJsonAPI,
         TasksQueriesXmlAPI,
         TasksQueriesGpxAPI,
         TasksQueriesAoiAPI,
@@ -170,6 +176,7 @@ def add_api_endpoints(app):
         TasksActionsSplitAPI,
     )
 
+    # Comments API impor
     from server.api.comments.resources import (
         CommentsProjectsRestAPI,
         CommentsTasksRestAPI,
@@ -178,45 +185,55 @@ def add_api_endpoints(app):
     # Annotations API import
     from server.api.annotations.resources import AnnotationsRestAPI
 
-    # Old stuff
-    from server.api.application_apis import ApplicationAPI
-    from server.api.users.authentication_apis import LoginAPI, OAuthAPI, AuthEmailAPI
-    from server.api.health_check_api import HealthCheckAPI
-    from server.api.license_apis import LicenseAPI, LicenceListAPI
-    from server.api.messaging.message_apis import (
-        HasNewMessages,
-        GetAllMessages,
-        MessagesAPI,
-        DeleteMultipleMessages,
-        ResendEmailValidationAPI,
-    )
+    # Issues API import
+    from server.api.issues.resources import IssuesRestAPI, IssuesAllAPI
 
-    from server.api.swagger_docs_api import SwaggerDocsAPI
-    from server.api.stats_api import (
-        HomePageStatsAPI,
-        StatsUserAPI,
-        StatsProjectUserAPI,
-        StatsContributionsByDayAPI,
+    # Licenses API import
+    from server.api.licenses.resources import LicensesRestAPI, LicensesAllAPI
+    from server.api.licenses.actions import LicensesActionsAcceptAPI
+
+    # Campaigns API endpoint
+    from server.api.campaigns.resources import CampaignsRestAPI
+
+    # Organisations API endpoint
+    from server.api.organisations.resources import OrganisationsRestAPI
+
+    # Notifications API endpoint
+    from server.api.notifications.resources import (
+        NotificationsRestAPI,
+        NotificationsAllAPI,
+        NotificationsQueriesCountUnreadAPI,
     )
-    from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
-    from server.api.mapping_issues_apis import (
-        MappingIssueCategoryAPI,
-        MappingIssueCategoriesAPI,
+    from server.api.notifications.actions import NotificationsActionsDeleteMultipleAPI
+
+    # Users API endpoint
+    from server.api.users.resources import (
+        UsersRestAPI,
+        UsersAllAPI,
+        UsersQueriesUsernameAPI,
+        UsersQueriesUsernameFilterAPI,
     )
-    from server.api.users.user_apis import (
-        UserAPI,
-        UserIdAPI,
-        UserOSMAPI,
-        UserSetRole,
-        UserSetLevel,
-        UserSetExpertMode,
-        UserAcceptLicense,
-        UserSearchFilterAPI,
-        UserSearchAllAPI,
-        UserUpdateAPI,
-        UserContributionsAPI,
+    from server.api.users.actions import (
+        UsersActionsSetUsersAPI,
+        UsersActionsSetLevelAPI,
+        UsersActionsSetRoleAPI,
+        UsersActionsSetExpertModeAPI,
+        UsersActionsVerifyEmailAPI,
     )
-    from server.api.settings_apis import LanguagesAPI
+    from server.api.users.openstreetmap import UsersOpenStreetMapAPI
+    from server.api.users.statistics import UsersStatisticsAPI
+
+    # System API endpoint
+    from server.api.system.general import SystemDocsAPI
+    from server.api.system.general import SystemHeartbeatAPI
+    from server.api.system.general import SystemLanguagesAPI
+    from server.api.system.statistics import SystemStatisticsAPI
+    from server.api.system.authentication import (
+        SystemAuthenticationEmailAPI,
+        SystemAuthenticationLoginAPI,
+        SystemAuthenticationCallbackAPI,
+    )
+    from server.api.system.applications import SystemApplicationsRestAPI
 
     # Projects REST endpoint
     api.add_resource(ProjectsAllAPI, "/api/v2/projects", methods=["GET"])
@@ -257,7 +274,15 @@ def add_api_endpoints(app):
         ProjectsContributionsAPI, "/api/v2/projects/<int:project_id>/contributions"
     )
     api.add_resource(
+        ProjectsContributionsQueriesDayAPI,
+        "/api/v2/projects/<int:project_id>/contributions/queries/day",
+    )
+    api.add_resource(
         ProjectsStatisticsAPI, "/api/v2/projects/<int:project_id>/statistics"
+    )
+    api.add_resource(
+        ProjectsStatisticsQueriesUsernameAPI,
+        "/api/v2/projects/<int:project_id>/statistics/queries/<string:username>",
     )
 
     # Projects actions endoints
@@ -271,12 +296,13 @@ def add_api_endpoints(app):
     )
 
     # Tasks REST endpoint
-    api.add_resource(TasksAllAPI, "/api/v2/projects/<int:project_id>/tasks")
+
     api.add_resource(
         TasksRestAPI, "/api/v2/projects/<int:project_id>/tasks/<int:task_id>"
     )
 
     # Tasks queries endoints (TODO: Refactor them into the REST endpoints)
+    api.add_resource(TasksQueriesJsonAPI, "/api/v2/projects/<int:project_id>/tasks")
     api.add_resource(
         TasksQueriesXmlAPI, "/api/v2/projects/<int:project_id>/tasks/queries/xml"
     )
@@ -303,7 +329,7 @@ def add_api_endpoints(app):
         "/api/v2/projects/<int:project_id>/tasks/queries/own/invalidated",
     )
 
-    # Projects actions endoints
+    # Tasks actions endoints
     api.add_resource(
         TasksActionsMappingLockAPI,
         "/api/v2/projects/<int:project_id>/tasks/actions/lock-for-mapping/<int:task_id>",
@@ -376,93 +402,118 @@ def add_api_endpoints(app):
         methods=["GET", "POST"],
     )
 
-    # System endpoint
-    api.add_resource(SwaggerDocsAPI, "/api/v2/system/docs/json")
-    api.add_resource(HealthCheckAPI, "/api/v2/system/heartbeat")
-
+    # Issues REST endpoints
     api.add_resource(
-        ApplicationAPI,
+        IssuesAllAPI, "/api/v2/tasks/issues/categories", methods=["GET", "POST"]
+    )
+    api.add_resource(
+        IssuesRestAPI,
+        "/api/v2/tasks/issues/categories/<int:category_id>",
+        methods=["GET", "PATCH", "DELETE"],
+    )
+
+    # Licenses REST endpoints
+    api.add_resource(LicensesAllAPI, "/api/v2/licenses")
+    api.add_resource(
+        LicensesRestAPI, "/api/v2/licenses", endpoint="create_license", methods=["POST"]
+    )
+    api.add_resource(
+        LicensesRestAPI,
+        "/api/v2/licenses/<int:license_id>",
+        methods=["GET", "PATCH", "DELETE"],
+    )
+
+    # Licenses actions endpoint
+    api.add_resource(
+        LicensesActionsAcceptAPI,
+        "/api/v2/licenses/<int:license_id>/actions/accept-for-me",
+    )
+
+    # Campaigns REST endpoints
+    api.add_resource(CampaignsRestAPI, "/api/v2/campaigns")
+
+    # Organisations REST endpoints
+    api.add_resource(OrganisationsRestAPI, "/api/v2/organisations")
+
+    # Notifications REST endpoints
+    api.add_resource(NotificationsRestAPI, "/api/v2/notifications/<int:message_id>")
+    api.add_resource(NotificationsAllAPI, "/api/v2/notifications")
+    api.add_resource(
+        NotificationsQueriesCountUnreadAPI,
+        "/api/v2/notifications/queries/myself/count-unread",
+    )
+
+    # Notifications Actions endpoints
+    api.add_resource(
+        NotificationsActionsDeleteMultipleAPI,
+        "/api/v2/notifications/delete-multiple",
+        methods=["DELETE"],
+    )
+
+    # Users REST endpoint
+    api.add_resource(UsersAllAPI, "/api/v2/users")
+    api.add_resource(UsersRestAPI, "/api/v2/users/<int:userid>")
+    api.add_resource(
+        UsersQueriesUsernameFilterAPI, "/api/v2/users/queries/filter/<string:username>"
+    )
+    api.add_resource(UsersQueriesUsernameAPI, "/api/v2/users/queries/<string:username>")
+
+    # Users Actions endpoint
+    api.add_resource(
+        UsersActionsSetUsersAPI, "/api/v2/users/actions/set-user/<string:username>"
+    )
+    api.add_resource(
+        UsersActionsSetLevelAPI,
+        "/api/v2/users/<string:username>/actions/set-level/<string:level>",
+    )
+    api.add_resource(
+        UsersActionsSetRoleAPI,
+        "/api/v2/users/<string:username>/actions/set-role/<string:role>",
+    )
+    api.add_resource(
+        UsersActionsSetExpertModeAPI,
+        "/api/v2/users/<string:username>/actions/set-expert-mode/<string:is_expert>",
+    )
+    api.add_resource(
+        UsersActionsVerifyEmailAPI, "/api/v2/users/myself/actions/verify-email"
+    )
+
+    # Users Statistics endpoint
+    api.add_resource(UsersStatisticsAPI, "/api/v2/users/<string:username>/statistics")
+
+    # Users openstreetmap endpoint
+    api.add_resource(
+        UsersOpenStreetMapAPI, "/api/v2/users/<string:username>/openstreetmap"
+    )
+
+    # System endpoint
+    api.add_resource(SystemDocsAPI, "/api/v2/system/docs/json")
+    api.add_resource(SystemHeartbeatAPI, "/api/v2/system/heartbeat")
+    api.add_resource(SystemLanguagesAPI, "/api/v2/system/languages")
+    api.add_resource(SystemStatisticsAPI, "/api/v2/system/statistics")
+    api.add_resource(
+        SystemAuthenticationLoginAPI, "/api/v2/system/authentication/login"
+    )
+    api.add_resource(
+        SystemAuthenticationCallbackAPI, "/api/v2/system/authentication/callback"
+    )
+    api.add_resource(
+        SystemAuthenticationEmailAPI, "/api/v2/system/authentication/email"
+    )
+    api.add_resource(
+        SystemApplicationsRestAPI,
         "/api/v2/system/authentication/applications",
         methods=["POST", "GET"],
     )
     api.add_resource(
-        ApplicationAPI,
+        SystemApplicationsRestAPI,
         "/api/v2/system/authentication/applications/<string:application_key>",
         endpoint="delete_application",
         methods=["DELETE"],
     )
     api.add_resource(
-        ApplicationAPI,
+        SystemApplicationsRestAPI,
         "/api/v2/system/authentication/applications/<string:application_key>",
         endpoint="check_application",
         methods=["PATCH"],
     )
-    api.add_resource(LoginAPI, "/api/v2/system/authentication/login")
-    api.add_resource(OAuthAPI, "/api/v2/system/authentication/callback")
-    api.add_resource(AuthEmailAPI, "/api/v2/system/authentication/email")
-    api.add_resource(
-        LicenseAPI, "/api/v2/licenses", endpoint="create_license", methods=["POST"]
-    )
-    api.add_resource(
-        LicenseAPI,
-        "/api/v2/licenses/<int:license_id>",
-        methods=["GET", "PATCH", "DELETE"],
-    )
-    api.add_resource(LicenceListAPI, "/api/v2/licenses")
-    api.add_resource(HasNewMessages, "/api/v2/messages/has-new-messages")
-    api.add_resource(GetAllMessages, "/api/v2/messages/get-all-messages")
-    api.add_resource(MessagesAPI, "/api/v2/messages/<int:message_id>")
-    api.add_resource(
-        DeleteMultipleMessages, "/api/v2/messages/delete-multiple", methods=["DELETE"]
-    )
-    api.add_resource(
-        ResendEmailValidationAPI, "/api/v2/messages/resend-email-verification"
-    )
-
-    api.add_resource(
-        StatsContributionsByDayAPI,
-        "/api/v2/projects/<int:project_id>/contributions/day",
-    )
-
-    api.add_resource(
-        StatsProjectUserAPI,
-        "/api/v2/projects/<int:project_id>/statistics/user/<string:username>",
-    )
-    api.add_resource(StatsUserAPI, "/api/v2/users/<string:username>/statistics")
-    api.add_resource(HomePageStatsAPI, "/api/v2/system/statistics")
-    api.add_resource(CampaignsTagsAPI, "/api/v2/tags/campaigns")
-    api.add_resource(OrganisationTagsAPI, "/api/v2/tags/organisations")
-    api.add_resource(
-        MappingIssueCategoriesAPI,
-        "/api/v2/tasks/issues/categories",
-        methods=["GET", "POST"],
-    )
-    api.add_resource(
-        MappingIssueCategoryAPI,
-        "/api/v2/tasks/issues/categories/<int:category_id>",
-        methods=["GET", "PATCH", "DELETE"],
-    )
-    api.add_resource(UserSearchAllAPI, "/api/v2/users")
-    api.add_resource(
-        UserSearchFilterAPI, "/api/v2/users/queries/filter/<string:username>"
-    )
-    api.add_resource(UserAPI, "/api/v2/users/queries/<string:username>")
-    api.add_resource(UserUpdateAPI, "/api/v2/users/<string:username>")
-    api.add_resource(
-        UserSetExpertMode,
-        "/api/v2/users/<string:username>/actions/set-expert-mode/<string:is_expert>",
-    )
-    api.add_resource(UserOSMAPI, "/api/v2/users/<string:username>/openstreetmap")
-    api.add_resource(
-        UserSetRole, "/api/v2/users/<string:username>/actions/set-role/<string:role>"
-    )
-    api.add_resource(
-        UserSetLevel, "/api/v2/users/<string:username>/actions/set-level/<string:level>"
-    )
-    api.add_resource(
-        UserAcceptLicense, "/api/v2/licenses/<int:license_id>/actions/accept-for-me"
-    )
-    api.add_resource(UserIdAPI, "/api/v2/users/<int:userid>")
-    api.add_resource(UserContributionsAPI, "/api/v2/users/<int:userid>/contributions")
-
-    api.add_resource(LanguagesAPI, "/api/v2/system/languages")
