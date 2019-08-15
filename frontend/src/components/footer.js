@@ -27,7 +27,9 @@ export function Footer() {
           <FormattedMessage {...messages.definition} />
         </div>
         <div className="pt2 mb2 w-50-l w-100 tl tr-l fr">
-          {menuItems.map((item, n) =>
+          {menuItems.filter(
+            item => item.authenticated === false || item.showAlways
+          ).map((item, n) =>
             <Link key={n} to={item.link}
             className="link barlow-condensed white f5 ttu di-l dib pt3 pt3-m pl4-l w-100 w-auto-l">
               <FormattedMessage {...item.label} />

@@ -3,6 +3,7 @@ import { FormattedMessage, FormattedRelative } from "react-intl";
 
 import DueDateBox from "./dueDateBox";
 import ProjectProgressBar from "./projectProgressBar";
+import { MappingLevelMessage } from "../mappingLevel";
 import messages from "./messages";
 import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
 
@@ -76,17 +77,6 @@ function getLogoClass(organisationTag: String) {
   } else {
     return null;
   }
-
-
-
-}
-
-export function MapperLevelLabel({mapperLevel}: Object) {
-  const translated = mapperLevel ? <FormattedMessage {...messages["projectMapperLevel"+mapperLevel]} /> : "";
-  return (
-  <span className="fl f7 mt1 ttc fw5 blue-grey">
-    {translated}
-  </span>);
 }
 
 export function ProjectCard({
@@ -121,7 +111,7 @@ export function ProjectCard({
               <ProjectTeaser totalContributors={totalContributors} lastUpdated={lastUpdated} />
               <ProjectProgressBar percentMapped={percentMapped} percentValidated={percentValidated} />
               <div className="cf pt2 h2">
-                <MapperLevelLabel mapperLevel={mapperLevel} />
+                <MappingLevelMessage level={mapperLevel} className="fl f7 mt1 ttc fw5 blue-grey" />
                 <DueDateBox dueDate={dueDate} />
               </div>
             </div>
