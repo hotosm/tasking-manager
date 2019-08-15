@@ -44,8 +44,8 @@ export class StatsSection extends React.Component {
   }
 
   componentWillUnmount() {
-      this.tmStatsPromise && this.tmStatsPromise.cancel();
-      this.editsStatsPromise && this.editsStatsPromise.cancel();
+    this.tmStatsPromise && this.tmStatsPromise.cancel();
+    this.editsStatsPromise && this.editsStatsPromise.cancel();
   }
 
   getTMStats = (event) => {

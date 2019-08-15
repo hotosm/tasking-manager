@@ -71,9 +71,7 @@ class AuthenticationService:
         username = osm_user.attrib["display_name"]
         try:
             # get gravatar profile picture file name
-            user_picture = (
-                osm_user.find("img").attrib["href"].split("/avatar/")[1].split("?s=")[0]
-            )
+            user_picture = osm_user.find("img").attrib["href"]
         except (AttributeError, IndexError):
             user_picture = None
 

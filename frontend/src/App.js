@@ -8,6 +8,7 @@ import { Home } from './views/home';
 import { AboutPage } from './views/about';
 import { Authorized } from './views/authorized';
 import { Login } from './views/login';
+import { Welcome } from './views/welcome';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <AboutPage path="about" />
           <Authorized path="authorized" />
           <Login path="login" />
+          <Welcome path="welcome" />
         </Router>
       </div>
       <Footer />

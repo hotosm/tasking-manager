@@ -24,18 +24,6 @@ export default defineMessages({
     id: 'project.card.percentValidated',
     defaultMessage: ' Validated'
   },
-  projectMapperLevelBEGINNER: {
-    id: 'project.card.mapperLevelBeginner',
-    defaultMessage: 'Beginner'
-  },
-  projectMapperLevelINTERMEDIATE: {
-    id: 'project.card.mapperLevelIntermediate',
-    defaultMessage: 'Intermediate'
-  },
-  projectMapperLevelADVANCED: {
-    id: 'project.card.mapperLevelAdvanced',
-    defaultMessage: 'Advanced'
-  },
   projectPriorityURGENT: {
     id: 'project.card.projectPriorityUrgent',
     defaultMessage: 'Urgent'
