@@ -45,6 +45,11 @@ class User(db.Model):
     name = db.Column(db.String)
     city = db.Column(db.String)
     country = db.Column(db.String)
+    default_editor = db.Column(db.String, default="iD", nullable=False)
+    mentions_notifications = db.Column(db.Boolean, default=True, nullable=False)
+    comments_notifications = db.Column(db.Boolean, default=False, nullable=False)
+    projects_notifications = db.Column(db.Boolean, default=True, nullable=False)
+    expert_mode = db.Column(db.Boolean, default=False)
     date_registered = db.Column(db.DateTime, default=timestamp)
     # Represents the date the user last had one of their tasks validated
     last_validation_date = db.Column(db.DateTime, default=timestamp)
@@ -100,6 +105,11 @@ class User(db.Model):
         self.country = user_dto.country
         self.name = user_dto.name
         self.validation_message = user_dto.validation_message
+        self.default_editor = user_dto.default_editor
+        self.mentions_notifications = user_dto.mentions_notifications
+        self.comments_notifications = user_dto.comments_notifications
+        self.projects_notifications = user_dto.projects_notifications
+        self.expert_mode = user_dto.expert_mode
         db.session.commit()
 
     def set_email_verified_status(self, is_verified: bool):
@@ -321,7 +331,11 @@ class User(db.Model):
         user_dto.name = self.name
         user_dto.osm_profile = self.osm_profile_url
         user_dto.missing_maps_profile = self.missing_maps_profile_url
-
+        user_dto.default_editor = self.default_editor
+        user_dto.mentions_notifications = self.mentions_notifications
+        user_dto.projects_notifications = self.projects_notifications
+        user_dto.comments_notifications = self.comments_notifications
+        user_dto.expert_mode = self.expert_mode
         user_dto.validation_message = self.validation_message
         user_dto.total_time_spent = 0
         user_dto.time_spent_mapping = 0

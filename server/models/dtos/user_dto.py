@@ -64,6 +64,12 @@ class UserDTO(Model):
     city = StringType(serialized_name="city")
     country = StringType(serialized_name="country")
     name = StringType(serialized_name="name")
+    default_editor = StringType(serialized_name="default_editor")
+    mentions_notifications = BooleanType(serialized_name="mentions_notifications")
+    comments_notifications = BooleanType(serialized_name="comments_notifications")
+    projects_notifications = BooleanType(serialized_name="projects_notifications")
+    expert_mode = BooleanType(serialized_name="expert_mode")
+
     # these are read only
     missing_maps_profile = StringType(serialized_name="missingMapsProfile")
     osm_profile = StringType(serialized_name="osmProfile")
