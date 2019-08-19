@@ -12,10 +12,13 @@ from server.models.dtos.user_dto import (
     UserStatsDTO,
     UserContributionDTO,
     UserContributionsDTO,
+    RecommendedProject,
+    UserRecommendedProjectsDTO
 )
 from server.models.postgis.message import Message
 from server.models.postgis.task import TaskHistory, TaskAction
 from server.models.postgis.user import User, UserRole, MappingLevel
+from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
@@ -277,8 +280,54 @@ class UserService:
     @staticmethod
     def get_recommended_projects(user_name: str, preferred_locale: str):
         """ Gets all projects a user has mapped or validated on """
-        user = UserService.get_user_by_username(user_name)
-        return User.get_recommended_projects(user.id, preferred_locale)
+        limit = 20
+        user = User.query.with_entities(User.id, User.mapping_level)\
+            .filter(User.username == user_name).one_or_none()
+        if user is None:
+            raise NotFound()
+
+        # Get all projects that the user has contributed
+        sq = TaskHistory.query.with_entities(TaskHistory.project_id.label('project_id'))\
+            .distinct(TaskHistory.project_id)\
+            .filter(TaskHistory.user_id==user.id).subquery() 
+
+        # Get all campaigns for all contributed projects.
+        campaign_tags = Project.query.with_entities(Project.campaign_tag.label('tag'))\
+            .distinct().filter(Project.campaign_tag != '')\
+            .filter(or_(Project.author_id == user.id, Project.id == sq.c.project_id)).subquery() 
+
+        # Get projects with given campaign tags but without user contributions.
+        query = Project.query.with_entities(Project.id,
+                ProjectInfo.name,
+                Project.centroid.ST_AsGeoJSON().label("centroid"),
+                Project.tasks_mapped,
+                Project.tasks_validated,
+                Project.status, Project.total_tasks)\
+            .join(ProjectInfo)\
+            .distinct()\
+            .filter(Project.private is not True)\
+            .filter(Project.id != sq.c.project_id)\
+            .filter(Project.mapper_level <= user.mapping_level)
+
+        projs = query.filter(Project.campaign_tag ==  campaign_tags.c.tag).limit(limit).all()
+
+        # Get only user mapping level projects.
+        len_projs = len(projs)
+        if len_projs < limit:
+            proj_ids = [p.id for p in projs]
+            remaining_projs = query.limit(limit-len_projs).all()
+            projs.extend(remaining_projs)
+
+        proj_dto = UserRecommendedProjectsDTO()
+        proj_dto.recommended_projects = [RecommendedProject(dict(
+            project_id=r.id,
+            name= r.name,
+            tasks_mapped=r.tasks_mapped,
+            tasks_validated=r.tasks_validated,
+            status=r.status,
+            centroid=r.centroid)) for r in projs]
+
+        return proj_dto
 
     @staticmethod
     def add_role_to_user(admin_user_id: int, username: str, role: str):
