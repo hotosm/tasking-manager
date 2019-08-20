@@ -147,6 +147,7 @@ def add_api_endpoints(app):
         ProjectsActionsTransferAPI,
         ProjectsActionsMessageContributorsAPI,
     )
+    from server.api.projects_apis import FeaturedProjectAPI
 
     # Tasks API import
     from server.api.tasks.resources import (
@@ -297,9 +298,19 @@ def add_api_endpoints(app):
         ProjectsActionsTransferAPI,
         "/api/v2/projects/<int:project_id>/actions/transfer-ownership/",
     )
+    api.add_resource(
+        FeaturedProjectAPI,
+        "/api/v1/project/feature",
+        endpoint="feature_projects",
+        methods=["GET"],
+    )
+    api.add_resource(
+        FeaturedProjectAPI,
+        "/api/v1/project/feature/<int:project_id>",
+        methods=["POST", "DELETE"],
+    )
 
     # Tasks REST endpoint
-
     api.add_resource(
         TasksRestAPI, "/api/v2/projects/<int:project_id>/tasks/<int:task_id>/"
     )
@@ -314,6 +325,9 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksQueriesAoiAPI, "/api/v2/projects/<int:project_id>/tasks/queries/aoi/"
+    )
+    api.add_resource(
+        MappedTasksByUser, "/api/v1/project/<int:project_id>/mapped-tasks-by-user"
     )
     api.add_resource(
         TasksQueriesOwnLockedAPI,
