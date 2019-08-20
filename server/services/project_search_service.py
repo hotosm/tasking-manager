@@ -55,6 +55,68 @@ class BBoxTooBigError(Exception):
 
 class ProjectSearchService:
     @staticmethod
+    def create_search_query():
+        query = (
+            db.session.query(
+                Project.id,
+                Project.mapper_level,
+                Project.priority,
+                Project.default_locale,
+                Project.centroid.ST_AsGeoJSON().label("centroid"),
+                Project.organisation_tag,
+                Project.campaign_tag,
+                Project.tasks_bad_imagery,
+                Project.tasks_mapped,
+                Project.tasks_validated,
+                Project.status,
+                Project.total_tasks,
+                Project.last_updated,
+                Project.due_date,
+                func.count(distinct(TaskHistory.user_id)).label("total_contributors"),
+            )
+            .outerjoin(TaskHistory, TaskHistory.project_id == Project.id)
+            .filter(Project.private is not True)
+        )
+
+        return query
+
+    @staticmethod
+    def create_result_dto(project, preferred_locale):
+        project_info_dto = ProjectInfo.get_dto_for_locale(
+            project.id, preferred_locale, project.default_locale
+        )
+        list_dto = ListSearchResultDTO()
+        list_dto.project_id = project.id
+        list_dto.locale = project_info_dto.locale
+        list_dto.name = project_info_dto.name
+        list_dto.priority = ProjectPriority(project.priority).name
+        list_dto.mapper_level = MappingLevel(project.mapper_level).name
+        list_dto.short_description = project_info_dto.short_description
+        list_dto.organisation_tag = project.organisation_tag
+        list_dto.last_updated = project.last_updated
+        list_dto.campaign_tag = project.campaign_tag
+        list_dto.due_date = project.due_date
+        list_dto.percent_mapped = Project.calculate_tasks_percent(
+            "mapped",
+            project.total_tasks,
+            project.tasks_mapped,
+            project.tasks_validated,
+            project.tasks_bad_imagery,
+        )
+        list_dto.percent_validated = Project.calculate_tasks_percent(
+            "validated",
+            project.total_tasks,
+            project.tasks_mapped,
+            project.tasks_validated,
+            project.tasks_bad_imagery,
+        )
+        list_dto.status = ProjectStatus(project.status).name
+        list_dto.active_mappers = Project.get_active_mappers(project.id)
+        list_dto.total_contributors = project.total_contributors
+
+        return list_dto
+
+    @staticmethod
     @cached(search_cache)
     def search_projects(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
         """ Searches all projects for matches to the criteria provided by the user """
@@ -81,72 +143,20 @@ class ProjectSearchService:
         feature_collection = geojson.FeatureCollection(features)
         dto = ProjectSearchResultsDTO()
         dto.map_results = feature_collection
-
-        for project in paginated_results.items:
-            # This loop loads the paginated text results
-            # TODO would be nice to get this for an array rather than individually would be more efficient
-            project_info_dto = ProjectInfo.get_dto_for_locale(
-                project.id, search_dto.preferred_locale, project.default_locale
-            )
-            list_dto = ListSearchResultDTO()
-            list_dto.project_id = project.id
-            list_dto.locale = project_info_dto.locale
-            list_dto.name = project_info_dto.name
-            list_dto.priority = ProjectPriority(project.priority).name
-            list_dto.mapper_level = MappingLevel(project.mapper_level).name
-            list_dto.short_description = project_info_dto.short_description
-            list_dto.organisation_tag = project.organisation_tag
-            list_dto.last_updated = project.last_updated
-            list_dto.campaign_tag = project.campaign_tag
-            list_dto.due_date = project.due_date
-            list_dto.percent_mapped = Project.calculate_tasks_percent(
-                "mapped",
-                project.total_tasks,
-                project.tasks_mapped,
-                project.tasks_validated,
-                project.tasks_bad_imagery,
-            )
-            list_dto.percent_validated = Project.calculate_tasks_percent(
-                "validated",
-                project.total_tasks,
-                project.tasks_mapped,
-                project.tasks_validated,
-                project.tasks_bad_imagery,
-            )
-            list_dto.status = ProjectStatus(project.status).name
-            list_dto.active_mappers = Project.get_active_mappers(project.id)
-            list_dto.total_contributors = project.total_contributors
-
-            dto.results.append(list_dto)
-
+        dto.results = [
+            ProjectSearchService.create_result_dto(p, search_dto.preferred_locale)
+            for p in paginated_results.items
+        ]
         dto.pagination = Pagination(paginated_results)
+
         return dto
 
     @staticmethod
     def _filter_projects(search_dto: ProjectSearchDTO):
         """ Filters all projects based on criteria provided by user"""
-        query = (
-            db.session.query(
-                Project.id,
-                Project.mapper_level,
-                Project.priority,
-                Project.default_locale,
-                Project.centroid.ST_AsGeoJSON().label("centroid"),
-                Project.organisation_tag,
-                Project.campaign_tag,
-                Project.tasks_bad_imagery,
-                Project.tasks_mapped,
-                Project.tasks_validated,
-                Project.status,
-                Project.total_tasks,
-                Project.last_updated,
-                Project.due_date,
-                func.count(distinct(TaskHistory.user_id)).label("total_contributors"),
-            )
-            .join(TaskHistory, TaskHistory.project_id == Project.id)
-            .join(ProjectInfo)
-            .filter(ProjectInfo.locale.in_([search_dto.preferred_locale, "en"]))
-            .filter(Project.private is not True)
+        query = ProjectSearchService.create_search_query()
+        query = query.join(ProjectInfo).filter(
+            ProjectInfo.locale.in_([search_dto.preferred_locale, "en"])
         )
 
         project_status_array = [ProjectStatus.PUBLISHED.value]
