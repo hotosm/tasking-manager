@@ -90,6 +90,9 @@ class Project(db.Model):
     )  # Force users to edit at random to avoid mapping "easy" tasks
     allow_non_beginners = db.Column(db.Boolean, default=False)
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
+    featured = db.Column(
+        db.Boolean, default=False
+    )  # Only PMs can set a project as featured
     entities_to_map = db.Column(db.String)
     changeset_comment = db.Column(db.String)
     osmcha_filter_id = db.Column(
@@ -375,6 +378,18 @@ class Project(db.Model):
     def delete(self):
         """ Deletes the current model from the DB """
         db.session.delete(self)
+        db.session.commit()
+
+    def set_as_featured(self):
+        if self.featured is True:
+            raise ValueError("Project is already featured")
+        self.featured = True
+        db.session.commit()
+
+    def unset_as_featured(self):
+        if self.featured is False:
+            raise ValueError("Project is not featured")
+        self.featured = False
         db.session.commit()
 
     def can_be_deleted(self) -> bool:

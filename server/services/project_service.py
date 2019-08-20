@@ -10,13 +10,17 @@ from server.models.dtos.project_dto import (
     ProjectUserStatsDTO,
     ProjectContribsDTO,
     ProjectContribDTO,
+    ProjectSearchResultsDTO,
 )
+
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task, TaskHistory, TaskAction
 from server.models.postgis.utils import NotFound
 from server.services.users.user_service import UserService
+from server.services.project_search_service import ProjectSearchService
 from sqlalchemy import func, or_
+from sqlalchemy.sql.expression import true
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -243,6 +247,32 @@ class ProjectService:
         """ Gets the project summary DTO """
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_summary(preferred_locale)
+
+    @staticmethod
+    def set_project_as_featured(project_id: int):
+        """ Sets project as featured """
+        project = ProjectService.get_project_by_id(project_id)
+        project.set_as_featured()
+
+    @staticmethod
+    def unset_project_as_featured(project_id: int):
+        """ Sets project as featured """
+        project = ProjectService.get_project_by_id(project_id)
+        project.unset_as_featured()
+
+    @staticmethod
+    def get_featured_projects(preferred_locale):
+        """ Sets project as featured """
+        query = ProjectSearchService.create_search_query()
+        projects = query.filter(Project.featured == true()).group_by(Project.id).all()
+
+        dto = ProjectSearchResultsDTO()
+        dto.results = [
+            ProjectSearchService.create_result_dto(p, preferred_locale)
+            for p in projects
+        ]
+
+        return dto
 
     @staticmethod
     def get_project_title(project_id: int, preferred_locale: str = "en") -> str:
