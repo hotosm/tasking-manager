@@ -82,9 +82,9 @@ export class TeamProfile extends React.Component{
             return(
                 <div className="ma3">
                     <div className="cf pv5 ph5-l ph4 bg-white">
-                        {(this.state.isAdmin) ? 
+                        {(this.state.isAdmin) ?
                             <div className="dt-rows">
-                                <Link to={ '/edit_team/' + this.props.team_id } className="no-underline">
+                                <Link to={ `/teams/${this.props.team_id}/edit` } className="no-underline">
                                     <Button children='Edit' class='edit-team' /></Link>
                             </div> : null}
                         <div className="dt-rows">
@@ -102,7 +102,7 @@ export class TeamProfile extends React.Component{
                                 <Button onClick={this.handleLeave} children='Leave' class='leave-team'/> :
                                 // (this.state.inviteSend != '') ? <Button children='Request Send' class='join-team'/> :
                                 (this.state.team.inviteOnly === false) ?
-                                <Button onClick={this.handleJoin} children='Join' class='join-team'/> : 
+                                <Button onClick={this.handleJoin} children='Join' class='join-team'/> :
                                 null
                             }
                         </div>
@@ -137,4 +137,3 @@ export class TeamProfile extends React.Component{
                 return(<div>Loading ...</div>)
     }
 }
-

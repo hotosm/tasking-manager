@@ -23,8 +23,8 @@ function App() {
           <Home path="/" />
           <AboutPage path="/about" />
           <ListTeams path="/teams" />
-          <TeamProfile path="/team/:team_id" />
-          <EditTeam path="/edit_team/:team_id" />
+          <TeamProfile path="/teams/:team_id" />
+          <EditTeam path="/teams/:team_id/edit" />
           <Authorized path="authorized" />
           <Login path="login" />
           <Welcome path="welcome" />
