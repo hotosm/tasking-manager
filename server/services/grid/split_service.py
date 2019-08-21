@@ -112,6 +112,7 @@ class SplitService:
         :return: new tasks in a DTO
         """
         # get the task to be split
+        project = Project.get(split_task_dto.project_id)
         original_task = Task.get(split_task_dto.task_id, split_task_dto.project_id)
         if original_task is None:
             raise NotFound()

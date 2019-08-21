@@ -6,6 +6,7 @@ from geoalchemy2 import shape
 
 from server.models.dtos.mapping_dto import TaskDTO, TaskDTOs, MappedTaskDTO, LockTaskDTO, StopMappingTaskDTO, TaskCommentDTO
 from server.models.dtos.user_dto import AssignTasksDTO, UnassignTasksDTO
+from server.models.postgis.project import Project
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskAction
 from server.models.postgis.utils import NotFound, UserLicenseError
@@ -95,12 +96,13 @@ class MappingService:
         :raises TaskServiceError
         :return: Updated task, or None if not found
         """
+        project = Project.get(lock_task_dto.project_id)
         task = MappingService.get_task(lock_task_dto.task_id, lock_task_dto.project_id)
 
         if not task.is_mappable():
             raise MappingServiceError('Task in invalid state for mapping')
 
-        if not task.can_assign_to(lock_task_dto.user_id):
+        if project.enforce_assignment and not task.can_assign_to(lock_task_dto.user_id):
             raise MappingServiceError('Task assigned to another user')
 
         MappingService.assert_user_can_map(

@@ -7,6 +7,7 @@ from server.models.postgis.statuses import ValidatingNotAllowed
 from server.models.postgis.task import Task, TaskStatus, TaskHistory, TaskInvalidationHistory
 from server.models.postgis.utils import NotFound, UserLicenseError, timestamp
 from server.models.postgis.project_info import ProjectInfo
+from server.models.postgis.project import Project
 from server.services.messaging.message_service import MessageService
 from server.services.project_service import ProjectService
 from server.services.stats_service import StatsService
@@ -30,6 +31,7 @@ class ValidatorService:
         """
         # Loop supplied tasks to check they can all be locked for validation
         tasks_to_lock = []
+        project = Project.get(validation_dto.project_id)
         for task_id in validation_dto.task_ids:
             task = Task.get(task_id, validation_dto.project_id)
 
@@ -42,7 +44,7 @@ class ValidatorService:
             if not ValidatorService._user_can_validate_task(validation_dto.user_id, task.mapped_by):
                 raise ValidatatorServiceError(f'Tasks cannot be validated by the same user who marked task as mapped or badimagery')
 
-            if not task.is_assigned_to(validation_dto.user_id):
+            if project.enforce_assignment and not task.assign_check(validation_dto.user_id):
                 raise ValidatatorServiceError('Task assigned to another user')
 
             tasks_to_lock.append(task)
