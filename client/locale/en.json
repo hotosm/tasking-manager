@@ -468,6 +468,7 @@
 	"Stop Mapping": "Stop Mapping",
 	"Stop Validating": "Stop Validating",
 	"Subject": "Subject",
+	"Tasks Assigned to You": "Tasks Assigned to You",
 	"Task automatically unlocked for mapping": "Task automatically unlocked for mapping",
 	"Task automatically unlocked for validation": "Task automatically unlocked for validation",
 	"Task could not be split": "Task could not be split",
@@ -496,6 +497,7 @@
 	"Tasks as": "Tasks as",
 	"Tasks Mapped": "Tasks Mapped",
 	"Tasks Validated": "Tasks Validated",
+	"Tasks You Assigned": "Tasks You Assigned",
 	"tasks.": "tasks.",
 	"tasks. Use a smaller AOI and/or fewer tasks.": "tasks. Use a smaller AOI and/or fewer tasks.",
 	"Text search": "Text search",
@@ -617,5 +619,9 @@
 	"You need to add at least one allowed user to a private project.": "You need to add at least one allowed user to a private project.",
 	"Your profile": "Your profile",
 	"Your project has been updated successfully.": "Your project has been updated successfully.",
-	"Your project was created successfully.": "Your project was created successfully."
+	"Your project was created successfully.": "Your project was created successfully.",
+	"TASKS_ASSIGNED_TO": "Task Assigned to {{username}}",
+	"TASKS_ASSIGNED_BY": "Tasks {{username}} Assigned",
+	"Error retrieving tasks assigned to you": "Error retrieving tasks assigned to you",
+	"Error retrieving tasks you assigned": "Error retrieving tasks you assigned"
 }

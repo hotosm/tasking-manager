@@ -21,6 +21,8 @@
         vm.map = null;
         vm.highlightSource = null;
         vm.savingExpertMode = false;
+        vm.assignerHasLoaded = false;
+        vm.assigneeHasLoaded = false;
 
         // Errors - for displaying messages when API calls were not successful
         vm.errorSetRole = false;
@@ -28,6 +30,8 @@
         vm.errorSetExpertMode = false;
         vm.errorSetContactDetails = false;
         vm.errorVerificationEmailSent = false;
+        vm.errorRetrievingAssignerTasks = false;
+        vm.errorRetrievingAssigneeTasks = false;
 
         // For showing the user a message when the verification email was sent
         // which only happens when the user has entered a new email address or
@@ -51,6 +55,24 @@
         vm.validatorClosedFilterOptions = vm.mapperClosedFilterOptions.slice(0); // clone
         vm.invalidatedTasksAsMapperTableSettings = invalidatedTaskTableSettings(false);
         vm.invalidatedTasksAsValidatorTableSettings = invalidatedTaskTableSettings(true);
+        
+        // assigned tasks status tables
+        vm.assigneeTaskStatusFilterOptions = [
+        {title: 'All', id: ''},
+        {title: 'Ready', id: 0},
+        {title: 'Locked For Mapping', id: 1},
+        {title: 'Mapped', id: 2},
+        {title: 'Locked For Validation', id: 3},
+        {title: 'Validated', id: 4},
+        {title: 'Invalidated', id: 5},
+        {title: 'Bad Imagery', id: 6},
+        {title: 'Split', id: 7}
+        ];
+        vm.assigneeClosedFilterOptions = vm.mapperClosedFilterOptions.slice(0); // clone
+        vm.assignerClosedFilterOptions = vm.mapperClosedFilterOptions.slice(0); // clone
+        vm.assignerTaskStatusFilterOptions = vm.assigneeTaskStatusFilterOptions.slice(0); //clone
+        vm.assignedTasksAsAssigneeTableSettings = assignedTaskTableSettings(false);
+        vm.assignedTasksAsAssignerTableSettings = assignedTaskTableSettings(true);
 
         activate();
 
@@ -92,6 +114,53 @@
                     }, function(e) {
                         // an error occurred
                         return [];
+                    });
+                }
+            });
+        };
+
+        function assignedTaskTableSettings(asAssigner) {
+            return new NgTableParams({
+                        sorting: {assignedDate: "desc"},
+                        filter: {closed: false, taskStatus: ''},
+                        count: 10,
+            },
+            {
+                counts: [10, 25, 50, 100],
+                getData: function(params) {
+                    var sortBy = Object.keys(params.sorting())[0]
+                    return taskService.getUserAssignedTasks(
+                        asAssigner,
+                        vm.username,
+                        params.page(),
+                        params.count(),
+                        sortBy,
+                        sortBy ? params.sorting()[sortBy] : undefined,
+                        params.filter().closed,
+                        params.filter().project,
+                        params.filter().taskStatus
+                    ).then(function (data) {
+                        params.total(data.pagination.total);
+                        if (!asAssigner) {
+                            vm.assigneeHasLoaded = true;
+                            vm.errorRetrievingAssigneeTasks = false;
+                        }
+                        if (asAssigner) {
+                            vm.assignerHasLoaded = true;
+                            vm.errorRetrievingAssignerTasks = false;
+                        }
+                        return data.assignedTasks;
+                    }, function(e) {
+                        // an error occurred
+                        if (!asAssigner) {
+                            vm.assigneeHasLoaded = true;
+                            vm.errorRetrievingAssigneeTasks = true;
+                        }
+                        if (asAssigner) {
+                            vm.assignerHasLoaded = true;
+                            vm.errorRetrievingAssignerTasks = true;
+                        }
+                        return e;
                     });
                 }
             });

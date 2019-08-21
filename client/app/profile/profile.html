@@ -283,6 +283,78 @@
         <div class="section-container">
             <div class="section__body">
                 <div class="inner">
+                    <h2 ng-if='profileCtrl.isOwnProfile()'>{{ 'Tasks Assigned to You' | translate }}</h2>
+                    <h2 ng-if='!profileCtrl.isOwnProfile()' translate='TASKS_ASSIGNED_TO' translate-value-username='{{profileCtrl.username}}'></h2>
+                    <div class="stats-card__loading" ng-show="!profileCtrl.assigneeHasLoaded"></div>
+                    <div class="profile-invalidated-tasks-list" ng-show="profileCtrl.assigneeHasLoaded">
+                        <p ng-show='profileCtrl.errorRetrievingAssigneeTasks'>
+                            {{ 'Error retrieving tasks assigned to you' | translate }} - {{ profileCtrl.assignedTasksAsAssigneeTableSettings }}
+                        </p>
+                        <table ng-table="profileCtrl.assignedTasksAsAssigneeTableSettings" class="table" ng-show='!profileCtrl.errorRetrievingAssigneeTasks'>
+                            <tr ng-repeat="assignedTask in $data">
+                                <td title="'Project' | translate" sortable="'projectId'">
+                                    <a ng-href="/project/{{ assignedTask.projectId }}">
+                                        {{ assignedTask.projectName }}
+                                    </a>
+                                </td>
+                                <td title="'Task' | translate">
+                                  <a ng-href="/project/{{ assignedTask.projectId }}?task={{ assignedTask.taskId }}&history={{ assignedTask.historyId }}">
+                                        {{ 'Task' | translate }} {{ assignedTask.taskId }}
+                                    </a>
+                                </td>
+                                <td title="'Task Status' | translate" filter="{taskStatus: 'select'}"
+                                    filter-data="profileCtrl.assigneeTaskStatusFilterOptions">
+                                        {{ assignedTask.taskStatus }}
+                                  </td>
+                                <td title="'State' | translate" filter="{closed: 'select'}"
+                                    filter-data="profileCtrl.assigneeClosedFilterOptions">
+                                        {{ (assignedTask.closed ? 'Closed' : 'Open') | translate }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body section__body--secondary">
+                <div class="inner">
+                    <h2 ng-if='profileCtrl.isOwnProfile()'>{{ 'Tasks You Assigned' | translate }}</h2>
+                    <h2 ng-if='!profileCtrl.isOwnProfile()' translate='TASKS_ASSIGNED_BY' translate-value-username='{{profileCtrl.username}}'></h2>
+                  <div class="stats-card__loading" ng-show="!profileCtrl.assignerHasLoaded"></div>
+                    <div ng-show="profileCtrl.assignerHasLoaded">
+                        <p ng-show='profileCtrl.errorRetrievingAssignerTasks'>
+                            {{ 'Error retrieving tasks you assigned' | translate }} - {{ profileCtrl.assignedTasksAsAssigneeTableSettings }}
+                        </p>
+                        <table ng-table="profileCtrl.assignedTasksAsAssignerTableSettings" class="table" ng-show='!profileCtrl.errorRetrievingAssignerTasks'>
+                            <tr ng-repeat="assignedTask in $data">
+                                <td title="'Project' | translate" sortable="'projectId'">
+                                    <a ng-href="/project/{{ assignedTask.projectId }}">
+                                        {{ assignedTask.projectName }}
+                                    </a>
+                                </td>
+                                <td title="'Task' | translate">
+                                  <a ng-href="/project/{{ assignedTask.projectId }}?task={{ assignedTask.taskId }}&history={{ assignedTask.historyId }}">
+                                        {{ 'Task' | translate }} {{ assignedTask.taskId }}
+                                    </a>
+                                </td>
+                                <td title="'Task Status' | translate" filter="{taskStatus: 'select'}"
+                                    filter-data="profileCtrl.assignerTaskStatusFilterOptions">
+                                        {{ assignedTask.taskStatus }}
+                                  </td>
+                                <td title="'State' | translate" filter="{closed: 'select'}"
+                                    filter-data="profileCtrl.assignerClosedFilterOptions">
+                                        {{ (assignedTask.closed ? 'Closed' : 'Open') | translate }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
                     <h2>{{ 'Projects' | translate }}</h2>
                      <p ng-show="!profileCtrl.projects.length > 0">{{ 'No contributions to projects (yet).' | translate }}</p>
                     <div ng-show="profileCtrl.projects.length > 0" class="profile-projects-list">
