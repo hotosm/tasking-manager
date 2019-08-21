@@ -16,6 +16,8 @@ from server.models.postgis.statuses import (
     MappingTypes,
     ProjectPriority,
 )
+from server.models.postgis.campaign import Campaign
+from server.models.postgis.organisation import Organisation
 from server.models.postgis.task import TaskHistory
 from server.models.postgis.utils import (
     NotFound,
@@ -24,6 +26,7 @@ from server.models.postgis.utils import (
     ST_Transform,
     ST_Area,
 )
+from server.services.campaign_service import CampaignService
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
@@ -89,6 +92,8 @@ class ProjectSearchService:
             project_info_dto = ProjectInfo.get_dto_for_locale(
                 project.id, search_dto.preferred_locale, project.default_locale
             )
+            project_campaigns_dto = CampaignService.get_project_campaigns_as_dto(project.id)
+
             list_dto = ListSearchResultDTO()
             list_dto.project_id = project.id
             list_dto.locale = project_info_dto.locale
@@ -96,9 +101,9 @@ class ProjectSearchService:
             list_dto.priority = ProjectPriority(project.priority).name
             list_dto.mapper_level = MappingLevel(project.mapper_level).name
             list_dto.short_description = project_info_dto.short_description
-            list_dto.organisation_tag = project.organisation_tag
+            list_dto.organisation = project.organisation
             list_dto.last_updated = project.last_updated
-            list_dto.campaign_tag = project.campaign_tag
+            list_dto.campaign = project_campaigns_dto.campaigns
             list_dto.due_date = project.due_date
             list_dto.percent_mapped = Project.calculate_tasks_percent(
                 "mapped",
@@ -133,8 +138,6 @@ class ProjectSearchService:
                 Project.priority,
                 Project.default_locale,
                 Project.centroid.ST_AsGeoJSON().label("centroid"),
-                Project.organisation_id,
-                Project.campaign_tag,
                 Project.tasks_bad_imagery,
                 Project.tasks_mapped,
                 Project.tasks_validated,
@@ -171,8 +174,8 @@ class ProjectSearchService:
         if search_dto.organisation:
             query = query.join(Organisation, Project.organisation).filter(Organisation.name == search_dto.organisation)
 
-        if search_dto.campaign_tag:
-            query = query.filter(Project.campaign_tag == search_dto.campaign_tag)
+        if search_dto.campaign:
+            query = query.join(Campaign, Project.campaign).filter(Campaign.name == search_dto.campaign)
 
         if search_dto.mapping_types:
             # Construct array of mapping types for query

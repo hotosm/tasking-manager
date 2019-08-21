@@ -15,6 +15,7 @@ from server.models.dtos.stats_dto import (
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User, Task
+from server.models.postgis.campaign import Campaign, campaign_projects
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService
@@ -215,25 +216,26 @@ class StatsService:
 
         dto.total_validated_area = tasks_validated_result.fetchone()["sum"]
 
-        campaign_count = (
-            db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))
-            .group_by(Project.campaign_tag)
-            .all()
-        )
-        no_campaign_count = 0
-        unique_campaigns = 0
+        unique_campaigns_sql = "select count(name) as sum from Campaign"
 
-        for tup in campaign_count:
+        unique_campaigns = db.engine.execute(unique_campaigns_sql).fetchone()['sum']
+        
+        linked_campaigns_sql = "select Campaign.name, count(campaign_projects.campaign_id) from Campaign INNER JOIN campaign_projects\
+            ON Campaign.id=campaign_projects.campaign_id group by Campaign.id"
+
+        linked_campaigns_count = db.engine.execute(linked_campaigns_sql).fetchall()
+        
+        no_campaign_count_sql = "select count(*) as project_count from projects where id not in (select distinct project_id from campaign_projects order by project_id)"
+        no_campaign_count = db.engine.execute(no_campaign_count_sql).fetchone()['project_count']
+
+        for tup in linked_campaigns_count:
             campaign_stats = CampaignStatsDTO(tup)
-            if campaign_stats.tag:
-                dto.campaigns.append(campaign_stats)
-                unique_campaigns += 1
-            else:
-                no_campaign_count += campaign_stats.projects_created
+            dto.campaigns.append(campaign_stats)
 
         if no_campaign_count:
-            no_campaign_proj = CampaignStatsDTO(("Untagged", no_campaign_count))
+            no_campaign_proj = CampaignStatsDTO(('Unassociated', no_campaign_count))
             dto.campaigns.append(no_campaign_proj)
+        
         dto.total_campaigns = unique_campaigns
 
         unique_orgs_sql = "select count(name) as sum from organisations"

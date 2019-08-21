@@ -43,6 +43,10 @@ from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task, TaskHistory
 from server.models.postgis.team import Team
 from server.models.postgis.user import User
+from server.models.postgis.campaign import (
+    Campaign,
+    campaign_projects,
+)
 
 from server.models.postgis.utils import (
     ST_SetSRID,
@@ -146,7 +150,6 @@ class Project(db.Model):
 
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
-    campaign_tag = db.Column(db.String, index=True)
 
     # Editors
     mapping_editors = db.Column(
@@ -193,6 +196,7 @@ class Project(db.Model):
         single_parent=True,
     )
     organisation = db.relationship(Organisation, backref="projects")
+    campaign = db.relationship(Campaign, secondary=campaign_projects, backref='project')
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
@@ -294,8 +298,6 @@ class Project(db.Model):
         cloned_project.josm_preset = original_project.josm_preset
         cloned_project.license_id = original_project.license_id
         cloned_project.mapping_types = original_project.mapping_types
-        cloned_project.organisation_tag = original_project.organisation_tag
-        cloned_project.campaign_tag = original_project.campaign_tag
 
         # We try to remove the changeset comment referencing the old project. This
         #  assumes the default changeset comment has not changed between the old
@@ -355,14 +357,6 @@ class Project(db.Model):
             if org is None:
                 raise NotFound("Organisation does not exist")
             self.organisation = org
-
-        if project_dto.campaign_tag:
-            camp_tag = Tags.upsert_campaign_tag(project_dto.campaign_tag)
-            self.campaign_tag = camp_tag
-        else:
-            self.campaign_tag = (
-                None
-            )  # Set to none, for cases where a tag could have been removed
 
         # Cast MappingType strings to int array
         type_array = []
@@ -634,7 +628,6 @@ class Project(db.Model):
         )
         area = polygon_aea.area / 1000000
         summary.area = area
-        summary.campaign_tag = self.campaign_tag
         summary.changeset_comment = self.changeset_comment
         summary.created = self.created
         summary.last_updated = self.last_updated
@@ -744,7 +737,6 @@ class Project(db.Model):
         base_dto.due_date = self.due_date
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset
-        base_dto.campaign_tag = self.campaign_tag
         base_dto.organisation_id = self.organisation_id
         base_dto.license_id = self.license_id
         base_dto.created = self.created
@@ -812,24 +804,6 @@ class Project(db.Model):
         project_tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
 
         return project_tasks
-
-    @staticmethod
-    def get_all_campaign_tag(preferred_locale="en"):
-        query = (
-            db.session.query(
-                Project.id, Project.campaign_tag, Project.private, Project.status
-            )
-            .join(ProjectInfo)
-            .filter(ProjectInfo.locale.in_([preferred_locale, "en"]))
-            .filter(Project.private.is_(True))
-            .filter(Project.campaign_tag.isnot(None))
-            .filter(Project.campaign_tag != "")
-        )
-        query = query.distinct(Project.campaign_tag)
-        query = query.order_by(Project.campaign_tag)
-        tags_dto = TagsDTO()
-        tags_dto.tags = [r[1] for r in query]
-        return tags_dto
 
     @staticmethod
     def calculate_tasks_percent(
