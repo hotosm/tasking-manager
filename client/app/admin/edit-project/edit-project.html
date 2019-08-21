@@ -447,6 +447,20 @@
                                         </li>
                                     </ul>
                                 </div>
+                                <div class="form__group form__group--section">
+                                        <label class="form__label">{{ 'Task Assignment' | translate }}</label>
+                                        <label class="form__option">
+                                            <input ng-model="editProjectCtrl.project.enforceAssignment" type="checkbox"/>{{ 'Turn on task assignment' | translate }}
+                                        </label>
+                                        <p>{{ 'If checked, a task will be assigned to a user when they lock it, it\'s invalidated, or a project manager or admin assign it manually.' | translate }}</p>
+                                </div>
+                                <div class="form__group form__group--section">
+                                        <label class="form__label">{{ 'Enforce Random Task Selection' | translate }}</label>
+                                        <label class="form__option">
+                                            <input ng-model="editProjectCtrl.project.enforceRandomTaskSelection" type="checkbox"/>{{ 'Enforce random task selection on mapping' | translate }}
+                                        </label>
+                                        <p>{{ 'If checked, users must edit tasks at random for the initial editing stage (project managers and admins are exempt). ' | translate }}</p>
+                                </div>
                             </fieldset>
                         </div>
                             <!--/ settings -->
