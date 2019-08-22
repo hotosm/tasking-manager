@@ -388,15 +388,7 @@
                                         <!-- task action buttons -->
                                         <div class="form__group form__group--section">
                                             <div ng-show="!(projectCtrl.enforceRandomTaskSelection() && projectCtrl.randomTaskSelectionError)">
-                                                <div ng-hide="projectCtrl.user.emailAddress">
-                                                    <p>
-                                                        {{ 'When you contribute on the Tasking Manager, it is important that notifications around the tasks and projects you participated are reaching you. Thus we require your email address.' | translate }}
-                                                        <a href="/user/{{ projectCtrl.user.username }}">{{ 'Please go to your profile and add your email address' | translate }}</a>.<br /><br />
-                                                        {{ 'You can inform yourself on our website about' | translate }}
-                                                        <a href="https://hotosm.org/privacy">{{ 'how we handle your data' | translate }}</a>.
-                                                    </p>
-                                                </div>
-                                                <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap && projectCtrl.user.emailAddress"
+                                                <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap"
                                                         class="button button--large"
                                                         ng-click="projectCtrl.lockSelectedTaskMapping()">
                                                     {{ 'Start Mapping' | translate }}
@@ -598,14 +590,6 @@
                                             role="alert">
                                         <p>{{ 'You cannot select tasks for validation on this project because you do not have the Validator role.' | translate }}</p>
                                     </div>
-                                    <div ng-hide="projectCtrl.user.emailAddress">
-                                        <p>
-                                            {{ 'When you contribute on the Tasking Manager, it is important that notifications around the tasks and projects you participated are reaching you. Thus we require your email address.' | translate }}
-                                            <a href="/user/{{ projectCtrl.user.username }}">{{ 'Please go to your profile and add your email address' | translate }}</a>.<br /><br />
-                                            {{ 'You can inform yourself on our website about' | translate }}
-                                            <a href="https://hotosm.org/privacy">{{ 'how we handle your data' | translate }}</a>.
-                                        </p>
-                                    </div>
                                     <div ng-show="projectCtrl.userCanValidate && !project.showWarning">
                                         <p class="description--block">{{ 'Find a task for validation through one of the options below.' | translate }}</p>
                                         <div ng-show="projectCtrl.taskErrorValidation === 'none-available'">
@@ -787,15 +771,7 @@
                                     <!-- task action buttons -->
                                     <div class="form__group form__group--section">
                                         <div>
-                                            <div ng-hide="projectCtrl.user.emailAddress">
-                                                <p>
-                                                    {{ 'When you contribute on the Tasking Manager, it is important that notifications around the tasks and projects you participated are reaching you. Thus we require your email address.' | translate }}
-                                                    <a href="/user/{{ projectCtrl.user.username }}">{{ 'Please go to your profile and add your email address' | translate }}</a>.<br /><br />
-                                                    {{ 'You can inform yourself on our website about' | translate }}
-                                                    <a href="https://hotosm.org/privacy">{{ 'how we handle your data' | translate }}</a>.
-                                                </p>
-                                            </div>
-                                            <button ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError && projectCtrl.userCanValidate && projectCtrl.user.emailAddress"
+                                            <button ng-show="projectCtrl.isSelectedValidatable && !projectCtrl.taskLockError && projectCtrl.userCanValidate"
                                                     class="button button--large"
                                                     ng-click="projectCtrl.lockSelectedTaskValidation()">
                                                 {{ 'Start Validating' | translate }}
