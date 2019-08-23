@@ -240,7 +240,7 @@ class Header extends React.Component {
             { this.renderAuthenticationButtons() }
             <div className="dib v-mid dn-l">
               <Popup
-                trigger={<BurgerMenu />}
+                trigger={open => <BurgerMenu open={open}/>}
                 modal
                 closeOnDocumentClick
                 >
