@@ -39,3 +39,5 @@ export { DisasterResponseIcon } from "./disasterResponse";
 export { WorldNodesIcon } from "./worldNodes";
 export { DataUseIcon } from "./dataUse";
 export { CheckIcon } from "./check";
+export { CloseIcon } from "./close";
+export { MenuIcon } from "./menu";
