@@ -8,6 +8,7 @@ from server.models.dtos.project_dto import (
     Pagination,
     ProjectSearchBBoxDTO,
 )
+from server.models.postgis.organisation import Organisation
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.statuses import (
     ProjectStatus,
@@ -132,7 +133,7 @@ class ProjectSearchService:
                 Project.priority,
                 Project.default_locale,
                 Project.centroid.ST_AsGeoJSON().label("centroid"),
-                Project.organisation_tag,
+                Project.organisation_id,
                 Project.campaign_tag,
                 Project.tasks_bad_imagery,
                 Project.tasks_mapped,
@@ -167,10 +168,8 @@ class ProjectSearchService:
                 Project.mapper_level == MappingLevel[search_dto.mapper_level].value
             )
 
-        if search_dto.organisation_tag:
-            query = query.filter(
-                Project.organisation_tag == search_dto.organisation_tag
-            )
+        if search_dto.organisation:
+            query = query.join(Organisation, Project.organisation).filter(Organisation.name == search_dto.organisation)
 
         if search_dto.campaign_tag:
             query = query.filter(Project.campaign_tag == search_dto.campaign_tag)

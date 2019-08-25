@@ -34,7 +34,7 @@ export class EditTeam extends React.Component {
   }
 
   getTeam = () => {
-    this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI('team/' + this.props.team_id));
+    this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI('teams/' + this.props.team_id));
     this.tmTeamsPromise.promise.then(
       r => {
         this.setState({
@@ -60,7 +60,7 @@ export class EditTeam extends React.Component {
   handleTeamDeletion = (e) => {
     console.log('Delete team');
     this.setState({ showDeleteTeamModal: false});
-    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('team/' + this.state.team.teamId, JSON.stringify({}), safeStorage.getItem('token'), 'DELETE'));
+    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId, JSON.stringify({}), safeStorage.getItem('token'), 'DELETE'));
     this.tmTeamsPromise.promise.then(
         res => {
         console.log(res);
@@ -73,8 +73,8 @@ export class EditTeam extends React.Component {
   deleteMultipleTeamMembers = (e) => {
     console.log(this.state.selectedMembers);
     this.toggleUsersDeletionModal(e);
-    let body = { usernames: this.state.selectedMembers, team_id:this.state.team.teamId };
-    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('team/remove-user', JSON.stringify(body), safeStorage.getItem('token'), 'DELETE'));
+    let body = { usernames: this.state.selectedMembers };
+    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/actions/remove-users', JSON.stringify(body), safeStorage.getItem('token'), 'DELETE'));
     this.tmTeamsPromise.promise.then(
       r => {console.log(r);
         this.getTeam();
@@ -84,8 +84,7 @@ export class EditTeam extends React.Component {
   //delete the team-project association
   deleteProject = (e, id) => {
     e.preventDefault();
-    let body = { project_id:id, team_id:this.state.team.teamId };
-    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('team/project', JSON.stringify(body), safeStorage.getItem('token'), 'DELETE'));
+    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/projects/' + id, JSON.stringify({}), safeStorage.getItem('token'), 'DELETE'));
     this.tmTeamsPromise.promise.then(
       r => {  this.getTeam();
       }).catch(e => console.log(e));
@@ -112,7 +111,7 @@ export class EditTeam extends React.Component {
     var newTeam = { name: this.state.name, organisation: this.state.organisation, description: this.state.description,
        invite_only: this.state.inviteOnly, visibility: this.state.visibility, members: this.state.members, organisation_id: this.state.team.organisation_id};
     console.log(newTeam);
-    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('team/' + this.state.team.teamId, JSON.stringify(newTeam), safeStorage.getItem('token'), 'POST'));
+    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId, JSON.stringify(newTeam), safeStorage.getItem('token'), 'PUT'));
     this.tmTeamsPromise.promise.then(
       r => {  this.getTeam();
       }).catch(e => console.log(e));
@@ -120,8 +119,8 @@ export class EditTeam extends React.Component {
 
   handleProjectSave = (e, project_id, role) => {
     e.preventDefault();
-    let body = { team_id: this.state.team.teamId, project_id: project_id, role: role};
-    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('team/project' , JSON.stringify(body), safeStorage.getItem('token'), 'PUT'));
+    let body = { role: role};
+    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/projects/' + project_id , JSON.stringify(body), safeStorage.getItem('token'), 'PUT'));
     this.tmTeamsPromise.promise.then(
       r => {  this.getTeam();
       }).catch(e => console.log(e));
@@ -129,15 +128,26 @@ export class EditTeam extends React.Component {
 
   // Add team-project association
   addProject = (e) => {
-    if(this.state.newProject!=null){
+    if(this.state.newProject != null){
       e.preventDefault();
-      let body = { project_id:this.state.newProject, team_id:this.state.team.teamId };
-      this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('team/project', JSON.stringify(body), safeStorage.getItem('token'), 'POST'));
+      this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/projects/' + this.state.newProject, JSON.stringify({}), safeStorage.getItem('token'), 'POST'));
       this.tmTeamsPromise.promise.then(
         r => {console.log(r);
           this.getTeam();
         }).catch(e => console.log(e));
     }
+  }
+
+  addTeamMember = (e) => {
+      console.log('Invite send');
+      let body = { user:this.state.username, type:'invite'};
+      this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/actions/join', JSON.stringify(body),
+      safeStorage.getItem('token'), 'POST'));
+      this.tmTeamsPromise.promise.then(
+          res => {
+          console.log(res);
+          }
+          ).catch(e => console.log(e));
   }
 
   // Select multiple members and team admins
@@ -168,11 +178,6 @@ export class EditTeam extends React.Component {
   toggleUsersDeletionModal = (e) => {
     e.preventDefault();
     this.setState(state => ({ showDeleteUsersModal: !state.showDeleteUsersModal }));
-  }
-
-  componentDidCatch = (error, info) => {
-      console.log(error);
-      console.log(info);
   }
 
   renderRedirect = () => {

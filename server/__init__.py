@@ -209,9 +209,9 @@ def add_api_endpoints(app):
         ListTeamsAPI,
         TeamMembersAPI,
         TeamProjectsAPI,
-        DeleteMultipleTeamMembers,
+        DeleteMultipleTeamMembersAPI,
     )
-    from server.api.organisation_api import OrganisationAPI
+    from server.api.organisation_api import OrganisationAPI, GetAllOrganisationsAPI
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
     from server.api.settings_apis import LanguagesAPI
@@ -406,36 +406,37 @@ def add_api_endpoints(app):
     api.add_resource(LanguagesAPI, "/api/v1/settings")
     api.add_resource(
         OrganisationAPI,
-        "/api/v1/organisation",
+        "/api/v1/organisations",
         endpoint="create_organisation",
-        methods=["PUT"],
+        methods=["POST"],
     )
     api.add_resource(
         OrganisationAPI,
-        "/api/v1/organisation/<string:organisation_name>",
+        "/api/v1/organisations/<int:organisation_id>",
         endpoint="get_organisation",
         methods=["GET"],
     )
     api.add_resource(
         OrganisationAPI,
-        "/api/v1/organisation/<int:organisation_id>",
-        methods=["POST", "DELETE"],
+        "/api/v1/organisations/<int:organisation_id>",
+        methods=["PUT", "DELETE"],
     )
-    api.add_resource(TeamAPI, "/api/v1/team", endpoint="create_team", methods=["PUT"])
+    api.add_resource(GetAllOrganisationsAPI, "/api/v1/organisations", methods=["GET"])
+    api.add_resource(TeamAPI, "/api/v1/teams", endpoint="create_team", methods=["POST"])
     api.add_resource(
-        TeamAPI, "/api/v1/team/<int:team_id>", methods=["GET", "POST", "DELETE"]
+        TeamAPI, "/api/v1/teams/<int:team_id>", methods=["GET", "PUT", "DELETE"]
     )
     api.add_resource(ListTeamsAPI, "/api/v1/teams", methods=["GET"])
-    api.add_resource(TeamMembersAPI, "/api/v1/team/request-join", methods=["POST"])
+    api.add_resource(TeamMembersAPI, "/api/v1/teams/<int:team_id>/actions/join", methods=["POST"])
     api.add_resource(
-        TeamMembersAPI, "/api/v1/team/leave", endpoint="leave_team", methods=["DELETE"]
+        TeamMembersAPI, "/api/v1/teams/<int:team_id>/actions/leave", endpoint="leave_team", methods=["DELETE"]
     )
     api.add_resource(
-        DeleteMultipleTeamMembers,
-        "/api/v1/team/remove-user",
+        DeleteMultipleTeamMembersAPI,
+        "/api/v1/teams/<int:team_id>/actions/remove-users",
         endpoint="remove_user_from_team",
         methods=["DELETE"],
     )
     api.add_resource(
-        TeamProjectsAPI, "/api/v1/team/project", methods=["POST", "DELETE", "PUT"]
+        TeamProjectsAPI, "/api/v1/teams/<int:team_id>/projects/<int:project_id>", methods=["POST", "DELETE", "PUT"]
     )

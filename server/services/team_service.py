@@ -35,7 +35,7 @@ class TeamServiceError(Exception):
 
 class TeamService:
     @staticmethod
-    def send_request_to_join_team(team_id, username):
+    def join_team(team_id, username):
         team_members = TeamService._get_team_managers(team_id)
         team = TeamService.get_team_by_id(team_id)
         user = UserService.get_user_by_username(username)
@@ -44,6 +44,47 @@ class TeamService:
                 user.id, user.username, member.user_id, team.name
             )
 
+    @staticmethod
+    def send_invite(team_id, from_user_id, username):
+        to_user = UserService.get_user_by_username(username)
+        from_user = UserService.get_user_by_id(from_user_id)
+        team = TeamService.get_team_by_id(team_id)
+        MessageService.send_invite_to_join_team(
+            from_user_id, from_user.username, to_user.id, team.name
+        )
+
+    @staticmethod
+    def accept_reject_join_request(team_id, to_user_id, from_user_id, function, response):
+        from_user = UserService.get_user_by_id(from_user_id)
+        team = TeamService.get_team_by_id(team_id)
+        MessageService.accept_reject_request_to_join_team(
+            from_user_id, from_user.username, to_user_id, team.name, response
+        )
+        if response == 'accept':
+            TeamService.add_team_member(team_id, to_user_id, TeamMemberFunctions[function])
+
+    @staticmethod
+    def accept_reject_invitation_request(team_id, from_user_id, to_user_id, function, response):
+        from_user = UserService.get_user_by_id(from_user_id)
+        to_user = UserService.get_user_by_id(to_user_id)
+        team = TeamService.get_team_by_id(team_id)
+        team_members = TeamService._get_team_managers(team_id)
+
+        for member in team_members:
+            MessageService.accept_reject_invitation_request_for_team(
+                from_user_id, from_user.username, member.user_id, to_user.username, team.name, response
+            )
+        if response == 'accept':
+            TeamService.add_team_member(team_id, from_user_id, TeamMemberFunctions[function])
+
+    @staticmethod
+    def add_team_member(team_id, user_id, function):
+        team_member = TeamMembers()
+        team_member.team_id = team_id
+        team_member.user_id = user_id
+        team_member.function = function
+        team_member.create()
+    
     @staticmethod
     def leave_team(team_id, username):
         user = UserService.get_user_by_username(username)

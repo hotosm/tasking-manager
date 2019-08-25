@@ -24,6 +24,11 @@ class TeamMembers(db.Model):
         "Team", backref=db.backref("members", cascade="all, delete-orphan")
     )
 
+    def create(self):
+        """ Creates and saves the current model to the DB """
+        db.session.add(self)
+        db.session.commit()
+
     def delete(self):
         """ Deletes the current model from the DB """
         db.session.delete(self)

@@ -112,8 +112,8 @@ class Organisation(db.Model):
         """ Gets all organisations; only returns secret orgs if user belongs to it """
         return Organisation.query.filter(
             or_(
-                Organisation.visibility != OrganisationVisibility.SECRET,
-                User().get_by_id(user_id) in Organisation.admins,
+                Organisation.visibility != OrganisationVisibility.SECRET.value,
+                # User().get_by_id(user_id) in Organisation.admins,
             )
         )
 

@@ -9,7 +9,7 @@ from server.services.organisation_service import OrganisationService
 
 class TeamAPI(Resource):
     @token_auth.login_required
-    def put(self):
+    def post(self):
         """
         Creates a new team
         ---
@@ -77,7 +77,7 @@ class TeamAPI(Resource):
             return {"error": error_msg}, 500
 
     @token_auth.login_required
-    def post(self, team_id):
+    def put(self, team_id):
         """
         Updates a team
         ---
@@ -269,18 +269,22 @@ class ListTeamsAPI(Resource):
 class TeamMembersAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
-    def post(self):
+    def post(self, team_id):
 
         try:
-            team_id = int(request.get_json(force=True)["team_id"])
             username = request.get_json(force=True)["user"]
+            request_type = request.get_json(force=True)["type"]
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
 
         try:
-            TeamService.send_request_to_join_team(team_id, username)
-            return {"Success": "Request Send"}, 200
+            if request_type == 'join':
+                TeamService.join_team(team_id, username)
+                return {"Success": "Request Send"}, 200
+            elif request_type == 'invite':
+                TeamService.send_invite(team_id, tm.authenticated_user_id, username)
+                return {"Success": "Invite Send"}, 200
         except Exception as e:
             error_msg = f"User POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -288,7 +292,32 @@ class TeamMembersAPI(Resource):
 
     @tm.pm_only(False)
     @token_auth.login_required
-    def delete(self):
+    def put(self, team_id):
+
+        try:
+            user_id = int(request.get_json(force=True)["user_id"])
+            request_type = request.get_json(force=True)["type"]
+            response = request.get_json(force=True)["response"]
+            function = request.get_json(force=True)["fuction"]
+        except DataError as e:
+            current_app.logger.error(f"error validating request: {str(e)}")
+            return str(e), 400
+
+        try:
+            if request_type == 'join-response':
+                TeamService.accept_reject_join_request(team_id, user_id, tm.authenticated_user_id, function, response)
+                return {"Success": "True"}, 200
+            elif request_type == 'invite-response':
+                TeamService.accept_reject_invitation_request(team_id, tm.authenticated_user_id, user_id, function, response)
+                return {"Success": "True"}, 200
+        except Exception as e:
+            error_msg = f"User POST - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def delete(self, team_id):
         """
         Deletes the user from team
         ---
@@ -320,7 +349,6 @@ class TeamMembersAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            team_id = int(request.get_json(force=True)["team_id"])
             username = request.get_json(force=True)["user"]
             TeamService.leave_team(team_id, username)
             team_dto = TeamService.get_team_as_dto(team_id, 9507979)
@@ -333,10 +361,10 @@ class TeamMembersAPI(Resource):
             return {"error": error_msg}, 500
 
 
-class DeleteMultipleTeamMembers(Resource):
+class DeleteMultipleTeamMembersAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
-    def delete(self):
+    def delete(self, team_id):
         """
         Deletes the specified message
         ---
@@ -369,7 +397,6 @@ class DeleteMultipleTeamMembers(Resource):
         """
         try:
 
-            team_id = int(request.get_json(force=True)["team_id"])
             usernames = request.get_json(force=True)["usernames"]
             for username in usernames:
                 TeamService.leave_team(team_id, username)
@@ -385,14 +412,7 @@ class DeleteMultipleTeamMembers(Resource):
 class TeamProjectsAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
-    def post(self):
-
-        try:
-            team_id = int(request.get_json(force=True)["team_id"])
-            project_id = int(request.get_json(force=True)["project_id"])
-        except DataError as e:
-            current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+    def post(self, team_id, project_id):
 
         try:
             TeamService.add_team_project(team_id, project_id)
@@ -404,11 +424,9 @@ class TeamProjectsAPI(Resource):
 
     @tm.pm_only(False)
     @token_auth.login_required
-    def put(self):
+    def put(self, team_id, project_id):
 
         try:
-            team_id = int(request.get_json(force=True)["team_id"])
-            project_id = int(request.get_json(force=True)["project_id"])
             role = request.get_json(force=True)["role"]
 
             if not TeamService.user_is_manager(team_id, tm.authenticated_user_id):
@@ -431,7 +449,7 @@ class TeamProjectsAPI(Resource):
 
     @tm.pm_only(False)
     @token_auth.login_required
-    def delete(self):
+    def delete(self, team_id, project_id):
         """
         Deletes the specified team project
         ---
@@ -464,8 +482,6 @@ class TeamProjectsAPI(Resource):
         """
         try:
 
-            team_id = int(request.get_json(force=True)["team_id"])
-            project_id = int(request.get_json(force=True)["project_id"])
             TeamService.delete_team_project(team_id, project_id)
             return {"Success": True}, 200
         except NotFound:

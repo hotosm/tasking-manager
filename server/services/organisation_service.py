@@ -2,10 +2,14 @@ from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
 from server import db
-from server.models.dtos.organisation_dto import OrganisationDTO, NewOrganisationDTO
-from server.models.postgis.organisation import Organisation
+from server.models.dtos.organisation_dto import OrganisationDTO, NewOrganisationDTO, ListOrganisationsDTO
+from server.models.dtos.team_dto import TeamDTO, TeamsListDTO
+from server.models.dtos.project_dto import ProjectDTO
+from server.models.postgis.organisation import Organisation, organisation_admins
 from server.models.postgis.project import Project, ProjectInfo
+from server.models.postgis.team import Team
 from server.models.postgis.utils import NotFound
+from server.models.postgis.statuses import OrganisationVisibility
 from server.services.users.user_service import UserService
 
 
@@ -31,6 +35,19 @@ class OrganisationService:
             raise NotFound()
 
         return projects
+
+    @staticmethod
+    def get_teams_by_organisation_id(organisation_id: int) -> Organisation:
+        teams = (
+            db.session.query(Team.id, Team.name)
+            .filter(Team.organisation_id == organisation_id)
+            .all()
+        )
+
+        if teams is None:
+            raise NotFound()
+
+        return teams
 
     @staticmethod
     def get_organisation_by_id(organisation_id: int) -> Organisation:
@@ -165,3 +182,55 @@ class OrganisationService:
             return Organisation().get_all_organisations()
 
         return Organisation().get_all_organisations_for_user(user_id)
+
+    @staticmethod
+    def get_all_organisations_for_user_as_dto(user_id: int):
+        orgs = OrganisationService.get_all_organisations_for_user(user_id)
+        orgs_dto = ListOrganisationsDTO()
+        orgs_dto.organisations = []
+        for org in orgs:
+            org_dto = OrganisationDTO()
+            org_dto.organisation_id = org.id
+            org_dto.name = org.name
+            org_dto.logo = org.logo
+            org_dto.url = org.url
+            org_dto.visibility = org.visibility
+            
+            orgs_dto.organisations.append(org_dto)
+
+        return orgs_dto
+
+    @staticmethod
+    def get_organisation_as_dto(organisation_id: int, user_id: int):
+        org = Organisation.get(organisation_id)
+        
+        if org is None:
+            raise NotFound()
+
+        if org.visibility != OrganisationVisibility.SECRET.value or OrganisationService.user_is_admin(organisation_id, user_id):
+            org_dto = OrganisationDTO()
+            
+            org_dto.projects = []
+            org_dto.teams = []
+            org_dto.admins = []
+            
+            org_dto.organisation_id = org.id
+            org_dto.name = org.name
+            org_dto.logo = org.logo
+            org_dto.url = org.url
+            org_dto.visibility = org.visibility
+            org_dto.is_admin = OrganisationService.user_is_admin(organisation_id, user_id)
+
+            if org.visibility != OrganisationVisibility.PRIVATE.value:
+                teams = OrganisationService.get_teams_by_organisation_id(organisation_id)
+                for team in teams:
+                    org_dto.teams.append(team.name)
+
+                projects = OrganisationService.get_projects_by_organisation_id(organisation_id)
+                for project in projects:
+                    org_dto.projects.append(project.name)
+
+                for admin in org.admins:
+                    org_dto.admins.append(admin.username)
+
+        return org_dto

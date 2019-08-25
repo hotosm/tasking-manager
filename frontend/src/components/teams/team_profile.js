@@ -27,9 +27,10 @@ export class TeamProfile extends React.Component{
     }
 
     getTeam = () => {
-        this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI('team/' + this.props.team_id));
+        this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI('teams/' + this.props.team_id));
         this.tmTeamsPromise.promise.then(
         r => {
+            console.log(r);
             var isMember = false;
             var isAdmin = false;
             r.members.map(member => {
@@ -50,8 +51,8 @@ export class TeamProfile extends React.Component{
 
     handleJoin = () => {
         console.log('Join requested');
-        let body = {team_id:this.state.team.teamId, user:this.state.username};
-        this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('team/request-join', JSON.stringify(body),
+        let body = {user:this.state.username, type:'join'};
+        this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/actions/join', JSON.stringify(body),
         safeStorage.getItem('token'), 'POST'));
         this.tmTeamsPromise.promise.then(
             res => {
@@ -65,7 +66,7 @@ export class TeamProfile extends React.Component{
     handleLeave = () => {
         console.log("Leave Team");
         let body = {team_id:this.state.team.teamId, user:this.state.username};
-        this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('team/leave', JSON.stringify(body),
+        this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/actions/leave', JSON.stringify(body),
         safeStorage.getItem('token'), 'DELETE'));
         this.tmTeamsPromise.promise.then(
             res => {
@@ -82,7 +83,7 @@ export class TeamProfile extends React.Component{
             return(
                 <div className="ma3">
                     <div className="cf pv5 ph5-l ph4 bg-white">
-                        {(this.state.isAdmin) ? 
+                        {(this.state.isAdmin || this.state.team.is_general_admin || this.state.team.is_org_admin) ? 
                             <div className="dt-rows">
                                 <Link to={ '/edit_team/' + this.props.team_id } className="no-underline">
                                     <Button children='Edit' class='edit-team' /></Link>
@@ -111,8 +112,8 @@ export class TeamProfile extends React.Component{
                             <ul>
                                 { this.state.team.members.map((member,i)=>{
                                     if(member.function === 'MANAGER')
-                                        return(<li key={i}><a href={'localhost:5000/users/'+member.username} className="no-underline gray">
-                                        {member.username}</a></li>)
+                                        return(<li key={i}><Link to={'/users/'+member.username} className="no-underline gray">
+                                        {member.username}</Link></li>)
                                     else
                                         return null;
                                 })}
@@ -123,8 +124,8 @@ export class TeamProfile extends React.Component{
                             <ul>
                                 {this.state.team.members.map((member, i)=>{
                                     if(member.function === 'EDITOR')
-                                        return(<li key={i}><a href={'localhost:5000/users/'+member.username} className="no-underline gray">
-                                        {member.username}</a></li>)
+                                        return(<li key={i}><Link to={'localhost:5000/users/'+member.username} className="no-underline gray">
+                                        {member.username}</Link></li>)
                                     else
                                         return null;
                                 })}

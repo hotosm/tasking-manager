@@ -12,7 +12,7 @@ from server.services.users.authentication_service import token_auth, tm
 
 class OrganisationAPI(Resource):
     @token_auth.login_required
-    def put(self):
+    def post(self):
         """
         Creates a new organisation
         ---
@@ -126,7 +126,7 @@ class OrganisationAPI(Resource):
             return {"error": error_msg}, 500
 
     @token_auth.login_required
-    def get(self, organisation_name):
+    def get(self, organisation_id):
         """
         Retrieves a Organisation
         ---
@@ -158,8 +158,8 @@ class OrganisationAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            org_dto = OrganisationService.get_organisation_dto_by_name(
-                organisation_name
+            org_dto = OrganisationService.get_all_organisations_for_user(
+                organisation_id, tm.authenticated_user_id
             )
             return org_dto.to_primitive(), 200
         except NotFound:
@@ -170,7 +170,7 @@ class OrganisationAPI(Resource):
             return {"error": error_msg}, 500
 
     @token_auth.login_required
-    def post(self, organisation_id):
+    def put(self, organisation_id):
         """
         Updates an organisation
         ---
@@ -248,5 +248,16 @@ class OrganisationAPI(Resource):
             return str(e), 402
         except Exception as e:
             error_msg = f"Organisation POST - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+class GetAllOrganisationsAPI(Resource):
+
+    def get(self):
+        try:
+            orgs = OrganisationService.get_all_organisations_for_user_as_dto(tm.authenticated_user_id)
+            return orgs.to_primitive(), 200
+        except Exception as e:
+            error_msg = f"Organisations GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500

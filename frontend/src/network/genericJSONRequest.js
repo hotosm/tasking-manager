@@ -15,12 +15,13 @@ export function fetchExternalJSONAPI(url): Promise<*> {
     });
 }
 
-export function fetchLocalJSONAPI(endpoint): Promise<*> {
+export function fetchLocalJSONAPI(endpoint, token=null): Promise<*> {
   const url = new URL(endpoint, API_URL);
   return fetch(url, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      Authorization: {token} ? `Token ${token}` : ""
     }
   })
     .then(handleErrors)
