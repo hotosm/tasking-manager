@@ -251,11 +251,13 @@ class OrganisationAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
-class GetAllOrganisationsAPI(Resource):
 
+class GetAllOrganisationsAPI(Resource):
     def get(self):
         try:
-            orgs = OrganisationService.get_all_organisations_for_user_as_dto(tm.authenticated_user_id)
+            orgs = OrganisationService.get_all_organisations_for_user_as_dto(
+                tm.authenticated_user_id
+            )
             return orgs.to_primitive(), 200
         except Exception as e:
             error_msg = f"Organisations GET - unhandled error: {str(e)}"

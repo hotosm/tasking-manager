@@ -279,10 +279,10 @@ class TeamMembersAPI(Resource):
             return str(e), 400
 
         try:
-            if request_type == 'join':
+            if request_type == "join":
                 TeamService.join_team(team_id, username)
                 return {"Success": "Request Send"}, 200
-            elif request_type == 'invite':
+            elif request_type == "invite":
                 TeamService.send_invite(team_id, tm.authenticated_user_id, username)
                 return {"Success": "Invite Send"}, 200
         except Exception as e:
@@ -304,11 +304,15 @@ class TeamMembersAPI(Resource):
             return str(e), 400
 
         try:
-            if request_type == 'join-response':
-                TeamService.accept_reject_join_request(team_id, user_id, tm.authenticated_user_id, function, response)
+            if request_type == "join-response":
+                TeamService.accept_reject_join_request(
+                    team_id, user_id, tm.authenticated_user_id, function, response
+                )
                 return {"Success": "True"}, 200
-            elif request_type == 'invite-response':
-                TeamService.accept_reject_invitation_request(team_id, tm.authenticated_user_id, user_id, function, response)
+            elif request_type == "invite-response":
+                TeamService.accept_reject_invitation_request(
+                    team_id, tm.authenticated_user_id, user_id, function, response
+                )
                 return {"Success": "True"}, 200
         except Exception as e:
             error_msg = f"User POST - unhandled error: {str(e)}"

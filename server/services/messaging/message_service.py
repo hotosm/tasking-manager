@@ -181,7 +181,12 @@ class MessageService:
 
     @staticmethod
     def accept_reject_invitation_request_for_team(
-        from_user: int, from_username: str, to_user: int, sending_member: str, team_name: str, response: str
+        from_user: int,
+        from_username: str,
+        to_user: int,
+        sending_member: str,
+        team_name: str,
+        response: str,
     ) -> Message:
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value

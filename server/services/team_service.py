@@ -54,17 +54,23 @@ class TeamService:
         )
 
     @staticmethod
-    def accept_reject_join_request(team_id, to_user_id, from_user_id, function, response):
+    def accept_reject_join_request(
+        team_id, to_user_id, from_user_id, function, response
+    ):
         from_user = UserService.get_user_by_id(from_user_id)
         team = TeamService.get_team_by_id(team_id)
         MessageService.accept_reject_request_to_join_team(
             from_user_id, from_user.username, to_user_id, team.name, response
         )
-        if response == 'accept':
-            TeamService.add_team_member(team_id, to_user_id, TeamMemberFunctions[function])
+        if response == "accept":
+            TeamService.add_team_member(
+                team_id, to_user_id, TeamMemberFunctions[function]
+            )
 
     @staticmethod
-    def accept_reject_invitation_request(team_id, from_user_id, to_user_id, function, response):
+    def accept_reject_invitation_request(
+        team_id, from_user_id, to_user_id, function, response
+    ):
         from_user = UserService.get_user_by_id(from_user_id)
         to_user = UserService.get_user_by_id(to_user_id)
         team = TeamService.get_team_by_id(team_id)
@@ -72,10 +78,17 @@ class TeamService:
 
         for member in team_members:
             MessageService.accept_reject_invitation_request_for_team(
-                from_user_id, from_user.username, member.user_id, to_user.username, team.name, response
+                from_user_id,
+                from_user.username,
+                member.user_id,
+                to_user.username,
+                team.name,
+                response,
             )
-        if response == 'accept':
-            TeamService.add_team_member(team_id, from_user_id, TeamMemberFunctions[function])
+        if response == "accept":
+            TeamService.add_team_member(
+                team_id, from_user_id, TeamMemberFunctions[function]
+            )
 
     @staticmethod
     def add_team_member(team_id, user_id, function):
@@ -84,7 +97,7 @@ class TeamService:
         team_member.user_id = user_id
         team_member.function = function
         team_member.create()
-    
+
     @staticmethod
     def leave_team(team_id, username):
         user = UserService.get_user_by_username(username)

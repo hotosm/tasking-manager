@@ -8,7 +8,6 @@ from server.models.dtos.project_dto import (
     Pagination,
     ProjectSearchBBoxDTO,
 )
-from server.models.postgis.organisation import Organisation
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.statuses import (
     ProjectStatus,
@@ -92,7 +91,9 @@ class ProjectSearchService:
             project_info_dto = ProjectInfo.get_dto_for_locale(
                 project.id, search_dto.preferred_locale, project.default_locale
             )
-            project_campaigns_dto = CampaignService.get_project_campaigns_as_dto(project.id)
+            project_campaigns_dto = CampaignService.get_project_campaigns_as_dto(
+                project.id
+            )
 
             list_dto = ListSearchResultDTO()
             list_dto.project_id = project.id
@@ -172,10 +173,14 @@ class ProjectSearchService:
             )
 
         if search_dto.organisation:
-            query = query.join(Organisation, Project.organisation).filter(Organisation.name == search_dto.organisation)
+            query = query.join(Organisation, Project.organisation).filter(
+                Organisation.name == search_dto.organisation
+            )
 
         if search_dto.campaign:
-            query = query.join(Campaign, Project.campaign).filter(Campaign.name == search_dto.campaign)
+            query = query.join(Campaign, Project.campaign).filter(
+                Campaign.name == search_dto.campaign
+            )
 
         if search_dto.mapping_types:
             # Construct array of mapping types for query

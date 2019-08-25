@@ -24,7 +24,6 @@ from server.models.dtos.project_dto import (
     ProjectStatsDTO,
     ProjectUserStatsDTO,
 )
-from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.organisation import Organisation
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
@@ -39,14 +38,10 @@ from server.models.postgis.statuses import (
     Editors,
     TeamRoles,
 )
-from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task, TaskHistory
 from server.models.postgis.team import Team
 from server.models.postgis.user import User
-from server.models.postgis.campaign import (
-    Campaign,
-    campaign_projects,
-)
+from server.models.postgis.campaign import Campaign, campaign_projects
 
 from server.models.postgis.utils import (
     ST_SetSRID,
@@ -196,7 +191,7 @@ class Project(db.Model):
         single_parent=True,
     )
     organisation = db.relationship(Organisation, backref="projects")
-    campaign = db.relationship(Campaign, secondary=campaign_projects, backref='project')
+    campaign = db.relationship(Campaign, secondary=campaign_projects, backref="project")
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """

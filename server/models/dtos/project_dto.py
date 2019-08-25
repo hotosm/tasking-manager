@@ -170,7 +170,7 @@ class ProjectDTO(Model):
     mapping_types = ListType(
         StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
     )
-    campaign = ListType(ModelType(CampaignDTO), serialized_name='campaign')
+    campaign = ListType(ModelType(CampaignDTO), serialized_name="campaign")
     organisation = StringType()
     license_id = IntType(serialized_name="licenseId")
     allowed_usernames = ListType(

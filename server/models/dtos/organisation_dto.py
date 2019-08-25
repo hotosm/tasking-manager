@@ -1,7 +1,15 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, ListType, LongType, ModelType, BooleanType
+from schematics.types import (
+    StringType,
+    IntType,
+    ListType,
+    LongType,
+    ModelType,
+    BooleanType,
+)
 from server.models.postgis.statuses import OrganisationVisibility
+
 
 def validate_organisation_visibility(value):
     """ Validates that value is a known Organisation Visibility """
@@ -28,11 +36,13 @@ class OrganisationDTO(Model):
         serialize_when_none=False,
     )
     is_admin = BooleanType(serialized_name="isAdmin", serialize_when_none=False)
-    projects = ListType(StringType)
-    teams = ListType(StringType)
+    projects = ListType(StringType, serialize_when_none=False)
+    teams = ListType(StringType, serialize_when_none=False)
+
 
 class ListOrganisationsDTO(Model):
     organisations = ListType(ModelType(OrganisationDTO))
+
 
 class NewOrganisationDTO(Model):
     """ Describes a JSON model to create a new organisation """

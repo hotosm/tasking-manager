@@ -1,18 +1,26 @@
 from server import db
-
-from server.models.postgis.user import User
-from server.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO, CampaignProjectDTO
+from server.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO
 
 
 campaign_projects = db.Table(
-    'campaign_projects', db.metadata,
-    db.Column('campaign_id', db.Integer, db.ForeignKey('campaign.id')),
-    db.Column('project_id', db.Integer, db.ForeignKey('projects.id'))
+    "campaign_projects",
+    db.metadata,
+    db.Column("campaign_id", db.Integer, db.ForeignKey("campaign.id")),
+    db.Column("project_id", db.Integer, db.ForeignKey("projects.id")),
 )
+
+campaign_organisations = db.Table(
+    "campaign_organisations",
+    db.metadata,
+    db.Column("campaign_id", db.Integer, db.ForeignKey("campaign.id")),
+    db.Column("organisation_id", db.Integer, db.ForeignKey("organisations.id")),
+)
+
 
 class Campaign(db.Model):
     """ Describes an Campaign"""
-    __tablename__ = 'campaign'
+
+    __tablename__ = "campaign"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -43,7 +51,7 @@ class Campaign(db.Model):
 
     @staticmethod
     def get_all_campaigns() -> CampaignListDTO:
-        query = Campaign.query.distinct() 
+        query = Campaign.query.distinct()
         campaign_list_dto = CampaignListDTO()
         for campaign in query:
             campaign_dto = CampaignDTO()
@@ -57,8 +65,29 @@ class Campaign(db.Model):
     @staticmethod
     def get_project_campaigns_as_dto(project_id: int) -> CampaignListDTO:
 
-        query = Campaign.query.join(campaign_projects).\
-            filter(campaign_projects.c.project_id==project_id).all()
+        query = (
+            Campaign.query.join(campaign_projects)
+            .filter(campaign_projects.c.project_id == project_id)
+            .all()
+        )
+        campaign_list_dto = CampaignListDTO()
+        for campaign in query:
+            campaign_dto = CampaignDTO()
+            campaign_dto.id = campaign.id
+            campaign_dto.name = campaign.name
+
+            campaign_list_dto.campaigns.append(campaign_dto)
+
+        return campaign_list_dto
+
+    @staticmethod
+    def get_organisation_campaigns_as_dto(org_id: int) -> CampaignListDTO:
+
+        query = (
+            Campaign.query.join(campaign_organisations)
+            .filter(campaign_organisations.c.organisation_id == org_id)
+            .all()
+        )
         campaign_list_dto = CampaignListDTO()
         for campaign in query:
             campaign_dto = CampaignDTO()
@@ -80,7 +109,7 @@ class Campaign(db.Model):
 
         return campaign
 
-    def as_dto(self)-> CampaignDTO:
+    def as_dto(self) -> CampaignDTO:
         """ Creates new message from DTO """
         campaign_dto = CampaignDTO()
         campaign_dto.id = self.id
@@ -90,4 +119,3 @@ class Campaign(db.Model):
         campaign_dto.description = self.description
 
         return campaign_dto
-        

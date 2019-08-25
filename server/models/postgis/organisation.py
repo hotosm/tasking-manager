@@ -3,6 +3,7 @@ from server import db
 
 from server.models.dtos.organisation_dto import OrganisationDTO, NewOrganisationDTO
 from server.models.postgis.user import User
+from server.models.postgis.campaign import Campaign, campaign_organisations
 from server.models.postgis.statuses import OrganisationVisibility
 from server.models.postgis.utils import NotFound
 
@@ -34,6 +35,9 @@ class Organisation(db.Model):
 
     admins = db.relationship(
         User, secondary=organisation_admins, backref="organisations"
+    )
+    campaign = db.relationship(
+        Campaign, secondary=campaign_organisations, backref="organisation"
     )
 
     def create(self):

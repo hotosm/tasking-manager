@@ -217,7 +217,8 @@ def add_api_endpoints(app):
         GetAllCampaignsAPI,
         CampaignProjectAPI,
         DeleteAllProjectCampaignsAPI,
-        CreateAndSetCampaignAPI
+        CreateAndSetCampaignAPI,
+        CampaignOrganisationAPI,
     )
     from server.api.grid.grid_apis import IntersectingTilesAPI
     from server.api.grid.split_task_apis import SplitTaskAPI
@@ -434,9 +435,14 @@ def add_api_endpoints(app):
         TeamAPI, "/api/v1/teams/<int:team_id>", methods=["GET", "PUT", "DELETE"]
     )
     api.add_resource(ListTeamsAPI, "/api/v1/teams", methods=["GET"])
-    api.add_resource(TeamMembersAPI, "/api/v1/teams/<int:team_id>/actions/join", methods=["POST"])
     api.add_resource(
-        TeamMembersAPI, "/api/v1/teams/<int:team_id>/actions/leave", endpoint="leave_team", methods=["DELETE"]
+        TeamMembersAPI, "/api/v1/teams/<int:team_id>/actions/join", methods=["POST"]
+    )
+    api.add_resource(
+        TeamMembersAPI,
+        "/api/v1/teams/<int:team_id>/actions/leave",
+        endpoint="leave_team",
+        methods=["DELETE"],
     )
     api.add_resource(
         DeleteMultipleTeamMembersAPI,
@@ -445,40 +451,61 @@ def add_api_endpoints(app):
         methods=["DELETE"],
     )
     api.add_resource(
-        TeamProjectsAPI, "/api/v1/teams/<int:team_id>/projects/<int:project_id>", methods=["POST", "DELETE", "PUT"]
+        TeamProjectsAPI,
+        "/api/v1/teams/<int:team_id>/projects/<int:project_id>",
+        methods=["POST", "DELETE", "PUT"],
     )
     api.add_resource(
         CampaignAPI,
-        "/api/v1/campaign/create",
+        "/api/v1/campaigns/create",
         endpoint="create_campaign",
-        methods=["POST"])
+        methods=["POST"],
+    )
     api.add_resource(
         CampaignProjectAPI,
-        "/api/v1/project/campaign",
+        "/api/v1/projects/campaigns",
         endpoint="assign_campaign_to_project",
-        methods=["POST", "DELETE"])
+        methods=["POST", "DELETE"],
+    )
     api.add_resource(
         CreateAndSetCampaignAPI,
-        "/api/v1/project/campaign/create/<int:project_id>",
+        "/api/v1/project/campaigns/create/<int:project_id>",
         endpoint="create_and_assign_campaign_to_project",
-        methods=["POST"])
+        methods=["POST"],
+    )
     api.add_resource(
         CampaignProjectAPI,
-        "/api/v1/project/campaigns/<int:project_id>",
-        endpoint='get_all_project_campaigns',
-        methods=['GET'])
+        "/api/v1/projects/<int:project_id>/campaigns",
+        endpoint="get_all_project_campaigns",
+        methods=["GET"],
+    )
     api.add_resource(
         DeleteAllProjectCampaignsAPI,
-        '/api/v1/project/campaigns/delete/<int:project_id>',
-        endpoint='delete_all_project_campaigns',
-        methods=['DELETE'])
+        "/api/v1/projects/campaigns/delete/<int:project_id>",
+        endpoint="delete_all_project_campaigns",
+        methods=["DELETE"],
+    )
     api.add_resource(
         GetAllCampaignsAPI,
-        '/api/v1/campaigns',
-        endpoint='get_all_campaign',
-        methods=['GET'])
+        "/api/v1/campaigns",
+        endpoint="get_all_campaign",
+        methods=["GET"],
+    )
     api.add_resource(
         CampaignAPI,
-        '/api/v1/campaign/<int:campaign_id>',
-        endpoint='get_update_campaign',
-        methods=['GET', 'PUT'])
+        "/api/v1/campaigns/<int:campaign_id>",
+        endpoint="get_update_campaign",
+        methods=["GET", "PUT"],
+    )
+    api.add_resource(
+        CampaignOrganisationAPI,
+        "/api/v1/organisation/campaigns",
+        endpoint="assign_campaign_to_organisation",
+        methods=["POST", "DELETE"],
+    )
+    api.add_resource(
+        CampaignOrganisationAPI,
+        "/api/v1/organisations/<int:org_id>/campaigns",
+        endpoint="get_all_organisation_campaigns",
+        methods=["POST", "DELETE"],
+    )

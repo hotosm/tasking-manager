@@ -1,6 +1,6 @@
 from cachetools import TTLCache, cached
 
-from sqlalchemy import func, text
+from sqlalchemy import text
 from server import db
 from server.models.dtos.stats_dto import (
     ProjectContributionsDTO,
@@ -15,7 +15,6 @@ from server.models.dtos.stats_dto import (
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.task import TaskHistory, User, Task
-from server.models.postgis.campaign import Campaign, campaign_projects
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService
@@ -218,45 +217,51 @@ class StatsService:
 
         unique_campaigns_sql = "select count(name) as sum from Campaign"
 
-        unique_campaigns = db.engine.execute(unique_campaigns_sql).fetchone()['sum']
-        
+        unique_campaigns = db.engine.execute(unique_campaigns_sql).fetchone()["sum"]
+
         linked_campaigns_sql = "select Campaign.name, count(campaign_projects.campaign_id) from Campaign INNER JOIN campaign_projects\
             ON Campaign.id=campaign_projects.campaign_id group by Campaign.id"
 
         linked_campaigns_count = db.engine.execute(linked_campaigns_sql).fetchall()
-        
-        no_campaign_count_sql = "select count(*) as project_count from projects where id not in (select distinct project_id from campaign_projects order by project_id)"
-        no_campaign_count = db.engine.execute(no_campaign_count_sql).fetchone()['project_count']
+
+        no_campaign_count_sql = "select count(*) as project_count from projects where id not in \
+            (select distinct project_id from campaign_projects order by project_id)"
+        no_campaign_count = db.engine.execute(no_campaign_count_sql).fetchone()[
+            "project_count"
+        ]
 
         for tup in linked_campaigns_count:
             campaign_stats = CampaignStatsDTO(tup)
             dto.campaigns.append(campaign_stats)
 
         if no_campaign_count:
-            no_campaign_proj = CampaignStatsDTO(('Unassociated', no_campaign_count))
+            no_campaign_proj = CampaignStatsDTO(("Unassociated", no_campaign_count))
             dto.campaigns.append(no_campaign_proj)
-        
+
         dto.total_campaigns = unique_campaigns
 
         unique_orgs_sql = "select count(name) as sum from organisations"
-        unique_orgs = db.engine.execute(unique_orgs_sql).fetchone()['sum']
-        
+        unique_orgs = db.engine.execute(unique_orgs_sql).fetchone()["sum"]
+
         linked_orgs_sql = "select organisations.name, count(projects.organisation_id) from projects INNER JOIN organisations\
-	    ON organisations.id=projects.organisation_id group by organisations.id"
+            ON organisations.id=projects.organisation_id group by organisations.id"
         linked_orgs_count = db.engine.execute(linked_orgs_sql).fetchall()
-        
+
         no_org_project_count = 0
-        no_org_project_count_sql = "select count(*) as project_count from organisations where id not in (select distinct organisation_id from projects order by organisation_id)"
-        no_org_project_count = db.engine.execute(no_org_project_count_sql).fetchone()['project_count']
+        no_org_project_count_sql = "select count(*) as project_count from organisations where id not in \
+            (select distinct organisation_id from projects order by organisation_id)"
+        no_org_project_count = db.engine.execute(no_org_project_count_sql).fetchone()[
+            "project_count"
+        ]
 
         for tup in linked_orgs_count:
             org_stats = OrganizationStatsDTO(tup)
             dto.organizations.append(org_stats)
 
         if no_org_project_count:
-            no_org_proj = OrganizationStatsDTO(('Unassociated', no_org_project_count))
+            no_org_proj = OrganizationStatsDTO(("Unassociated", no_org_project_count))
             dto.organizations.append(no_org_proj)
-        
+
         dto.total_organizations = unique_orgs
 
         return dto
