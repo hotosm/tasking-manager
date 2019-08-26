@@ -197,7 +197,11 @@ class TeamAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            team_dto = TeamService.get_team_as_dto(team_id, 9507979)
+            if tm.authenticated_user_id is None:
+                user_id = 0
+            else:
+                user_id = tm.authenticated_user_id
+            team_dto = TeamService.get_team_as_dto(team_id, user_id)
             return team_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Team Not Found"}, 404

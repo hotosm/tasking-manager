@@ -35,9 +35,9 @@ class OrganisationDTO(Model):
         validators=[validate_organisation_visibility],
         serialize_when_none=False,
     )
-    is_admin = BooleanType(serialized_name="isAdmin", serialize_when_none=False)
-    projects = ListType(StringType, serialize_when_none=False)
-    teams = ListType(StringType, serialize_when_none=False)
+    is_admin = BooleanType(serialized_name="isAdmin")
+    projects = ListType(StringType)
+    teams = ListType(StringType)
 
 
 class ListOrganisationsDTO(Model):

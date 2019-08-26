@@ -28,7 +28,7 @@ function App() {
           <ListTeams path="/teams" />
           <TeamProfile path="/teams/:team_id" />
           <EditTeam path="/teams/:team_id/edit" />
-          <CreateTeam path="/team/create" />
+          <CreateTeam path="/teams/create" />
           <Organisations path="/organisations" />
           <CreateOrganisation path="/organisations/create" />
           <OrganisationProfile path="/organisations/:org_id" />

@@ -58,7 +58,7 @@ class CreateTeam extends React.Component{
 
     renderRedirect = () => {
         if(this.state.team_id)
-        return (<Redirect to={"/edit_team/" + this.state.team_id} noThrow />);
+        return (<Redirect to={`/teams/${this.state.team_id}/edit`} noThrow />);
     }
 
     render(){

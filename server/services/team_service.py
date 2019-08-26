@@ -149,6 +149,10 @@ class TeamService:
     @staticmethod
     def get_team_as_dto(team_id: int, user_id: int) -> TeamDTO:
         team = TeamService.get_team_by_id(team_id)
+
+        if team is None:
+            raise NotFound()
+
         team_dto = TeamDetailsDTO()
         team_dto.team_id = team.id
         team_dto.name = team.name
@@ -159,11 +163,15 @@ class TeamService:
         team_dto.organisation = team.organisation.name
         team_dto.organisation_id = team.organisation.id
 
-        if UserService.is_user_an_admin(user_id):
-            team_dto.is_general_admin = True
+        if user_id != 0:
+            if UserService.is_user_an_admin(user_id):
+                team_dto.is_general_admin = True
 
-        if OrganisationService.is_user_an_org_admin(team.organisation.id, user_id):
-            team_dto.is_org_admin = True
+            if OrganisationService.is_user_an_org_admin(team.organisation.id, user_id):
+                team_dto.is_org_admin = True
+        else:
+            team_dto.is_general_admin = False
+            team_dto.is_org_admin = False
 
         team_members = TeamService._get_team_members(team_id)
         for member in team_members:
