@@ -209,12 +209,14 @@ class OrganisationService:
         if org is None:
             raise NotFound()
 
-        if (
-            org.visibility != OrganisationVisibility.SECRET.value
-            or OrganisationService.user_is_admin(organisation_id, user_id)
-        ):
-            org_dto = OrganisationDTO()
+        if user_id == 0:
+            logged_in = False
+        else:
+            logged_in = OrganisationService.user_is_admin(organisation_id, user_id)
 
+        org_dto = OrganisationDTO()
+
+        if org.visibility != OrganisationVisibility.SECRET.value or logged_in:
             org_dto.projects = []
             org_dto.teams = []
             org_dto.admins = []
@@ -223,24 +225,26 @@ class OrganisationService:
             org_dto.name = org.name
             org_dto.logo = org.logo
             org_dto.url = org.url
-            org_dto.visibility = org.visibility
-            org_dto.is_admin = OrganisationService.user_is_admin(
-                organisation_id, user_id
+            org_dto.visibility = OrganisationVisibility(org.visibility).name
+
+            if user_id != 0:
+                org_dto.is_admin = OrganisationService.user_is_admin(
+                    organisation_id, user_id
+                )
+            else:
+                org_dto.is_admin = False
+
+            teams = OrganisationService.get_teams_by_organisation_id(organisation_id)
+            for team in teams:
+                org_dto.teams.append(team.name)
+
+            projects = OrganisationService.get_projects_by_organisation_id(
+                organisation_id
             )
+            for project in projects:
+                org_dto.projects.append(project.name)
 
             if org.visibility != OrganisationVisibility.PRIVATE.value:
-                teams = OrganisationService.get_teams_by_organisation_id(
-                    organisation_id
-                )
-                for team in teams:
-                    org_dto.teams.append(team.name)
-
-                projects = OrganisationService.get_projects_by_organisation_id(
-                    organisation_id
-                )
-                for project in projects:
-                    org_dto.projects.append(project.name)
-
                 for admin in org.admins:
                     org_dto.admins.append(admin.username)
 

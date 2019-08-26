@@ -79,8 +79,9 @@ class Team(db.Model):
         new_team.description = new_team_dto.description
         new_team.invite_only = new_team_dto.invite_only
         new_team.visibility = TeamVisibility[new_team_dto.visibility].value
+        new_team.organisation_id = new_team_dto.organisation_id
 
-        org = Organisation().get_organisation_by_name(new_team_dto.organisation)
+        org = Organisation().get(new_team_dto.organisation_id)
         new_team.organisation = org
 
         # Create team member with creator as a manager

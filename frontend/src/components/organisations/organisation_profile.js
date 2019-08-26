@@ -1,20 +1,21 @@
 import React from 'react';
 import { Link, Redirect } from '@reach/router';
-import * as safeStorage from '../../utils/safe_storage';
 import { cancelablePromise } from '../../utils/promise';
 import { fetchLocalJSONAPI,
         pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Button } from '../button';
 import { AreaIcon } from '../svgIcons/area';
+import { connect } from "react-redux";
 
-export class OrganisationProfile extends React.Component{
+class OrganisationProfile extends React.Component{
     tmTeamsPromise;
     constructor(props) {
         super(props);
         this.state = {
             org: [],
-            e: null,
-            redirect: null
+            orgNotFound: null,
+            renderRedirect: null,
+            hasError: false,
         };
       }
 
@@ -24,7 +25,7 @@ export class OrganisationProfile extends React.Component{
     }
 
     getOrg = () => {
-        this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI('organisations/' + this.props.org_id, safeStorage.getItem('token')));
+        this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI('organisations/' + this.props.org_id, this.props.token));
         this.tmTeamsPromise.promise.then(
         r => {
             this.setState({
@@ -32,29 +33,35 @@ export class OrganisationProfile extends React.Component{
             });
         }).catch(e => {
             console.log(typeof(e));
-            this.setState({e:e}, ()=>console.log(this.state.e));
-            console.log(e)});
+            this.setState({orgNotFound:true});
+            });
     }
 
     deleteOrg = () => {
-        console.log("Leave Team");
         let body = {};
         this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('organisations/' + this.props.org_id, JSON.stringify(body),
-        safeStorage.getItem('token'), 'DELETE'));
+        this.props.token, 'DELETE'));
         this.tmTeamsPromise.promise.then(
             res => {
-                this.setState({
-                redirect: res,
-                });
+                this.setState({ renderRedirect: true, });
                 }).catch(e => console.log(e));
     }
 
+    static getDerivedStateFromError(error) {
+        // Update state so the next render will show the fallback UI.
+        return { hasError: true };
+    }
+        
     renderRedirect = () => {
-        if(this.state.redirect !== null)
-            return(<Redirect to='/organisations' />);
-    } 
+        console.log('redirect');
+        if(this.state.renderRedirect)
+            return(<Redirect to='/organisations' noThrow />);
+    }
 
     render(){
+            if (this.state.hasError) {
+            return <h1>Something went wrong.</h1>;
+            }
             if(this.state.org.length !== 0)
             return(
                 <div className="ma3">
@@ -73,39 +80,51 @@ export class OrganisationProfile extends React.Component{
                                 <AreaIcon className="tr" />
                             </div>
                         </div>
-                        <div className="dt-rows">
-                            <h3 className="gray tl tl">Organisation admins</h3>
-                            <ul>
-                                { (this.state.org.admins) ? this.state.org.admins.map((admin,i)=>{
-                                        return(<li key={i}><Link to={'/users/'+admin} className="no-underline gray">
-                                        {admin}</Link></li>)
-                                }) : null}
-                            </ul>
-                        </div>
+                        
+                        {(this.state.org.visibility !== 'PRIVATE') ?
+                            <div className="dt-rows">
+                                <h3 className="gray tl tl">Organisation admins</h3>
+                                <ul>
+                                    { this.state.org.admins.map((admin,i)=>{
+                                            return(<li key={i}><Link to={'/users/'+admin} className="no-underline gray">
+                                            {admin}</Link></li>)
+                                    })}
+                                </ul>
+                            </div>
+                        : null }
                         <div className="dt-rows">
                             <h3 className="gray tl tl">Projects</h3>
                             <ul>
-                                { (this.state.org.projects) ? this.state.org.projects.map((project, i)=>{
+                                { this.state.org.projects.map((project, i)=>{
                                         return(<li key={i}>{project}</li>)
-                                }) : null}
+                                })}
                             </ul>
                         </div>
                         <div className="dt-rows">
                             <h3 className="gray tl tl">Teams</h3>
                             <ul>
-                                { (this.state.org.teams) ? this.state.org.teams.map((team, i)=>{
+                                { this.state.org.teams.map((team, i)=>{
                                         return(<li key={i}>{team}</li>)
-                                }) : null}
+                                })}
                             </ul>
                         </div>
                     </div>
                 </div>
             )
-            else if(this.state.e){
-                return(<div><h3>Organisation not found</h3></div>)
+            else if(this.state.orgNotFound){
+                return(<div>Not found</div>)
             }
             else
                 return(<div>Loading ...</div>)
     }
 }
+
+const mapStateToProps = state => ({
+    username: state.auth.getIn(['userDetails', 'username']),
+    token: state.auth.get('token'),
+  });
+  
+OrganisationProfile = connect(mapStateToProps)(OrganisationProfile);
+  
+  export { OrganisationProfile };
 

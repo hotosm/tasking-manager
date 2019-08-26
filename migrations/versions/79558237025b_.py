@@ -70,7 +70,23 @@ def upgrade():
         query = "insert into campaign(name) values('" + result + "')"
         op.execute(query)
 
+    # Migrate the organisations tag in organisations table
+    organisations = conn.execute("select organisations from tags").fetchall()
+
+    # This will be used to consolidate the data in the tags table
+    org_dictionaries = {"HOTOSM": {"HOTOSM", "HOT-OSM"}, "ABC": {"abc", "ABc"}}
+
+    for org in organisations:
+        result = org[0]
+        for org_key, org_values in org_dictionaries.items():
+            if result in org_values:
+                result = org_key
+
+        query = "insert into organisations(name) values ('" + result + "')"
+        op.execute(query)
+
 
 def downgrade():
     op.drop_table("campaign_projects")
+    op.drop_table("campaign_organisations")
     op.drop_table("campaign")

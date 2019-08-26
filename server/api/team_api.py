@@ -146,7 +146,7 @@ class TeamAPI(Resource):
                 team_id, tm.authenticated_user_id
             )
 
-            org = TeamService.assert_validate_organisation(team_dto.organisation)
+            org = TeamService.assert_validate_organisation(team_dto.organisation_id)
             TeamService.assert_validate_members(team_details_dto)
 
             if not TeamService.user_is_manager(

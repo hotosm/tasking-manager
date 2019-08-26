@@ -93,7 +93,6 @@ class TeamDTO(Model):
     invite_only = BooleanType(
         default=False, serialized_name="inviteOnly", required=True
     )
-    organisation = StringType()
     visibility = StringType(
         required=True, validators=[validate_team_visibility], serialize_when_none=False
     )
@@ -114,7 +113,7 @@ class NewTeamDTO(Model):
     """ Describes a JSON model to create a new team """
 
     creator = LongType(required=True)
-    organisation = StringType(required=True)
+    organisation_id = IntType(required=True)
     name = StringType(required=True)
     logo = StringType()
     description = StringType()

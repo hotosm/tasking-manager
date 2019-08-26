@@ -26,12 +26,12 @@ function App() {
           <Home path="/" />
           <AboutPage path="/about" />
           <ListTeams path="/teams" />
-          <TeamProfile path="/team/:team_id" />
-          <EditTeam path="/edit_team/:team_id" />
+          <TeamProfile path="/teams/:team_id" />
+          <EditTeam path="/teams/:team_id/edit" />
           <CreateTeam path="/team/create" />
           <Organisations path="/organisations" />
-          <CreateOrganisation path="/organisation/create" />
-          <OrganisationProfile path="/organisation/:org_id" />
+          <CreateOrganisation path="/organisations/create" />
+          <OrganisationProfile path="/organisations/:org_id" />
           <Authorized path="authorized" />
           <Login path="login" />
           <Welcome path="welcome" />

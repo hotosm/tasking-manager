@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from '@reach/router';
-import * as safeStorage from '../../utils/safe_storage';
 import { cancelablePromise } from '../../utils/promise';
 import { fetchLocalJSONAPI,
         pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Button } from '../button';
 import { AreaIcon } from '../svgIcons/area';
+import { connect } from "react-redux";
 
-export class TeamProfile extends React.Component{
+class TeamProfile extends React.Component{
     tmTeamsPromise;
     constructor(props) {
         super(props);
@@ -16,14 +16,11 @@ export class TeamProfile extends React.Component{
             inviteSend: "",
             isMember: false,
             isAdmin: false,
-            username: safeStorage.getItem('username'),
         };
       }
 
     componentDidMount = () => {
         this.getTeam();
-        console.log(this.props);
-        console.log(this.state.username);
     }
 
     getTeam = () => {
@@ -34,7 +31,7 @@ export class TeamProfile extends React.Component{
             var isMember = false;
             var isAdmin = false;
             r.members.map(member => {
-                if(member.username === this.state.username){
+                if(member.username === this.props.username){
                     isMember = true;
                     if(member.function === 'MANAGER')
                         isAdmin = true;
@@ -50,10 +47,9 @@ export class TeamProfile extends React.Component{
     }
 
     handleJoin = () => {
-        console.log('Join requested');
-        let body = {user:this.state.username, type:'join'};
+        let body = {user:this.props.username, type:'join'};
         this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/actions/join', JSON.stringify(body),
-        safeStorage.getItem('token'), 'POST'));
+        this.props.token, 'POST'));
         this.tmTeamsPromise.promise.then(
             res => {
             this.setState({
@@ -64,10 +60,9 @@ export class TeamProfile extends React.Component{
         }
 
     handleLeave = () => {
-        console.log("Leave Team");
-        let body = {team_id:this.state.team.teamId, user:this.state.username};
+        let body = {team_id:this.state.team.teamId, user:this.props.username};
         this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/actions/leave', JSON.stringify(body),
-        safeStorage.getItem('token'), 'DELETE'));
+        this.props.token, 'DELETE'));
         this.tmTeamsPromise.promise.then(
             res => {
                 this.setState({
@@ -85,7 +80,7 @@ export class TeamProfile extends React.Component{
                     <div className="cf pv5 ph5-l ph4 bg-white">
                         {(this.state.isAdmin || this.state.team.is_general_admin || this.state.team.is_org_admin) ? 
                             <div className="dt-rows">
-                                <Link to={ '/edit_team/' + this.props.team_id } className="no-underline">
+                                <Link to={ `/teams/${this.props.team_id}/edit`} className="no-underline">
                                     <Button children='Edit' class='edit-team' /></Link>
                             </div> : null}
                         <div className="dt-rows">
@@ -99,9 +94,8 @@ export class TeamProfile extends React.Component{
                         </div>
                         <div className="dt-rows mt6">
                             <p>{this.state.team.description}</p>
-                            {(this.state.username === null) ? null : (this.state.isMember) ?
+                            {(this.props.token === null) ? null : (this.state.isMember) ?
                                 <Button onClick={this.handleLeave} children='Leave' class='leave-team'/> :
-                                // (this.state.inviteSend != '') ? <Button children='Request Send' class='join-team'/> :
                                 (this.state.team.inviteOnly === false) ?
                                 <Button onClick={this.handleJoin} children='Join' class='join-team'/> : 
                                 null
@@ -139,3 +133,11 @@ export class TeamProfile extends React.Component{
     }
 }
 
+const mapStateToProps = state => ({
+    username: state.auth.getIn(['userDetails', 'username']),
+    token: state.auth.get('token'),
+  });
+  
+TeamProfile = connect(mapStateToProps)(TeamProfile);
+  
+export { TeamProfile };

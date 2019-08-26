@@ -249,7 +249,7 @@ class TeamService:
         :param team_dto: Team DTO
         :returns: ID of new Team
         """
-        TeamService.assert_validate_organisation(new_team_dto.organisation)
+        TeamService.assert_validate_organisation(new_team_dto.organisation_id)
 
         team = Team.create_from_dto(new_team_dto)
         return team.id
@@ -267,12 +267,12 @@ class TeamService:
         return team
 
     @staticmethod
-    def assert_validate_organisation(org_name: str):
+    def assert_validate_organisation(org_id: int):
         """ Makes sure an organisation exists """
         try:
-            OrganisationService.get_organisation_by_name(org_name)
+            OrganisationService.get_organisation_by_id(org_id)
         except NotFound:
-            raise TeamServiceError(f"Organisation {org_name} does not exist")
+            raise TeamServiceError(f"Organisation {org_id} does not exist")
 
     @staticmethod
     def assert_validate_members(team_dto: TeamDTO):

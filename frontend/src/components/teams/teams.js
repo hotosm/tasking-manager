@@ -42,7 +42,7 @@ export class ListTeams extends React.Component {
               this.state.teams.map(team=>{
                 return(
                   <article key={team.teamId} className="br2 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw6 center">
-                    <Link to={'/team/'+team.teamId} className="no-underline">
+                    <Link to={`/teams/${team.teamId}`} className="no-underline">
                       <div className="pa2 ph3-ns pb3-ns">
                         <div className="dt w-100 mt1">
                           <div className="dtc">

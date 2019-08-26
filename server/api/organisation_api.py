@@ -125,7 +125,6 @@ class OrganisationAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
-    @token_auth.login_required
     def get(self, organisation_id):
         """
         Retrieves a Organisation
@@ -158,8 +157,12 @@ class OrganisationAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            org_dto = OrganisationService.get_all_organisations_for_user(
-                organisation_id, tm.authenticated_user_id
+            if tm.authenticated_user_id is None:
+                user_id = 0
+            else:
+                user_id = tm.authenticated_user_id
+            org_dto = OrganisationService.get_organisation_as_dto(
+                organisation_id, user_id
             )
             return org_dto.to_primitive(), 200
         except NotFound:
