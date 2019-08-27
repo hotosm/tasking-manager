@@ -27,10 +27,14 @@ function CompletenessProgressBar({ completeness }: Object) {
   );
 }
 
+export function calculateCompleteness(userDetails) {
+  return (
+    PROFILE_RELEVANT_FIELDS.filter(k => userDetails[k]).length / PROFILE_RELEVANT_FIELDS.length
+  );
+}
+
 export function ProfileCompleteness({ userDetails }: Object) {
-  const completeness =
-    PROFILE_RELEVANT_FIELDS.filter(k => userDetails[k]).length /
-    PROFILE_RELEVANT_FIELDS.length;
+  const completeness = calculateCompleteness(userDetails);
   return (
     <div className="shadow-4 ph3 pv3">
       <h3 className="f4 mt0 fw6">

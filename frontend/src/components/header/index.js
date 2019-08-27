@@ -47,10 +47,10 @@ const UserDisplay = (props) => {
 };
 
 const AuthButtons = (props) => {
-  const { logInStyle, signUpStyle, aStyle } = props;
+  const { logInStyle, signUpStyle, aStyle, redirectTo } = props;
   return (
     <>
-      <a href={`${API_URL}auth/login?redirect_to=/login/`} className={ aStyle } >
+      <a href={`${API_URL}auth/login?redirect_to=${redirectTo || '/'}`} className={ aStyle } >
         <Button className={ logInStyle } >
           <FormattedMessage {...messages.logIn}/>
         </Button>
@@ -136,6 +136,7 @@ class Header extends React.Component {
               aStyle="mh1 mv2 dib"
               logInStyle="bg-red white"
               signUpStyle="bg-blue-dark white mh1 mv2 dib"
+              redirectTo={this.props.location.pathname}
             />
           </div>
         }
@@ -185,7 +186,7 @@ class Header extends React.Component {
           value={[]}
           options={this.userLinks}
           display={<UserDisplay username={this.props.username} />}
-          className="blue-dark bg-white mr1 v-mid dn dib-ns pv1 ph3 bn"
+          className="blue-dark bg-white mr1 v-mid dn dib-ns pv2 ph3 bn"
         />
         :
         <div className="dib">
@@ -196,12 +197,13 @@ class Header extends React.Component {
             value={this.getActiveLanguageNames()}
             options={supportedLocales}
             display={<FormattedMessage {...messages.language}/>}
-            className="blue-dark bg-white mr1 v-mid dn dib-66rem pv1 ph3 bn"
+            className="blue-dark bg-white mr1 v-mid dn dib-66rem pv2 ph3 bn"
           />
           <AuthButtons
             aStyle="mh1 v-mid dn dib-ns"
             logInStyle="blue-dark bg-white"
             signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
+            redirectTo={this.props.location.pathname}
           />
         </div>
     );

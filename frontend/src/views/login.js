@@ -1,10 +1,13 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { Redirect } from '@reach/router';
 
 import { AuthButtons } from '../components/header';
 
 
-export class Login extends React.Component {
-  render() {
+export function Login() {
+  const userIsloggedIn = useSelector(state => state.auth.get('token'));
+  if (!userIsloggedIn) {
     return (
       <div className="cf w-100 pv5">
         <div className="tc">
@@ -15,7 +18,8 @@ export class Login extends React.Component {
           />
         </div>
       </div>
-
     );
+  } else {
+    return <Redirect to={'user'} noThrow />;
   }
 }
