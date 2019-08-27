@@ -44,11 +44,15 @@
   height: 0.5rem;
 }
 
-/* 
+/*
    Add shadow on hover, building on what is already in Tachyons
    adjust for the lighter shadow from design
 */
 
 .shadow-hover::after {
   box-shadow: 0 7px 20px 0 rgba(0,0,0,0.08);
+}
+
+button:focus, button:active, a:focus, a:active {
+  outline: 0;
 }

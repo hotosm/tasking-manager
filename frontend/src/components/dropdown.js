@@ -4,7 +4,6 @@ import onClickOutside from 'react-click-outside';
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
 import { CustomButton } from './button';
 
-
 class DropdownContent extends React.PureComponent {
   isActive = (obj: Object) => {
     if (this.props.value === obj.label) {
@@ -45,14 +44,14 @@ class DropdownContent extends React.PureComponent {
   };
   render() {
     return (
-      <div className="di tl mt1 ba b--grey-light br1 fixed shadow-1 z-1 flex flex-column">
-        {this.props.options.map((i, k) =>
+      <div className="di tl mt1 ba b--grey-light br1 absolute shadow-1 z-1 flex flex-column">
+        {this.props.options.map((i, k) => (
           <span
             key={k}
             onClick={this.handleClick.bind(null, i)}
             className="pa3 bg-animate bg-white hover-bg-tan"
           >
-            {this.props.multi &&
+            {this.props.multi && (
               <input
                 data-label={i.label}
                 data-payload={JSON.stringify(i)}
@@ -60,22 +59,28 @@ class DropdownContent extends React.PureComponent {
                 checked={this.isActive(i)}
                 value={i.label}
                 className="mr2"
-              />}
-            {i.href
-              ? <a
-                  target={'_blank'}
-                  href={i.href}
-                  onClick={this.props.toggleDropdown}
-                >
-                  {i.label}{this.isActive(i) && <span className="red pl4"><CheckIcon /></span>}
-                </a>
-              : <span
-                  onClick={this.props.toggleDropdown}
-                >
-                  {i.label}{this.isActive(i) && <span className="red pl4"><CheckIcon /></span>}
-                </span>
-            }
-            {this.props.deletable &&
+              />
+            )}
+            {i.href ? (
+              <a target={'_blank'} href={i.href} onClick={this.props.toggleDropdown}>
+                {i.label}
+                {this.isActive(i) && (
+                  <span className="red pl4">
+                    <CheckIcon />
+                  </span>
+                )}
+              </a>
+            ) : (
+              <span onClick={this.props.toggleDropdown}>
+                {i.label}
+                {this.isActive(i) && (
+                  <span className="red pl4">
+                    <CheckIcon />
+                  </span>
+                )}
+              </span>
+            )}
+            {this.props.deletable && (
               <span
                 onClick={e => {
                   e.preventDefault();
@@ -85,9 +90,10 @@ class DropdownContent extends React.PureComponent {
                 }}
               >
                 x
-              </span>}
+              </span>
+            )}
           </span>
-        )}
+        ))}
       </div>
     );
   }
@@ -104,20 +110,20 @@ export class _Dropdown extends React.PureComponent {
     options: Array<Object>,
     display: string,
     deletable?: (value: string) => any,
-    multi: boolean
+    multi: boolean,
   };
 
   state = {
-    display: false
+    display: false,
   };
   handleClickOutside = () => {
     this.setState({
-      display: false
+      display: false,
     });
   };
   toggleDropdown = () => {
     this.setState({
-      display: !this.state.display
+      display: !this.state.display,
     });
   };
   isActive = (obj: Object) => {
@@ -130,19 +136,17 @@ export class _Dropdown extends React.PureComponent {
   };
   render() {
     return (
-      <div className={`dib pointer ba b--grey-light ${this.props.className || ''}`}>
-        <CustomButton
-          onClick={this.toggleDropdown}
-          className={`${this.props.className || ''}`}
-        >
-          {this.props.display} <ChevronDownIcon style={{height: "14px"}} className="pl2 v-mid"/>
+      <div className={`dib pointer`}>
+        <CustomButton onClick={this.toggleDropdown} className={`${this.props.className || ''}`}>
+          {this.props.display} <ChevronDownIcon style={{ height: '14px' }} className="pl2 v-mid" />
         </CustomButton>
-        {this.state.display &&
+        {this.state.display && (
           <DropdownContent
             {...this.props}
             eventTypes={['click', 'touchend']}
             toggleDropdown={this.toggleDropdown}
-          />}
+          />
+        )}
       </div>
     );
   }

@@ -6,23 +6,25 @@ import { setAuthDetails } from '../store/actions/auth';
 
  class Authorized extends React.Component {
   state = {
-    redirectUrl: '/',
     isReadyToRedirect: false
-  }
+  };
+  params = new URLSearchParams(this.props.location.search);
+
   componentDidMount() {
-    const params = new URLSearchParams(this.props.location.search);
-    const username = params.get('username');
-    const sessionToken = params.get('session_token');
-    const userPicture = params.get('picture');
+    const username = this.params.get('username');
+    const sessionToken = this.params.get('session_token');
+    const userPicture = this.params.get('picture');
     this.props.authenticateUser(username, sessionToken, userPicture);
     this.setState({
-      redirect_url: params.get('redirect_to') ? params.get('redirect_to') : '/',
       isReadyToRedirect: true
     });
   }
   render() {
+    const redirectUrl = this.params.get('redirect_to') && this.params.get('redirect_to') !== '/' ? (
+      this.params.get('redirect_to')
+    ) : 'welcome';
     return (
-      this.state.isReadyToRedirect ? <Redirect to={this.state.redirectUrl} noThrow /> : <div>redirecting</div>
+      this.state.isReadyToRedirect ? <Redirect to={redirectUrl} noThrow /> : <div>redirecting</div>
     );
   }
 }
