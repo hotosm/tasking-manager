@@ -58,8 +58,9 @@ export const setAuthDetails= (username, token, userPicture) => dispatch => {
 }
 
 export const setUserDetails = (username, encoded_token) => dispatch => {
-  fetchUserDetails(username, encoded_token).then(
-    userDetails => dispatch(updateUserDetails(userDetails))
+  fetchUserDetails(username, encoded_token)
+    .then(userDetails => dispatch(updateUserDetails(userDetails)))
+    .catch(error => dispatch(logout())
   );
 }
 
