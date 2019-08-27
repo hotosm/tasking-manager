@@ -289,3 +289,27 @@ class ProjectAdminService:
         project_file = ProjectFiles.get(dto.project_id, dto.id)
         project_file.update(dto)
         return project_file
+
+    @staticmethod
+    def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
+        """ Transfers project from old owner (transfering_user_id) to new owner (username) """
+        project = Project.get(project_id)
+
+        transfering_user = UserService.get_user_by_id(transfering_user_id)
+        new_owner = UserService.get_user_by_username(username)
+        is_pm = new_owner.role in (UserRole.PROJECT_MANAGER.value, UserRole.ADMIN.value)
+
+        if not is_pm:
+            raise Exception("User must be a project manager")
+
+        if transfering_user.role == UserRole.PROJECT_MANAGER.value:
+            if project.author_id == transfering_user_id:
+                project.author_id = new_owner.id
+                project.save()
+            else:
+                raise Exception("Invalid owner_id")
+        elif transfering_user.role == UserRole.ADMIN.value:
+            project.author_id = new_owner.id
+            project.save()
+        else:
+            raise Exception("Normal users cannot transfer projects")

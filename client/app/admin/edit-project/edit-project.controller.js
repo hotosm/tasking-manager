@@ -149,6 +149,9 @@
         vm.projectFile = {};
         vm.uploadPolicy = "ALLOW";
 
+        // User role
+        vm.userRole = '';
+
         activate();
 
         function activate() {

@@ -24,6 +24,7 @@ homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
 
 class StatsService:
+
     @staticmethod
     def update_stats_after_task_state_change(
         project_id: int,
