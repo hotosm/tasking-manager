@@ -41,3 +41,4 @@ export { DataUseIcon } from "./dataUse";
 export { CheckIcon } from "./check";
 export { CloseIcon } from "./close";
 export { MenuIcon } from "./menu";
+export { PencilIcon } from "./pencil";

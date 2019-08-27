@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
+import ReactPlaceholder from 'react-placeholder';
+import { TextRow } from 'react-placeholder/lib/placeholders';
 
 import messages from './messages';
 import { UserAvatar } from './avatar';
@@ -53,6 +55,14 @@ class UserTopBar extends React.Component {
     ) {
       this.getOSMDetails();
     }
+    if (
+      this.props.userDetails &&
+      this.props.userDetails.mappingLevel === 'ADVANCED' &&
+      this.props.userDetails.username &&
+      prevProps.userDetails.username !== this.props.userDetails.username
+    ) {
+      this.setState({ finishedLoadingData: true });
+    }
   }
 
   componentWillUnmount() {
@@ -65,6 +75,7 @@ class UserTopBar extends React.Component {
     );
     this.osmDetailsPromise.promise
       .then(r => {
+        console.log('ok');
         this.setState({
           changesetsCount: r.changesetCount,
           finishedLoadingData: true,
@@ -73,29 +84,44 @@ class UserTopBar extends React.Component {
       .catch(e => console.log(e));
   };
 
+  getPlaceholder() {
+    return (
+      <div className="pl2 dib">
+        <TextRow style={{ width: 150, height: '2.3em' }} color="#eee" />
+        <TextRow style={{ width: 150, height: '1em' }} color="#eee" />
+        <TextRow style={{ width: 150, height: '1em' }} color="#eee" />
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className="cf ph4 pt3 pb1">
         <div className="w-100 w-75-l fl pb2">
           <div className="fl dib pr3">
-            <UserAvatar className="h4 br-100 pa1 ba b--grey-light bw3" />
+            <UserAvatar className="h4 w4 br-100 pa1 ba b--grey-light bw3" />
           </div>
-          <div className="pl2 dib">
-            <h3 className="ttu f2 fw-6 mv0 barlow-condensed">
-              {this.props.userDetails.name || this.props.userDetails.username}
-            </h3>
-            <p className="f4 mt3 mb2">
-              <FormattedMessage
-                {...messages.mapper}
-                values={{
-                  level: <MappingLevelMessage level={this.props.userDetails.mappingLevel} />,
-                }}
-              />
-            </p>
-            {this.state.finishedLoadingData && (
+          <ReactPlaceholder
+            showLoadingAnimation={true}
+            customPlaceholder={this.getPlaceholder()}
+            delay={500}
+            ready={this.state.finishedLoadingData}
+          >
+            <div className="pl2 dib">
+              <h3 className="ttu f2 fw-6 mv0 barlow-condensed">
+                {this.props.userDetails.name || this.props.userDetails.username}
+              </h3>
+              <p className="f4 mt3 mb2">
+                <FormattedMessage
+                  {...messages.mapper}
+                  values={{
+                    level: <MappingLevelMessage level={this.props.userDetails.mappingLevel} />,
+                  }}
+                />
+              </p>
               <NextMappingLevel changesetsCount={this.state.changesetsCount} />
-            )}
-          </div>
+            </div>
+          </ReactPlaceholder>
         </div>
         <div className="w-100 w-25-l fl pb2">
           <ProfileCompleteness userDetails={this.props.userDetails} />
