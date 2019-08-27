@@ -175,7 +175,7 @@ class UserService:
 
     @staticmethod
     @cached(user_filter_cache)
-    def filter_users(username: str, project_id: int, 
+    def filter_users(username: str, project_id: int,
                      page: int, is_project_manager: bool = False) -> UserFilterDTO:
         """ Gets paginated list of users, filtered by username, for autocomplete """
         return User.filter_users(username, project_id, page, is_project_manager)

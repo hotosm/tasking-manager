@@ -83,5 +83,11 @@ def refresh_project_stats():
     print("Project stats updated")
 
 
-if __name__ == "__main__":
+@manager.command
+def refresh_translatables():
+    print('Exporting translatable strings')
+    TranslationService.refresh_translatables()
+
+
+if __name__ == '__main__':
     manager.run()

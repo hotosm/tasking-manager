@@ -55,8 +55,8 @@
             vm.messageIdToBeDeleted = messageId;
             vm.showDeleteMessageModal = true;
         };
-        
-        /** 
+
+        /**
          * Redirect to inbox after message is deleted
         **/
         vm.redirectAfterDelete = function(){
@@ -72,11 +72,11 @@
             var resultsPromise = messageService.deleteMessage(id);
             resultsPromise.then(function (data) {
                 // success
-                vm.redirectAfterDelete();   
+                vm.redirectAfterDelete();
             }, function () {
                 // an error occurred
                 vm.deleteMessageFail = true;
-            });    
+            });
         };
 
 
