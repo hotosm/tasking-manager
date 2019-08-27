@@ -2,7 +2,7 @@
 
 (function () {
 
-    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'ui.bootstrap', 'angularMoment', 'chart.js', 'ngTagsInput', 'mentio', '720kb.socialshare', 'pascalprecht.translate', 'ngTable', 'taskingmanager.config'])
+    angular.module('taskingManager', ['ngRoute', 'ngFileUpload', 'ng-showdown', 'ui.bootstrap', 'angularMoment', 'chart.js', 'ngTagsInput', 'mentio', '720kb.socialshare', 'pascalprecht.translate', 'ngTable', 'ngClickCopy', 'taskingmanager.config'])
 
     /**
      * Factory that returns the configuration settings for the current environment
@@ -158,6 +158,18 @@
                     controller: 'licenseEditController',
                     controllerAs: 'licenseEditCtrl',
                     title: 'Edit Licenses'
+                })
+
+                .when('/admin/mapping-issues/categories', {
+                    templateUrl: 'app/admin/mapping-issues/mapping-issue-categories.html',
+                    controller: 'mappingIssueCategoriesController',
+                    controllerAs: 'mappingIssueCategoriesCtrl'
+                })
+
+                .when('/admin/mapping-issues/categories/edit/:id', {
+                    templateUrl: 'app/admin/mapping-issues/mapping-issue-categories-edit.html',
+                    controller: 'mappingIssueCategoriesEditController',
+                    controllerAs: 'mappingIssueCategoriesEditCtrl'
                 })
 
                 .when('/admin/dashboard', {

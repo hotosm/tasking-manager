@@ -35,8 +35,33 @@
     border: 2px solid $darkest-grey;
   }
 
+  td.timestamp {
+    min-width: 145px;
+    text-align: right;
+
+    a.disabled {
+      padding-right: 25px; // since no diff control
+    }
+  }
+
   td.comment-text {
     word-break: break-word;
+  }
+
+  td.issue-summary {
+    color: $darker-red;
+
+    .issue-summary__heading {
+      margin-bottom: 1em;
+    }
+
+    .issue-summary__marker {
+      font-size: 18px;
+    }
+
+    &--fixed {
+      color: inherit;
+    }
   }
 
   th:first-child,

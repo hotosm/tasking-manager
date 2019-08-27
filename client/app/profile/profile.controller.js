@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('profileController', ['$routeParams', '$location', '$window', 'NgTableParams', 'accountService','authService','mapService','projectMapService','userService', 'taskService', 'geospatialService', 'messageService','settingsService', profileController]);
+        .controller('profileController', ['$routeParams', '$location', '$window', 'NgTableParams', 'accountService','authService','mapService', 'projectService', 'projectMapService','userService', 'taskService', 'geospatialService', 'messageService','settingsService', profileController]);
 
-    function profileController($routeParams, $location, $window, NgTableParams, accountService, authService, mapService, projectMapService, userService, taskService, geospatialService, messageService, settingsService) {
+    function profileController($routeParams, $location, $window,  NgTableParams, accountService, authService, mapService, projectService, projectMapService, userService, taskService, geospatialService, messageService, settingsService) {
 
         var vm = this;
         vm.username = '';
@@ -249,20 +249,71 @@
          * View project for user and bounding box in Overpass Turbo
          * @param aoi
          */
-        vm.viewOverpassTurbo = function (aoi) {
-            var feature = geospatialService.getFeatureFromGeoJSON(aoi);
-            var olExtent = feature.getGeometry().getExtent();
-            var bboxArray = geospatialService.transformExtentToLatLonArray(olExtent);
-            var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
-            var queryPrefix = '<osm-script output="json" timeout="25"><union>';
-            var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
-            var queryMiddle = '<query type="node"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
-                '<query type="way"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
-                '<query type="relation"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>';
-            var query = queryPrefix + queryMiddle + querySuffix;
-            $window.open('http://overpass-turbo.eu/map.html?Q=' + encodeURIComponent(query));
+        vm.viewOverpassTurbo = function (project_id) {
+            var promise = projectService.getAOIServer(project_id);
+            var tabWindow = $window.open('', '_blank');
+            promise.then(function(aoi) {
+
+                var feature = geospatialService.getFeatureFromGeoJSON(aoi);
+                var olExtent = feature.getGeometry().getExtent();
+                var bboxArray = geospatialService.transformExtentToLatLonArray(olExtent);
+                var bbox = 'w="' + bboxArray[0] + '" s="' + bboxArray[1] + '" e="' + bboxArray[2] + '" n="' + bboxArray[3] + '"';
+                var queryPrefix = '<osm-script output="json" timeout="25"><union>';
+                var querySuffix = '</union><print mode="body"/><recurse type="down"/><print mode="skeleton" order="quadtile"/></osm-script>';
+                var queryMiddle = '<query type="node"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
+                    '<query type="way"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>' +
+                    '<query type="relation"><user name="' + vm.username + '"/><bbox-query ' + bbox + '/></query>';
+
+                var query = queryPrefix + queryMiddle + querySuffix;
+                tabWindow.location.href = 'http://overpass-turbo.eu/map.html?Q=' + encodeURIComponent(query);
+            });
         };
 
+        /**
+         * Calculate duration for user profile
+         */
+        function humanizeDuration(eventDuration) {
+          var eventDurationString = ''
+          var eventMDuration = moment.duration(eventDuration, 'seconds');
+          var years = eventMDuration.years();
+          var days = eventMDuration.days();
+          var hours = eventMDuration.hours();
+          var minutes = eventMDuration.minutes();
+          eventDurationString = "";
+          if (years > 0)
+          {
+              if (years === 1){
+                  eventDurationString += " " + years + ' year'
+              } else {
+                  eventDurationString += " " + years + ' years'
+              }
+          }
+          if (days > 0)
+          {
+              if (days === 1){
+                  eventDurationString += " " + days + ' day'
+              } else {
+                  eventDurationString += " " + days + ' days'
+              }
+          }
+          if (hours > 0)
+          {
+              if (hours === 1){
+                  eventDurationString += " " + hours + ' hour'
+              } else {
+                  eventDurationString += " " + hours + ' hours'
+              }
+          }
+          if (minutes > 0)
+          {
+              if (minutes === 1){
+                  eventDurationString += " " + minutes + ' minute'
+              } else {
+                  eventDurationString += " " + minutes + ' minutes'
+              }
+          }
+          return eventDurationString
+        }
 
         /**
          * Get the settings for the levels
@@ -283,6 +334,7 @@
             resultsPromise.then(function (data) {
                 // On success, set the detailed stats for this user
                 vm.userStats = data;
+                vm.userStats.timeSpentMapping = humanizeDuration(vm.userStats.timeSpentMapping)
             });
         }
 

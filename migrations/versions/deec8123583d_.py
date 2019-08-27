@@ -6,9 +6,6 @@ Create Date: 2018-08-07 23:09:58.621826
 
 """
 from alembic import op
-import sqlalchemy as sa
-from server.models.postgis.project import Project
-from server.models.postgis.task import Task
 
 
 # revision identifiers, used by Alembic.
@@ -17,26 +14,26 @@ down_revision = 'ac55902fcc3d'
 branch_labels = None
 depends_on = None
 
-projects = Project.__table__
-tasks = Task.__table__
 
 def upgrade():
     conn = op.get_bind()
 
-    for project in conn.execute(projects.select()):
-        zooms = conn.execute(
-            sa.sql.expression.select([tasks.c.zoom]).distinct(tasks.c.zoom)
-                .where(tasks.c.project_id == project.id))
+    projects = conn.execute('select * from projects')
+
+    # Content migration: Check the amount of zoom levels in tasks of a project and set
+    # task_creation_mode to 1 or 0 accordingly.
+    for project in projects:
+        select_query = 'select distinct zoom from tasks where project_id = ' + str(project.id)
+        zooms = conn.execute(select_query)
         zooms = zooms.fetchall()
 
         if len(zooms) == 1 and zooms[0] == (None,):
-            op.execute(
-                projects.update().where(projects.c.id == project.id)
-                    .values(task_creation_mode=1))
+            update_query = 'update projects set task_creation_mode = 1 where id = ' + str(project.id)
         else:
-            op.execute(
-                projects.update().where(projects.c.id == project.id)
-                    .values(task_creation_mode=0))
+            update_query = 'update projects set task_creation_mode = 0 where id = ' + str(project.id)
+
+        op.execute(update_query)
+
 
 
 def downgrade():

@@ -14,7 +14,8 @@
             getProjectContributions: getProjectContributions,
             getProjectActivity: getProjectActivity,
             getProjectStats: getProjectStats,
-            getHomePageStats: getHomePageStats
+            getProjectUserStats: getProjectUserStats,
+            getHomePageStats: getHomePageStats,
         };
 
         return service;
@@ -93,10 +94,31 @@
          * @returns {*|!jQuery.deferred|!jQuery.Promise|!jQuery.jqXHR}
          */
         function getHomePageStats(){
-            console.log('In service');
             return $http({
                 method: 'GET',
-                url: configService.tmAPI + '/stats/home-page'
+                url: configService.tmAPI + '/stats/summary'
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+         * Get project stats
+         * @param projectId
+         * @param username
+         * @returns {*|!jQuery.deferred|!jQuery.Promise|!jQuery.jqXHR}
+         */
+        function getProjectUserStats(projectId, username){
+            // Returns a promise
+            return $http({
+                method: 'GET',
+                url: configService.tmAPI + '/stats/project/' + projectId + 'user/' + username
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available

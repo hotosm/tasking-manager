@@ -18,18 +18,27 @@
                                     <a title="{{ 'Edit description' | translate }}" ng-click="editProjectCtrl.currentSection = 'description'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'description' ? 'aside-menu-item--active' : ''">
                                     {{ 'Description' | translate }} *
+                                        <span ng-show="editProjectCtrl.nameMissing || editProjectCtrl.shortDescriptionMissing || editProjectCtrl.descriptionMissing">
+                                            <span class="missing-email-indicator fa fa-exclamation"></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
                                     <a title="{{ 'Edit instructions' | translate }}" ng-click="editProjectCtrl.currentSection = 'instructions'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'instructions' ? 'aside-menu-item--active' : ''">
                                         {{ 'Instructions' | translate }} *
+                                        <span ng-show="editProjectCtrl.instructionsMissing">
+                                            <span class="missing-email-indicator fa fa-exclamation"></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
                                     <a title="{{ 'Edit tags' | translate }}" ng-click="editProjectCtrl.currentSection = 'metadata'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'metadata' ? 'aside-menu-item--active' : ''">
-                                        {{ 'Metadata' | translate }}
+                                        {{ 'Metadata' | translate }} *
+                                        <span ng-show="!editProjectCtrl.editForm.organisationTag.$valid || !editProjectCtrl.editForm.campaignTag.$valid || editProjectCtrl.organisationTagMissing || editProjectCtrl.mappingTypeMissing">
+                                            <span class="missing-email-indicator fa fa-exclamation"></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
@@ -48,13 +57,20 @@
                                     <a title="{{ 'Edit permissions' | translate }}" ng-click="editProjectCtrl.currentSection = 'permissions'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'permissions' ? 'aside-menu-item--active' : ''">
                                         {{ 'Permissions' | translate }}
+                                        <span ng-show="editProjectCtrl.project.private && editProjectCtrl.project.allowedUsernames.length < 1">
+                                            <span class="missing-email-indicator fa fa-exclamation"></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li>
                                     <a title="{{ 'Edit settings' | translate }}" ng-click="editProjectCtrl.currentSection = 'settings'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'settings' ? 'aside-menu-item--active' : ''">
                                         {{ 'Settings' | translate }}
+                                        <span ng-show="editProjectCtrl.project.mappingEditors.length < 1 || editProjectCtrl.project.validationEditors.length < 1">
+                                            <span class="missing-email-indicator fa fa-exclamation"></span>
+                                        </span>
                                     </a>
+
                                 </li>
                                 <li>
                                     <a title="{{ 'Project wide actions' | translate }}" ng-click="editProjectCtrl.currentSection = 'actions'"
@@ -119,6 +135,9 @@
                                                    ng-model="info.name"/>
                                         </div>
                                     </div>
+                                    <p class="error" ng-show="editProjectCtrl.nameMissing">
+                                        {{ 'A name for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'is missing.' | translate }}
+                                    </p>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Short description' | translate }} *</label>
@@ -148,6 +167,9 @@
                                             <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewShortDescription" markdown-to-html="info.shortDescription"></p>
                                         </div>
                                     </div>
+                                    <p class="error" ng-show="editProjectCtrl.shortDescriptionMissing">
+                                        {{ 'A short description for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'is missing.' | translate }}
+                                    </p>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Description' | translate }} *</label>
@@ -180,6 +202,9 @@
                                             </p>
                                         </div>
                                     </div>
+                                    <p class="error" ng-show="editProjectCtrl.descriptionMissing">
+                                        {{ 'A description for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'is missing.' | translate }}
+                                    </p>
                                 </div>
                             </fieldset>
                         </div>
@@ -227,6 +252,9 @@
                                             <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewInstructions" markdown-to-html="info.instructions"></p>
                                         </div>
                                     </div>
+                                    <p class="error" ng-show="editProjectCtrl.instructionsMissing">
+                                        {{ 'Instructions for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'are missing.' | translate }}
+                                    </p>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Per Task Instructions' | translate }}</label>
@@ -254,7 +282,7 @@
                                                 {x}, {y} and {z} parameters can only be be used on tasks generated in the Tasking Manager and not on imported tasks.
                                                 For example: « This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM ».' | translate }}</p>
                                             <p ng-if="editProjectCtrl.project.taskCreationMode == 'ARBITRARY'">
-                                                {{ 'Put here anything that can be useful to users while taking a task. If you have added extra properties within the GeoJSON of the task, they can be referenced by surrounding them in curly braces. For eg. if you have a property called "import_url" in your GeoJSON, you can reference it like:' | translate }}
+                                                {{ 'Put here anything that can be useful to users while taking a task. If you have added extra properties within the GeoJSON of the task, they can be referenced by surrounding them in curly braces. For eg. if you have a property called `import_url` in your GeoJSON, you can reference it like:' | translate }}
                                                 <code>This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&url={import_url}) to load the data into JOSM</code>
                                             </p>
                                             <button class="button button--secondary button--small"
@@ -295,7 +323,7 @@
                                     <p>{{ 'Setting the level will help the mappers find suitable projects to work on. You can enforce the level required for mapping in the permissions section.' | translate }}</p>
                                 </div>
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Type(s) of mapping' | translate }}</label>
+                                    <label class="form__label">{{ 'Type(s) of mapping' | translate }} *</label>
                                     <label class="form__option">
                                         <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.roads"/>{{ 'Roads' | translate }}
                                     </label>
@@ -313,13 +341,16 @@
                                     </label>
                                 </div>
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Organisation Tag' | translate }}</label>
+                                    <label class="form__label">{{ 'Organisation Tag' | translate }} *</label>
                                     <p>{{ 'Only one organisation tag is allowed.' | translate }}</p>
                                     <tags-input ng-model="editProjectCtrl.projectOrganisationTag"
                                         name="organisationTag" placeholder="{{ 'choose from existing tags or create a new one' | translate }}"
                                         replace-spaces-with-dashes="false" max-tags="1">
                                         <auto-complete source="editProjectCtrl.getOrganisationTags($query)"></auto-complete>
                                     </tags-input>
+                                    <p class="error" ng-show="!editProjectCtrl.editForm.organisationTag.$valid">
+                                        {{ 'Please make sure you only have one organisation tag.' | translate }}
+                                    </p>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Campaign Tag' | translate }}</label>
@@ -329,6 +360,16 @@
                                                 replace-spaces-with-dashes="false" max-tags="1">
                                         <auto-complete source="editProjectCtrl.getCampaignTags($query)"></auto-complete>
                                     </tags-input>
+                                    <p class="error" ng-show="!editProjectCtrl.editForm.campaignTag.$valid">
+                                        {{ 'Please make sure you only have one campaign tag.' | translate }}
+                                    </p>
+                                </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'OSMCha Filter Id' | translate }}</label>
+                                    <input type="text" class="form__control" ng-model="editProjectCtrl.project.osmchaFilterId"/>
+                                    <p>
+                                        {{ 'Optional id of a saved OSMCha filter to apply when viewing the project in OSMCha, if you desire custom filtering. Note that this replaces all standard filters. Example: 095e8b31-b3cb-4b36-a106-02826fb6a109 (for convenience, you can also paste an OSMCha URL here that uses a saved filter and the filter id will be extracted for you).' | translate }}
+                                    </p>
                                 </div>
                             </fieldset>
                         </div>
@@ -386,19 +427,23 @@
                         <div ng-show="editProjectCtrl.currentSection === 'permissions'">
                             <fieldset class="form__fieldset">
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Mapper Level' | translate }}</label>
+                                    <label class="form__label">{{ 'Mappers' | translate }}</label>
                                     <label class="form__option">
-                                        <input ng-model="editProjectCtrl.project.enforceMapperLevel" type="checkbox"/>{{ 'Only mappers with level' | translate }} {{ editProjectCtrl.project.mapperLevel }} {{ 'or higher can map' | translate }}
+                                        <input ng-model="editProjectCtrl.project.enforceMapperLevel" type="checkbox"/>{{ 'Only mappers with experience level' | translate }} {{ editProjectCtrl.project.mapperLevel }} {{ 'or higher can map' | translate }}
                                     </label>
                                     <p>{{ 'If checked, only users with the listed mapper experience level will be able to contribute to this project. If unchecked, anyone can contribute. Go to the Metadata panel to change the mapper experience level for this project.' | translate }}
                                     </p>
                                 </div>
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Validator Level' | translate }}</label>
+                                    <label class="form__label">{{ 'Validators' | translate }}</label>
                                     <label class="form__option">
-                                        <input ng-model="editProjectCtrl.project.enforceValidatorRole" type="checkbox"/>{{ 'Only Validators can validate on this project' | translate }}
+                                        <input ng-model="editProjectCtrl.project.enforceValidatorRole" type="checkbox" />{{ 'Require users to be validators' | translate }}
                                     </label>
                                     <p>{{ 'If checked, only users with the Validator role will be able to validate tasks in this project. If unchecked, anyone can validate or invalidate tasks.' | translate }}</p>
+                                    <label class="form__option">
+                                        <input ng-model="editProjectCtrl.project.allowNonBeginners" type="checkbox"/>{{ 'Require experience level INTERMEDIATE or ADVANCED' | translate }}
+                                    </label>
+                                    <p>{{ ' If checked, only users with the experience level of Intermediate and Advanced will be able to validate tasks in this project.' | translate }}</p>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Private Project' | translate }}</label>
@@ -430,6 +475,9 @@
                                                 <span>{{ 'Add user' | translate }}</span>
                                             </button>
                                         </span>
+                                        <p class="error" ng-show="editProjectCtrl.project.private && editProjectCtrl.project.allowedUsernames.length < 1">
+                                            {{ 'You need to add at least one allowed user to a private project.' | translate }}
+                                        </p>
                                     </div>
                                 </div>
                             </fieldset>
@@ -453,6 +501,49 @@
                                         </li>
                                     </ul>
                                 </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Editors for mapping' | translate }}</label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.id"/>{{ 'iD Editor' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.josm"/>{{ 'JOSM' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.potlatch2"/>{{ 'Potlatch 2' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
+                                    </label>
+                                    <p class="error" ng-show="editProjectCtrl.project.mappingEditors.length < 1">
+                                        {{ 'You need at least one mapping editor.' | translate }}
+                                    </p>
+                                </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Editors for validation' | translate }}</label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.id"/>{{ 'iD Editor' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.josm"/>{{ 'JOSM' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.potlatch2"/>{{ 'Potlatch 2' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
+                                    </label>
+                                    <p class="error" ng-show="editProjectCtrl.project.validationEditors.length < 1">
+                                        {{ 'You need at least one validation editor.' | translate }}
+                                    </p>
+                                </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Enforce Random Task Selection' | translate }}</label>
+                                    <label class="form__option">
+                                        <input ng-model="editProjectCtrl.project.enforceRandomTaskSelection" type="checkbox"/>{{ 'Enforce random task selection on mapping' | translate }}
+                                    </label>
+                                    <p>{{ 'If checked, users must edit tasks at random for the initial editing stage (project managers and admins are exempt). ' | translate }}</p>
+                            </div>
                             </fieldset>
                         </div>
                             <!--/ settings -->
@@ -502,6 +593,27 @@
                                     <button class="button button--secondary" type="button"
                                             ng-click="editProjectCtrl.showDeleteConfirmation(true)">
                                         {{ 'Delete project' | translate }}
+                                    </button>
+                                </div>
+                                <div class="form__group form__group--section">
+                                    <label class="form__label">{{ 'Transfer project' | translate }}</label>
+                                    <div class="alert alert--warning" role="alert">
+                                        <p><strong>{{ 'Warning' | translate }}:</strong> {{ 'This cannot be undone.' | translate }}</p>
+                                        <p>{{ 'The selected user needs to be project manager or administratror role assigned'  | translate }}</p>
+                                    </div>
+                                    <div style="margin-top: 5px">
+                                        <tags-input ng-model="editProjectCtrl.transferProjectTo"
+                                        name="projectTransferTo" placeholder="{{ 'Search for username' | translate }}"
+                                        replace-spaces-with-dashes="false" max-tags="1">
+                                        <auto-complete source="editProjectCtrl.getUser($query, true)"></auto-complete>
+                                        <p class="error" ng-show="!editProjectCtrl.editForm.projectTransferTo.$valid">
+                                            {{ 'Please make sure you only have one user.' | translate }}
+                                        </p>
+                                        <p class="error" ng-show="editProjectCtrl.showTransferEmptyUserError">{{ 'Please enter a valid username' | translate }}</p>
+                                    </div>
+                                    <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.showTransferConfirmation(true)">
+                                        {{ 'Transfer project' | translate }}
                                     </button>
                                 </div>
                                 <div class="form__group form__group--section">
@@ -611,6 +723,12 @@
                                     <p class="error" ng-show="!editProjectCtrl.editForm.organisationTag.$valid">
                                         {{ 'Please make sure you only have one organisation tag.' | translate }}
                                     </p>
+                                    <p class="error" ng-show="editProjectCtrl.organisationTagMissing">
+                                        {{ 'An organisation tag is missing.' | translate }}
+                                    </p>
+                                    <p class="error" ng-show="editProjectCtrl.mappingTypeMissing">
+                                        {{ 'A mapping type selection is missing.' | translate }}
+                                    </p>
                                 </div>
                             </div>
                         </form>
@@ -653,6 +771,43 @@
         </footer>
     </div>`
     <button class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showDeleteConfirmation(false)">
+        {{ 'Dismiss' | translate }}
+    </button>
+</section>
+<!-- delete project confirmation modal -->
+
+<!-- transter project confirmation modal -->
+<section class="modal modal-tm" ng-show="editProjectCtrl.showTransferConfirmationModal">
+    <div class="modal__inner">
+        <header class="modal__header">
+            <div class="modal__headline">
+                <h1 class="modal__title">{{ 'Transfer project' | translate }}</h1>
+            </div>
+        </header>
+        <div class="modal__body">
+            <p ng-hide="editProjectCtrl.transferProjectSuccess">
+                {{ 'Are you sure you want to transfer this project? You cannot undo transfering a project.' | translate }}
+            </p>
+            <p ng-show="editProjectCtrl.transferProjectSuccess">{{ 'The project was transfered successfully.' | translate }}</p>
+            <p ng-show="editProjectCtrl.transferProjectFail" class="error">{{ 'The project was not transfered successfully.' | translate }}</p>
+        </div>
+        <footer class="modal__footer">
+            <div ng-hide="editProjectCtrl.transferProjectSuccess">
+                <button class="button button--achromic" type="button"
+                        ng-click="editProjectCtrl.showTransferConfirmation(false)">{{ 'Cancel' | translate }}
+                </button>
+                <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.transferProject()">{{ 'Transfer' | translate }}
+                </button>
+            </div>
+            <div ng-show="editProjectCtrl.transferProjectSuccess">
+                 <button class="button button--base" type="button"
+                        ng-click="editProjectCtrl.goToProjectDetail()">{{ 'Go back to the project' | translate }}
+                </button>
+            </div>
+        </footer>
+    </div>`
+    <button class="modal__button-dismiss" title="{{ 'Close' | translate }}" ng-click="editProjectCtrl.showTransferConfirmation(false)">
         {{ 'Dismiss' | translate }}
     </button>
 </section>

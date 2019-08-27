@@ -2,10 +2,11 @@ from cachetools import TTLCache, cached
 from flask import current_app
 
 from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary
+from server.models.dtos.project_dto import ProjectDTO, LockedTasksForUser, ProjectSummary, ProjectStatsDTO, ProjectUserStatsDTO
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task
+from server.models.postgis.task_annotation import TaskAnnotation
 from server.models.postgis.utils import NotFound
 from server.services.users.user_service import UserService
 
@@ -35,7 +36,7 @@ class ProjectService:
         Task.auto_unlock_tasks(project_id)
 
     @staticmethod
-    def get_project_dto_for_mapper(project_id, locale='en') -> ProjectDTO:
+    def get_project_dto_for_mapper(project_id, locale='en', abbrev=False) -> ProjectDTO:
         """
         Get the project DTO for mappers
         :param project_id: ID of the Project mapper has requested
@@ -43,7 +44,7 @@ class ProjectService:
         :raises ProjectServiceError, NotFound
         """
         project = ProjectService.get_project_by_id(project_id)
-        return project.as_dto_for_mapping(locale)
+        return project.as_dto_for_mapping(locale, abbrev)
 
     @staticmethod
     def get_project_tasks(project_id):
@@ -176,3 +177,17 @@ class ProjectService:
         """ Gets the project title DTO """
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_title(preferred_locale)
+
+    @staticmethod
+    def get_project_stats(project_id: int) -> ProjectStatsDTO:
+        """ Gets the project stats DTO """
+        project = ProjectService.get_project_by_id(project_id)
+        return project.get_project_stats()
+
+    @staticmethod
+    def get_project_user_stats(project_id: int, username: str) -> ProjectUserStatsDTO:
+        """ Gets the user stats for a specific project """
+        print(project_id)
+        project = ProjectService.get_project_by_id(project_id)
+        user = UserService.get_user_by_username(username)
+        return project.get_project_user_stats(user.id)
