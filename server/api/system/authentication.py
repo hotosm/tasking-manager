@@ -44,7 +44,7 @@ class SystemAuthenticationLoginAPI(Resource):
 
         base_url = current_app.config["APP_BASE_URL"]
         return osm.authorize(
-            callback=f"{base_url}/api/v1/auth/oauth-callback{redirect_query}"
+            callback=f"{base_url}/api/v2/system/authentication/callback{redirect_query}"
         )
 
 
