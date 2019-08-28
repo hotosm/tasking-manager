@@ -195,8 +195,9 @@ class MappingService:
         """
         Creates a GPX file for supplied tasks.  Timestamp is for unit testing only.
         You can use the following URL to test locally:
-        http://www.openstreetmap.org/edit?editor=id&#map=11/31.50362930069913/34.628906243797054&comment=CHANGSET_COMMENT&gpx=http://localhost:5000/api/v1/project/111/tasks_as_gpx%3Ftasks=2
+        http://www.openstreetmap.org/edit?editor=id&#map=11/31.50362930069913/34.628906243797054&comment=CHANGSET_COMMENT&gpx=http://localhost:5000/api/v2/projects/{project_id}/tasks/queries/gpx%3Ftasks=2
         """
+
         if timestamp is None:
             timestamp = datetime.datetime.utcnow()
 

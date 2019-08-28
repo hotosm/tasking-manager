@@ -50,7 +50,7 @@ const AuthButtons = (props) => {
   const { logInStyle, signUpStyle, aStyle, redirectTo } = props;
   return (
     <>
-      <a href={`${API_URL}auth/login?redirect_to=${redirectTo || '/'}`} className={ aStyle } >
+      <a href={`${API_URL}system/authentication/login?redirect_to=${redirectTo || '/'}`} className={ aStyle } >
         <Button className={ logInStyle } >
           <FormattedMessage {...messages.logIn}/>
         </Button>
