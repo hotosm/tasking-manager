@@ -1,6 +1,7 @@
 import logging
 import os
 from dotenv import load_dotenv
+import tempfile
 
 
 class EnvironmentConfig:
@@ -49,6 +50,12 @@ class EnvironmentConfig:
 
     # Time to wait until task auto-unlock (e.g. '2h' or '7d' or '30m' or '1h30m')
     TASK_AUTOUNLOCK_AFTER = os.getenv('TM_TASK_AUTOUNLOCK_AFTER', '2h')
+
+    # Where the additional project files are stored. Defaults to a temporary directory
+    PROJECT_FILES_DIR = os.getenv('PROJECT_FILES_DIR', tempfile.gettempdir())
+
+    # Image sources
+    MAPILLARY_API = os.getenv('MAPILLARY_API', None)
 
     # Configuration for sending emails
     SMTP_SETTINGS = {
