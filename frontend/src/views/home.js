@@ -7,8 +7,8 @@ import { WhoIsMapping } from '../components/homepage/whoIsMapping';
 import { Testimonials } from '../components/homepage/testimonials/index';
 import { FeaturedProjects } from '../components/homepage/featuredProjects';
 
-
 export class Home extends React.Component {
+
   render() {
     return(
       <div className="pull-center">
