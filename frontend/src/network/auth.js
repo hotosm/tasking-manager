@@ -3,7 +3,7 @@ import { API_URL } from '../config';
 
 
 export function fetchUserDetails(username, token) {
-  return fetch(`${API_URL}user/${username}`, {
+  return fetch(`${API_URL}users/queries/${username}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
