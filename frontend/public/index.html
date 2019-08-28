@@ -41,6 +41,22 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <div id="optout-form"></div>
+    <script type="application/javascript">
+      if (typeof %REACT_APP_MATOMO_ID% !== 'undefined' && '%REACT_APP_MATOMO_ENDPOINT%' !== '' && %REACT_APP_MATOMO_ID% !== 0) {
+      const s = document.createElement('script');
+      s.type = 'text/javascript';
+      s.async = true;
+      s.innerHTML = "var site_id = " + %REACT_APP_MATOMO_ID% + ";";
+      document.body.appendChild(s);
+
+      const s2 = document.createElement('script');
+      s2.src = "%REACT_APP_MATOMO_ENDPOINT%";
+      s2.async = true;
+      document.body.appendChild(s2);
+    }
+
+    </script>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
