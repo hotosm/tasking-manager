@@ -1,0 +1,4 @@
+Hi [ADMIN_USERNAME],<br />
+<br />
+User [MAPPER_USERNAME] requested for a validation role.
+<br />

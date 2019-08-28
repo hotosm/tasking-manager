@@ -92,3 +92,11 @@ class Editors(Enum):
     JOSM = 1
     POTLATCH_2 = 2
     FIELD_PAPERS = 3
+
+
+class UserValidatorRoleRequestStatus(Enum):
+    """ Describes if a validation form is ready to be reviewd, accepted or denied """
+
+    READY = 0
+    ACCEPT = 1
+    DENY = 2

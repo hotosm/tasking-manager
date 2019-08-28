@@ -11,10 +11,16 @@ from server.models.dtos.user_dto import (
     UserSearchDTO,
     ProjectParticipantUser,
     ListedUser,
+    UserValidatorRoleRequestDTO,
 )
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
-from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
+from server.models.postgis.statuses import (
+    MappingLevel,
+    ProjectStatus,
+    UserRole,
+    UserValidatorRoleRequestStatus,
+)
 from server.models.postgis.utils import NotFound, timestamp
 
 
@@ -368,3 +374,96 @@ class User(db.Model):
             user_dto.email_address = self.email_address
             user_dto.is_email_verified = self.is_email_verified
         return user_dto
+
+
+class UserValidatorRoleRequest(db.Model):
+    """ Describes the request form related to validator role request"""
+
+    __tablename__ = "validator_role_requests"
+    id = db.Column(db.BigInteger, primary_key=True, index=True)
+    requester_user_id = db.Column(
+        db.BigInteger, db.ForeignKey("users.id"), nullable=False
+    )
+    status = db.Column(db.Integer, default=UserValidatorRoleRequestStatus.READY.value)
+    created_date = db.Column(db.DateTime, default=timestamp)
+
+    # http://bit.ly/HOTValidators
+    reason = db.Column(db.String)
+    reviewed_howto = db.Column(db.Boolean, default=False)
+    read_learnosm = db.Column(db.Boolean, default=False)
+    read_code_conduct = db.Column(db.Boolean, default=False)
+
+    agreed_interactions = db.Column(db.Boolean, default=False)
+    agreed_osmdata = db.Column(db.Boolean, default=False)
+
+    # On a response from a manager/admin.
+    response_user_id = db.Column(db.BigInteger, db.ForeignKey("users.id"))
+    response_reason = db.Column(db.String)
+    updated_date = db.Column(db.DateTime)
+
+    requested_user = db.relationship(User, foreign_keys=[requester_user_id])
+    response_user = db.relationship(
+        User, foreign_keys=[response_user_id], backref="validation_form_responses"
+    )
+
+    def create(self):
+        """ Creates and saves the current model to the DB """
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, dto: UserValidatorRoleRequestDTO) -> UserValidatorRoleRequestDTO:
+        self.response_user_id = dto.response_user_id
+        self.status = UserValidatorRoleRequestStatus[dto.status].value
+        self.response_reason = dto.response_reason
+        self.updated_date = dto.updated_date
+
+        db.session.commit()
+
+        return dto
+
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
+
+    @classmethod
+    def create_from_dto(
+        cls, dto: UserValidatorRoleRequestDTO
+    ) -> UserValidatorRoleRequestDTO:
+        role_request = cls()
+        role_request.requester_user_id = dto.requester_user_id
+        role_request.status = UserValidatorRoleRequestStatus[dto.status].value
+        role_request.created_date = timestamp()
+
+        # http://bit.ly/HOTValidators
+        role_request.reason = dto.reason
+        role_request.reviewed_howto = dto.reviewed_howto
+        role_request.read_learnosm = dto.read_learnosm
+        role_request.read_code_conduct = dto.read_code_conduct
+
+        role_request.agreed_interactions = dto.agreed_interactions
+        role_request.agreed_osmdata = dto.agreed_osmdata
+
+        role_request.create()
+
+        return role_request.as_dto()
+
+    def as_dto(self) -> UserValidatorRoleRequestDTO:
+        dto = UserValidatorRoleRequestDTO()
+        dto.id = self.id
+        dto.requester_user_id = self.requester_user_id
+        dto.response_user_id = self.response_user_id
+        dto.status = UserValidatorRoleRequestStatus(self.status).name
+        dto.created_date = self.created_date
+        dto.updated_date = self.updated_date
+        dto.response_reason = self.response_reason
+
+        dto.reason = self.reason
+        dto.reviewed_howto = self.reviewed_howto
+        dto.read_learnosm = self.read_learnosm
+        dto.read_code_conduct = self.read_code_conduct
+
+        dto.agreed_interactions = self.agreed_interactions
+        dto.agreed_osmdata = self.agreed_osmdata
+
+        return dto

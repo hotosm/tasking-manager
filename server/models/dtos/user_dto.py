@@ -1,6 +1,13 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, EmailType, LongType, BooleanType
+from schematics.types import (
+    StringType,
+    IntType,
+    EmailType,
+    LongType,
+    BooleanType,
+    DateTimeType,
+)
 
 from schematics.types.compound import ListType, ModelType, BaseType
 from server.models.dtos.stats_dto import Pagination
@@ -73,6 +80,27 @@ class UserDTO(Model):
     # these are read only
     missing_maps_profile = StringType(serialized_name="missingMapsProfile")
     osm_profile = StringType(serialized_name="osmProfile")
+
+
+class UserValidatorRoleRequestDTO(Model):
+    id = LongType()
+    requester_user_id = IntType(required=True, serialized_name="requesterUserId")
+    status = StringType(default="READY")
+    created_date = DateTimeType()
+
+    # http://bit.ly/HOTValidators
+    reason = StringType()
+    reviewed_howto = BooleanType(default=False)
+    read_learnosm = BooleanType(default=False)
+    read_code_conduct = BooleanType(default=False)
+
+    agreed_interactions = BooleanType(default=False)
+    agreed_osmdata = BooleanType(default=False)
+
+    # On a response from a manager/admin.
+    response_user_id = IntType(serialized_name="responseUserId")
+    response_reason = StringType(serialized_name="responseReason")
+    updated_date = DateTimeType()
 
 
 class UserStatsDTO(Model):

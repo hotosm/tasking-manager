@@ -1,9 +1,20 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from server.models.dtos.user_dto import UserSearchQuery, UserDTO
+from server.models.dtos.user_dto import (
+    UserSearchQuery,
+    UserDTO,
+    UserValidatorRoleRequestDTO,
+)
 from server.services.users.authentication_service import token_auth, tm
-from server.services.users.user_service import UserService, UserServiceError, NotFound
+from server.services.users.user_service import (
+    UserService,
+    UserServiceError,
+    NotFound,
+    UserValidatorRoleRequestService,
+)
+from server.models.postgis.statuses import UserValidatorRoleRequestStatus
+from server.models.postgis.utils import timestamp
 
 
 class UserAPI(Resource):
@@ -606,3 +617,214 @@ class UserAcceptLicense(Resource):
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class UserValidatorRoleByIdAPI(Resource):
+    @tm.pm_only(True)
+    @token_auth.login_required
+    def put(self, id):
+        """
+        put to update a validator role request id
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: path
+              name: id
+              description: User validator role request id
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for updating validator role request
+              schema:
+                  properties:
+                      response_reason:
+                          type: string
+                      status:
+                          type: string
+                          description: response status. OPTIONS "DENY", "ACCEPT"
+        responses:
+            200:
+                description: Validator role request updated
+            400:
+                description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            payload = request.get_json()
+            # Validate that user exists.
+            dto = UserValidatorRoleRequestService.get_by_id_as_dto(id)
+            dto.response_reason = payload["response_reason"]
+            dto.status = UserValidatorRoleRequestStatus[payload["status"]].name
+            dto.response_user_id = tm.authenticated_user_id
+            dto.updated_date = timestamp()
+            dto.validate()
+
+            dto = UserValidatorRoleRequestService.update(dto)
+
+            return dto.serialize()
+        except KeyError:
+            return {"Error": "Invalid status value"}, 400
+        except ValueError as e:
+            return {"Error": str(e)}, 400
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except DataError as e:
+            current_app.logger.error(f"error validating request: {str(e)}")
+            return str(e), 400
+
+    @token_auth.login_required
+    def get(self, id):
+        """
+        Gets user validation role request
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: id
+              in: path
+              description: The role request id
+              required: true
+              type: integer
+        responses:
+            200:
+                description: User validator role request found
+            404:
+                description: No user validator role request found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            data = UserValidatorRoleRequestService.get_by_id_as_dto(id)
+            return data.serialize()
+        except ValueError as e:
+            return {"Error": str(e)}, 400
+        except Exception as e:
+            error_msg = f"User GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    @tm.pm_only(True)
+    @token_auth.login_required
+    def delete(self, id):
+        """
+        Deletes user validation role request
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: id
+              in: path
+              description: The role request id
+              required: true
+              type: integer
+        responses:
+            200:
+                description: User validator role request found
+            404:
+                description: No user validator role request found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            UserValidatorRoleRequestService.delete(id)
+            return {"Success": True}
+        except ValueError as e:
+            return {"Error": str(e)}, 400
+        except Exception as e:
+            error_msg = f"User GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class UserValidatorRoleRequestAPI(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self):
+        """
+        Post to indicate user has applied as a validator role
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating a validator role request
+              schema:
+                  properties:
+                      reason:
+                          type: string
+                      reviewed_howto:
+                          type: boolean
+                      read_learnosm:
+                          type: boolean
+                      read_code_conduct:
+                          type: boolean
+                      agreed_interactions:
+                          type: boolean
+                      agreed_osmdata:
+                          type: boolean
+        responses:
+            200:
+                description: Validator role request created
+            400:
+                description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            payload = request.get_json()
+            payload["requester_user_id"] = tm.authenticated_user_id
+            role_dto = UserValidatorRoleRequestDTO(payload)
+            role_dto.validate()
+
+            # Now we insert it into the database.
+            role_dto = UserValidatorRoleRequestService.create(role_dto)
+            return role_dto.serialize()
+
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except DataError as e:
+            current_app.logger.error(f"error validating request: {str(e)}")
+            return str(e), 400

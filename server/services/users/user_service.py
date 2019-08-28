@@ -12,10 +12,17 @@ from server.models.dtos.user_dto import (
     UserStatsDTO,
     UserContributionDTO,
     UserContributionsDTO,
+    UserValidatorRoleRequestDTO,
 )
-from server.models.postgis.message import Message
+from server.models.postgis.message import Message, MessageType
 from server.models.postgis.task import TaskHistory, TaskAction
-from server.models.postgis.user import User, UserRole, MappingLevel
+from server.models.postgis.user import (
+    User,
+    UserRole,
+    MappingLevel,
+    UserValidatorRoleRequest,
+    UserValidatorRoleRequestStatus,
+)
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
@@ -422,3 +429,80 @@ class UserService:
             users_updated += 1
 
         return users_updated
+
+
+class UserValidatorRoleRequestService:
+    @staticmethod
+    def get_by_id(validator_role_request_id: int) -> UserValidatorRoleRequest:
+        role_request = UserValidatorRoleRequest.query.get(validator_role_request_id)
+        if role_request is None:
+            raise ValueError("User validator role request not found")
+
+        return role_request
+
+    def get_by_id_as_dto(validator_role_request_id: int) -> UserValidatorRoleRequestDTO:
+        validator_role_request = UserValidatorRoleRequestService.get_by_id(
+            validator_role_request_id
+        )
+        return validator_role_request.as_dto()
+
+    @staticmethod
+    def create(
+        validator_role_dto: UserValidatorRoleRequestDTO
+    ) -> UserValidatorRoleRequestDTO():
+        validator_role_dto = UserValidatorRoleRequest.create_from_dto(
+            validator_role_dto
+        )
+
+        # Message admins.
+        mapper = UserService.get_user_by_id(validator_role_dto.requester_user_id)
+        admins = User.query.filter(User.role == UserRole.ADMIN.value)
+        for admin in admins.all():
+            text_template = get_template("validation_role_request.txt")
+
+            text_template = text_template.replace("[ADMIN_USERNAME]", admin.username)
+            text_template = text_template.replace("[MAPPER_USERNAME]", mapper.username)
+            message = Message(
+                message_type=MessageType.SYSTEM.value,
+                from_user_id=mapper.id,
+                to_user_id=admin.id,
+                subject=f"User {mapper.username} has applied for a validator role",
+                message=text_template,
+            )
+            message.add_message()
+
+        return validator_role_dto
+
+    @staticmethod
+    def delete(validator_role_request_id: int):
+        validator_role_request = UserValidatorRoleRequestService.get_by_id(
+            validator_role_request_id
+        )
+        validator_role_request.delete()
+
+    @staticmethod
+    def update(dto: UserValidatorRoleRequestDTO) -> UserValidatorRoleRequestDTO:
+        validator_role_request = UserValidatorRoleRequestService.get_by_id(dto.id)
+
+        # Validate that admin exist within the database.
+        UserService.get_user_by_id(dto.response_user_id)
+
+        dto = validator_role_request.update(dto)
+        message = Message(
+            message_type=MessageType.SYSTEM.value,
+            from_user_id=dto.response_user_id,
+            to_user_id=dto.requester_user_id,
+            subject=f"Validator role request response",
+            message=f"Your validation role request application has been denied",
+        )
+
+        if dto.status == UserValidatorRoleRequestStatus.ACCEPT.name:
+            user = UserService.get_user_by_id(dto.requester_user_id)
+            user.set_user_role(UserRole.VALIDATOR)
+            message.message = (
+                f"Your validation role request application has been accepted"
+            )
+
+        message.add_message()
+
+        return dto
