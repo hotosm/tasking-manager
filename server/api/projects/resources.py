@@ -100,12 +100,12 @@ class ProjectsRestAPI(Resource):
             return project_dto, 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404
-        except ProjectServiceError as e:
-            return {"error": str(e)}, 403
+        except ProjectServiceError:
+            return {"Error": "Unable to fetch project"}, 403
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch project"}, 500
         finally:
             # this will try to unlock tasks that have been locked too long
             try:
@@ -184,19 +184,19 @@ class ProjectsRestAPI(Resource):
             draft_project_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to create project"}, 400
 
         try:
             draft_project_id = ProjectAdminService.create_draft_project(
                 draft_project_dto
             )
             return {"projectId": draft_project_id}, 201
-        except (InvalidGeoJson, InvalidData) as e:
-            return {"error": f"{str(e)}"}, 400
+        except (InvalidGeoJson, InvalidData):
+            return {"Error": "Invalid GeoJson"}, 400
         except Exception as e:
             error_msg = f"Project PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to create project"}, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -239,7 +239,7 @@ class ProjectsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch project"}, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -370,7 +370,7 @@ class ProjectsRestAPI(Resource):
             project_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to update project"}, 400
 
         try:
             ProjectAdminService.update_project(project_dto)
@@ -379,12 +379,12 @@ class ProjectsRestAPI(Resource):
             return {"Invalid GeoJson": str(e)}, 400
         except NotFound:
             return {"Error": "Project Not Found"}, 404
-        except ProjectAdminServiceError as e:
-            return {"error": str(e)}, 400
+        except ProjectAdminServiceError:
+            return {"Error": "Unable to update project"}, 400
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to update project"}, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -431,7 +431,7 @@ class ProjectsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to delete project"}, 500
 
 
 class ProjectsAllAPI(Resource):
@@ -525,7 +525,7 @@ class ProjectsAllAPI(Resource):
             search_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to fetch projects"}, 400
 
         try:
             results_dto = ProjectSearchService.search_projects(search_dto)
@@ -535,7 +535,7 @@ class ProjectsAllAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch projects"}, 500
 
 
 class ProjectsQueriesBboxAPI(Resource):
@@ -604,18 +604,18 @@ class ProjectsQueriesBboxAPI(Resource):
             search_dto.validate()
         except Exception as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to fetch projects"}, 400
         try:
             geojson = ProjectSearchService.get_projects_geojson(search_dto)
             return geojson, 200
         except BBoxTooBigError:
             return {"Error": "Bounding Box too large"}, 403
-        except ProjectSearchServiceError as e:
-            return {"error": str(e)}, 400
+        except ProjectSearchServiceError:
+            return {"Error": "Unable to fetch projects"}, 400
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch projects"}, 500
 
 
 class ProjectsQueriesOwnerAPI(Resource):
@@ -708,7 +708,7 @@ class ProjectsQueriesTouchedAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch projects"}, 500
 
 
 class ProjectsQueriesSummaryAPI(Resource):
@@ -750,7 +750,7 @@ class ProjectsQueriesSummaryAPI(Resource):
         except Exception as e:
             error_msg = f"Project Summary GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch project summary"}, 500
 
 
 class ProjectsQueriesNoGeometriesAPI(Resource):
@@ -823,12 +823,12 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
             return project_dto, 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404
-        except ProjectServiceError as e:
-            return {"error": str(e)}, 403
+        except ProjectServiceError:
+            return {"Error": "Unable to fetch project"}, 403
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch project"}, 500
         finally:
             # this will try to unlock tasks that have been locked too long
             try:
@@ -907,12 +907,12 @@ class ProjectsQueriesNoTasksAPI(Resource):
             return project_dto, 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404
-        except ProjectServiceError as e:
-            return {"error": str(e)}, 403
+        except ProjectServiceError:
+            return {"Error": "Unable to fetch project"}, 403
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch project"}, 500
         finally:
             # this will try to unlock tasks that have been locked too long
             try:
@@ -972,9 +972,9 @@ class ProjectsQueriesAoiAPI(Resource):
             return project_aoi, 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404
-        except ProjectServiceError as e:
-            return {"Error": str(e)}, 403
+        except ProjectServiceError:
+            return {"Error": "Unable to fetch project"}, 403
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch project"}, 500

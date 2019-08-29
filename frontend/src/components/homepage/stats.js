@@ -49,7 +49,7 @@ export class StatsSection extends React.Component {
   }
 
   getTMStats = (event) => {
-    this.tmStatsPromise = cancelablePromise(fetchLocalJSONAPI('stats/summary'));
+    this.tmStatsPromise = cancelablePromise(fetchLocalJSONAPI('system/statistics/'));
     this.tmStatsPromise.promise.then(
       r => {
         this.setState({

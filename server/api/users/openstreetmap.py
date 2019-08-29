@@ -39,4 +39,4 @@ class UsersOpenStreetMapAPI(Resource):
         except Exception as e:
             error_msg = f"User OSM GET - unhandled error: {str(e)}"
             current_app.logger.error(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch OpenStreetMap details"}, 500

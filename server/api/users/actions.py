@@ -10,7 +10,7 @@ from server.services.users.user_service import UserService, UserServiceError, No
 class UsersActionsSetUsersAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
-    def post(self):
+    def patch(self):
         """
         Updates user info
         ---
@@ -72,7 +72,7 @@ class UsersActionsSetUsersAPI(Resource):
             user_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to update user details"}, 400
 
         try:
             verification_sent = UserService.update_user_details(
@@ -84,13 +84,13 @@ class UsersActionsSetUsersAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to update user details"}, 500
 
 
 class UsersActionsSetLevelAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
-    def post(self, username, level):
+    def patch(self, username, level):
         """
         Allows PMs to set a users mapping level
         ---
@@ -139,13 +139,13 @@ class UsersActionsSetLevelAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to update mapping level"}, 500
 
 
 class UsersActionsSetRoleAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
-    def post(self, username, role):
+    def patch(self, username, role):
         """
         Allows PMs to set the users role
         ---
@@ -194,13 +194,13 @@ class UsersActionsSetRoleAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to update user role"}, 500
 
 
 class UsersActionsSetExpertModeAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
-    def post(self, is_expert):
+    def patch(self, is_expert):
         """
         Allows user to enable or disable expert mode
         ---
@@ -244,13 +244,13 @@ class UsersActionsSetExpertModeAPI(Resource):
         except Exception as e:
             error_msg = f"UserSetExpert POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to update expert mode"}, 500
 
 
 class UsersActionsVerifyEmailAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
-    def post(self):
+    def patch(self):
         """
         Resends the validation user to the logged in user
         ---
@@ -277,4 +277,4 @@ class UsersActionsVerifyEmailAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to send verification email"}, 500

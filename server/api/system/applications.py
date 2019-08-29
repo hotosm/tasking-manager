@@ -39,7 +39,7 @@ class SystemApplicationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Application GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch application keys"}, 500
 
     @token_auth.login_required
     def post(self):
@@ -71,7 +71,7 @@ class SystemApplicationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Application POST API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to create application keys"}, 500
 
     def patch(self, application_key):
         """
@@ -105,7 +105,7 @@ class SystemApplicationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Application PUT API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to check application key"}, 500
 
     @token_auth.login_required
     def delete(self, application_key):
@@ -151,4 +151,4 @@ class SystemApplicationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Application DELETE API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to delete application key"}, 500

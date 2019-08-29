@@ -17,7 +17,7 @@ export function OSMCard({ username }: Object) {
     }
     async function fetchData() {
       if (username) {
-        return fetchLocalJSONAPI(`user/${username}/osm-details`).then(result =>
+        return fetchLocalJSONAPI(`users/${username}/openstreetmap/`).then(result =>
           handleStateChange(result),
         );
       }

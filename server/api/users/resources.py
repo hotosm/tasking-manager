@@ -46,7 +46,7 @@ class UsersRestAPI(Resource):
         except Exception as e:
             error_msg = f"Userid GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch user details"}, 500
 
 
 class UsersAllAPI(Resource):
@@ -92,7 +92,7 @@ class UsersAllAPI(Resource):
             query.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to fetch user list"}, 400
 
         try:
             users_dto = UserService.get_all_users(query)
@@ -100,7 +100,7 @@ class UsersAllAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch user list"}, 500
 
 
 class UsersQueriesUsernameAPI(Resource):
@@ -145,7 +145,7 @@ class UsersQueriesUsernameAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch user details"}, 500
 
 
 class UsersQueriesUsernameFilterAPI(Resource):
@@ -192,4 +192,4 @@ class UsersQueriesUsernameFilterAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch matching users"}, 500

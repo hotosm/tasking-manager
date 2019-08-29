@@ -55,7 +55,7 @@ class LicensesRestAPI(Resource):
             license_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to create new mapping license"}, 400
 
         try:
             new_license_id = LicenseService.create_licence(license_dto)
@@ -63,7 +63,7 @@ class LicensesRestAPI(Resource):
         except Exception as e:
             error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to create new mapping license"}, 500
 
     def get(self, license_id):
         """
@@ -96,7 +96,7 @@ class LicensesRestAPI(Resource):
         except Exception as e:
             error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch license"}, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -162,7 +162,7 @@ class LicensesRestAPI(Resource):
         except Exception as e:
             error_msg = f"License POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to update license"}, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -205,7 +205,7 @@ class LicensesRestAPI(Resource):
         except Exception as e:
             error_msg = f"License DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to delete license"}, 500
 
 
 class LicensesAllAPI(Resource):
@@ -233,4 +233,4 @@ class LicensesAllAPI(Resource):
         except Exception as e:
             error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch all licenses"}, 500

@@ -76,7 +76,7 @@ class TasksRestAPI(Resource):
         except Exception as e:
             error_msg = f"Task GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch task"}, 500
 
 
 class TasksQueriesJsonAPI(Resource):
@@ -134,9 +134,8 @@ class TasksQueriesJsonAPI(Resource):
         except ProjectServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(e)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch task JSON"}, 500
 
 
 class TasksQueriesXmlAPI(Resource):
@@ -202,7 +201,7 @@ class TasksQueriesXmlAPI(Resource):
         except Exception as e:
             error_msg = f"Task as OSM API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch task XML"}, 500
 
 
 class TasksQueriesGpxAPI(Resource):
@@ -269,7 +268,7 @@ class TasksQueriesGpxAPI(Resource):
         except Exception as e:
             error_msg = f"Task as GPX API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch task GPX"}, 500
 
 
 class TasksQueriesAoiAPI(Resource):
@@ -334,7 +333,7 @@ class TasksQueriesAoiAPI(Resource):
             grid_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to fetch tiles interesecting AOI"}, 400
 
         try:
             grid = GridService.trim_grid_to_aoi(grid_dto)
@@ -344,7 +343,7 @@ class TasksQueriesAoiAPI(Resource):
         except Exception as e:
             error_msg = f"IntersectingTiles GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch tiles intersecting AOI"}, 500
 
 
 class TasksQueriesOwnLockedAPI(Resource):
@@ -391,7 +390,7 @@ class TasksQueriesOwnLockedAPI(Resource):
         except Exception as e:
             error_msg = f"HasUserTaskOnProject - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch locked tasks for user"}, 500
 
 
 class TasksQueriesOwnLockedDetailsAPI(Resource):
@@ -445,7 +444,7 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
         except Exception as e:
             error_msg = f"HasUserTaskOnProject - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch task details for user"}, 500
 
 
 class TasksQueriesOwnMappedAPI(Resource):
@@ -480,7 +479,7 @@ class TasksQueriesOwnMappedAPI(Resource):
         except Exception as e:
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch mapped tasks"}, 500
 
 
 class TasksQueriesOwnInvalidatedAPI(Resource):
@@ -585,4 +584,4 @@ class TasksQueriesOwnInvalidatedAPI(Resource):
         except Exception as e:
             error_msg = f"Invalidated Tasks API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch invalidated tasks for user"}, 500

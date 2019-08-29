@@ -46,14 +46,14 @@ class NotificationsRestAPI(Resource):
                 message_id, tm.authenticated_user_id
             )
             return user_message.to_primitive(), 200
-        except MessageServiceError as e:
-            return {"Error": str(e)}, 403
+        except MessageServiceError:
+            return {"Error": "Unable to fetch message"}, 403
         except NotFound:
             return {"Error": "No messages found"}, 404
         except Exception as e:
             error_msg = f"Messages GET all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch message"}, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -91,14 +91,14 @@ class NotificationsRestAPI(Resource):
         try:
             MessageService.delete_message(message_id, tm.authenticated_user_id)
             return {"Success": "Message deleted"}, 200
-        except MessageServiceError as e:
-            return {"Error": str(e)}, 403
+        except MessageServiceError:
+            return {"Error": "Unable to delete message"}, 403
         except NotFound:
             return {"Error": "No messages found"}, 404
         except Exception as e:
             error_msg = f"Messages GET all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to delete message"}, 500
 
 
 class NotificationsAllAPI(Resource):
@@ -187,7 +187,7 @@ class NotificationsAllAPI(Resource):
         except Exception as e:
             error_msg = f"Messages GET all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch messages"}, 500
 
 
 class NotificationsQueriesCountUnreadAPI(Resource):
@@ -222,4 +222,4 @@ class NotificationsQueriesCountUnreadAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch messages count"}, 500

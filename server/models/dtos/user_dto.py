@@ -64,11 +64,11 @@ class UserDTO(Model):
     city = StringType(serialized_name="city")
     country = StringType(serialized_name="country")
     name = StringType(serialized_name="name")
-    default_editor = StringType(serialized_name="default_editor")
-    mentions_notifications = BooleanType(serialized_name="mentions_notifications")
-    comments_notifications = BooleanType(serialized_name="comments_notifications")
-    projects_notifications = BooleanType(serialized_name="projects_notifications")
-    expert_mode = BooleanType(serialized_name="expert_mode")
+    default_editor = StringType(serialized_name="defaultEditor")
+    mentions_notifications = BooleanType(serialized_name="mentionsNotifications")
+    comments_notifications = BooleanType(serialized_name="commentsNotifications")
+    projects_notifications = BooleanType(serialized_name="projectsNotifications")
+    expert_mode = BooleanType(serialized_name="expertMode")
 
     # these are read only
     missing_maps_profile = StringType(serialized_name="missingMapsProfile")

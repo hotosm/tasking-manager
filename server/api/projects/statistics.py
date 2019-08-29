@@ -41,7 +41,7 @@ class ProjectsStatisticsAPI(Resource):
         except Exception as e:
             error_msg = f"Project Summary GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch project statistics"}, 500
 
 
 class ProjectsStatisticsQueriesUsernameAPI(Resource):
@@ -81,4 +81,4 @@ class ProjectsStatisticsQueriesUsernameAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch user statistics for project"}, 500

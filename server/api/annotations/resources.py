@@ -128,10 +128,10 @@ class AnnotationsRestAPI(Resource):
                 )
             except NotFound:
                 current_app.logger.error(f"Invalid token")
-                return {"error": "Invalid token"}, 500
+                return {"Error": "Invalid token"}, 500
         else:
             current_app.logger.error(f"No token supplied")
-            return {"error": "No token supplied"}, 500
+            return {"Error": "No token supplied"}, 500
 
         try:
             annotations = request.get_json() or {}
@@ -149,7 +149,7 @@ class AnnotationsRestAPI(Resource):
         tasks = Task.get_tasks(project_id, task_ids)
         tasks_ids_db = [t.id for t in tasks]
         if len(task_ids) != len(tasks_ids_db):
-            return {"error": "Invalid task id"}, 500
+            return {"Error": "Invalid task id"}, 500
 
         for annotation in annotations["tasks"]:
             try:
