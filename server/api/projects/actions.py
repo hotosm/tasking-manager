@@ -58,7 +58,7 @@ class ProjectsActionsTransferAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to transfer project"}, 500
 
 
 class ProjectsActionsMessageContributorsAPI(Resource):
@@ -113,7 +113,7 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             message_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to send message to mappers"}, 400
 
         try:
             threading.Thread(
@@ -125,4 +125,4 @@ class ProjectsActionsMessageContributorsAPI(Resource):
         except Exception as e:
             error_msg = f"Send message all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to send messages to mappers"}, 500

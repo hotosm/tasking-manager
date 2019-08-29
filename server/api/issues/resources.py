@@ -39,7 +39,7 @@ class IssuesRestAPI(Resource):
         except Exception as e:
             error_msg = f"Mapping-issue category PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch mapping issue category"}, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -90,7 +90,7 @@ class IssuesRestAPI(Resource):
             category_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to update mapping issue category"}, 400
 
         try:
             updated_category = MappingIssueCategoryService.update_mapping_issue_category(
@@ -102,7 +102,7 @@ class IssuesRestAPI(Resource):
         except Exception as e:
             error_msg = f"Mapping-issue category PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to update mapping issue category"}, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -148,7 +148,7 @@ class IssuesRestAPI(Resource):
         except Exception as e:
             error_msg = f"Mapping-issue category DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to delete mapping issue category"}, 500
 
 
 class IssuesAllAPI(Resource):
@@ -181,7 +181,7 @@ class IssuesAllAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch mapping issue categories"}, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -226,7 +226,7 @@ class IssuesAllAPI(Resource):
             category_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to create a new mapping issue category"}, 400
 
         try:
             new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
@@ -236,4 +236,4 @@ class IssuesAllAPI(Resource):
         except Exception as e:
             error_msg = f"Mapping-issue category POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to create a new mapping issue category"}, 500

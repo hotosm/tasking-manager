@@ -48,20 +48,12 @@ class UserTopBar extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (
-      this.props.userDetails &&
-      this.props.userDetails.mappingLevel !== 'ADVANCED' &&
-      this.props.userDetails.username &&
-      prevProps.userDetails.username !== this.props.userDetails.username
+      (this.props.userDetails && this.props.userDetails.username) &&
+      (prevProps.userDetails.username !== this.props.userDetails.username ||
+        (this.state.finishedLoadingData === false || this.state.changesetsCount === 0)
+      )
     ) {
       this.getOSMDetails();
-    }
-    if (
-      this.props.userDetails &&
-      this.props.userDetails.mappingLevel === 'ADVANCED' &&
-      this.props.userDetails.username &&
-      prevProps.userDetails.username !== this.props.userDetails.username
-    ) {
-      this.setState({ finishedLoadingData: true });
     }
   }
 
@@ -71,11 +63,10 @@ class UserTopBar extends React.Component {
 
   getOSMDetails = event => {
     this.osmDetailsPromise = cancelablePromise(
-      fetchLocalJSONAPI(`user/${this.props.userDetails.username}/osm-details`),
+      fetchLocalJSONAPI(`users/${this.props.userDetails.username}/openstreetmap/`),
     );
     this.osmDetailsPromise.promise
       .then(r => {
-        console.log('ok');
         this.setState({
           changesetsCount: r.changesetCount,
           finishedLoadingData: true,

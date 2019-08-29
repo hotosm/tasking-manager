@@ -24,8 +24,8 @@ def upgrade():
             "enforce_random_task_selection",
             sa.Boolean(),
             nullable=True,
-            server_default="FALSE"
-        )
+            server_default="FALSE",
+        ),
     )
     # ### end Alembic commands ###
 

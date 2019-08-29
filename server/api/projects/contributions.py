@@ -35,7 +35,7 @@ class ProjectsContributionsAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch user contributions"}, 500
 
 
 class ProjectsContributionsQueriesDayAPI(Resource):
@@ -69,4 +69,4 @@ class ProjectsContributionsQueriesDayAPI(Resource):
         except Exception as e:
             error_msg = f"Project contributions GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch per day user contribution"}, 500
