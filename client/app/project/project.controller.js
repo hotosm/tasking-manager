@@ -50,7 +50,7 @@
         vm.isAuthorized = false;
 
         //Email warning modal
-        vm.showWarning = false;
+        // vm.showWarning = false;
 
         //status flags
         vm.isSelectedMappable = false;
@@ -110,7 +110,7 @@
         activate();
 
         function activate() {
-            vm.showWarning = false;
+            // vm.showWarning = false;
             vm.currentTab = 'instructions';
             vm.mappingStep = 'selecting';
             vm.validatingStep = 'selecting';
@@ -159,7 +159,6 @@
             }, 120000);
 
             // set up the preferred editor from user preferences
-
             vm.selectedMappingEditor = userPreferencesService.getFavouriteEditor();
             vm.selectedValidationEditor = userPreferencesService.getFavouriteEditor();
 
@@ -1382,7 +1381,7 @@
          * Call api to lock currently selected task for mapping.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskMapping = function () {
-            if(vm.user.emailAddress){
+            if (vm.user.emailAddress || true) {
                 vm.lockingReason = 'MAPPING';
                 var projectId = vm.projectData.projectId;
                 var taskId = vm.selectedTaskData.taskId;
@@ -1452,7 +1451,7 @@
          * Call api to lock currently selected task for validation.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
-            if(vm.user.emailAddress){
+            if (vm.user.emailAddress || true) {
                 vm.lockingReason = 'VALIDATION';
                 var projectId = vm.projectData.projectId;
                 var taskId = vm.selectedTaskData.taskId;
@@ -2157,7 +2156,7 @@
          * @param doneTaskIds - array of task ids
          */
         vm.lockTasksForValidation = function (doneTaskIds) {
-            if(vm.user.isEmailVerified){
+            if(vm.user.isEmailVerified || true) {
                 vm.selectInteraction.getFeatures().clear();
 
                 //use doneTaskIds to get corresponding subset of tasks for selection from the project
@@ -2340,6 +2339,12 @@
                 result.push({
                     "name": "iD Editor",
                     "value": "ideditor"
+                });
+            }
+            if (editors.includes("RAPID")) {
+                result.push({
+                    "name": "RapiD Editor",
+                    "value": "rapid"
                 });
             }
             if (editors.includes("JOSM")) {
