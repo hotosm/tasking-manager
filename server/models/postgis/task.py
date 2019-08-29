@@ -622,13 +622,13 @@ class Task(db.Model):
             project_tasks = \
                 db.session.query(Task.id,
                                  Task.x, Task.y, Task.zoom,
-                                 Task.splittable, Task.task_status,
+                                 Task.is_square, Task.task_status,
                                  Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id, Task.id.in_(task_ids)).all()
         else:
             project_tasks = \
                 db.session.query(Task.id,
                                  Task.x, Task.y, Task.zoom,
-                                 Task.splittable, Task.task_status,
+                                 Task.is_square, Task.task_status,
                                  Task.geometry.ST_AsGeoJSON().label('geojson')).filter(Task.project_id == project_id).all()
 
         tasks_features = []
