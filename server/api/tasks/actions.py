@@ -86,7 +86,7 @@ class TasksActionsMappingLockAPI(Resource):
             lock_task_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to lock task"}, 400
 
         try:
             task = MappingService.lock_task_for_mapping(lock_task_dto)
@@ -100,7 +100,7 @@ class TasksActionsMappingLockAPI(Resource):
         except Exception as e:
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to lock task"}, 500
 
 
 class TasksActionsMappingStopAPI(Resource):
@@ -173,19 +173,19 @@ class TasksActionsMappingStopAPI(Resource):
             stop_task.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Task unlock failed"}, 400
 
         try:
             task = MappingService.stop_mapping_task(stop_task)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
-        except MappingServiceError as e:
-            return {"Error": str(e)}, 403
+        except MappingServiceError:
+            return {"Error": "Task unlock failed"}, 403
         except Exception as e:
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Task unlock failed"}, 500
 
 
 class TasksActionsMappingUnlockAPI(Resource):
@@ -257,19 +257,19 @@ class TasksActionsMappingUnlockAPI(Resource):
             mapped_task.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Task unlock failed"}, 400
 
         try:
             task = MappingService.unlock_task_after_mapping(mapped_task)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
-        except MappingServiceError as e:
-            return {"Error": str(e)}, 403
+        except MappingServiceError:
+            return {"Error": "Task unlock failed"}, 403
         except Exception as e:
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Task unlock failed"}, 500
         finally:
             # Refresh mapper level after mapping
             UserService.check_and_update_mapper_level(tm.authenticated_user_id)
@@ -334,7 +334,7 @@ class TasksActionsMappingUndoAPI(Resource):
         except Exception as e:
             error_msg = f"Task GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to lock task"}, 500
 
 
 class TasksActionsValidationLockAPI(Resource):
@@ -403,21 +403,21 @@ class TasksActionsValidationLockAPI(Resource):
             validator_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to lock task"}, 400
 
         try:
             tasks = ValidatorService.lock_tasks_for_validation(validator_dto)
             return tasks.to_primitive(), 200
-        except ValidatatorServiceError as e:
-            return {"Error": str(e)}, 403
-        except NotFound as e:
-            return {"Error": str(e)}, 404
+        except ValidatatorServiceError:
+            return {"Error": "Unable to lock task"}, 403
+        except NotFound:
+            return {"Error": "Task not found"}, 404
         except UserLicenseError:
             return {"Error": "User not accepted license terms"}, 409
         except Exception as e:
             error_msg = f"Validator Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to lock task"}, 500
 
 
 class TasksActionsValidatioStopAPI(Resource):
@@ -483,19 +483,19 @@ class TasksActionsValidatioStopAPI(Resource):
             validated_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Task unlock failed"}, 400
 
         try:
             tasks = ValidatorService.stop_validating_tasks(validated_dto)
             return tasks.to_primitive(), 200
-        except ValidatatorServiceError as e:
-            return {"Error": str(e)}, 403
-        except NotFound as e:
-            return {"Error": str(e)}, 404
+        except ValidatatorServiceError:
+            return {"Error": "Task unlock failed"}, 403
+        except NotFound:
+            return {"Error": "Task unlock failed"}, 404
         except Exception as e:
             error_msg = f"Stop Validating API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Task unlock failed"}, 500
 
 
 class TasksActionsValidationUnlockAPI(Resource):
@@ -561,19 +561,19 @@ class TasksActionsValidationUnlockAPI(Resource):
             validated_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Task unlock failed"}, 400
 
         try:
             tasks = ValidatorService.unlock_tasks_after_validation(validated_dto)
             return tasks.to_primitive(), 200
-        except ValidatatorServiceError as e:
-            return {"Error": str(e)}, 403
-        except NotFound as e:
-            return {"Error": str(e)}, 404
+        except ValidatatorServiceError:
+            return {"Error": "Task unlock failed"}, 403
+        except NotFound:
+            return {"Error": "Task unlock failed"}, 404
         except Exception as e:
             error_msg = f"Validator Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Task unlock failed"}, 500
 
 
 class ProjectValidateAll(Resource):
@@ -614,7 +614,7 @@ class ProjectValidateAll(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to validate tasks"}, 500
 
 
 class ProjectInvalidateAll(Resource):
@@ -655,7 +655,7 @@ class ProjectInvalidateAll(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to invalidate tasks"}, 500
 
 
 class ProjectResetBadImagery(Resource):
@@ -696,7 +696,7 @@ class ProjectResetBadImagery(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to reset tasks"}, 500
 
 
 class ProjectResetAll(Resource):
@@ -737,7 +737,7 @@ class ProjectResetAll(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to reset tasks"}, 500
 
 
 class TasksActionsMapAllAPI(Resource):
@@ -778,7 +778,7 @@ class TasksActionsMapAllAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to mapall tasks"}, 500
 
 
 class TasksActionsValidateAllAPI(Resource):
@@ -819,7 +819,7 @@ class TasksActionsValidateAllAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to validate all tasks"}, 500
 
 
 class TasksActionsInvalidateAllAPI(Resource):
@@ -860,7 +860,7 @@ class TasksActionsInvalidateAllAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to invalidate all tasks"}, 500
 
 
 class TasksActionsResetBadImageryAllAPI(Resource):
@@ -901,7 +901,7 @@ class TasksActionsResetBadImageryAllAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to reset tasks"}, 500
 
 
 class TasksActionsResetAllAPI(Resource):
@@ -942,7 +942,7 @@ class TasksActionsResetAllAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to reset tasks"}, 500
 
 
 class TasksActionsSplitAPI(Resource):
@@ -1006,15 +1006,15 @@ class TasksActionsSplitAPI(Resource):
             split_task_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to split task"}, 400
         try:
             tasks = SplitService.split_task(split_task_dto)
             return tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
-        except SplitServiceError as e:
-            return {"Error": str(e)}, 403
+        except SplitServiceError:
+            return {"Error": "Unable to split task"}, 403
         except Exception as e:
             error_msg = f"Task Split API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to split task"}, 500

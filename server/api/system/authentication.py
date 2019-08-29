@@ -90,8 +90,8 @@ class SystemAuthenticationCallbackAPI(Resource):
             return redirect(
                 authorized_url
             )  # Redirect to Authentication page on successful authorization :)
-        except AuthServiceError as e:
-            return {"Error": str(e)}, 500
+        except AuthServiceError:
+            return {"Error": "Unable to authenticate"}, 500
 
 
 class SystemAuthenticationEmailAPI(Resource):
@@ -129,4 +129,4 @@ class SystemAuthenticationEmailAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to authenticate"}, 500

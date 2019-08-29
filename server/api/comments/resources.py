@@ -62,7 +62,7 @@ class CommentsProjectsRestAPI(Resource):
             chat_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to add chat message"}, 400
 
         try:
             project_messages = ChatService.post_message(chat_dto)
@@ -70,7 +70,7 @@ class CommentsProjectsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Chat PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to add chat message"}, 500
 
     def get(self, project_id):
         """
@@ -109,7 +109,7 @@ class CommentsProjectsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Chat PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch chat messages"}, 500
 
 
 class CommentsTasksRestAPI(Resource):
@@ -176,19 +176,19 @@ class CommentsTasksRestAPI(Resource):
             task_comment.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to add comment"}, 400
 
         try:
             task = MappingService.add_task_comment(task_comment)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
-        except MappingServiceError as e:
-            return {"Error": str(e)}, 403
+        except MappingServiceError:
+            return {"Error": "Task update failed"}, 403
         except Exception as e:
             error_msg = f"Task Comment API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Task update failed"}, 500
 
     def get(self, project_id, task_id):
         """
@@ -251,7 +251,7 @@ class CommentsTasksRestAPI(Resource):
             task_comment.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to fetch task comments"}, 400
 
         try:
             # NEW FUNCTION HAS TO BE ADDED

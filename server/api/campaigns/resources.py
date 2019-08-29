@@ -24,4 +24,4 @@ class CampaignsRestAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Campaign fetch failed"}, 500
