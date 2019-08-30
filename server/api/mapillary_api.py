@@ -52,10 +52,16 @@ class MapillaryTasksAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            if request.args.get('usernames') is not None:
-                tasks = MapillaryService.getMapillarySequences(request.args['bbox'], request.args['start_date'], request.args['end_date'], request.args['usernames'])
-            else:
-                tasks = MapillaryService.getMapillarySequences(request.args['bbox'], request.args['start_date'], request.args['end_date'])
+            potential_arguments = ['bbox', 'start_date', 'end_date', 'usernames']
+            arguments = {}
+            for argument in potential_arguments:
+                try:
+                    variable = request.args.get(argument)
+                    if variable is not None:
+                        arguments[argument] = variable
+                except Exception as e:
+                    current_app.logger.debug(f'Mapillary - key doesn\'t exist {argument}, {str(e)}')
+            tasks = MapillaryService.getMapillarySequences(arguments)
             if len(tasks) > 0:
                 return tasks, 200
             else:

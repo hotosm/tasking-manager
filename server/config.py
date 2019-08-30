@@ -55,7 +55,7 @@ class EnvironmentConfig:
     PROJECT_FILES_DIR = os.getenv('PROJECT_FILES_DIR', tempfile.gettempdir())
 
     # Image sources
-    MAPILLARY_API = os.getenv('MAPILLARY_API', None)
+    MAPILLARY_API = {'base': 'https://a.mapillary.com/v3/', 'clientId': os.getenv('MAPILLARY_API_KEY', None)}
 
     # Configuration for sending emails
     SMTP_SETTINGS = {

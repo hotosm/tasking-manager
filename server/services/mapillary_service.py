@@ -48,25 +48,32 @@ async def run(urls, features):
             ]
 
             for response in await asyncio.gather(*tasks):
-                features.extend(response.json()['features'])
+                json_response = response.json()
+                if 'features' in json_response:
+                    features.extend(json_response['features'])
+                else:
+                    current_app.logger.critical(f'No features for {response.url}:\r\n{json_response}')
                 pass
 
 
 class MapillaryService:
 
     @staticmethod
-    def getMapillarySequences(bbox: str, start_date: str, end_date: str, usernames_str: str = None):
-        # set up the url for mapillary
+    def getMapillarySequences(parameters: dict):
         MAPILLARY_API = current_app.config['MAPILLARY_API']
-        url = MAPILLARY_API['base'] + 'sequences?bbox=' + bbox + '&start_time=' + start_date + '&end_time=' + end_date + '&client_id=' + MAPILLARY_API['clientId']
-        if usernames_str is not None:
-            url += '&usernames=' + usernames_str
+        parameters['client_id'] = MAPILLARY_API['clientId']
+        if 'bbox' not in parameters:
+            raise ValueError("parameters must include a bbox")
+        # set up the url for mapillary
+        url = MAPILLARY_API['base'] + 'sequences'
 
         # Get all the url's so we can query sequences asynchronously (this part might be able to async too)
-        urls = [url]
+        head = requests.head(url, params=parameters)
+        urls = [head.url]
         while (url):
             try:
-                url = requests.head(url).links["next"]["url"]
+                head = requests.head(url, params=parameters)
+                url = head.links["next"]["url"]
                 urls.append(url)
             except KeyError:
                 url = None
