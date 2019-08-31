@@ -8,6 +8,7 @@ from server.models.dtos.team_dto import (
     TeamsListDTO,
     TeamMembersDTO,
     ProjectTeamDTO,
+    TeamProjectDTO,
     TeamDetailsDTO,
 )
 from server.models.dtos.organisation_dto import OrganisationProjectsDTO
@@ -184,7 +185,7 @@ class TeamService:
 
         team_projects = TeamService.get_projects_by_team_id(team.id)
         for team_project in team_projects:
-            project_team_dto = ProjectTeamDTO()
+            project_team_dto = TeamProjectDTO()
             project_team_dto.project_name = team_project.name
             project_team_dto.project_id = team_project.project_id
             project_team_dto.role = TeamRoles(team_project.role).name
@@ -217,6 +218,23 @@ class TeamService:
             raise NotFound()
 
         return projects
+
+    @staticmethod
+    def get_project_teams_as_dto(project_id: int) -> TeamsListDTO:
+        """ Gets all the campaigns for a specified project """
+        project_teams = ProjectTeams.query.filter(project_id == project_id).all()
+        teams_list_dto = TeamsListDTO()
+
+        for project_team in project_teams:
+            team = TeamService.get_team_by_id(project_team.team_id)
+            team_dto = ProjectTeamDTO()
+            team_dto.team_id = project_team.team_id
+            team_dto.team_name = team.name
+            team_dto.role = project_team.role
+
+            teams_list_dto.teams.append(team_dto)
+
+        return teams_list_dto
 
     @staticmethod
     def change_team_role(team_id: int, project_id: int, role: str):

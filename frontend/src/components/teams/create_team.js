@@ -12,13 +12,14 @@ class CreateTeam extends React.Component{
         super(props);
         this.state = {
             name: "",
-            org: "",
+            org: [],
             logo: "",
             description: "",
             inviteOnly: false,
             visibility: "PUBLIC",
             organisations: [],
             team_id: null,
+            hasError: false,
         };
     }
 
@@ -35,13 +36,13 @@ class CreateTeam extends React.Component{
                 org:r.organisations[0],
             },()=>{console.log(this.state.organisations)});
           }
-        ).catch(e => console.log(e));
+        ).catch(e => {console.log(e)});
     }
 
     handleChange = (e) => {
         this.setState({
           [e.target.name]: e.target.value
-        }, ()=>console.log(this.state.org))
+        })
     }
 
     handleCreate = () => {
@@ -56,6 +57,11 @@ class CreateTeam extends React.Component{
             ).catch(e => console.log(e));
     }
 
+    static getDerivedStateFromError(error) {
+        // Update state so the next render will show the fallback UI.
+        this.setState({ hasError: true });
+    }
+
     renderRedirect = () => {
         if(this.state.team_id)
         return (<Redirect to={`/teams/${this.state.team_id}/edit`} noThrow />);
@@ -64,7 +70,9 @@ class CreateTeam extends React.Component{
     render(){
             if(this.props.token === null)
                 return(<div>Not Authorized</div>);
-            if(this.state.organisations)
+            else if(this.state.hasError)
+                return(<h1>Something went wrong.</h1>)
+            else if(this.state.organisations.length !== 0 && this.state.org.length !== 0)
                     return(
                         <div className="ma3">
                             {this.renderRedirect()}

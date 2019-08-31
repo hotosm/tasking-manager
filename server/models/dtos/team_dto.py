@@ -44,13 +44,19 @@ class TeamMembersDTO(Model):
     function = StringType(required=True)
 
 
-class ProjectTeamDTO(Model):
+class TeamProjectDTO(Model):
     """ Describes a JSON model to create a project team """
 
     project_name = StringType(required=True)
     project_id = IntType(required=True)
     role = StringType(required=True)
 
+class ProjectTeamDTO(Model):
+    """ Describes a JSON model to create a project team """
+
+    team_id = IntType(required=True)
+    team_name = StringType(required=True)
+    role = StringType(required=True)
 
 class TeamDetailsDTO(Model):
     def __init__(self):

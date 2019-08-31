@@ -30,6 +30,13 @@ class CampaignService:
         return campaign
 
     @staticmethod
+    def delete_campaign(campaign_id: int):
+        """ Delete campaign for a project"""
+        campaign = Campaign.query.get(campaign_id)
+        campaign.delete()
+        campaign.save()
+
+    @staticmethod
     def get_campaign_as_dto(campaign_id: int, user_id: int):
         """ Gets the specified campaign """
         campaign = CampaignService.get_campaign(campaign_id)
@@ -124,19 +131,19 @@ class CampaignService:
         return new_campaigns
 
     @staticmethod
-    def get_organisation_campaigns_as_dto(org_id: int) -> CampaignListDTO:
+    def get_organisation_campaigns_as_dto(organisation_id: int) -> CampaignListDTO:
         """ Gets all the campaigns for a specified project """
 
-        return Campaign.get_organisation_campaigns_as_dto(org_id)
+        return Campaign.get_organisation_campaigns_as_dto(organisation_id)
 
     @staticmethod
-    def delete_organisation_campaign(org_id: int, campaign_id: int):
+    def delete_organisation_campaign(organisation_id: int, campaign_id: int):
         """ Delete campaign for a project"""
         campaign = Campaign.query.get(campaign_id)
-        org = Organisation.query.get(org_id)
+        org = Organisation.query.get(organisation_id)
         org.campaign.remove(campaign)
         db.session.commit()
-        new_campaigns = CampaignService.get_organisation_campaigns_as_dto(org_id)
+        new_campaigns = CampaignService.get_organisation_campaigns_as_dto(organisation_id)
         return new_campaigns
 
     @staticmethod

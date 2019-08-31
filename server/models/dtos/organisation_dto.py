@@ -36,8 +36,9 @@ class OrganisationDTO(Model):
         serialize_when_none=False,
     )
     is_admin = BooleanType(serialized_name="isAdmin")
-    projects = ListType(StringType)
-    teams = ListType(StringType)
+    projects = ListType(ListType(StringType))
+    teams = ListType(ListType(StringType))
+    campaigns = ListType(ListType(StringType))
 
 
 class ListOrganisationsDTO(Model):

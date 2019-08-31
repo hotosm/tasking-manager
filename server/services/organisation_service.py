@@ -236,13 +236,13 @@ class OrganisationService:
 
             teams = OrganisationService.get_teams_by_organisation_id(organisation_id)
             for team in teams:
-                org_dto.teams.append(team.name)
+                org_dto.teams.append([team.id, team.name])
 
             projects = OrganisationService.get_projects_by_organisation_id(
                 organisation_id
             )
             for project in projects:
-                org_dto.projects.append(project.name)
+                org_dto.projects.append([project.id, project.name])
 
             if org.visibility != OrganisationVisibility.PRIVATE.value:
                 for admin in org.admins:

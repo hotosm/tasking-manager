@@ -34,9 +34,6 @@ export class Organisations extends React.Component {
             <h1 className="gray tl tl">Organisations</h1>
         </div>
         <div className="dt-rows">
-          {/* <div className="fl w-10 tl">
-            Search and filter Teams
-          </div> */}
           <div className="flex flax-wrap justify-center fl w-90">
             {
               this.state.orgs.map(org=>{

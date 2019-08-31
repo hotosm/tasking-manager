@@ -25,9 +25,10 @@ class OrganisationProfile extends React.Component{
     }
 
     getOrg = () => {
-        this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI('organisations/' + this.props.org_id, this.props.token));
+        this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI(`organisations/${this.props.org_id}`, this.props.token));
         this.tmTeamsPromise.promise.then(
         r => {
+            console.log(r);
             this.setState({
             org: r
             });
@@ -39,7 +40,7 @@ class OrganisationProfile extends React.Component{
 
     deleteOrg = () => {
         let body = {};
-        this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('organisations/' + this.props.org_id, JSON.stringify(body),
+        this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI(`organisations/${this.props.org_id}`, JSON.stringify(body),
         this.props.token, 'DELETE'));
         this.tmTeamsPromise.promise.then(
             res => {
@@ -49,11 +50,10 @@ class OrganisationProfile extends React.Component{
 
     static getDerivedStateFromError(error) {
         // Update state so the next render will show the fallback UI.
-        return { hasError: true };
+        this.setState({ hasError: true });
     }
         
     renderRedirect = () => {
-        console.log('redirect');
         if(this.state.renderRedirect)
             return(<Redirect to='/organisations' noThrow />);
     }
@@ -84,29 +84,37 @@ class OrganisationProfile extends React.Component{
                         {(this.state.org.visibility !== 'PRIVATE') ?
                             <div className="dt-rows">
                                 <h3 className="gray tl tl">Organisation admins</h3>
-                                <ul>
+                                <ol>
                                     { this.state.org.admins.map((admin,i)=>{
-                                            return(<li key={i}><Link to={'/users/'+admin} className="no-underline gray">
-                                            {admin}</Link></li>)
+                                            return(<Link key={i} to={'/users/'+admin} className="b no-underline gray">
+                                            <li >{admin}</li></Link>)
                                     })}
-                                </ul>
+                                </ol>
                             </div>
                         : null }
                         <div className="dt-rows">
+                            {(this.state.org.isAdmin) ?
+                                <Button>
+                                    <Link to='/projects/create' className="no-underline gray">Create Project</Link>
+                                </Button> : null}
                             <h3 className="gray tl tl">Projects</h3>
-                            <ul>
+                            <ol>
                                 { this.state.org.projects.map((project, i)=>{
-                                        return(<li key={i}>{project}</li>)
+                                        return(<Link key={i} to={"/projects/" + project[0]} className="b no-underline gray" ><li >{project[1]}</li></Link>)
                                 })}
-                            </ul>
+                            </ol>
                         </div>
                         <div className="dt-rows">
+                            {(this.state.org.isAdmin) ?
+                                <Button>
+                                    <Link to='/teams/create' className="no-underline gray">Create Team</Link>
+                                </Button> : null}
                             <h3 className="gray tl tl">Teams</h3>
-                            <ul>
+                            <ol>
                                 { this.state.org.teams.map((team, i)=>{
-                                        return(<li key={i}>{team}</li>)
+                                        return(<Link key={i} to={"/teams/" + team[0]} className="b no-underline gray"><li key={i}>{team[1]}</li></Link>)
                                 })}
-                            </ul>
+                            </ol>
                         </div>
                     </div>
                 </div>

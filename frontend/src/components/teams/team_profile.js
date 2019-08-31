@@ -16,6 +16,7 @@ class TeamProfile extends React.Component{
             inviteSend: "",
             isMember: false,
             isAdmin: false,
+            hasError: false,
         };
       }
 
@@ -24,7 +25,7 @@ class TeamProfile extends React.Component{
     }
 
     getTeam = () => {
-        this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI('teams/' + this.props.team_id));
+        this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI(`teams/${this.props.team_id}`));
         this.tmTeamsPromise.promise.then(
         r => {
             console.log(r);
@@ -73,7 +74,15 @@ class TeamProfile extends React.Component{
                 }).catch(e => console.log(e));
     }
 
+    static getDerivedStateFromError(error) {
+        // Update state so the next render will show the fallback UI.
+        console.log(error);
+        this.setState({ hasError: true });
+    }
+
     render(){
+            if(this.state.hasError)
+                return(<h1>Something went wrong.</h1>)
             if(this.state.team.members)
             return(
                 <div className="ma3">

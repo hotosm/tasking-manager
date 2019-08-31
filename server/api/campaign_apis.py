@@ -82,6 +82,20 @@ class CampaignAPI(Resource):
             return {"error": error_msg}, 500
 
     @token_auth.login_required
+    def delete(self, campaign_id):
+
+        try:
+            campaign = CampaignService.get_campaign(campaign_id)
+            campaign = CampaignService.delete_campaign(campaign_id)
+            return {campaign.id: "Deleted"}, 200
+        except NotFound:
+            return {"Error": "Campaign not found"}, 404
+        except Exception as e:
+            error_msg = f"User PATCH - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+    @token_auth.login_required
     def post(self):
 
         try:
@@ -126,8 +140,8 @@ class GetAllCampaignsAPI(Resource):
 
 class CampaignProjectAPI(Resource):
     @token_auth.login_required
-    def post(self):
-
+    def put(self):
+        """ Assign campaign to project """
         try:
             campaign_project_dto = CampaignProjectDTO(request.get_json())
             campaign_project_dto.validate()
@@ -158,7 +172,7 @@ class CampaignProjectAPI(Resource):
             return {"error": error_msg}, 500
 
     @token_auth.login_required
-    def delete(self):
+    def delete(self, project_id, campaign_id):
         """
         Deletes a Tasking-Manager project
         ---
@@ -192,8 +206,6 @@ class CampaignProjectAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            project_id = int(request.args.get("project_id"))
-            campaign_id = int(request.args.get("campaign_id"))
             new_campaigns = CampaignService.delete_project_campaign(
                 project_id, campaign_id
             )
@@ -227,10 +239,10 @@ class CampaignOrganisationAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
-    def get(self, org_id):
+    def get(self, organisation_id):
 
         try:
-            campaigns = CampaignService.get_organisation_campaigns_as_dto(org_id)
+            campaigns = CampaignService.get_organisation_campaigns_as_dto(organisation_id)
             return campaigns.to_primitive(), 200
         except NotFound:
             return {"Error": "No campaign found"}, 404
@@ -240,7 +252,7 @@ class CampaignOrganisationAPI(Resource):
             return {"error": error_msg}, 500
 
     @token_auth.login_required
-    def delete(self):
+    def delete(self, organisation_id, campaign_id):
         """
         Deletes a Tasking-Manager project
         ---
@@ -274,10 +286,8 @@ class CampaignOrganisationAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            org_id = int(request.args.get("organisation_id"))
-            campaign_id = int(request.args.get("campaign_id"))
             new_campaigns = CampaignService.delete_organisation_campaign(
-                org_id, campaign_id
+                organisation_id, campaign_id
             )
             return new_campaigns.to_primitive(), 200
         except NotFound:
@@ -290,7 +300,7 @@ class CampaignOrganisationAPI(Resource):
 
 class DeleteAllProjectCampaignsAPI(Resource):
     @token_auth.login_required
-    def delete(self, project_id):
+    def post(self, project_id):
 
         try:
             campaigns = request.get_json(force=True)["campaigns"]
@@ -304,29 +314,3 @@ class DeleteAllProjectCampaignsAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
-
-class CreateAndSetCampaignAPI(Resource):
-    @token_auth.login_required
-    def post(self, project_id):
-
-        try:
-            campaign_dto = CampaignDTO(request.get_json())
-            campaign_dto.validate()
-
-        except DataError as e:
-            current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
-
-        try:
-            campaign = CampaignService.create_campaign(campaign_dto)
-            campaign_project_dto = CampaignProjectDTO()
-            campaign_project_dto.campaign_id = campaign.id
-            campaign_project_dto.project_id = project_id
-            new_campaigns = CampaignService.create_campaign_project(
-                campaign_project_dto
-            )
-            return new_campaigns.to_primitive(), 200
-        except Exception as e:
-            error_msg = f"User POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500

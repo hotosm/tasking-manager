@@ -34,7 +34,7 @@ export class EditTeam extends React.Component {
   }
 
   getTeam = () => {
-    this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI('teams/' + this.props.team_id));
+    this.tmTeamsPromise = cancelablePromise(fetchLocalJSONAPI(`teams/${this.props.team_id}`));
     this.tmTeamsPromise.promise.then(
       r => {
         this.setState({
@@ -60,7 +60,7 @@ export class EditTeam extends React.Component {
   handleTeamDeletion = (e) => {
     console.log('Delete team');
     this.setState({ showDeleteTeamModal: false});
-    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId, JSON.stringify({}), safeStorage.getItem('token'), 'DELETE'));
+    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI(`teams/${this.state.team.teamId}`, JSON.stringify({}), safeStorage.getItem('token'), 'DELETE'));
     this.tmTeamsPromise.promise.then(
         res => {
         console.log(res);
@@ -74,7 +74,7 @@ export class EditTeam extends React.Component {
     console.log(this.state.selectedMembers);
     this.toggleUsersDeletionModal(e);
     let body = { usernames: this.state.selectedMembers };
-    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/actions/remove-users', JSON.stringify(body), safeStorage.getItem('token'), 'DELETE'));
+    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI(`teams/${this.state.team.teamId}/actions/remove-users`, JSON.stringify(body), safeStorage.getItem('token'), 'DELETE'));
     this.tmTeamsPromise.promise.then(
       r => {console.log(r);
         this.getTeam();
@@ -84,7 +84,7 @@ export class EditTeam extends React.Component {
   //delete the team-project association
   deleteProject = (e, id) => {
     e.preventDefault();
-    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/projects/' + id, JSON.stringify({}), safeStorage.getItem('token'), 'DELETE'));
+    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI(`projects/${id}/teams/${this.state.team.teamId}`, JSON.stringify({}), safeStorage.getItem('token'), 'DELETE'));
     this.tmTeamsPromise.promise.then(
       r => {  this.getTeam();
       }).catch(e => console.log(e));
@@ -120,7 +120,7 @@ export class EditTeam extends React.Component {
   handleProjectSave = (e, project_id, role) => {
     e.preventDefault();
     let body = { role: role};
-    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/projects/' + project_id , JSON.stringify(body), safeStorage.getItem('token'), 'PUT'));
+    this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI(`projects/${project_id}/teams/${this.state.team.teamId}` , JSON.stringify(body), safeStorage.getItem('token'), 'PATCH'));
     this.tmTeamsPromise.promise.then(
       r => {  this.getTeam();
       }).catch(e => console.log(e));
@@ -130,7 +130,7 @@ export class EditTeam extends React.Component {
   addProject = (e) => {
     if(this.state.newProject != null){
       e.preventDefault();
-      this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/projects/' + this.state.newProject, JSON.stringify({}), safeStorage.getItem('token'), 'POST'));
+      this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI(`projects/${this.state.newProject}/teams/${this.state.team.teamId}`, JSON.stringify({}), safeStorage.getItem('token'), 'PUT'));
       this.tmTeamsPromise.promise.then(
         r => {console.log(r);
           this.getTeam();
@@ -141,7 +141,7 @@ export class EditTeam extends React.Component {
   addTeamMember = (e) => {
       console.log('Invite send');
       let body = { user:this.state.username, type:'invite'};
-      this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI('teams/' + this.state.team.teamId + '/actions/join', JSON.stringify(body),
+      this.tmTeamsPromise = cancelablePromise(pushToLocalJSONAPI(`teams/${this.state.team.teamId}/actions/join`, JSON.stringify(body),
       safeStorage.getItem('token'), 'POST'));
       this.tmTeamsPromise.promise.then(
           res => {
@@ -212,7 +212,7 @@ export class EditTeam extends React.Component {
                     </div>
                     <div className="mv3">
                       <label className="db fw6 lh-copy f6">Description</label>
-                      <textarea className="b measure-wide pa2-ns input-reset ba bg-transparent w-100" 
+                      <textarea className="measure-wide pa2-ns input-reset ba bg-transparent w-100" 
                         value={this.state.description} type="text" onChange={this.handleChange} name="description"  id="description" />
                     </div>
                     <div className="mt3">

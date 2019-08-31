@@ -418,22 +418,34 @@ class DeleteMultipleTeamMembersAPI(Resource):
 
 
 class TeamProjectsAPI(Resource):
+    
     @tm.pm_only(False)
-    @token_auth.login_required
-    def post(self, team_id, project_id):
-
+    def get(self, project_id):
+        """ Get projects associated with the project"""
         try:
-            TeamService.add_team_project(team_id, project_id)
-            return {"Success": "Project added"}, 200
+            teams_dto = TeamService.get_project_teams_as_dto(project_id)
+            return teams_dto.to_primitive(), 200
         except Exception as e:
-            error_msg = f"User POST - unhandled error: {str(e)}"
+            error_msg = f"Team GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
     def put(self, team_id, project_id):
+        """ Assign team to the project"""
+        try:
+            TeamService.add_team_project(team_id, project_id)
+            return {"Success": "Project added"}, 200
+        except Exception as e:
+            error_msg = f"Team PUT - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
 
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def patch(self, team_id, project_id):
+        """ Update role of the project-team"""
         try:
             role = request.get_json(force=True)["role"]
 
@@ -451,7 +463,7 @@ class TeamProjectsAPI(Resource):
         except TeamServiceError as e:
             return str(e), 402
         except Exception as e:
-            error_msg = f"Team POST - unhandled error: {str(e)}"
+            error_msg = f"Team PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
