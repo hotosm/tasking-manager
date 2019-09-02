@@ -120,8 +120,21 @@
                                             <i class="hot-ds-icon-sm-tick"></i>
                                         </span>
                                         <span ng-show="profileCtrl.userDetails.emailAddress && !profileCtrl.userDetails.isEmailVerified && !profileCtrl.editDetails">
-                                            <button class="button button--achromic button--small"
-                                                    ng-click="profileCtrl.resendVerificationEmail()">{{ 'Resend validation email' | translate }}</button>
+                                            <p>{{ 'Thanks for providing your contact info.  We’ve sent you a confirmation email that you can check at a later time. Now you can get started mapping! If you’ve kept a task open, make sure to refresh the page.' | translate }}</p>
+                                            <p ng-show="!profileCtrl.contactDetailsForm.$valid" class="error">
+                                                {{ 'Not a valid email address' | translate }}
+                                            </p>
+                                            <p ng-show="profileCtrl.errorSetContactDetails" class="error">
+                                                {{ 'Error: setting your contact details' | translate }}
+                                            </p>
+                                            <p ng-show="profileCtrl.errorVerificationEmailSent" class="error">
+                                                {{ 'Error: sending your verification email' }}
+                                            </p>
+                                            <p ng-show="profileCtrl.verificationEmailSent">
+                                                {{ 'A verification email was sent.' | translate }}
+                                            </p>
+                                            <p><button class="button button--achromic button--small"
+                                                                ng-click="profileCtrl.resendVerificationEmail()">{{ 'Resend validation email' | translate }}</button></p>
                                         </span>
                                     </li>
                                     <li>
@@ -179,7 +192,6 @@
                                       <span class="important-message__icon fa fa-exclamation-circle"></span>
                                       {{ "Please provide an email address to receive notifications about your mapping" | translate }}
                                     </div>
-
                                     <button class="button button--achromic" type="button"
                                             ng-click="profileCtrl.editDetails = !profileCtrl.editDetails"
                                             ng-show="!profileCtrl.editDetails">
@@ -198,18 +210,6 @@
                                             ng-show="profileCtrl.editDetails">
                                         <span>{{ 'Cancel' | translate }}</span>
                                     </button>
-                                    <p ng-show="!profileCtrl.contactDetailsForm.$valid" class="error">
-                                        {{ 'Not a valid email address' | translate }}
-                                    </p>
-                                    <p ng-show="profileCtrl.errorSetContactDetails" class="error">
-                                        {{ 'Error: setting your contact details' | translate }}
-                                    </p>
-                                    <p ng-show="profileCtrl.errorVerificationEmailSent" class="error">
-                                        {{ 'Error: sending your verification email' }}
-                                    </p>
-                                    <p ng-show="profileCtrl.verificationEmailSent">
-                                        {{ 'A verification email was sent.' | translate }}
-                                    </p>
                                     <hr ng-show="profileCtrl.userDetails.emailAddress || profileCtrl.userDetails.facebookId || profileCtrl.userDetails.twitterId || profileCtrl.userDetails.linkedinId"/>
                                 </div>
                             </form>
