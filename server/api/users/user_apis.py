@@ -1,7 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from server.models.dtos.user_dto import UserSearchQuery, UserDTO
+from server.models.dtos.user_dto import UserSearchQuery, UserDTO, UserRegisterEmailDTO
 from server.services.users.authentication_service import token_auth, tm
 from server.services.users.user_service import UserService, UserServiceError, NotFound
 
@@ -133,6 +133,57 @@ class UserContributionsAPI(Resource):
             return {"Error": "User not found"}, 404
         except Exception as e:
             error_msg = f"Userid GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class UserRegisterAPI(Resource):
+    def post(self):
+        """
+        Registers users without OSM account.
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: body
+              name: body
+              required: true
+              description: JSON object to update a user
+              schema:
+                  properties:
+                      name:
+                          type: string
+                          default: Your Name
+                      lastName:
+                          type: string
+                          default: Your Last name
+                      emailAddress:
+                          type: string
+                          default: test@test.com
+        responses:
+            200:
+                description: User registered
+            400:
+                description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            user_dto = UserRegisterEmailDTO(request.get_json())
+            user_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f"error validating request: {str(e)}")
+            return str(e), 400
+
+        try:
+            user = UserService.register_user_with_email(user_dto)
+            return {'id': user.id}, 200
+        except Exception as e:
+            error_msg = f"User POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 

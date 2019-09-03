@@ -196,6 +196,7 @@ def add_api_endpoints(app):
         UserSearchAllAPI,
         UserUpdateAPI,
         UserContributionsAPI,
+        UserRegisterAPI
     )
     from server.api.validator_apis import (
         LockTasksForValidationAPI,
@@ -372,6 +373,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(UserAPI, "/api/v1/user/<string:username>")
     api.add_resource(UserUpdateAPI, "/api/v1/user/update-details")
+    api.add_resource(UserRegisterAPI, "/api/v1/user/register")
     api.add_resource(
         UserSetExpertMode, "/api/v1/user/set-expert-mode/<string:is_expert>"
     )

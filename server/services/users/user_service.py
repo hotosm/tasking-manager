@@ -12,10 +12,11 @@ from server.models.dtos.user_dto import (
     UserStatsDTO,
     UserContributionDTO,
     UserContributionsDTO,
+    UserRegisterEmailDTO
 )
 from server.models.postgis.message import Message
 from server.models.postgis.task import TaskHistory, TaskAction
-from server.models.postgis.user import User, UserRole, MappingLevel
+from server.models.postgis.user import User, UserRole, MappingLevel, UserEmail
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
@@ -34,6 +35,12 @@ class UserServiceError(Exception):
 
 
 class UserService:
+    @staticmethod
+    def get_user_registered_with_email(email_address: str) -> UserEmail:
+        user_email = UserEmail.get_by_email(email_address=email_address)
+
+        return user_email
+
     @staticmethod
     def get_user_by_id(user_id: int) -> User:
         user = User().get_by_id(user_id)
@@ -116,6 +123,17 @@ class UserService:
             new_user.mapping_level = MappingLevel.BEGINNER.value
 
         new_user.create()
+        return new_user
+
+    @staticmethod
+    def register_user_with_email(user: UserRegisterEmailDTO):
+        new_user = UserEmail(
+            name=user.name,
+            last_name=user.last_name,
+            email_address=user.email_address
+        )
+        new_user.create()
+
         return new_user
 
     @staticmethod

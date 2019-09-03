@@ -8,6 +8,7 @@ import { Home } from './views/home';
 import { AboutPage } from './views/about';
 import { Authorized } from './views/authorized';
 import { Login } from './views/login';
+import { SignUp } from './views/signUp';
 import { Welcome } from './views/welcome';
 import { Settings } from './views/settings';
 import { NotFound } from './views/notFound';
@@ -27,6 +28,7 @@ function App() {
               <Login path="login" />
               <Welcome path="welcome" />
               <Settings path="settings" />
+              <SignUp path="signup" />
               <NotFound default />
             </Router>
           </div>

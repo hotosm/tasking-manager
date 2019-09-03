@@ -4,6 +4,7 @@ import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 
 export const types = {
+  REGISTER_USER: 'REGISTER_USER',
   SET_USER_DETAILS: 'SET_USER_DETAILS',
   GET_USER_DETAILS: 'GET_USER_DETAILS',
   SET_TOKEN: 'SET_TOKEN',

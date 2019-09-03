@@ -18,6 +18,33 @@ from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
 from server.models.postgis.utils import NotFound, timestamp
 
 
+class UserEmail(db.Model):
+    __tablename__ = "users_with_email"
+
+    id = db.Column(db.BigInteger, primary_key=True, index=True)
+    name = db.Column(db.String)
+    last_name = db.Column(db.String)
+    email_address = db.Column(db.String, nullable=False, unique=True)
+
+    def create(self):
+        """ Creates and saves the current model to the DB """
+        db.session.add(self)
+        db.session.commit()
+
+    def save(self):
+        db.session.commit()
+
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_by_email(email_address: str):
+        """ Return the user for the specified username, or None if not found """
+        return UserEmail.query.filter_by(email_address=email_address).one_or_none()
+
+
 class User(db.Model):
     """ Describes the history associated with a task """
 

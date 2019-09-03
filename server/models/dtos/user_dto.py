@@ -75,6 +75,14 @@ class UserDTO(Model):
     osm_profile = StringType(serialized_name="osmProfile")
 
 
+class UserRegisterEmailDTO(Model):
+    """ DTO containing data for user registration with email model """
+
+    name = StringType(required=True)
+    last_name = StringType(required=True, serialized_name="lastName")
+    email_address = StringType(required=True, serialized_name="emailAddress")
+
+
 class UserStatsDTO(Model):
     """ DTO containing statistics about the user """
 
