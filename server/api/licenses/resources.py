@@ -7,10 +7,10 @@ from server.services.license_service import LicenseService
 from server.services.users.authentication_service import token_auth, tm
 
 
-class LicenseAPI(Resource):
+class LicensesRestAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
-    def put(self):
+    def post(self):
         """
         Creates a new mapping license
         ---
@@ -55,7 +55,7 @@ class LicenseAPI(Resource):
             license_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": "Unable to create new mapping license"}, 400
 
         try:
             new_license_id = LicenseService.create_licence(license_dto)
@@ -63,7 +63,7 @@ class LicenseAPI(Resource):
         except Exception as e:
             error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to create new mapping license"}, 500
 
     def get(self, license_id):
         """
@@ -96,13 +96,13 @@ class LicenseAPI(Resource):
         except Exception as e:
             error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch license"}, 500
 
     @tm.pm_only()
     @token_auth.login_required
-    def post(self, license_id):
+    def patch(self, license_id):
         """
-        Update  a new mapping license
+        Update a specified mapping license
         ---
         tags:
             - licenses
@@ -124,7 +124,7 @@ class LicenseAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for creating a new mapping license
+              description: JSON object for updating a specified mapping license
               schema:
                   properties:
                       name:
@@ -138,7 +138,7 @@ class LicenseAPI(Resource):
                           default: This imagery is in the public domain.
         responses:
             200:
-                description: New license created
+                description: License updated
             400:
                 description: Invalid Request
             401:
@@ -162,7 +162,7 @@ class LicenseAPI(Resource):
         except Exception as e:
             error_msg = f"License POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to update license"}, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -205,10 +205,10 @@ class LicenseAPI(Resource):
         except Exception as e:
             error_msg = f"License DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to delete license"}, 500
 
 
-class LicenceListAPI(Resource):
+class LicensesAllAPI(Resource):
     def get(self):
         """
         Get all imagery licenses
@@ -233,4 +233,4 @@ class LicenceListAPI(Resource):
         except Exception as e:
             error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to fetch all licenses"}, 500

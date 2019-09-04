@@ -203,7 +203,7 @@ const useFeaturedProjectAPI = (initialData) => {
         /* TODO: finalize API for featured projects,
         for now, this just gets first page of all projects */
         const result = await axios(
-          `${API_URL}project/search?mapperLevel=ALL`,
+          `${API_URL}projects/`,
         );
 
         if (!didCancel) {

@@ -4,14 +4,14 @@ from server.services.application_service import ApplicationService, NotFound
 from server.services.users.authentication_service import token_auth, tm
 
 
-class ApplicationAPI(Resource):
+class SystemApplicationsRestAPI(Resource):
     @token_auth.login_required
     def get(self):
         """
         Gets application keys for a user
         ---
         tags:
-          - application
+          - system
         produces:
           - application/json
         parameters:
@@ -39,7 +39,7 @@ class ApplicationAPI(Resource):
         except Exception as e:
             error_msg = f"Application GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to fetch application keys"}, 500
 
     @token_auth.login_required
     def post(self):
@@ -47,7 +47,7 @@ class ApplicationAPI(Resource):
         Creates an application key for the user
         ---
         tags:
-          - application
+          - system
         produces:
           - application/json
         parameters:
@@ -71,14 +71,14 @@ class ApplicationAPI(Resource):
         except Exception as e:
             error_msg = f"Application POST API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to create application keys"}, 500
 
-    def put(self, application_key):
+    def patch(self, application_key):
         """
         Checks the validity of an application key
         ---
         tags:
-          - application
+          - system
         produces:
           - application/json
         parameters:
@@ -105,7 +105,7 @@ class ApplicationAPI(Resource):
         except Exception as e:
             error_msg = f"Application PUT API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to check application key"}, 500
 
     @token_auth.login_required
     def delete(self, application_key):
@@ -113,7 +113,7 @@ class ApplicationAPI(Resource):
         Deletes an application key for a user
         ---
         tags:
-          - application
+          - system
         produces:
           - application/json
         parameters:
@@ -151,4 +151,4 @@ class ApplicationAPI(Resource):
         except Exception as e:
             error_msg = f"Application DELETE API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": "Unable to delete application key"}, 500

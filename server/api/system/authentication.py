@@ -18,13 +18,13 @@ def get_oauth_token():
         return resp["oauth_token"], resp["oauth_token_secret"]
 
 
-class LoginAPI(Resource):
+class SystemAuthenticationLoginAPI(Resource):
     def get(self):
         """
         Redirects user to OSM to authenticate
         ---
         tags:
-          - authentication
+          - system
         produces:
           - application/json
         parameters:
@@ -44,17 +44,17 @@ class LoginAPI(Resource):
 
         base_url = current_app.config["APP_BASE_URL"]
         return osm.authorize(
-            callback=f"{base_url}/api/v1/auth/oauth-callback{redirect_query}"
+            callback=f"{base_url}/api/v2/system/authentication/callback{redirect_query}"
         )
 
 
-class OAuthAPI(Resource):
+class SystemAuthenticationCallbackAPI(Resource):
     def get(self):
         """
         Handles the OSM OAuth callback
         ---
         tags:
-          - authentication
+          - system
         produces:
           - application/json
         responses:
@@ -90,17 +90,17 @@ class OAuthAPI(Resource):
             return redirect(
                 authorized_url
             )  # Redirect to Authentication page on successful authorization :)
-        except AuthServiceError as e:
-            return {"Error": str(e)}, 500
+        except AuthServiceError:
+            return {"Error": "Unable to authenticate"}, 500
 
 
-class AuthEmailAPI(Resource):
+class SystemAuthenticationEmailAPI(Resource):
     def get(self):
         """
         Authenticates user owns email address
         ---
         tags:
-          - authentication
+          - system
         produces:
           - application/json
         parameters:
@@ -129,4 +129,4 @@ class AuthEmailAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": "Unable to authenticate"}, 500
