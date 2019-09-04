@@ -15,7 +15,7 @@
         vm.sponsors = [
             {
                 name: 'Kaart',
-                logo: './assets/img/kaart17.jpg',
+                logo: './assets/img/Kaart-circle.jpg',
                 url: 'https://kaart.com'
             },
             {
