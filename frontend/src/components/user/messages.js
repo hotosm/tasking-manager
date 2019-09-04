@@ -10,7 +10,7 @@ export default defineMessages({
   },
   nextLevel: {
     id: 'user.nextLevel',
-    defaultMessage: '{number} changesets to {level}',
+    defaultMessage: '{changesets} / {nextLevelThreshold} changesets to {level}',
   },
   personalInfo: {
     id: 'user.personalInfo',
