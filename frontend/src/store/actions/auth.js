@@ -74,7 +74,7 @@ export const getUserDetails = (state) => dispatch => {
 
 
 export const pushUserDetails = (userDetails, token) => dispatch => {
-  pushToLocalJSONAPI('user/update-details', userDetails, token).then(
+  pushToLocalJSONAPI(`users/actions/set-user/`, userDetails, token, 'PATCH').then(
     data => dispatch(setUserDetails(safeStorage.getItem('username'), token))
   );
 }
