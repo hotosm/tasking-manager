@@ -18,11 +18,7 @@
             launchFieldPapersEditor: launchFieldPapersEditor,
             launchPotlatch2Editor: launchPotlatch2Editor,
             launchIdEditor: launchIdEditor,
-<<<<<<< HEAD
             launchCustomIdEditor: launchCustomIdEditor,
-=======
-            launchRapidEditor: launchRapidEditor,
->>>>>>> Added RapiD  editor to the list of editors
             getGPXUrl: getGPXUrl,
             getOSMXMLUrl: getOSMXMLUrl,
             idPresetCategories: idPresetCategories,
