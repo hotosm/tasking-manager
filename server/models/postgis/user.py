@@ -88,28 +88,9 @@ class User(db.Model):
 
     def update(self, user_dto: UserDTO):
         """ Update the user details """
-        self.email_address = (
-            user_dto.email_address.lower() if user_dto.email_address else None
-        )
-        self.twitter_id = user_dto.twitter_id.lower() if user_dto.twitter_id else None
-        self.facebook_id = (
-            user_dto.facebook_id.lower() if user_dto.facebook_id else None
-        )
-        self.linkedin_id = (
-            user_dto.linkedin_id.lower() if user_dto.linkedin_id else None
-        )
-        self.irc_id = user_dto.irc_id.lower() if user_dto.irc_id else None
-        self.skype_id = user_dto.skype_id.lower() if user_dto.skype_id else None
-        self.slack_id = user_dto.slack_id.lower() if user_dto.slack_id else None
-        self.city = user_dto.city
-        self.country = user_dto.country
-        self.name = user_dto.name
-        self.validation_message = user_dto.validation_message
-        self.default_editor = user_dto.default_editor
-        self.mentions_notifications = user_dto.mentions_notifications
-        self.comments_notifications = user_dto.comments_notifications
-        self.projects_notifications = user_dto.projects_notifications
-        self.expert_mode = user_dto.expert_mode
+        for attr, value in user_dto.items():
+            if value:
+                setattr(self, attr, value)
         db.session.commit()
 
     def set_email_verified_status(self, is_verified: bool):

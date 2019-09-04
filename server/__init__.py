@@ -468,9 +468,8 @@ def add_api_endpoints(app):
     )
 
     # Users Actions endpoint
-    api.add_resource(
-        UsersActionsSetUsersAPI, "/api/v2/users/actions/set-user/<string:username>/"
-    )
+    api.add_resource(UsersActionsSetUsersAPI, "/api/v2/users/actions/set-user/")
+
     api.add_resource(
         UsersActionsSetLevelAPI,
         "/api/v2/users/<string:username>/actions/set-level/<string:level>/",
