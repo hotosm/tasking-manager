@@ -2,8 +2,7 @@
    Header
    ========================================================================== */
 .tm-header {
-  background-image: url('../../img/Kaart-plate.jpg');
-  // background-color: $kaart-green;
+  background-image: url('../../img/aerial.jpg');
   h1, p {
     color: #fff;
   }
@@ -16,6 +15,8 @@
   .inner {
     padding-top: 5rem;
     padding-bottom: 5rem;
+    background-color: $kaart-orange;
+    border-radius: 3rem;
   }
 }
 
