@@ -49,7 +49,7 @@
                                                 <a href="/user/{{ item.actionBy }}">{{ item.actionBy }}</a>
                                             </td>
                                             <td>
-                                                <span am-time-ago="item.actionDate | amUtc | amLocal"></span>
+                                                <span tm-timestamp="item.actionDate"></span>
                                             </td>
                                         </tr>
                                   </tbody>
@@ -133,7 +133,7 @@
                             <tbody>
                                 <tr ng-repeat="comment in projectDashboardCtrl.projectComments | orderBy: '-commentDate'">
                                     <td>{{ comment.comment }}</td>
-                                    <td><span am-time-ago="comment.commentDate | amUtc | amLocal"></span></td>
+                                    <td><span tm-timestamp="comment.commentDate"></span></td>
                                     <td><a href="/user/{{ comment.userName }}" target="_blank" rel="noopener">{{ comment.userName }}</a></td>
                                     <td><a href="/project/{{ projectDashboardCtrl.projectId }}?task={{ comment.taskId}}" target="_blank" rel="noopener">Task {{ comment.taskId }}</a></td>
                                 </tr>

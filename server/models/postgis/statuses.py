@@ -81,3 +81,11 @@ class UploadPolicy(Enum):
     BLOCK = 0
     ALLOW = 1
     DISCOURAGE = 2
+
+class Editors(Enum):
+    """ Enum describing the possible editors for projects """
+    ID = 0
+    JOSM = 1
+    POTLATCH_2 = 2
+    FIELD_PAPERS = 3
+    RAPID = 4

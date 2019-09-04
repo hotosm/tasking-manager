@@ -87,17 +87,15 @@
                             <span>{{ 'About' | translate }}</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="/what-is-new" title="{{ 'New features in the Tasking Manager' | translate }}" class="global-menu-item">
-                            <span>{{ 'What is New?' | translate }}</span>
-                        </a>
-                    </li>
                 </ul>
                 <ul class="global-menu menu-secondary-wrapper">
                     <li class="global-menu-item">
                         <language-switch class="language-dropown-wrapper"></language-switch>
                     </li>
                     <li class="global-menu-divider"></li>
+                    <li class="global-menu-item">
+                        <mapper-level-indicator></mapper-level-indicator>
+                    </li>
                     <li class="global-menu-item">
                         <account-nav></account-nav>
                     </li>
@@ -274,6 +272,7 @@
 <script src="app/components/language/language-switch.directive.js"></script>
 <script src="app/components/popup/map-popup.directive.js"></script>
 <script src="app/components/show-project-aois/show-project-aois.directive.js"></script>
+<script src="app/components/ng-click-copy/ng-click-copy.js"></script>
 <script src="app/components/project-chat/project-chat.directive.js"></script>
 <!-- /build -->
 

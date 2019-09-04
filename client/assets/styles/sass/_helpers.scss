@@ -31,6 +31,18 @@
   margin-top: 2em;
 }
 
+.important-message {
+  color: $darker-red;
+  margin-bottom: 1em;
+  line-height: 1.5em;
+
+  &__icon {
+    margin-right: 0.25em;
+    vertical-align: text-bottom;
+    font-size: 1.5em;
+  }
+}
+
 .pointer {
   cursor: pointer;
 }

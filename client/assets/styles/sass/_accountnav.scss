@@ -13,3 +13,8 @@
   border-radius: 0.25rem;
   transition: opacity 0.16s ease 0s, margin 0.16s ease 0s, visibility 0.16s linear 0s;
 }
+
+.missing-email-indicator {
+  color: $darker-red;
+  margin: 0 0.25em;
+}

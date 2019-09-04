@@ -1,6 +1,6 @@
 import geojson
-from shapely.geometry import mapping, Polygon, MultiPolygon
-from shapely.geometry import Polygon, Point, MultiPolygon, shape as shapely_shape
+from shapely.geometry import mapping, Polygon, MultiPolygon, LineString, Point, shape as shapely_shape
+from shapely.ops import split
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
@@ -22,12 +22,17 @@ class SplitServiceError(Exception):
 
 class SplitService:
     @staticmethod
-    def _create_split_tasks(x, y, zoom, task=None) -> list:
+    def _create_split_tasks(x, y, zoom, task) -> list:
         """
         function for splitting a task square geometry into 4 smaller squares
         :param geom_to_split: {geojson.Feature} the geojson feature to b split
         :return: list of {geojson.Feature}
         """
+        # If the task's geometry doesn't correspond to an OSM tile identified by an
+        # x, y, zoom then we need to take a different approach to splitting
+        if x is None or y is None or zoom is None:
+            return SplitService._create_split_tasks_from_geometry(task)
+
         try:
             task_geojson = False
 
@@ -101,6 +106,56 @@ class SplitService:
 
         # use DB to get the geometry as geojson
         return geojson.loads(db.engine.execute(transformed_geometry.ST_AsGeoJSON()).scalar())
+
+    @staticmethod
+    def _create_split_tasks_from_geometry(task) -> list:
+        """
+        Splits a task into 4 smaller tasks based purely on the task's geometry rather than
+        an OSM tile identified by x, y, zoom
+        :return: list of {geojson.Feature}
+        """
+        # Load the task's geometry and calculate its centroid and bbox
+        query = db.session.query(Task.id, Task.geometry.ST_AsGeoJSON().label('geometry')) \
+            .filter(Task.id == task.id, Task.project_id == task.project_id)
+        task_geojson = geojson.loads(query[0].geometry)
+        geometry = shapely_shape(task_geojson)
+        centroid = geometry.centroid
+        minx, miny, maxx, maxy = geometry.bounds
+
+        # split geometry in half vertically, then split those halves in half horizontally
+        split_geometries = []
+        vertical_dividing_line = LineString([(centroid.x, miny), (centroid.x, maxy)])
+        horizontal_dividing_line = LineString([(minx, centroid.y), (maxx, centroid.y)])
+
+        vertical_halves = SplitService._as_halves(split(geometry, vertical_dividing_line), centroid, 'x')
+        for half in vertical_halves:
+            split_geometries += SplitService._as_halves(split(half, horizontal_dividing_line), centroid, 'y')
+
+        # convert split geometries into GeoJSON features expected by Task
+        split_features = []
+        for split_geometry in split_geometries:
+            feature = geojson.Feature()
+            # Tasks expect multipolygons. Convert and use the database to get as GeoJSON
+            multipolygon_geometry = shape.from_shape(split_geometry, 4326)
+            feature.geometry = geojson.loads(db.engine.execute(multipolygon_geometry.ST_AsGeoJSON()).scalar())
+            feature.properties['x'] = None
+            feature.properties['y'] = None
+            feature.properties['zoom'] = None
+            feature.properties['isSquare'] = False
+            split_features.append(feature)
+        return split_features
+
+    @staticmethod
+    def _as_halves(geometries, centroid, axis) -> list:
+        """
+        Divides the given geometries into two groups -- one with geometries less
+        than or equal to the centroid position (along the given axis) and one
+        with geometries greater than the centroid position -- and returns a tuple
+        of two MultiPolygons
+        """
+        first_half = [g for g in geometries if getattr(g.centroid, axis) <= getattr(centroid, axis)]
+        second_half = [g for g in geometries if getattr(g.centroid, axis) > getattr(centroid, axis)]
+        return (MultiPolygon(first_half), MultiPolygon(second_half))
 
     @staticmethod
     def split_task(split_task_dto: SplitTaskDTO) -> TaskDTOs:

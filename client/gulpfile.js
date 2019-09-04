@@ -32,8 +32,8 @@ gulp.task('browser-sync', function () {
 
         // Specify list of files to watch for changes, apparently reload method doesn't work on Windows */
     var filesToWatch = [
-            './**/*.html',
-            './**/*.js'
+            './app/**/*.html',
+            './app/**/*.js'
         ];
 
     // Create a rewrite rule that redirects to index.html to let Angular handle the routing

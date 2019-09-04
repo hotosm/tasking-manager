@@ -1,17 +1,13 @@
-#Pycharm
-.idea/
 
-# Configuration file
-tasking-manager.env
+# Configuration files #
+tasking-manager*.env
 
-# Dev artifacts
+# Generated frontend #
 client/node_modules/
 client/assets/styles/css
-shippable/
-
-# Ignore generated config
 client/app/taskingmanager.config.js
 client/package-lock.json
+client/yarn.lock
 
 # Ignore dist folder as this contains the minimized build for deploy
 server/web/static/dist
@@ -19,24 +15,31 @@ server/web/static/dist/
 
 # Ignore local logs
 logs/
+*.log
+
+# Ignore some translation stuff
+.tx/tasking-manager.master/
 
 #python
 venv/
 *pyc
 
-# AWS
+# Editor generated files #
+.idea/
+.vscode/
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# OS generated files #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 .elasticbeanstalk/
 venv_aws/
-
-# Mac
-.DS_Store
-
-# Project Files Dir
-/server/project_files/
-
-# VSCode
-.vscode
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
