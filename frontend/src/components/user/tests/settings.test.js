@@ -12,14 +12,16 @@ const createComponentWithIntl = (children, props = { locale: 'en' }) => {
 it('changesets missing to intermediate level', () => {
   const element = createComponentWithIntl(<NextMappingLevel changesetsCount={100} />);
   const elementInstance = element.root;
-  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(150);
+  expect(elementInstance.findAllByType(FormattedNumber)[0].props.value).toBe(100);
+  expect(elementInstance.findAllByType(FormattedNumber)[1].props.value).toBe(250);
   expect(elementInstance.findByType(MappingLevelMessage).props.level).toBe('INTERMEDIATE');
 });
 
 it('changesets missing to advanced level', () => {
   const element = createComponentWithIntl(<NextMappingLevel changesetsCount={300} />);
   const elementInstance = element.root;
-  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(200);
+  expect(elementInstance.findAllByType(FormattedNumber)[0].props.value).toBe(300);
+  expect(elementInstance.findAllByType(FormattedNumber)[1].props.value).toBe(500);
   expect(elementInstance.findByType(MappingLevelMessage).props.level).toBe('ADVANCED');
 });
 
