@@ -978,3 +978,35 @@ class ProjectsQueriesAoiAPI(Resource):
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch project"}, 500
+
+
+class ProjectsQueriesFeaturedAPI(Resource):
+    def get(self):
+        """
+        Get featured projects
+        ---
+        tags:
+            - projects
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+        responses:
+            200:
+                description: Featured projects
+            500:
+                description: Internal Server Error
+        """
+        try:
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            projects_dto = ProjectService.get_featured_projects(preferred_locale)
+            return projects_dto.to_primitive(), 200
+        except Exception as e:
+            error_msg = f"FeaturedProjects GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
