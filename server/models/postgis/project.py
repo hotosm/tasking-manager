@@ -28,7 +28,6 @@ from server.models.dtos.project_dto import (
     ProjectStatsDTO,
     ProjectUserStatsDTO,
 )
-from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.organisation import Organisation
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
@@ -41,12 +40,12 @@ from server.models.postgis.statuses import (
     MappingTypes,
     TaskCreationMode,
     Editors,
-    TeamRoles
+    TeamRoles,
 )
-from server.models.postgis.tags import Tags
 from server.models.postgis.task import Task, TaskHistory
 from server.models.postgis.team import Team
 from server.models.postgis.user import User
+from server.models.postgis.campaign import Campaign, campaign_projects
 
 from server.models.postgis.utils import (
     ST_SetSRID,
@@ -78,19 +77,31 @@ project_allowed_users = db.Table(
 
 
 class ProjectTeams(db.Model):
-    __tablename__ = 'project_teams'
-    team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), primary_key=True)
+    __tablename__ = "project_teams"
+    team_id = db.Column(db.Integer, db.ForeignKey("teams.id"), primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), primary_key=True)
     role = db.Column(db.Integer, nullable=False)
 
     project = db.relationship(
-        'Project',
-        backref=db.backref('teams', cascade='all, delete-orphan')
+        "Project", backref=db.backref("teams", cascade="all, delete-orphan")
     )
     team = db.relationship(
-        Team,
-        backref=db.backref('projects', cascade='all, delete-orphan')
+        Team, backref=db.backref("projects", cascade="all, delete-orphan")
     )
+
+    def create(self):
+        """ Creates and saves the current model to the DB """
+        db.session.add(self)
+        db.session.commit()
+
+    def save(self):
+        """ Save changes to db"""
+        db.session.commit()
+
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
 
 
 # cache mapper counts for 30 seconds
@@ -145,11 +156,14 @@ class Project(db.Model):
         db.Integer, default=TaskCreationMode.GRID.value, nullable=False
     )
 
-    organisation_id = db.Column(db.Integer, db.ForeignKey('organisations.id', name='fk_organisations'), index=True)
+    organisation_id = db.Column(
+        db.Integer,
+        db.ForeignKey("organisations.id", name="fk_organisations"),
+        index=True,
+    )
 
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
-    campaign_tag = db.Column(db.String, index=True)
 
     # Editors
     mapping_editors = db.Column(
@@ -197,6 +211,7 @@ class Project(db.Model):
     )
     favorited = db.relationship(User, secondary=project_favorites, backref="favorites")
     organisation = db.relationship(Organisation, backref='projects')
+    campaign = db.relationship(Campaign, secondary=campaign_projects, backref="project")
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
@@ -327,8 +342,6 @@ class Project(db.Model):
         cloned_project.josm_preset = original_project.josm_preset
         cloned_project.license_id = original_project.license_id
         cloned_project.mapping_types = original_project.mapping_types
-        cloned_project.organisation_tag = original_project.organisation_tag
-        cloned_project.campaign_tag = original_project.campaign_tag
 
         # We try to remove the changeset comment referencing the old project. This
         #  assumes the default changeset comment has not changed between the old
@@ -393,14 +406,6 @@ class Project(db.Model):
                 raise NotFound("Organisation does not exist")
             self.organisation = org
 
-        if project_dto.campaign_tag:
-            camp_tag = Tags.upsert_campaign_tag(project_dto.campaign_tag)
-            self.campaign_tag = camp_tag
-        else:
-            self.campaign_tag = (
-                None
-            )  # Set to none, for cases where a tag could have been removed
-
         # Cast MappingType strings to int array
         type_array = []
         for mapping_type in project_dto.mapping_types:
@@ -432,15 +437,15 @@ class Project(db.Model):
 
             for project_team in project_dto.project_teams:
 
-                team = Team.get(project_team['teamId'])
+                team = Team.get(project_team["teamId"])
 
                 if team is None:
-                    raise NotFound(f'Team not found')
+                    raise NotFound(f"Team not found")
 
                 new_project_team = ProjectTeams()
                 new_project_team.project = self
                 new_project_team.team = team
-                new_project_team.role = TeamRoles[project_team['role']].value
+                new_project_team.role = TeamRoles[project_team["role"]].value
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
@@ -803,11 +808,13 @@ class Project(db.Model):
         """ Helper to return teams with members so we can handle permissions """
         project_teams = []
         for t in self.teams:
-            project_teams.append({
-                'name': t.team.name,
-                'role': t.role,
-                'members': [m.member.username for m in t.team.members]
-            })
+            project_teams.append(
+                {
+                    "name": t.team.name,
+                    "role": t.role,
+                    "members": [m.member.username for m in t.team.members],
+                }
+            )
 
         return project_teams
 
@@ -855,7 +862,6 @@ class Project(db.Model):
         base_dto.due_date = self.due_date
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset
-        base_dto.campaign_tag = self.campaign_tag
         base_dto.country_tag = self.country
         base_dto.organisation_id = self.organisation_id
         base_dto.license_id = self.license_id
