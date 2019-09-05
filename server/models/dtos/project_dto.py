@@ -20,6 +20,15 @@ from server.models.postgis.statuses import (
     Editors,
 )
 
+ORDER_BY_OPTIONS = (
+    "id",
+    "mapper_level",
+    "priority",
+    "status",
+    "last_updated",
+    "due_date",
+)
+
 
 def is_known_project_status(value):
     """ Validates that Project Status is known value """
@@ -213,12 +222,15 @@ class ProjectDTO(Model):
 class ProjectSearchDTO(Model):
     """ Describes the criteria users use to filter active projects"""
 
-    preferred_locale = StringType(required=True, default="en")
+    preferred_locale = StringType(default="en")
     mapper_level = StringType(validators=[is_known_mapping_level])
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
     project_statuses = ListType(StringType, validators=[is_known_project_status])
     organisation_tag = StringType()
     campaign_tag = StringType()
+    order_by = StringType(choices=ORDER_BY_OPTIONS)
+    order_by_type = StringType(choices=("ASC", "DESC"))
+
     page = IntType(required=True)
     text_search = StringType()
     is_project_manager = BooleanType(required=True, default=False)
