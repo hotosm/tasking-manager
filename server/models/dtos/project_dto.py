@@ -403,6 +403,24 @@ class PMDashboardDTO(Model):
     )
 
 
+class ProjectMatchedDTO(Model):
+    project_id = IntType(required=True, serialized_name="projectId")
+    name = StringType()
+
+
+class ProjectsMatchedDTO(Model):
+    """ DTO for projects that matched a given keyword """
+
+    def __init__(self):
+        """ DTO constructor set names array to empty """
+        super().__init__()
+        self.projects = []
+
+    projects = ListType(
+        ModelType(ProjectMatchedDTO), required=True, serialized_name="projects"
+    )
+
+
 class ProjectTaskAnnotationsDTO(Model):
     """ DTO for task annotations of a project """
 

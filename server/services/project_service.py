@@ -11,9 +11,12 @@ from server.models.dtos.project_dto import (
     ProjectContribsDTO,
     ProjectContribDTO,
     ProjectSearchResultsDTO,
+    ProjectMatchedDTO,
+    ProjectsMatchedDTO,
 )
 
 from server.models.postgis.project import Project, ProjectStatus, MappingLevel
+from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.statuses import MappingNotAllowed, ValidatingNotAllowed
 from server.models.postgis.task import Task, TaskHistory, TaskAction
 from server.models.postgis.utils import NotFound
@@ -293,3 +296,25 @@ class ProjectService:
         project = ProjectService.get_project_by_id(project_id)
         user = UserService.get_user_by_username(username)
         return project.get_project_user_stats(user.id)
+
+    @staticmethod
+    def get_matched_projects(keyword: str) -> ProjectsMatchedDTO:
+        keywords = keyword.split(" ")
+        keywords = " | ".join(["{}:*".format(k) for k in keywords])
+        matched_projects = (
+            ProjectInfo.query.filter(
+                ProjectInfo.text_searchable.match(
+                    keywords, postgresql_regconfig="english"
+                )
+            )
+            .limit(6)
+            .all()
+        )
+
+        dto = ProjectsMatchedDTO()
+        dto.projects = [
+            ProjectMatchedDTO(dict(project_id=p.project_id, name=p.name))
+            for p in matched_projects
+        ]
+
+        return dto
