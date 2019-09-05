@@ -28,6 +28,7 @@ from server.models.dtos.project_dto import (
     ProjectStatsDTO,
     ProjectUserStatsDTO,
 )
+from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.organisation import Organisation
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
@@ -980,16 +981,17 @@ class Project(db.Model):
         return tags_dto
 
     @staticmethod
-    def get_all_campaign_tag(preferred_locale='en'):
-        query = db.session.query(Project.id,
-                                 Project.campaign_tag,
-                                 Project.private,
-                                 Project.status)\
-            .join(ProjectInfo)\
-            .filter(ProjectInfo.locale.in_([preferred_locale, 'en'])) \
-            .filter(Project.private != True)\
-            .filter(Project.campaign_tag.isnot(None))\
-            .filter(Project.campaign_tag != '')
+    def get_all_campaign_tag(preferred_locale="en"):
+        query = (
+            db.session.query(
+                Project.id, Project.campaign_tag, Project.private, Project.status
+            )
+            .join(ProjectInfo)
+            .filter(ProjectInfo.locale.in_([preferred_locale, "en"]))
+            .filter(Project.private is not True)
+            .filter(Project.campaign_tag.isnot(None))
+            .filter(Project.campaign_tag != "")
+        )
         query = query.distinct(Project.campaign_tag)
         query = query.order_by(Project.campaign_tag)
         tags_dto = TagsDTO()

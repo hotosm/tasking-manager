@@ -10,7 +10,7 @@ from server.services.organisation_service import (
 from server.services.users.authentication_service import token_auth, tm
 
 
-class OrganisationAPI(Resource):
+class OrganisationsRestAPI(Resource):
     @token_auth.login_required
     def post(self):
         """
@@ -255,7 +255,7 @@ class OrganisationAPI(Resource):
             return {"error": error_msg}, 500
 
 
-class GetAllOrganisationsAPI(Resource):
+class OrganisationsAllAPI(Resource):
     def get(self):
         try:
             orgs = OrganisationService.get_all_organisations_for_user_as_dto(
