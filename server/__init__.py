@@ -133,6 +133,7 @@ def add_api_endpoints(app):
         ProjectsQueriesNoGeometriesAPI,
         ProjectsQueriesNoTasksAPI,
         ProjectsQueriesAoiAPI,
+        ProjectsQueriesFeaturedAPI,
     )
     from server.api.projects.activities import ProjectsActivitiesAPI
     from server.api.projects.contributions import (
@@ -146,6 +147,8 @@ def add_api_endpoints(app):
     from server.api.projects.actions import (
         ProjectsActionsTransferAPI,
         ProjectsActionsMessageContributorsAPI,
+        ProjectsActionsFeatureAPI,
+        ProjectsActionsUnFeatureAPI,
     )
 
     # Tasks API import
@@ -268,6 +271,7 @@ def add_api_endpoints(app):
     api.add_resource(
         ProjectsQueriesAoiAPI, "/api/v2/projects/<int:project_id>/queries/aoi/"
     )
+    api.add_resource(ProjectsQueriesFeaturedAPI, "/api/v2/projects/queries/featured")
 
     # Projects' addtional resources
     api.add_resource(
@@ -297,9 +301,15 @@ def add_api_endpoints(app):
         ProjectsActionsTransferAPI,
         "/api/v2/projects/<int:project_id>/actions/transfer-ownership/",
     )
+    api.add_resource(
+        ProjectsActionsFeatureAPI, "/api/v2/projects/<int:project_id>/actions/feature"
+    )
+    api.add_resource(
+        ProjectsActionsUnFeatureAPI,
+        "/api/v2/projects/<int:project_id>/actions/remove-feature",
+    )
 
     # Tasks REST endpoint
-
     api.add_resource(
         TasksRestAPI, "/api/v2/projects/<int:project_id>/tasks/<int:task_id>/"
     )
