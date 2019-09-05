@@ -19,6 +19,7 @@ from server.models.postgis.statuses import (
     TaskCreationMode,
     Editors,
 )
+from server.models.dtos.campaign_dto import CampaignDTO
 
 ORDER_BY_OPTIONS = (
     "id",
@@ -188,9 +189,10 @@ class ProjectDTO(Model):
     mapping_types = ListType(
         StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
     )
-    campaign_tag = StringType(serialized_name="campaignTag")
+    campaign = ListType(ModelType(CampaignDTO), serialized_name="campaign")
     organisation = StringType()
     country_tag = ListType(StringType, serialized_name="countryTag")
+
     license_id = IntType(serialized_name="licenseId")
     allowed_usernames = ListType(
         StringType(), serialized_name="allowedUsernames", default=[]
@@ -209,6 +211,7 @@ class ProjectDTO(Model):
         validators=[is_known_task_creation_mode],
         serialize_when_none=False,
     )
+    project_teams = BaseType(serialized_name="projectTeams")
     mapping_editors = ListType(
         StringType,
         min_size=1,
@@ -252,7 +255,7 @@ class ProjectSearchDTO(Model):
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
     project_statuses = ListType(StringType, validators=[is_known_project_status])
     organisation = StringType()
-    campaign_tag = StringType()
+    campaign = StringType()
     order_by = StringType(choices=ORDER_BY_OPTIONS)
     order_by_type = StringType(choices=("ASC", "DESC"))
     country = StringType()
@@ -269,36 +272,41 @@ class ProjectSearchDTO(Model):
         if self.mapping_types:
             for mapping_type in self.mapping_types:
                 hashable_mapping_types += mapping_type
-        hashable_project_statuses = ''
+        hashable_project_statuses = ""
         if self.project_statuses:
             for project_status in self.project_statuses:
                 hashable_project_statuses += project_status
-        hashable_teams = ''
+        hashable_teams = ""
         if self.teams:
             for team in self.teams:
                 hashable_teams += team
-        hashable_mapping_editors = ''
+        hashable_mapping_editors = ""
         if self.mapping_editors:
             for mapping_editor in self.mapping_editors:
                 hashable_mapping_editors = hashable_mapping_editors + mapping_editor
         hashable_validation_editors = ""
         if self.validation_editors:
             for validation_editor in self.validation_editors:
-                hashable_validation_editors = hashable_validation_editors + validation_editor
+                hashable_validation_editors = (
+                    hashable_validation_editors + validation_editor
+                )
 
-        return hash((
-            self.preferred_locale,
-            self.mapper_level,
-            hashable_mapping_types,
-            hashable_project_statuses,
-            hashable_teams,
-            self.organisation,
-            self.campaign_tag,
-            self.page,
-            self.text_search,
-            self.is_project_manager,
-            hashable_mapping_editors,
-            hashable_validation_editors))
+        return hash(
+            (
+                self.preferred_locale,
+                self.mapper_level,
+                hashable_mapping_types,
+                hashable_project_statuses,
+                hashable_teams,
+                self.organisation,
+                self.campaign,
+                self.page,
+                self.text_search,
+                self.is_project_manager,
+                hashable_mapping_editors,
+                hashable_validation_editors,
+            )
+        )
 
 
 class ProjectSearchBBoxDTO(Model):
@@ -318,7 +326,7 @@ class ListSearchResultDTO(Model):
     mapper_level = StringType(required=True, serialized_name="mapperLevel")
     priority = StringType(required=True)
     organisation = StringType()
-    campaign_tag = StringType(serialized_name="campaignTag")
+    campaign = StringType()
     percent_mapped = IntType(serialized_name="percentMapped")
     percent_validated = IntType(serialized_name="percentValidated")
     status = StringType(serialized_name="status")
@@ -327,7 +335,6 @@ class ListSearchResultDTO(Model):
     due_date = DateTimeType(serialized_name="dueDate")
     total_contributors = IntType(serialized_name="totalContributors")
     country = StringType(serialize_when_none=False)
-
 
 
 class ProjectSearchResultsDTO(Model):
@@ -401,13 +408,14 @@ class ProjectSummary(Model):
     due_date = DateTimeType(serialized_name="dueDate")
     last_updated = DateTimeType(serialized_name="lastUpdated")
     priority = StringType(serialized_name="projectPriority")
-    campaign_tag = StringType(serialized_name="campaignTag")
+    campaign = StringType()
     organisation = StringType()
     country_tag = ListType(StringType, serialized_name="countryTag")
     entities_to_map = StringType(serialized_name="entitiesToMap")
     mapping_types = ListType(
         StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
     )
+
     changeset_comment = StringType(serialized_name="changesetComment")
     percent_mapped = IntType(serialized_name="percentMapped")
     percent_validated = IntType(serialized_name="percentValidated")
@@ -429,7 +437,7 @@ class ProjectSummary(Model):
     project_info = ModelType(
         ProjectInfoDTO, serialized_name="projectInfo", serialize_when_none=False
     )
-
+    short_description = StringType(serialized_name="shortDescription")
     status = StringType()
     imagery = StringType()
     mapping_editors = ListType(
