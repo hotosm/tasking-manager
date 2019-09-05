@@ -3,34 +3,41 @@ from server import db
 
 from server.models.dtos.organisation_dto import OrganisationDTO, NewOrganisationDTO
 from server.models.postgis.user import User
+from server.models.postgis.campaign import Campaign, campaign_organisations
 from server.models.postgis.statuses import OrganisationVisibility
 from server.models.postgis.utils import NotFound
 
 
 # Secondary table defining many-to-many relationship between organisations and admins
 organisation_admins = db.Table(
-    'organisation_admins',
+    "organisation_admins",
     db.metadata,
-    db.Column('organisation_id', db.Integer, db.ForeignKey('organisations.id'), nullable=False),
-    db.Column('user_id', db.BigInteger, db.ForeignKey('users.id'), nullable=False)
+    db.Column(
+        "organisation_id", db.Integer, db.ForeignKey("organisations.id"), nullable=False
+    ),
+    db.Column("user_id", db.BigInteger, db.ForeignKey("users.id"), nullable=False),
 )
 
 
 class Organisation(db.Model):
     """ Describes an Organisation """
-    __tablename__ = 'organisations'
+
+    __tablename__ = "organisations"
 
     # Columns
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(512), nullable=False, unique=True)
     logo = db.Column(db.String)  # URL of a logo
     url = db.Column(db.String)
-    visibility = db.Column(db.Integer, default=OrganisationVisibility.PUBLIC.value, nullable=False)
+    visibility = db.Column(
+        db.Integer, default=OrganisationVisibility.PUBLIC.value, nullable=False
+    )
 
     admins = db.relationship(
-        User,
-        secondary=organisation_admins,
-        backref='organisations'
+        User, secondary=organisation_admins, backref="organisations"
+    )
+    campaign = db.relationship(
+        Campaign, secondary=campaign_organisations, backref="organisation"
     )
 
     def create(self):
@@ -46,8 +53,12 @@ class Organisation(db.Model):
         new_org.name = new_organisation_dto.name
         new_org.logo = new_organisation_dto.logo
         new_org.url = new_organisation_dto.url
-        new_org.visibility = OrganisationVisibility[new_organisation_dto.visibility].value
-        new_org.admins = [User().get_by_id(admin) for admin in new_organisation_dto.admins]
+        new_org.visibility = OrganisationVisibility[
+            new_organisation_dto.visibility
+        ].value
+        new_org.admins = [
+            User().get_by_id(admin) for admin in new_organisation_dto.admins
+        ]
 
         new_org.create()
         return new_org
@@ -64,7 +75,7 @@ class Organisation(db.Model):
         for admin in organisation_dto.admins:
             new_admin = User().get_by_username(admin)
             if new_admin is None:
-                raise NotFound(f'User {admin} Not Found')
+                raise NotFound(f"User {admin} Not Found")
             self.admins.append(new_admin)
 
         db.session.commit()
@@ -105,8 +116,8 @@ class Organisation(db.Model):
         """ Gets all organisations; only returns secret orgs if user belongs to it """
         return Organisation.query.filter(
             or_(
-                Organisation.visibility != OrganisationVisibility.SECRET,
-                User().get_by_id(user_id) in Organisation.admins
+                Organisation.visibility != OrganisationVisibility.SECRET.value,
+                # User().get_by_id(user_id) in Organisation.admins,
             )
         )
 
