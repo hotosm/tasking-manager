@@ -26,7 +26,7 @@ from server.models.postgis.utils import (
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
-from sqlalchemy import func, distinct
+from sqlalchemy import func, distinct, desc
 import math
 
 
@@ -58,7 +58,7 @@ class ProjectSearchService:
     def create_search_query():
         query = (
             db.session.query(
-                Project.id,
+                Project.id.label("id"),
                 Project.mapper_level,
                 Project.priority,
                 Project.default_locale,
@@ -202,18 +202,13 @@ class ProjectSearchService:
                 )
             )
 
-        query = query.group_by(Project.id)
+        order_by = search_dto.order_by
+        if search_dto.order_by_type == "DESC":
+            order_by = desc(search_dto.order_by)
 
-        all_results = (
-            query.order_by(Project.priority, Project.id.desc())
-            .distinct(Project.priority, Project.id)
-            .all()
-        )
-        paginated_results = (
-            query.order_by(Project.priority, Project.id.desc())
-            .distinct(Project.priority, Project.id)
-            .paginate(search_dto.page, 14, True)
-        )
+        query = query.order_by(order_by).group_by(Project.id)
+        all_results = query.all()
+        paginated_results = query.paginate(search_dto.page, 14, True)
 
         return all_results, paginated_results
 
