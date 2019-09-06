@@ -460,6 +460,16 @@ class ProjectsAllAPI(Resource):
               type: string
               default: BEGINNER
             - in: query
+              name: orderBy
+              type: string
+              default: priority
+              enum: [id,mapper_level,priority,status,last_updated,due_date]
+            - in: query
+              name: orderByType
+              type: string
+              default: ASC
+              enum: [ASC, DESC]
+            - in: query
               name: mappingTypes
               type: string
               default: ROADS,BUILDINGS
@@ -499,6 +509,8 @@ class ProjectsAllAPI(Resource):
             search_dto.mapper_level = request.args.get("mapperLevel")
             search_dto.organisation_tag = request.args.get("organisationTag")
             search_dto.campaign_tag = request.args.get("campaignTag")
+            search_dto.order_by = request.args.get("orderBy", "priority")
+            search_dto.order_by_type = request.args.get("orderByType", "ASC")
             search_dto.page = (
                 int(request.args.get("page")) if request.args.get("page") else 1
             )
