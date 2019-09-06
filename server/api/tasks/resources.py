@@ -5,14 +5,16 @@ from flask import send_file, Response
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
+from server.services.mapping_service import MappingService, NotFound
 from server.models.dtos.grid_dto import GridDTO
-from server.services.grid.grid_service import GridService
-from server.services.project_admin_service import InvalidGeoJson
+
+from server.models.postgis.statuses import TaskStatus
 from server.services.users.authentication_service import token_auth, tm, verify_token
 from server.services.validator_service import ValidatorService
 
-from server.services.mapping_service import MappingService, NotFound
 from server.services.project_service import ProjectService, ProjectServiceError
+from server.services.grid.grid_service import GridService
+from server.models.postgis.utils import InvalidGeoJson
 
 
 class TasksRestAPI(Resource):
@@ -370,6 +372,25 @@ class TasksQueriesOwnLockedAPI(Resource):
               required: true
               type: integer
               default: 1
+            - in: query
+              name: as_file
+              type: boolean
+              description: Set to true if file download preferred
+              default: True
+            - in: query
+              name: status
+              type: string
+              description: task status to filter by
+            - in: query
+              name: orderBy
+              type:  string
+              description: Field name to sort tasks by, available last_updated, effort_prediction
+              default: null
+            - in: query
+              name: orderByType
+              type: string
+              default: ASC
+              enum: [ASC, DESC]
         responses:
             200:
                 description: Task user is working on
@@ -381,10 +402,40 @@ class TasksQueriesOwnLockedAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            locked_tasks = ProjectService.get_task_for_logged_in_user(
-                project_id, tm.authenticated_user_id
+            order_by = request.args.get("orderBy")
+            status = request.args.get("status")
+
+            as_file = (
+                strtobool(request.args.get("as_file"))
+                if request.args.get("as_file")
+                else True
             )
-            return locked_tasks.to_primitive(), 200
+
+            if status:
+                try:
+                    status = TaskStatus[status.upper()].value
+                except KeyError:
+                    status = None
+
+            if order_by not in ["effort_prediction", "last_updated"]:
+                order_by = None
+
+            order_by_type = request.args.get("orderByType", "ASC")
+
+            tasks = ProjectService.get_project_tasks(
+                int(project_id), order_by, order_by_type, status
+            )
+
+            if as_file:
+                tasks = str(tasks).encode("utf-8")
+                return send_file(
+                    io.BytesIO(tasks),
+                    mimetype="application/json",
+                    as_attachment=True,
+                    attachment_filename=f"{str(project_id)}-tasks.geoJSON",
+                )
+
+            return tasks, 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
