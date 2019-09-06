@@ -111,5 +111,9 @@ export default defineMessages({
   organizationContactButton: {
     id: 'home.whoIsMapping.contact.button',
     defaultMessage: "Contact us"
+  },
+  errorLoadingTheX: {
+    id: 'project.featuredProjects.error',
+    defaultMessage: 'Error loading the {xWord}'
   }
 });

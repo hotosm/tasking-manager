@@ -41,11 +41,12 @@ function getTranslatedMessages(locale) {
   return translatedMessages[locale] || translatedMessages[config.DEFAULT_LOCALE];
 }
 
-
+/* textComponent is for orderBy <select>, see codesandbox at https://github.com/facebook/react/issues/15513 */
 let ConnectedIntl = props => (
   <IntlProvider
     key={props.locale}
     locale={props.locale}
+    textComponent={React.Fragment}
     messages={getTranslatedMessages(props.locale)}
   >
     {props.children}
