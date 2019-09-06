@@ -119,9 +119,11 @@ class ProjectService:
         return project.as_dto_for_mapping(locale, abbrev)
 
     @staticmethod
-    def get_project_tasks(project_id):
+    def get_project_tasks(
+        project_id, order_by: str = None, order_by_type: str = "ASC", status: int = None
+    ):
         project = ProjectService.get_project_by_id(project_id)
-        return project.all_tasks_as_geojson()
+        return project.all_tasks_as_geojson(order_by, order_by_type, status)
 
     @staticmethod
     def get_project_aoi(project_id):
