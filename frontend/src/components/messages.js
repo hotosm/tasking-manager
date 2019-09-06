@@ -21,6 +21,10 @@ export default defineMessages({
     id: 'footer.learn',
     defaultMessage: 'Learn more about OpenStreetMap.'
   },
+  mappingLevelALL: {
+    id: 'project.level.all',
+    defaultMessage: 'All'
+  },
   mappingLevelADVANCED: {
     id: 'mapping.level.advanced',
     defaultMessage: 'Advanced'

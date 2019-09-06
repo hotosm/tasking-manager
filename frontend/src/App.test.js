@@ -6,6 +6,10 @@ import {IntlProvider} from 'react-intl';
 import { store } from './store';
 import App from './App';
 
+/* fix https://github.com/mapbox/mapbox-gl-js/issues/3436 */
+jest.mock('mapbox-gl/dist/mapbox-gl', () => ({
+  Map: () => ({}),
+}));
 
 it('renders without crashing', () => {
   const div = document.createElement('div');

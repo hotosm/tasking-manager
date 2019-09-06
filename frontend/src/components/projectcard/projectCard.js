@@ -22,18 +22,25 @@ function PriorityBox({ priority }: Object) {
 }
 
 function ProjectTeaser({ lastUpdated, totalContributors }: Object) {
+  /* outerDivStyles must have f6 even if sub-divs have f7 to fix grid issues*/
+  const outerDivStyles = "f6 tl blue-grey truncate mb2";
+  
   if (totalContributors < PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD) {
     return (
-      <div className="db tl f7 blue-grey truncate mv2" >
+      <div className={outerDivStyles} >
+        <span className="f7">
         <FormattedMessage  {...messages["projectLastContribution"]} /> <FormattedRelative value={lastUpdated} />
+        </span>
       </div>
     );
   } else {
     return(
-      <div className="f7 tl blue-light mv2" >
-        <FormattedMessage {...messages["projectTotalContributors"]}
+      <div className={outerDivStyles} >
+        <span className="f7 blue-light">
+          <FormattedMessage {...messages["projectTotalContributors"]}
           values={{number: <span className="blue-grey b f6">{totalContributors||0}</span>}}
         />
+        </span>
       </div>
     );
   }
@@ -91,11 +98,12 @@ export function ProjectCard({
   campaignTag,
   percentMapped,
   percentValidated,
-  totalContributors
+  totalContributors,
+  cardWidthClass="w-25-l"
 }: Object) {
   return (
     <a className="" href={`#project=${projectId}`}>
-      <article className="fl w-25-l base-font w-50-m w-100 mb3 ph2 blue-dark mw5">
+      <article className={`fl ${cardWidthClass} base-font w-50-m w-100 mb3 ph2 blue-dark mw5`}>
         <div className="pv3 ph3 ba br1 b--grey-light shadow-hover ">
           <PriorityBox priority={priority} />
           <div className="w-50 red dib"><ProjectOrgLogo organisationTag={organisationTag} /></div>

@@ -15,25 +15,24 @@ const persistedState = {
 }),
   preferences: {
     locale: safeStorage.getItem('locale'),
+    mapShown: 'true' === safeStorage.getItem('mapShown'),
   }
 };
 
 const enhancers = [];
 
-if (process.env.NODE_ENV === 'development') {
-  const devToolsExtension = window.devToolsExtension;
+const composeEnhancers = (process.env.NODE_ENV === 'development' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
-  if (typeof devToolsExtension === 'function') {
-    enhancers.push(devToolsExtension());
-  }
-}
-
-const composedEnhancers = compose(applyMiddleware(thunk), ...enhancers);
+const composedEnhancers = composeEnhancers(applyMiddleware(thunk), ...enhancers);
 
 const store = createStore(
   reducers,
   persistedState,
   composedEnhancers
 );
+
+store.subscribe(() => {
+  safeStorage.setItem('mapShown', store.getState().preferences['mapShown'])
+})
 
 export { store };
