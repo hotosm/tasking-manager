@@ -87,17 +87,15 @@
                             <span>{{ 'About' | translate }}</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="/what-is-new" title="{{ 'New features in the Tasking Manager' | translate }}" class="global-menu-item">
-                            <span>{{ 'What is New?' | translate }}</span>
-                        </a>
-                    </li>
                 </ul>
                 <ul class="global-menu menu-secondary-wrapper">
                     <li class="global-menu-item">
                         <language-switch class="language-dropown-wrapper"></language-switch>
                     </li>
                     <li class="global-menu-divider"></li>
+                    <li class="global-menu-item">
+                        <mapper-level-indicator></mapper-level-indicator>
+                    </li>
                     <li class="global-menu-item">
                         <account-nav></account-nav>
                     </li>
@@ -124,7 +122,7 @@
 
 <footer class="page__footer section">
     <div class='inner'>
-        {{ 'Made by the' | translate }} <a href="https://www.hotosm.org/">HOTOSM</a> {{ 'Community, modified by' | translate }} <a href="https://www.kaart.com">Kaart</a>. <a href="/about">{{ 'Get in touch' | translate }}</a>.</span>
+        <span>{{ 'Made by the' | translate }} <a href="https://www.hotosm.org/">HOTOSM</a> {{ 'Community, modified by' | translate }} <a href="https://www.kaart.com">Kaart</a>. <a href="/about">{{ 'Get in touch' | translate }}</a>.</span>
         <span class="right">{{ 'Give feedback on' | translate }} <a href="https://github.com/KaartGroup/tasking-manager" target="_blank" rel="noopener">{{ 'GitHub' | translate }}</a>. {{ 'Learn more about' | translate }} <a href="https://www.openstreetmap.org/about">OpenStreetMap</a>.</span>
     </div>
 </footer>
@@ -161,8 +159,8 @@
 <script src="node_modules/ng-file-upload/dist/ng-file-upload.js"></script>
 <!-- /build -->
 
-<!-- build:js https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js -->
-<script src="node_modules/@turf/turf/turf.js"></script>
+<!-- build:js https://cdnjs.cloudflare.com/ajax/libs/Turf.js/3.0.14/turf.min.js -->
+<script src="node_modules/turf/turf.js"></script>
 <!-- /build -->
 
 <!-- build:js https://cdn.rawgit.com/calvinmetcalf/shapefile-js/gh-pages/dist/shp.min.js-->
@@ -274,6 +272,7 @@
 <script src="app/components/language/language-switch.directive.js"></script>
 <script src="app/components/popup/map-popup.directive.js"></script>
 <script src="app/components/show-project-aois/show-project-aois.directive.js"></script>
+<script src="app/components/ng-click-copy/ng-click-copy.js"></script>
 <script src="app/components/project-chat/project-chat.directive.js"></script>
 <!-- /build -->
 

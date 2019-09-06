@@ -29,7 +29,6 @@
             var resultsPromise = statsService.getHomePageStats();
             resultsPromise.then(function (data) {
                 vm.stats = data;
-                console.log(vm.stats);
                 vm.hasLoaded = true;
                 vm.mappersOnline = data.mappersOnline;
                 vm.tasksMapped = data.tasksMapped;

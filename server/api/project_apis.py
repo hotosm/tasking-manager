@@ -1,13 +1,18 @@
-import geojson, io
+import geojson
+import io
 from flask import send_file
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from distutils.util import strtobool
 from server.models.dtos.project_dto import ProjectSearchDTO, ProjectSearchBBoxDTO
+from server.models.postgis.task import Task
+from server.models.postgis.task_annotation import TaskAnnotation
 from server.services.project_search_service import ProjectSearchService, ProjectSearchServiceError, BBoxTooBigError
 from server.services.project_service import ProjectService, ProjectServiceError, NotFound
 from server.services.users.user_service import UserService
 from server.services.users.authentication_service import token_auth, tm, verify_token
+from server.services.task_annotations_service import TaskAnnotationsService
+from server.services.application_service import ApplicationService
 
 
 class ProjectAPI(Resource):
@@ -16,7 +21,7 @@ class ProjectAPI(Resource):
         Get HOT Project for mapping
         ---
         tags:
-            - mapping
+            - projects
         produces:
             - application/json
         parameters:
@@ -37,6 +42,11 @@ class ProjectAPI(Resource):
               type: boolean
               description: Set to true if file download is preferred
               default: False
+            - in: query
+              name: abbreviated
+              type: boolean
+              description: Set to true if only state information is desired
+              default: False
         responses:
             200:
                 description: Project found
@@ -49,9 +59,10 @@ class ProjectAPI(Resource):
         """
         try:
             as_file = strtobool(request.args.get('as_file')) if request.args.get('as_file') else False
+            abbreviated = strtobool(request.args.get('abbreviated')) if request.args.get('abbreviated') else False
 
             project_dto = ProjectService.get_project_dto_for_mapper(project_id,
-                                                                    request.environ.get('HTTP_ACCEPT_LANGUAGE'))
+                                                                    request.environ.get('HTTP_ACCEPT_LANGUAGE'), abbreviated)
             project_dto = project_dto.to_primitive()
 
             if as_file:
@@ -75,13 +86,56 @@ class ProjectAPI(Resource):
                 current_app.logger.critical(str(e))
 
 
+class ProjectSummaryAPI(Resource):
+
+    def get(self, project_id: int):
+        """
+        Gets project summary
+        ---
+        tags:
+            - projects
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              description: The ID of the project
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Project Summary
+            404:
+                description: Project not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            summary = ProjectService.get_project_summary(project_id, preferred_locale)
+            return summary.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Project not found"}, 404
+        except Exception as e:
+            error_msg = f'Project Summary GET - unhandled error: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
 class ProjectAOIAPI(Resource):
     def get(self, project_id):
         """
         Get AOI of Project
         ---
         tags:
-            - mapping
+            - projects
         produces:
             - application/json
         parameters:
@@ -400,44 +454,155 @@ class HasUserTaskOnProjectDetails(Resource):
             return {"Error": error_msg}, 500
 
 
-class ProjectSummaryAPI(Resource):
-
-    def get(self, project_id: int):
+class TaskAnnotationsAPI(Resource):
+    def get(self, project_id: int, annotation_type: str = None):
         """
-        Gets project summary
+        Get all task annotations for a project
         ---
         tags:
-          - mapping
+            - task annotations
         produces:
-          - application/json
+            - application/json
         parameters:
-            - in: header
-              name: Accept-Language
-              description: Language user is requesting
-              type: string
-              required: true
-              default: en
             - name: project_id
               in: path
               description: The ID of the project
               required: true
               type: integer
-              default: 1
+            - name: annotation_type
+              in: path
+              description: The type of annotation to fetch
+              required: false
+              type: string
         responses:
             200:
-                description: Project Summary
+                description: Project Annotations
             404:
-                description: Project not found
+                description: Project or annotations not found
             500:
                 description: Internal Server Error
         """
         try:
-            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            summary = ProjectService.get_project_summary(project_id, preferred_locale)
-            return summary.to_primitive(), 200
-        except NotFound:
+            project = ProjectService.get_project_by_id(project_id)
+        except NotFound as e:
+            current_app.logger.error(f'Error validating project: {str(e)}')
             return {"Error": "Project not found"}, 404
-        except Exception as e:
-            error_msg = f'Project Summary GET - unhandled error: {str(e)}'
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+
+        try:
+            if annotation_type:
+                annotations = TaskAnnotation.get_task_annotations_by_project_id_type(project_id, annotation_type)
+            else:
+                annotations = TaskAnnotation.get_task_annotations_by_project_id(project_id)
+            return annotations.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Annotations not found"}, 404
+
+    def post(self, project_id: int, annotation_type: str):
+        """
+        Store new task annotations for tasks of a project
+        ---
+        tags:
+            - task annotations
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Content-Type
+              description: Content type for post body
+              required: true
+              type: string
+              default: application/json
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+            - name: annotation_type
+              in: path
+              description: Annotation type
+              required: true
+              type: string
+            - name: Application-Token
+              in: header
+              description: Application token registered with TM
+              required: true
+              type: string
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                projectId:
+                    type: integer
+                    required: true
+                annotationType:
+                    type: string
+                    required: true
+                tasks:
+                    type: array
+                    required: true
+                    items:
+                        schema:
+                            taskId:
+                                type: integer
+                                required: true
+                            annotationSource:
+                                type: string
+                            annotationMarkdown:
+                                type: string
+                            properties:
+                                description: JSON object with properties
+        responses:
+            200:
+                description: Project updated
+            400:
+                description: Client Error - Invalid Request
+            404:
+                description: Project or task not found
+            500:
+                description: Internal Server Error
+        """
+
+        if 'Application-Token' in request.headers:
+            application_token = request.headers['Application-Token']
+            try:
+                is_valid_token = ApplicationService.check_token(application_token)
+            except NotFound as e:
+                current_app.logger.error(f'Invalid token')
+                return {"error": "Invalid token"}, 500
+        else:
+            current_app.logger.error(f'No token supplied')
+            return {"error": "No token supplied"}, 500
+
+        try:
+            annotations = request.get_json() or {}
+        except DataError as e:
+            current_app.logger.error(f'Error validating request: {str(e)}')
+
+        try:
+            project = ProjectService.get_project_by_id(project_id)
+        except NotFound as e:
+            current_app.logger.error(f'Error validating project: {str(e)}')
+
+        task_ids = [t['taskId'] for t in annotations['tasks']]
+
+        # check if task ids are valid
+        tasks = Task.get_tasks(project_id, task_ids)
+        tasks_ids_db = [t.id for t in tasks]
+        if (len(task_ids) != len(tasks_ids_db)):
+            return {"error": 'Invalid task id'}, 500
+
+        for annotation in annotations['tasks']:
+            try:
+                TaskAnnotationsService.add_or_update_annotation(annotation, project_id, annotation_type)
+            except DataError as e:
+                current_app.logger.error(f'Error creating annotations: {str(e)}')
+                return {"Error": "Error creating annotations"}, 500
+
+        return project_id, 200
+
+    def put(self, project_id: int, task_id: int):
+        """
+        Update a single task's annotations
+        """
+        pass

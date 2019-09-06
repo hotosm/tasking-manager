@@ -60,7 +60,7 @@
                 if (vm.account.username) {
                     checkIfUserHasMessages();
                 }
-            }, 10000);
+            }, 60000);
 
             // Catch clicks and check if it was outside of the menu element. If so, close the dropdown menu.
             $document.bind('click', function(event){
@@ -111,6 +111,14 @@
          */
         vm.goToManageLicenses = function () {
             $location.path('admin/licenses');
+        };
+
+        /**
+         * Navigate to the mapping-issue category management page
+         */
+        vm.goToManageMappingIssueCategories = function () {
+            $location.path('admin/mapping-issues/categories');
+            vm.showDropdown = false;
         };
 
         /**

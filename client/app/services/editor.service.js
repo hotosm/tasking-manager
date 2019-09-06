@@ -18,7 +18,7 @@
             launchFieldPapersEditor: launchFieldPapersEditor,
             launchPotlatch2Editor: launchPotlatch2Editor,
             launchIdEditor: launchIdEditor,
-	    launchRapid: launchRapid,
+            launchRapidEditor: launchRapidEditor,
             getGPXUrl: getGPXUrl,
             getOSMXMLUrl: getOSMXMLUrl,
             getProjectFileOSMXMLUrl: getProjectFileOSMXMLUrl
@@ -89,8 +89,8 @@
          * @param projectId
          * @param taskId
          */
-        function launchRapid(centroid, changesetComment, imageryUrl, projectId, taskId){
-            var base = "https://mapwith.ai/rapid?";
+        function launchRapidEditor(centroid, changesetComment, imageryUrl, projectId, taskId){
+            var base = 'https://www.mapwith.ai/rapid?';
             var zoom = mapService.getOSMMap().getView().getZoom();
             var url = base + '#map=' +
                         [zoom, centroid[1], centroid[0]].join('/');
@@ -113,7 +113,6 @@
             }
             $window.open(url);
         }
-
 
         /**
          * Round to a certain amount of decimals

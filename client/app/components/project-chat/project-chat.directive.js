@@ -15,7 +15,7 @@
      * Creates project-chat directive
      * Example:
      *
-     *  <project-chat project-id="projectCtrl.id" project-author="projectCtrl.projectData.author"></project-chat>
+     *  <project-chat project-id="projectCtrl.id" project-author="projectCtrl.projectData.author" role="projectCtrl.user.role"></project-chat>
      */
     function projectChatDirective() {
 
@@ -26,7 +26,8 @@
             controllerAs: 'projectChatCtrl',
             scope: {
                 projectId: '=projectId',
-                projectAuthor: '=projectAuthor'
+                projectAuthor: '=projectAuthor',
+                role: '=role'
             },
             bindToController: true // because the scope is isolated
         };
@@ -43,7 +44,7 @@
         vm.messages = [];
         vm.maxlengthComment = configService.maxChatLength;
         vm.suggestedUsers = [];
-
+        vm.role = '';
         vm.hasScrolled = false;
 
         // Errors
@@ -66,6 +67,9 @@
         });
         $scope.$watch('projectChatCtrl.projectAuthor', function (authorName) {
             vm.author = authorName;
+        });
+        $scope.$watch('projectChatCtrl.role', function (role) {
+            vm.role = role;
         });
 
         //start up a timer for getting the chat messages
