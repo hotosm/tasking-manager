@@ -4,7 +4,6 @@ import { Redirect } from '@reach/router';
 
 import { AuthButtons } from '../components/header';
 
-
 export function Login() {
   const userIsloggedIn = useSelector(state => state.auth.get('token'));
   if (!userIsloggedIn) {

@@ -1,12 +1,11 @@
 import React from 'react';
-import { Redirect } from "@reach/router";
-import { connect } from "react-redux";
+import { Redirect } from '@reach/router';
+import { connect } from 'react-redux';
 import { setAuthDetails } from '../store/actions/auth';
 
-
- class Authorized extends React.Component {
+class Authorized extends React.Component {
   state = {
-    isReadyToRedirect: false
+    isReadyToRedirect: false,
   };
   params = new URLSearchParams(this.props.location.search);
 
@@ -16,33 +15,35 @@ import { setAuthDetails } from '../store/actions/auth';
     const userPicture = this.params.get('picture');
     this.props.authenticateUser(username, sessionToken, userPicture);
     this.setState({
-      isReadyToRedirect: true
+      isReadyToRedirect: true,
     });
   }
   render() {
-    const redirectUrl = this.params.get('redirect_to') && this.params.get('redirect_to') !== '/' ? (
-      this.params.get('redirect_to')
-    ) : 'welcome';
-    return (
-      this.state.isReadyToRedirect ? <Redirect to={redirectUrl} noThrow /> : <div>redirecting</div>
+    const redirectUrl =
+      this.params.get('redirect_to') && this.params.get('redirect_to') !== '/'
+        ? this.params.get('redirect_to')
+        : 'welcome';
+    return this.state.isReadyToRedirect ? (
+      <Redirect to={redirectUrl} noThrow />
+    ) : (
+      <div>redirecting</div>
     );
   }
 }
 
- let mapStateToProps = (state, props) => ({
-    location: props.location,
+let mapStateToProps = (state, props) => ({
+  location: props.location,
 });
 
- const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    authenticateUser: (username, token, userPicture) => dispatch(
-      setAuthDetails(username, token, userPicture)
-    )
+    authenticateUser: (username, token, userPicture) =>
+      dispatch(setAuthDetails(username, token, userPicture)),
   };
 };
 
- Authorized = connect(
-    mapStateToProps,
-    mapDispatchToProps
+Authorized = connect(
+  mapStateToProps,
+  mapDispatchToProps,
 )(Authorized);
 export { Authorized };

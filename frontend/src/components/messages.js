@@ -1,5 +1,4 @@
-import { defineMessages } from 'react-intl'
-
+import { defineMessages } from 'react-intl';
 
 /**
  * Internationalized messages for use on header.
@@ -7,34 +6,35 @@ import { defineMessages } from 'react-intl'
 export default defineMessages({
   definition: {
     id: 'foooter.definition',
-    defaultMessage: 'Tasking Manager is a platform where people can help humanitarian causes by mapping in OpenStreetMap.'
+    defaultMessage:
+      'Tasking Manager is a platform where people can help humanitarian causes by mapping in OpenStreetMap.',
   },
   credits: {
     id: 'footer.credits',
-    defaultMessage: 'Made by HOTOSM Community. Get in touch.'
+    defaultMessage: 'Made by HOTOSM Community. Get in touch.',
   },
   feedback: {
     id: 'footer.feedback',
-    defaultMessage: 'Give feedback on GitHub.'
+    defaultMessage: 'Give feedback on GitHub.',
   },
   learn: {
     id: 'footer.learn',
-    defaultMessage: 'Learn more about OpenStreetMap.'
+    defaultMessage: 'Learn more about OpenStreetMap.',
   },
   mappingLevelALL: {
     id: 'project.level.all',
-    defaultMessage: 'All'
+    defaultMessage: 'All',
   },
   mappingLevelADVANCED: {
     id: 'mapping.level.advanced',
-    defaultMessage: 'Advanced'
+    defaultMessage: 'Advanced',
   },
   mappingLevelINTERMEDIATE: {
     id: 'mapping.level.intermediate',
-    defaultMessage: 'Intermediate'
+    defaultMessage: 'Intermediate',
   },
   mappingLevelBEGINNER: {
     id: 'mapping.level.beginner',
-    defaultMessage: 'Beginner'
+    defaultMessage: 'Beginner',
   },
 });
