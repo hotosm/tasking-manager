@@ -8,9 +8,8 @@ import { Testimonials } from '../components/homepage/testimonials/index';
 import { FeaturedProjects } from '../components/homepage/featuredProjects';
 
 export class Home extends React.Component {
-
   render() {
-    return(
+    return (
       <div className="pull-center">
         <Jumbotron />
         <StatsSection />

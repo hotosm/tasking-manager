@@ -2,7 +2,8 @@ import * as safeStorage from '../../utils/safe_storage';
 
 
 export const types = {
-  SET_LOCALE: 'SET_LOCALE'
+  SET_LOCALE: 'SET_LOCALE',
+  TOGGLE_MAP: 'TOGGLE_MAP'
 };
 
 export function updateLocale(locale) {

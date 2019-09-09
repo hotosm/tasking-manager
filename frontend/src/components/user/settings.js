@@ -29,7 +29,11 @@ function NextMappingLevel({ changesetsCount }: Object) {
           {...messages.nextLevel}
           className="blue-grey"
           values={{
-            changesets: <span className="blue-dark f4 fw6"><FormattedNumber value={changesetsCount} /></span>,
+            changesets: (
+              <span className="blue-dark f4 fw6">
+                <FormattedNumber value={changesetsCount} />
+              </span>
+            ),
             nextLevelThreshold: <span className="blue-dark f4">{nextLevelThreshold}</span>,
             level: nextLevel,
           }}
@@ -49,10 +53,10 @@ class UserTopBar extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (
-      (this.props.userDetails && this.props.userDetails.username) &&
+      this.props.userDetails &&
+      this.props.userDetails.username &&
       (prevProps.userDetails.username !== this.props.userDetails.username ||
-        (this.state.finishedLoadingData === false || this.state.changesetsCount === 0)
-      )
+        (this.state.finishedLoadingData === false || this.state.changesetsCount === 0))
     ) {
       this.getOSMDetails();
     }

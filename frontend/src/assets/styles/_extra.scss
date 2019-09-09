@@ -40,6 +40,7 @@
   background-blend-mode: darken;
 }
 
+/* used for project progress bar */
 .hhalf {
   height: 0.5rem;
 }
@@ -48,11 +49,35 @@
    Add shadow on hover, building on what is already in Tachyons
    adjust for the lighter shadow from design
 */
-
 .shadow-hover::after {
   box-shadow: 0 7px 20px 0 rgba(0,0,0,0.08);
 }
 
 button:focus, button:active, a:focus, a:active {
   outline: 0;
+}
+/* TOGGLE for Show Map*/
+.t-cb { transition: all .3s cubic-bezier(.33, 1, .66, 1); } // Custom class
+
+.checkbox:checked + .checkbox-wrapper {
+  background-color: $red; // @extend .bg-green;
+
+  .checkbox-toggle {
+    left: 2rem; // @extend .left-2;
+    background-color: #fff; // @extend .bg-moon-gray;
+    border-color: $red;
+  }
+}
+.checkbox-toggle:hover {
+  border: dashed red !important;
+ }
+
+/* mapping type by RADIO BUTTONs
+https://codepen.io/nielsenramon/pen/mLMeLY
+ */
+.radiobutton:checked + .radiobutton-wrapper {
+  background-color: $red; // @extend .bg-white;
+  div {
+    border-color: #fff; // @extend .b--white;
+  }
 }

@@ -4,44 +4,40 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on project cards.
  */
 export default defineMessages({
-  projectTitle: {
-    id: 'project.mainSection.title',
-    defaultMessage: 'Generic project'
-  },
   projectTotalContributors: {
     id: 'project.card.contributorCount',
-    defaultMessage: '{number} total contributors'
+    defaultMessage: '{number} total contributors',
   },
   projectLastContribution: {
     id: 'project.card.lastContribution',
-    defaultMessage: 'Last contribution'
+    defaultMessage: 'Last contribution',
   },
   percentMapped: {
     id: 'project.card.percentMapped',
-    defaultMessage: ' Mapped'
+    defaultMessage: ' Mapped',
   },
   percentValidated: {
     id: 'project.card.percentValidated',
-    defaultMessage: ' Validated'
+    defaultMessage: ' Validated',
   },
   projectPriorityURGENT: {
     id: 'project.card.projectPriorityUrgent',
-    defaultMessage: 'Urgent'
+    defaultMessage: 'Urgent',
   },
   projectPriorityHIGH: {
     id: 'project.card.projectPriorityHigh',
-    defaultMessage: 'High'
+    defaultMessage: 'High',
   },
   projectPriorityMEDIUM: {
     id: 'project.card.projectPriorityMedium',
-    defaultMessage: 'Medium'
+    defaultMessage: 'Medium',
   },
   projectPriorityLOW: {
     id: 'project.card.projectPriorityLow',
-    defaultMessage: 'Low'
+    defaultMessage: 'Low',
   },
   dueDateRelativeRemainingDays: {
     id: 'project.card.dueDateLeft',
-    defaultMessage: '{daysLeftHumanize} left'
-  }
+    defaultMessage: '{daysLeftHumanize} left',
+  },
 });

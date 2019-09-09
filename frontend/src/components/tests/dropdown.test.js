@@ -26,11 +26,11 @@ it('dropdown-content is not rendered before the user clicks on the button', () =
   let elementInstance = createTestDropdown([{ label: 'English' }, { label: 'Português' }]);
   expect(() =>
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-1 flex flex-column',
+      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column',
     }),
   ).toThrow(
     new Error(
-      'No instances found with props: {"className":"di tl mt1 ba b--grey-light br1 absolute shadow-1 z-1 flex flex-column"}',
+      'No instances found with props: {"className":"di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column"}',
     ),
   );
 });
@@ -44,7 +44,7 @@ it('dropdown-content show/hide with clicks', () => {
   elementInstance.findByType(CustomButton).props.onClick();
   expect(
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-1 flex flex-column',
+      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column',
     }).type,
   ).toBe('div');
   expect(elementInstance.findAllByType(CheckIcon).length).toBe(1);
@@ -52,11 +52,11 @@ it('dropdown-content show/hide with clicks', () => {
   elementInstance.findByType(CustomButton).props.onClick();
   expect(() =>
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-1 flex flex-column',
+      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column',
     }),
   ).toThrow(
     new Error(
-      'No instances found with props: {"className":"di tl mt1 ba b--grey-light br1 absolute shadow-1 z-1 flex flex-column"}',
+      'No instances found with props: {"className":"di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column"}',
     ),
   );
 });
@@ -70,11 +70,11 @@ it('dropdown-content disappear after click on option', () => {
   // dropdown-content should disappear after selecting an option
   expect(() =>
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-1 flex flex-column',
+      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column',
     }),
   ).toThrow(
     new Error(
-      'No instances found with props: {"className":"di tl mt1 ba b--grey-light br1 absolute shadow-1 z-1 flex flex-column"}',
+      'No instances found with props: {"className":"di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column"}',
     ),
   );
 });
@@ -89,7 +89,7 @@ it('dropdown behaviour with href props', () => {
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-1 flex flex-column',
+      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column',
     }).type,
   ).toBe('div');
   // number of dropdown options should be 3
@@ -123,7 +123,7 @@ it('dropdown behaviour with multi enabled', () => {
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-1 flex flex-column',
+      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column',
     }).type,
   ).toBe('div');
   // number of dropdown options should be 3
