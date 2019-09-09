@@ -892,7 +892,7 @@
                                         </div>
                                         <div ng-show="projectCtrl.project_files.length">
                                                 <h6>{{ 'This project has accompanying files. To load these files, you must use JOSM to edit.' | translate }}</h6>
-                                                <div ng-show="projectCtrl.selectedEditor === 'josm'">
+                                                <div ng-show="projectCtrl.selectedValidationEditor === 'josm'">
                                                 <h6>{{ 'The following files can be loaded into JOSM as separate layers within the task boundary:' | translate }}</h6>
                                                 <ul>
                                                     <li ng-repeat="file in projectCtrl.project_files">
@@ -1013,7 +1013,7 @@
                                         </div>
                                         <div ng-show="projectCtrl.project_files.length">
                                                 <h6>{{ 'This project has accompanying files. To load these files, you must use JOSM to edit.' | translate }}</h6>
-                                                <div ng-show="projectCtrl.selectedEditor === 'josm'">
+                                                <div ng-show="projectCtrl.selectedValidationEditor === 'josm'">
                                                 <h6>{{ 'The following files can be loaded into JOSM as separate layers within the tasks\' boundaries:' | translate }}</h6>
                                                 <ul>
                                                     <li ng-repeat="file in projectCtrl.project_files">
