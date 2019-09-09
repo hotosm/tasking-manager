@@ -604,7 +604,9 @@ class Project(db.Model):
             partial(
                 pyproj.transform,
                 pyproj.Proj(init="EPSG:4326"),
-                pyproj.Proj(proj="aea", lat1=polygon.bounds[1], lat2=polygon.bounds[3]),
+                pyproj.Proj(
+                    proj="aea", lat_1=polygon.bounds[1], lat_2=polygon.bounds[3]
+                ),
             ),
             polygon,
         )
