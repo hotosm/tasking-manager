@@ -1,6 +1,6 @@
 import React from 'react';
-import { Location, Router, globalHistory } from "@reach/router";
-import { QueryParamProvider } from 'use-query-params'
+import { Location, Router, globalHistory } from '@reach/router';
+import { QueryParamProvider } from 'use-query-params';
 
 import './assets/styles/index.scss';
 import { Header } from './components/header';
@@ -20,29 +20,27 @@ function App() {
   return (
     <Location>
       {({ location }) => (
-      <div className="App w-100 base-font">
-        <Header location={location} />
-        <div className="cf w-100 base-font">
-          <QueryParamProvider reachHistory={globalHistory}>
-
-            <Router>
-              <Home path="/" />
+        <div className="App w-100 base-font">
+          <Header location={location} />
+          <div className="cf w-100 base-font">
+            <QueryParamProvider reachHistory={globalHistory}>
+              <Router>
+                <Home path="/" />
                 <ProjectsPage path="contribute">
                   <ProjectsPageIndex path="/" />
                   <MoreFilters path="/filters/*" />
                 </ProjectsPage>
-              <AboutPage path="about" />
-              <Authorized path="authorized" />
-              <Login path="login" />
-              <Welcome path="welcome" />
-              <Settings path="settings" />
-              <NotFound default />
-            </Router>
-
-          </QueryParamProvider>
+                <AboutPage path="about" />
+                <Authorized path="authorized" />
+                <Login path="login" />
+                <Welcome path="welcome" />
+                <Settings path="settings" />
+                <NotFound default />
+              </Router>
+            </QueryParamProvider>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
       )}
     </Location>
   );

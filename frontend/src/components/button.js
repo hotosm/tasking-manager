@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 export function Button({ onClick, children, className }: Object) {
   return (
     <button
@@ -8,13 +7,12 @@ export function Button({ onClick, children, className }: Object) {
       aria-pressed="false"
       focusindex="0"
       className={`${className || ''} br1 f5 bn pointer`}
-      style={{padding: ".75rem 1.5rem"}}
+      style={{ padding: '.75rem 1.5rem' }}
     >
-      { children }
+      {children}
     </button>
   );
 }
-
 
 export function FormSubmitButton({ children, className, disabledClassName, disabled }: Object) {
   return (
@@ -22,15 +20,16 @@ export function FormSubmitButton({ children, className, disabledClassName, disab
       type="submit"
       aria-pressed="false"
       focusindex="0"
-      className={`${disabled ? disabledClassName : className} br1 f5 bn ${disabled ? '' : 'pointer'}`}
-      style={{padding: ".75rem 2.5rem"}}
+      className={`${disabled ? disabledClassName : className} br1 f5 bn ${
+        disabled ? '' : 'pointer'
+      }`}
+      style={{ padding: '.75rem 2.5rem' }}
       disabled={disabled}
     >
-      { children }
+      {children}
     </button>
   );
 }
-
 
 export function CustomButton({ onClick, children, className }: Object) {
   return (
@@ -40,7 +39,7 @@ export function CustomButton({ onClick, children, className }: Object) {
       focusindex="0"
       className={`${className || ''} br1 f5 bn pointer`}
     >
-      { children }
+      {children}
     </button>
   );
 }
