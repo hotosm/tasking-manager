@@ -792,11 +792,6 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
               type: boolean
               description: Set to true if file download is preferred
               default: False
-            - in: query
-              name: abbreviated
-              type: boolean
-              description: Set to true if only state information is desired
-              default: False
         responses:
             200:
                 description: Project found
@@ -813,14 +808,8 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
                 if request.args.get("as_file")
                 else False
             )
-            abbreviated = (
-                strtobool(request.args.get("abbreviated"))
-                if request.args.get("abbreviated")
-                else False
-            )
-
             project_dto = ProjectService.get_project_dto_for_mapper(
-                project_id, request.environ.get("HTTP_ACCEPT_LANGUAGE"), abbreviated
+                project_id, request.environ.get("HTTP_ACCEPT_LANGUAGE"), True
             )
             project_dto = project_dto.to_primitive()
 
@@ -850,87 +839,48 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
 
 
 class ProjectsQueriesNoTasksAPI(Resource):
+    @tm.pm_only()
+    @token_auth.login_required
     def get(self, project_id):
         """
-        Get HOT Project for mapping
+        Retrieves a Tasking-Manager project
         ---
         tags:
-            - projects
+            - project admin
         produces:
             - application/json
         parameters:
             - in: header
-              name: Accept-Language
-              description: Language user is requesting
-              type: string
+              name: Authorization
+              description: Base64 encoded session token
               required: true
-              default: en
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The unique project ID
               required: true
               type: integer
               default: 1
-            - in: query
-              name: as_file
-              type: boolean
-              description: Set to true if file download is preferred
-              default: False
-            - in: query
-              name: abbreviated
-              type: boolean
-              description: Set to true if only state information is desired
-              default: False
         responses:
             200:
                 description: Project found
-            403:
-                description: Forbidden
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: Project not found
             500:
                 description: Internal Server Error
         """
         try:
-            as_file = (
-                strtobool(request.args.get("as_file"))
-                if request.args.get("as_file")
-                else False
-            )
-            abbreviated = (
-                strtobool(request.args.get("abbreviated"))
-                if request.args.get("abbreviated")
-                else False
-            )
-
-            project_dto = ProjectService.get_project_dto_for_mapper(
-                project_id, request.environ.get("HTTP_ACCEPT_LANGUAGE"), abbreviated
-            )
-            project_dto = project_dto.to_primitive()
-
-            if as_file:
-                return send_file(
-                    io.BytesIO(geojson.dumps(project_dto).encode("utf-8")),
-                    mimetype="application/json",
-                    as_attachment=True,
-                    attachment_filename=f"project_{str(project_id)}.json",
-                )
-
-            return project_dto, 200
+            project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
+            return project_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404
-        except ProjectServiceError:
-            return {"Error": "Unable to fetch project"}, 403
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch project"}, 500
-        finally:
-            # this will try to unlock tasks that have been locked too long
-            try:
-                ProjectService.auto_unlock_tasks(project_id)
-            except Exception as e:
-                current_app.logger.critical(str(e))
+            return {"error": error_msg}, 500
 
 
 class ProjectsQueriesAoiAPI(Resource):
