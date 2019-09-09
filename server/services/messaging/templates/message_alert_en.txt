@@ -1,10 +1,10 @@
 Hi [USERNAME]
 
-You have a new message on the HOT Tasking Manager.  Click the link below to view it.
+You have a new message on the Kaart Tasking Manager.  Click the link below to view it.
 
 [PROFILE_LINK]
 
 Please note: You can now opt-out of all automated validation messages by visiting your User Profile and clicking "Edit-Add Contact Details."
 
 Many thanks,
-Humanitarian OpenStreetMap Team
+Kaart
