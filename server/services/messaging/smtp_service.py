@@ -27,7 +27,7 @@ class SMTPService:
         text_template = text_template.replace('[USERNAME]', username)
         text_template = text_template.replace('[VEFIFICATION_LINK]', verification_url)
 
-        subject = 'HOT Tasking Manager - Email Verification'
+        subject = 'Kaart Tasking Manager - Email Verification'
         SMTPService._send_mesage(to_address, subject, html_template, text_template)
 
         return True
@@ -50,7 +50,7 @@ class SMTPService:
         text_template = text_template.replace('[USERNAME]', username)
         text_template = text_template.replace('[PROFILE_LINK]', inbox_url)
 
-        subject = 'You have a new message on the HOT Tasking Manager'
+        subject = 'You have a new message on the Kaart Tasking Manager'
         SMTPService._send_mesage(to_address, subject, html_template, text_template)
 
         return True
