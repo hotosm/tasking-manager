@@ -199,8 +199,8 @@ class MappingService:
                     ET.SubElement(trkseg, 'trkpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
 
                     # Append wpt elements to end of doc
-                    # wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
-                    # root.append(wpt)
+                    wpt = ET.Element('wpt', attrib=dict(lon=str(point[0]), lat=str(point[1])))
+                    root.append(wpt)
 
         xml_gpx = ET.tostring(root, encoding='utf8')
         return xml_gpx
@@ -299,7 +299,6 @@ class MappingService:
             os.makedirs(filedir)
 
         tasks_file = os.path.join(filedir, "{project_id}_tasks.geojson".format(project_id=str(project_id)))
-        current_app.logger.debug(tasks_file)
 
         with open(tasks_file, 'w') as t:
             t.write(str(tasks))
@@ -307,8 +306,7 @@ class MappingService:
         # Convert the geojson features into separate .poly files
         # to use with osmosis
         poly_cmd = './server/tools/ogr2poly.py {file} -p {filedir}/ -f taskId'.format(file=tasks_file, filedir=filedir)
-        current_app.logger.debug(poly_cmd)
-        subprocess.call(poly_cmd, shell=True)
+        subprocess.check_output(poly_cmd, shell=True)
         os.remove(tasks_file)
 
         osm_files = []
@@ -317,7 +315,13 @@ class MappingService:
             task_cmd = './server/tools/osmosis/bin/osmosis  --rx file={xml} enableDateParsing=no --bp completeWays=yes clipIncompleteEntities=true file={task_poly} --wx file={task_xml}'.format(
                     xml=os.path.join(dto.path, dto.file_name),
                     task_poly=os.path.join(filedir, poly),
-                    task_xml=os.path.join(filedir, "task_{task_id}_{file_name}.osm".format(task_id=os.path.splitext(poly)[0], file_name=os.path.splitext(dto.file_name)[0]))
+                    task_xml=os.path.join(
+                        filedir,
+                        "task_{task_id}_{file_name}.osm".format(
+                            task_id=os.path.splitext(poly)[0],
+                            file_name=os.path.splitext(dto.file_name)[0]
+                        )
+                    )
                 )
             osm_files.append(
                 os.path.join(
@@ -327,7 +331,7 @@ class MappingService:
                         file_name=os.path.splitext(dto.file_name)[0])
                     )
                 )
-            subprocess.call(task_cmd, shell=True)
+            subprocess.check_output(task_cmd, shell=True)
             os.remove(os.path.join(filedir, poly))
 
         # Merge the extracted files back together. Used if more than one task is sent in request.

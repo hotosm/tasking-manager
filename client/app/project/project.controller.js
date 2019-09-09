@@ -1404,7 +1404,6 @@
                     vm.isSelectedMappable = true;
                     vm.lockedTaskData = data;
                     vm.lockTime[taskId] = getLastLockedAction(vm.lockedTaskData).actionDate;
-                    vm.isSelectedSplittable = isTaskSplittable(vm.taskVectorLayer.getSource().getFeatures(), data.taskId);
                     formatHistoryComments(vm.selectedTaskData.taskHistory);
                 }, function (error) {
                     onLockError(projectId, error);
@@ -1446,7 +1445,7 @@
         };
 
         /**
-         * Call api to lock currently selected task for validation.  Will update view and map after unlock.
+	 * Call api to lock currently selected task for validation.  Will update view and map after unlock.
          */
         vm.lockSelectedTaskValidation = function () {
             // if(vm.user.isEmailVerified){
