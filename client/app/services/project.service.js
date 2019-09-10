@@ -399,10 +399,10 @@
          */
         function getMapillarySequences(bbox, startDate, endDate, usernames) {
 	    if (usernames) {
-		var url = configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_date=' + startDate + '&end_date=' + endDate + '&usernames=' + usernames
+		var url = configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_time=' + startDate + '&end_time=' + endDate + '&usernames=' + usernames
 	    }
 	    else {
-		var url = configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_date=' + startDate + '&end_date=' + endDate
+		var url = configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_time=' + startDate + '&end_time=' + endDate
 	    }
             return $http({
                 method: 'GET',
