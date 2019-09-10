@@ -25,13 +25,13 @@ class MapillaryTasksAPI(Resource):
               required: true
               type: string
               default: 23.921654915861897,37.87224805696286,23.953491461967605,37.89270203032973
-            - name: start_date
+            - name: start_time
               in: query
               description: The start date of the query
               required: true
               type: string
               default: 2018-01-01
-            - name: end_date
+            - name: end_time
               in: query
               description: The end date of the query
               required: true
@@ -52,7 +52,7 @@ class MapillaryTasksAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            potential_arguments = ['bbox', 'start_date', 'end_date', 'usernames']
+            potential_arguments = ['bbox', 'start_time', 'end_time', 'usernames']
             arguments = {}
             for argument in potential_arguments:
                 try:
