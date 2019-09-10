@@ -22,7 +22,7 @@ module.exports = function(config) {
       'node_modules/openlayers/dist/ol-debug.js',
       'node_modules/ol3-layerswitcher/src/ol3-layerswitcher.js',
       'node_modules/ol3-geocoder/build/ol3-geocoder-debug.js',
-      'node_modules/turf/turf.js',
+      'node_modules/@turf/turf/turf.js',
       'node_modules/ng-file-upload/dist/ng-file-upload.js',
       'node_modules/showdown/dist/showdown.js',
       'node_modules/ng-showdown/dist/ng-showdown.js',
