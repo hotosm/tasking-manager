@@ -111,8 +111,10 @@ export const ProjectNav = props => {
     <header className="bt bb b--tan w-100 ">
       <div className="mt2 mb1 ph2 dib lh-copy w-100 cf">
         <div className="w-90-ns w-100 fl dib">
-          <div className="dib mt2">
-            <DifficultyDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
+          <div className="dib">
+            <div className="mv2 dib">
+              <DifficultyDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
+            </div>
             <nav className="dn dib-l mh1">
               {!props.orgAPIState.isError && !props.orgAPIState.isLoading && (
                 <TagFilterPickerAutocompleteDownshift
