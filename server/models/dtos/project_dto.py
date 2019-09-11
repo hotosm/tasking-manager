@@ -181,6 +181,7 @@ class ProjectDTO(Model):
     campaign_tag = StringType(serialized_name="campaignTag")
     organisation_tag = StringType(serialized_name="organisationTag")
     license_id = IntType(serialized_name="licenseId")
+
     allowed_usernames = ListType(
         StringType(), serialized_name="allowedUsernames", default=[]
     )
@@ -366,6 +367,9 @@ class ProjectSummary(Model):
     campaign_tag = StringType(serialized_name="campaignTag")
     organisation_tag = StringType(serialized_name="organisationTag")
     entities_to_map = StringType(serialized_name="entitiesToMap")
+    mapping_types = ListType(
+        StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
+    )
     changeset_comment = StringType(serialized_name="changesetComment")
     percent_mapped = IntType(serialized_name="percentMapped")
     percent_validated = IntType(serialized_name="percentValidated")
