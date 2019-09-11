@@ -623,6 +623,7 @@ class Project(db.Model):
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map
+        summary.imagery = self.imagery
 
         # Cast MappingType values to related string array
         mapping_types_array = []

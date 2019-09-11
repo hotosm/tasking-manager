@@ -135,7 +135,7 @@ class ProjectDTO(Model):
     project_id = IntType(serialized_name="projectId")
     project_status = StringType(
         required=True,
-        serialized_name="projectStatus",
+        serialized_name="status",
         validators=[is_known_project_status],
         serialize_when_none=False,
     )
@@ -367,7 +367,7 @@ class ProjectSummary(Model):
     project_id = IntType(required=True, serialized_name="projectId")
     area = FloatType(serialized_name="projectArea(in sq.km)")
     name = StringType()
-    author = StringType(serialized_name="createdBy")
+    author = StringType()
     created = DateTimeType()
     due_date = DateTimeType()
     last_updated = DateTimeType(serialized_name="lastUpdated")
@@ -388,6 +388,7 @@ class ProjectSummary(Model):
     validator_level_enforced = BooleanType(serialized_name="validatorLevelEnforced")
     short_description = StringType(serialized_name="shortDescription")
     status = StringType()
+    imagery = StringType()
 
 
 class PMDashboardDTO(Model):
