@@ -480,7 +480,7 @@ class Project(db.Model):
         return stats_dto
 
     def get_project_stats(self) -> ProjectStatsDTO:
-        """ Create Project Summary model for postgis project object"""
+        """ Create Project Stats model for postgis project object"""
         project_stats = ProjectStatsDTO()
         project_stats.project_id = self.id
         project_area_sql = "select ST_Area(geometry, true)/1000000 as area from public.projects where id = :id"
@@ -609,6 +609,12 @@ class Project(db.Model):
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map
+
+        # Cast MappingType values to related string array
+        mapping_types_array = []
+        for mapping_type in self.mapping_types:
+            mapping_types_array.append(MappingTypes(mapping_type).name)
+        summary.mapping_types = mapping_types_array
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
