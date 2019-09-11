@@ -38,12 +38,12 @@ export const ProjectSearchBox = ({
   const clearIconStyleForInputtedText = !fullProjectsQuery.text ? 'dn' : 'red dib-ns';
 
   return (
-    <nav ref={navRef} className={`${className}`}>
+    <nav ref={navRef} className={`${className} mt1`}>
       <form className="relative">
         <div>
           <SearchIcon
             onClick={() => inputRef.current.focus()}
-            className={`fixed ${iconStyleForInputtedText} pl2 pt2`}
+            className={`absolute ${iconStyleForInputtedText} pl2 pt2`}
           />
         </div>
         <input
