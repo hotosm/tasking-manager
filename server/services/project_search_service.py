@@ -72,6 +72,7 @@ class ProjectSearchService:
                 Project.total_tasks,
                 Project.last_updated,
                 Project.due_date,
+                Project.country,
                 func.count(distinct(TaskHistory.user_id)).label("total_contributors"),
             )
             .outerjoin(TaskHistory, TaskHistory.project_id == Project.id)
@@ -113,6 +114,7 @@ class ProjectSearchService:
         list_dto.status = ProjectStatus(project.status).name
         list_dto.active_mappers = Project.get_active_mappers(project.id)
         list_dto.total_contributors = project.total_contributors
+        list_dto.country = project.country
 
         return list_dto
 
@@ -201,6 +203,15 @@ class ProjectSearchService:
                     or_search, postgresql_regconfig="english"
                 )
             )
+
+        if search_dto.country:
+            # Unnest country column array.
+            sq = Project.query.with_entities(
+                Project.id, func.unnest(Project.country).label("country")
+            ).subquery()
+            query = query.filter(
+                sq.c.country.ilike("%{}%".format(search_dto.country))
+            ).filter(Project.id == sq.c.id)
 
         order_by = search_dto.order_by
         if search_dto.order_by_type == "DESC":
