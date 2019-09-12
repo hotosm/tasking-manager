@@ -645,8 +645,7 @@ class Project(db.Model):
         project_info = ProjectInfo.get_dto_for_locale(
             self.id, preferred_locale, self.default_locale
         )
-        summary.name = project_info.name
-        summary.short_description = project_info.short_description
+        summary.project_info = project_info
 
         return summary
 
@@ -709,6 +708,27 @@ class Project(db.Model):
         base_dto.author = User().get_by_id(self.author_id).username
         base_dto.active_mappers = Project.get_active_mappers(self.id)
         base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
+        base_dto.percent_mapped = Project.calculate_tasks_percent(
+            "mapped",
+            self.total_tasks,
+            self.tasks_mapped,
+            self.tasks_validated,
+            self.tasks_bad_imagery,
+        )
+        base_dto.percent_validated = Project.calculate_tasks_percent(
+            "validated",
+            self.total_tasks,
+            self.tasks_mapped,
+            self.tasks_validated,
+            self.tasks_bad_imagery,
+        )
+        base_dto.percent_bad_imagery = Project.calculate_tasks_percent(
+            "bad_imagery",
+            self.total_tasks,
+            self.tasks_mapped,
+            self.tasks_validated,
+            self.tasks_bad_imagery,
+        )
 
         if self.private:
             # If project is private it should have a list of allowed users

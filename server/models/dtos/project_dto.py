@@ -190,6 +190,9 @@ class ProjectDTO(Model):
     last_updated = DateTimeType(serialized_name="lastUpdated")
     author = StringType()
     active_mappers = IntType(serialized_name="activeMappers")
+    percent_mapped = IntType(serialized_name="percentMapped")
+    percent_validated = IntType(serialized_name="percentValidated")
+    percent_bad_imagery = IntType(serialized_name="percentBadImagery")
     task_creation_mode = StringType(
         required=True,
         serialized_name="taskCreationMode",
@@ -358,10 +361,9 @@ class ProjectSummary(Model):
 
     project_id = IntType(required=True, serialized_name="projectId")
     area = FloatType(serialized_name="projectArea(in sq.km)")
-    name = StringType()
     author = StringType()
     created = DateTimeType()
-    due_date = DateTimeType()
+    due_date = DateTimeType(serialized_name="dueDate")
     last_updated = DateTimeType(serialized_name="lastUpdated")
     priority = StringType(serialized_name="projectPriority")
     campaign_tag = StringType(serialized_name="campaignTag")
@@ -378,7 +380,9 @@ class ProjectSummary(Model):
     mapper_level = StringType(serialized_name="mapperLevel")
     mapper_level_enforced = BooleanType(serialized_name="mapperLevelEnforced")
     validator_level_enforced = BooleanType(serialized_name="validatorLevelEnforced")
-    short_description = StringType(serialized_name="shortDescription")
+    project_info = ModelType(
+        ProjectInfoDTO, serialized_name="projectInfo", serialize_when_none=False
+    )
     status = StringType()
     imagery = StringType()
 
