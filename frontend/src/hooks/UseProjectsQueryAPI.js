@@ -49,6 +49,7 @@ const remapParamsToAPI = param => {
     difficulty: 'mapperLevel',
     campaign: 'campaignTag',
     organisation: 'organisationTag',
+    location: 'country',
     types: 'mappingTypes',
     text: 'textSearch',
     page: 'page',
