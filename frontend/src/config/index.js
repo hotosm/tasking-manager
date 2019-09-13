@@ -22,3 +22,6 @@ export const ORG_FB = process.env.REACT_APP_ORG_FB || 'https://www.facebook.com'
 export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || 'https://www.instagram.com';
 export const ORG_YOUTUBE = process.env.REACT_APP_ORG_YOUTUBE || 'https://www.youtube.com';
 export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.com/';
+
+export const CUSTOM_ID_EDITOR_INSTANCE_NAME = process.env.REACT_APP_CUSTOM_ID_EDITOR_INSTANCE_NAME;
+export const CUSTOM_ID_EDITOR_INSTANCE_HOST = process.env.REACT_APP_CUSTOM_ID_EDITOR_INSTANCE_HOST;

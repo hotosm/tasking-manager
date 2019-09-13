@@ -23,7 +23,7 @@ export default defineMessages({
   },
   mappingLevelALL: {
     id: 'project.level.all',
-    defaultMessage: 'All',
+    defaultMessage: 'All levels',
   },
   mappingLevelADVANCED: {
     id: 'mapping.level.advanced',
