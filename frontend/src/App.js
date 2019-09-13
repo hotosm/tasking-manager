@@ -13,6 +13,7 @@ import { Login } from './views/login';
 import { Welcome } from './views/welcome';
 import { Settings } from './views/settings';
 import { NotFound } from './views/notFound';
+import { SelectTaskToMap, SelectTaskToValidate } from './views/taskSelection';
 
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
  *  create special sub-router for Projects page and wrap it only around that */
@@ -35,11 +36,13 @@ function App() {
                 <Login path="login" />
                 <Welcome path="welcome" />
                 <Settings path="settings" />
+                <SelectTaskToMap path="projects/:id/map" />
+                <SelectTaskToValidate path="projects/:id/validate" />
                 <NotFound default />
               </Router>
             </QueryParamProvider>
           </div>
-          <Footer />
+          <Footer location={location} />
         </div>
       )}
     </Location>
