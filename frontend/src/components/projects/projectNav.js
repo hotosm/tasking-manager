@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import messages from './messages';
 import { MappingLevelMessage } from '../mappingLevel';
-import { CheckIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 
 import { useExploreProjectsQueryParams, stringify } from '../../hooks/UseProjectsQueryAPI';
@@ -56,23 +55,15 @@ const DifficultyDropdown = props => {
           'pushIn',
         );
       }}
-      value={'ALL'}
+      value={props.fullProjectsQuery.difficulty || []}
       options={[
-        { label: <MappingLevelMessage level="ALL" className="" />, value: undefined },
+        { label: <MappingLevelMessage level="ALL" className="" />, value: 'ALL' },
         { label: <MappingLevelMessage level="BEGINNER" className="" />, value: 'BEGINNER' },
         { label: <MappingLevelMessage level="INTERMEDIATE" className="" />, value: 'INTERMEDIATE' },
         { label: <MappingLevelMessage level="ADVANCED" className="" />, value: 'ADVANCED' },
       ]}
       display={
-        <>
           <FormattedMessage {...messages.mappingDifficulty} />
-          {props.fullProjectsQuery.difficulty && (
-            <span>
-              &nbsp;
-              <CheckIcon className="red" />
-            </span>
-          )}
-        </>
       }
       className={'ba b--grey-light bg-white mr1 f6 v-mid dn dib-ns pv1'}
     />

@@ -72,8 +72,8 @@ class Header extends React.Component {
       : { className: this.linkCombo };
   };
   userLinks = [
-    { label: <FormattedMessage {...messages.settings} />, url: 'settings' },
-    { label: <FormattedMessage {...messages.logout} />, url: 'logout' },
+    { label: <FormattedMessage {...messages.settings} />, url: '/settings' },
+    { label: <FormattedMessage {...messages.logout} />, url: '/logout' },
   ];
 
   renderMenuItems() {
@@ -114,7 +114,7 @@ class Header extends React.Component {
         {this.props.username && (
           <>
             <p>
-              <Link to={'settings'} className={this.linkCombo}>
+              <Link to={'/settings'} className={this.linkCombo}>
                 <FormattedMessage {...messages.settings} />
               </Link>
             </p>
@@ -150,7 +150,7 @@ class Header extends React.Component {
 
   onUserMenuSelect = arr => {
     if (arr.length === 1) {
-      if (arr[0].url === 'logout') {
+      if (arr[0].url === '/logout') {
         this.props.logout();
       } else {
         console.log(this.props.push);

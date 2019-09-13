@@ -8,7 +8,7 @@ import { MappingLevelMessage } from '../mappingLevel';
 import messages from './messages';
 import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
 
-function PriorityBox({ priority }: Object) {
+export function PriorityBox({ priority, extraClasses }: Object) {
   let color = 'blue-grey';
   let borderColor = 'b--grey';
   if (priority === 'URGENT') {
@@ -21,7 +21,7 @@ function PriorityBox({ priority }: Object) {
     ''
   );
   return (
-    <div className={`pa1 fr w-33 tc br1 mt3 f7 ttu ba ${borderColor} ${color}`}>{translated}</div>
+    <div className={`tc br1 f7 ttu ba ${borderColor} ${color} ${extraClasses}`}>{translated}</div>
   );
 }
 
@@ -101,7 +101,9 @@ export function ProjectCard({
     <Link className="" to={`/projects/${projectId}`}>
       <article className={`fl ${cardWidthClass} base-font w-50-m w-100 mb3 ph2 blue-dark mw5`}>
         <div className="pv3 ph3 ba br1 b--grey-light shadow-hover ">
-          <PriorityBox priority={priority} />
+          <div className="mt3 w-33 fr">
+            <PriorityBox priority={priority} extraClasses={'pv1 ph2'} />
+          </div>
           <div className="w-50 red dib">
             <ProjectOrgLogo organisationTag={organisationTag} />
           </div>

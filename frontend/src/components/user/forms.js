@@ -58,13 +58,13 @@ class UserInformationForm extends React.Component {
             return (
               <form onSubmit={handleSubmit} className="blue-grey">
                 <fieldset className="bn" disabled={submitting || !this.props.userDetails.username}>
-                  <div>
+                  <div className="cf">
                     <label className={labelClasses}>
                       <FormattedMessage {...messages.name} />
                     </label>
-                    <Field name="name" component="input" className={fieldClasses} />
+                    <Field name="name" component="input" type="text" className={fieldClasses} />
                   </div>
-                  <div>
+                  <div className="cf">
                     <label className={labelClasses}>
                       <FormattedMessage {...messages.email} />
                     </label>
@@ -81,32 +81,36 @@ class UserInformationForm extends React.Component {
                       <label className={labelClasses}>
                         <FormattedMessage {...messages.city} />
                       </label>
-                      <Field name="city" component="input" className={fieldClasses} />
+                      <Field name="city" component="input" type="text" className={fieldClasses} />
                     </div>
                     <div className="w-100 w-50-ns fl pl3-ns">
                       <label className={labelClasses}>
                         <FormattedMessage {...messages.country} />
                       </label>
-                      <Field name="country" component="input" className={fieldClasses} />
+                      <Field name="country" component="input" type="text" className={fieldClasses} />
                     </div>
                   </div>
-                  <div>
-                    <label className={labelClasses}>
-                      <FormattedMessage {...messages.slackUsername} />
-                    </label>
-                    <Field name="slackId" component="input" className={fieldClasses} />
+                  <div className="cf pt3">
+                    <div className="w-100 w-50-ns fl pr3-ns">
+                      <label className={labelClasses}>
+                        <FormattedMessage {...messages.slackUsername} />
+                      </label>
+                      <Field name="slackId" component="input" type="text" className={fieldClasses} />
+                    </div>
+                    <div className="w-100 w-50-ns fl pl3-ns">
+                      <label className={labelClasses}>Twitter</label>
+                      <Field name="twitterId" component="input" type="text" className={fieldClasses} />
+                    </div>
                   </div>
-                  <div>
-                    <label className={labelClasses}>Twitter</label>
-                    <Field name="twitterId" component="input" className={fieldClasses} />
-                  </div>
-                  <div>
-                    <label className={labelClasses}>Facebook</label>
-                    <Field name="facebookId" component="input" className={fieldClasses} />
-                  </div>
-                  <div>
-                    <label className={labelClasses}>Linkedin</label>
-                    <Field name="linkedinId" component="input" className={fieldClasses} />
+                  <div className="cf">
+                    <div className="w-100 w-50-ns fl pr3-ns">
+                      <label className={labelClasses}>Facebook</label>
+                      <Field name="facebookId" component="input" type="text" className={fieldClasses} />
+                    </div>
+                    <div className="w-100 w-50-ns fl pl3-ns">
+                      <label className={labelClasses}>Linkedin</label>
+                      <Field name="linkedinId" component="input" type="text" className={fieldClasses} />
+                    </div>
                   </div>
                   <div className="pt2">
                     <FormSubmitButton
