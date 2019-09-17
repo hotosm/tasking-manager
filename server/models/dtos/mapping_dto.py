@@ -62,6 +62,15 @@ class TaskHistoryDTO(Model):
     issues = ListType(ModelType(TaskMappingIssueDTO))
 
 
+class TaskStatusDTO(Model):
+    """Describes a DTO for the current status of the task"""
+
+    task_id = IntType(serialized_name="taskId")
+    task_status = StringType(serialized_name="taskStatus")
+    action_date = DateTimeType(serialized_name="actionDate")
+    action_by = StringType(serialized_name="actionBy", serialize_when_none=False)
+
+
 class TaskDTO(Model):
     """ Describes a Task DTO """
 
