@@ -40,7 +40,7 @@ function TaskItem({data, projectId, selectTask, selected=[]}: Object) {
             <span className="blue-grey">
             <FormattedMessage {...messages.taskLastUpdate} values={{user: <span className="b blue-grey">{data.actionBy}</span>}} />
             { ' ' }
-            <FormattedRelative value={data.actionDate} />
+            <FormattedRelative value={data.actionDate} title={data.actionDate} />
             </span>
           </>
         }
