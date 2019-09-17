@@ -135,7 +135,10 @@ def add_api_endpoints(app):
         ProjectsQueriesAoiAPI,
         ProjectsQueriesFeaturedAPI,
     )
-    from server.api.projects.activities import ProjectsActivitiesAPI
+    from server.api.projects.activities import (
+        ProjectsActivitiesAPI,
+        ProjectsLastActivitiesAPI,
+    )
     from server.api.projects.contributions import (
         ProjectsContributionsAPI,
         ProjectsContributionsQueriesDayAPI,
@@ -276,6 +279,10 @@ def add_api_endpoints(app):
     # Projects' addtional resources
     api.add_resource(
         ProjectsActivitiesAPI, "/api/v2/projects/<int:project_id>/activities/"
+    )
+    api.add_resource(
+        ProjectsLastActivitiesAPI,
+        "/api/v2/projects/<int:project_id>/activities/latest/",
     )
     api.add_resource(
         ProjectsContributionsAPI, "/api/v2/projects/<int:project_id>/contributions/"

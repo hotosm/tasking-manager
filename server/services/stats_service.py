@@ -7,7 +7,9 @@ from server.models.dtos.stats_dto import (
     UserContribution,
     Pagination,
     TaskHistoryDTO,
+    TaskStatusDTO,
     ProjectActivityDTO,
+    ProjectLastActivityDTO,
     HomePageStatsDTO,
     OrganizationStatsDTO,
     CampaignStatsDTO,
@@ -122,7 +124,7 @@ class StatsService:
         activity_dto = ProjectActivityDTO()
         for item in results.items:
             history = TaskHistoryDTO()
-            history.history_id = item.id
+            history.task_id = item.id
             history.task_id = item.task_id
             history.action = item.action
             history.action_text = item.action_text
@@ -132,6 +134,46 @@ class StatsService:
 
         activity_dto.pagination = Pagination(results)
         return activity_dto
+
+    @staticmethod
+    def get_last_activity(project_id: int) -> ProjectLastActivityDTO:
+        """ Gets the last activity for a project's tasks """
+
+        results = (
+            db.session.query(
+                Task.id,
+                Task.project_id,
+                Task.task_status,
+                Task.locked_by,
+                Task.mapped_by,
+                Task.validated_by,
+            )
+            .filter(Task.project_id == project_id)
+            .order_by(Task.id.asc())
+        )
+
+        last_activity_dto = ProjectLastActivityDTO()
+
+        for item in results:
+            latest = TaskStatusDTO()
+            latest.task_id = item.id
+            latest.task_status = TaskStatus(item.task_status).name
+            latest_activity = (
+                db.session.query(TaskHistory.action_date, User.username)
+                .join(User)
+                .filter(
+                    TaskHistory.task_id == item.id,
+                    TaskHistory.project_id == project_id,
+                    User.id == TaskHistory.user_id,
+                )
+                .order_by(TaskHistory.id.desc())
+                .first()
+            )
+            latest.action_date = latest_activity[0]
+            latest.action_by = latest_activity[1]
+            last_activity_dto.activity.append(latest)
+
+        return last_activity_dto
 
     @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:

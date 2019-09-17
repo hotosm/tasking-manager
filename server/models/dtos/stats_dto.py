@@ -1,7 +1,7 @@
 from schematics import Model
 from schematics.types import StringType, IntType, FloatType, BooleanType
 from schematics.types.compound import ListType, ModelType
-from server.models.dtos.mapping_dto import TaskHistoryDTO
+from server.models.dtos.mapping_dto import TaskHistoryDTO, TaskStatusDTO
 
 
 class UserContribution(Model):
@@ -59,6 +59,16 @@ class ProjectActivityDTO(Model):
 
     pagination = ModelType(Pagination)
     activity = ListType(ModelType(TaskHistoryDTO))
+
+
+class ProjectLastActivityDTO(Model):
+    """ DTO to hold latest status from project activity """
+
+    def __init__(self):
+        super().__init__()
+        self.activity = []
+
+    activity = ListType(ModelType(TaskStatusDTO))
 
 
 class OrganizationStatsDTO(Model):
