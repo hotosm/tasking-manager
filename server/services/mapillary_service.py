@@ -33,7 +33,11 @@ def fetch(url, session):
                 return response
 
 
-async def run(urls, features):
+async def run(urls, features, old_urls = None):
+    new_urls = []
+    if old_urls is None:
+        old_urls = []
+        old_urls.extend(urls)
     with ThreadPoolExecutor(max_workers=3) as executor:
         with requests.Session() as session:
             loop = asyncio.get_event_loop()
@@ -48,12 +52,21 @@ async def run(urls, features):
             ]
 
             for response in await asyncio.gather(*tasks):
+                try:
+                    next_url = response.links['next']['url']
+                    if next_url not in old_urls:
+                        new_urls.append(next_url)
+                        old_urls.append(next_url)
+                except KeyError as e:
+                    pass
                 json_response = response.json()
                 if 'features' in json_response:
                     features.extend(json_response['features'])
                 else:
                     current_app.logger.critical(f'No features for {response.url}:\r\n{json_response}')
                 pass
+    if new_urls:
+        await run(new_urls, features, old_urls = old_urls)
 
 
 class MapillaryService:
