@@ -3,11 +3,11 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 
-export default function ProjectProgressBar({ percentMapped, percentValidated }: Object) {
+export default function ProjectProgressBar({ percentMapped, percentValidated, className }: Object) {
   /* tooltip component credit: https://codepen.io/syndicatefx/pen/QVPbJg */
   return (
     <>
-      <div className="cf db">
+      <div className={`cf db ${className}`}>
         <div className="relative">
           <div
             className="absolute bg-blue-grey br-pill hhalf hide-child"
