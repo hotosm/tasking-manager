@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { ProjectNav } from '../components/projects/projectNav';
 import { MoreFiltersForm } from '../components/projects/moreFiltersForm';
+import { ProjectDetail } from '../components/projectDetail/index';
 
 import {
   useProjectsQueryAPI,
@@ -10,6 +11,8 @@ import {
 } from '../hooks/UseProjectsQueryAPI';
 import { useTagAPI } from '../hooks/UseTagAPI';
 import useForceUpdate from '../hooks/UseForceUpdate';
+
+import { useFetch } from '../hooks/UseFetch';
 
 import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
 import { ProjectSearchResults } from '../components/projects/projectSearchResults';
@@ -92,5 +95,40 @@ export const MoreFilters = props => {
         className={rightpanelShadowDivStyle}
       ></div>
     </>
+  );
+};
+
+export const ProjectDetailPage = props => {
+  const userPreferences = useSelector(state => state.preferences);
+  const Error = ({ error }) => <span>Error:{error.message}</span>;
+
+  // replace by queries/summary/ soon
+  const [visualError, visualLoading, visualData] = useFetch(
+    `projects/${props.id}/contributions/queries/day/`,
+  );
+  const [error, loading, data] = useFetch(`projects/${props.id}/`);
+  const [tasksError, tasksLoading, tasks] = useFetch(`projects/${props.id}/tasks/`);
+  const [totalMappersError, totalMappersLoading, totalMappers] = useFetch(
+    `projects/${props.id}/statistics/`,
+  );
+
+  if (error) return <Error error={error} />;
+  if (visualError) return <Error error={visualError} />;
+
+  return (
+    <ProjectDetail
+      project={data}
+      projectLoading={loading}
+      userPreferences={userPreferences}
+      percentDoneVisData={visualData}
+      percentDoneVisLoading={visualLoading}
+      tasksError={tasksError}
+      tasks={tasks}
+      tasksLoading={tasksLoading}
+      totalMappersError={totalMappersError}
+      totalMappersLoading={totalMappersLoading}
+      totalMappers={totalMappers}
+      type="detail"
+    />
   );
 };
