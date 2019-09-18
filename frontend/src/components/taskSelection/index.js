@@ -10,8 +10,9 @@ import { PriorityBox } from '../projectcard/projectCard';
 import { TasksMap } from './map.js';
 import { TaskSelectionFooter } from './footer';
 import { TaskList } from './taskList';
+import { htmlFromMarkdown } from '../projectDetail/htmlFromMarkdown';
 
-function HeaderLine({author, projectId, priority}: Object) {
+export function HeaderLine({author, projectId, priority}: Object) {
   const userLink = (
     <Link to={`/users/${author}`} className="link blue-dark underline">
       {author}
@@ -40,6 +41,8 @@ export function TaskSelection({project, type, loading}: Object) {
   const defaultEditor = useSelector(state => state.preferences.default_editor);
   const [selected, setSelectedTasks] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const htmlInstructions =
+    project.projectInfo && htmlFromMarkdown(project.projectInfo.instructions);
 
   function selectTask(selection, status=null) {
     if (typeof(selection) === 'object') {
@@ -97,7 +100,7 @@ export function TaskSelection({project, type, loading}: Object) {
                   {activeSection === 'tasks' ? (
                     <TaskList projectId={project.projectId} selectTask={selectTask} selected={selected} />
                   ) : (
-                    <p>{project.projectInfo.instructions}</p>
+                    <p dangerouslySetInnerHTML={htmlInstructions} />
                   )}
                 </div>
               </div>
