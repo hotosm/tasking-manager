@@ -1,9 +1,37 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { SearchIcon, CloseIcon } from '../svgIcons';
+import { useProjectAutocompleteAPI } from '../../hooks/UseProjectAutocompleteAPI';
 
-// import onClickOutside from 'react-click-outside';
 import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 /* via https://github.com/Pomax/react-onclickoutside/issues/310 b/c of ref problems with onClickOutside */
+
+const AutocompleteNav = ({options, setQuerySearch}) => {
+  const [highlightedIndex, setHighlightedIndex] = useState(false);
+  const menuStylesSelect = {
+    maxHeight: '600px',
+    overflowY: 'auto',
+    position: 'absolute',
+    margin: 0,
+    borderTop: 0,
+    zIndex: 3,
+    background: 'white',
+  };
+
+  return (
+    <ul className={`list pl0 ml0 center mw5 br3`} style={menuStylesSelect}>
+            {options.length>0  && options.map((option, index) => (
+              <li
+                className={`ph3 pv2 bb b--light-silver ${highlightedIndex === option.projectId ? 'bg-tan' : ''}`}
+                key={`${option.projectId}${index}`}
+                onMouseEnter={() => setHighlightedIndex(option.projectId)}
+                onClick={() => setQuerySearch(["#",option.projectId].join(""))}
+              >
+                {option.name}
+              </li>
+            ))}
+        </ul>
+  );
+}
 
 export const ProjectSearchBox = ({
   fullProjectsQuery,
@@ -32,14 +60,22 @@ export const ProjectSearchBox = ({
       ),
     [fullProjectsQuery, setQuery],
   );
+  
+  const onKeyPressPreventEnter = event => {
+    if (event.which === 13 /* Enter */) {
+      event.preventDefault();
+    }
+  }
 
   const isFocusMobile = isMobile && isFocus;
   const iconStyleForInputtedText = !fullProjectsQuery.text ? 'grey-light' : 'red';
   const clearIconStyleForInputtedText = !fullProjectsQuery.text ? 'dn' : 'red dib-ns';
-
+  
+  const [autocompleteResults] = useProjectAutocompleteAPI(queryParamText)
+  
   return (
     <nav ref={navRef} className={`${className} mt1`}>
-      <form className="relative">
+      <form className="relative" onKeyPress={onKeyPressPreventEnter}>
         <div>
           <SearchIcon
             onClick={() => inputRef.current.focus()}
@@ -54,6 +90,10 @@ export const ProjectSearchBox = ({
           onFocus={() => setFocus(true)}
           onChange={event => {
             const value = event.target.value;
+            if (event.target.value === "") {
+              /* hide the popup when last character is deleted */
+              setFocus(false);
+            }
             setQuerySearch(value);
           }}
           placeholder="Search Projects"
@@ -75,6 +115,7 @@ export const ProjectSearchBox = ({
             !isFocusMobile ? 'pr2 right-0 dn ' : 'pr2 right-0'
           }`}
         />
+       {isFocus && <AutocompleteNav options={autocompleteResults.projects} setQuerySearch={setQuerySearch}/>}
       </form>
     </nav>
   );
