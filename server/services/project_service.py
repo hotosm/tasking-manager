@@ -82,8 +82,14 @@ class ProjectService:
         cumulative_mapped = 0
         cumulative_validated = 0
         for date in dates:
-            dto = ProjectContribDTO({"date": str(date), "mapped": 0, "validated": 0,
-                                     "total_tasks": project.total_tasks})
+            dto = ProjectContribDTO(
+                {
+                    "date": str(date),
+                    "mapped": 0,
+                    "validated": 0,
+                    "total_tasks": project.total_tasks,
+                }
+            )
             values = [(s[0], s[2]) for s in stats if date == s[1]]
             for val in values:
                 if val[0] == TaskAction.LOCKED_FOR_MAPPING.name:

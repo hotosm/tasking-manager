@@ -56,6 +56,7 @@ const frameProps = {
         return e.getMonth() + 1 + '/' + e.getDate() + year;
       },
       label: { name: 'Date', locationDistance: 50 },
+      ticks: 10
     },
   ],
 };
