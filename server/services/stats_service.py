@@ -169,8 +169,9 @@ class StatsService:
                 .order_by(TaskHistory.id.desc())
                 .first()
             )
-            latest.action_date = latest_activity[0]
-            latest.action_by = latest_activity[1]
+            if latest_activity:
+                latest.action_date = latest_activity[0]
+                latest.action_by = latest_activity[1]
             last_activity_dto.activity.append(latest)
 
         return last_activity_dto
