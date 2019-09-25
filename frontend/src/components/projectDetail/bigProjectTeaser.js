@@ -11,7 +11,7 @@ export function BigProjectTeaser({
   }: Object) {
     /* outerDivStyles must have f6 even if sub-divs have f7 to fix grid issues*/
     const outerDivStyles = 'f6 tl blue-grey truncate mb2';
-  
+
     return (
       <div className="cf">
         <div className={`fl ${outerDivStyles} ${className}`}>
@@ -19,7 +19,7 @@ export function BigProjectTeaser({
             <FormattedMessage
               {...messages['projectTotalContributors']}
               values={{
-                number: <span className={`blue-grey b ${bigFont}`}>{totalContributors || 0}</span>,
+                number: <span className={`blue-dark b ${bigFont}`}>{totalContributors || 0}</span>,
               }}
             />
           </span>
