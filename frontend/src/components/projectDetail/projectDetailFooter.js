@@ -8,25 +8,35 @@ import messages from './messages';
 
 export const ProjectDetailFooter = props => {
   return (
-    <div className={`${props.className} bt bb b--grey-light pl4`}>
+    <div className={`${props.className} cf bt bb b--grey-light pl4`}>
       {/* TODO ADD ANCHORS */}
-      <div className="dib-l dn">
-        Overview &#183; How to Contribute &#183; Contributions &#183; Related Projects
+      <div className="dib-l fl w-60 dn pt3 mt2">
+        <FormattedMessage {...messages.overview} />
+        <span className="ph2">&#183;</span>
+        <FormattedMessage {...messages.howToContribute} />
+        <span className="ph2">&#183;</span>
+        <FormattedMessage {...messages.questionsAndComments} />
+        <span className="ph2">&#183;</span>
+        <FormattedMessage {...messages.contributions} />
+        <span className="ph2">&#183;</span>
+        <FormattedMessage {...messages.relatedProjects} />
       </div>
-      <div className="dib mh1 pa2 pb3">
-        <ShareIcon className="pt3 pr2" />
-        <FormattedMessage {...messages.share} />
-      </div>
-      <div className="dib mh1 pa2 pb3">
-        <FlagIcon className="pt3 pr2" />
-        <FormattedMessage {...messages.addToFavorites} />
-      </div>
-      <div className="dib fr">
-        <Link to={`./map`} className="">
-          <Button className="white bg-red w5 h3">
-            <FormattedMessage {...messages.contribute} />
-          </Button>
-        </Link>
+      <div className="w-40 fr">
+        <div className="w-20 fl tc dib pt2 pb3">
+          <ShareIcon className="pt3 pr2" />
+          <FormattedMessage {...messages.share} />
+        </div>
+        <div className="w-40 fl tc dib pt2 pb3">
+          <FlagIcon className="pt3 pr2" />
+          <FormattedMessage {...messages.addToFavorites} />
+        </div>
+        <div className="dib w-40 tr fr">
+          <Link to={`./map`} className="">
+            <Button className="white bg-red w5 h3">
+              <FormattedMessage {...messages.contribute} />
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );

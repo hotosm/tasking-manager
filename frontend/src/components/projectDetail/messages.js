@@ -136,4 +136,24 @@ export default defineMessages({
     id: 'project.detail.cards.submityourwork.description',
     defaultMessage: "Submitting your work is cruicial. If you don't do it, it will not be merged into the project."
   },
+  overview: {
+    id: 'project.detail.sections.overview',
+    defaultMessage: 'Overview'
+  },
+  howToContribute: {
+    id: 'project.detail.sections.howToContribute',
+    defaultMessage: 'How to contribute'
+  },
+  questionsAndComments: {
+    id: 'project.detail.sections.questionsAndComments',
+    defaultMessage: 'Questions & Comments'
+  },
+  contributions: {
+    id: 'project.detail.sections.contributions',
+    defaultMessage: 'Contributions'
+  },
+  relatedProjects: {
+    id: 'project.detail.sections.relatedProjects',
+    defaultMessage: 'Related projects'
+  },
 });

@@ -88,7 +88,7 @@ export const ProjectDetailLeft = props => {
 
   return (
     <div className={`${props.className}`}>
-      <div className="">
+      <div className="h-75">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={3}
@@ -118,7 +118,7 @@ export const ProjectDetailLeft = props => {
         </ReactPlaceholder>
       </div>
 
-      <div className="cf pr4 pb3 pt4">
+      <div className="cf pr4 pb3 pt1">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={3}
@@ -134,7 +134,7 @@ export const ProjectDetailLeft = props => {
           />
           <ReactPlaceholder rows={1} ready={props.totalMappers.totalMappers}>
             <BigProjectTeaser
-              className={`pt4`}
+              className="pt3"
               totalContributors={props.totalMappers.totalMappers || 0}
               lastUpdated={props.project.lastUpdated}
               littleFont="f5"
@@ -142,14 +142,14 @@ export const ProjectDetailLeft = props => {
             />
           </ReactPlaceholder>
           <ProjectProgressBar
-            className={`pb2`}
+            className="pb2"
             percentMapped={props.project.percentMapped || 50}
             percentValidated={props.project.percentValidated || 25}
           />
           <div className="cf pt2 h2">
             <MappingLevelMessage
               level={props.project.mapperLevel}
-              className="fl f5 mt1 ttc fw5 blue-grey"
+              className="fl f5 mt1 ttc fw5 blue-dark"
             />
             <DueDateBox dueDate={props.project.dueDate} />
           </div>
@@ -166,7 +166,7 @@ export const ProjectDetail = props => {
     <div className={`${props.className}`}>
       <div className="bb b--grey-light">
         <div className="cf">
-          <ProjectDetailLeft {...props} className={`w-60 w-60-ns fl ph4 pv3`} />
+          <ProjectDetailLeft {...props} className={`w-60 w-60-ns fl ph4 pv3 vh-75`} />
 
           <div className="w-100 w-40-ns fl">
             <ReactPlaceholder
@@ -187,6 +187,7 @@ export const ProjectDetail = props => {
       <h3 className={`${h2Classes}`}>How to Contribute</h3>
       <NewMapperFlow />
 
+      <h3 className={`${h2Classes} mb6 `}>Question & Comments</h3>
       <h3 className={`${h2Classes} mb6 `}>Contributors</h3>
 
       <h3 className={`${h2Classes}`}>Contributions Timeline</h3>
