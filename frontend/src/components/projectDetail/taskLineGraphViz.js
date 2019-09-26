@@ -1,8 +1,12 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import XYFrame from 'semiotic/lib/XYFrame';
 import { scaleTime } from 'd3-scale';
 import { curveStepAfter } from 'd3-shape';
 import { group } from 'd3-array';
+
+import messages from './messages';
+
 const theme = [
   '#ac58e5',
   '#E0488B',
@@ -64,8 +68,10 @@ const frameProps = {
 export default props => {
   const inData = props.percentDoneVisData && props.percentDoneVisData.stats;
 
-  if (!inData) {
-    return null;
+  if (!inData || inData.length === 0) {
+    return <div className="f5 red pb4 pt2 ph4">
+        <FormattedMessage {...messages.timelineNotAvailable}/>
+    </div>;
   }
   /* separate validated and mapped into their own leaf objects: */
   const prepTaskDays = group(

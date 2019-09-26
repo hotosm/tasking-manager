@@ -93,7 +93,7 @@ export const ProjectDetailLeft = props => {
           showLoadingAnimation={true}
           rows={3}
           delay={500}
-          ready={props.project.projectId}
+          ready={typeof(props.project.projectId) === 'number'}
         >
           <HeaderLine
             author={props.project.author}
@@ -123,7 +123,7 @@ export const ProjectDetailLeft = props => {
           showLoadingAnimation={true}
           rows={3}
           delay={500}
-          ready={props.project.projectId}
+          ready={typeof(props.project.projectId) === 'number'}
         >
           <ProjectDetailTypeBar
             type={props.type}
@@ -132,7 +132,7 @@ export const ProjectDetailLeft = props => {
             editors={props.project.mappingEditors}
             defaultUserEditor={props.userPreferences.default_editor}
           />
-          <ReactPlaceholder rows={1} ready={props.totalMappers.totalMappers}>
+          <ReactPlaceholder rows={1} ready={typeof(props.totalMappers.totalMappers) === 'number'}>
             <BigProjectTeaser
               className="pt3"
               totalContributors={props.totalMappers.totalMappers || 0}
@@ -174,7 +174,7 @@ export const ProjectDetail = props => {
               type={'media'}
               rows={26}
               delay={200}
-              ready={props.project.projectId}
+              ready={typeof(props.project.projectId) === 'number'}
             >
               <ProjectDetailMap {...props} />
             </ReactPlaceholder>
@@ -184,20 +184,20 @@ export const ProjectDetail = props => {
         <ProjectDetailFooter />
       </div>
 
-      <h3 className={`${h2Classes}`}>How to Contribute</h3>
+      <h3 className={`${h2Classes}`}><FormattedMessage {...messages.howToContribute} /></h3>
       <NewMapperFlow />
 
-      <h3 className={`${h2Classes} mb6 `}>Question & Comments</h3>
-      <h3 className={`${h2Classes} mb6 `}>Contributors</h3>
+      <h3 className={`${h2Classes} mb6 `}><FormattedMessage {...messages.questionsAndComments} /></h3>
+      <h3 className={`${h2Classes} mb6 `}><FormattedMessage {...messages.contributors} /></h3>
 
-      <h3 className={`${h2Classes}`}>Contributions Timeline</h3>
+      <h3 className={`${h2Classes}`}><FormattedMessage {...messages.contributionsTimeline} /></h3>
       <div className={``}>
         <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
           <ReactPlaceholder
             showLoadingAnimation={true}
             rows={3}
             delay={500}
-            ready={props.percentDoneVisData}
+            ready={typeof(props.percentDoneVisData) === 'object'}
           >
             <TaskLineGraphViz percentDoneVisData={props.percentDoneVisData} />
           </ReactPlaceholder>

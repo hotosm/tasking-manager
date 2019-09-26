@@ -152,8 +152,20 @@ export default defineMessages({
     id: 'project.detail.sections.contributions',
     defaultMessage: 'Contributions'
   },
+  contributionsTimeline: {
+    id: 'project.detail.sections.contributionsTimeline',
+    defaultMessage: 'Contributions timeline'
+  },
+  contributors: {
+    id: 'project.detail.sections.contributors',
+    defaultMessage: 'Contributors'
+  },
   relatedProjects: {
     id: 'project.detail.sections.relatedProjects',
     defaultMessage: 'Related projects'
+  },
+  timelineNotAvailable: {
+    id: 'project.detail.sections.contributions.timelineError',
+    defaultMessage: 'The timeline will be available when at least one task is mapped.'
   },
 });
