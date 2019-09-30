@@ -87,15 +87,18 @@ class UserService:
         return dto
 
     @staticmethod
-    def update_username(user_id: int, osm_username: str) -> User:
+    def update_user(user_id: int, osm_username: str, picture_url: str) -> User:
         user = UserService.get_user_by_id(user_id)
         if user.username != osm_username:
             user.update_username(osm_username)
 
+        if picture_url is not None and user.picture_url != picture_url:
+            user.update_picture_url(picture_url)
+
         return user
 
     @staticmethod
-    def register_user(osm_id, username, changeset_count):
+    def register_user(osm_id, username, changeset_count, picture_url):
         """
         Creates user in DB
         :param osm_id: Unique OSM user id
@@ -105,6 +108,8 @@ class UserService:
         new_user = User()
         new_user.id = osm_id
         new_user.username = username
+        if picture_url is not None:
+            new_user.picture_url = picture_url
 
         intermediate_level = current_app.config["MAPPER_LEVEL_INTERMEDIATE"]
         advanced_level = current_app.config["MAPPER_LEVEL_ADVANCED"]

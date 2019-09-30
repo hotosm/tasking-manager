@@ -45,6 +45,7 @@ class User(db.Model):
     name = db.Column(db.String)
     city = db.Column(db.String)
     country = db.Column(db.String)
+    picture_url = db.Column(db.String)
     default_editor = db.Column(db.String, default="iD", nullable=False)
     mentions_notifications = db.Column(db.Boolean, default=True, nullable=False)
     comments_notifications = db.Column(db.Boolean, default=False, nullable=False)
@@ -84,6 +85,11 @@ class User(db.Model):
     def update_username(self, username: str):
         """ Update the username """
         self.username = username
+        db.session.commit()
+
+    def update_picture_url(self, picture_url: str):
+        """ Update the profile picture """
+        self.picture_url = picture_url
         db.session.commit()
 
     def update(self, user_dto: UserDTO):
@@ -310,6 +316,7 @@ class User(db.Model):
         user_dto.city = self.city
         user_dto.country = self.country
         user_dto.name = self.name
+        user_dto.picture_url = self.picture_url
         user_dto.osm_profile = self.osm_profile_url
         user_dto.missing_maps_profile = self.missing_maps_profile_url
         user_dto.default_editor = self.default_editor

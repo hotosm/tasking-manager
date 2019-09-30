@@ -77,12 +77,14 @@ class AuthenticationService:
 
         try:
             UserService.get_user_by_id(osm_id)
-            UserService.update_username(osm_id, username)
+            UserService.update_user(osm_id, username, user_picture)
         except NotFound:
             # User not found, so must be new user
             changesets = osm_user.find("changesets")
             changeset_count = int(changesets.attrib["count"])
-            new_user = UserService.register_user(osm_id, username, changeset_count)
+            new_user = UserService.register_user(
+                osm_id, username, changeset_count, user_picture
+            )
             MessageService.send_welcome_message(new_user)
 
         session_token = AuthenticationService.generate_session_token_for_user(osm_id)
@@ -149,19 +151,12 @@ class AuthenticationService:
         base_url = current_app.config["FRONTEND_BASE_URL"]
 
         redirect_query = ""
-        picture_query = ""
         if redirect_to:
             redirect_query = f"&redirect_to={urllib.parse.quote(redirect_to)}"
-        if user_picture:
-            picture_query = f"&picture={user_picture}"
 
         # Trailing & added as frontend might be a bit flaky with parsing querystring
-        authorized_url = "{}/authorized?username={}&session_token={}&ng=0{}{}".format(
-            base_url,
-            urllib.parse.quote(username),
-            session_token,
-            redirect_query,
-            picture_query,
+        authorized_url = "{}/authorized?username={}&session_token={}&ng=0{}".format(
+            base_url, urllib.parse.quote(username), session_token, redirect_query
         )
         return authorized_url
 
