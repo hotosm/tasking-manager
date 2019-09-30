@@ -97,6 +97,10 @@ const Parameters = {
   MatomoEndpoint: {
     Type: 'String',
     Description: 'Endpoint URL for matomo tracking'
+  },
+  MapboxToken: {
+    Type: 'String',
+    Description: 'Mapbox Token'
   }
 };
 
@@ -232,6 +236,7 @@ const Resources = {
         cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
         cf.sub('export TM_MATOMO_ID="${MatomoSiteID}"'),
         cf.sub('export TM_MATOMO_ENDPOINT="${MatomoEndpoint}"'),
+        cf.sub('export TM_MAPBOX_TOKEN="${MapboxToken}"'),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',
