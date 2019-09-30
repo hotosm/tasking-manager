@@ -64,6 +64,7 @@ class UserDTO(Model):
     city = StringType(serialized_name="city")
     country = StringType(serialized_name="country")
     name = StringType(serialized_name="name")
+    picture_url = StringType(serialized_name="pictureUrl")
     default_editor = StringType(serialized_name="defaultEditor")
     mentions_notifications = BooleanType(serialized_name="mentionsNotifications")
     comments_notifications = BooleanType(serialized_name="commentsNotifications")
