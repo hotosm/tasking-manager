@@ -8,8 +8,7 @@ from flask import current_app
 from geoalchemy2 import Geometry
 import sqlalchemy
 from sqlalchemy.sql.expression import cast
-from sqlalchemy import func
-from sqlalchemy import text
+from sqlalchemy import text, desc, func
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.session import make_transient
@@ -27,6 +26,7 @@ from server.models.dtos.project_dto import (
     PMDashboardDTO,
     ProjectStatsDTO,
     ProjectUserStatsDTO,
+    ProjectSearchDTO,
 )
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.custom_editors import CustomEditor
@@ -560,9 +560,20 @@ class Project(db.Model):
         return locked_tasks
 
     @staticmethod
-    def get_projects_for_admin(admin_id: int, preferred_locale: str) -> PMDashboardDTO:
+    def get_projects_for_admin(
+        admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO
+    ) -> PMDashboardDTO:
         """ Get projects for admin """
-        admins_projects = Project.query.filter_by(author_id=admin_id).all()
+        query = Project.query.filter(Project.author_id == admin_id)
+        # Do Filtering Here
+
+        if search_dto.order_by:
+            if search_dto.order_by_type == "DESC":
+                query = query.order_by(desc(search_dto.order_by))
+            else:
+                query = query.order_by(search_dto.order_by)
+
+        admins_projects = query.all()
 
         if admins_projects is None:
             raise NotFound("No projects found for admin")
