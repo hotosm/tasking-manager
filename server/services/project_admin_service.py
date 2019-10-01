@@ -7,6 +7,7 @@ from server.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
     ProjectCommentsDTO,
+    ProjectSearchDTO,
 )
 from server.models.postgis.project import Project, Task, ProjectStatus
 from server.models.postgis.statuses import TaskCreationMode, UserRole
@@ -15,6 +16,7 @@ from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
 from server.services.grid.grid_service import GridService
 from server.services.license_service import LicenseService
 from server.services.users.user_service import UserService
+from server.services.project_search_service import ProjectSearchService
 
 
 class ProjectAdminServiceError(Exception):
@@ -285,9 +287,12 @@ class ProjectAdminService:
         return True  # Indicates valid default locale for unit testing
 
     @staticmethod
-    def get_projects_for_admin(admin_id: int, preferred_locale: str):
+    def get_projects_for_admin(
+        admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO
+    ):
         """ Get all projects for provided admin """
-        return Project.get_projects_for_admin(admin_id, preferred_locale)
+        ProjectSearchService.create_search_query()
+        return Project.get_projects_for_admin(admin_id, preferred_locale, search_dto)
 
     @staticmethod
     def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
