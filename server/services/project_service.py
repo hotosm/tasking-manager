@@ -266,10 +266,14 @@ class ProjectService:
         query = ProjectSearchService.create_search_query()
         projects = query.filter(Project.featured == true()).group_by(Project.id).all()
 
+        # Get total contributors.
+        contrib_counts = ProjectSearchService.get_total_contributions(projects)
+        zip_items = zip(projects, contrib_counts)
+
         dto = ProjectSearchResultsDTO()
         dto.results = [
-            ProjectSearchService.create_result_dto(p, preferred_locale)
-            for p in projects
+            ProjectSearchService.create_result_dto(p, preferred_locale, t)
+            for p, t in zip_items
         ]
 
         return dto
