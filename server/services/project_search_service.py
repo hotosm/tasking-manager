@@ -116,16 +116,13 @@ class ProjectSearchService:
     @staticmethod
     def get_total_contributions(paginated_results):
         paginated_projects_ids = [p.id for p in paginated_results]
-        filtered_projects = Project.query.filter(
-            Project.id.in_(paginated_projects_ids)
-        ).subquery()
 
         # We need to make a join to return projects without contributors.
         project_contributors_count = (
             Project.query.with_entities(
                 Project.id, func.count(distinct(TaskHistory.user_id)).label("total")
             )
-            .filter(Project.id == filtered_projects.c.id)
+            .filter(Project.id.in_(paginated_projects_ids))
             .outerjoin(TaskHistory, TaskHistory.project_id == Project.id)
             .group_by(Project.id)
             .all()

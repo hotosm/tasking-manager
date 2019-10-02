@@ -146,6 +146,7 @@ def add_api_endpoints(app):
     from server.api.projects.statistics import (
         ProjectsStatisticsAPI,
         ProjectsStatisticsQueriesUsernameAPI,
+        ProjectsStatisticsQueriesPopularAPI,
     )
     from server.api.projects.actions import (
         ProjectsActionsTransferAPI,
@@ -300,9 +301,14 @@ def add_api_endpoints(app):
     api.add_resource(
         ProjectsStatisticsAPI, "/api/v2/projects/<int:project_id>/statistics/"
     )
+
     api.add_resource(
         ProjectsStatisticsQueriesUsernameAPI,
         "/api/v2/projects/<int:project_id>/statistics/queries/<string:username>/",
+    )
+
+    api.add_resource(
+        ProjectsStatisticsQueriesPopularAPI, "/api/v2/projects/queries/popular/"
     )
 
     # Projects actions endoints
