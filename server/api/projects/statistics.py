@@ -1,6 +1,30 @@
 from flask_restful import Resource, current_app
-from server.services.stats_service import NotFound
+from server.services.stats_service import NotFound, StatsService
 from server.services.project_service import ProjectService
+
+
+class ProjectsStatisticsQueriesPopularAPI(Resource):
+    def get(self):
+        """
+        Get Popular project Stats
+        ---
+        tags:
+          - projects
+        produces:
+          - application/json
+        responses:
+            200:
+                description: Popular Projects stats
+            500:
+                description: Internal Server Error
+        """
+        try:
+            stats = StatsService.get_popular_projects()
+            return stats.to_primitive(), 200
+        except Exception as e:
+            error_msg = f"Unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
 
 
 class ProjectsStatisticsAPI(Resource):
