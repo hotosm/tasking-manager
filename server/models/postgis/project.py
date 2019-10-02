@@ -6,6 +6,9 @@ from cachetools import TTLCache, cached
 import geojson
 from flask import current_app
 from geoalchemy2 import Geometry
+import sqlalchemy
+from sqlalchemy.sql.expression import cast
+from sqlalchemy import func
 from sqlalchemy import text
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -14,6 +17,7 @@ from geoalchemy2.shape import to_shape
 from shapely.ops import transform
 from functools import partial
 import pyproj
+import requests
 
 from server import db
 from server.models.dtos.project_dto import (
@@ -47,6 +51,8 @@ from server.models.postgis.utils import (
     timestamp,
     ST_Centroid,
     NotFound,
+    ST_X,
+    ST_Y,
 )
 from server.services.grid.grid_service import GridService
 
@@ -105,6 +111,7 @@ class Project(db.Model):
     license_id = db.Column(db.Integer, db.ForeignKey("licenses.id", name="fk_licenses"))
     geometry = db.Column(Geometry("MULTIPOLYGON", srid=4326))
     centroid = db.Column(Geometry("POINT", srid=4326))
+    country = db.Column(ARRAY(db.String), default=[])
     task_creation_mode = db.Column(
         db.Integer, default=TaskCreationMode.GRID.value, nullable=False
     )
@@ -190,6 +197,31 @@ class Project(db.Model):
             if self.changeset_comment is not None
             else f"{default_comment}-{self.id}"
         )
+        self.save()
+
+    def set_country_info(self):
+        """ Sets the default country based on centroid"""
+
+        lat, lng = (
+            db.session.query(
+                cast(ST_Y(Project.centroid), sqlalchemy.String),
+                cast(ST_X(Project.centroid), sqlalchemy.String),
+            )
+            .filter(Project.id == self.id)
+            .one()
+        )
+        url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={0}&lon={1}".format(
+            lat, lng
+        )
+        country_info = requests.get(url)
+        country_info_json = country_info.content.decode("utf8").replace("'", '"')
+        # Load the JSON to a Python list & dump it back out as formatted JSON
+        data = json.loads(country_info_json)
+        if data["address"].get("country") is not None:
+            self.country = [data["address"]["country"]]
+        else:
+            self.country = [data["address"]["county"]]
+
         self.save()
 
     def create(self):
@@ -347,6 +379,7 @@ class Project(db.Model):
         for validation_editor in project_dto.validation_editors:
             validation_editors_array.append(Editors[validation_editor].value)
         self.validation_editors = validation_editors_array
+        self.country = project_dto.country_tag
 
         # Add list of allowed users, meaning the project can only be mapped by users in this list
         if hasattr(project_dto, "allowed_users"):
@@ -702,6 +735,7 @@ class Project(db.Model):
         base_dto.josm_preset = self.josm_preset
         base_dto.campaign_tag = self.campaign_tag
         base_dto.organisation_tag = self.organisation_tag
+        base_dto.country_tag = self.country
         base_dto.license_id = self.license_id
         base_dto.created = self.created
         base_dto.last_updated = self.last_updated
@@ -788,6 +822,13 @@ class Project(db.Model):
         project_tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
 
         return project_tasks
+
+    @staticmethod
+    def get_all_countries():
+        query = db.session.query(func.unnest(Project.country)).distinct()
+        tags_dto = TagsDTO()
+        tags_dto.tags = [r[0] for r in query]
+        return tags_dto
 
     @staticmethod
     def get_all_organisations_tag(preferred_locale="en"):

@@ -69,6 +69,7 @@ class ProjectAdminService:
             draft_project.create()  # Create the new project
 
         draft_project.set_default_changeset_comment()
+        draft_project.set_country_info()
         return draft_project.id
 
     @staticmethod

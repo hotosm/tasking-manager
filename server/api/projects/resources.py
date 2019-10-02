@@ -330,6 +330,11 @@ class ProjectsRestAPI(Resource):
                     organisationTag:
                         type: string
                         default: red cross
+                    countryTag:
+                          type: array
+                          items:
+                              type: string
+                          default: []
                     licenseId:
                         type: integer
                         default: 1
@@ -492,6 +497,10 @@ class ProjectsAllAPI(Resource):
               type: string
               default: serbia
             - in: query
+              name: country
+              description: Project country
+              type: string
+            - in: query
               name: projectStatuses
               description: Authenticated PMs can search for archived or draft statuses
               type: string
@@ -510,6 +519,7 @@ class ProjectsAllAPI(Resource):
             search_dto.organisation_tag = request.args.get("organisationTag")
             search_dto.campaign_tag = request.args.get("campaignTag")
             search_dto.order_by = request.args.get("orderBy", "priority")
+            search_dto.country = request.args.get("country")
             search_dto.order_by_type = request.args.get("orderByType", "ASC")
             search_dto.page = (
                 int(request.args.get("page")) if request.args.get("page") else 1

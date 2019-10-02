@@ -204,6 +204,9 @@ def add_api_endpoints(app):
     # Organisations API endpoint
     from server.api.organisations.resources import OrganisationsRestAPI
 
+    # Countries API endpoint
+    from server.api.countries.resources import CountriesRestAPI
+
     # Notifications API endpoint
     from server.api.notifications.resources import (
         NotificationsRestAPI,
@@ -458,6 +461,9 @@ def add_api_endpoints(app):
 
     # Organisations REST endpoints
     api.add_resource(OrganisationsRestAPI, "/api/v2/organisations/")
+
+    # Countries REST endpoints
+    api.add_resource(CountriesRestAPI, "/api/v2/countries/")
 
     # Notifications REST endpoints
     api.add_resource(NotificationsRestAPI, "/api/v2/notifications/<int:message_id>/")
