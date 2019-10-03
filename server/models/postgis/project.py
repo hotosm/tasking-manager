@@ -632,6 +632,7 @@ class Project(db.Model):
         area = polygon_aea.area / 1000000
         summary.area = area
         summary.campaign_tag = self.campaign_tag
+        summary.country_tag = self.country
         summary.changeset_comment = self.changeset_comment
         summary.created = self.created
         summary.last_updated = self.last_updated
