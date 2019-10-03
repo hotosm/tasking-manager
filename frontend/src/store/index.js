@@ -11,7 +11,6 @@ const persistedState = {
       username: safeStorage.getItem('username'),
     }),
     token: safeStorage.getItem('token'),
-    userPicture: safeStorage.getItem('userPicture'),
   }),
   preferences: {
     locale: safeStorage.getItem('locale'),

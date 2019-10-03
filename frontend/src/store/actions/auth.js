@@ -7,7 +7,6 @@ export const types = {
   SET_USER_DETAILS: 'SET_USER_DETAILS',
   GET_USER_DETAILS: 'GET_USER_DETAILS',
   SET_TOKEN: 'SET_TOKEN',
-  SET_PICTURE: 'SET_PICTURE',
   CLEAR_SESSION: 'CLEAR_SESSION',
 };
 
@@ -38,13 +37,6 @@ export function updateToken(token) {
   };
 }
 
-export function updateUserPicture(userPicture) {
-  return {
-    type: types.SET_PICTURE,
-    userPicture: userPicture
-  };
-}
-
 export const setAuthDetails= (username, token, userPicture) => dispatch => {
   const encoded_token = btoa(token);
   safeStorage.setItem('username', username);
@@ -52,7 +44,6 @@ export const setAuthDetails= (username, token, userPicture) => dispatch => {
   dispatch(updateToken(encoded_token));
   if (userPicture) {
     safeStorage.setItem('userPicture', userPicture);
-    dispatch(updateUserPicture(userPicture));
   }
   dispatch(setUserDetails(username, encoded_token));
 }
