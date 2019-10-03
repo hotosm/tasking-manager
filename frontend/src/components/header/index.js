@@ -38,7 +38,7 @@ const TopNavLink = props => {
 const UserDisplay = props => {
   return (
     <span>
-      <UserAvatar className="br-100 h2 v-mid" />
+      <UserAvatar className="br-100 v-mid red" width="32px" height="32px" />
       <span className="pl2">{props.username}</span>
     </span>
   );

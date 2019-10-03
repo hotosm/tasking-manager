@@ -95,7 +95,7 @@ class UserTopBar extends React.Component {
       <div className="cf ph4 pt3 pb1">
         <div className="w-100 w-75-l fl pb2">
           <div className="fl dib pr3">
-            <UserAvatar className="h4 w4 br-100 pa1 ba b--grey-light bw3" />
+            <UserAvatar className="h4 w4 br-100 pa1 ba b--grey-light bw3 red" />
           </div>
           <ReactPlaceholder
             showLoadingAnimation={true}
