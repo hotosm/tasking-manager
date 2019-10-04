@@ -74,6 +74,21 @@ class UserDTO(Model):
     # these are read only
     missing_maps_profile = StringType(serialized_name="missingMapsProfile")
     osm_profile = StringType(serialized_name="osmProfile")
+    gender = StringType(
+        serialized_name="gender",
+        choices=("MALE", "FEMALE", "SELF_DESCRIBE", "PREFER_NOT"),
+    )
+    self_description_gender = StringType(
+        serialized_name="selfDescriptionGender", default=None
+    )
+
+    def validate_self_description(self, data, value):
+        if (
+            data["gender"] == "SELF_DESCRIBE"
+            and data["self_description_gender"] is None
+        ):
+            raise ValueError("selfDescription field is not defined")
+        return value
 
 
 class UserStatsDTO(Model):

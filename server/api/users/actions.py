@@ -52,6 +52,12 @@ class UsersActionsSetUsersAPI(Resource):
                       linkedinId:
                           type: string
                           default: linkedin username
+                      gender:
+                          type: string
+                          description: gender
+                      selfDescriptionGender:
+                          type: string
+                          description: gender self-description
         responses:
             200:
                 description: Details saved
@@ -70,6 +76,8 @@ class UsersActionsSetUsersAPI(Resource):
                 )  # Replace empty string with None so validation doesn't break
 
             user_dto.validate()
+        except ValueError as e:
+            return {"Error": str(e)}, 400
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return {"Error": "Unable to update user details"}, 400

@@ -14,7 +14,12 @@ from server.models.dtos.user_dto import (
 )
 from server.models.postgis.licenses import License, users_licenses_table
 from server.models.postgis.project_info import ProjectInfo
-from server.models.postgis.statuses import MappingLevel, ProjectStatus, UserRole
+from server.models.postgis.statuses import (
+    MappingLevel,
+    ProjectStatus,
+    UserRole,
+    UserGender,
+)
 from server.models.postgis.utils import NotFound, timestamp
 
 
@@ -46,6 +51,8 @@ class User(db.Model):
     city = db.Column(db.String)
     country = db.Column(db.String)
     picture_url = db.Column(db.String)
+    gender = db.Column(db.Integer)
+    self_description_gender = db.Column(db.String)
     default_editor = db.Column(db.String, default="iD", nullable=False)
     mentions_notifications = db.Column(db.Boolean, default=True, nullable=False)
     comments_notifications = db.Column(db.Boolean, default=False, nullable=False)
@@ -93,10 +100,16 @@ class User(db.Model):
         db.session.commit()
 
     def update(self, user_dto: UserDTO):
+
         """ Update the user details """
         for attr, value in user_dto.items():
+            if attr == "gender" and value is not None:
+                value = UserGender[value].value
             if value:
                 setattr(self, attr, value)
+
+        if user_dto.gender != UserGender.SELF_DESCRIBE.name:
+            self.self_description_gender = None
         db.session.commit()
 
     def set_email_verified_status(self, is_verified: bool):
@@ -328,6 +341,11 @@ class User(db.Model):
         user_dto.total_time_spent = 0
         user_dto.time_spent_mapping = 0
         user_dto.time_spent_validating = 0
+        gender = None
+        if self.gender is not None:
+            gender = UserGender(self.gender).name
+        user_dto.gender = gender
+        user_dto.self_description_gender = self.self_description_gender
 
         sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
                 WHERE action='LOCKED_FOR_VALIDATION'
