@@ -640,6 +640,9 @@ class Project(db.Model):
         summary.mapper_level = MappingLevel(self.mapper_level).name
         summary.mapper_level_enforced = self.enforce_mapper_level
         summary.validator_level_enforced = self.enforce_validator_role
+        summary.random_task_selection_enforced = self.enforce_random_task_selection
+        summary.allow_non_beginners = self.allow_non_beginners
+        summary.private = self.private
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map

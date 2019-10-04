@@ -381,8 +381,13 @@ class ProjectSummary(Model):
     percent_bad_imagery = IntType(serialized_name="percentBadImagery")
     aoi_centroid = BaseType(serialized_name="aoiCentroid")
     mapper_level = StringType(serialized_name="mapperLevel")
-    mapper_level_enforced = BooleanType(serialized_name="mapperLevelEnforced")
-    validator_level_enforced = BooleanType(serialized_name="validatorLevelEnforced")
+    mapper_level_enforced = BooleanType(serialized_name="enforceMapperLevel")
+    validator_level_enforced = BooleanType(serialized_name="enforceValidatorRole")
+    random_task_selection_enforced = BooleanType(
+        required=False, default=False, serialized_name="enforceRandomTaskSelection"
+    )
+    allow_non_beginners = BooleanType(serialized_name="allowNonBeginners")
+    private = BooleanType(serialized_name="private")
     project_info = ModelType(
         ProjectInfoDTO, serialized_name="projectInfo", serialize_when_none=False
     )
