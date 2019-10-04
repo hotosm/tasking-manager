@@ -1,133 +1,139 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState} from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
-import { TasksMap } from './map.js';
+import { useFetch } from '../../hooks/UseFetch';
 import { PriorityBox } from '../projectcard/projectCard';
+import { TasksMap } from './map.js';
 import { TaskSelectionFooter } from './footer';
-import { cancelablePromise } from '../../utils/promise';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { TaskList } from './taskList';
 
-
-class TaskSelection extends React.Component {
-  getProjectTasksPromise;
-  state = {
-    activeSection: 'tasks',
-    tasks: {},
-  };
-
-  componentDidMount() {
-    if (this.props.project.projectId) {
-      this.getProjectTasks();
-    }
-  }
-  componentDidUpdate(prevProps) {
-    if (this.props.project.projectId && this.props.project.projectId !== prevProps.project.projectId) {
-      this.getProjectTasks();
-    }
-  }
-  getProjectTasks = event => {
-    this.getProjectTasksPromise = cancelablePromise(
-      fetchLocalJSONAPI(`projects/${this.props.project.projectId}/tasks/`)
-    );
-    this.getProjectTasksPromise.promise
-      .then(data => this.setState({tasks: data}))
-      .catch(e => console.log(e));
-  }
-  renderHeaderLine() {
-    const userLink = (
-      <Link to={`/users/${this.props.project.author}`} className="link blue-dark underline">
-        {this.props.project.author}
-      </Link>
-    );
-    return (
-      <div className="cf">
-        <div className="w-70 dib fl">
-          <span className="blue-light">#{this.props.project.projectId}</span>
-          <span className="blue-dark">
-            {' '}
-            | <FormattedMessage {...messages.createBy} values={{ user: userLink }} />
-          </span>
-        </div>
-        <div className="mw4 dib fr">
-          <PriorityBox priority={this.props.project.projectPriority} extraClasses={'pv2 ph3'} />
-        </div>
+function HeaderLine({author, projectId, priority}: Object) {
+  const userLink = (
+    <Link to={`/users/${author}`} className="link blue-dark underline">
+      {author}
+    </Link>
+  );
+  const projectIdLink = <Link to={`/projects/${projectId}`} className="no-underline">
+    <span className="blue-light">#{projectId}</span>
+  </Link>;
+  return (
+    <div className="cf">
+      <div className="w-70 dib fl">
+        <span className="blue-dark">
+          <FormattedMessage {...messages.createBy} values={{ user: userLink, id: projectIdLink }} />
+        </span>
       </div>
-    );
-  }
-
-  render() {
-    return (
-      <div>
-        <div className="cf pv3">
-          <div className="w-100 w-60-ns fl">
-            <div className="ph4">
-              <ReactPlaceholder
-                showLoadingAnimation={true}
-                rows={3}
-                delay={500}
-                ready={typeof(this.props.project.projectId) === 'number' && this.props.project.projectId > 0}
-              >
-                {this.renderHeaderLine()}
-                <div className="cf pb3">
-                  <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
-                    {this.props.project.projectInfo && this.props.project.projectInfo.name}
-                  </h3>
-                  <span className="blue-light">{this.props.project.campaignTag} &#183; Brazil</span>
-                </div>
-                <div className="cf">
-                  <div className="cf ttu barlow-condensed f4 pv2">
-                    <span
-                      className={`mr4 pb2 pointer ${this.state.activeSection === 'tasks' && 'bb b--blue-dark'}`}
-                      onClick={() => this.setState({activeSection: 'tasks'})}
-                    >
-                      <FormattedMessage {...messages.tasks} />
-                    </span>
-                    <span
-                      className={`mr4 pb2 pointer ${this.state.activeSection === 'instructions' && 'bb b--blue-dark'}`}
-                      onClick={() => this.setState({activeSection: 'instructions'})}
-                    >
-                      <FormattedMessage {...messages.instructions} />
-                    </span>
-                  </div>
-                </div>
-              </ReactPlaceholder>
-            </div>
-          </div>
-          <div className="w-100 w-40-ns fl">
-            <TasksMap mapResults={this.state.tasks} projectId={this.props.project.projectId} type={this.props.type} className="dib w-100 fl"/>
-          </div>
-        </div>
-        <div className="cf ph4 bt b--grey-light">
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            rows={3}
-            delay={500}
-            ready={typeof(this.props.project.projectId) === 'number' && this.props.project.projectId >0}
-          >
-            <TaskSelectionFooter
-              type={this.props.type}
-              mappingTypes={this.props.project.mappingTypes}
-              imagery={this.props.project.imagery}
-              editors={this.props.project.mappingEditors}
-              defaultUserEditor={this.props.userPreferences.default_editor}
-            />
-          </ReactPlaceholder>
-        </div>
+      <div className="mw4 dib fr">
+        <PriorityBox priority={priority} extraClasses={'pv2 ph3'} />
       </div>
-    );
-  }
+    </div>
+  );
 }
 
-const mapStateToProps = state => ({
-  userPreferences: state.preferences,
-  username: state.auth.getIn(['userDetails', 'username']),
-});
+export function TaskSelection({project, type, loading}: Object) {
+  const [error, tasksLoading, tasks] = useFetch(`projects/${project.projectId}/tasks/`);
+  const [activeSection, setActiveSection] = useState('tasks');
+  const defaultEditor = useSelector(state => state.preferences.default_editor);
+  const [selected, setSelectedTasks] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
-TaskSelection = connect(
-  mapStateToProps
-)(TaskSelection);
-export { TaskSelection };
+  function selectTask(selection, status=null) {
+    if (typeof(selection) === 'object') {
+      setSelectedTasks(selection);
+    } else {
+      if (selected.includes(selection)) {
+        setSelectedTasks([]);
+        setSelectedStatus(null)
+      } else {
+        setSelectedTasks([selection]);
+        setSelectedStatus(status);
+      }
+    }
+  }
+
+  return (
+    <div>
+      <div className="cf pv3">
+        <div className="w-100 w-50-ns fl">
+          <div className="ph4">
+            <ReactPlaceholder
+              showLoadingAnimation={true}
+              rows={3}
+              delay={500}
+              ready={typeof(project.projectId) === 'number' && project.projectId > 0}
+            >
+              <HeaderLine author={project.author} priority={project.projectPriority} projectId={project.projectId} />
+              <div className="cf pb3">
+                <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
+                  {project.projectInfo && project.projectInfo.name}
+                </h3>
+                <span className="blue-light">{project.campaignTag}</span>
+                {project.countryTag &&
+                  <span className="blue-light">
+                    <span className="ph2">&#183;</span>{project.countryTag.map(country => country).join(', ')}
+                  </span>
+                }
+              </div>
+              <div className="cf">
+                <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
+                  <span
+                    className={`mr4 pb2 pointer ${activeSection === 'tasks' && 'bb b--blue-dark'}`}
+                    onClick={() => setActiveSection('tasks')}
+                  >
+                    <FormattedMessage {...messages.tasks} />
+                  </span>
+                  <span
+                    className={`mr4 pb2 pointer ${activeSection === 'instructions' && 'bb b--blue-dark'}`}
+                    onClick={() => setActiveSection('instructions')}
+                  >
+                    <FormattedMessage {...messages.instructions} />
+                  </span>
+                </div>
+                <div className="pt4">
+                  {activeSection === 'tasks' ? (
+                    <TaskList projectId={project.projectId} selectTask={selectTask} selected={selected} />
+                  ) : (
+                    <p>{project.projectInfo.instructions}</p>
+                  )}
+                </div>
+              </div>
+            </ReactPlaceholder>
+          </div>
+        </div>
+        <div className="w-100 w-50-ns fl">
+          <TasksMap
+            mapResults={tasks}
+            projectId={project.projectId}
+            type={type}
+            error={error}
+            loading={tasksLoading}
+            className="dib w-100 fl"
+            selectTask={selectTask}
+            selected={selected}
+          />
+        </div>
+      </div>
+      <div className="cf ph4 bt b--grey-light">
+        <ReactPlaceholder
+          showLoadingAnimation={true}
+          rows={3}
+          delay={500}
+          ready={typeof(project.projectId) === 'number' && project.projectId >0}
+        >
+          <TaskSelectionFooter
+            mappingTypes={project.mappingTypes}
+            imagery={project.imagery}
+            editors={project.mappingEditors}
+            defaultUserEditor={defaultEditor}
+            selected={selected}
+            selectedStatus={selectedStatus}
+          />
+        </ReactPlaceholder>
+      </div>
+    </div>
+  );
+}

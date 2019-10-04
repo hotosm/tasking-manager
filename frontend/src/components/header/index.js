@@ -66,8 +66,8 @@ const AuthButtons = props => {
 class Header extends React.Component {
   menuItems = menuItems;
   linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu';
-  isActive = ({ isPartiallyCurrent }) => {
-    return isPartiallyCurrent
+  isActive = ({ isCurrent }) => {
+    return isCurrent
       ? { className: `${this.linkCombo} bb b--blue-dark bw1 pv2` }
       : { className: this.linkCombo };
   };

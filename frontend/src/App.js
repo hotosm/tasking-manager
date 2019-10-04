@@ -13,7 +13,7 @@ import { Login } from './views/login';
 import { Welcome } from './views/welcome';
 import { Settings } from './views/settings';
 import { NotFound } from './views/notFound';
-import { SelectTaskToMap, SelectTaskToValidate } from './views/taskSelection';
+import { SelectTask } from './views/taskSelection';
 
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
  *  create special sub-router for Projects page and wrap it only around that */
@@ -21,7 +21,7 @@ function App() {
   return (
     <Location>
       {({ location }) => (
-        <div className="App w-100 base-font">
+        <div className="App w-100 base-font bg-white">
           <Header location={location} />
           <div className="cf w-100 base-font">
             <QueryParamProvider reachHistory={globalHistory}>
@@ -36,8 +36,7 @@ function App() {
                 <Login path="login" />
                 <Welcome path="welcome" />
                 <Settings path="settings" />
-                <SelectTaskToMap path="projects/:id/map" />
-                <SelectTaskToValidate path="projects/:id/validate" />
+                <SelectTask path="projects/:id/map" />
                 <NotFound default />
               </Router>
             </QueryParamProvider>

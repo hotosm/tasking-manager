@@ -1,5 +1,4 @@
 import React, { useLayoutEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { extent } from 'geojson-bounds';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -7,18 +6,27 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { MAPBOX_TOKEN } from '../../config';
 import lock from '../../assets/img/lock.png';
 
+export const colours = {
+  'READY': '#fff',
+  'LOCKED_FOR_MAPPING': '#fff',
+  'MAPPED': '#a1d7e5',
+  'LOCKED_FOR_VALIDATION': '#a1d7e5',
+  'VALIDATED': '#6cb570',
+  'INVALIDATED': '#e6e6e6',
+  'BADIMAGERY': '#e04141',
+};
+
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
 export const TasksMap = ({
   mapResults,
   className,
   projectId,
+  selectTask,
+  selected
 }) => {
   const mapRef = React.createRef();
   const [map, setMapObj] = useState(null);
-  const activeTasks = useSelector(state => state.tasks.get('activeTasks'));
-  const activeProject = useSelector(state => state.tasks.get('activeProject'));
-  const dispatch = useDispatch();
 
   useLayoutEffect(() => {
     /* May be able to refactor this to just take
@@ -75,15 +83,15 @@ export const TasksMap = ({
           'fill-color': [
             'match',
             ['get', 'taskStatus'],
-            'READY', '#fff',
-            'LOCKED_FOR_MAPPING', '#fff',
-            'MAPPED', '#a1d7e5',
-            'LOCKED_FOR_VALIDATION', '#a1d7e5',
-            'VALIDATED', '#6cb570',
-            'INVALIDATED', '#e6e6e6',
-            'BADIMAGERY', '#e04141',
+            'READY', colours.READY,
+            'LOCKED_FOR_MAPPING', colours.LOCKED_FOR_MAPPING,
+            'MAPPED', colours.MAPPED,
+            'LOCKED_FOR_VALIDATION', colours.LOCKED_FOR_VALIDATION,
+            'VALIDATED', colours.VALIDATED,
+            'INVALIDATED', colours.INVALIDATED,
+            'BADIMAGERY', colours.BADIMAGERY,
             'rgba(0,0,0,0)'
-          ],
+          ]
         }
       }, 'tasks-icon');
       map.addLayer({
@@ -106,10 +114,6 @@ export const TasksMap = ({
         },
       }, 'selected-tasks-border');
 
-      if (projectId === activeProject) {
-        map.setFilter('selected-tasks-border', ['in', 'taskId'].concat(activeTasks));
-      }
-
       map.fitBounds(extent(mapResults), {padding: 40});
 
       map.on('mouseenter', 'tasks-fill', function(e) {
@@ -122,17 +126,8 @@ export const TasksMap = ({
       });
 
       map.on('click', 'tasks-fill', e => {
-        const value = e.features && e.features[0].properties && e.features[0].properties.taskId;
-        console.log(value);
-        map.setFilter('selected-tasks-border', ['in', 'taskId'].concat(activeTasks.concat(value)));
-        dispatch({
-          type: 'SET_ACTIVE_TASKS',
-          activeTasks: [value]
-        });
-        dispatch({
-          type: 'SET_ACTIVE_PROJECT',
-          activeProject: projectId
-        });
+        const task = e.features && e.features[0].properties;
+        selectTask(task.taskId, task.taskStatus);
       });
     };
 
@@ -159,8 +154,9 @@ export const TasksMap = ({
     /* refill the source on mapResults changes */
     if (map !== null && map.getSource('tasks') !== undefined && someResultsReady) {
       map.getSource('tasks').setData(mapResults);
+      map.setFilter('selected-tasks-border', ['in', 'taskId'].concat(selected));
     }
-  }, [map, mapResults, activeProject, activeTasks, projectId, dispatch]);
+  }, [map, mapResults, selected, selectTask]);
 
-  return <div id="map" className={`vh-75-l vh-50 fr ${className}`} ref={mapRef}></div>;
+  return <div id="map" className={`vh-75-ns vh-50 fr ${className}`} ref={mapRef}></div>;
 };

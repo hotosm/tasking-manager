@@ -1,22 +1,22 @@
 
 export const types = {
-  SET_ACTIVE_TASKS: 'SET_ACTIVE_TASKS',
-  SET_ACTIVE_PROJECT: 'SET_ACTIVE_PROJECT',
+  SET_LOCKED_TASKS: 'SET_LOCKED_TASKS',
+  SET_PROJECT: 'SET_PROJECT',
   SET_TASKS_STATUS: 'SET_TASKS_STATUS',
-  CLEAR_ACTIVE_TASKS: 'CLEAR_ACTIVE_TASKS',
+  CLEAR_LOCKED_TASKS: 'CLEAR_LOCKED_TASKS',
 };
 
-export function updateActiveProject(activeProject) {
+export function updateProject(project) {
   return {
-    type: types.SET_ACTIVE_PROJECT,
-    activeProject: activeProject
+    type: types.SET_PROJECT,
+    project: project
   };
 }
 
-export function updateActiveTasks(activeTasks) {
+export function updateLockedTasks(tasks) {
   return {
-    type: types.SET_ACTIVE_TASKS,
-    activeTasks: activeTasks
+    type: types.SET_LOCKED_TASKS,
+    tasks: tasks
   };
 }
 
@@ -27,15 +27,15 @@ export function updateTasksStatus(status) {
   };
 }
 
-export function clearActiveTasks() {
+export function clearLockedTasks() {
   return {
-    type: types.CLEAR_ACTIVE_TASKS,
+    type: types.CLEAR_LOCKED_TASKS,
   };
 }
 
-export const setActiveTasks = (tasks, projectId) => dispatch => {
-  dispatch(updateActiveTasks(tasks));
-  dispatch(updateActiveProject(projectId));
+export const setLockedTasks = (tasks, projectId) => dispatch => {
+  dispatch(updateLockedTasks(tasks));
+  dispatch(updateProject(projectId));
 };
 
 export const setTasksStatus = (status) => dispatch => {

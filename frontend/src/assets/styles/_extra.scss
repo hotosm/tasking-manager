@@ -12,7 +12,7 @@
 
 @media screen and (min-width: 60em) {
   .bg-split-blue-white {
-    background: linear-gradient(to right, $blue-dark, $blue-dark 80%, white 20%, white);
+    background: linear-gradient(to right, $blue-dark, $blue-dark 80%, $white 20%, $white);
   }
   .f-4rem-l {
     font-size: 4rem;
@@ -27,7 +27,7 @@
     max-width: 20rem;
   }
   .bg-split-blue-white {
-    background: linear-gradient(to bottom, $blue-dark, $blue-dark 80%, white 20%, white);
+    background: linear-gradient(to bottom, $blue-dark, $blue-dark 80%, $white 20%, $white);
   }
 }
 
@@ -64,7 +64,7 @@ button:focus, button:active, a:focus, a:active {
 
   .checkbox-toggle {
     left: 2rem; // @extend .left-2;
-    background-color: #fff; // @extend .bg-moon-gray;
+    background-color: $white; // @extend .bg-moon-gray;
     border-color: $red;
   }
 }
@@ -78,6 +78,6 @@ https://codepen.io/nielsenramon/pen/mLMeLY
 .radiobutton:checked + .radiobutton-wrapper {
   background-color: $red; // @extend .bg-white;
   div {
-    border-color: #fff; // @extend .b--white;
+    border-color: $white; // @extend .b--white;
   }
 }

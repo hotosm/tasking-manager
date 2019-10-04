@@ -25,6 +25,9 @@ Text colors
 .grey-light {
   color: $grey-light;
 }
+.white {
+  color: $white;
+}
 
 /*
 Text colors hover
@@ -52,6 +55,9 @@ Text colors hover
 }
 .hover-grey-light:hover, .hover-grey-light:focus {
   color: $grey-light;
+}
+.hover-white:hover, .hover-white:focus {
+  color: $white;
 }
 
 /*
@@ -81,6 +87,9 @@ Background colors
 .bg-grey-light {
   background-color: $grey-light;
 }
+.bg-white {
+  background-color: $white;
+}
 
 /*
 Background colors hover
@@ -109,6 +118,9 @@ Background colors hover
 .hover-bg-grey-light:hover, .hover-bg-grey-light:focus {
   background-color: $grey-light;
 }
+.hover-bg-white:hover, .hover-bg-white:focus {
+  background-color: $white;
+}
 
 /*
 Border colors
@@ -136,4 +148,7 @@ Border colors
 }
 .b--grey-light {
   border-color: $grey-light;
+}
+.b--white {
+  border-color: $white;
 }

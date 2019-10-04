@@ -26,7 +26,7 @@ const PROFILE_RELEVANT_FIELDS = [
 
 function UserInterests() {
   return (
-    <div className="bg-white shadow-4 pa4 mb3">
+    <div className="bg-white blue-dark shadow-4 pa4 mb3">
       <span>Interests selection card</span>
     </div>
   );
@@ -46,7 +46,7 @@ class UserInformationForm extends React.Component {
     const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
     return (
       <div className="bg-white shadow-4 pa4 mb3">
-        <h3 className="f3 mt0 fw6">
+        <h3 className="f3 blue-dark mt0 fw6">
           <FormattedMessage {...messages.personalInfo} />
         </h3>
         <Form
