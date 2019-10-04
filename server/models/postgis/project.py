@@ -664,9 +664,10 @@ class Project(db.Model):
 
         # Cast MappingType values to related string array
         mapping_types_array = []
-        for mapping_type in self.mapping_types:
-            mapping_types_array.append(MappingTypes(mapping_type).name)
-        summary.mapping_types = mapping_types_array
+        if self.mapping_types:
+            for mapping_type in self.mapping_types:
+                mapping_types_array.append(MappingTypes(mapping_type).name)
+            summary.mapping_types = mapping_types_array
 
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
