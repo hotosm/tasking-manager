@@ -27,7 +27,7 @@ export function OSMCard({ username }: Object) {
 
   return (
     <div className="cf bg-white shadow-4 pa4 mv4">
-      <h3 className="f3 mt0 fw6">
+      <h3 className="f3 blue-dark mt0 fw6">
         <FormattedMessage {...messages.osmCardTitle} />
       </h3>
       <div className="cf">
@@ -53,7 +53,7 @@ export function OSMCard({ username }: Object) {
           <h4 className="ttu blue-grey f5 fw4">
             <FormattedMessage {...messages.joinedOSM} />
           </h4>
-          <p className="f4 fw8">
+          <p className="f4 blue-dark fw8">
             <FormattedRelative value={accountCreated} />
           </p>
         </div>
@@ -61,7 +61,7 @@ export function OSMCard({ username }: Object) {
           <h4 className="ttu blue-grey f5 fw4">
             <FormattedMessage {...messages.totalChangesets} />
           </h4>
-          <p className="f4 fw8">
+          <p className="f4 blue-dark fw8">
             <FormattedNumber value={changesetCount} />
           </p>
         </div>

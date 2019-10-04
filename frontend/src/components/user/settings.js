@@ -107,7 +107,7 @@ class UserTopBar extends React.Component {
               <h3 className="ttu f2 fw-6 mv0 barlow-condensed">
                 {this.props.userDetails.name || this.props.userDetails.username}
               </h3>
-              <p className="f4 mt3 mb2">
+              <p className="f4 blue-dark mt3 mb2">
                 <FormattedMessage
                   {...messages.mapper}
                   values={{

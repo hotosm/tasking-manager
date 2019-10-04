@@ -8,5 +8,5 @@ import { tasksReducer } from './tasks';
 export default combineReducers({
   preferences: preferencesReducer,
   auth: authorizationReducer,
-  tasks: tasksReducer,
+  lockedTasks: tasksReducer,
 });
