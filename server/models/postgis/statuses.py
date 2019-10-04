@@ -75,6 +75,15 @@ class ValidatingNotAllowed(Enum):
     PROJECT_NOT_PUBLISHED = 103
 
 
+class UserGender(Enum):
+    """ Describes the gender a user can be assigned"""
+
+    MALE = 1
+    FEMALE = 2
+    SELF_DESCRIBE = 3
+    PREFER_NOT = 4
+
+
 class UserRole(Enum):
     """ Describes the role a user can be assigned, app doesn't support multiple roles """
 
