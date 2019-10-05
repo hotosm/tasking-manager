@@ -14,7 +14,7 @@ export function MappingTypes({ types=[], colorClass }: Object) {
     {titledIcons.map((Element, k) =>
       <span title={Element.title} key={k}>
         <Element.icon
-          className={`ml1 mr3 ${types.includes(Element.value) ? colorClass : 'grey-light'}`}
+          className={`ml1 mr3 ${types && types.includes(Element.value) ? colorClass : 'grey-light'}`}
           height="23"
         />
       </span>
