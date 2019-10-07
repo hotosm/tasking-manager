@@ -32,6 +32,10 @@ export default defineMessages({
     id: 'user.email',
     defaultMessage: 'Email',
   },
+  gender: {
+    id: 'user.gender',
+    defaultMessage: 'Gender',
+  },
   slackUsername: {
     id: 'user.slack',
     defaultMessage: 'Username on HOT Slack',
