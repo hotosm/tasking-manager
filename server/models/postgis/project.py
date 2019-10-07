@@ -88,14 +88,14 @@ class Project(db.Model):
     mapper_level = db.Column(
         db.Integer, default=2, nullable=False, index=True
     )  # Mapper level project is suitable for
-    enforce_mapper_level = db.Column(db.Boolean, default=False)
-    enforce_validator_role = db.Column(
+    restrict_mapping_level_to_project = db.Column(db.Boolean, default=False)
+    restrict_validation_role = db.Column(
         db.Boolean, default=False
     )  # Means only users with validator role can validate
     enforce_random_task_selection = db.Column(
         db.Boolean, default=False
     )  # Force users to edit at random to avoid mapping "easy" tasks
-    allow_non_beginners = db.Column(db.Boolean, default=False)
+    restrict_validation_level_intermediate = db.Column(db.Boolean, default=False)
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
     featured = db.Column(
         db.Boolean, default=False
@@ -280,8 +280,12 @@ class Project(db.Model):
         cloned_project.priority = original_project.priority
         cloned_project.default_locale = original_project.default_locale
         cloned_project.mapper_level = original_project.mapper_level
-        cloned_project.enforce_mapper_level = original_project.enforce_mapper_level
-        cloned_project.enforce_validator_role = original_project.enforce_validator_role
+        cloned_project.restrict_mapping_level_to_project = (
+            original_project.restrict_mapping_level_to_project
+        )
+        cloned_project.restrict_validation_role = (
+            original_project.restrict_validation_role
+        )
         cloned_project.enforce_random_task_selection = (
             original_project.enforce_random_task_selection
         )
@@ -325,10 +329,14 @@ class Project(db.Model):
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
         self.default_locale = project_dto.default_locale
-        self.enforce_mapper_level = project_dto.enforce_mapper_level
-        self.enforce_validator_role = project_dto.enforce_validator_role
+        self.restrict_mapping_level_to_project = (
+            project_dto.restrict_mapping_level_to_project
+        )
+        self.restrict_validation_role = project_dto.restrict_validation_role
         self.enforce_random_task_selection = project_dto.enforce_random_task_selection
-        self.allow_non_beginners = project_dto.allow_non_beginners
+        self.restrict_validation_level_intermediate = (
+            project_dto.restrict_validation_level_intermediate
+        )
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
         self.entities_to_map = project_dto.entities_to_map
@@ -652,10 +660,14 @@ class Project(db.Model):
         summary.last_updated = self.last_updated
         summary.due_date = self.due_date
         summary.mapper_level = MappingLevel(self.mapper_level).name
-        summary.mapper_level_enforced = self.enforce_mapper_level
-        summary.validator_level_enforced = self.enforce_validator_role
+        summary.restrict_mapping_level_to_project = (
+            self.restrict_mapping_level_to_project
+        )
+        summary.restrict_validation_role = self.restrict_validation_role
         summary.random_task_selection_enforced = self.enforce_random_task_selection
-        summary.allow_non_beginners = self.allow_non_beginners
+        summary.restrict_validation_level_intermediate = (
+            self.restrict_validation_level_intermediate
+        )
         summary.private = self.private
         summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
@@ -747,10 +759,14 @@ class Project(db.Model):
         base_dto.project_priority = ProjectPriority(self.priority).name
         base_dto.area_of_interest = self.get_aoi_geometry_as_geojson()
         base_dto.aoi_bbox = shape(base_dto.area_of_interest).bounds
-        base_dto.enforce_mapper_level = self.enforce_mapper_level
-        base_dto.enforce_validator_role = self.enforce_validator_role
+        base_dto.restrict_mapping_level_to_project = (
+            self.restrict_mapping_level_to_project
+        )
+        base_dto.restrict_validation_role = self.restrict_validation_role
         base_dto.enforce_random_task_selection = self.enforce_random_task_selection
-        base_dto.allow_non_beginners = self.allow_non_beginners
+        base_dto.restrict_validation_level_intermediate = (
+            self.restrict_validation_level_intermediate
+        )
         base_dto.private = self.private
         base_dto.mapper_level = MappingLevel(self.mapper_level).name
         base_dto.entities_to_map = self.entities_to_map

@@ -170,7 +170,7 @@ class ProjectService:
         if len(tasks) > 0:
             return False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
-        if project.enforce_mapper_level:
+        if project.restrict_mapping_level_to_project:
             if not ProjectService._is_user_mapping_level_at_or_above_level_requests(
                 MappingLevel(project.mapper_level), user_id
             ):
@@ -221,7 +221,7 @@ class ProjectService:
         ):
             return False, ValidatingNotAllowed.PROJECT_NOT_PUBLISHED
 
-        if project.enforce_validator_role and not UserService.is_user_validator(
+        if project.restrict_validation_role and not UserService.is_user_validator(
             user_id
         ):
             return False, ValidatingNotAllowed.USER_NOT_VALIDATOR
