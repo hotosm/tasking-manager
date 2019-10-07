@@ -55,7 +55,7 @@ def upgrade():
             if is_match:
                 project_continent = continent["properties"]["CONTINENT"]
                 with open(
-                    "migrations/" + project_continent + ".json"
+                    "migrations/" + project_continent + ".json", "r", encoding="utf-8"
                 ) as countries_data:
                     countries = json.load(countries_data)
                     if not project_centroid.is_valid:
