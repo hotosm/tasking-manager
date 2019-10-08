@@ -388,6 +388,7 @@ class ProjectSummary(Model):
     )
     allow_non_beginners = BooleanType(serialized_name="allowNonBeginners")
     private = BooleanType(serialized_name="private")
+    allowed_users = ListType(StringType, serialized_name="allowedUsernames", default=[])
     project_info = ModelType(
         ProjectInfoDTO, serialized_name="projectInfo", serialize_when_none=False
     )
