@@ -237,6 +237,15 @@ class ProjectService:
             except StopIteration:
                 return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
+        # Restrict validation by non-beginners users only
+        if project.restrict_validation_level_intermediate is True:
+            user = UserService.get_user_by_id(user_id)
+            if user.mapping_level not in (
+                MappingLevel.INTERMEDIATE.value,
+                MappingLevel.ADVANCED.value,
+            ):
+                return False, ValidatingNotAllowed.USER_IS_BEGINNER
+
         return True, "User allowed to validate"
 
     @staticmethod
