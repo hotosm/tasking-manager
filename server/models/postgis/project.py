@@ -669,6 +669,13 @@ class Project(db.Model):
                 mapping_types_array.append(MappingTypes(mapping_type).name)
             summary.mapping_types = mapping_types_array
 
+        # If project is private, fetch list of allowed users
+        if self.private:
+            allowed_users = []
+            for user in self.allowed_users:
+                allowed_users.append(user.username)
+            summary.allowed_users = allowed_users
+
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         summary.aoi_centroid = geojson.loads(centroid_geojson)
 
