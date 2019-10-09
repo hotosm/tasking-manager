@@ -154,6 +154,8 @@ def add_api_endpoints(app):
         ProjectsActionsUnFeatureAPI,
     )
 
+    from server.api.projects.favorites import ProjectFavoriteAPI
+
     # Tasks API import
     from server.api.tasks.resources import (
         TasksRestAPI,
@@ -221,6 +223,7 @@ def add_api_endpoints(app):
         UsersAllAPI,
         UsersQueriesUsernameAPI,
         UsersQueriesUsernameFilterAPI,
+        UserFavoritesAPI,
     )
     from server.api.users.actions import (
         UsersActionsSetUsersAPI,
@@ -317,6 +320,12 @@ def add_api_endpoints(app):
     api.add_resource(
         ProjectsActionsUnFeatureAPI,
         "/api/v2/projects/<int:project_id>/actions/remove-feature",
+    )
+
+    api.add_resource(
+        ProjectFavoriteAPI,
+        "/api/v2/projects/<int:project_id>/favorite/",
+        methods=["GET", "POST", "DELETE"],
     )
 
     # Tasks REST endpoint
@@ -489,6 +498,7 @@ def add_api_endpoints(app):
     api.add_resource(
         UsersQueriesUsernameAPI, "/api/v2/users/queries/<string:username>/"
     )
+    api.add_resource(UserFavoritesAPI, "/api/v2/users/queries/favorites/")
 
     # Users Actions endpoint
     api.add_resource(UsersActionsSetUsersAPI, "/api/v2/users/actions/set-user/")

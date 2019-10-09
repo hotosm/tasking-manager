@@ -3,6 +3,7 @@ from flask import current_app
 import datetime
 from sqlalchemy import text, func, or_, desc
 from server import db
+from server.models.dtos.project_dto import ProjectFavoritesDTO
 from server.models.dtos.user_dto import (
     UserDTO,
     UserOSMDTO,
@@ -96,6 +97,16 @@ class UserService:
             user.update_picture_url(picture_url)
 
         return user
+
+    @staticmethod
+    def get_projects_favorited(user_id: int) -> ProjectFavoritesDTO:
+        user = UserService.get_user_by_id(user_id)
+        projects_dto = [f.as_dto_for_admin(f.id) for f in user.favorites]
+
+        fav_dto = ProjectFavoritesDTO()
+        fav_dto.favorited_projects = projects_dto
+
+        return fav_dto
 
     @staticmethod
     def register_user(osm_id, username, changeset_count, picture_url):

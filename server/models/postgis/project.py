@@ -56,6 +56,15 @@ from server.models.postgis.utils import (
 )
 from server.services.grid.grid_service import GridService
 
+
+# Secondary table defining many-to-many join for projects that were favorited by users.
+project_favorites = db.Table(
+    "project_favorites",
+    db.metadata,
+    db.Column("project_id", db.Integer, db.ForeignKey("projects.id")),
+    db.Column("user_id", db.BigInteger, db.ForeignKey("users.id")),
+)
+
 # Secondary table defining many-to-many join for private projects that only defined users can map on
 project_allowed_users = db.Table(
     "project_allowed_users",
@@ -165,6 +174,7 @@ class Project(db.Model):
         cascade="all, delete-orphan",
         single_parent=True,
     )
+    favorited = db.relationship(User, secondary=project_favorites, backref="favorites")
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
@@ -419,6 +429,25 @@ class Project(db.Model):
     def delete(self):
         """ Deletes the current model from the DB """
         db.session.delete(self)
+        db.session.commit()
+
+    def is_favorited(self, user_id: int) -> bool:
+        user = User.query.get(user_id)
+        if user not in self.favorited:
+            return False
+
+        return True
+
+    def favorite(self, user_id: int):
+        user = User.query.get(user_id)
+        self.favorited.append(user)
+        db.session.commit()
+
+    def unfavorite(self, user_id: int):
+        user = User.query.get(user_id)
+        if user not in self.favorited:
+            raise ValueError("Project not been favorited by user")
+        self.favorited.remove(user)
         db.session.commit()
 
     def set_as_featured(self):
