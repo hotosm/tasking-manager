@@ -4,9 +4,13 @@ const Parameters = {
   GitSha: {
     Type: 'String'
   },
-  Environment: {
+  NetworkEnvironment: {
     Type :'String',
     AllowedValues: ['staging', 'production']
+  },
+  AutoscalingPolicy: {
+    Type: 'String',
+    AllowedValues: ['Testing (max 1 instance)', 'Demo (max 3)', 'Production (max 12)']
   },
   DBSnapshot: {
     Type: 'String',
@@ -103,7 +107,8 @@ const Parameters = {
 const Conditions = {
   UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
   DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
-  IsTaskingManagerProduction: cf.equals(cf.stackName, 'tasking-manager-production')
+  IsTaskingManagerProduction: cf.equals(cf.ref('AutoscalingPolicy'), 'Production (max 12)'),
+  IsTaskingManagerDemo: cf.equals(cf.ref('AutoscalingPolicy'), 'Demo (max 3)')
 };
 
 const Resources = {
@@ -112,11 +117,11 @@ const Resources = {
     Type: 'AWS::AutoScaling::AutoScalingGroup',
     Properties: {
       AutoScalingGroupName: cf.stackName,
-      Cooldown: 300,
+      Cooldown: 600,
       MinSize: cf.if('IsTaskingManagerProduction', 3, 1),
       DesiredCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
-      MaxSize: cf.if('IsTaskingManagerProduction', 12, 1),
-      HealthCheckGracePeriod: 300,
+      MaxSize: cf.if('IsTaskingManagerProduction', 12, cf.if('IsTaskingManagerDemo', 3, 1)),
+      HealthCheckGracePeriod: 600,
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
@@ -135,7 +140,7 @@ const Resources = {
         AutoScalingGroupName: cf.ref('TaskingManagerASG'),
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
-          TargetValue: 500,
+          TargetValue: 600,
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
             ResourceLabel: cf.join('/', [
@@ -152,7 +157,7 @@ const Resources = {
             ])
           }
         },
-        Cooldown: 300
+        Cooldown: 600
       }
   },
   TaskingManagerLaunchConfiguration: {
@@ -264,7 +269,7 @@ const Resources = {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
       ImageId: 'ami-0565af6e282977273',
       InstanceType: 'c5d.large',
-      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
+      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
         '#!/bin/bash',
         'set -x',
@@ -501,7 +506,7 @@ const Resources = {
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
     Properties: {
       Name: cf.stackName,
-      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'elbs-security-group', cf.region]))],
+      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
       Subnets: cf.split(',', cf.ref('ELBSubnets')),
       Type: 'application'
     }
@@ -572,7 +577,7 @@ const Resources = {
         EnableCloudwatchLogsExports: ['postgresql'],
         DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.m5.xlarge', 'db.t2.small'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
-        VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
+        VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
     }
   }
 };
