@@ -10,7 +10,7 @@ from server.models.dtos.project_dto import (
     ProjectSearchDTO,
 )
 from server.models.postgis.project import Project, Task, ProjectStatus
-from server.models.postgis.statuses import TaskCreationMode, UserRole, TeamRoles
+from server.models.postgis.statuses import TaskCreationMode, TeamRoles
 from server.models.postgis.task import TaskHistory, TaskStatus, TaskAction
 from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
 from server.services.grid.grid_service import GridService
@@ -115,38 +115,6 @@ class ProjectAdminService:
     @staticmethod
     def update_project(project_dto: ProjectDTO, authenticated_user_id: int):
         project_id = project_dto.project_id
-        author_id = project_dto.author
-        org_id = project_dto.organisation
-        allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
-
-        is_admin = UserService.is_user_an_admin(authenticated_user_id)
-        is_author = UserService.is_user_the_project_author(
-            authenticated_user_id, author_id
-        )
-        is_org_manager = None
-        if org_id:
-            is_org_manager = OrganisationService.is_user_an_org_manager(
-                org_id, authenticated_user_id
-            )
-        # Verify team role
-        is_team_member = None
-        if hasattr(project_dto, "project_teams") and project_dto.project_teams:
-            teams_dto = TeamService.get_project_teams_as_dto(project_id)
-            if teams_dto.teams:
-                teams_allowed = [
-                    team_dto
-                    for team_dto in teams_dto.teams
-                    if team_dto.role in allowed_roles
-                ]
-                user_membership = [
-                    team_dto.team_id
-                    for team_dto in teams_allowed
-                    if TeamService.is_user_member_of_team(
-                        team_dto.team_id, authenticated_user_id
-                    )
-                ]
-                if user_membership:
-                    is_team_member = True
 
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
             ProjectAdminService._validate_default_locale(
@@ -159,13 +127,13 @@ class ProjectAdminService:
         if project_dto.private:
             ProjectAdminService._validate_allowed_users(project_dto)
 
-        if is_admin or is_author or is_org_manager or is_team_member:
+        if ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        ):
             project = ProjectAdminService._get_project_by_id(project_id)
             project.update(project_dto)
         else:
-            raise ProjectAdminServiceError(
-                "Project can only be updated by admins or by the owner"
-            )
+            raise ValueError("Project can only be updated by admins or by the owner")
 
         return project
 
@@ -334,21 +302,58 @@ class ProjectAdminService:
         """ Transfers project from old owner (transfering_user_id) to new owner (username) """
         project = Project.get(project_id)
 
-        transfering_user = UserService.get_user_by_id(transfering_user_id)
+        # Check permissions for the user (transferring_user_id) who initiatied the action
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            transfering_user_id, project_id
+        ):
+            raise ValueError("User action not permitted")
         new_owner = UserService.get_user_by_username(username)
-        is_pm = new_owner.role in (UserRole.PROJECT_MANAGER.value, UserRole.ADMIN.value)
 
-        if not is_pm:
-            raise Exception("User must be a project manager")
-
-        if transfering_user.role == UserRole.PROJECT_MANAGER.value:
-            if project.author_id == transfering_user_id:
-                project.author_id = new_owner.id
-                project.save()
-            else:
-                raise Exception("Invalid owner_id")
-        elif transfering_user.role == UserRole.ADMIN.value:
-            project.author_id = new_owner.id
-            project.save()
+        # Check permissions for the new owner - must be an admin or project's org manager or a PM team member
+        if not ProjectAdminService.is_user_action_permitted_on_project(
+            new_owner.id, project_id
+        ):
+            raise ValueError("User action not permitted")
         else:
-            raise Exception("Normal users cannot transfer projects")
+            project.save()
+
+    @staticmethod
+    def is_user_action_permitted_on_project(
+        authenticated_user_id: int, project_id: int
+    ) -> bool:
+        """ Is user action permitted on project"""
+        project = Project.get(project_id)
+        author_id = project.author_id
+        allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
+
+        is_admin = UserService.is_user_an_admin(authenticated_user_id)
+        is_author = UserService.is_user_the_project_author(
+            authenticated_user_id, author_id
+        )
+        is_org_manager = False
+        if hasattr(project, "organisation_id") and project.organisation_id:
+            org_id = project.organisation_id
+            org = OrganisationService.get_organisation_by_id_as_dto(org_id)
+            if org.is_manager:
+                is_org_manager = True
+
+        is_team_member = None
+        if hasattr(project, "project_teams") and project.project_teams:
+            teams_dto = TeamService.get_project_teams_as_dto(project_id)
+            if teams_dto.teams:
+                teams_allowed = [
+                    team_dto
+                    for team_dto in teams_dto.teams
+                    if team_dto.role in allowed_roles
+                ]
+                user_membership = [
+                    team_dto.team_id
+                    for team_dto in teams_allowed
+                    if TeamService.is_user_member_of_team(
+                        team_dto.team_id, authenticated_user_id
+                    )
+                ]
+                if user_membership:
+                    is_team_member = True
+
+        return is_admin or is_author or is_org_manager or is_team_member

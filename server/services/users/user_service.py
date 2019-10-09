@@ -214,7 +214,7 @@ class UserService:
         )
 
         interests_dto = [
-            InterestDTO(dict(id=i.id, name=i.name, count_projects=i.count_projects,))
+            InterestDTO(dict(id=i.id, name=i.name, count_projects=i.count_projects))
             for i in interests
         ]
 

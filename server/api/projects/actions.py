@@ -12,7 +12,6 @@ from server.services.interests_service import InterestService
 
 
 class ProjectsActionsTransferAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -48,6 +47,8 @@ class ProjectsActionsTransferAPI(Resource):
                 description: Project ownership transfered successfully
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Unauthorized - Forbidden
             500:
                 description: Internal Server Error
         """
@@ -57,6 +58,8 @@ class ProjectsActionsTransferAPI(Resource):
                 project_id, tm.authenticated_user_id, username
             )
             return {"Success": "Project Transfered"}, 200
+        except ValueError as e:
+            return {"Error": str(e)}, 403
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -64,7 +67,6 @@ class ProjectsActionsTransferAPI(Resource):
 
 
 class ProjectsActionsMessageContributorsAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -106,6 +108,8 @@ class ProjectsActionsMessageContributorsAPI(Resource):
                 description: Message sent successfully
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Unauthorized - Forbidden
             500:
                 description: Internal Server Error
         """
@@ -118,12 +122,17 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             return {"Error": "Unable to send message to mappers"}, 400
 
         try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
             threading.Thread(
                 target=MessageService.send_message_to_all_contributors,
                 args=(project_id, message_dto),
             ).start()
 
             return {"Success": "Messages started"}, 200
+        except ValueError as e:
+            return {"Error": str(e)}, 403
         except Exception as e:
             error_msg = f"Send message all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -131,7 +140,6 @@ class ProjectsActionsMessageContributorsAPI(Resource):
 
 
 class ProjectsActionsFeatureAPI(Resource):
-    @tm.pm_only(True)
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -167,7 +175,15 @@ class ProjectsActionsFeatureAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectService.set_project_as_featured(project_id)
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"FeaturedProjects POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
+        try:
+            ProjectService.set_project_as_featured(project_id, tm.authenticated_user_id)
             return {"Success": True}, 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404
@@ -175,13 +191,12 @@ class ProjectsActionsFeatureAPI(Resource):
             error_msg = f"FeaturedProjects POST: {str(e)}"
             return {"Error": error_msg}, 400
         except Exception as e:
-            error_msg = f"FeaturedProjects GET - unhandled error: {str(e)}"
+            error_msg = f"FeaturedProjects POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
 
 class ProjectsActionsUnFeatureAPI(Resource):
-    @tm.pm_only(True)
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -217,6 +232,14 @@ class ProjectsActionsUnFeatureAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"FeaturedProjects POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
+        try:
             ProjectService.unset_project_as_featured(project_id)
             return {"Success": True}, 200
         except NotFound:
@@ -231,7 +254,6 @@ class ProjectsActionsUnFeatureAPI(Resource):
 
 
 class ProjectsActionsSetInterestsAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -269,11 +291,21 @@ class ProjectsActionsSetInterestsAPI(Resource):
                 description: New project interest relationship created
             400:
                 description: Invalid Request
+            403:
+                description: Forbidden
             401:
                 description: Unauthorized - Invalid credentials
             500:
                 description: Internal Server Error
         """
+        try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"ProjectsActionsSetInterestsAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             data = request.get_json()
             project_interests = InterestService.create_or_update_project_interests(
@@ -281,8 +313,10 @@ class ProjectsActionsSetInterestsAPI(Resource):
             )
             return project_interests.to_primitive(), 200
         except NotFound:
-            return {"Error": "project not Found"}, 404
+            return {"Error": "Project not Found"}, 404
         except Exception as e:
-            error_msg = f"project relationship POST - unhandled error: {str(e)}"
+            error_msg = (
+                f"ProjectsActionsSetInterestsAPI POST - unhandled error: {str(e)}"
+            )
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500

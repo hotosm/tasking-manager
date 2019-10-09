@@ -3,12 +3,12 @@ from schematics.exceptions import DataError
 
 from server.models.dtos.campaign_dto import CampaignProjectDTO
 from server.services.campaign_service import CampaignService
+from server.services.project_admin_service import ProjectAdminService
 from server.models.postgis.utils import NotFound
 from server.services.users.authentication_service import token_auth, tm
 
 
 class ProjectsCampaignsAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id, campaign_id):
         """
@@ -44,9 +44,20 @@ class ProjectsCampaignsAPI(Resource):
                 description: Client Error - Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Unauthorized: Forbidden
             500:
                 description: Internal Server Error
         """
+
+        try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"ProjectsCampaignsAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             campaign_project_dto = CampaignProjectDTO()
             campaign_project_dto.campaign_id = campaign_id
@@ -63,7 +74,7 @@ class ProjectsCampaignsAPI(Resource):
             )
             return ({"Success": message}, 200)
         except Exception as e:
-            error_msg = f"User POST - unhandled error: {str(e)}"
+            error_msg = f"ProjectsCampaignsAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -102,7 +113,6 @@ class ProjectsCampaignsAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    @tm.pm_only()
     @token_auth.login_required
     def delete(self, project_id, campaign_id):
         """
@@ -138,15 +148,25 @@ class ProjectsCampaignsAPI(Resource):
                 description: Client Error - Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Unauthorized - Forbidden
             500:
                 description: Internal Server Error
         """
+        try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"ProjectsCampaignsAPI DELETE: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             CampaignService.delete_project_campaign(project_id, campaign_id)
             return {"Success": "Campaigns Deleted"}, 200
         except NotFound:
             return {"Error": "Campaign Not Found"}, 404
         except Exception as e:
-            error_msg = f"Project Campaigns GET - unhandled error: {str(e)}"
+            error_msg = f"ProjectCampaignsAPI DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500

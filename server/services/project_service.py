@@ -128,7 +128,9 @@ class ProjectService:
         return contribs_dto
 
     @staticmethod
-    def get_project_dto_for_mapper(project_id, locale="en", abbrev=False) -> ProjectDTO:
+    def get_project_dto_for_mapper(
+        project_id, current_user_id, locale="en", abbrev=False
+    ) -> ProjectDTO:
         """
         Get the project DTO for mappers
         :param project_id: ID of the Project mapper has requested
@@ -136,7 +138,7 @@ class ProjectService:
         :raises ProjectServiceError, NotFound
         """
         project = ProjectService.get_project_by_id(project_id)
-        return project.as_dto_for_mapping(locale, abbrev)
+        return project.as_dto_for_mapping(current_user_id, locale, abbrev)
 
     @staticmethod
     def get_project_tasks(
@@ -190,7 +192,7 @@ class ProjectService:
 
     @staticmethod
     def evaluate_mapping_permission(
-        project_id: int, user_id: int, mapping_permission: int,
+        project_id: int, user_id: int, mapping_permission: int
     ):
         allowed_roles = [
             TeamRoles.MAPPER.value,
@@ -388,13 +390,13 @@ class ProjectService:
         return project.get_project_summary(preferred_locale)
 
     @staticmethod
-    def set_project_as_featured(project_id: int):
+    def set_project_as_featured(project_id: int, authenticated_user_id: int):
         """ Sets project as featured """
         project = ProjectService.get_project_by_id(project_id)
         project.set_as_featured()
 
     @staticmethod
-    def unset_project_as_featured(project_id: int):
+    def unset_project_as_featured(project_id: int, authenticated_user_id: int):
         """ Sets project as featured """
         project = ProjectService.get_project_by_id(project_id)
         project.unset_as_featured()
