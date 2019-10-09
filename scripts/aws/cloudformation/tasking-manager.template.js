@@ -10,7 +10,8 @@ const Parameters = {
   },
   AutoscalingPolicy: {
     Type: 'String',
-    AllowedValues: ['Testing (max 1 instance)', 'Demo (max 3)', 'Production (max 12)']
+    AllowedValues: ['development', 'demo', 'production'],
+    Description: "development: min 1, max 1 instance; demo: min 1 max 3 instances; production: min 3 max 12 instances"
   },
   DBSnapshot: {
     Type: 'String',

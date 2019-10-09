@@ -82,6 +82,10 @@ jobs:
         description: "The environment (staging or production) on AWS"
         type: enum
         enum: ["staging", "production"]
+      autoscaling_policy:
+        description: "Setting autoscaling parameters"
+        type: enum
+        enum: ['development', 'demo', 'production']
       new_relic_license:
         type: env_var_name
         default: NEW_RELIC_LICENSE
@@ -132,7 +136,7 @@ jobs:
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"<< parameters.environment_name >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"MatomoSiteID\":\"${<< parameters.matomo_site_id >>}\", \"MatomoEndpoint\":\"${<< parameters.matomo_endpoint >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"MatomoSiteID\":\"${<< parameters.matomo_site_id >>}\", \"MatomoEndpoint\":\"${<< parameters.matomo_endpoint >>}\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -203,6 +207,7 @@ jobs:
         name: Deploy to << parameters.stack_name >>
         command: |
           export NODE_PATH=/usr/lib/node_modules
+          validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
           cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
@@ -237,6 +242,7 @@ workflows:
         - build
         stack_name: "staging"
         environment_name: "staging"
+        autoscaling_policy: "development"
         postgres_db: POSTGRES_DB_STAGING
         postgres_password: POSTGRES_PASSWORD_STAGING
         postgres_user: POSTGRES_USER_STAGING
@@ -266,6 +272,7 @@ workflows:
           - build
         stack_name: "prod-restored"
         environment_name: "production"
+        autoscaling_policy: "production"
         postgres_db: POSTGRES_DB_PRODUCTION
         postgres_password: POSTGRES_PASSWORD_PRODUCTION
         postgres_user: POSTGRES_USER_PRODUCTION
@@ -295,6 +302,7 @@ workflows:
           - build
         stack_name: "teachosm"
         environment_name: "production"
+        autoscaling_policy: "demo"
         postgres_db: POSTGRES_DB_TEACHOSM
         postgres_password: POSTGRES_PASSWORD_TEACHOSM
         postgres_user: POSTGRES_USER_TEACHOSM
@@ -324,6 +332,7 @@ workflows:
           - build
         stack_name: "assisted"
         environment_name: "staging"
+        autoscaling_policy: "demo"
         postgres_db: POSTGRES_DB_ASSISTED
         postgres_password: POSTGRES_PASSWORD_ASSISTED
         postgres_user: POSTGRES_USER_ASSISTED
