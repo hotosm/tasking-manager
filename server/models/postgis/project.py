@@ -211,7 +211,7 @@ class Project(db.Model):
         single_parent=True,
     )
     favorited = db.relationship(User, secondary=project_favorites, backref="favorites")
-    organisation = db.relationship(Organisation, backref='projects')
+    organisation = db.relationship(Organisation, backref="projects")
     campaign = db.relationship(Campaign, secondary=campaign_projects, backref="project")
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
@@ -727,9 +727,7 @@ class Project(db.Model):
             self.restrict_validation_level_intermediate
         )
         summary.private = self.private
-        summary.organisation_id = self.organisation_id
-        summary.mapper_level_enforced = self.enforce_mapper_level
-        summary.validator_level_enforced = self.enforce_validator_role
+        summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map
         summary.imagery = self.imagery
