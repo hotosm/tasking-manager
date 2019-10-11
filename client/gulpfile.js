@@ -5,8 +5,11 @@ var gulp = require('gulp'),
     cssnano = require('gulp-cssnano'),
     del = require('del'),
     eslint = require("gulp-eslint"),
+    fs = require('fs'),
     modRewrite = require('connect-modrewrite'),
     processhtml = require('gulp-processhtml'),
+    remoteSrc = require('gulp-remote-src'),
+    rename = require('gulp-rename'),
     runSequence = require('run-sequence'),
     sass = require('gulp-sass');
 uglify = require('gulp-uglify');
@@ -132,10 +135,37 @@ gulp.task('create-release-config', function () {
         .pipe(gulp.dest('app'))
 });
 
+gulp.task('create-presets-config', function () {
+   /**
+    * Creates a config file for Angular containing iD editor preset categories
+    * from the iD preset categories file, which will be fetched directly from
+    * Github if no presets file exists locally
+    *
+    * There is a plan to break iD presets out into their own NPM package, at
+    * which time this will no longer be necessary
+    */
+    var presetData = fs.existsSync('./id_preset_categories.json') ?
+                     gulp.src('id_preset_categories.json') :
+                     fetchIdPresets()
+
+    return presetData
+        .pipe(config('idpresets'))
+        .pipe(gulp.dest('app'))
+});
+
+gulp.task('fetch-id-presets', function () {
+  /**
+   * Explicitly fetch presets file from Github, intended to be run manually on
+   * demand
+   */
+  return fetchIdPresets();
+});
+
 /** Build task for will minify the app and copy it to the dist folder ready to deploy */
 gulp.task('build', function (callback) {
     runSequence('clean',
         'create-release-config',
+        'create-presets-config',
         'compile-sass',
         'copy_images_to_dist',
         'copy_icons_to_dist',
@@ -150,6 +180,7 @@ gulp.task('build', function (callback) {
 
 gulp.task('run', function (callback) {
     runSequence('create-dev-config',
+        'create-presets-config',
         'compile-sass',
         'browser-sync',
         'sass:watch',
@@ -157,3 +188,15 @@ gulp.task('run', function (callback) {
     )
     ;
 });
+
+function fetchIdPresets() {
+  /**
+   * Fetches the iD preset categories from github and saves them as
+   * ./id_preset_categories.json
+   */
+  return remoteSrc('presets/categories.json', {
+             base: 'https://raw.githubusercontent.com/openstreetmap/iD/v2.15.3/data/'
+         })
+      .pipe(rename('id_preset_categories.json'))
+      .pipe(gulp.dest('./'));
+}

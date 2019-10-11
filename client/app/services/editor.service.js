@@ -6,12 +6,12 @@
 
     angular
         .module('taskingManager')
-        .service('editorService', ['$window', '$location', '$q', 'mapService', 'configService', editorService]);
+        .service('editorService', ['$window', '$location', '$q', 'mapService', 'configService', 'categories', editorService]);
 
     var JOSM_COMMAND_TIMEOUT = 1000;
     var josmLastCommand = 0;
 
-    function editorService($window, $location, $q, mapService, configService) {
+    function editorService($window, $location, $q, mapService, configService, idPresetCategories) {
 
         var service = {
             sendJOSMCmd: sendJOSMCmd,
@@ -19,7 +19,9 @@
             launchPotlatch2Editor: launchPotlatch2Editor,
             launchIdEditor: launchIdEditor,
             getGPXUrl: getGPXUrl,
-            getOSMXMLUrl: getOSMXMLUrl
+            getOSMXMLUrl: getOSMXMLUrl,
+            idPresetCategories: idPresetCategories,
+            allIdPresets: allIdPresets,
         };
 
         return service;
@@ -54,7 +56,7 @@
          * @param projectId
          * @param taskId
          */
-        function launchIdEditor(centroid, changesetComment, imageryUrl, projectId, taskId){
+        function launchIdEditor(centroid, changesetComment, imageryUrl, projectId, taskId, presets){
             var base = 'http://www.openstreetmap.org/edit?editor=id&';
             var zoom = mapService.getOSMMap().getView().getZoom();
             var url = base + '#map=' +
@@ -75,6 +77,10 @@
             // Add GPX
             if (projectId && projectId !== '' && taskId && taskId !== '') {
                 url += "&gpx=" + getGPXUrl(projectId, taskId);
+            }
+            // Add preset limits
+            if (presets && presets.length > 0) {
+                url += "&presets=" + encodeURIComponent(presets.join(','));
             }
             $window.open(url);
         }
@@ -184,6 +190,27 @@
                 osmUrl = $location.protocol() + '://' + $location.host() + osmUrl;
             }
             return encodeURIComponent(osmUrl);
+        }
+
+        /**
+         * Returns a flat (uncategorized) array of all available iD presets in
+         * alphabetical order
+         */
+        function allIdPresets() {
+            var presets = [];
+            Object.keys(idPresetCategories).forEach(function(category) {
+                // Some presets are duplicated between categories, so only add
+                // if unseen
+                var categoryMembers = idPresetCategories[category].members;
+                for (var i = 0; i < categoryMembers.length; i++) {
+                    if (presets.indexOf(categoryMembers[i]) === -1) {
+                        presets.push(categoryMembers[i]);
+                    }
+                }
+            });
+
+            presets.sort();
+            return presets;
         }
     }
 })();

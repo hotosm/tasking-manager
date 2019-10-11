@@ -32,6 +32,8 @@
     "gulp-eslint": "4.0.2",
     "gulp-ng-config": "^1.4.0",
     "gulp-processhtml": "^1.1.0",
+    "gulp-remote-src": "^0.4.4",
+    "gulp-rename": "^1.4.0",
     "gulp-sass": "^3.1.0",
     "gulp-uglify": "^2.0.1",
     "hot-design-system": "git+https://github.com/hotosm/hot-design-system.git",

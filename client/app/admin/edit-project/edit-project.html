@@ -317,22 +317,56 @@
                                     <p>{{ 'Setting the level will help the mappers find suitable projects to work on. You can enforce the level required for mapping in the permissions section.' | translate }}</p>
                                 </div>
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Type(s) of mapping' | translate }} *</label>
-                                    <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.roads"/>{{ 'Roads' | translate }}
-                                    </label>
-                                    <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.buildings"/>{{ 'Buildings' | translate }}
-                                    </label>
-                                    <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.waterways"/>{{ 'Waterways' | translate }}
-                                    </label>
-                                    <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.landuse"/>{{ 'Landuse' | translate }}
-                                    </label>
-                                    <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.other"/>{{ 'Other' | translate }}
-                                    </label>
+                                    <div class="edit-mapping-types">
+                                        <div>
+                                            <label class="form__label">{{ 'Type(s) of mapping' | translate }}</label>
+                                            <label class="form__option">
+                                                <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.roads"/>{{ 'Roads' | translate }}
+                                            </label>
+                                            <label class="form__option">
+                                                <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.buildings"/>{{ 'Buildings' | translate }}
+                                            </label>
+                                            <label class="form__option">
+                                                <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.waterways"/>{{ 'Waterways' | translate }}
+                                            </label>
+                                            <label class="form__option">
+                                                <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.landuse"/>{{ 'Landuse' | translate }}
+                                            </label>
+                                            <label class="form__option">
+                                                <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.other"/>{{ 'Other' | translate }}
+                                            </label>
+                                        </div>
+                                        <div ng-show="editProjectCtrl.limitPresets || editProjectCtrl.userIsExpert">
+                                            <div class="limit-presets">
+                                                <label class="form__label">{{ 'iD Editor Presets *' | translate }}</label>
+                                                <p>
+                                                    {{ 'Choose 1 or more presets or disable preset limiting' | translate }}
+                                                </p>
+                                                <label class="form__option">
+                                                    <input type="checkbox" ng-model="editProjectCtrl.limitPresets"/>
+                                                    {{ 'Limit iD Editor Presets' | translate }}
+                                                </label>
+                                                <div ng-show="editProjectCtrl.getMappingTypesArray().length > 0">
+                                                      <div ng-show="editProjectCtrl.limitPresets">
+                                                          <label class="form__label">{{ 'Offer Presets:' | translate }}</label>
+                                                          <input type="text"
+                                                                ng-model="editProjectCtrl.presetsFilter"
+                                                                placeholder="{{ 'Type to narrow presets' | translate }}"
+                                                                class="form__control form__control--medium narrow-presets"
+                                                          />
+                                                          <div ng-repeat="preset in editProjectCtrl.offeredPresets()">
+                                                              <label class="form__option">
+                                                                  <input type="checkbox" ng-model="editProjectCtrl.selectedPresets[preset]"/>{{ preset }}
+                                                              </label>
+                                                          </div>
+                                                      </div>
+                                                </div>
+                                                <p ng-hide="!editProjectCtrl.limitPresets || editProjectCtrl.getMappingTypesArray().length > 0">
+                                                  {{ 'Tip: choose Types of Mapping to view preset options' | translate }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Organisation Tag' | translate }} *</label>
@@ -663,6 +697,9 @@
                                     </p>
                                     <p class="error" ng-show="editProjectCtrl.instructionsMissing">
                                         {{ 'Instructions for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'are missing.' | translate }}
+                                    </p>
+                                    <p class="error" ng-show="editProjectCtrl.presetsMissing">
+                                        {{ 'Select at least one iD preset or disable iD preset limiting.' | translate }}
                                     </p>
                                     <p class="error" ng-show="!editProjectCtrl.editForm.campaignTag.$valid">
                                         {{ 'Please make sure you only have one campaign tag.' | translate }}

@@ -264,3 +264,16 @@
 .email-warning{
   color: $danger-color !important;
 }
+
+.edit-mapping-types {
+  display: flex;
+  justify-content: space-between;
+}
+
+.limit-presets {
+  min-width: 350px;
+}
+
+input.narrow-presets {
+  margin-bottom: 1em;
+}

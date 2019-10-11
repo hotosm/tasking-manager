@@ -1593,7 +1593,8 @@
                     changesetComment,
                     imageryUrl,
                     vm.projectData.projectId,
-                    vm.getSelectTaskIds()
+                    vm.getSelectTaskIds(),
+                    vm.projectData.idPresets
                 );
             }
             else if (editor === 'potlatch2') {

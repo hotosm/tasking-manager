@@ -111,6 +111,7 @@ class ProjectDTO(Model):
     due_date = DateTimeType(serialized_name='dueDate')
     imagery = StringType()
     josm_preset = StringType(serialized_name='josmPreset', serialize_when_none=False)
+    id_presets = ListType(StringType, serialized_name='idPresets', default=[])
     mapping_types = ListType(StringType, serialized_name='mappingTypes', validators=[is_known_mapping_type])
     campaign_tag = StringType(serialized_name='campaignTag')
     organisation_tag = StringType(serialized_name='organisationTag')
