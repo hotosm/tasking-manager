@@ -149,6 +149,7 @@ class Project(db.Model):
     due_date = db.Column(db.DateTime)
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
+    id_presets = db.Column(ARRAY(db.String))
     last_updated = db.Column(db.DateTime, default=timestamp)
     license_id = db.Column(db.Integer, db.ForeignKey("licenses.id", name="fk_licenses"))
     geometry = db.Column(Geometry("MULTIPOLYGON", srid=4326))
@@ -164,6 +165,7 @@ class Project(db.Model):
         index=True,
     )
     organisation_tag = db.Column(db.String, index=True)
+
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
 
@@ -393,6 +395,7 @@ class Project(db.Model):
         self.due_date = project_dto.due_date
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
+        self.id_presets = project_dto.id_presets
         self.last_updated = timestamp()
         self.license_id = project_dto.license_id
 
@@ -865,6 +868,8 @@ class Project(db.Model):
         base_dto.due_date = self.due_date
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset
+        base_dto.id_presets = self.id_presets
+        base_dto.campaign_tag = self.campaign_tag
         base_dto.country_tag = self.country
         base_dto.organisation_id = self.organisation_id
         base_dto.license_id = self.license_id
