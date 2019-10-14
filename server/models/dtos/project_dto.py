@@ -218,6 +218,25 @@ class ProjectDTO(Model):
     )
 
 
+class ProjectFavoriteDTO(Model):
+    """ DTO used to define project favorite by user """
+
+    project_id = IntType(required=True)
+    user_id = IntType(required=True)
+
+
+class ProjectFavoritesDTO(Model):
+    """ DTO for projects a user has mapped """
+
+    def __init__(self):
+        super().__init__()
+        self.favorited_projects = []
+
+    favorited_projects = ListType(
+        ModelType(ProjectDTO), serialized_name="favoritedProjects"
+    )
+
+
 class ProjectSearchDTO(Model):
     """ Describes the criteria users use to filter active projects"""
 
