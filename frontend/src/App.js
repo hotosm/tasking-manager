@@ -1,5 +1,5 @@
 import React from 'react';
-import { Location, Router, globalHistory } from '@reach/router';
+import { Router, globalHistory } from '@reach/router';
 import { QueryParamProvider } from 'use-query-params';
 
 import './assets/styles/index.scss';
@@ -19,33 +19,34 @@ import { SelectTask } from './views/taskSelection';
  *  create special sub-router for Projects page and wrap it only around that */
 function App() {
   return (
-    <Location>
-      {({ location }) => (
-        <div className="App w-100 base-font bg-white">
-          <Header location={location} />
-          <div className="cf w-100 base-font">
-            <QueryParamProvider reachHistory={globalHistory}>
-              <Router>
-                <Home path="/" />
-                <ProjectsPage path="contribute">
-                  <ProjectsPageIndex path="/" />
-                  <MoreFilters path="/filters/*" />
-                </ProjectsPage>
-                <AboutPage path="about" />
-                <Authorized path="authorized" />
-                <Login path="login" />
-                <Welcome path="welcome" />
-                <Settings path="settings" />
-                <SelectTask path="projects/:id/map" />
-                <ProjectDetailPage path="projects/:id" />
-                <NotFound default />
-              </Router>
-            </QueryParamProvider>
-          </div>
-          <Footer location={location} />
-        </div>
-      )}
-    </Location>
+    <div className="App w-100 base-font bg-white">
+      <Router>
+        <Header path="/*"/>
+      </Router>
+      <div className="cf w-100 base-font">
+        <QueryParamProvider reachHistory={globalHistory}>
+          <Router>
+            <Home path="/" />
+            <ProjectsPage path="contribute">
+              <ProjectsPageIndex path="/" />
+              <MoreFilters path="/filters/*" />
+            </ProjectsPage>
+            <AboutPage path="about" />
+            <Authorized path="authorized" />
+            <Login path="login" />
+            <Welcome path="welcome" />
+            <Settings path="settings" />
+            <SelectTask path="projects/:id/map" />
+            <ProjectDetailPage path="projects/:id" />
+            <NotFound default />
+          </Router>
+        </QueryParamProvider>
+      </div>
+      <Router>
+      <Footer path="/*"/>
+
+      </Router>
+    </div>
   );
 }
 

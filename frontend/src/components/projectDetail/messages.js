@@ -5,92 +5,84 @@ import { defineMessages } from 'react-intl';
  */
 export default defineMessages({
   projectTotalContributors: {
-    id: 'project.card.contributorCount',
+    id: 'project.detail.contributorCount',
     defaultMessage: '{number} total contributors',
   },
   projectLastContribution: {
-    id: 'project.card.lastContribution',
+    id: 'project.detail.lastContribution',
     defaultMessage: 'Last contribution',
   },
   percentMapped: {
-    id: 'project.card.percentMapped',
+    id: 'project.detail.percentMapped',
     defaultMessage: ' Mapped',
   },
   percentValidated: {
-    id: 'project.card.percentValidated',
+    id: 'project.detail.percentValidated',
     defaultMessage: ' Validated',
   },
   projectPriorityURGENT: {
-    id: 'project.card.projectPriorityUrgent',
+    id: 'project.detail.projectPriorityUrgent',
     defaultMessage: 'Urgent',
   },
   projectPriorityHIGH: {
-    id: 'project.card.projectPriorityHigh',
+    id: 'project.detail.projectPriorityHigh',
     defaultMessage: 'High',
   },
   projectPriorityMEDIUM: {
-    id: 'project.card.projectPriorityMedium',
+    id: 'project.detail.projectPriorityMedium',
     defaultMessage: 'Medium',
   },
   projectPriorityLOW: {
-    id: 'project.card.projectPriorityLow',
+    id: 'project.detail.projectPriorityLow',
     defaultMessage: 'Low',
   },
   dueDateRelativeRemainingDays: {
-    id: 'project.card.dueDateLeft',
+    id: 'project.detail.dueDateLeft',
     defaultMessage: '{daysLeftHumanize} left',
   },
   createBy: {
-    id: 'project.createdBy',
+    id: 'project.detail.createdBy',
     defaultMessage: 'Created by {user}',
   },
   typesOfMapping: {
-    id: 'project.typesOfMapping',
+    id: 'project.detail.typesOfMapping',
     defaultMessage: 'Types of Mapping',
   },
   editor: {
-    id: 'project.editor',
+    id: 'project.detail.editor',
     defaultMessage: 'Editor',
   },
   selectEditor: {
-    id: 'project.editor.select',
+    id: 'project.detail.editor.select',
     defaultMessage: 'Select editor',
   },
   tasks: {
-    id: 'project.tasks',
+    id: 'project.detail.tasks',
     defaultMessage: 'Tasks',
   },
   instructions: {
-    id: 'project.instructions',
+    id: 'project.detail.instructions',
     defaultMessage: 'Instructions',
   },
   imagery: {
-    id: 'project.imagery',
+    id: 'project.detail.imagery',
     defaultMessage: 'Imagery',
   },
   customTMSLayer: {
-    id: 'project.imagery.tms',
+    id: 'project.detail.imagery.tms',
     defaultMessage: 'Custom TMS Layer',
   },
   customWMSLayer: {
-    id: 'project.imagery.wms',
+    id: 'project.detail.imagery.wms',
     defaultMessage: 'Custom WMS Layer',
   },
   customWMTSLayer: {
-    id: 'project.imagery.wmts',
+    id: 'project.detail.imagery.wmts',
     defaultMessage: 'Custom WMTS Layer',
   },
   contribute: {
     id: 'project.selectTask.footer.button.contribute',
     defaultMessage: 'Contribute',
-  },
-  mapRandomTask: {
-    id: 'project.selectTask.footer.button.mapRandomTask',
-    defaultMessage: 'Map random task',
-  },
-  validateRandomTask: {
-    id: 'project.selectTask.footer.button.validateRandomTask',
-    defaultMessage: 'Validate random task',
   },
   readMore: {
     id: 'project.readMoreButton',
@@ -99,6 +91,10 @@ export default defineMessages({
   addToFavorites: {
     id: 'project.detail.addToFavorites',
     defaultMessage: 'Add to Favorites'
+  },
+  removeFromFavorites: {
+    id: 'project.detail.removeFromFavorites',
+    defaultMessage: 'Remove from Favorites'
   },
   share: {
     id: 'project.detail.share',
@@ -109,7 +105,7 @@ export default defineMessages({
     defaultMessage: 'Country Map'
   },
   taskmap: {
-    id: 'project.detail.countrymap',
+    id: 'project.detail.taskmap',
     defaultMessage: 'Task Map'
   },
   selectATaskCardTitle: {
@@ -126,7 +122,7 @@ export default defineMessages({
   },
   selectATaskCardDescription: {
     id: 'project.detail.cards.selectATask.description',
-    defaultMessage: 'Projects are subdivided into a set of tasks managable in size and adapted to your skill level'
+    defaultMessage: 'Projects are subdivided into a set of tasks managable in size and adapted to your skill level.'
   },
   mapThroughOSMCardDescription: {
     id: 'project.detail.cards.mapthroughosm.description',
@@ -168,4 +164,16 @@ export default defineMessages({
     id: 'project.detail.sections.contributions.timelineError',
     defaultMessage: 'The timeline will be available when at least one task is mapped.'
   },
+  date: {
+    id: 'project.detail.visualisation.date',
+    defaultMessage: 'Date'
+  },
+  validated: {
+    id: 'project.detail.visualisation.validated',
+    defaultMessage: 'Validated'
+  },
+  mapped: {
+    id: 'project.detail.visualisation.mapped',
+    defaultMessage: 'Mapped'
+  }
 });

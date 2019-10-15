@@ -37,9 +37,9 @@ const frameProps = {
     fillOpacity: 0.3,
   }),
   title: (
-    <text textAnchor="middle">
-      Tasks that were <tspan fill={'#ac58e5'}>Mapped</tspan> vs{' '}
-      <tspan fill={'#E0488B'}>Validated</tspan>
+    <text textAnchor="right">
+      <tspan fill={theme[0]}>● Mapped</tspan>{' '}
+      <tspan fill={theme[1]}>● Validated</tspan>
     </text>
   ),
   axes: [
@@ -49,6 +49,13 @@ const frameProps = {
       tickFormat: function(e) {
         return e + '';
       },
+      tickLineGenerator: ({ xy }) => (
+        <path
+        className="grey-light"
+        style={{ fill: "currentColor", strokeDasharray: "10 10", stroke: "currentColor" }}
+        d={`M${xy.x1},${xy.y1 - 5}L${xy.x2},${xy.y1 - 5}`}
+      />
+      )
     },
     {
       orient: 'bottom',
@@ -59,11 +66,24 @@ const frameProps = {
         }
         return e.getMonth() + 1 + '/' + e.getDate() + year;
       },
-      label: { name: 'Date', locationDistance: 50 },
+      tickLineGenerator: ({ xy }) => (
+        <path
+          className="grey-light"
+          style={{ fill: "currentColor", strokeDasharray: "10 10", stroke: "currentColor" }}
+          d={`M${xy.x1 - 5},${xy.y1}L${xy.x1 - 5},${xy.y2}`}
+        />
+      ),
+      label: 'Date',
       ticks: 10
     },
   ],
 };
+
+/* TODO use <FormattedDate
+          year="numeric"
+          month="short"
+          value={e}
+          />  – for ticks, does not work yet. Refuses to render*/
 
 export default props => {
   const inData = props.percentDoneVisData && props.percentDoneVisData.stats;
@@ -117,10 +137,9 @@ export default props => {
       tooltipContent={d => (
         <div className="z-1 w4 w4-m w5-l bg-black ba br2 b--blue-dark pa2 shadow-5 tooltip-content">
           <p className="f6 lh-copy near-black ma0 white f7 fw4 ttc">
-            {console.log(d)}
-            {d.parentLine.title}: {d.count} ({d.percent}% before splits)
+            <FormattedMessage {...messages[d.parentLine.title]} />: {d.count} ({d.percent}% before splits)
           </p>
-          <p className="f6 lh-copy near-black ma0 white f7 fw4">Date: {d.date.toString()}</p>
+          <p className="f6 lh-copy near-black ma0 white f7 fw4"><FormattedMessage {...messages.date} />: {d.date.toString()}</p>
         </div>
       )}
       {...frameProps}

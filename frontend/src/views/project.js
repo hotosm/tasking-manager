@@ -128,6 +128,7 @@ export const ProjectDetailPage = props => {
       totalMappersError={totalMappersError}
       totalMappersLoading={totalMappersLoading}
       totalMappers={totalMappers}
+      navigate={props.navigate}
       type="detail"
     />
   );
