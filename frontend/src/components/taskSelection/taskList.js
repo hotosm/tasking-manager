@@ -29,18 +29,19 @@ function TaskStatus({status}: Object) {
 
 function TaskItem({data, projectId, selectTask, selected=[]}: Object) {
   return (
-    <div className={`cf db pv3 ba br1 mt2 ${selected.includes(data.taskId) ? 'b--blue-dark bw1' : 'b--tan bw1'}`}>
-      <div className="w-60 fl dib pointer" onClick={() => selectTask(data.taskId, data.taskStatus)}>
+    <div className={`cf db pv3 ba br1 mt2 ${selected.includes(data.taskId) ? 'b--blue-dark bw1' : 'b--tan bw1'}`} 
+        onClick={() => selectTask(data.taskId, data.taskStatus)}>
+      <div className="w-60 fl dib pointer" >
         <span className="pl3 b">
           <FormattedMessage {...messages.taskId} values={{id: data.taskId}}/>
         </span>
         {data.actionDate &&
           <>
             <span className="ph2 blue-grey">&#183;</span>
-            <span className="blue-grey">
+            <span className="blue-grey" title={data.actionDate}>
             <FormattedMessage {...messages.taskLastUpdate} values={{user: <span className="b blue-grey">{data.actionBy}</span>}} />
             { ' ' }
-            <FormattedRelative value={data.actionDate} title={data.actionDate} />
+            <FormattedRelative value={data.actionDate} />
             </span>
           </>
         }

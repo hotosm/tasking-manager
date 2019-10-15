@@ -25,7 +25,7 @@ export function BigProjectTeaser({
           </span>
         </div>
         <div className={`fr ${outerDivStyles} ${className}`}>
-          <span className={littleFont}>
+          <span className={littleFont} title={lastUpdated}>
             <FormattedMessage {...messages['projectLastContribution']} />{' '}
             <FormattedRelative value={lastUpdated} />
           </span>

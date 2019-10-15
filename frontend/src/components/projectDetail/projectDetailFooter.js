@@ -2,37 +2,37 @@ import React from 'react';
 import { Link } from '@reach/router';
 import { Button } from '../button';
 
-import { ShareIcon, FlagIcon } from '../svgIcons';
+import { ShareIcon } from '../svgIcons';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
+import { AddToFavs } from './addToFavs'
 
 export const ProjectDetailFooter = props => {
   return (
-    <div className={`${props.className} cf bt bb b--grey-light pl4`}>
+    <div className={`${props.className || ''} cf bt bb b--grey-light pl4 fixed-l w-100 z-4 bg-white`}>
       {/* TODO ADD ANCHORS */}
       <div className="dib-l fl w-60 dn pt3 mt2">
-        <FormattedMessage {...messages.overview} />
+        <a className="link blue-dark" href="#top"><FormattedMessage {...messages.overview} /></a>
         <span className="ph2">&#183;</span>
-        <FormattedMessage {...messages.howToContribute} />
+        <a className="link blue-dark" href="#howToContribute"><FormattedMessage {...messages.howToContribute} /></a>
         <span className="ph2">&#183;</span>
-        <FormattedMessage {...messages.questionsAndComments} />
+        <a className="link blue-dark" href="#questionsAndComments"><FormattedMessage {...messages.questionsAndComments} /></a>
         <span className="ph2">&#183;</span>
-        <FormattedMessage {...messages.contributions} />
-        <span className="ph2">&#183;</span>
-        <FormattedMessage {...messages.relatedProjects} />
+        <a className="link blue-dark" href="#contributions"><FormattedMessage {...messages.contributions} /></a>
+        {/* <span className="ph2">&#183;</span>
+        <a  className="link" href="#relatedProjects"><FormattedMessage {...messages.relatedProjects} /></a> */}
       </div>
-      <div className="w-40 fr">
-        <div className="w-20 fl tc dib pt2 pb3">
+      <div className="w-40-ns fr">
+        <div className="w-20 fl tc dib pt2 pb3 o-10">
           <ShareIcon className="pt3 pr2" />
           <FormattedMessage {...messages.share} />
         </div>
         <div className="w-40 fl tc dib pt2 pb3">
-          <FlagIcon className="pt3 pr2" />
-          <FormattedMessage {...messages.addToFavorites} />
+          <AddToFavs projectId={props.projectId}/>
         </div>
         <div className="dib w-40 tr fr">
           <Link to={`./map`} className="">
-            <Button className="white bg-red w5 h3">
+            <Button className="white bg-red h3 w-100">
               <FormattedMessage {...messages.contribute} />
             </Button>
           </Link>
