@@ -5,6 +5,7 @@ import { QueryParamProvider } from 'use-query-params';
 import './assets/styles/index.scss';
 import { Header } from './components/header';
 import { Footer } from './components/footer';
+import { IdEditor } from './components/IdEditor';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
 import { ProjectsPage, ProjectsPageIndex, MoreFilters } from './views/project';
@@ -35,6 +36,7 @@ function App() {
                 <Authorized path="authorized" />
                 <Login path="login" />
                 <Welcome path="welcome" />
+                <IdEditor path="id" />
                 <Settings path="settings" />
                 <SelectTask path="projects/:id/map" />
                 <NotFound default />
