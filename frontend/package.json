@@ -22,6 +22,7 @@
     "react-dom": "^16.9.0",
     "react-final-form": "^6.3.0",
     "react-intl": "^2.9.0",
+    "react-meta-elements": "^1.0.0",
     "react-placeholder": "^3.0.2",
     "react-redux": "^7.1.1",
     "react-scripts": "^3.1.1",
