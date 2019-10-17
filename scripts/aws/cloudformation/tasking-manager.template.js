@@ -101,6 +101,14 @@ const Parameters = {
   MapboxToken: {
     Type: 'String',
     Description: 'Mapbox Token'
+  },
+  TaskingManagerInstanceImageID: {
+      Type: 'String',
+      Description: 'AMI ID for launching TM instances from'
+  },
+  TaskingManagerInstanceKeypairName: {
+      Type: 'String',
+      Description: 'Name of SSH keypair for TM instances'
   }
 };
 
@@ -109,6 +117,10 @@ const Conditions = {
   DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
   IsTaskingManagerProduction: cf.equals(cf.stackName, 'tasking-manager-production')
 };
+
+const Outputs = {
+    MyRegion: cf.ref('AWS::Region')
+}
 
 const Resources = {
   TaskingManagerASG: {
@@ -124,7 +136,8 @@ const Resources = {
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
-      AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f']
+      AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f'],
+      Tags: [{'Key' : 'Name', 'PropagateAtLaunch' : true,  'Value' : 'Tasking Manager'}, {'Key' : 'TM Version', 'PropagateAtLaunch' : true,  'Value' : '4'}]
     },
     UpdatePolicy: {
       AutoScalingRollingUpdate: {
@@ -163,7 +176,7 @@ const Resources = {
     Type: 'AWS::AutoScaling::LaunchConfiguration',
     Properties: {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: 'ami-0565af6e282977273',
+      ImageId: cf.ref('TaskingManagerInstanceImageID'),
       InstanceType: 'c5d.large',
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
@@ -177,35 +190,20 @@ const Resources = {
         'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
         'sudo add-apt-repository ppa:jonathonf/python-3.6 -y',
         'sudo apt-get update',
-        'sudo apt-get -y install python3.6',
-        'sudo apt-get -y install python3.6-dev',
-        'sudo apt-get -y install python3.6-venv',
-        'sudo apt-get -y install curl',
+        'sudo apt-get -y install python3.6 python3.6-dev python3.6-venv',
+        'sudo apt-get -y install awscli curl git ruby wget',
         'curl -o install-node10.sh -sL https://deb.nodesource.com/setup_10.x',
-        'sudo chmod +x install-node10.sh',
-        'sudo ./install-node10.sh',
+        'sudo chmod +x install-node10.sh && sudo ./install-node10.sh',
         'sudo apt-get -y install nodejs',
         'wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -',
-        'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
-        'sudo apt update -y',
-        'sudo apt-get install -y postgresql-11',
-        'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt xenial-pgdg main" >> /etc/apt/sources.list\'',
-        'wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -',
-        'sudo apt update -y',
-        'sudo apt install -y postgresql-11-postgis',
-        'sudo apt install -y postgresql-11-postgis-scripts',
-        'sudo apt install -y postgis',
-        'sudo apt-get -y install libpq-dev',
-        'sudo apt-get -y install libxml2',
-        'sudo apt-get -y install wget libxml2-dev',
-        'sudo apt-get -y install libgeos-3.5.0',
-        'sudo apt-get -y install libgeos-dev',
-        'sudo apt-get -y install libproj9',
-        'sudo apt-get -y install libproj-dev',
+        'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" | sudo tee -a /etc/apt/sources.list.d/PostgreSQL.list',
+        'sudo apt-get -y update',
+        'sudo apt-get -y install postgresql-11 postgis postgresql-11-postgis postgresql-11-postgis-scripts libpq-dev',
+        'sudo apt-get -y install libxml2 libxml2-dev',
+        'sudo apt-get -y install libgeos-3.5.0 libgeos-dev',
+        'sudo apt-get -y install libproj9 libproj-dev',
         'sudo apt-get -y install python-pip libgdal1-dev',
         'sudo apt-get -y install libjson-c-dev',
-        'sudo apt-get -y install git',
-        'sudo apt-get -y install awscli',
         'git clone --recursive https://github.com/hotosm/tasking-manager.git',
         'cd tasking-manager/',
         cf.sub('git reset --hard ${GitSha}'),
@@ -248,7 +246,7 @@ const Resources = {
         'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 3 --timeout 179 manage:application &',
         cf.sub('cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
       ]),
-      KeyName: 'mbtiles'
+      KeyName: cf.ref('TaskingManagerInstanceKeypairName')
     }
   },
   TaskingManagerEC2Role: {
