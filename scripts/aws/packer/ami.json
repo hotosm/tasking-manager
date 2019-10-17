@@ -3,10 +3,8 @@
   "variables": {
     "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
-    "instance_type": "t2.micro",
-    "instance_region": "us-east-1",
+    "instance_type": "t3.small",
     "ssh_username": "ubuntu",
-    "created_by": "{{env `PACKER_RUN_OWNER`}}",
     "name": "tasking-manager-{{timestamp}}"
   },
   "builders": [{
@@ -36,7 +34,19 @@
   "provisioners": [
     {
     "type": "shell",
-    "script": "infra/bootstrap.sh"
+    "script": "scripts/aws/packer/bootstrap.sh"
+    }
+  ],
+  "post-processors": [
+    {
+        "type": "manifest",
+        "output": "scripts/aws/packer/manifest.json"
+    },
+    {
+        "type": "shell-local",
+        "inline": [
+          "echo aws ssm put-parameter --name 'TaskingManager_AMI_Current' --value 'AMI_ID_HERE' --type 'String' --overwrite"
+        ]
     }
   ]
 }

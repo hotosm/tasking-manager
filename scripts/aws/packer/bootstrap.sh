@@ -1,7 +1,8 @@
 #!/bin/bash -e
 #
 # Node.JS 10
-# PostgreSQL 9.5
+# PostgreSQL 11
+# Ubuntu 16.04
 
 # Do not prompt to trust Github.com
 /usr/bin/ssh-keyscan -t rsa github.com | sudo /usr/bin/tee -a /etc/ssh/ssh_known_hosts
@@ -21,7 +22,7 @@ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-
 echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" | \
     sudo /usr/bin/tee -a /etc/apt/sources.list.d/PostgreSQL.list
 
-sudo apt-get -q update
+sudo apt-get -qq update
 
 echo "Upgrade Ubuntu packages.."
 sudo DEBIAN_FRONTEND=noninteractive apt-get -qq -y \
@@ -63,16 +64,16 @@ sudo apt-get -qq -y install \
     postgresql-11-postgis \
     postgresql-11-postgis-scripts # PostgreSQL 11
 
-sudo apt-get -qq -y instal libpq-dev  # PostgreSQL Library to C
+sudo apt-get -qq -y install libpq-dev  # PostgreSQL Library to C
 
 # Setup Node.JS v10.x
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get -qq -y install nodejs
 
 # sudo git clone --recursive https://github.com/hotosm/tasking-manager.git /tasking-manager
-sudo git clone --recursive --single-branch \
-    --branch deployment/hot-tasking-manager \
-    https://github.com/hotosm/tasking-manager.git /tasking-manager
+# sudo git clone --recursive --single-branch \
+#     --branch deployment/hot-tasking-manager \
+#     https://github.com/hotosm/tasking-manager.git /tasking-manager
 
 # inotify watches for filesystem (why?)
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
