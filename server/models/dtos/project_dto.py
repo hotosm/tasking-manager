@@ -122,6 +122,15 @@ class ProjectInfoDTO(Model):
     )
 
 
+class CustomEditorDTO(Model):
+    """ DTO to define a custom editor """
+
+    name = StringType(required=True)
+    description = StringType()
+    url = StringType(required=True)
+    enabled = BooleanType(default=False)
+
+
 class ProjectDTO(Model):
     """ Describes JSON model for a tasking manager project """
 
@@ -218,6 +227,9 @@ class ProjectDTO(Model):
         required=True,
         serialized_name="validationEditors",
         validators=[is_known_editor],
+    )
+    custom_editor = ModelType(
+        CustomEditorDTO, serialized_name="customEditor", serialize_when_none=False
     )
 
 
