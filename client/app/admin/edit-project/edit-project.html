@@ -78,6 +78,13 @@
                                         {{ 'Actions' | translate }}
                                     </a>
                                 </li>
+                                <li>
+                                    <a title="{{ 'Add or edit a custom editor' | translate }}" ng-click="editProjectCtrl.currentSection = 'customEditor'"
+                                       class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'customEditor' ? 'aside-menu-item--active' : ''"
+                                       ng-show="editProjectCtrl.userIsExpert">
+                                        {{ 'Custom Editor' | translate }}
+                                    </a>
+                                </li>
                             </ul>
                         </nav>
                     </aside>
@@ -543,6 +550,9 @@
                                     <label class="form__option">
                                         <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
                                     </label>
+                                    <label ng-show="editProjectCtrl.customEditor.enabled && editProjectCtrl.userIsExpert" class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.custom"/>{{ editProjectCtrl.customEditor.name }}
+                                    </label>
                                     <p class="error" ng-show="editProjectCtrl.project.mappingEditors.length < 1">
                                         {{ 'You need at least one mapping editor.' | translate }}
                                     </p>
@@ -560,6 +570,9 @@
                                     </label>
                                     <label class="form__option">
                                         <input type="checkbox" ng-model="editProjectCtrl.validationEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
+                                    </label>
+                                    <label ng-show="editProjectCtrl.customEditor.enabled && editProjectCtrl.userIsExpert" class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.custom"/>{{ editProjectCtrl.customEditor.name }}
                                     </label>
                                     <p class="error" ng-show="editProjectCtrl.project.validationEditors.length < 1">
                                         {{ 'You need at least one validation editor.' | translate }}
@@ -633,7 +646,7 @@
                                         <tags-input ng-model="editProjectCtrl.transferProjectTo"
                                         name="projectTransferTo" placeholder="{{ 'Search for username' | translate }}"
                                         replace-spaces-with-dashes="false" max-tags="1">
-                                        <auto-complete source="editProjectCtrl.getUser($query, true)"></auto-complete> 
+                                        <auto-complete source="editProjectCtrl.getUser($query, true)"></auto-complete>
                                         <p class="error" ng-show="!editProjectCtrl.editForm.projectTransferTo.$valid">
                                             {{ 'Please make sure you only have one user.' | translate }}
                                         </p>
@@ -666,6 +679,50 @@
                             </fieldset>
                         </div>
                             <!--/ actions -->
+                            <!-- custom editor -->
+                        <div ng-show="editProjectCtrl.currentSection === 'customEditor'">
+                            <fieldset class="form__fieldset">
+                                <div class="form__group form__group--section">
+                                <label class="form__label">{{ 'Custom Editor' | translate }}</label>
+                                <p class="important-message"><strong>{{ 'Note' | translate }}:</strong> This feature only supports iD urls and JOSM remote control urls without parameters.</p>
+                                <label class="form__label">{{ 'Name' | translate }}:</label>
+                                <input type="text" class="form__control"
+                                        name="name"
+                                        ng-model="editProjectCtrl.project.customEditor.name"/>
+                                <label class="form__label">{{ 'Description' | translate }}:</label>
+                                <textarea
+                                    class="form__control"
+                                    ng-model="editProjectCtrl.project.customEditor.description" rows="10">
+                                </textarea>
+                                <p><strong>{{ 'Tip' | translate }}:</strong> {{ 'You can use Markdown. (HTML is not allowed)' | translate }}</p>
+                                <p>{{ 'The description will appear when a user selects the editor from the editor dropdown.' | translate }}</p>
+                                <button class="button button--secondary button--small"
+                                        ng-click="editProjectCtrl.showPreviewShortDescription = !editProjectCtrl.showPreviewShortDescription">
+                                    {{ 'Preview' | translate }}
+                                </button>
+                                <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewShortDescription"
+                                    markdown-to-html="editProjectCtrl.project.customEditor.description"
+                                    ng-model="editProjectCtrl.project.customEditor.description"></p>
+                                </p>
+                                <label class="form__label">URL:</label>
+                                <input type="text" class="form__control"
+                                        name="url"
+                                        ng-model="editProjectCtrl.project.customEditor.url"/>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.customEditor.enabled"/>{{ 'Enabled' | translate }}
+                                    </label>
+                                </div>
+                                <div class="form__group form__group--section" ng-show="editProjectCtrl.customEditor">
+                                    <label class="form__label">{{ 'Delete Custom Editor' | translate }}</label>
+                                        <p>{{ 'This will remove the custom editor from the project. Are you sure you don\'t want to disable the custom editor by toggling the "Enabled" checkbox above?' | translate }}</p>
+                                    <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.deleteCustomEditor()">
+                                            {{ 'Remove Custom Editor' | translate }}
+                                    </button>
+                                </div>
+                            </fieldset>
+                        </div>
+                            <!--/ custom editor -->
                             <div ng-show="editProjectCtrl.currentSection !== 'actions'">
                                 <div class="button-group">
                                     <button class="button button--primary" type="button"

@@ -85,6 +85,14 @@ class ProjectInfoDTO(Model):
     per_task_instructions = StringType(default='', serialized_name='perTaskInstructions')
 
 
+class CustomEditorDTO(Model):
+    """ DTO to define a custom editor """
+    name = StringType(required=True)
+    description = StringType()
+    url = StringType(required=True)
+    enabled = BooleanType(default=False)
+
+
 class ProjectDTO(Model):
     """ Describes JSON model for a tasking manager project """
     project_id = IntType(serialized_name='projectId')
@@ -126,6 +134,7 @@ class ProjectDTO(Model):
                                     validators=[is_known_task_creation_mode], serialize_when_none=False)
     mapping_editors = ListType(StringType, min_size=1, required=True, serialized_name='mappingEditors', validators=[is_known_editor])
     validation_editors = ListType(StringType, min_size=1, required=True, serialized_name='validationEditors', validators=[is_known_editor])
+    custom_editor = ModelType(CustomEditorDTO, serialized_name='customEditor', serialize_when_none=False)
 
 
 class ProjectSearchDTO(Model):
