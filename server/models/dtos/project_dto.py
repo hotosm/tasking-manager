@@ -227,6 +227,9 @@ class ProjectDTO(Model):
         serialized_name="validationEditors",
         validators=[is_known_editor],
     )
+    custom_editor = ModelType(
+        CustomEditorDTO, serialized_name="customEditor", serialize_when_none=False
+    )
 
 
 class ProjectFavoriteDTO(Model):

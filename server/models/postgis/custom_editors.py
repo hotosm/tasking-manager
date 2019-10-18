@@ -4,8 +4,9 @@ from server.models.dtos.project_dto import CustomEditorDTO
 
 class CustomEditor(db.Model):
     """ Model for user defined editors for a project """
+
     __tablename__ = "project_custom_editors"
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String)
     url = db.Column(db.String, nullable=False)
