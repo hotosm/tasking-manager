@@ -27,10 +27,12 @@ from server.models.dtos.project_dto import (
     PMDashboardDTO,
     ProjectStatsDTO,
     ProjectUserStatsDTO,
+    CustomEditorDTO,
 )
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.custom_editors import CustomEditor
 from server.models.postgis.organisation import Organisation
+from server.models.postgis.custom_editors import CustomEditor
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.project_chat import ProjectChat
@@ -178,6 +180,7 @@ class Project(db.Model):
             Editors.JOSM.value,
             Editors.POTLATCH_2.value,
             Editors.FIELD_PAPERS.value,
+            Editors.CUSTOM.value,
         ],
         index=True,
         nullable=False,
@@ -189,6 +192,7 @@ class Project(db.Model):
             Editors.JOSM.value,
             Editors.POTLATCH_2.value,
             Editors.FIELD_PAPERS.value,
+            Editors.CUSTOM.value,
         ],
         index=True,
         nullable=False,
@@ -214,6 +218,7 @@ class Project(db.Model):
         cascade="all, delete-orphan",
         single_parent=True,
     )
+    custom_editor = db.relationship(CustomEditor, uselist=False)
     favorited = db.relationship(User, secondary=project_favorites, backref="favorites")
     organisation = db.relationship(Organisation, backref="projects")
     campaign = db.relationship(Campaign, secondary=campaign_projects, backref="project")
@@ -477,7 +482,9 @@ class Project(db.Model):
 
         if project_dto.custom_editor:
             if not self.custom_editor:
-                new_editor = CustomEditor.create_from_dto(self.id, project_dto.custom_editor)
+                new_editor = CustomEditor.create_from_dto(
+                    self.id, project_dto.custom_editor
+                )
                 self.custom_editor = new_editor
             else:
                 self.custom_editor.update_editor(project_dto.custom_editor)
