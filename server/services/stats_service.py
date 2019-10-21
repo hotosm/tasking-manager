@@ -1,6 +1,7 @@
 from cachetools import TTLCache, cached
 
-from sqlalchemy import func, text
+from sqlalchemy import func, text, desc, cast, extract, or_
+from sqlalchemy.types import Time
 from server import db
 from server.models.dtos.stats_dto import (
     ProjectContributionsDTO,
@@ -14,13 +15,17 @@ from server.models.dtos.stats_dto import (
     OrganizationStatsDTO,
     CampaignStatsDTO,
 )
+
+from server.models.dtos.project_dto import ProjectSearchResultsDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
-from server.models.postgis.task import TaskHistory, User, Task
+from server.models.postgis.task import TaskHistory, User, Task, TaskAction
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
+from server.services.project_search_service import ProjectSearchService
 from server.services.users.user_service import UserService
 
+from datetime import date, timedelta
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
@@ -134,6 +139,50 @@ class StatsService:
 
         activity_dto.pagination = Pagination(results)
         return activity_dto
+
+    @staticmethod
+    def get_popular_projects() -> ProjectSearchResultsDTO:
+        """ Get all projects ordered by task_history """
+        rate_func = func.count(TaskHistory.user_id) / extract(
+            "epoch", func.sum(cast(TaskHistory.action_date, Time))
+        )
+
+        query = TaskHistory.query.with_entities(
+            TaskHistory.project_id.label("id"), rate_func.label("rate")
+        )
+        # Implement filters.
+        query = (
+            query.filter(TaskHistory.action_date >= date.today() - timedelta(days=90))
+            .filter(
+                or_(
+                    TaskHistory.action == TaskAction.LOCKED_FOR_MAPPING.name,
+                    TaskHistory.action == TaskAction.LOCKED_FOR_VALIDATION.name,
+                )
+            )
+            .filter(TaskHistory.action_text is not None)
+            .filter(TaskHistory.action_text != "")
+        )
+        # Group by and order by.
+        sq = (
+            query.group_by(TaskHistory.project_id)
+            .order_by(desc("rate"))
+            .limit(10)
+            .subquery()
+        )
+
+        projects_query = ProjectSearchService.create_search_query()
+        projects = projects_query.filter(Project.id == sq.c.id)
+
+        # Get total contributors.
+        contrib_counts = ProjectSearchService.get_total_contributions(projects)
+        zip_items = zip(projects, contrib_counts)
+
+        dto = ProjectSearchResultsDTO()
+        dto.results = [
+            ProjectSearchService.create_result_dto(p, "en", t) for p, t in zip_items
+        ]
+
+        return dto
 
     @staticmethod
     def get_last_activity(project_id: int) -> ProjectLastActivityDTO:
