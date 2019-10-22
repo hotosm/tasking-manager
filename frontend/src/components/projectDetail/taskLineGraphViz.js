@@ -38,8 +38,7 @@ const frameProps = {
   }),
   title: (
     <text textAnchor="right">
-      <tspan fill={theme[0]}>● Mapped</tspan>{' '}
-      <tspan fill={theme[1]}>● Validated</tspan>
+      <tspan fill={theme[0]}>● Mapped</tspan> <tspan fill={theme[1]}>● Validated</tspan>
     </text>
   ),
   axes: [
@@ -51,11 +50,11 @@ const frameProps = {
       },
       tickLineGenerator: ({ xy }) => (
         <path
-        className="grey-light"
-        style={{ fill: "currentColor", strokeDasharray: "10 10", stroke: "currentColor" }}
-        d={`M${xy.x1},${xy.y1 - 5}L${xy.x2},${xy.y1 - 5}`}
-      />
-      )
+          className="grey-light"
+          style={{ fill: 'currentColor', strokeDasharray: '10 10', stroke: 'currentColor' }}
+          d={`M${xy.x1},${xy.y1 - 5}L${xy.x2},${xy.y1 - 5}`}
+        />
+      ),
     },
     {
       orient: 'bottom',
@@ -69,12 +68,12 @@ const frameProps = {
       tickLineGenerator: ({ xy }) => (
         <path
           className="grey-light"
-          style={{ fill: "currentColor", strokeDasharray: "10 10", stroke: "currentColor" }}
+          style={{ fill: 'currentColor', strokeDasharray: '10 10', stroke: 'currentColor' }}
           d={`M${xy.x1 - 5},${xy.y1}L${xy.x1 - 5},${xy.y2}`}
         />
       ),
       label: 'Date',
-      ticks: 10
+      ticks: 10,
     },
   ],
 };
@@ -89,9 +88,11 @@ export default props => {
   const inData = props.percentDoneVisData && props.percentDoneVisData.stats;
 
   if (!inData || inData.length === 0) {
-    return <div className="f5 red pb4 pt2 ph4">
-        <FormattedMessage {...messages.timelineNotAvailable}/>
-    </div>;
+    return (
+      <div className="f5 red pb4 pt2 ph4">
+        <FormattedMessage {...messages.timelineNotAvailable} />
+      </div>
+    );
   }
   /* separate validated and mapped into their own leaf objects: */
   const prepTaskDays = group(
@@ -137,9 +138,12 @@ export default props => {
       tooltipContent={d => (
         <div className="z-1 w4 w4-m w5-l bg-black ba br2 b--blue-dark pa2 shadow-5 tooltip-content">
           <p className="f6 lh-copy near-black ma0 white f7 fw4 ttc">
-            <FormattedMessage {...messages[d.parentLine.title]} />: {d.count} ({d.percent}% before splits)
+            <FormattedMessage {...messages[d.parentLine.title]} />: {d.count} ({d.percent}% before
+            splits)
           </p>
-          <p className="f6 lh-copy near-black ma0 white f7 fw4"><FormattedMessage {...messages.date} />: {d.date.toString()}</p>
+          <p className="f6 lh-copy near-black ma0 white f7 fw4">
+            <FormattedMessage {...messages.date} />: {d.date.toString()}
+          </p>
         </div>
       )}
       {...frameProps}
