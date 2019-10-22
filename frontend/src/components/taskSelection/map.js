@@ -34,7 +34,6 @@ export const TasksMap = ({
   const mapRef = React.createRef();
   const [map, setMapObj] = useState(null);
 
-
   useLayoutEffect(() => {
     /* May be able to refactor this to just take
      * advantage of useRef instead inside other useLayoutEffect() */
@@ -55,14 +54,23 @@ export const TasksMap = ({
   }, []);
 
   useLayoutEffect(() => {
-
     const onSelectTaskClick = e => {
       const task = e.features && e.features[0].properties;
       selectTask && selectTask(task.taskId, task.taskStatus);
     }
 
-    const countryMapLayers = [taskBordersMap && 'outerhull-tasks-border', taskBordersMap && 'point-tasks-centroid', taskBordersMap && 'point-tasks-centroid-inner'];
-    const taskMapLayers = ['tasks-icon', 'tasks-fill', 'selected-tasks-border', 'unselected-tasks-border', taskBordersMap && 'outerhull-tasks-border'];
+    const countryMapLayers = [
+      taskBordersMap && 'outerhull-tasks-border',
+      taskBordersMap && 'point-tasks-centroid',
+      taskBordersMap && 'point-tasks-centroid-inner'
+    ];
+    const taskMapLayers = [
+      'tasks-icon',
+      'tasks-fill',
+      'selected-tasks-border',
+      'unselected-tasks-border',
+      taskBordersMap && 'outerhull-tasks-border'
+    ];
 
     const updateTMZoom = () => {
       if(!taskBordersOnly) {
@@ -74,7 +82,6 @@ export const TasksMap = ({
     }
 
     const mapboxLayerDefn = () => {
-
       if (map.getSource('tasks') === undefined) {
         map.addSource('tasks', {
           type: 'geojson',
@@ -85,98 +92,73 @@ export const TasksMap = ({
         lockIcon.src = lock;
         map.addImage('lock', lockIcon, {width: 17, height: 20, data: lockIcon})
 
-      /* labels layering:  This code provides the first labels layer ("symbol" layer) 
-       * from the mapbox style, if applicable, so it can be on the top of other layers */
-      var layers = map.getStyle().layers;
-      var firstSymbolId;
-      for (var i = 0; i < layers.length; i++) {
-        if (layers[i].type === 'symbol') {
-          firstSymbolId = layers[i].id;
-          break;
-        }
-      }
-      /* end labels layering */
-
-      if (disableScrollZoom) {
-      // disable map zoom when using scroll
-        map.scrollZoom.disable();
         map.addControl(new mapboxgl.NavigationControl());
-
-      } else {
-        map.scrollZoom.enable();
-
-      }
-
-      map.addLayer({
-        id: 'tasks-icon',
-        type: 'symbol',
-        source: 'tasks',
-        layout: {
-          'icon-image': [
-            'match',
-            ['get', 'taskStatus'],
-            'LOCKED_FOR_MAPPING', 'lock',
-            'LOCKED_FOR_VALIDATION', 'lock',
-            ''
-          ],
-          'icon-size': 0.7
+        if (disableScrollZoom) {
+        // disable map zoom when using scroll
+          map.scrollZoom.disable();
+        } else {
+          map.scrollZoom.enable();
         }
-      }, firstSymbolId);
 
-      map.addLayer({
-        id: 'tasks-fill',
-        type: 'fill',
-        source: 'tasks',
-        layout: {
-          'visibility': 'none'
-        },
-        paint: {
-          'fill-color': [
-            'match',
-            ['get', 'taskStatus'],
-            'READY', colours.READY,
-            'LOCKED_FOR_MAPPING', colours.LOCKED_FOR_MAPPING,
-            'MAPPED', colours.MAPPED,
-            'LOCKED_FOR_VALIDATION', colours.LOCKED_FOR_VALIDATION,
-            'VALIDATED', colours.VALIDATED,
-            'INVALIDATED', colours.INVALIDATED,
-            'BADIMAGERY', colours.BADIMAGERY,
-            'rgba(0,0,0,0)'
-          ]
-        }
-      }, 'tasks-icon');
+        map.addLayer({
+          id: 'tasks-icon',
+          type: 'symbol',
+          source: 'tasks',
+          layout: {
+            'icon-image': [
+              'match',
+              ['get', 'taskStatus'],
+              'LOCKED_FOR_MAPPING', 'lock',
+              'LOCKED_FOR_VALIDATION', 'lock',
+              ''
+            ],
+            'icon-size': 0.7
+          }
+        });
 
-      map.addLayer({
-        id: 'selected-tasks-border',
-        type: 'line',
-        source: 'tasks',
-        paint: {
-          'line-color': '#2c3038',
-          'line-width': 2
-        },
-        filter: ['in', 'taskId', ''],
-        layout: {
-          'visibility': 'none'
-        }
-      }, firstSymbolId);
+        map.addLayer({
+          id: 'tasks-fill',
+          type: 'fill',
+          source: 'tasks',
+          paint: {
+            'fill-color': [
+              'match',
+              ['get', 'taskStatus'],
+              'READY', colours.READY,
+              'LOCKED_FOR_MAPPING', colours.LOCKED_FOR_MAPPING,
+              'MAPPED', colours.MAPPED,
+              'LOCKED_FOR_VALIDATION', colours.LOCKED_FOR_VALIDATION,
+              'VALIDATED', colours.VALIDATED,
+              'INVALIDATED', colours.INVALIDATED,
+              'BADIMAGERY', colours.BADIMAGERY,
+              'rgba(0,0,0,0)'
+            ]
+          }
+        }, 'tasks-icon');
 
-      map.addLayer({
-        id: 'unselected-tasks-border',
-        type: 'line',
-        source: 'tasks',
-        paint: {
-          'line-color': '#f6f6f6',
-          'line-width': 2
-        },
-        layout: {
-          'visibility': 'none'
-        }
-      }, 'selected-tasks-border');
+        map.addLayer({
+          id: 'selected-tasks-border',
+          type: 'line',
+          source: 'tasks',
+          paint: {
+            'line-color': '#2c3038',
+            'line-width': 2
+          },
+          filter: ['in', 'taskId', ''],
+        });
 
+        map.addLayer({
+          id: 'unselected-tasks-border',
+          type: 'line',
+          source: 'tasks',
+          paint: {
+            'line-color': '#f6f6f6',
+            'line-width': 2
+          },
+        }, 'selected-tasks-border');
       }
 
       if (map.getSource('tasks-outline') === undefined && taskBordersMap) {
-
         map.addSource('tasks-outline', {
           type: 'geojson',
           data: taskBordersMap,
@@ -190,18 +172,16 @@ export const TasksMap = ({
             'line-color': '#68707f',
             'line-width': {
               'base': 0.3,
-              'stops': [[1, 4], [10, 1], [12,0.3]] 
+              'stops': [[1, 4], [10, 1], [12, 0.3]]
             }
           },
           layout: {
             'visibility': 'visible'
           },
-        }, firstSymbolId);
-
+        });
       }
 
       if (map.getSource('tasks-centroid') === undefined && taskBordersMap) {
-
         map.addSource('tasks-centroid', {
           type: 'geojson',
           data: taskCentroidMap,
@@ -213,11 +193,10 @@ export const TasksMap = ({
           source: 'tasks-centroid',
           paint: {
             'circle-radius': {
-            'base': 3,
-            'stops': [[12, 4], [22, 180]]
+              'base': 3,
+              'stops': [[12, 4], [22, 180]]
             },
-            'circle-color': 
-              '#FFF'
+            'circle-color': '#FFF'
           },
           layout: {
             'visibility': 'visible'
@@ -230,17 +209,15 @@ export const TasksMap = ({
           source: 'tasks-centroid',
           paint: {
             'circle-radius': {
-            'base': 5,
-            'stops': [[12, 10], [22, 180]]
+              'base': 5,
+              'stops': [[12, 10], [22, 180]]
             },
-            'circle-color': 
-              '#d73f3f'
+            'circle-color': '#d73f3f'
           },
           layout: {
             'visibility': 'visible'
           },
         },'point-tasks-centroid-inner');
-
       }
 
       map.on('mouseenter', 'tasks-fill', function(e) {
@@ -252,13 +229,13 @@ export const TasksMap = ({
 
       if (taskBordersOnly && navigate) {
         map.on('mouseenter', 'point-tasks-centroid', function(e) {
-            map.getCanvas().style.cursor = 'pointer';
+          map.getCanvas().style.cursor = 'pointer';
         });
         map.on('mouseleave', 'point-tasks-centroid', function(e) {
-            map.getCanvas().style.cursor = '';
+          map.getCanvas().style.cursor = '';
         });
-        map.on('click', 'point-tasks-centroid', ()=>navigate('./map') );
-        map.on('click', 'point-tasks-centroid-inner', ()=>navigate('./map') );
+        map.on('click', 'point-tasks-centroid', () => navigate('./map') );
+        map.on('click', 'point-tasks-centroid-inner', () => navigate('./map') );
       }
 
       map.on('click', 'tasks-fill', onSelectTaskClick);
@@ -266,9 +243,7 @@ export const TasksMap = ({
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = '';
       });
-    
     };
-
 
     const someResultsReady = mapResults && mapResults.features && mapResults.features.length > 0;
 
@@ -282,10 +257,9 @@ export const TasksMap = ({
       !map.isStyleLoaded() &&
       map.getSource('tasks') === undefined &&
       someResultsReady;
-    const mapLayersAlreadyDefined = 
+    const mapLayersAlreadyDefined =
       map !== null &&
       map.getSource('tasks') !== undefined;
-
 
     /* set up style/sources for the map, either immediately or on base load */
     if (mapReadyTasksReady && !mapLayersAlreadyDefined) {
@@ -301,39 +275,36 @@ export const TasksMap = ({
     if (mapLayersAlreadyDefined && someResultsReady) {
       map.getSource('tasks').setData(mapResults);
 
-      /* update the click event so its functional scope can see the 
-       *  new selectedOnMap to be able to toggle it off. 
+      /* update the click event so its functional scope can see the
+       *  new selectedOnMap to be able to toggle it off.
        *  These will accumulate and need cleanup. */
       map.on('click', 'tasks-fill', onSelectTaskClick);
 
-
-      updateTMZoom();
-
-
-      if (taskBordersOnly===true) {
+      if (taskBordersOnly === true) {
         taskMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
         countryMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'visible'));
-        
-        } else {
-          countryMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
-          taskMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'visible'));
-          if (selectedOnMap && selectedOnMap.length>0) {
-            map.setFilter('selected-tasks-border', ['in', 'taskId'].concat(selectedOnMap));
-          }
+      } else {
+        countryMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
+        taskMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'visible'));
+        if (disableScrollZoom) {
+          updateTMZoom();
         }
-
+        if (selectedOnMap && selectedOnMap.length > 0) {
+          map.setFilter('selected-tasks-border', ['in', 'taskId'].concat(selectedOnMap));
+        }
+      }
     }
 
     return () => {
       /* cleanup any extra click event listeners after each effect */
       if (map !== null && map.getSource('tasks') !== undefined && someResultsReady) {
-        map.off('click', 'tasks-fill', onSelectTaskClick)
+        map.off('click', 'tasks-fill', onSelectTaskClick);
         countryMapLayers.forEach(lr => lr &&  map.setLayoutProperty(lr, 'visibility', 'none'));
-          taskMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
+        taskMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
       }
     };
-
-  }, [map, mapResults, selectedOnMap, selectTask, taskBordersMap, taskCentroidMap, taskBordersOnly, disableScrollZoom, navigate]);
+  },
+  [map, mapResults, selectedOnMap, selectTask, taskBordersMap, taskCentroidMap, taskBordersOnly, disableScrollZoom, navigate]);
 
   return <div id="map" className={`vh-75-ns vh-50 fr ${className}`} ref={mapRef}></div>;
 };

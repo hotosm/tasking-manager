@@ -86,94 +86,97 @@ export default defineMessages({
   },
   readMore: {
     id: 'project.readMoreButton',
-    defaultMessage: 'Read more'
+    defaultMessage: 'Read more',
   },
   addToFavorites: {
     id: 'project.detail.addToFavorites',
-    defaultMessage: 'Add to Favorites'
+    defaultMessage: 'Add to Favorites',
   },
   removeFromFavorites: {
     id: 'project.detail.removeFromFavorites',
-    defaultMessage: 'Remove from Favorites'
+    defaultMessage: 'Remove from Favorites',
   },
   share: {
     id: 'project.detail.share',
-    defaultMessage: 'Share'
+    defaultMessage: 'Share',
   },
   countrymap: {
     id: 'project.detail.countrymap',
-    defaultMessage: 'Country Map'
+    defaultMessage: 'Country Map',
   },
   taskmap: {
     id: 'project.detail.taskmap',
-    defaultMessage: 'Task Map'
+    defaultMessage: 'Task Map',
   },
   selectATaskCardTitle: {
     id: 'project.detail.cards.selectATask.title',
-    defaultMessage: '1. Select a task'
+    defaultMessage: '1. Select a task',
   },
   mapThroughOSMCardTitle: {
     id: 'project.detail.cards.mapthroughosm.title',
-    defaultMessage: '2. Map through OpenStreetMap'
+    defaultMessage: '2. Map through OpenStreetMap',
   },
   submitYourWorkCardTitle: {
     id: 'project.detail.cards.submityourwork.title',
-    defaultMessage: '3. Submit your Work'
+    defaultMessage: '3. Submit your Work',
   },
   selectATaskCardDescription: {
     id: 'project.detail.cards.selectATask.description',
-    defaultMessage: 'Projects are subdivided into a set of tasks managable in size and adapted to your skill level.'
+    defaultMessage:
+      'Projects are subdivided into a set of tasks managable in size and adapted to your skill level.',
   },
   mapThroughOSMCardDescription: {
     id: 'project.detail.cards.mapthroughosm.description',
-    defaultMessage: 'If you are new to mapping, we recommend checking the How It Works page before you start mapping.'
+    defaultMessage:
+      'If you are new to mapping, we recommend checking the How It Works page before you start mapping.',
   },
   submitYourWorkCardDescription: {
     id: 'project.detail.cards.submityourwork.description',
-    defaultMessage: "Submitting your work is cruicial. If you don't do it, it will not be merged into the project."
+    defaultMessage:
+      "Submitting your work is cruicial. If you don't do it, it will not be merged into the project.",
   },
   overview: {
     id: 'project.detail.sections.overview',
-    defaultMessage: 'Overview'
+    defaultMessage: 'Overview',
   },
   howToContribute: {
     id: 'project.detail.sections.howToContribute',
-    defaultMessage: 'How to contribute'
+    defaultMessage: 'How to contribute',
   },
   questionsAndComments: {
     id: 'project.detail.sections.questionsAndComments',
-    defaultMessage: 'Questions & Comments'
+    defaultMessage: 'Questions & Comments',
   },
   contributions: {
     id: 'project.detail.sections.contributions',
-    defaultMessage: 'Contributions'
+    defaultMessage: 'Contributions',
   },
   contributionsTimeline: {
     id: 'project.detail.sections.contributionsTimeline',
-    defaultMessage: 'Contributions timeline'
+    defaultMessage: 'Contributions timeline',
   },
   contributors: {
     id: 'project.detail.sections.contributors',
-    defaultMessage: 'Contributors'
+    defaultMessage: 'Contributors',
   },
   relatedProjects: {
     id: 'project.detail.sections.relatedProjects',
-    defaultMessage: 'Related projects'
+    defaultMessage: 'Related projects',
   },
   timelineNotAvailable: {
     id: 'project.detail.sections.contributions.timelineError',
-    defaultMessage: 'The timeline will be available when at least one task is mapped.'
+    defaultMessage: 'The timeline will be available when at least one task is mapped.',
   },
   date: {
     id: 'project.detail.visualisation.date',
-    defaultMessage: 'Date'
+    defaultMessage: 'Date',
   },
   validated: {
     id: 'project.detail.visualisation.validated',
-    defaultMessage: 'Validated'
+    defaultMessage: 'Validated',
   },
   mapped: {
     id: 'project.detail.visualisation.mapped',
-    defaultMessage: 'Mapped'
-  }
+    defaultMessage: 'Mapped',
+  },
 });
