@@ -2,6 +2,7 @@ import * as safeStorage from '../../utils/safe_storage';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const types = {
+  REGISTER_USER: 'REGISTER_USER',
   SET_USER_DETAILS: 'SET_USER_DETAILS',
   SET_OSM: 'SET_OSM',
   UPDATE_OSM_INFO: 'UPDATE_OSM_INFO',
@@ -15,6 +16,24 @@ export function clearUserDetails() {
     type: types.CLEAR_SESSION,
   };
 }
+
+export const updateUserEmail = (userDetails, token, relevant_fields) => dispatch => {
+  const filtered = Object.keys(userDetails)
+    .filter(key => relevant_fields.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = userDetails[key];
+      return obj;
+    }, {});
+  const payload = JSON.stringify(filtered);
+
+  pushToLocalJSONAPI(`users/actions/set-user/`, payload, token, 'PATCH').then(() => {
+      dispatch({
+        type: types.SET_USER_DETAILS,
+        userDetails: userDetails
+      })
+    }
+  )
+};
 
 export const logout = () => dispatch => {
   safeStorage.removeItem('username');

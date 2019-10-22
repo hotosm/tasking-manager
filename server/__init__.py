@@ -247,6 +247,7 @@ def add_api_endpoints(app):
         UsersActionsSetRoleAPI,
         UsersActionsSetExpertModeAPI,
         UsersActionsVerifyEmailAPI,
+        UsersActionsRegisterEmailAPI,
     )
     from server.api.users.openstreetmap import UsersOpenStreetMapAPI
     from server.api.users.statistics import UsersStatisticsAPI
@@ -639,6 +640,7 @@ def add_api_endpoints(app):
     api.add_resource(
         UsersActionsVerifyEmailAPI, "/api/v2/users/myself/actions/verify-email/"
     )
+    api.add_resource(UsersActionsRegisterEmailAPI, "/api/v2/users/actions/register/")
 
     # Users Statistics endpoint
     api.add_resource(UsersStatisticsAPI, "/api/v2/users/<string:username>/statistics/")
