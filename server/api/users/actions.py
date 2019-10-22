@@ -1,10 +1,12 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
-from server.models.dtos.user_dto import UserDTO
+from server.models.dtos.user_dto import UserDTO, UserRegisterEmailDTO
 from server.services.messaging.message_service import MessageService
 from server.services.users.authentication_service import token_auth, tm
 from server.services.users.user_service import UserService, UserServiceError, NotFound
+
+from sqlalchemy.exc import IntegrityError
 
 
 class UsersActionsSetUsersAPI(Resource):
@@ -286,3 +288,63 @@ class UsersActionsVerifyEmailAPI(Resource):
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to send verification email"}, 500
+
+
+class UsersActionsRegisterEmailAPI(Resource):
+    def post(self):
+        """
+        Registers users without OSM account.
+        ---
+        tags:
+          - user
+        produces:
+          - application/json
+        parameters:
+            - in: body
+              name: body
+              required: true
+              description: JSON object to update a user
+              schema:
+                  properties:
+                      email:
+                          type: string
+                          default: test@test.com
+        responses:
+            200:
+                description: User registered
+            400:
+                description: Client Error - Invalid Request
+            500:
+                description: Internal Server Error
+        """
+        try:
+            user_dto = UserRegisterEmailDTO(request.get_json())
+            user_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f"error validating request: {str(e)}")
+            return str(e), 400
+
+        try:
+            user = UserService.register_user_with_email(user_dto)
+            user_dto = UserRegisterEmailDTO(
+                dict(
+                    success=True,
+                    email=user_dto.email,
+                    details="User created successfully",
+                    id=user.id,
+                )
+            )
+            return user_dto.to_primitive(), 200
+        except IntegrityError:
+            details_msg = f"Email address {user_dto.email} already exists"
+            user_dto = UserRegisterEmailDTO(
+                dict(email=user_dto.email, details=details_msg)
+            )
+            return user_dto.to_primitive(), 400
+        except Exception as e:
+            details_msg = f"User POST - unhandled error: Unknown error"
+            current_app.logger.critical(str(e))
+            user_dto = UserRegisterEmailDTO(
+                dict(email=user_dto.email, details=details_msg)
+            )
+            return user_dto.to_primitive(), 500

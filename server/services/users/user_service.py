@@ -15,11 +15,13 @@ from server.models.dtos.user_dto import (
     UserContributionsDTO,
     RecommendedProject,
     UserRecommendedProjectsDTO,
+    UserRegisterEmailDTO,
 )
+
 from server.models.postgis.message import Message
 from server.models.postgis.task import TaskHistory, TaskAction
-from server.models.postgis.user import User, UserRole, MappingLevel
 from server.models.postgis.project import Project, ProjectInfo
+from server.models.postgis.user import User, UserRole, MappingLevel, UserEmail
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
@@ -255,6 +257,12 @@ class UserService:
             verification_email_sent = True
 
         user.update(user_dto)
+        user_email = UserEmail.query.filter(
+            UserEmail.email == user_dto.email_address
+        ).one_or_none()
+        if user_email is not None:
+            user_email.delete()
+
         return dict(verificationEmailSent=verification_email_sent)
 
     @staticmethod
@@ -553,3 +561,10 @@ class UserService:
             users_updated += 1
 
         return users_updated
+
+    @staticmethod
+    def register_user_with_email(user: UserRegisterEmailDTO):
+        new_user = UserEmail(email=user.email)
+        new_user.create()
+
+        return new_user

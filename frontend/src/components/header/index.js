@@ -12,6 +12,8 @@ import { LinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 import { BurgerMenu } from './burgerMenu';
+import { SignUp } from './signUp';
+import { UpdateEmail } from './updateEmail';
 import { UserAvatar } from '../user/avatar';
 import { logout } from '../../store/actions/auth';
 import { setLocale } from '../../store/actions/userPreferences';
@@ -79,9 +81,14 @@ const AuthButtons = props => {
       <Button onClick={() => createLoginWindow(redirectTo)} className={logInStyle}>
         <FormattedMessage {...messages.logIn} />
       </Button>
-      <Button className={signUpStyle}>
-        <FormattedMessage {...messages.signUp} />
-      </Button>
+      <Popup
+        contentStyle={modalStyle}
+        trigger={<Button className={signUpStyle}><FormattedMessage {...messages.signUp} /></Button>}
+        modal
+        closeOnDocumentClick
+      >
+        <SignUp />
+      </Popup>
     </>
   );
 };
@@ -191,6 +198,19 @@ class Header extends React.Component {
     }
   };
 
+  checkUserEmail() {
+    return this.props.username && !this.props.email ? (
+        <Popup
+          contentStyle={modalStyle}
+          modal
+          open
+          closeOnEscape={false}
+          closeOnDocumentClick={false}>
+            {close => <UpdateEmail closeModal={close}/>}
+        </Popup>
+      ) : null;
+  }
+
   getActiveLanguageNames() {
     const locales = [
       this.props.userPreferences.locale,
@@ -240,7 +260,9 @@ class Header extends React.Component {
 
   render() {
     return (
+      // Validate that user has set is email.
       <header className="w-100 bb b--grey-light">
+        {this.checkUserEmail()}
         <div className="cf ph2 red pt3 pb2 bb b--grey-light">
           <div className="fl w-50">
             <span className="barlow-condensed f5 ml2 ">
@@ -282,10 +304,16 @@ class Header extends React.Component {
   }
 }
 
+const modalStyle = { 
+  width: '44%',
+  marginTop: '5em'
+}
+
 const mapStateToProps = state => ({
   userPreferences: state.preferences,
   username: state.auth.getIn(['userDetails', 'username']),
   token: state.auth.get('token'),
+  email: state.auth.getIn(['userDetails', 'emailAddress']),
 });
 
 Header = connect(
