@@ -25,14 +25,14 @@ export function PriorityBox({ priority, extraClasses }: Object) {
   );
 }
 
-function ProjectTeaser({ lastUpdated, totalContributors }: Object) {
+export function ProjectTeaser({ lastUpdated, totalContributors, className, littleFont="f7", bigFont="f6" }: Object) {
   /* outerDivStyles must have f6 even if sub-divs have f7 to fix grid issues*/
   const outerDivStyles = 'f6 tl blue-grey truncate mb2';
 
   if (totalContributors < PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD) {
     return (
-      <div className={outerDivStyles}>
-        <span className="f7">
+      <div className={`${outerDivStyles} ${className}`}>
+        <span className={littleFont}>
           <FormattedMessage {...messages['projectLastContribution']} />{' '}
           <FormattedRelative value={lastUpdated} />
         </span>
@@ -40,11 +40,11 @@ function ProjectTeaser({ lastUpdated, totalContributors }: Object) {
     );
   } else {
     return (
-      <div className={outerDivStyles}>
-        <span className="f7 blue-light">
+      <div className={`${outerDivStyles} ${className}`}>
+        <span className={`${littleFont} blue-light`}>
           <FormattedMessage
             {...messages['projectTotalContributors']}
-            values={{ number: <span className="blue-grey b f6">{totalContributors || 0}</span> }}
+            values={{ number: <span className={`blue-grey b ${bigFont}`}>{totalContributors || 0}</span> }}
           />
         </span>
       </div>
@@ -63,7 +63,7 @@ function ProjectOrgLogo(organisationTag) {
   );
 }
 
-function getLogoClass(organisationTag: String) {
+export function getLogoClass(organisationTag: String) {
   const orgs = [
     { className: 'org-unicef', organisationTag: 'UNICEF' },
     { className: 'org-usaid', organisationTag: '#YouthMappers' },

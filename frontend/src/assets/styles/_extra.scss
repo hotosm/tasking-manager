@@ -31,6 +31,10 @@
   }
 }
 
+.bg-split-white-grey-light {
+  background: linear-gradient(to right, $white, $white 20%, $grey-light 20%, $grey-light);
+}
+
 .bg-jumbotron {
   background: url('../img/hero_banner.jpg') left;
 }
@@ -51,6 +55,7 @@
 */
 .shadow-hover::after {
   box-shadow: 0 7px 20px 0 rgba(0,0,0,0.08);
+  z-index: 0;
 }
 
 button:focus, button:active, a:focus, a:active {

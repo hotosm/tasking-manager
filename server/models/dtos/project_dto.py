@@ -365,6 +365,9 @@ class ProjectContribDTO(Model):
     date = StringType(required=True)
     mapped = IntType(required=True)
     validated = IntType(required=True)
+    cumulative_mapped = IntType(required=False)
+    cumulative_validated = IntType(required=False)
+    total_tasks = IntType(required=False)
 
 
 class ProjectContribsDTO(Model):
