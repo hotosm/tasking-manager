@@ -31,6 +31,10 @@
   }
 }
 
+.bg-split-white-grey-light {
+  background: linear-gradient(to right, $white, $white 20%, $grey-light 20%, $grey-light);
+}
+
 .bg-jumbotron {
   background: url('../img/hero_banner.jpg') left;
 }

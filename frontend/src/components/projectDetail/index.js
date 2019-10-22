@@ -1,8 +1,7 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
-import { useMeta, useTitle } from 'react-meta-elements'; /* useMeta also avail */
-
+import { useMeta, useTitle } from 'react-meta-elements';
 
 import messages from './messages';
 
@@ -38,7 +37,7 @@ const ProjectDetailTypeBar = props => {
   const titleClasses = 'db ttu f6 blue-light mb2';
   return (
     <div className="cf">
-      <div className="w-50 fl">
+      <div className="w-50-ns w-70 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.typesOfMapping} />
         </h3>
@@ -46,7 +45,7 @@ const ProjectDetailTypeBar = props => {
           <MappingTypes types={props.mappingTypes} />
         </div>
       </div>
-      <div className="w-50 fl">
+      <div className="w-50-n w-30 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.imagery} />
         </h3>
@@ -57,7 +56,7 @@ const ProjectDetailTypeBar = props => {
 };
 
 const ProjectDetailMap = props => {
-  const [taskBordersOnly, setTaskBordersOnly] = useState(true)
+  const [taskBordersOnly, setTaskBordersOnly] = useState(true);
 
   var taskBordersGeoJSON = props.project.areaOfInterest && {
     type: 'FeatureCollection',
@@ -65,20 +64,20 @@ const ProjectDetailMap = props => {
       {
         type: 'Feature',
         properties: {},
-        geometry: props.project.areaOfInterest
+        geometry: props.project.areaOfInterest,
       },
     ],
-  }
+  };
   var centroidGeoJSON = props.totalMappers.aoiCentroid && {
     type: 'FeatureCollection',
     features: [
       {
         type: 'Feature',
         properties: {},
-        geometry: props.totalMappers.aoiCentroid
+        geometry: props.totalMappers.aoiCentroid,
       },
     ],
-  }
+  };
   return (
     <div className="relative">
       {
@@ -101,11 +100,20 @@ const ProjectDetailMap = props => {
       />
       <div className="cf left-1 top-1 absolute">
         <div className="cf ttu bg-white barlow-condensed f4 pv2">
-          <span onClick={(e) => { setTaskBordersOnly(true); e.preventDefault(); e.stopPropagation();}}
-           className={`pb2 pointer mh2 ${taskBordersOnly ? 'bb b--blue-dark' : ''} ph2`}>
+          <span
+            onClick={e => {
+              setTaskBordersOnly(true);
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            className={`pb2 pointer mh2 ${taskBordersOnly ? 'bb b--blue-dark' : ''} ph2`}
+          >
             <FormattedMessage {...messages.countrymap} />
           </span>
-          <span onClick={(e) => setTaskBordersOnly(false)} className={`pb2 mh2 pointer ${!taskBordersOnly ? 'bb b--blue-dark' : ''} ph2`}>
+          <span
+            onClick={e => setTaskBordersOnly(false)}
+            className={`pb2 mh2 pointer ${!taskBordersOnly ? 'bb b--blue-dark' : ''} ph2`}
+          >
             <FormattedMessage {...messages.taskmap} />
           </span>
         </div>
@@ -123,7 +131,11 @@ export const ProjectDetailLeft = props => {
     `#${props.project.projectId || 'Tasking Manager'}: ${props.project.projectInfo &&
       props.project.projectInfo.name}`,
   );
-  useMeta({property: 'og:title', content: `#${props.project.projectId || "Tasking Manager"}: ${props.project.projectInfo && props.project.projectInfo.name}`});
+  useMeta({
+    property: 'og:title',
+    content: `#${props.project.projectId || 'Tasking Manager'}: ${props.project.projectInfo &&
+      props.project.projectInfo.name}`,
+  });
   // useMeta({name: 'application-name', content: `#${props.project.projectId || "Tasking Manager"}: ${props.project.projectInfo && props.project.projectInfo.name}` });
   // useMeta({name: 'description', content: `#${props.project.projectId || "Tasking Manager"}: ${props.project.projectInfo && props.project.projectInfo.name}` });
   // useMeta({name: 'og:description', content: `#${props.project.projectId || "Tasking Manager"}: ${props.project.projectInfo && props.project.projectInfo.name}` });
@@ -155,10 +167,10 @@ export const ProjectDetailLeft = props => {
             )}
           </div>
           <section className={`lh-copy h5 overflow-x-scroll`}>
-            <div className="" dangerouslySetInnerHTML={htmlShortDescription} />
+            <div className="pr2" dangerouslySetInnerHTML={htmlShortDescription} />
             <div className="pv2">
               <ShowReadMoreButton>
-                <div className="pv2" dangerouslySetInnerHTML={htmlDescription} />
+                <div className="pv2 pr2" dangerouslySetInnerHTML={htmlDescription} />
               </ShowReadMoreButton>
             </div>
             <BigProjectOrgLogo organisationTag={props.project.organisationTag} />
@@ -166,7 +178,7 @@ export const ProjectDetailLeft = props => {
         </ReactPlaceholder>
       </div>
 
-      <div className="cf pr4 pb3 pt1">
+      <div className="cf pr4 pb3 pt0">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={3}
@@ -194,7 +206,7 @@ export const ProjectDetailLeft = props => {
             percentMapped={props.project.percentMapped || 50}
             percentValidated={props.project.percentValidated || 25}
           />
-          <div className="cf pt2 h2">
+          <div className="cf pt1 h2">
             <MappingLevelMessage
               level={props.project.mapperLevel}
               className="fl f5 mt1 ttc fw5 blue-dark"
@@ -214,9 +226,8 @@ export const ProjectDetail = props => {
     <div className={`${props.className || ''}`}>
       <div className="bb b--grey-light">
         <div className="cf">
-          <ProjectDetailLeft {...props} className={`w-100 w-60-ns fl ph4 pv3  vh-75-ns vh-110`} />
-
-          <div className="w-100 w-40-ns fl">
+          <ProjectDetailLeft {...props} className={`w-100 w-60-l fl ph4 pv3 vh-75-l vh-110`} />
+          <div className="w-100 w-40-l fl">
             <ReactPlaceholder
               showLoadingAnimation={true}
               type={'media'}
@@ -228,9 +239,7 @@ export const ProjectDetail = props => {
             </ReactPlaceholder>
           </div>
         </div>
-
         <ProjectDetailFooter projectId={props.project.projectId} />
-        <div className="cf bt bb b--grey-light pl4 h3">&nbsp;</div>
       </div>
 
       <a href="#howToContribute" style={{ visibility: 'hidden' }} name="howToContribute">

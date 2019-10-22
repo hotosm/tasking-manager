@@ -108,16 +108,24 @@ export function TaskSelection({project, type, loading}: Object) {
           </div>
         </div>
         <div className="w-100 w-50-ns fl">
-          <TasksMap
-            mapResults={tasks}
-            projectId={project.projectId}
-            type={type}
-            error={error}
-            loading={tasksLoading}
-            className="dib w-100 fl"
-            selectTask={selectTask}
-            selected={selected}
-          />
+          <ReactPlaceholder
+            showLoadingAnimation={true}
+            type={'media'}
+            rows={26}
+            delay={200}
+            ready={!tasksLoading && tasks}
+          >
+            <TasksMap
+              mapResults={tasks}
+              projectId={project.projectId}
+              error={error}
+              loading={tasksLoading}
+              className="dib w-100 fl"
+              selectTask={selectTask}
+              selected={selected}
+              taskBordersOnly={false}
+            />
+          </ReactPlaceholder>
         </div>
       </div>
       <div className="cf ph4 bt b--grey-light">
