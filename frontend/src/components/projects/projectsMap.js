@@ -8,11 +8,11 @@ mapboxgl.accessToken = MAPBOX_TOKEN;
 export const fallbackRasterStyle = {
   version: 8,
   // "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
-  glyphs: 'http://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+  glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
   sources: {
     'raster-tiles': {
       type: 'raster',
-      tiles: ['http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'],
+      tiles: ['https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'],
       tileSize: 128,
       attribution:
         '© <a href="https://www.openstreetmap.org/copyright/">OpenStreetMap</a> contributors',
