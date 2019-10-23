@@ -32,6 +32,6 @@ export const ProjectCardPaginator = props => {
 
   /* TODO(tdk): redo this logic once we figure out what happens with ...*/
   return (
-    <PaginatorLine activePage={activePage} setPageFn={changeToPage} lastPage={maxPage} />
+    <PaginatorLine activePage={activePage} setPageFn={changeToPage} lastPage={maxPage} className="flex items-center justify-center pa4" />
   );
 };

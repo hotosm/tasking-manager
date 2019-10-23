@@ -28,9 +28,9 @@ it('children and onClick props of CustomButton', () => {
   );
   const buttonInstance = testButton.root;
   expect(
-    buttonInstance.findByProps({ className: 'black bg-white br1 f5 bn pointer' }).children,
+    buttonInstance.findByProps({ className: 'black bg-white br1 f5 pointer' }).children,
   ).toEqual(['Test it']);
 
-  buttonInstance.findByProps({ className: 'black bg-white br1 f5 bn pointer' }).props.onClick();
+  buttonInstance.findByProps({ className: 'black bg-white br1 f5 pointer' }).props.onClick();
   expect(testVar).toEqual(true);
 });

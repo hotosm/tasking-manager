@@ -8,14 +8,14 @@ import { Button } from '../button';
 import { Imagery } from './imagery';
 import { MappingTypes } from './mappingTypes';
 
-export function ContributeButton({type}: Object) {
-  if (type === 'validation') {
+export function ContributeButton({action}: Object) {
+  if (action) {
     return <Button className="white bg-red">
-      <FormattedMessage {...messages.validateRandomTask}/>
+      <FormattedMessage {...messages[action]}/>
     </Button>;
   }
   return <Button className="white bg-red">
-    <FormattedMessage {...messages.mapRandomTask}/>
+    <FormattedMessage {...messages.mapATask}/>
   </Button>;
 }
 
@@ -46,12 +46,13 @@ export const TaskSelectionFooter = props => {
           options={getEditors()}
           value={props.defaultUserEditor || ''}
           display={<FormattedMessage {...messages.selectEditor} />}
+          className="bg-white bn"
         />
       </div>
       <div className="w-30 fl tr">
         <div className="mt3">
           {/* type value will be changed soon */}
-          <ContributeButton type={props.type || 'mapping'} />
+          <ContributeButton action={props.taskAction} />
         </div>
       </div>
     </div>

@@ -5,6 +5,9 @@ import { listPageOptions, howManyPages, PageButton, PaginatorLine } from '../ind
 
 it('test if listPageOptions returns the correct options', () => {
   expect(
+    listPageOptions(1, 0)
+  ).toEqual([1]);
+  expect(
     listPageOptions(1, 1)
   ).toEqual([1]);
   expect(

@@ -6,6 +6,9 @@ const inactiveStyle = 'bg-white blue-grey';
 
 export function listPageOptions(page, lastPage) {
   let pageOptions = [1];
+  if (lastPage === 0) {
+    return pageOptions;
+  }
   if (page === 0 || page > lastPage) {
     return pageOptions.concat([2, '...', lastPage]);
   }
@@ -64,9 +67,9 @@ export const PageButton = props => {
   }
 };
 
-export function PaginatorLine({activePage, lastPage, setPageFn}: Object) {
+export function PaginatorLine({activePage, lastPage, setPageFn, className}: Object) {
   const pageOptions = listPageOptions(activePage, lastPage);
-  return <div className="flex items-center justify-center pa4">
+  return <div className={className}>
       {pageOptions.map(
         (item, n) => <PageButton key={n} activePage={activePage} label={item} setPageFn={setPageFn} />
       )}

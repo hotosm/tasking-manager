@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
@@ -6,6 +6,7 @@ import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
 import { useFetch } from '../../hooks/UseFetch';
+import { getTaskAction } from '../../utils/projectPermissions';
 import { PriorityBox } from '../projectcard/projectCard';
 import { TasksMap } from './map.js';
 import { TaskSelectionFooter } from './footer';
@@ -37,12 +38,12 @@ export function HeaderLine({author, projectId, priority}: Object) {
 
 export function TaskSelection({project, type, loading}: Object) {
   const [error, tasksLoading, tasks] = useFetch(`projects/${project.projectId}/tasks/`);
+  const user = useSelector(state => state.auth.get('userDetails'));
   const [activeSection, setActiveSection] = useState('tasks');
-  const defaultEditor = useSelector(state => state.preferences.default_editor);
   const [selected, setSelectedTasks] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState(null);
-  const htmlInstructions =
-    project.projectInfo && htmlFromMarkdown(project.projectInfo.instructions);
+  const [taskAction, setTaskAction] = useState('mapATask');
+
+  const htmlInstructions = project.projectInfo && htmlFromMarkdown(project.projectInfo.instructions);
 
   function selectTask(selection, status=null) {
     if (typeof(selection) === 'object') {
@@ -50,16 +51,17 @@ export function TaskSelection({project, type, loading}: Object) {
     } else {
       if (selected.includes(selection)) {
         setSelectedTasks([]);
-        setSelectedStatus(null)
+        setTaskAction(getTaskAction(user, project, null));
       } else {
         setSelectedTasks([selection]);
-        setSelectedStatus(status);
+        setTaskAction(getTaskAction(user, project, status));
       }
     }
   }
 
+
   return (
-    <div>
+    <div className="flex flex-column">
       <div className="cf pv3">
         <div className="w-100 w-50-ns fl">
           <div className="ph4">
@@ -96,9 +98,9 @@ export function TaskSelection({project, type, loading}: Object) {
                     <FormattedMessage {...messages.instructions} />
                   </span>
                 </div>
-                <div className="pt4">
+                <div className="pt3">
                   {activeSection === 'tasks' ? (
-                    <TaskList projectId={project.projectId} selectTask={selectTask} selected={selected} />
+                    <TaskList project={project} selectTask={selectTask} selected={selected} />
                   ) : (
                     <p dangerouslySetInnerHTML={htmlInstructions} />
                   )}
@@ -128,20 +130,19 @@ export function TaskSelection({project, type, loading}: Object) {
           </ReactPlaceholder>
         </div>
       </div>
-      <div className="cf ph4 bt b--grey-light">
+      <div className="cf w-100 ph4 mb2 bt b--grey-light fixed bottom-0 left-0">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={3}
           delay={500}
-          ready={typeof(project.projectId) === 'number' && project.projectId >0}
+          ready={typeof(project.projectId) === 'number' && project.projectId > 0}
         >
           <TaskSelectionFooter
             mappingTypes={project.mappingTypes}
             imagery={project.imagery}
             editors={project.mappingEditors}
-            defaultUserEditor={defaultEditor}
-            selected={selected}
-            selectedStatus={selectedStatus}
+            defaultUserEditor={user ? user.defaultEditor : 'iD'}
+            taskAction={taskAction}
           />
         </ReactPlaceholder>
       </div>

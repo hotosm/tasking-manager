@@ -40,11 +40,11 @@ it('test if footer has imagery component returning the correct message', () => {
   ).toBe('tms[1,22]:https://service.com/earthservice/tms/Layer@EPSG:3857@jpg/{zoom}/{x}/{-y}.jpg');
 });
 
-it('test if footer returns the correct contribute button message when type is "mapping"', () => {
+it('test if footer returns the correct contribute button message when action is "mapATask"', () => {
   const element = createComponentWithIntl(
     <TaskSelectionFooter
       mappingTypes={['LAND_USE']}
-      type={'mapping'}
+      taskAction={'mapATask'}
     />
   );
   const testInstance = element.root;
@@ -53,15 +53,15 @@ it('test if footer returns the correct contribute button message when type is "m
   ).toBe('project.selectTask.footer.button.mapRandomTask');
 });
 
-it('test if footer returns the correct contribute button message when type is "validation"', () => {
+it('test if footer returns the correct contribute button message when taskAction is "validateSelectedTask"', () => {
   const element = createComponentWithIntl(
     <TaskSelectionFooter
       mappingTypes={['LAND_USE']}
-      type={'validation'}
+      taskAction={'validateSelectedTask'}
     />
   );
   const testInstance = element.root;
   expect(
     testInstance.findByType(Button).findByType(FormattedMessage).props.id
-  ).toBe('project.selectTask.footer.button.validateRandomTask');
+  ).toBe('project.selectTask.footer.button.validateSelectedTask');
 });
