@@ -874,9 +874,11 @@ class Project(db.Model):
 
         return project_dto
 
-    def all_tasks_as_geojson(self):
+    def all_tasks_as_geojson(self, order_by=None, order_by_type="ASC", status=None):
         """ Creates a geojson of all areas """
-        project_tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+        project_tasks = Task.get_tasks_as_geojson_feature_collection(
+            self.id, order_by, order_by_type, status
+        )
 
         return project_tasks
 
