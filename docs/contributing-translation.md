@@ -9,7 +9,7 @@ Everybody is welcome to support translations through the Transifex website.
 ## Developers
 
 For developers Transifex offers a [CLI client](https://docs.transifex.com/client/introduction/) and the Tasking
-Manager is offering commands to interact with it. The client is already included in the requirements.txt so you should 
+Manager is offering commands to interact with it. The client is already included in the requirements.txt so you should
 have the Transifex commands installed, once you have set up your server side code.
 
 The Tasking Manager is using Angular Translate to display the translated strings. It works with key/value pairs
@@ -25,7 +25,7 @@ The .tx folder contains the Transifex config file. This is where you can find th
 
 ### Extract strings for translation
 
-* ```make refresh-translatables``` -  Collects translatable strings and moves them into `frontend/src/locales/en.json`.
+* ```python manage.py build_locales``` -  Collects translatable strings and moves them into `frontend/src/locales/en.json` and it will update the new keys on the other languages supported by TM.
 * Push to the `develop` branch and it will be automatically picked up by Transifex (twice a day).
 
 ### Update with latest translations
