@@ -6,7 +6,6 @@ import { TaskSelection } from '../components/taskSelection';
 import { NotFound } from './notFound';
 import { Login } from './login';
 
-
 const Error = ({ error }) => <span>Error:{error.message}</span>;
 
 export function SelectTask({ id }: Object) {
@@ -14,10 +13,10 @@ export function SelectTask({ id }: Object) {
   const token = useSelector(state => state.auth.get('token'));
   if (error) {
     if (error.message === 'NOT FOUND') {
-      return <NotFound projectId={id} />
-    };
-    return <Error error={error} />
-  };
+      return <NotFound projectId={id} />;
+    }
+    return <Error error={error} />;
+  }
   if (token) {
     return (
       <div className="cf">

@@ -1,7 +1,8 @@
 import {
-  getTaskAction, getMessageOnValidationContext, getMessageOnMappingContext
+  getTaskAction,
+  getMessageOnValidationContext,
+  getMessageOnMappingContext,
 } from '../projectPermissions';
-
 
 /*****  MAPPING CONTEXT  *****/
 it('when taskStatus is null, returns mapATask', () => {
@@ -57,7 +58,12 @@ it('when taskStatus is INVALIDATED, returns mapSelectedTask', () => {
 
 it('READY TASK selected and USER able to map returns mapSelectedTask', () => {
   const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
-  const project = { percentMapped: 40, percentBadImagery: 0, percentValidated: 0, mapperLevel: 'BEGINNER' };
+  const project = {
+    percentMapped: 40,
+    percentBadImagery: 0,
+    percentValidated: 0,
+    mapperLevel: 'BEGINNER',
+  };
   const taskStatus = 'READY';
   expect(getTaskAction(user, project, taskStatus)).toBe('mapSelectedTask');
 });

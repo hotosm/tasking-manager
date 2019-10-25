@@ -46,7 +46,7 @@ const dataFetchReducer = (state, action) => {
         ...state,
         isLoading: false,
         isError: true,
-        fetched: false 
+        fetched: false,
       };
     default:
       console.log(action);
@@ -63,11 +63,11 @@ export const useFavProjectAPI = (initialData, projectId, token) => {
   });
 
   /* Used to allow user to redo the side effects for the toggle */
-  /* for more complicated side effects, use something like 
+  /* for more complicated side effects, use something like
    * https://www.reddit.com/r/reasonml/comments/c6eer3/a_better_usereducer_colocating_side_effects_with/ */
   const [toggleFetchType, setToggleFetchType] = useState('GET');
 
-  const toggleFetchMethod = (state) => {
+  const toggleFetchMethod = state => {
     if (state.isFav === false) {
       /* set favorite to true on project */
       return 'POST';
@@ -75,7 +75,7 @@ export const useFavProjectAPI = (initialData, projectId, token) => {
       /* set favorite to false on project */
       return 'DELETE';
     }
-  }
+  };
 
   const dispatchToggle = () => {
     if (!state.isLoading) {
@@ -86,36 +86,35 @@ export const useFavProjectAPI = (initialData, projectId, token) => {
   useEffect(() => {
     let didCancel = false;
 
-    const fetchData = async (toggleFetchType) => {
-      const isToggle = toggleFetchType!=='GET' ? '_TOGGLE' : '';
+    const fetchData = async toggleFetchType => {
+      const isToggle = toggleFetchType !== 'GET' ? '_TOGGLE' : '';
 
       dispatch({ type: `FETCH${isToggle}_INIT` });
       try {
         if (!projectId) {
-          throw Error(); 
+          throw Error();
         }
 
         const result = await axios({
-          'method': toggleFetchType,
-          'url': `${API_URL}projects/${projectId}/favorite/`,
-          'headers': {
+          method: toggleFetchType,
+          url: `${API_URL}projects/${projectId}/favorite/`,
+          headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Token ${token}`,
-          }
+            Authorization: `Token ${token}`,
+          },
         });
 
-
         if (!didCancel) {
-         if (toggleFetchType !== 'GET' && result.data.project_id !== projectId) {
-            return Error("Project altered and project in response did not match");
-         }
-         dispatch({ type: `FETCH${isToggle}_SUCCESS`, payload: result.data });
+          if (toggleFetchType !== 'GET' && result.data.project_id !== projectId) {
+            return Error('Project altered and project in response did not match');
+          }
+          dispatch({ type: `FETCH${isToggle}_SUCCESS`, payload: result.data });
         }
       } catch (error) {
         /* if cancelled, this setting state of unmounted
          * component would be a memory leak */
         if (!didCancel) {
-          dispatch({ type: `FETCH${isToggle}_FAILURE` })
+          dispatch({ type: `FETCH${isToggle}_FAILURE` });
         }
       }
     };
@@ -126,8 +125,6 @@ export const useFavProjectAPI = (initialData, projectId, token) => {
       didCancel = true;
     };
   }, [projectId, token, toggleFetchType]);
-
-      
 
   return [state, dispatchToggle];
 };
