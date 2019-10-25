@@ -76,13 +76,29 @@ export default defineMessages({
     id: 'project.imagery.noDefined',
     defaultMessage: 'Any available source',
   },
-  mapRandomTask: {
+  mapATask: {
     id: 'project.selectTask.footer.button.mapRandomTask',
-    defaultMessage: 'Map random task',
+    defaultMessage: 'Map a task',
   },
-  validateRandomTask: {
+  mapSelectedTask: {
+    id: 'project.selectTask.footer.button.mapSelectedTask',
+    defaultMessage: 'Map selected task',
+  },
+  mapAnotherTask: {
+    id: 'project.selectTask.footer.button.mapAnotherTask',
+    defaultMessage: 'Map another task',
+  },
+  validateATask: {
     id: 'project.selectTask.footer.button.validateRandomTask',
-    defaultMessage: 'Validate random task',
+    defaultMessage: 'Validate a task',
+  },
+  validateSelectedTask: {
+    id: 'project.selectTask.footer.button.validateSelectedTask',
+    defaultMessage: 'Validate selected task',
+  },
+  validateAnotherTask: {
+    id: 'project.selectTask.footer.button.validateAnotherTask',
+    defaultMessage: 'Validate another task',
   },
   taskLastUpdate: {
     id: 'project.tasks.list.lastUpdate',
@@ -119,5 +135,25 @@ export default defineMessages({
   taskStatus_SPLIT: {
     id: 'project.tasks.status.split',
     defaultMessage: 'Splitted',
+  },
+  sortById: {
+    id: 'project.tasks.sorting.id',
+    defaultMessage: 'Sort by task number',
+  },
+  sortByLastUpdate: {
+    id: 'project.tasks.sorting.date',
+    defaultMessage: 'Last updated first',
+  },
+  filterAll: {
+    id: 'project.tasks.filter.all',
+    defaultMessage: 'All',
+  },
+  filterReadyToValidate: {
+    id: 'project.tasks.filter.readyToValidate',
+    defaultMessage: 'Ready to validate',
+  },
+  filterReadyToMap: {
+    id: 'project.tasks.filter.readyToMap',
+    defaultMessage: 'Ready to map',
   },
 });

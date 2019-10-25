@@ -16,4 +16,8 @@ export default defineMessages({
     id: 'notFound.lead',
     defaultMessage: 'Check the URL or report this error.',
   },
+  loginRequired: {
+    id: 'loginPage.title',
+    defaultMessage: 'Login or register an account',
+  },
 });

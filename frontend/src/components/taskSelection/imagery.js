@@ -10,7 +10,7 @@ export function Imagery({ value = '' }: Object) {
   const [isCopied, setCopied] = useCopyClipboard();
 
   const handleClick = () => {
-      setCopied(value);
+    setCopied(value);
   };
   let content = <span>{value}</span>;
   let copyButton;
@@ -29,16 +29,24 @@ export function Imagery({ value = '' }: Object) {
       messageId = 'customLayer';
     }
     if (messageId) {
-      content = <span title={value}><FormattedMessage {...messages[messageId]} /></span>;
-      copyButton = <span className="pointer pl2 blue-light hover-blue-dark" title="Copy imagery URL">
-        <ClipboardIcon width="16px" height="16px" onClick={handleClick} />
-      </span>;
+      content = (
+        <span title={value}>
+          <FormattedMessage {...messages[messageId]} />
+        </span>
+      );
+      copyButton = (
+        <span className="pointer pl2 blue-light hover-blue-dark" title="Copy imagery URL">
+          <ClipboardIcon width="16px" height="16px" onClick={handleClick} />
+        </span>
+      );
     }
   } else {
     content = <FormattedMessage {...messages.noImageryDefined} />;
   }
-  return <p className={`f5 fw6 pt1 ma0 ${value ? 'blue-dark' : 'blue-light'}`}>
-    {content}
-    {copyButton}
-  </p>;
+  return (
+    <p className={`f5 fw6 pt1 ma0 ${value ? 'blue-dark' : 'blue-light'}`}>
+      {content}
+      {copyButton}
+    </p>
+  );
 }

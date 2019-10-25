@@ -25,3 +25,13 @@ export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.co
 
 export const CUSTOM_ID_EDITOR_INSTANCE_NAME = process.env.REACT_APP_CUSTOM_ID_EDITOR_INSTANCE_NAME;
 export const CUSTOM_ID_EDITOR_INSTANCE_HOST = process.env.REACT_APP_CUSTOM_ID_EDITOR_INSTANCE_HOST;
+
+export const TASK_COLOURS = {
+  READY: '#fff',
+  LOCKED_FOR_MAPPING: '#fff',
+  MAPPED: '#a1d7e5',
+  LOCKED_FOR_VALIDATION: '#a1d7e5',
+  VALIDATED: '#6cb570',
+  INVALIDATED: '#e6e6e6',
+  BADIMAGERY: '#e04141',
+};

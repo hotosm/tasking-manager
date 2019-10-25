@@ -18,6 +18,7 @@ export { ChevronRightIcon } from './chevron-right';
 export { ShareIcon } from './share';
 export { FacebookIcon } from './facebook';
 export { ExitIcon } from './exit';
+export { EyeIcon } from './eye';
 export { HomeIcon } from './home';
 export { LockIcon } from './lock';
 export { GithubIcon } from './github';
