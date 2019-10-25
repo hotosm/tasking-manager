@@ -5,6 +5,30 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
+export const fallbackRasterStyle = {
+  version: 8,
+  // "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+  glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+  sources: {
+    'raster-tiles': {
+      type: 'raster',
+      tiles: ['https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'],
+      tileSize: 128,
+      attribution:
+        '© <a href="https://www.openstreetmap.org/copyright/">OpenStreetMap</a> contributors',
+    },
+  },
+  layers: [
+    {
+      id: 'simple-tiles',
+      type: 'raster',
+      source: 'raster-tiles',
+      minzoom: 0,
+      maxzoom: 22,
+    },
+  ],
+};
+
 export const ProjectsMap = ({
   state,
   state: { mapResults },
@@ -31,17 +55,19 @@ export const ProjectsMap = ({
   useLayoutEffect(() => {
     /* May be able to refactor this to just take
      * advantage of useRef instead inside other useLayoutEffect() */
+
+    /* List of non-mapbox Glyph names is at
+     https://github.com/openmaptiles/fonts/tree/gh-pages/Open%20Sans%20Regular */
+
     /* I referenced this initially https://philipprost.com/how-to-use-mapbox-gl-with-react-functional-component/ */
-    if (MAPBOX_TOKEN) {
-      setMapObj(
-        new mapboxgl.Map({
-          container: mapRef.current,
-          // style: 'mapbox://styles/mapbox/bright-v9',
-          style: 'mapbox://styles/mapbox/streets-v11',
-          zoom: 0,
-        }),
-      );
-    }
+    setMapObj(
+      new mapboxgl.Map({
+        container: mapRef.current,
+        // style: 'mapbox://styles/mapbox/bright-v9',
+        style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/streets-v11' : fallbackRasterStyle,
+        zoom: 0,
+      }),
+    );
 
     return () => {
       map && map.remove();
@@ -50,6 +76,9 @@ export const ProjectsMap = ({
   }, []);
 
   useLayoutEffect(() => {
+    const licensedFonts = MAPBOX_TOKEN
+      ? ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
+      : ['Open Sans Semibold'];
     /* docs: https://docs.mapbox.com/mapbox-gl-js/example/cluster/ */
     const mapboxLayerDefn = () => {
       map.addSource('projects', {
@@ -78,7 +107,7 @@ export const ProjectsMap = ({
         filter: ['has', 'point_count'],
         layout: {
           'text-field': '{point_count_abbreviated}',
-          'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
+          'text-font': licensedFonts,
           'text-size': 16,
         },
         paint: {
@@ -96,7 +125,7 @@ export const ProjectsMap = ({
         layout: {
           'icon-image': 'marker-15',
           'text-field': '#{projectId}',
-          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-font': licensedFonts,
           'text-offset': [0, 0.6],
           'text-anchor': 'top',
         },

@@ -67,12 +67,22 @@ class MappingNotAllowed(Enum):
 
 
 class ValidatingNotAllowed(Enum):
-    """ Enum describing reasons a user cannot map """
+    """ Enum describing reasons a user cannot validate """
 
     USER_NOT_VALIDATOR = 100
     USER_NOT_ACCEPTED_LICENSE = 101
     USER_NOT_ON_ALLOWED_LIST = 102
     PROJECT_NOT_PUBLISHED = 103
+    USER_IS_BEGINNER = 104
+
+
+class UserGender(Enum):
+    """ Describes the gender a user can be assigned"""
+
+    MALE = 1
+    FEMALE = 2
+    SELF_DESCRIBE = 3
+    PREFER_NOT = 4
 
 
 class UserRole(Enum):

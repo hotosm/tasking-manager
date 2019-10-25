@@ -36,8 +36,8 @@ export function calculateCompleteness(userDetails) {
 export function ProfileCompleteness({ userDetails }: Object) {
   const completeness = calculateCompleteness(userDetails);
   return (
-    <div className="shadow-4 ph3 pv3">
-      <h3 className="f4 mt0 fw6">
+    <div className="shadow-4 bg-white ph3 pv3">
+      <h3 className="blue-dark f4 mt0 fw6">
         <FormattedMessage {...messages.completenessTitle} />
       </h3>
       <p className="blue-grey">

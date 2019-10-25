@@ -97,6 +97,20 @@ class ST_MakeEnvelope(GenericFunction):
     type = Geometry
 
 
+class ST_X(GenericFunction):
+    """ Exposes PostGIS ST_X function """
+
+    name = "ST_X"
+    type = Geometry
+
+
+class ST_Y(GenericFunction):
+    """ Exposes PostGIS ST_Y function """
+
+    name = "ST_Y"
+    type = Geometry
+
+
 def timestamp():
     """ Used in SQL Alchemy models to ensure we refresh timestamp when new models initialised"""
     return datetime.datetime.utcnow()

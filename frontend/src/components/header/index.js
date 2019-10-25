@@ -38,7 +38,7 @@ const TopNavLink = props => {
 const UserDisplay = props => {
   return (
     <span>
-      <UserAvatar className="br-100 h2 v-mid" />
+      <UserAvatar className="br-100 v-mid red" width="32px" height="32px" />
       <span className="pl2">{props.username}</span>
     </span>
   );
@@ -66,8 +66,8 @@ const AuthButtons = props => {
 class Header extends React.Component {
   menuItems = menuItems;
   linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu';
-  isActive = ({ isPartiallyCurrent }) => {
-    return isPartiallyCurrent
+  isActive = ({ isCurrent }) => {
+    return isCurrent
       ? { className: `${this.linkCombo} bb b--blue-dark bw1 pv2` }
       : { className: this.linkCombo };
   };

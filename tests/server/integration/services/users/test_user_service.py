@@ -77,7 +77,9 @@ class TestAuthenticationService(unittest.TestCase):
     @patch.object(User, "create")
     def test_user_can_register_with_correct_mapping_level(self, mock_user):
         # Act
-        test_user = UserService().register_user(12, "Thinkwhere", 300)
+        test_user = UserService().register_user(
+            12, "Thinkwhere", 300, "some_picture_url"
+        )
 
         # Assert
         self.assertEqual(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)

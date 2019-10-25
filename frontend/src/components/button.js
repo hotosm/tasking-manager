@@ -37,7 +37,7 @@ export function CustomButton({ onClick, children, className }: Object) {
       onClick={onClick}
       aria-pressed="false"
       focusindex="0"
-      className={`${className || ''} br1 f5 bn pointer`}
+      className={`${className || ''} br1 f5 pointer`}
     >
       {children}
     </button>

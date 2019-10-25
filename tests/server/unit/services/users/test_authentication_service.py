@@ -58,7 +58,7 @@ class TestAuthenticationService(unittest.TestCase):
         AuthenticationService.login_user(osm_response, "/test/redirect")
 
         # Assert
-        mock_user_register.assert_called_with(7777777, "Thinkwhere Test", 16)
+        mock_user_register.assert_called_with(7777777, "Thinkwhere Test", 16, None)
 
     @patch.object(UserService, "get_user_by_id")
     def test_valid_auth_request_gets_token(self, mock_user_get):

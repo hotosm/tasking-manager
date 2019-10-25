@@ -17,6 +17,8 @@ const PROFILE_RELEVANT_FIELDS = [
   'facebookId',
   'linkedinId',
   'slackId',
+  'gender',
+  'selfDescriptionGender',
   // 'default_editor',
   // 'mentions_notifications',
   // 'comments_notifications',
@@ -26,7 +28,7 @@ const PROFILE_RELEVANT_FIELDS = [
 
 function UserInterests() {
   return (
-    <div className="bg-white shadow-4 pa4 mb3">
+    <div className="bg-white blue-dark shadow-4 pa4 mb3">
       <span>Interests selection card</span>
     </div>
   );
@@ -46,7 +48,7 @@ class UserInformationForm extends React.Component {
     const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
     return (
       <div className="bg-white shadow-4 pa4 mb3">
-        <h3 className="f3 mt0 fw6">
+        <h3 className="f3 blue-dark mt0 fw6">
           <FormattedMessage {...messages.personalInfo} />
         </h3>
         <Form
@@ -87,7 +89,12 @@ class UserInformationForm extends React.Component {
                       <label className={labelClasses}>
                         <FormattedMessage {...messages.country} />
                       </label>
-                      <Field name="country" component="input" type="text" className={fieldClasses} />
+                      <Field
+                        name="country"
+                        component="input"
+                        type="text"
+                        className={fieldClasses}
+                      />
                     </div>
                   </div>
                   <div className="cf pt3">
@@ -95,21 +102,75 @@ class UserInformationForm extends React.Component {
                       <label className={labelClasses}>
                         <FormattedMessage {...messages.slackUsername} />
                       </label>
-                      <Field name="slackId" component="input" type="text" className={fieldClasses} />
+                      <Field
+                        name="slackId"
+                        component="input"
+                        type="text"
+                        className={fieldClasses}
+                      />
                     </div>
                     <div className="w-100 w-50-ns fl pl3-ns">
                       <label className={labelClasses}>Twitter</label>
-                      <Field name="twitterId" component="input" type="text" className={fieldClasses} />
+                      <Field
+                        name="twitterId"
+                        component="input"
+                        type="text"
+                        className={fieldClasses}
+                      />
                     </div>
                   </div>
                   <div className="cf">
                     <div className="w-100 w-50-ns fl pr3-ns">
                       <label className={labelClasses}>Facebook</label>
-                      <Field name="facebookId" component="input" type="text" className={fieldClasses} />
+                      <Field
+                        name="facebookId"
+                        component="input"
+                        type="text"
+                        className={fieldClasses}
+                      />
                     </div>
                     <div className="w-100 w-50-ns fl pl3-ns">
                       <label className={labelClasses}>Linkedin</label>
-                      <Field name="linkedinId" component="input" type="text" className={fieldClasses} />
+                      <Field
+                        name="linkedinId"
+                        component="input"
+                        type="text"
+                        className={fieldClasses}
+                      />
+                    </div>
+                  </div>
+                  <div className="cf w-100 w-50-ns">
+                    <div>
+                      <label className={labelClasses}>
+                        <FormattedMessage {...messages.gender} />
+                      </label>
+                      <div style={radioButtonStyle}>
+                        <Field name="gender" component="input" type="radio" value="FEMALE" /> Female
+                      </div>
+                      <div style={radioButtonStyle}>
+                        <Field name="gender" component="input" type="radio" value="MALE" /> Male
+                      </div>
+                      <div style={radioButtonStyle}>
+                        <Field name="gender" component="input" type="radio" value="PREFER_NOT" />{' '}
+                        Prefer not to say
+                      </div>
+                      <div style={radioButtonStyle}>
+                        <Field name="gender" component="input" type="radio" value="SELF_DESCRIBE" />{' '}
+                        Prefer to self-describe:
+                      </div>
+                      <Field name="gender" subscription={{ value: true }}>
+                        {({ input: { value } }) =>
+                          value === 'SELF_DESCRIBE' ? (
+                            <Field
+                              name="selfDescriptionGender"
+                              component="input"
+                              type="text"
+                              className={fieldClasses}
+                              required
+                            />
+                          ) : null
+                        }
+                      </Field>
                     </div>
                   </div>
                   <div className="pt2">
@@ -267,6 +328,10 @@ class UserNotificationsForm extends React.Component {
     );
   }
 }
+
+const radioButtonStyle = {
+  padding: '0.5em 0',
+};
 
 UserNotificationsForm = connect(
   mapStateToProps,
