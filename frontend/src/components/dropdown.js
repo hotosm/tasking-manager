@@ -136,7 +136,9 @@ export class _Dropdown extends React.PureComponent {
     return false;
   };
   getActiveOrDisplay() {
-    const activeItems = this.props.options.filter(item => item.label === this.props.value || item.value === this.props.value);
+    const activeItems = this.props.options.filter(
+      item => item.label === this.props.value || item.value === this.props.value,
+    );
     return activeItems.length === 0 || activeItems.length > 1
       ? this.props.display
       : activeItems[0].label;

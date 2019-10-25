@@ -8,23 +8,27 @@ import { Button } from '../button';
 import { Imagery } from './imagery';
 import { MappingTypes } from './mappingTypes';
 
-export function ContributeButton({type}: Object) {
-  if (type === 'validation') {
-    return <Button className="white bg-red">
-      <FormattedMessage {...messages.validateRandomTask}/>
-    </Button>;
+export function ContributeButton({ action }: Object) {
+  if (action) {
+    return (
+      <Button className="white bg-red">
+        <FormattedMessage {...messages[action]} />
+      </Button>
+    );
   }
-  return <Button className="white bg-red">
-    <FormattedMessage {...messages.mapRandomTask}/>
-  </Button>;
+  return (
+    <Button className="white bg-red">
+      <FormattedMessage {...messages.mapATask} />
+    </Button>
+  );
 }
 
 export const TaskSelectionFooter = props => {
   const titleClasses = 'db ttu f6 blue-light mb2';
 
   return (
-    <div className="cf">
-      <div className="w-25 fl">
+    <div className="cf bg-white pb2 ph4-l ph2">
+      <div className="w-25-ns w-40 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.typesOfMapping} />
         </h3>
@@ -32,13 +36,13 @@ export const TaskSelectionFooter = props => {
           <MappingTypes types={props.mappingTypes} />
         </div>
       </div>
-      <div className="w-25 fl">
+      <div className="w-25-ns w-60 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.imagery} />
         </h3>
         <Imagery value={props.imagery} />
       </div>
-      <div className="w-20 fl">
+      <div className="w-20-ns w-40 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.editor} />
         </h3>
@@ -46,14 +50,15 @@ export const TaskSelectionFooter = props => {
           options={getEditors()}
           value={props.defaultUserEditor || ''}
           display={<FormattedMessage {...messages.selectEditor} />}
+          className="bg-white bn"
         />
       </div>
-      <div className="w-30 fl tr">
+      <div className="w-30-ns w-60 fl tr">
         <div className="mt3">
           {/* type value will be changed soon */}
-          <ContributeButton type={props.type || 'mapping'} />
+          <ContributeButton action={props.taskAction} />
         </div>
       </div>
     </div>
   );
-}
+};

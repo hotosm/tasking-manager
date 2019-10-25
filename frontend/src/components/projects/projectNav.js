@@ -62,9 +62,7 @@ const DifficultyDropdown = props => {
         { label: <MappingLevelMessage level="INTERMEDIATE" className="" />, value: 'INTERMEDIATE' },
         { label: <MappingLevelMessage level="ADVANCED" className="" />, value: 'ADVANCED' },
       ]}
-      display={
-          <FormattedMessage {...messages.mappingDifficulty} />
-      }
+      display={<FormattedMessage {...messages.mappingDifficulty} />}
       className={'ba b--grey-light bg-white mr1 f6 v-mid dn dib-ns pv1'}
     />
   );

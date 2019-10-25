@@ -41,7 +41,11 @@ export const MoreFiltersForm = props => {
   };
 
   /* dereference the formQuery */
-  const { campaign: campaignInQuery, organisation: orgInQuery, location: countryInQuery } = formQuery;
+  const {
+    campaign: campaignInQuery,
+    organisation: orgInQuery,
+    location: countryInQuery,
+  } = formQuery;
   const [campaignAPIState] = useTagAPI([], 'campaigns');
   const [orgAPIState] = useTagAPI([], 'organisations');
   const [countriesAPIState] = useTagAPI([], 'countries');
@@ -98,17 +102,16 @@ export const MoreFiltersForm = props => {
       </div>
 
       <TagFilterPickerCheckboxes
-          fieldsetTitle=<FormattedMessage {...messages.location} />
-          fieldsetTitlePlural=<FormattedMessage {...messages.locations} />
-          fieldsetName="location"
-          fieldsetStyle={fieldsetStyle}
-          titleStyle={titleStyle}
-          selectedTag={countryInQuery}
-          tagOptionsFromAPI={countriesAPIState}
-          setQueryForChild={setFormQuery}
-          allQueryParamsForChild={formQuery}
-        />
-
+        fieldsetTitle=<FormattedMessage {...messages.location} />
+        fieldsetTitlePlural=<FormattedMessage {...messages.locations} />
+        fieldsetName="location"
+        fieldsetStyle={fieldsetStyle}
+        titleStyle={titleStyle}
+        selectedTag={countryInQuery}
+        tagOptionsFromAPI={countriesAPIState}
+        setQueryForChild={setFormQuery}
+        allQueryParamsForChild={formQuery}
+      />
     </form>
   );
 };

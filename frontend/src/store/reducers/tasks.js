@@ -2,11 +2,10 @@ import { Map } from 'immutable';
 
 import { types } from '../actions/tasks';
 
-
 const initialState = Map({
   project: null,
   tasks: [],
-  status: null
+  status: null,
 });
 
 export function tasksReducer(state = initialState, action) {

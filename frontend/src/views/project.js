@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+
 import { ProjectNav } from '../components/projects/projectNav';
 import { MoreFiltersForm } from '../components/projects/moreFiltersForm';
 import { ProjectDetail } from '../components/projectDetail/index';
