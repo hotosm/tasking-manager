@@ -7,7 +7,7 @@ import { Button } from '../button';
 
 function contactCard() {
   return (
-    <div className="w-25-l w-100 fl pv2 ph3 bg-white blue-dark shadow-4">
+    <div className="w-25-l w-100 fl pv2 ph3 blue-dark shadow-4 bg-white">
       <h3 className="ma1 pb3 w-70-l w-60-m f3 fw8 ttu barlow-condensed">
         <FormattedMessage {...messages.organizationContactTitle} />
       </h3>

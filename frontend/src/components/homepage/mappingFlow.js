@@ -42,7 +42,7 @@ export function MappingFlow() {
     },
   ];
   return (
-    <div className="bg-white black">
+    <div className="black">
       <div className="ph6-l ph4 pv3">
         <h3 className="mb4 mw-36rem-l lh-copy f3 fw6">
           <FormattedMessage

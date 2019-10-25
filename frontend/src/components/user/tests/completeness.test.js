@@ -34,6 +34,7 @@ const user0Percent = {
   city: null,
   country: null,
   name: null,
+  gender: null,
   missingMapsProfile: 'http://www.missingmaps.org/users/#/user1',
   osmProfile: 'https://www.openstreetmap.org/user/user1',
 };
@@ -64,6 +65,8 @@ const incompleteProfile = {
   city: 'Nairobi',
   country: 'Nigeria',
   name: 'The User',
+  gender: 'SELF_DESCRIBE',
+  selfDescriptionGender: 'random_gender',
   missingMapsProfile: 'http://www.missingmaps.org/users/#/user1',
   osmProfile: 'https://www.openstreetmap.org/user/user1',
 };
@@ -94,6 +97,8 @@ const user100Percent = {
   city: 'Nairobi',
   country: 'Nigeria',
   name: 'The User',
+  gender: 'SELF_DESCRIBE',
+  selfDescriptionGender: 'random_gender',
   missingMapsProfile: 'http://www.missingmaps.org/users/#/user1',
   osmProfile: 'https://www.openstreetmap.org/user/user1',
 };
@@ -117,11 +122,11 @@ it('test with a user whose profile is 62.5% filled', () => {
   expect(elementInstance.findAllByType(FormattedMessage).map(i => i.props.id)).toContain(
     'user.completeness.lead.high',
   );
-  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(0.625);
+  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(0.7);
   expect(
     elementInstance.findByProps({ className: 'absolute bg-red br-pill hhalf hide-child' }).props
       .style.width,
-  ).toBe('62.5%');
+  ).toBe('70%');
 });
 
 it('test with a user whose profile is 0% filled', () => {

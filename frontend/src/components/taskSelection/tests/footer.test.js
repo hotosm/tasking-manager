@@ -7,61 +7,55 @@ import { MappingTypes } from '../mappingTypes';
 import { TaskSelectionFooter } from '../footer';
 import { Button } from '../../button';
 
-const createComponentWithIntl = (children, props = {locale: 'en'}) => {
+const createComponentWithIntl = (children, props = { locale: 'en' }) => {
   return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
 };
 
 it('test if footer has MappingTypes component defined set with the correct mappingTypes', () => {
-  const element = createComponentWithIntl(<TaskSelectionFooter mappingTypes={['ROADS', 'BUILDINGS']}/>);
+  const element = createComponentWithIntl(
+    <TaskSelectionFooter mappingTypes={['ROADS', 'BUILDINGS']} />,
+  );
   const testInstance = element.root;
-  expect(
-    testInstance.findByType(MappingTypes).props.types
-  ).toStrictEqual(['ROADS', 'BUILDINGS']);
+  expect(testInstance.findByType(MappingTypes).props.types).toStrictEqual(['ROADS', 'BUILDINGS']);
 });
 
 it('test if footer has MappingTypes component defined set with the correct mappingTypes', () => {
-  const element = createComponentWithIntl(<TaskSelectionFooter mappingTypes={['LAND_USE']}/>);
+  const element = createComponentWithIntl(<TaskSelectionFooter mappingTypes={['LAND_USE']} />);
   const testInstance = element.root;
-  expect(
-    testInstance.findByType(MappingTypes).props.types
-  ).toStrictEqual(['LAND_USE']);
+  expect(testInstance.findByType(MappingTypes).props.types).toStrictEqual(['LAND_USE']);
 });
 
 it('test if footer has imagery component returning the correct message', () => {
   const element = createComponentWithIntl(
     <TaskSelectionFooter
       mappingTypes={['LAND_USE']}
-      imagery={'tms[1,22]:https://service.com/earthservice/tms/Layer@EPSG:3857@jpg/{zoom}/{x}/{-y}.jpg'}
-    />
+      imagery={
+        'tms[1,22]:https://service.com/earthservice/tms/Layer@EPSG:3857@jpg/{zoom}/{x}/{-y}.jpg'
+      }
+    />,
   );
   const testInstance = element.root;
-  expect(
-    testInstance.findByType(Imagery).props.value
-  ).toBe('tms[1,22]:https://service.com/earthservice/tms/Layer@EPSG:3857@jpg/{zoom}/{x}/{-y}.jpg');
+  expect(testInstance.findByType(Imagery).props.value).toBe(
+    'tms[1,22]:https://service.com/earthservice/tms/Layer@EPSG:3857@jpg/{zoom}/{x}/{-y}.jpg',
+  );
 });
 
-it('test if footer returns the correct contribute button message when type is "mapping"', () => {
+it('test if footer returns the correct contribute button message when action is "mapATask"', () => {
   const element = createComponentWithIntl(
-    <TaskSelectionFooter
-      mappingTypes={['LAND_USE']}
-      type={'mapping'}
-    />
+    <TaskSelectionFooter mappingTypes={['LAND_USE']} taskAction={'mapATask'} />,
   );
   const testInstance = element.root;
-  expect(
-    testInstance.findByType(Button).findByType(FormattedMessage).props.id
-  ).toBe('project.selectTask.footer.button.mapRandomTask');
+  expect(testInstance.findByType(Button).findByType(FormattedMessage).props.id).toBe(
+    'project.selectTask.footer.button.mapRandomTask',
+  );
 });
 
-it('test if footer returns the correct contribute button message when type is "validation"', () => {
+it('test if footer returns the correct contribute button message when taskAction is "validateSelectedTask"', () => {
   const element = createComponentWithIntl(
-    <TaskSelectionFooter
-      mappingTypes={['LAND_USE']}
-      type={'validation'}
-    />
+    <TaskSelectionFooter mappingTypes={['LAND_USE']} taskAction={'validateSelectedTask'} />,
   );
   const testInstance = element.root;
-  expect(
-    testInstance.findByType(Button).findByType(FormattedMessage).props.id
-  ).toBe('project.selectTask.footer.button.validateRandomTask');
+  expect(testInstance.findByType(Button).findByType(FormattedMessage).props.id).toBe(
+    'project.selectTask.footer.button.validateSelectedTask',
+  );
 });

@@ -56,32 +56,28 @@ class BBoxTooBigError(Exception):
 class ProjectSearchService:
     @staticmethod
     def create_search_query():
-        query = (
-            db.session.query(
-                Project.id.label("id"),
-                Project.mapper_level,
-                Project.priority,
-                Project.default_locale,
-                Project.centroid.ST_AsGeoJSON().label("centroid"),
-                Project.organisation_tag,
-                Project.campaign_tag,
-                Project.tasks_bad_imagery,
-                Project.tasks_mapped,
-                Project.tasks_validated,
-                Project.status,
-                Project.total_tasks,
-                Project.last_updated,
-                Project.due_date,
-                func.count(distinct(TaskHistory.user_id)).label("total_contributors"),
-            )
-            .outerjoin(TaskHistory, TaskHistory.project_id == Project.id)
-            .filter(Project.private is not True)
-        )
+        query = db.session.query(
+            Project.id.label("id"),
+            Project.mapper_level,
+            Project.priority,
+            Project.default_locale,
+            Project.centroid.ST_AsGeoJSON().label("centroid"),
+            Project.organisation_tag,
+            Project.campaign_tag,
+            Project.tasks_bad_imagery,
+            Project.tasks_mapped,
+            Project.tasks_validated,
+            Project.status,
+            Project.total_tasks,
+            Project.last_updated,
+            Project.due_date,
+            Project.country,
+        ).filter(Project.private is not True)
 
         return query
 
     @staticmethod
-    def create_result_dto(project, preferred_locale):
+    def create_result_dto(project, preferred_locale, total_contributors):
         project_info_dto = ProjectInfo.get_dto_for_locale(
             project.id, preferred_locale, project.default_locale
         )
@@ -112,9 +108,27 @@ class ProjectSearchService:
         )
         list_dto.status = ProjectStatus(project.status).name
         list_dto.active_mappers = Project.get_active_mappers(project.id)
-        list_dto.total_contributors = project.total_contributors
+        list_dto.total_contributors = total_contributors
+        list_dto.country = project.country
 
         return list_dto
+
+    @staticmethod
+    def get_total_contributions(paginated_results):
+        paginated_projects_ids = [p.id for p in paginated_results]
+
+        # We need to make a join to return projects without contributors.
+        project_contributors_count = (
+            Project.query.with_entities(
+                Project.id, func.count(distinct(TaskHistory.user_id)).label("total")
+            )
+            .filter(Project.id.in_(paginated_projects_ids))
+            .outerjoin(TaskHistory, TaskHistory.project_id == Project.id)
+            .group_by(Project.id)
+            .all()
+        )
+
+        return [p.total for p in project_contributors_count]
 
     @staticmethod
     @cached(search_cache)
@@ -143,9 +157,16 @@ class ProjectSearchService:
         feature_collection = geojson.FeatureCollection(features)
         dto = ProjectSearchResultsDTO()
         dto.map_results = feature_collection
+
+        # Get all total contributions for each paginated project.
+        contrib_counts = ProjectSearchService.get_total_contributions(
+            paginated_results.items
+        )
+        zip_items = zip(paginated_results.items, contrib_counts)
+
         dto.results = [
-            ProjectSearchService.create_result_dto(p, search_dto.preferred_locale)
-            for p in paginated_results.items
+            ProjectSearchService.create_result_dto(p, search_dto.preferred_locale, t)
+            for p, t in zip_items
         ]
         dto.pagination = Pagination(paginated_results)
 
@@ -201,6 +222,15 @@ class ProjectSearchService:
                     or_search, postgresql_regconfig="english"
                 )
             )
+
+        if search_dto.country:
+            # Unnest country column array.
+            sq = Project.query.with_entities(
+                Project.id, func.unnest(Project.country).label("country")
+            ).subquery()
+            query = query.filter(
+                sq.c.country.ilike("%{}%".format(search_dto.country))
+            ).filter(Project.id == sq.c.id)
 
         order_by = search_dto.order_by
         if search_dto.order_by_type == "DESC":

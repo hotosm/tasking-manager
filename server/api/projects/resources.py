@@ -330,6 +330,11 @@ class ProjectsRestAPI(Resource):
                     organisationTag:
                         type: string
                         default: red cross
+                    countryTag:
+                          type: array
+                          items:
+                              type: string
+                          default: []
                     licenseId:
                         type: integer
                         default: 1
@@ -373,7 +378,7 @@ class ProjectsRestAPI(Resource):
             return {"Error": "Unable to update project"}, 400
 
         try:
-            ProjectAdminService.update_project(project_dto)
+            ProjectAdminService.update_project(project_dto, tm.authenticated_user_id)
             return {"Status": "Updated"}, 200
         except InvalidGeoJson as e:
             return {"Invalid GeoJson": str(e)}, 400
@@ -422,7 +427,7 @@ class ProjectsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.delete_project(project_id)
+            ProjectAdminService.delete_project(project_id, tm.authenticated_user_id)
             return {"Success": "Project deleted"}, 200
         except ProjectAdminServiceError:
             return {"Error": "Project has some mapping"}, 403
@@ -492,6 +497,10 @@ class ProjectsAllAPI(Resource):
               type: string
               default: serbia
             - in: query
+              name: country
+              description: Project country
+              type: string
+            - in: query
               name: projectStatuses
               description: Authenticated PMs can search for archived or draft statuses
               type: string
@@ -510,6 +519,7 @@ class ProjectsAllAPI(Resource):
             search_dto.organisation_tag = request.args.get("organisationTag")
             search_dto.campaign_tag = request.args.get("campaignTag")
             search_dto.order_by = request.args.get("orderBy", "priority")
+            search_dto.country = request.args.get("country")
             search_dto.order_by_type = request.args.get("orderByType", "ASC")
             search_dto.page = (
                 int(request.args.get("page")) if request.args.get("page") else 1
