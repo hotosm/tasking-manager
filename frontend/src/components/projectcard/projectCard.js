@@ -25,7 +25,13 @@ export function PriorityBox({ priority, extraClasses }: Object) {
   );
 }
 
-export function ProjectTeaser({ lastUpdated, totalContributors, className, littleFont="f7", bigFont="f6" }: Object) {
+export function ProjectTeaser({
+  lastUpdated,
+  totalContributors,
+  className,
+  littleFont = 'f7',
+  bigFont = 'f6',
+}: Object) {
   /* outerDivStyles must have f6 even if sub-divs have f7 to fix grid issues*/
   const outerDivStyles = 'f6 tl blue-grey truncate mb2';
 
@@ -44,7 +50,9 @@ export function ProjectTeaser({ lastUpdated, totalContributors, className, littl
         <span className={`${littleFont} blue-light`}>
           <FormattedMessage
             {...messages['projectTotalContributors']}
-            values={{ number: <span className={`blue-grey b ${bigFont}`}>{totalContributors || 0}</span> }}
+            values={{
+              number: <span className={`blue-grey b ${bigFont}`}>{totalContributors || 0}</span>,
+            }}
           />
         </span>
       </div>

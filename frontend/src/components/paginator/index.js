@@ -6,26 +6,29 @@ const inactiveStyle = 'bg-white blue-grey';
 
 export function listPageOptions(page, lastPage) {
   let pageOptions = [1];
+  if (lastPage === 0) {
+    return pageOptions;
+  }
   if (page === 0 || page > lastPage) {
     return pageOptions.concat([2, '...', lastPage]);
   }
   if (lastPage > 5) {
     if (page < 3) {
-      return pageOptions.concat([2, 3, '...', lastPage])
+      return pageOptions.concat([2, 3, '...', lastPage]);
     }
     if (page === 3) {
-      return pageOptions.concat([2, 3, 4, '...', lastPage])
+      return pageOptions.concat([2, 3, 4, '...', lastPage]);
     }
     if (page === lastPage) {
-      return pageOptions.concat(['...', page - 2, page - 1, lastPage])
+      return pageOptions.concat(['...', page - 2, page - 1, lastPage]);
     }
     if (page === lastPage - 1) {
-      return pageOptions.concat(['...', page - 1, page, lastPage])
+      return pageOptions.concat(['...', page - 1, page, lastPage]);
     }
     if (page === lastPage - 2) {
-      return pageOptions.concat(['...', page - 1, page, page + 1, lastPage])
+      return pageOptions.concat(['...', page - 1, page, page + 1, lastPage]);
     }
-    return pageOptions.concat(['...', page - 1, page, page + 1, '...', lastPage])
+    return pageOptions.concat(['...', page - 1, page, page + 1, '...', lastPage]);
   } else {
     let range = [];
     for (let i = 1; i <= lastPage; i++) {
@@ -43,14 +46,14 @@ export function howManyPages(numberOfItems, pageSize) {
   if (mod === 0) {
     return numberOfItems / pageSize;
   } else {
-    return ((numberOfItems - mod) / pageSize) + 1;
+    return (numberOfItems - mod) / pageSize + 1;
   }
 }
 
 export const PageButton = props => {
   const currentStyle = props.label === props.activePage ? activeStyle : inactiveStyle;
   if (props.label === '...') {
-    return <span className="f5 blue-grey">...</span>
+    return <span className="f5 blue-grey">...</span>;
   } else {
     return (
       <button
@@ -64,11 +67,13 @@ export const PageButton = props => {
   }
 };
 
-export function PaginatorLine({activePage, lastPage, setPageFn}: Object) {
+export function PaginatorLine({ activePage, lastPage, setPageFn, className }: Object) {
   const pageOptions = listPageOptions(activePage, lastPage);
-  return <div className="flex items-center justify-center pa4">
-      {pageOptions.map(
-        (item, n) => <PageButton key={n} activePage={activePage} label={item} setPageFn={setPageFn} />
-      )}
-  </div>;
+  return (
+    <div className={className}>
+      {pageOptions.map((item, n) => (
+        <PageButton key={n} activePage={activePage} label={item} setPageFn={setPageFn} />
+      ))}
+    </div>
+  );
 }
