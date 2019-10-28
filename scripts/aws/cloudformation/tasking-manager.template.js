@@ -4,9 +4,14 @@ const Parameters = {
   GitSha: {
     Type: 'String'
   },
-  Environment: {
+  NetworkEnvironment: {
     Type :'String',
     AllowedValues: ['staging', 'production']
+  },
+  AutoscalingPolicy: {
+    Type: 'String',
+    AllowedValues: ['development', 'demo', 'production'],
+    Description: "development: min 1, max 1 instance; demo: min 1 max 3 instances; production: min 3 max 12 instances"
   },
   DBSnapshot: {
     Type: 'String',
@@ -107,7 +112,8 @@ const Parameters = {
 const Conditions = {
   UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
   DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
-  IsTaskingManagerProduction: cf.equals(cf.stackName, 'tasking-manager-production')
+  IsTaskingManagerProduction: cf.equals(cf.ref('AutoscalingPolicy'), 'Production (max 12)'),
+  IsTaskingManagerDemo: cf.equals(cf.ref('AutoscalingPolicy'), 'Demo (max 3)')
 };
 
 const Resources = {
@@ -116,11 +122,11 @@ const Resources = {
     Type: 'AWS::AutoScaling::AutoScalingGroup',
     Properties: {
       AutoScalingGroupName: cf.stackName,
-      Cooldown: 300,
+      Cooldown: 600,
       MinSize: cf.if('IsTaskingManagerProduction', 3, 1),
       DesiredCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
-      MaxSize: cf.if('IsTaskingManagerProduction', 12, 1),
-      HealthCheckGracePeriod: 300,
+      MaxSize: cf.if('IsTaskingManagerProduction', 12, cf.if('IsTaskingManagerDemo', 3, 1)),
+      HealthCheckGracePeriod: 600,
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
@@ -139,7 +145,7 @@ const Resources = {
         AutoScalingGroupName: cf.ref('TaskingManagerASG'),
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
-          TargetValue: 500,
+          TargetValue: 600,
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
             ResourceLabel: cf.join('/', [
@@ -156,16 +162,119 @@ const Resources = {
             ])
           }
         },
-        Cooldown: 300
+        Cooldown: 600
       }
   },
   TaskingManagerLaunchConfiguration: {
-    Type: 'AWS::AutoScaling::LaunchConfiguration',
+    Type: "AWS::AutoScaling::LaunchConfiguration",
+    Metadata: {
+      "AWS::CloudFormation::Init": {
+        "configSets": {
+          "default": [
+            "01_setupCfnHup", 
+            "02_config-amazon-cloudwatch-agent", 
+            "03_restart_amazon-cloudwatch-agent"
+          ],
+          "UpdateEnvironment": [
+            "02_config-amazon-cloudwatch-agent",
+            "03_restart_amazon-cloudwatch-agent"
+            ]
+        },
+        // Definition of json configuration of AmazonCloudWatchAgent, you can change the configuration below.
+        "02_config-amazon-cloudwatch-agent": {
+          "files": {
+            '/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json': {
+              "content": cf.join("\n", [
+                  "{\"logs\": {",
+                  "\"logs_collected\": {",
+                  "\"files\": {",
+                  "\"collect_list\": [",
+                  "{",
+                  "\"file_path\": \"/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log\",",
+                  cf.sub("\"log_group_name\": \"${AWS::StackName}.log\","),
+                  cf.sub("\"log_stream_name\": \"${AWS::StackName}-cloudwatch-agent.log\","),
+                  "\"timezone\": \"UTC\"",
+                  "},",
+                  "{",
+                  cf.sub("\"file_path\": \"${TaskingManagerLogDirectory}/tasking-manager.log\","),
+                  cf.sub("\"log_group_name\": \"${AWS::StackName}.log\","),
+                  cf.sub("\"log_stream_name\": \"${AWS::StackName}.log\","),
+                  "\"timezone\": \"UTC\"",
+                  "}]}},",
+                  cf.sub("\"log_stream_name\": \"${AWS::StackName}-logs\","),
+                  "\"force_flush_interval\" : 15",
+                  "}}"
+              ])
+            }
+          }
+        },
+        // Invoke amazon-cloudwatch-agent-ctl to restart the AmazonCloudWatchAgent.
+        "03_restart_amazon-cloudwatch-agent": {
+          "commands": {
+            "01_stop_service": {
+              "command": "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a stop"
+            },
+            "02_start_service": {
+              "command": "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s"
+            }
+          }
+        },
+        // Cfn-hup setting, it is to monitor the change of metadata.
+        // When there is change in the contents of json file in the metadata section, cfn-hup will call cfn-init to restart the AmazonCloudWatchAgent.
+        "01_setupCfnHup": {
+          "files": {
+            "/etc/cfn/cfn-hup.conf": {
+              "content": cf.join('\n', [
+                "[main]",
+                cf.sub("stack=${!AWS::StackName}"),
+                cf.sub("region=${!AWS::Region}"),
+                "interval=1"
+              ]),
+              "mode": "000400",
+              "owner": "root",
+              "group": "root"
+            },
+            "/etc/cfn/hooks.d/amazon-cloudwatch-agent-auto-reloader.conf": {
+              "content": cf.join('\n', [
+                "[cfn-auto-reloader-hook]",
+                "triggers=post.update",
+                "path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init.02_config-amazon-cloudwatch-agent",
+                cf.sub("action=cfn-init -v --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region} --configsets UpdateEnvironment"),
+                "runas=root"
+              ]),
+              "mode": "000400",
+              "owner": "root",
+              "group": "root"
+            },
+            "/lib/systemd/system/cfn-hup.service": {
+              "content": cf.join('\n', [
+                "[Unit]",
+                "Description=cfn-hup daemon",
+                "[Service]",
+                "Type=simple",
+                "ExecStart=/opt/aws/bin/cfn-hup",
+                "Restart=always",
+                "[Install]",
+                "WantedBy=multi-user.target"
+                ])
+            }
+          },
+          "commands": {
+            "01enable_cfn_hup": {
+            "command": "systemctl enable cfn-hup.service"
+            },
+            "02start_cfn_hup": {
+              "command": "systemctl start cfn-hup.service"
+            }
+          }
+        }
+      }
+    },
     Properties: {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
       ImageId: 'ami-0565af6e282977273',
       InstanceType: 'c5d.large',
-      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
+      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
         '#!/bin/bash',
         'set -x',
@@ -215,6 +324,8 @@ const Resources = {
         'pip install -r requirements.txt',
         'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf',
         'export LC_ALL=C',
+        'wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
+        'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
         'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz',
         'pip2 install aws-cfn-bootstrap-latest.tar.gz',
         'echo "Exporting environment variables:"',
@@ -246,6 +357,7 @@ const Resources = {
         'cd ../',
         'echo "------------------------------------------------------------"',
         'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 3 --timeout 179 manage:application &',
+        cf.sub('sudo cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
         cf.sub('cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
       ]),
       KeyName: 'mbtiles'
@@ -285,6 +397,29 @@ const Resources = {
             ],
             Effect: 'Allow',
             Resource: ['arn:aws:cloudformation:*']
+          }]
+        }
+      }, {
+        PolicyName: "CloudwatchAgentPermissions",
+        PolicyDocument: {
+          Version: "2012-10-17",
+          Statement: [{
+            Effect: "Allow",
+            Action: [
+              "logs:CreateLogGroup",
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+              "logs:DescribeLogStreams"
+            ],
+            Resource: ["arn:aws:logs:*:*:*"]
+          }, {
+            Effect: "Allow",
+            Action: [
+              "s3:GetObject"
+            ],
+            Resource: [
+              "arn:aws:s3:::tasking-manager/*"
+            ]
           }]
         }
       }],
@@ -377,7 +512,7 @@ const Resources = {
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
     Properties: {
       Name: cf.stackName,
-      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'elbs-security-group', cf.region]))],
+      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
       Subnets: cf.split(',', cf.ref('ELBSubnets')),
       Type: 'application'
     }
@@ -448,7 +583,7 @@ const Resources = {
         EnableCloudwatchLogsExports: ['postgresql'],
         DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.m5.xlarge', 'db.t2.small'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
-        VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
+        VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
     }
   }
 };

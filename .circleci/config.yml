@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: circleci/python:3-buster-browsers
+    - image: circleci/python:3.7-buster-browsers
     steps:
     - checkout
     - setup_remote_docker
@@ -82,6 +82,10 @@ jobs:
         description: "The environment (staging or production) on AWS"
         type: enum
         enum: ["staging", "production"]
+      autoscaling_policy:
+        description: "Setting autoscaling parameters"
+        type: enum
+        enum: ['development', 'demo', 'production']
       new_relic_license:
         type: env_var_name
         default: NEW_RELIC_LICENSE
@@ -127,14 +131,14 @@ jobs:
         type: env_var_name
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: circleci/python:3-buster
+    - image: circleci/python:3.7-buster
     steps:
     - checkout
     - setup_remote_docker
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"Environment\":\"<< parameters.environment_name >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"MatomoSiteID\":\"${<< parameters.matomo_site_id >>}\", \"MatomoEndpoint\":\"${<< parameters.matomo_endpoint >>}\", \"MapboxToken\":\"${<< parameters.mapbox_token >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"MatomoSiteID\":\"${<< parameters.matomo_site_id >>}\", \"MatomoEndpoint\":\"${<< parameters.matomo_endpoint >>}\", \"MapboxToken\":\"${<< parameters.mapbox_token >>}\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -205,6 +209,7 @@ jobs:
         name: Deploy to << parameters.stack_name >>
         command: |
           export NODE_PATH=/usr/lib/node_modules
+          validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
           cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
@@ -239,6 +244,7 @@ workflows:
         - build
         stack_name: "staging"
         environment_name: "staging"
+        autoscaling_policy: "development"
         postgres_db: POSTGRES_DB_STAGING
         postgres_password: POSTGRES_PASSWORD_STAGING
         postgres_user: POSTGRES_USER_STAGING
@@ -269,6 +275,7 @@ workflows:
           - build
         stack_name: "prod-restored"
         environment_name: "production"
+        autoscaling_policy: "production"
         postgres_db: POSTGRES_DB_PRODUCTION
         postgres_password: POSTGRES_PASSWORD_PRODUCTION
         postgres_user: POSTGRES_USER_PRODUCTION
@@ -299,6 +306,7 @@ workflows:
           - build
         stack_name: "teachosm"
         environment_name: "production"
+        autoscaling_policy: "demo"
         postgres_db: POSTGRES_DB_TEACHOSM
         postgres_password: POSTGRES_PASSWORD_TEACHOSM
         postgres_user: POSTGRES_USER_TEACHOSM
@@ -329,6 +337,7 @@ workflows:
           - build
         stack_name: "assisted"
         environment_name: "staging"
+        autoscaling_policy: "demo"
         postgres_db: POSTGRES_DB_ASSISTED
         postgres_password: POSTGRES_PASSWORD_ASSISTED
         postgres_user: POSTGRES_USER_ASSISTED
@@ -349,3 +358,35 @@ workflows:
         matomo_site_id: MATOMO_SITE_ID_ASSISTED
         matomo_endpoint: MATOMO_ENDPOINT_ASSISTED
         mapbox_token: MAPBOX_TOKEN
+    - deploy:
+        name: tm4
+        filters:
+          branches:
+            only:
+              - deployment/redesign-tasking-manager
+        requires:
+          - build
+        stack_name: "tm4"
+        environment_name: "production"
+        autoscaling_policy: "demo"
+        postgres_db: POSTGRES_DB_TM4
+        postgres_password: POSTGRES_PASSWORD_TM4
+        postgres_user: POSTGRES_USER_TM4
+        base_url: TM_APP_BASE_URL_TM4
+        consumer_key: TM_CONSUMER_KEY_TM4
+        consumer_secret: TM_CONSUMER_SECRET_TM4
+        tm_secret: TM_SECRET_TM4
+        email_from_address: TM_EMAIL_FROM_ADDRESS_TM4
+        smtp_host: TM_SMTP_HOST_TM4
+        smtp_password: TM_SMTP_PASSWORD_TM4
+        smtp_user: TM_SMTP_USER_TM4
+        smtp_port: TM_SMTP_PORT_TM4
+        log_dir: TM_LOG_DIR_TM4
+        db_size: DATABASE_SIZE_TM4
+        elb_subnets: ELB_SUBNETS_TM4
+        ssl_cert: SSL_CERTIFICATE_ID_TM4
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_TM4
+        matomo_site_id: MATOMO_SITE_ID_TM4
+        matomo_endpoint: MATOMO_ENDPOINT_TM4
+        mapbox_token: MAPBOX_TOKEN
+
