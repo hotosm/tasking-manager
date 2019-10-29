@@ -14,13 +14,15 @@ export function fetchExternalJSONAPI(url): Promise<*> {
     });
 }
 
-export function fetchLocalJSONAPI(endpoint): Promise<*> {
+export function fetchLocalJSONAPI(endpoint, token): Promise<*> {
   const url = new URL(endpoint, API_URL);
+  let headers = { 'Content-Type': 'application/json' };
+  if (token) {
+    headers['Authorization'] = `Token ${token}`;
+  }
   return fetch(url, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: headers,
   })
     .then(handleErrors)
     .then(res => {

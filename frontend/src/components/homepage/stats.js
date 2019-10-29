@@ -7,19 +7,17 @@ import { EDITS_API_URL } from '../../config';
 import { cancelablePromise } from '../../utils/promise';
 import { fetchLocalJSONAPI, fetchExternalJSONAPI } from '../../network/genericJSONRequest';
 
-export class StatsNumber extends React.Component {
-  render() {
-    const value = shortNumber(this.props.value);
-    if (typeof value === 'number') {
-      return <FormattedNumber value={value} />;
-    }
-    return (
-      <span>
-        <FormattedNumber value={Number(value.substr(0, value.length - 1))} />
-        {value.substr(-1)}
-      </span>
-    );
+export const StatsNumber = props => {
+  const value = shortNumber(props.value);
+  if (typeof value === 'number') {
+    return <FormattedNumber value={value} />;
   }
+  return (
+    <span>
+      <FormattedNumber value={Number(value.substr(0, value.length - 1))} />
+      {value.substr(-1)}
+    </span>
+  );
 }
 
 export class StatsSection extends React.Component {
