@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
 
 import { UserTopBar } from '../components/user/settings';
-import { OSMCard } from '../components/user/content';
+import { OSMCard, APIKeyCard } from '../components/user/content';
 import {
   UserInformationForm,
   UserInterests,
@@ -12,10 +12,10 @@ import {
 } from '../components/user/forms';
 
 export function Settings() {
-  const userIsloggedIn = useSelector(state => state.auth.get('token'));
+  const token = useSelector(state => state.auth.get('token'));
   const userDetails = useSelector(state => state.auth.get('userDetails'));
 
-  if (userIsloggedIn) {
+  if (token) {
     return (
       <div className="pull-center">
         <UserTopBar />
@@ -24,6 +24,7 @@ export function Settings() {
             <UserInterests />
             <UserSettingsForm />
             <UserNotificationsForm />
+            {userDetails.expertMode && <APIKeyCard token={token} />}
           </div>
           <div className="fl w-100 w-40-l pb3 pl3-l">
             <UserInformationForm />
