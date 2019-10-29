@@ -96,28 +96,17 @@ const ProjectDetailMap = props => {
         type={props.type}
         error={props.tasksError}
         loading={props.tasksLoading}
-        className="dib w-100 fl"
+        className="dib w-100 fl vh-75"
       />
-      <div className="cf left-1 top-1 absolute">
-        <div className="cf ttu bg-white barlow-condensed f4 pv2">
-          <span
-            onClick={e => {
-              setTaskBordersOnly(true);
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            className={`pb2 pointer mh2 ${taskBordersOnly ? 'bb b--blue-dark' : ''} ph2`}
-          >
-            <FormattedMessage {...messages.countrymap} />
-          </span>
-          <span
-            onClick={e => setTaskBordersOnly(false)}
-            className={`pb2 mh2 pointer ${!taskBordersOnly ? 'bb b--blue-dark' : ''} ph2`}
-          >
-            <FormattedMessage {...messages.taskmap} />
-          </span>
+      {taskBordersOnly && (
+        <div className="cf left-1 top-1 absolute">
+          <div className="cf ttu bg-white barlow-condensed f4 pv2">
+            <span onClick={e => setTaskBordersOnly(false)} className="pb2 mh2 pointer ph2">
+              <FormattedMessage {...messages.zoomToTasks} />
+            </span>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
