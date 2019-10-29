@@ -1,100 +1,101 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { FormattedMessage, FormattedNumber, FormattedRelative } from 'react-intl';
+import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
+import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
-import { UserAvatar } from './avatar';
-import { MappingIcon, LinkIcon } from '../svgIcons';
-import { Button } from '../button';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { MappingIcon, ClipboardIcon } from '../svgIcons';
+
+
+export function APIKeyCard({token}) {
+  //eslint-disable-next-line
+  const [isCopied, setCopied] = useCopyClipboard();
+
+  const handleClick = () => {
+      setCopied(`Token ${token}`);
+  };
+  const link = <a className="link red" href="/api-docs/" target="_blank">
+    <FormattedMessage {...messages.apiDocs} />
+  </a>;
+  return (
+    <div className="cf bg-white shadow-4 pa4 mb3">
+      <h3 className="f3 blue-dark mt0 fw6">
+        <FormattedMessage {...messages.apiKey} />
+      </h3>
+      <div className="cf">
+        <pre className="f6 di bg-tan blue-grey pa2">Token {token}</pre>
+        <span className="pointer pl2 blue-light hover-blue-dark di" title="Copy Token">
+          <ClipboardIcon width="18px" height="18px" onClick={handleClick} />
+        </span>
+        <p className="f6 blue-grey pt3">
+          <FormattedMessage
+            {...messages.apiKeyDescription}
+            values={{link: link}}
+          />
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export function OSMCard({ username }: Object) {
-  const [accountCreated, setAccountCreated] = useState(new Date());
-  const [changesetCount, setChangesetCount] = useState(0);
-  useEffect(() => {
-    function handleStateChange(result) {
-      setAccountCreated(result.accountCreated);
-      setChangesetCount(result.changesetCount);
-    }
-    async function fetchData() {
-      if (username) {
-        return fetchLocalJSONAPI(`users/${username}/openstreetmap/`).then(result =>
-          handleStateChange(result),
-        );
-      }
-    }
-    fetchData();
-  }, [username]);
+  const osmUserInfo = useSelector(state => state.auth.get('osm'));
 
   return (
-    <div className="cf bg-white shadow-4 pa4 mv4">
+    <div className="cf bg-white shadow-4 pa4 mb3">
       <h3 className="f3 blue-dark mt0 fw6">
         <FormattedMessage {...messages.osmCardTitle} />
       </h3>
       <div className="cf">
-        <div className="fl w-30">
-          <UserAvatar className="h3 w3 br-100 pa1" />
+        <div className="w-50 fl">
+          <h4 className="ttu blue-grey f5 fw4 mt1 mb0">
+            <FormattedMessage {...messages.joinedOSM} />
+          </h4>
+          <p className="f4 blue-dark fw8 mt3">
+            <ReactPlaceholder
+              showLoadingAnimation={true}
+              rows={1}
+              ready={osmUserInfo}
+            >
+              <FormattedRelative value={osmUserInfo && osmUserInfo.accountCreated} />
+            </ReactPlaceholder>
+          </p>
         </div>
-        <div className="fl w-70 tr pl3 pt2 mt3">
-          {/* it's interim while we get access to the correct icon */}
+        <div className="w-50 fl">
+          <h4 className="ttu blue-grey f5 fw4 mt1 mb0">
+            <FormattedMessage {...messages.totalChangesets} />
+          </h4>
+          <p className="f4 blue-dark fw8 mt3">
+            <ReactPlaceholder
+              showLoadingAnimation={true}
+              rows={1}
+              ready={osmUserInfo}
+              >
+              <FormattedNumber value={osmUserInfo ? osmUserInfo.changesetCount : 0} />
+            </ReactPlaceholder>
+          </p>
+        </div>
+      </div>
+      <div className="cf pt1">
+        <div className="w-100 w-50-ns fl">
           <a
+            className="link red pb2"
             href={`https://www.openstreetmap.org/user/${username}/account`}
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Button className="blue-light bg-white link pt3 br1 f5 ba b--grey-light pointer">
-              <FormattedMessage {...messages.changePicture} />{' '}
-              <LinkIcon style={{ width: '13px', height: '13px' }} />
-            </Button>
+            <FormattedMessage {...messages.editOSMProfile} />
           </a>
         </div>
-      </div>
-      <div className="cf">
-        <div className="w-50 fl">
-          <h4 className="ttu blue-grey f5 fw4">
-            <FormattedMessage {...messages.joinedOSM} />
-          </h4>
-          <p className="f4 blue-dark fw8">
-            <FormattedRelative value={accountCreated} />
-          </p>
-        </div>
-        <div className="w-50 fl">
-          <h4 className="ttu blue-grey f5 fw4">
-            <FormattedMessage {...messages.totalChangesets} />
-          </h4>
-          <p className="f4 blue-dark fw8">
-            <FormattedNumber value={changesetCount} />
-          </p>
-        </div>
-      </div>
-      <div className="cf pt3">
-        <div className="w-25 fl">
+        <div className="w-100 w-50-ns fl">
           <a
-            className="link red"
-            href={`https://www.openstreetmap.org/user/${username}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FormattedMessage {...messages.osmProfile} />
-          </a>
-        </div>
-        <div className="w-25 fl">
-          <a
-            className="link red"
+            className="link red pb2"
             href={`https://osmcha.mapbox.com/?filters={"users":[{"label":"${username}","value":"${username}"}]}`}
             target="_blank"
             rel="noopener noreferrer"
           >
             <FormattedMessage {...messages.osmHistory} />
-          </a>
-        </div>
-        <div className="w-50 fl">
-          <a
-            className="link red"
-            href={`http://yosmhm.neis-one.org/?${username}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FormattedMessage {...messages.osmHeatMap} />
           </a>
         </div>
       </div>
