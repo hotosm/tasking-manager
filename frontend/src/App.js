@@ -21,7 +21,7 @@ function App() {
   return (
     <div className="App w-100 base-font bg-white">
       <Router>
-        <Header path="/*"/>
+        <Header path="/*" />
       </Router>
       <div className="cf w-100 base-font">
         <QueryParamProvider reachHistory={globalHistory}>
@@ -43,8 +43,7 @@ function App() {
         </QueryParamProvider>
       </div>
       <Router>
-      <Footer path="/*"/>
-
+        <Footer path="/*" />
       </Router>
     </div>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -24,7 +24,19 @@ export function ContributeButton({ action }: Object) {
 }
 
 export const TaskSelectionFooter = props => {
+  const [editor, setEditor] = useState(props.defaultUserEditor);
+  const [editorOptions, setEditorOptions] = useState([]);
   const titleClasses = 'db ttu f6 blue-light mb2';
+
+  useEffect(() => {
+    if (props.taskAction && props.mappingEditors && props.taskAction.startsWith('validate')) {
+      setEditorOptions(getEditors().filter(i => props.validationEditors.includes(i.backendValue)));
+    } else {
+      setEditorOptions(getEditors().filter(i => props.mappingEditors.includes(i.backendValue)));
+    }
+  }, [props.taskAction, props.mappingEditors, props.validationEditors]);
+
+  const updateEditor = arr => setEditor(arr[0].value);
 
   return (
     <div className="cf bg-white pb2 ph4-l ph2">
@@ -47,10 +59,14 @@ export const TaskSelectionFooter = props => {
           <FormattedMessage {...messages.editor} />
         </h3>
         <Dropdown
-          options={getEditors()}
-          value={props.defaultUserEditor || ''}
+          options={editorOptions}
+          value={editor}
           display={<FormattedMessage {...messages.selectEditor} />}
           className="bg-white bn"
+          toTop={true}
+          onChange={updateEditor}
+          onAdd={() => {}}
+          onRemove={() => {}}
         />
       </div>
       <div className="w-30-ns w-60 fl tr">
