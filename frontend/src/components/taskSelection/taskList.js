@@ -5,7 +5,6 @@ import ReactPlaceholder from 'react-placeholder';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 
 import messages from './messages';
-import { useFetch } from '../../hooks/UseFetch';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
 import { userCanValidate } from '../../utils/projectPermissions';
 import { TASK_COLOURS } from '../../config';
@@ -119,10 +118,7 @@ export function TaskFilter({ project, statusFilter, setStatusFn }: Object) {
   return <></>;
 }
 
-export function TaskList({ project, activeFilter, selectTask, selected }: Object) {
-  const [tasksError, tasksLoading, tasks] = useFetch(
-    `projects/${project.projectId}/activities/latest/`,
-  );
+export function TaskList({ project, tasks, activeFilter, selectTask, selected }: Object) {
   const user = useSelector(state => state.auth.get('userDetails'));
   const [readyTasks, setTasks] = useState([]);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
@@ -189,8 +185,13 @@ export function TaskList({ project, activeFilter, selectTask, selected }: Object
         )}
         <TaskFilter project={project} statusFilter={statusFilter} setStatusFn={setStatusFilter} />
       </div>
-      <ReactPlaceholder showLoadingAnimation={true} rows={6} delay={500} ready={!tasksLoading}>
-        {!tasksError && !tasksLoading && (
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        rows={6}
+        delay={10}
+        ready={readyTasks && readyTasks.length}
+      >
+        {readyTasks && (
           <PaginatedList
             pageSize={6}
             items={

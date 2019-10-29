@@ -136,3 +136,24 @@ it('dropdown behaviour with multi enabled', () => {
       .children[0].type,
   ).toBe('input');
 });
+
+it('dropdown with toTop enabled should have bottom-3 class', () => {
+  const testElement = TestRenderer.create(
+    <Dropdown
+      value={'A'}
+      options={[{ label: 'A' }, { label: 'B' }, { label: 'C' }]}
+      display={'Options'}
+      multi={true}
+      className="blue-dark bg-white"
+      toTop={true}
+    />,
+  );
+  const elementInstance = testElement.root;
+  elementInstance.findByType(CustomButton).props.onClick();
+  // dropdown-content must be rendered after the click
+  expect(
+    elementInstance.findByProps({
+      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column bottom-3',
+    }).type,
+  ).toBe('div');
+});

@@ -20,7 +20,7 @@ from server.models.postgis.utils import InvalidGeoJson
 class TasksRestAPI(Resource):
     def get(self, project_id, task_id):
         """
-        Get task for mapping
+        Get task metadata
         ---
         tags:
             - tasks

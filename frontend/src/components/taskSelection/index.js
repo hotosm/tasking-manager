@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
-import { useFetch } from '../../hooks/UseFetch';
+import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
 import { getTaskAction } from '../../utils/projectPermissions';
+import { updateTasksStatus } from '../../utils/updateTasksStatus';
 import { PriorityBox } from '../projectcard/projectCard';
 import { TasksMap } from './map.js';
 import { TaskSelectionFooter } from './footer';
@@ -39,11 +40,34 @@ export function HeaderLine({ author, projectId, priority }: Object) {
 }
 
 export function TaskSelection({ project, type, loading }: Object) {
-  const [error, tasksLoading, tasks] = useFetch(`projects/${project.projectId}/tasks/`);
+  // these two fetches are needed to initialize the component
+  const [tasksError, tasksLoading, initialTasks] = useFetch(`projects/${project.projectId}/tasks/`);
+  /* eslint-disable-next-line */
+  const [tasksActivitiesError, tasksActivitiesLoading, initialActivities] = useFetch(
+    `projects/${project.projectId}/activities/latest/`,
+  );
+  // get activities each 60 seconds
+  /* eslint-disable-next-line */
+  const [activitiesError, activities] = useFetchIntervaled(
+    `projects/${project.projectId}/activities/latest/`,
+    60000,
+  );
   const user = useSelector(state => state.auth.get('userDetails'));
-  const [activeSection, setActiveSection] = useState('tasks');
+  const [tasks, setTasks] = useState([]);
+  const [activeSection, setActiveSection] = useState(null);
   const [selected, setSelectedTasks] = useState([]);
   const [taskAction, setTaskAction] = useState('mapATask');
+
+  useEffect(() => {
+    setActiveSection(user.mappingLevel === 'BEGINNER' ? 'instructions' : 'tasks');
+    setTasks(initialTasks);
+  }, [user.mappingLevel, initialTasks]);
+
+  useEffect(() => {
+    if (initialTasks && activities) {
+      setTasks(updateTasksStatus(initialTasks, activities));
+    }
+  }, [initialTasks, activities]);
 
   const htmlInstructions =
     project.projectInfo && htmlFromMarkdown(project.projectInfo.instructions);
@@ -64,8 +88,8 @@ export function TaskSelection({ project, type, loading }: Object) {
 
   return (
     <div>
-      <div className="cf vh-75-ns h-100">
-        <div className="w-100 w-50-ns fl pt3 overflow-y-scroll vh-75-ns" >
+      <div className="cf vh-minus-200-ns">
+        <div className="w-100 w-50-ns fl pt3 overflow-y-scroll-ns vh-minus-200-ns h-100">
           <div className="pl4-ns pl2 pr2">
             <ReactPlaceholder
               showLoadingAnimation={true}
@@ -107,9 +131,17 @@ export function TaskSelection({ project, type, loading }: Object) {
                 </div>
                 <div className="pt3">
                   {activeSection === 'tasks' ? (
-                    <TaskList project={project} selectTask={selectTask} selected={selected} />
+                    <TaskList
+                      project={project}
+                      tasks={activities || initialActivities}
+                      selectTask={selectTask}
+                      selected={selected}
+                    />
                   ) : (
-                    <p dangerouslySetInnerHTML={htmlInstructions} />
+                    <div
+                      className="markdown-content base-font blue-dark"
+                      dangerouslySetInnerHTML={htmlInstructions}
+                    />
                   )}
                 </div>
               </div>
@@ -122,14 +154,14 @@ export function TaskSelection({ project, type, loading }: Object) {
             type={'media'}
             rows={26}
             delay={200}
-            ready={!tasksLoading && tasks}
+            ready={!tasksLoading}
           >
             <TasksMap
               mapResults={tasks}
               projectId={project.projectId}
-              error={error}
+              error={tasksError}
               loading={tasksLoading}
-              className="dib w-100 fl"
+              className="dib w-100 fl h-100-ns vh-75"
               selectTask={selectTask}
               selected={selected}
               taskBordersOnly={false}
@@ -147,7 +179,8 @@ export function TaskSelection({ project, type, loading }: Object) {
           <TaskSelectionFooter
             mappingTypes={project.mappingTypes}
             imagery={project.imagery}
-            editors={project.mappingEditors}
+            mappingEditors={project.mappingEditors}
+            validationEditors={project.validationEditors}
             defaultUserEditor={user ? user.defaultEditor : 'iD'}
             taskAction={taskAction}
           />

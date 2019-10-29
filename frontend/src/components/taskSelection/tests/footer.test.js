@@ -13,14 +13,24 @@ const createComponentWithIntl = (children, props = { locale: 'en' }) => {
 
 it('test if footer has MappingTypes component defined set with the correct mappingTypes', () => {
   const element = createComponentWithIntl(
-    <TaskSelectionFooter mappingTypes={['ROADS', 'BUILDINGS']} />,
+    <TaskSelectionFooter
+      mappingTypes={['ROADS', 'BUILDINGS']}
+      mappingEditors={['ID', 'JOSM']}
+      validationEditors={['ID', 'JOSM']}
+    />,
   );
   const testInstance = element.root;
   expect(testInstance.findByType(MappingTypes).props.types).toStrictEqual(['ROADS', 'BUILDINGS']);
 });
 
 it('test if footer has MappingTypes component defined set with the correct mappingTypes', () => {
-  const element = createComponentWithIntl(<TaskSelectionFooter mappingTypes={['LAND_USE']} />);
+  const element = createComponentWithIntl(
+    <TaskSelectionFooter
+      mappingTypes={['LAND_USE']}
+      mappingEditors={['ID', 'JOSM']}
+      validationEditors={['ID', 'JOSM']}
+    />,
+  );
   const testInstance = element.root;
   expect(testInstance.findByType(MappingTypes).props.types).toStrictEqual(['LAND_USE']);
 });
@@ -29,6 +39,8 @@ it('test if footer has imagery component returning the correct message', () => {
   const element = createComponentWithIntl(
     <TaskSelectionFooter
       mappingTypes={['LAND_USE']}
+      mappingEditors={['ID', 'JOSM']}
+      validationEditors={['ID', 'JOSM']}
       imagery={
         'tms[1,22]:https://service.com/earthservice/tms/Layer@EPSG:3857@jpg/{zoom}/{x}/{-y}.jpg'
       }
@@ -42,7 +54,12 @@ it('test if footer has imagery component returning the correct message', () => {
 
 it('test if footer returns the correct contribute button message when action is "mapATask"', () => {
   const element = createComponentWithIntl(
-    <TaskSelectionFooter mappingTypes={['LAND_USE']} taskAction={'mapATask'} />,
+    <TaskSelectionFooter
+      mappingTypes={['LAND_USE']}
+      taskAction={'mapATask'}
+      mappingEditors={['ID', 'JOSM']}
+      validationEditors={['ID', 'JOSM']}
+    />,
   );
   const testInstance = element.root;
   expect(testInstance.findByType(Button).findByType(FormattedMessage).props.id).toBe(
@@ -52,7 +69,12 @@ it('test if footer returns the correct contribute button message when action is 
 
 it('test if footer returns the correct contribute button message when taskAction is "validateSelectedTask"', () => {
   const element = createComponentWithIntl(
-    <TaskSelectionFooter mappingTypes={['LAND_USE']} taskAction={'validateSelectedTask'} />,
+    <TaskSelectionFooter
+      mappingEditors={['ID', 'JOSM']}
+      validationEditors={['ID', 'JOSM']}
+      mappingTypes={['LAND_USE']}
+      taskAction={'validateSelectedTask'}
+    />,
   );
   const testInstance = element.root;
   expect(testInstance.findByType(Button).findByType(FormattedMessage).props.id).toBe(

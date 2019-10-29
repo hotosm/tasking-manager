@@ -8,7 +8,7 @@ function MappingCard({ image, title, description }: Object) {
     <div className="db ph2-l pb3 w-100">
       <div className="shadow-4 mh2 bg-white">
         <div className="pa1 ph3-m cf">
-          <div className="red pv2 fl dib">{image}</div>
+          <div className="red pv2 fl dib mr3">{image}</div>
           <h4 className="blue-dark b dib mt2 mb2">
             <FormattedMessage {...title} />
           </h4>
@@ -22,20 +22,20 @@ function MappingCard({ image, title, description }: Object) {
 }
 
 export function NewMapperFlow() {
-  const imageHeight = '5rem';
+  const style = { height: '5rem', width: '6rem' };
   const cards = [
     {
-      image: <TaskSelectionIcon style={{ height: imageHeight }} />,
+      image: <TaskSelectionIcon style={style} />,
       title: messages.selectATaskCardTitle,
       description: messages.selectATaskCardDescription,
     },
     {
-      image: <AreaIcon style={{ height: imageHeight }} />,
+      image: <AreaIcon style={style} />,
       title: messages.mapThroughOSMCardTitle,
       description: messages.mapThroughOSMCardDescription,
     },
     {
-      image: <SubmitWorkIcon style={{ height: imageHeight }} />,
+      image: <SubmitWorkIcon style={style} />,
       title: messages.submitYourWorkCardTitle,
       description: messages.submitYourWorkCardDescription,
     },

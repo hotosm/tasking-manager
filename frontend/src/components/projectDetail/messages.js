@@ -100,13 +100,9 @@ export default defineMessages({
     id: 'project.detail.share',
     defaultMessage: 'Share',
   },
-  countrymap: {
-    id: 'project.detail.countrymap',
-    defaultMessage: 'Country Map',
-  },
-  taskmap: {
-    id: 'project.detail.taskmap',
-    defaultMessage: 'Task Map',
+  zoomToTasks: {
+    id: 'project.detail.zoomToTasks',
+    defaultMessage: 'Zoom to tasks',
   },
   selectATaskCardTitle: {
     id: 'project.detail.cards.selectATask.title',

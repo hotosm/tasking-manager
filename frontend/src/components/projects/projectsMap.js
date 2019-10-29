@@ -63,8 +63,7 @@ export const ProjectsMap = ({
     setMapObj(
       new mapboxgl.Map({
         container: mapRef.current,
-        // style: 'mapbox://styles/mapbox/bright-v9',
-        style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/streets-v11' : fallbackRasterStyle,
+        style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/bright-v9' : fallbackRasterStyle,
         zoom: 0,
       }),
     );
@@ -130,9 +129,9 @@ export const ProjectsMap = ({
           'text-anchor': 'top',
         },
         paint: {
-          'text-color': '#d73f3f',
+          'text-color': '#2c3038',
           'text-halo-width': 1,
-          'text-halo-color': '#68707f',
+          'text-halo-color': '#fff',
         },
       });
       map.on('mouseenter', 'projects-unclustered-points', function(e) {

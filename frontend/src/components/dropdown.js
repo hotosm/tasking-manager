@@ -44,7 +44,11 @@ class DropdownContent extends React.PureComponent {
   };
   render() {
     return (
-      <div className="di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column">
+      <div
+        className={`di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column${
+          this.props.toTop ? ' bottom-3' : ''
+        }`}
+      >
         {this.props.options.map((i, k) => (
           <span
             key={k}
@@ -111,6 +115,7 @@ export class _Dropdown extends React.PureComponent {
     display: string,
     deletable?: (value: string) => any,
     multi: boolean,
+    toTop: boolean,
   };
 
   state = {
@@ -155,6 +160,7 @@ export class _Dropdown extends React.PureComponent {
             {...this.props}
             eventTypes={['click', 'touchend']}
             toggleDropdown={this.toggleDropdown}
+            toTop={this.props.toTop}
           />
         )}
       </div>
