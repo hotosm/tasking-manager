@@ -255,7 +255,7 @@ CREATE TABLE public.projects (
     enforce_validator_role boolean,
     private boolean,
     entities_to_map character varying,
-    changeset_comment character varying,
+    changeset_tags character varying,
     due_date timestamp without time zone,
     imagery character varying,
     josm_preset character varying,
@@ -592,9 +592,9 @@ COPY public.project_chat (id, project_id, user_id, time_stamp, message) FROM std
 --
 
 COPY public.project_info (project_id, locale, name, short_description, description, instructions, project_id_str, text_searchable, per_task_instructions) FROM stdin;
-1	en	testing ssa	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	1	\N	
-2	en	arbitrary-project	tests tsete	tests tsete	tests tsete	2	\N	
-3	en	arbitrary-1	arbitrary- test split	arbitrary- test split	arbitrary- test split	3	\N	
+1	en	testing ssa	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	testing ssa ahsjhdjshfjsh jhsjdh fsjhdfjs jsfhd jshjf hsjdhf sjhfjsh jshfjsdh jshjf hsjhf jsdhfjs hfjshf jsdhfj sdhfjh jsdhfjshfj shjf hsdj	1	\N
+2	en	arbitrary-project	tests tsete	tests tsete	tests tsete	2	\N
+3	en	arbitrary-1	arbitrary- test split	arbitrary- test split	arbitrary- test split	3	\N
 \.
 
 
@@ -610,10 +610,10 @@ COPY public.project_priority_areas (project_id, priority_area_id) FROM stdin;
 -- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.projects (id, status, created, priority, default_locale, author_id, mapper_level, enforce_mapper_level, enforce_validator_role, private, entities_to_map, changeset_comment, due_date, imagery, josm_preset, last_updated, mapping_types, organisation_tag, campaign_tag, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery, license_id, centroid, geometry, task_creation_mode) FROM stdin;
-2	1	2019-04-08 12:21:37.425808	1	en	360183	1	f	f	f	\N	#hotosm-project-2	\N	\N	\N	2019-04-09 03:34:52.985812	{}	\N	\N	16	1	0	1	\N	0101000020E61000004B5FA2C5E5DC3240E03320AF4AF740C0	0106000020E610000001000000010300000001000000050000000100405B40D53240CDE033A57FF540C0010040B6F2D6324010F53EC585F940C00000C02390E23240EDEACD35A0F840C0000080ADC9E63240EBCFC9CBFBF540C00100405B40D53240CDE033A57FF540C0	1
-1	1	2019-04-08 10:54:25.449637	1	en	360183	1	f	f	f	\N	#tm-project-1	\N	\N	\N	2019-04-08 11:40:37.248906	{}	\N	\N	171	1	1	2	\N	0101000020E61000005A0601152A3543C05A9C94D060CD29C0	0106000020E6100000010000000103000000010000000E00000015A922BEFA3943C0A897377D739529C015A922BE421F43C053173DCE36BD29C015A922BE522D43C0883A6048D8EC29C016A922BE9B2F43C0F948A4C9BBE829C014A9223E5A3C43C0D647DECB9E092AC014A9223ECA4443C05FC6E2FB38072AC015A922BED24343C0988DCFC461F429C015A922BE024143C0B194E08B47E429C015A922BE4B4343C0387210A150D929C016A922BEC73F43C0D1675BBE01CE29C015A922BE7E3D43C0FAB7CBCCD8AF29C016A9223EEC4043C06AD15D4AFE9C29C014A9223E924043C001D02AE3649329C015A922BEFA3943C0A897377D739529C0	0
-3	1	2019-04-08 12:23:34.568831	2	en	360183	1	f	f	f	\N	#hotosm-project-3	\N	\N	\N	2019-04-08 12:24:51.647033	{}	\N	\N	1	0	0	0	\N	0101000020E61000004B5FA2C5E5DC3240E03320AF4AF740C0	0106000020E610000001000000010300000001000000050000000100405B40D53240CDE033A57FF540C0010040B6F2D6324010F53EC585F940C00000C02390E23240EDEACD35A0F840C0000080ADC9E63240EBCFC9CBFBF540C00100405B40D53240CDE033A57FF540C0	1
+COPY public.projects (id, status, created, priority, default_locale, author_id, mapper_level, enforce_mapper_level, enforce_validator_role, private, entities_to_map, changeset_tags, due_date, imagery, josm_preset, last_updated, mapping_types, organisation_tag, campaign_tag, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery, license_id, centroid, geometry, task_creation_mode) FROM stdin;
+2	1	2019-04-08 12:21:37.425808	1	en	360183	1	f	f	f	\N	{"comment": "#hotosm-project-2"}	\N	\N	\N	2019-04-09 03:34:52.985812	{}	\N	\N	16	1	0	1	\N	0101000020E61000004B5FA2C5E5DC3240E03320AF4AF740C0	0106000020E610000001000000010300000001000000050000000100405B40D53240CDE033A57FF540C0010040B6F2D6324010F53EC585F940C00000C02390E23240EDEACD35A0F840C0000080ADC9E63240EBCFC9CBFBF540C00100405B40D53240CDE033A57FF540C0	1
+1	1	2019-04-08 10:54:25.449637	1	en	360183	1	f	f	f	\N	{"comment": "#tm-project-1"}	\N	\N	\N	2019-04-08 11:40:37.248906	{}	\N	\N	171	1	1	2	\N	0101000020E61000005A0601152A3543C05A9C94D060CD29C0	0106000020E6100000010000000103000000010000000E00000015A922BEFA3943C0A897377D739529C015A922BE421F43C053173DCE36BD29C015A922BE522D43C0883A6048D8EC29C016A922BE9B2F43C0F948A4C9BBE829C014A9223E5A3C43C0D647DECB9E092AC014A9223ECA4443C05FC6E2FB38072AC015A922BED24343C0988DCFC461F429C015A922BE024143C0B194E08B47E429C015A922BE4B4343C0387210A150D929C016A922BEC73F43C0D1675BBE01CE29C015A922BE7E3D43C0FAB7CBCCD8AF29C016A9223EEC4043C06AD15D4AFE9C29C014A9223E924043C001D02AE3649329C015A922BEFA3943C0A897377D739529C0	0
+3	1	2019-04-08 12:23:34.568831	2	en	360183	1	f	f	f	\N	{"comment": "#hotosm-project-3"}	\N	\N	\N	2019-04-08 12:24:51.647033	{}	\N	\N	1	0	0	0	\N	0101000020E61000004B5FA2C5E5DC3240E03320AF4AF740C0	0106000020E610000001000000010300000001000000050000000100405B40D53240CDE033A57FF540C0010040B6F2D6324010F53EC585F940C00000C02390E23240EDEACD35A0F840C0000080ADC9E63240EBCFC9CBFBF540C00100405B40D53240CDE033A57FF540C0	1
 \.
 
 
