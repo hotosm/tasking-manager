@@ -5,6 +5,7 @@ import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { createPopup } from './createPopup';
 import { ORG_URL, ORG_NAME, API_URL } from '../../config';
 import logo from '../../assets/img/main-logo.svg';
 import { LinkIcon } from '../svgIcons';
@@ -44,18 +45,40 @@ const UserDisplay = props => {
   );
 };
 
+const createLoginWindow = redirectTo => {
+  let url = `${API_URL}system/authentication/login/?callback_url=${window.location.origin}/authorized/`
+  fetch(url)
+    .then(resp => resp.json())
+    .then(resp => {
+      createPopup('OSM auth', resp.auth_url);
+      // Perform token exchange.
+      window.authComplete = verifier => {
+        const tokens = new URLSearchParams({
+          'oauth_token': resp.oauth_token,
+          'oauth_token_secret': resp.oauth_token_secret
+        }).toString()
+        fetch(`${API_URL}system/authentication/callback/?${tokens}&oauth_verifier=${verifier}`)
+        .then(res => res.json())
+        .then(res => {
+          const params = new URLSearchParams({
+            'username': res.username,
+            'session_token': res.session_token,
+            'picture': res.picture,
+          }).toString()
+          let redirectUrl = `/authorized/?${params}`;
+          window.location.href=redirectUrl;
+        })
+      }
+    })
+};
+
 const AuthButtons = props => {
-  const { logInStyle, signUpStyle, aStyle, redirectTo } = props;
+  const { logInStyle, signUpStyle, redirectTo } = props;
   return (
     <>
-      <a
-        href={`${API_URL}system/authentication/login?redirect_to=${redirectTo || '/'}`}
-        className={aStyle}
-      >
-        <Button className={logInStyle}>
-          <FormattedMessage {...messages.logIn} />
-        </Button>
-      </a>
+      <Button onClick={() => createLoginWindow(redirectTo)} className={logInStyle}>
+        <FormattedMessage {...messages.logIn} />
+      </Button>
       <Button className={signUpStyle}>
         <FormattedMessage {...messages.signUp} />
       </Button>
@@ -137,7 +160,6 @@ class Header extends React.Component {
         ) : (
           <div>
             <AuthButtons
-              aStyle="mh1 mv2 dib"
               logInStyle="bg-red white"
               signUpStyle="bg-blue-dark white mh1 mv2 dib"
               redirectTo={this.props.location.pathname}

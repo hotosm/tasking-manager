@@ -1,5 +1,3 @@
-from urllib import parse
-
 from flask import session, current_app, redirect, request
 from flask_restful import Resource
 
@@ -29,23 +27,20 @@ class SystemAuthenticationLoginAPI(Resource):
           - application/json
         parameters:
             - in: query
-              name: redirect_to
+              name: callback_url
               description: Route to redirect user once authenticated
               type: string
               default: /take/me/here
         responses:
-          302:
-            description: Redirects to OSM
+          200:
+            description: oauth token params
         """
-        redirect_query = ""
-        redirect_to = request.args.get("redirect_to")
-        if redirect_to and "login" not in redirect_to:
-            redirect_query = f"?redirect_to={parse.quote(redirect_to)}"
+        callback_url = request.args.get("callback_url", None)
+        if callback_url is None:
+            callback_url = current_app.config["APP_BASE_URL"]
+        params = AuthenticationService.generate_authorize_url(callback_url)
 
-        base_url = current_app.config["APP_BASE_URL"]
-        return osm.authorize(
-            callback=f"{base_url}/api/v2/system/authentication/callback{redirect_query}"
-        )
+        return params, 200
 
 
 class SystemAuthenticationCallbackAPI(Resource):
@@ -65,6 +60,17 @@ class SystemAuthenticationCallbackAPI(Resource):
           502:
             description: A problem occurred negotiating with the OSM API
         """
+
+        # Create session from requests. TODO: Do not use flask session
+        token_secret = request.args.get("oauth_token_secret", None)
+        if token_secret is None:
+            return {"Error": "Missing oauth_token_secret parameter"}, 500
+
+        session["osm_oauthtok"] = (
+            request.args.get("oauth_token"),
+            request.args.get("oauth_token_secret"),
+        )
+
         osm_resp = osm.authorized_response()
         if osm_resp is None:
             current_app.logger.critical("No response from OSM")
@@ -73,23 +79,17 @@ class SystemAuthenticationCallbackAPI(Resource):
             session[
                 "osm_oauth"
             ] = osm_resp  # Set OAuth details in the session temporarily
-
         osm_response = osm.request(
             "user/details"
         )  # Get details for the authenticating user
-
         if osm_response.status != 200:
             current_app.logger.critical("Error response from OSM")
             return redirect(AuthenticationService.get_authentication_failed_url())
 
         try:
-            redirect_to = request.args.get("redirect_to")
-            authorized_url = AuthenticationService.login_user(
-                osm_response.data, redirect_to
-            )
-            return redirect(
-                authorized_url
-            )  # Redirect to Authentication page on successful authorization :)
+            user_params = AuthenticationService.login_user(osm_response.data)
+            user_params["session"] = osm_resp
+            return user_params, 200
         except AuthServiceError:
             return {"Error": "Unable to authenticate"}, 500
 
