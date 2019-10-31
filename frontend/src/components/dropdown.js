@@ -45,7 +45,7 @@ class DropdownContent extends React.PureComponent {
   render() {
     return (
       <div
-        className={`di tl mt1 ba b--grey-light br1 absolute shadow-1 z-3 flex flex-column${
+        className={`di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column${
           this.props.toTop ? ' bottom-3' : ''
         }`}
       >
