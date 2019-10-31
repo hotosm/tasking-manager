@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router, globalHistory } from '@reach/router';
+import { Router, Redirect, globalHistory } from '@reach/router';
 import { QueryParamProvider } from 'use-query-params';
 
 import './assets/styles/index.scss';
@@ -38,6 +38,7 @@ function App() {
             <Settings path="settings" />
             <SelectTask path="projects/:id/map" />
             <ProjectDetailPage path="projects/:id" />
+            <Redirect from="project/:id" to="projects/:id" noThrow />
             <NotFound default />
           </Router>
         </QueryParamProvider>
