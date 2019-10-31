@@ -1,9 +1,10 @@
 import * as safeStorage from '../../utils/safe_storage';
-import { fetchUserDetails } from '../../network/auth';
-import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const types = {
   SET_USER_DETAILS: 'SET_USER_DETAILS',
+  SET_OSM: 'SET_OSM',
+  UPDATE_OSM_INFO: 'UPDATE_OSM_INFO',
   GET_USER_DETAILS: 'GET_USER_DETAILS',
   SET_TOKEN: 'SET_TOKEN',
   CLEAR_SESSION: 'CLEAR_SESSION',
@@ -28,6 +29,13 @@ export function updateUserDetails(userDetails) {
   };
 }
 
+export function updateOSMInfo(osm) {
+  return {
+    type: types.SET_OSM,
+    osm: osm,
+  };
+}
+
 export function updateToken(token) {
   return {
     type: types.SET_TOKEN,
@@ -44,7 +52,12 @@ export const setAuthDetails = (username, token) => dispatch => {
 };
 
 export const setUserDetails = (username, encoded_token) => dispatch => {
-  fetchUserDetails(username, encoded_token)
+  // UPDATES OSM INFORMATION OF THE USER
+  fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encoded_token)
+    .then(osmInfo => dispatch(updateOSMInfo(osmInfo)))
+    .catch(error => console.log(error));
+  // GET USER DETAILS
+  fetchLocalJSONAPI(`users/queries/${username}/`, encoded_token)
     .then(userDetails => dispatch(updateUserDetails(userDetails)))
     .catch(error => dispatch(logout()));
 };
