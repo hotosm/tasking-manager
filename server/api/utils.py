@@ -18,3 +18,20 @@ class TMAPIDecorators:
                 return func(*args, **kwargs)
             return decorated_function
         return pm_only_decorator
+
+    def set_authenticated_user_id(self, lock, user_id):
+        """
+        Set the authenticated_user_id using a mutex so the id doesn't change with concurrent
+        calls of "verify_token" in AuthenticationService
+        :param lock: asyncio Lock functioning as a mutex to ensure accurate user_id
+        """
+        await lock.acquire()
+        self.authenticated_user_id = user_id
+
+    def get_authenticated_user_id(self, lock):
+        """
+        Return the authenticated_user_id and unlock the mutex
+        :param lock: mutex to unlock
+        """
+        lock.release()
+        return self.authenticated_user_id

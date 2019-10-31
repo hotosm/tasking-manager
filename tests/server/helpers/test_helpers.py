@@ -2,7 +2,10 @@ import geojson
 import json
 import os
 from typing import Tuple
+import time
+import threading
 import xml.etree.ElementTree as ET
+from server.api.utils import TMAPIDecorators
 from server.models.dtos.project_dto import DraftProjectDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus
@@ -10,6 +13,9 @@ from server.models.postgis.task import Task
 from server.models.postgis.user import User
 
 TEST_USER_ID = 1234
+TEST_USER_ID_2 = 4321
+TM = TMAPIDecorators()
+lock = threading.Lock
 
 
 def get_canned_osm_user_details():
@@ -71,6 +77,21 @@ def create_canned_user() -> User:
     return test_user
 
 
+def create_canned_user_2() -> User:
+    """ Generate a canned user in the DB """
+    test_user = User()
+    test_user.id = TEST_USER_ID_2
+    test_user.username = 'Second User'
+    test_user.mapping_level = 2
+    test_user.create()
+
+    return test_user
+
+
+def create_canned_users():
+    return create_canned_user(), create_canned_user_2()
+
+
 def create_canned_project() -> Tuple[Project, User]:
     """ Generates a canned project in the DB to help with integration tests """
     test_aoi_geojson = geojson.loads(json.dumps(get_canned_json('test_aoi.json')))
@@ -104,3 +125,19 @@ def create_canned_project() -> Tuple[Project, User]:
     test_project.create()
 
     return test_project, test_user
+
+
+def user_1_thread(user):
+    print('User 1 thread start')
+    TM.authenticated_user_id = user.id
+    print(f'TM AUTH UID - 1: {TM.authenticated_user_id}')
+    time.sleep(2)
+    print(f'TM AUTH UID - 2: {TM.authenticated_user_id}')
+    print('User 1 thread end')
+
+
+def user_2_thread(user):
+    print('User 2 thread start')
+    TM.authenticated_user_id = user.id
+    print(f'TM AUTH UID - 3: {TM.authenticated_user_id}')
+    print('User 2 thread end')

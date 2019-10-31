@@ -1,21 +1,27 @@
 import unittest
 from unittest.mock import patch
 from urllib.parse import urlparse, parse_qs
+import threading
 
 from server import create_app
 from server.services.users.authentication_service import AuthenticationService, AuthServiceError, UserService, NotFound, MessageService
 from server.services.messaging.smtp_service import SMTPService
-from tests.server.helpers.test_helpers import get_canned_osm_user_details
+from tests.server.helpers.test_helpers import get_canned_osm_user_details, create_canned_users, user_1_thread, user_2_thread
 
 
 class TestAuthenticationService(unittest.TestCase):
+    test_user_1 = None
+    test_user_2 = None
 
     def setUp(self):
         self.app = create_app()
         self.ctx = self.app.app_context()
         self.ctx.push()
+        self.test_user_1, self.test_user_2 = create_canned_users()
 
     def tearDown(self):
+        self.test_user_1.delete()
+        self.test_user_2.delete()
         self.ctx.pop()
 
     def test_unable_to_find_user_in_osm_response_raises_error(self):
@@ -89,3 +95,10 @@ class TestAuthenticationService(unittest.TestCase):
         # Assert
         self.assertTrue(is_valid)
         self.assertEqual(email_address, test_email)
+
+    def test_concurrent_auth(self):
+        print(f'\n\n\n\nUSERS: {self.test_user_1}, {self.test_user_2}')
+        user_1_thread_func = threading.Thread(target=user_1_thread, args=(self.test_user_1,))
+        user_1_thread_func.start()
+        user_2_thread_func = threading.Thread(target=user_2_thread, args=(self.test_user_2,))
+        user_2_thread_func.start()
