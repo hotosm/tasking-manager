@@ -18,7 +18,6 @@ export function clearUserDetails() {
 export const logout = () => dispatch => {
   safeStorage.removeItem('username');
   safeStorage.removeItem('token');
-  safeStorage.removeItem('userPicture');
   dispatch(clearUserDetails());
 };
 
@@ -36,14 +35,11 @@ export function updateToken(token) {
   };
 }
 
-export const setAuthDetails = (username, token, userPicture) => dispatch => {
+export const setAuthDetails = (username, token) => dispatch => {
   const encoded_token = btoa(token);
-  safeStorage.setItem('username', username);
   safeStorage.setItem('token', encoded_token);
+  safeStorage.setItem('username', username);
   dispatch(updateToken(encoded_token));
-  if (userPicture) {
-    safeStorage.setItem('userPicture', userPicture);
-  }
   dispatch(setUserDetails(username, encoded_token));
 };
 
