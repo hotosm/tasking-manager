@@ -7,6 +7,9 @@ import { MAPBOX_TOKEN, TASK_COLOURS } from '../../config';
 import { fallbackRasterStyle } from '../projects/projectsMap';
 import lock from '../../assets/img/lock.png';
 
+let lockIcon = new Image(17, 20);
+lockIcon.src = lock;
+
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
 export const TasksMap = ({
@@ -72,14 +75,12 @@ export const TasksMap = ({
 
     const mapboxLayerDefn = () => {
       if (map.getSource('tasks') === undefined) {
+        map.addImage('lock', lockIcon, { width: 17, height: 20, data: lockIcon });
+
         map.addSource('tasks', {
           type: 'geojson',
           data: mapResults,
         });
-
-        const lockIcon = new Image(17, 20);
-        lockIcon.src = lock;
-        map.addImage('lock', lockIcon, { width: 17, height: 20, data: lockIcon });
 
         map.addControl(new mapboxgl.NavigationControl());
         if (disableScrollZoom) {
@@ -322,5 +323,5 @@ export const TasksMap = ({
     navigate,
   ]);
 
-  return <div id="map" className={`h-100-ns vh-50 fr ${className}`} ref={mapRef}></div>;
+  return <div id="map" className={className} ref={mapRef}></div>;
 };

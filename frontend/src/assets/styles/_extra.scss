@@ -1,3 +1,9 @@
+@media screen and (min-width: 30em) {
+  .vh-minus-200-ns {
+    height: calc(100vh - 200px);
+  }
+}
+
 @media screen and (min-width: 66rem) {
   .dib-66rem {
     display: inline-block;
@@ -85,4 +91,24 @@ https://codepen.io/nielsenramon/pen/mLMeLY
   div {
     border-color: $white; // @extend .b--white;
   }
+}
+
+.markdown-content {
+  h1 {
+    font-size: 1.25rem;
+  }
+  h2 {
+    font-size: 1.125rem;
+  }
+  h3 {
+    font-size: 1rem;
+  }
+  a {
+    color: $red;
+    text-decoration: none;
+  }
+}
+
+.bottom-3 {
+  bottom: 3rem;
 }

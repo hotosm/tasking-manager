@@ -422,6 +422,20 @@ class ProjectSummary(Model):
     )
     status = StringType()
     imagery = StringType()
+    mapping_editors = ListType(
+        StringType,
+        min_size=1,
+        required=True,
+        serialized_name="mappingEditors",
+        validators=[is_known_editor],
+    )
+    validation_editors = ListType(
+        StringType,
+        min_size=1,
+        required=True,
+        serialized_name="validationEditors",
+        validators=[is_known_editor],
+    )
 
 
 class PMDashboardDTO(Model):

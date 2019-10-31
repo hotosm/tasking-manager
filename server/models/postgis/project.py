@@ -696,6 +696,20 @@ class Project(db.Model):
                 mapping_types_array.append(MappingTypes(mapping_type).name)
             summary.mapping_types = mapping_types_array
 
+        if self.mapping_editors:
+            mapping_editors = []
+            for mapping_editor in self.mapping_editors:
+                mapping_editors.append(Editors(mapping_editor).name)
+
+            summary.mapping_editors = mapping_editors
+
+        if self.validation_editors:
+            validation_editors = []
+            for validation_editor in self.validation_editors:
+                validation_editors.append(Editors(validation_editor).name)
+
+            summary.validation_editors = validation_editors
+
         # If project is private, fetch list of allowed users
         if self.private:
             allowed_users = []
