@@ -134,6 +134,7 @@ def add_api_endpoints(app):
         ProjectsQueriesNoTasksAPI,
         ProjectsQueriesAoiAPI,
         ProjectsQueriesFeaturedAPI,
+        ProjectsQueriesAutoCompleteAPI,
     )
     from server.api.projects.activities import (
         ProjectsActivitiesAPI,
@@ -282,7 +283,9 @@ def add_api_endpoints(app):
         ProjectsQueriesAoiAPI, "/api/v2/projects/<int:project_id>/queries/aoi/"
     )
     api.add_resource(ProjectsQueriesFeaturedAPI, "/api/v2/projects/queries/featured")
-
+    api.add_resource(
+        ProjectsQueriesAutoCompleteAPI, "/api/v2/projects/queries/auto-complete/"
+    )
     # Projects' addtional resources
     api.add_resource(
         ProjectsActivitiesAPI, "/api/v2/projects/<int:project_id>/activities/"
