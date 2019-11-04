@@ -102,3 +102,35 @@ class Editors(Enum):
     JOSM = 1
     POTLATCH_2 = 2
     FIELD_PAPERS = 3
+
+
+class OrganisationVisibility(Enum):
+    """ Describes the visibility associated with an Organisation """
+
+    PUBLIC = 0
+    PRIVATE = 1
+    SECRET = 2
+
+
+class TeamVisibility(Enum):
+    """ Describes the visibility associated with an Team """
+
+    PUBLIC = 0
+    PRIVATE = 1
+    SECRET = 2
+
+
+class TeamRoles(Enum):
+    """ Describes the role a Team has within a Project """
+
+    READ_ONLY = -1
+    MAPPER = 0
+    VALIDATOR = 1
+    PROJECT_MANAGER = 2
+
+
+class TeamMemberFunctions(Enum):
+    """ Describes the function a member can hold within a team """
+
+    EDITOR = 0
+    MANAGER = 1

@@ -88,6 +88,24 @@ class UserService:
         return dto
 
     @staticmethod
+    def get_project_managers() -> User:
+        users = User.query.filter(User.role == 2).all()
+
+        if users is None:
+            raise NotFound()
+
+        return users
+
+    @staticmethod
+    def get_general_admins() -> User:
+        users = User.query.filter(User.role == 1).all()
+
+        if users is None:
+            raise NotFound()
+
+        return users
+
+    @staticmethod
     def update_user(user_id: int, osm_username: str, picture_url: str) -> User:
         user = UserService.get_user_by_id(user_id)
         if user.username != osm_username:
@@ -261,8 +279,8 @@ class UserService:
         return False
 
     @staticmethod
-    def is_user_admin(user_id: int) -> bool:
-        """ Is the user a project admin"""
+    def is_user_an_admin(user_id: int) -> bool:
+        """ Is the user an admin """
         user = UserService.get_user_by_id(user_id)
         if UserRole(user.role) == UserRole.ADMIN:
             return True

@@ -285,14 +285,6 @@ class StatsService:
             Task.task_status == TaskStatus.VALIDATED.value
         ).count()
 
-        org_proj_count = (
-            db.session.query(
-                Project.organisation_tag, func.count(Project.organisation_tag)
-            )
-            .group_by(Project.organisation_tag)
-            .all()
-        )
-
         total_area_sql = """select coalesce(sum(ST_Area(geometry,true)/1000000),0) as sum
                               from public.projects as area"""
         total_area_result = db.engine.execute(total_area_sql)
@@ -315,48 +307,53 @@ class StatsService:
 
         dto.total_validated_area = tasks_validated_result.fetchone()["sum"]
 
-        campaign_count = (
-            db.session.query(Project.campaign_tag, func.count(Project.campaign_tag))
-            .group_by(Project.campaign_tag)
-            .all()
-        )
-        no_campaign_count = 0
-        unique_campaigns = 0
+        unique_campaigns_sql = "select count(name) as sum from Campaign"
 
-        for tup in campaign_count:
+        unique_campaigns = db.engine.execute(unique_campaigns_sql).fetchone()["sum"]
+
+        linked_campaigns_sql = "select Campaign.name, count(campaign_projects.campaign_id) from Campaign INNER JOIN campaign_projects\
+            ON Campaign.id=campaign_projects.campaign_id group by Campaign.id"
+
+        linked_campaigns_count = db.engine.execute(linked_campaigns_sql).fetchall()
+
+        no_campaign_count_sql = "select count(*) as project_count from projects where id not in \
+            (select distinct project_id from campaign_projects order by project_id)"
+        no_campaign_count = db.engine.execute(no_campaign_count_sql).fetchone()[
+            "project_count"
+        ]
+
+        for tup in linked_campaigns_count:
             campaign_stats = CampaignStatsDTO(tup)
-            if campaign_stats.tag:
-                dto.campaigns.append(campaign_stats)
-                unique_campaigns += 1
-            else:
-                no_campaign_count += campaign_stats.projects_created
+            dto.campaigns.append(campaign_stats)
 
         if no_campaign_count:
-            no_campaign_proj = CampaignStatsDTO(("Untagged", no_campaign_count))
+            no_campaign_proj = CampaignStatsDTO(("Unassociated", no_campaign_count))
             dto.campaigns.append(no_campaign_proj)
+
         dto.total_campaigns = unique_campaigns
 
-        org_proj_count = (
-            db.session.query(
-                Project.organisation_tag, func.count(Project.organisation_tag)
-            )
-            .group_by(Project.organisation_tag)
-            .all()
-        )
-        no_org_count = 0
-        unique_orgs = 0
+        unique_orgs_sql = "select count(name) as sum from organisations"
+        unique_orgs = db.engine.execute(unique_orgs_sql).fetchone()["sum"]
 
-        for tup in org_proj_count:
+        linked_orgs_sql = "select organisations.name, count(projects.organisation_id) from projects INNER JOIN organisations\
+            ON organisations.id=projects.organisation_id group by organisations.id"
+        linked_orgs_count = db.engine.execute(linked_orgs_sql).fetchall()
+
+        no_org_project_count = 0
+        no_org_project_count_sql = "select count(*) as project_count from organisations where id not in \
+            (select distinct organisation_id from projects order by organisation_id)"
+        no_org_project_count = db.engine.execute(no_org_project_count_sql).fetchone()[
+            "project_count"
+        ]
+
+        for tup in linked_orgs_count:
             org_stats = OrganizationStatsDTO(tup)
-            if org_stats.tag:
-                dto.organizations.append(org_stats)
-                unique_orgs += 1
-            else:
-                no_org_count += org_stats.projects_created
+            dto.organizations.append(org_stats)
 
-        if no_org_count:
-            no_org_proj = OrganizationStatsDTO(("Untagged", no_org_count))
+        if no_org_project_count:
+            no_org_proj = OrganizationStatsDTO(("Unassociated", no_org_project_count))
             dto.organizations.append(no_org_proj)
+
         dto.total_organizations = unique_orgs
 
         return dto
