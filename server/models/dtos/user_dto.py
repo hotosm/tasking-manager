@@ -133,6 +133,29 @@ class UserMappedProjectsDTO(Model):
     )
 
 
+class RecommendedProject(Model):
+    """ Describes a single project recommended for an user """
+
+    project_id = IntType(serialized_name="projectId")
+    name = StringType()
+    tasks_mapped = IntType(serialized_name="tasksMapped")
+    tasks_validated = IntType(serialized_name="tasksValidated")
+    status = StringType()
+    centroid = BaseType()
+
+
+class UserRecommendedProjectsDTO(Model):
+    """ DTO for projects recommended for an user """
+
+    def __init__(self):
+        super().__init__()
+        self.recommended_projects = []
+
+    recommended_projects = ListType(
+        ModelType(RecommendedProject), serialized_name="recommendedProjects"
+    )
+
+
 class UserSearchQuery(Model):
     """ Describes a user search query, that a user may submit to filter the list of users """
 
