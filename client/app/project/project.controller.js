@@ -156,7 +156,7 @@
             }, 10000);
 
             // set up the preferred editor from user preferences
-            
+
             vm.selectedMappingEditor = userPreferencesService.getFavouriteEditor();
             vm.selectedValidationEditor = userPreferencesService.getFavouriteEditor();
         }
@@ -169,15 +169,15 @@
             }
         });
 
-        /**	
-         * calculates padding number to makes sure there is plenty of clear space around feature on map to keep visual	
-         * context of feature location	
-         * @returns {number} - padding number	
-         */	
-        function getPaddingSize() {	
-            // padding to makes sure there is plenty of clear space around feature on map to keep visual	
-            // context of feature location	
-            return vm.map.getSize()[1] * 0.3;	
+        /**
+         * calculates padding number to makes sure there is plenty of clear space around feature on map to keep visual
+         * context of feature location
+         * @returns {number} - padding number
+         */
+        function getPaddingSize() {
+            // padding to makes sure there is plenty of clear space around feature on map to keep visual
+            // context of feature location
+            return vm.map.getSize()[1] * 0.3;
         }
 
         /**
@@ -1604,88 +1604,128 @@
                 editorService.launchFieldPapersEditor(center);
             }
             else if (editor === 'josm') {
-
-                if (taskCount > 1) {
-                    // load a new empty layer in josm for task square(s).  This step required to get custom name for layer
-                    // use empty, uri encoded osmxml with upload=never for the data para
-                    var emptyTaskLayerParams = {
-                        new_layer: true,
-                        mime_type: encodeURIComponent('application/x-osm+xml'),
-                        layer_name: encodeURIComponent('Task Boundaries #' + vm.projectData.projectId + '- Do not edit or upload'),
-                        data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
-                    };
-                    editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
-                        .catch(function() {
-                            //warn that JSOM couldn't be started
-                            vm.editorStartError = 'josm-error';
-                        });
-
-                    //load task square(s) into JOSM
-                    var taskImportParams = {
-                        url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
-                        new_layer: false
-                    };
-                    editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
-                        .catch(function() {
-                            //warn that JSOM couldn't be started
-                            vm.editorStartError = 'josm-error';
-                        });
+                launchJosm(
+                    taskCount,
+                    imageryUrl,
+                    extentTransformed,
+                    changesetComment
+                    )
+            }
+            else if (editor === 'custom'){
+                var domain = vm.projectData.customEditor.url.replace('http://','').replace('https://','').split(/[/?#]/)[0];
+                var josm_endpoints = ["127.0.0.1:8111", "127.0.0.1:8112", "localhost:8111", "localhost:8112"];
+                if (josm_endpoints.includes(domain)) {
+                    launchJosm(
+                        taskCount,
+                        imageryUrl,
+                        extentTransformed,
+                        changesetComment,
+                        vm.projectData.customEditor.url
+                        )
                 }
-
-                //load aerial photography if present
-                var changesetSource = "Bing";
-                var hasImagery = false;
-                if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
-                    changesetSource = imageryUrl;
-                    hasImagery = true;
+                else{
+                    editorService.launchCustomIdEditor(
+                        center,
+                        changesetComment,
+                        imageryUrl,
+                        vm.projectData.projectId,
+                        vm.getSelectTaskIds(),
+                        vm.projectData.customEditor.url
+                    );
                 }
-                if (hasImagery) {
-                    var imageryParams = {
-                        title: encodeURIComponent('Tasking Manager Imagery - #' + vm.projectData.projectId),
-                        type: imageryUrl.toLowerCase().substring(0, 3),
-                        url: encodeURIComponent(imageryUrl)
-                    };
-                    editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams)
-                        .catch(function() {
-                            //warn that imagery couldn't be loaded
-                            vm.editorStartError = 'josm-imagery-error';
-                        });
-                }
+            }
+        };
 
-                // load a new empty layer in josm for osm data, this step necessary to have a custom name for the layer
-                // use empty, uri encoded osmxml for the data param
-                var emptyOSMLayerParams = {
+        function launchJosm(
+            taskCount,
+            imageryUrl,
+            extentTransformed,
+            changesetComment,
+            customUrl) {
+            if (taskCount > 1) {
+                // load a new empty layer in josm for task square(s).  This step required to get custom name for layer
+                // use empty, uri encoded osmxml with upload=never for the data para
+                var emptyTaskLayerParams = {
                     new_layer: true,
-                    mime_type: 'application/x-osm+xml',
-                    layer_name: 'OSM Data',
-                    data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
-                }
-                editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams)
+                    mime_type: encodeURIComponent('application/x-osm+xml'),
+                    layer_name: encodeURIComponent('Task Boundaries #' + vm.projectData.projectId + '- Do not edit or upload'),
+                    data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
+                };
+                editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
                     .catch(function() {
                         //warn that JSOM couldn't be started
                         vm.editorStartError = 'josm-error';
                     });
 
-                var loadAndZoomParams = {
-                    left: extentTransformed[0],
-                    bottom: extentTransformed[1],
-                    right: extentTransformed[2],
-                    top: extentTransformed[3],
-                    changeset_comment: encodeURIComponent(changesetComment),
-                    changeset_source: encodeURIComponent(changesetSource),
+                //load task square(s) into JOSM
+                var taskImportParams = {
+                    url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
                     new_layer: false
                 };
-
-                if (taskCount == 1) {
-                    //load OSM data and zoom to the bbox
-                    editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
-                } else {
-                    //probably too much OSM data to download, just zoom to the bbox
-                    editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);
-                }
-
+                editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
+                    .catch(function() {
+                        //warn that JSOM couldn't be started
+                        vm.editorStartError = 'josm-error';
+                    });
             }
-        };
+
+
+            //load aerial photography if present
+            var changesetSource = "Bing";
+            var hasImagery = false;
+            if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
+                changesetSource = imageryUrl;
+                hasImagery = true;
+            }
+            if (hasImagery) {
+                var imageryParams = {
+                    title: encodeURIComponent('Tasking Manager Imagery - #' + vm.projectData.projectId),
+                    type: imageryUrl.toLowerCase().substring(0, 3),
+                    url: encodeURIComponent(imageryUrl)
+                };
+                editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams)
+                    .catch(function() {
+                        //warn that imagery couldn't be loaded
+                        vm.editorStartError = 'josm-imagery-error';
+                    });
+            }
+
+            // load a new empty layer in josm for osm data, this step necessary to have a custom name for the layer
+            // use empty, uri encoded osmxml for the data param
+            var emptyOSMLayerParams = {
+                new_layer: true,
+                mime_type: 'application/x-osm+xml',
+                layer_name: 'OSM Data',
+                data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
+            }
+            editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams)
+                .catch(function() {
+                    //warn that JSOM couldn't be started
+                    vm.editorStartError = 'josm-error';
+                });
+
+            var loadAndZoomParams = {
+                left: extentTransformed[0],
+                bottom: extentTransformed[1],
+                right: extentTransformed[2],
+                top: extentTransformed[3],
+                changeset_comment: encodeURIComponent(changesetComment),
+                changeset_source: encodeURIComponent(changesetSource),
+                new_layer: false
+            };
+
+            if (taskCount == 1) {
+                //load OSM data and zoom to the bbox
+                editorService.sendJOSMCmd('http://127.0.0.1:8111/load_and_zoom', loadAndZoomParams);
+            } else {
+                //probably too much OSM data to download, just zoom to the bbox
+                editorService.sendJOSMCmd('http://127.0.0.1:8111/zoom', loadAndZoomParams);
+            }
+            if (customUrl) {
+                //give it an empty param dict to avoid breaking things
+                editorService.sendJOSMCmd(customUrl, {});
+            }
+        }
 
         /**
          * Get the task bounding box, transforming to SWNE (min lat, min lon, max lat, max lon) array
@@ -2078,7 +2118,7 @@
         };
 
         /**
-         * Creates json objects for editors 
+         * Creates json objects for editors
          * @params editors
          */
         function createEditorList(editors) {
@@ -2105,6 +2145,12 @@
                 result.push({
                     "name": "Field Papers",
                     "value": "fieldpapers"
+                });
+            }
+            if (editors.includes("CUSTOM")) {
+                result.push({
+                    "name": vm.projectData.customEditor.name,
+                    "value": "custom"
                 });
             }
             return result;
