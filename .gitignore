@@ -6,6 +6,8 @@ tasking-manager*.env
 client/node_modules/
 client/assets/styles/css
 client/app/taskingmanager.config.js
+client/id_preset_categories.json
+client/app/id_preset_categories.js
 client/package-lock.json
 client/yarn.lock
 

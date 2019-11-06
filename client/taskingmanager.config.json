@@ -28,7 +28,8 @@
       ],
       "atticQueryOffsetMinutes": 10,
       "maxCommentLength": 5000,
-      "maxChatLength": 5000
+      "maxChatLength": 5000,
+      "idPresetsLimitedByDefault": false
     }
   },
   "release": {
@@ -61,7 +62,8 @@
       ],
       "atticQueryOffsetMinutes": 10,
       "maxCommentLength": 5000,
-      "maxChatLength": 5000
+      "maxChatLength": 5000,
+      "idPresetsLimitedByDefault": false
     }
   }
 }
