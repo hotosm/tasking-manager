@@ -38,6 +38,10 @@ class ProjectAdminService:
         :raises InvalidGeoJson
         :returns ID of new draft project
         """
+        # First things first, we need to validate that the author_id is a PM. issue #1715
+        if not UserService.is_user_a_project_manager(draft_project_dto.user_id):
+            raise(ProjectAdminServiceError(f'User {UserService.get_user_by_id(draft_project_dto.user_id).username} is not a project manager'))
+
         # If we're cloning we'll copy all the project details from the clone, otherwise create brand new project
         if draft_project_dto.cloneFromProjectId:
             draft_project = Project.clone(draft_project_dto.cloneFromProjectId, draft_project_dto.user_id)
@@ -222,7 +226,7 @@ class ProjectAdminService:
     def get_projects_for_admin(admin_id: int, preferred_locale: str):
         """ Get all projects for provided admin """
         return Project.get_projects_for_admin(admin_id, preferred_locale)
-        
+
     @staticmethod
     def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
         """ Transfers project from old owner (transfering_user_id) to new owner (username) """
@@ -246,4 +250,3 @@ class ProjectAdminService:
             project.save()
         else:
             raise Exception("Normal users cannot transfer projects")
-        
