@@ -5,14 +5,14 @@ from server.models.dtos.campaign_dto import CampaignDTO, CampaignListDTO
 campaign_projects = db.Table(
     "campaign_projects",
     db.metadata,
-    db.Column("campaign_id", db.Integer, db.ForeignKey("campaign.id")),
+    db.Column("campaign_id", db.Integer, db.ForeignKey("campaigns.id")),
     db.Column("project_id", db.Integer, db.ForeignKey("projects.id")),
 )
 
 campaign_organisations = db.Table(
     "campaign_organisations",
     db.metadata,
-    db.Column("campaign_id", db.Integer, db.ForeignKey("campaign.id")),
+    db.Column("campaign_id", db.Integer, db.ForeignKey("campaigns.id")),
     db.Column("organisation_id", db.Integer, db.ForeignKey("organisations.id")),
 )
 
@@ -20,7 +20,7 @@ campaign_organisations = db.Table(
 class Campaign(db.Model):
     """ Describes an Campaign"""
 
-    __tablename__ = "campaign"
+    __tablename__ = "campaigns"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
