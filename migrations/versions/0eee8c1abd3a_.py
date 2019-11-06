@@ -57,7 +57,7 @@ def upgrade():
                 with open(
                     "scripts/world/" + project_continent + ".json",
                     "r",
-                    encoding="utf-8" "scripts/world/" + project_continent + ".json",
+                    encoding="utf-8",
                 ) as countries_data:
                     countries = json.load(countries_data)
                     if not project_centroid.is_valid:

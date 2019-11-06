@@ -65,8 +65,7 @@ class ProjectSearchService:
             Project.priority,
             Project.default_locale,
             Project.centroid.ST_AsGeoJSON().label("centroid"),
-            Project.organisation_tag,
-            Project.campaign_tag,
+            Project.organisation_id,
             Project.tasks_bad_imagery,
             Project.tasks_mapped,
             Project.tasks_validated,
@@ -91,9 +90,8 @@ class ProjectSearchService:
         list_dto.priority = ProjectPriority(project.priority).name
         list_dto.mapper_level = MappingLevel(project.mapper_level).name
         list_dto.short_description = project_info_dto.short_description
-        list_dto.organisation_tag = project.organisation_tag
+        list_dto.organisation_id = project.organisation_id
         list_dto.last_updated = project.last_updated
-        list_dto.campaign_tag = project.campaign_tag
         list_dto.due_date = project.due_date
         list_dto.percent_mapped = Project.calculate_tasks_percent(
             "mapped",
