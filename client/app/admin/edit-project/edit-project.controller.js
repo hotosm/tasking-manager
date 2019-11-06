@@ -99,7 +99,7 @@
         // Delete
         vm.showDeleteConfirmationModal = false;
 
-        // Transfer 
+        // Transfer
         vm.showTransferConfirmationModal = false;
         vm.transferProjectTo= []; //it's a list because it uses the tag input
 
@@ -132,6 +132,9 @@
         // User info
         vm.userRole = '';
         vm.userIsExpert = false;
+
+        // Custom Editor
+        vm.customEditor = null;
 
         activate();
 
@@ -217,6 +220,8 @@
             else {
                 vm.project.licenseId = null;
             }
+
+            vm.project.customEditor = vm.customEditor;
 
             // Prepare the data for sending to API by removing any locales with no fields
             if (!requiredFieldsMissing && vm.editForm.$valid){
@@ -372,7 +377,7 @@
         };
 
         /**
-         * Navigate to the project detail 
+         * Navigate to the project detail
          */
         vm.goToProjectDetail = function(){
             $location.path('/project/' + vm.project.projectId);
@@ -1123,7 +1128,7 @@
             if (vm.mappingEditors.fieldpapers){
                 mappingEditorsArray.push("FIELD_PAPERS");
             }
-            if (vm.mappingEditors.custom && vm.project.customEditor.enabled){
+            if (vm.mappingEditors.custom && vm.project.customEditor && vm.project.customEditor.enabled){
                 mappingEditorsArray.push("CUSTOM");
             }
             return mappingEditorsArray;
@@ -1161,7 +1166,7 @@
             if (vm.validationEditors.fieldpapers){
                 validationEditorsArray.push("FIELD_PAPERS");
             }
-            if (vm.validationEditors.custom && vm.project.customEditor.enabled){
+            if (vm.validationEditors.custom && vm.project.customEditor && vm.project.customEditor.enabled){
                 validationEditorsArray.push("CUSTOM");
             }
             return validationEditorsArray;
@@ -1265,9 +1270,9 @@
          * Removes the custom editor from the project
          */
         vm.deleteCustomEditor = function(){
-            // have to force the toggle to false or it will stay enabled
-            vm.project.customEditor.enabled = false;
-            vm.project.customEditor = null;
+            delete vm.customEditor;
+            populateEditorsForMapping();
+            populateEditorsForValidation();
         }
     }
 })();
