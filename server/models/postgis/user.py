@@ -21,6 +21,7 @@ from server.models.postgis.statuses import (
     UserGender,
 )
 from server.models.postgis.utils import NotFound, timestamp
+from server.models.postgis.interests import Interest, users_interests
 
 
 class User(db.Model):
@@ -64,6 +65,7 @@ class User(db.Model):
 
     # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)
+    interests = db.relationship(Interest, secondary=users_interests, backref="users")
 
     @property
     def missing_maps_profile_url(self):
@@ -374,6 +376,12 @@ class User(db.Model):
             user_dto.email_address = self.email_address
             user_dto.is_email_verified = self.is_email_verified
         return user_dto
+
+    def create_or_update_interests(self, interests_ids):
+        self.interests = []
+        objs = [Interest.get_by_id(i) for i in interests_ids]
+        self.interests.extend(objs)
+        db.session.commit()
 
 
 class UserEmail(db.Model):

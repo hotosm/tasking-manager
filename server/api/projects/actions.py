@@ -8,6 +8,7 @@ from server.services.project_service import ProjectService, NotFound
 from server.services.project_admin_service import ProjectAdminService
 from server.services.messaging.message_service import MessageService
 from server.services.users.authentication_service import token_auth, tm
+from server.services.interests_service import InterestService
 
 
 class ProjectsActionsTransferAPI(Resource):
@@ -225,5 +226,61 @@ class ProjectsActionsUnFeatureAPI(Resource):
             return {"error": error_msg}, 400
         except Exception as e:
             error_msg = f"FeaturedProjects DELETE - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
+
+
+class ProjectsActionsSetInterestsAPI(Resource):
+    def post(self, project_id):
+        """
+        Creates a relationship between project and interests
+        ---
+        tags:
+            - interests
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating/updating project and interests relationships
+              schema:
+                  properties:
+                      interests:
+                          type: array
+                          items:
+                            type: integer
+        responses:
+            200:
+                description: New project interest relationship created
+            400:
+                description: Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            data = request.get_json()
+            project_interests = InterestService.create_or_update_project_interests(
+                project_id, data["interests"]
+            )
+            return project_interests.to_primitive(), 200
+        except NotFound:
+            return {"Error": "project not Found"}, 404
+        except Exception as e:
+            error_msg = f"project relationship POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
