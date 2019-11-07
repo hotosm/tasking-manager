@@ -214,7 +214,9 @@ class Project(db.Model):
     favorited = db.relationship(User, secondary=project_favorites, backref="favorites")
     organisation = db.relationship(Organisation, backref="projects")
     campaign = db.relationship(Campaign, secondary=campaign_projects, backref="project")
-    interests = db.relationship(Interest, secondary=projects_interests)
+    interests = db.relationship(
+        Interest, secondary=projects_interests, backref="projects"
+    )
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """

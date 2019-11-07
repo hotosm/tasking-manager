@@ -65,7 +65,7 @@ class User(db.Model):
 
     # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)
-    interests = db.relationship(Interest, secondary=users_interests)
+    interests = db.relationship(Interest, secondary=users_interests, backref="users")
 
     @property
     def missing_maps_profile_url(self):
