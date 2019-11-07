@@ -139,45 +139,6 @@ def upgrade():
         ["invalidator_id", "is_closed"],
         unique=False,
     )
-
-    conn = op.get_bind()
-
-    # Content migration: Migrate the campaigns tag in campaigns table
-    campaigns = conn.execute(
-        "select campaigns from tags where campaigns is not null"
-    ).fetchall()
-
-    # This will be used to consolidate the data in tags table
-    dictionaries = {"HOTOSM": {"HOTOSM", "HOT-OSM"}, "ABC": {"abc", "ABc"}}
-
-    for campaign in campaigns:
-        result = campaign[0]
-        for campaign_key, campaign_values in dictionaries.items():
-            if campaign[0] in campaign_values:
-                result = campaign_key
-
-        query = "insert into campaigns(name) values('" + result + "')"
-        op.execute(query)
-
-    # Migrate the organisations tag in organisations table
-    organisations = conn.execute(
-        "select organisations from tags where organisations is not null"
-    ).fetchall()
-
-    # This will be used to consolidate the data in the tags table
-    org_dictionaries = {"HOTOSM": {"HOTOSM", "HOT-OSM"}, "ABC": {"abc", "ABc"}}
-
-    for org in organisations:
-        result = org[0]
-        if result.startswith("'") or result.startswith('"'):
-            result = result[1:-1]
-        for org_key, org_values in org_dictionaries.items():
-            if result in org_values:
-                result = org_key
-
-        query = "insert into organisations(name) values ('" + result + "')"
-        op.execute(query)
-
     # ### end Alembic commands ###
 
 
