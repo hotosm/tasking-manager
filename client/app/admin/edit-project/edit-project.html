@@ -679,6 +679,7 @@
                             </fieldset>
                         </div>
                             <!--/ actions -->
+
                             <!-- custom editor -->
                         <div ng-show="editProjectCtrl.currentSection === 'customEditor'">
                             <fieldset class="form__fieldset">
@@ -688,11 +689,11 @@
                                 <label class="form__label">{{ 'Name' | translate }}:</label>
                                 <input type="text" class="form__control"
                                         name="name"
-                                        ng-model="editProjectCtrl.project.customEditor.name"/>
+                                        ng-model="editProjectCtrl.customEditor.name"/>
                                 <label class="form__label">{{ 'Description' | translate }}:</label>
                                 <textarea
                                     class="form__control"
-                                    ng-model="editProjectCtrl.project.customEditor.description" rows="10">
+                                    ng-model="editProjectCtrl.customEditor.description" rows="10">
                                 </textarea>
                                 <p><strong>{{ 'Tip' | translate }}:</strong> {{ 'You can use Markdown. (HTML is not allowed)' | translate }}</p>
                                 <p>{{ 'The description will appear when a user selects the editor from the editor dropdown.' | translate }}</p>
@@ -701,18 +702,18 @@
                                     {{ 'Preview' | translate }}
                                 </button>
                                 <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewShortDescription"
-                                    markdown-to-html="editProjectCtrl.project.customEditor.description"
-                                    ng-model="editProjectCtrl.project.customEditor.description"></p>
+                                    markdown-to-html="editProjectCtrl.customEditor.description"
+                                    ng-model="editProjectCtrl.customEditor.description"></p>
                                 </p>
                                 <label class="form__label">URL:</label>
                                 <input type="text" class="form__control"
                                         name="url"
-                                        ng-model="editProjectCtrl.project.customEditor.url"/>
+                                        ng-model="editProjectCtrl.customEditor.url"/>
                                     <label class="form__option">
                                         <input type="checkbox" ng-model="editProjectCtrl.customEditor.enabled"/>{{ 'Enabled' | translate }}
                                     </label>
                                 </div>
-                                <div class="form__group form__group--section" ng-show="editProjectCtrl.customEditor">
+                                <div class="form__group form__group--section" ng-show="editProjectCtrl.project.customEditor">
                                     <label class="form__label">{{ 'Delete Custom Editor' | translate }}</label>
                                         <p>{{ 'This will remove the custom editor from the project. Are you sure you don\'t want to disable the custom editor by toggling the "Enabled" checkbox above?' | translate }}</p>
                                     <button class="button button--secondary" type="button"
@@ -723,6 +724,7 @@
                             </fieldset>
                         </div>
                             <!--/ custom editor -->
+
                             <div ng-show="editProjectCtrl.currentSection !== 'actions'">
                                 <div class="button-group">
                                     <button class="button button--primary" type="button"
