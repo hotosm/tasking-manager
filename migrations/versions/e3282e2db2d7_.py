@@ -89,11 +89,11 @@ def upgrade():
         ["organisation_id"],
         unique=False,
     )
-    op.drop_index("ix_projects_organisation_tag", table_name="projects")
+
     op.create_foreign_key(
         "fk_organisations", "projects", "organisations", ["organisation_id"], ["id"]
     )
-    op.drop_column("projects", "organisation_tag")
+
     op.drop_index(
         "idx_task_validation_mapper_status_composite",
         table_name="task_invalidation_history",
@@ -170,8 +170,7 @@ def upgrade():
     for org in organisations:
         result = org[0]
         if result.startswith("'") or result.startswith('"'):
-            print(result)
-            result = result[1:]
+            result = result[1:-1]
         for org_key, org_values in org_dictionaries.items():
             if result in org_values:
                 result = org_key
@@ -194,14 +193,8 @@ def downgrade():
         ["invalidator_id", "is_closed"],
         unique=False,
     )
-    op.add_column(
-        "projects",
-        sa.Column("organisation_tag", sa.VARCHAR(), autoincrement=False, nullable=True),
-    )
+
     op.drop_constraint("fk_organisations", "projects", type_="foreignkey")
-    op.create_index(
-        "ix_projects_organisation_tag", "projects", ["organisation_tag"], unique=False
-    )
     op.drop_index(op.f("ix_projects_organisation_id"), table_name="projects")
     op.alter_column(
         "projects", "task_creation_mode", existing_type=sa.INTEGER(), nullable=True
