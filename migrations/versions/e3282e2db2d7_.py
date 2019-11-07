@@ -89,11 +89,11 @@ def upgrade():
         ["organisation_id"],
         unique=False,
     )
-    op.drop_index("ix_projects_organisation_tag", table_name="projects")
+
     op.create_foreign_key(
         "fk_organisations", "projects", "organisations", ["organisation_id"], ["id"]
     )
-    op.drop_column("projects", "organisation_tag")
+
     op.drop_index(
         "idx_task_validation_mapper_status_composite",
         table_name="task_invalidation_history",
@@ -139,46 +139,6 @@ def upgrade():
         ["invalidator_id", "is_closed"],
         unique=False,
     )
-
-    conn = op.get_bind()
-
-    # Content migration: Migrate the campaigns tag in campaigns table
-    campaigns = conn.execute(
-        "select campaigns from tags where campaigns is not null"
-    ).fetchall()
-
-    # This will be used to consolidate the data in tags table
-    dictionaries = {"HOTOSM": {"HOTOSM", "HOT-OSM"}, "ABC": {"abc", "ABc"}}
-
-    for campaign in campaigns:
-        result = campaign[0]
-        for campaign_key, campaign_values in dictionaries.items():
-            if campaign[0] in campaign_values:
-                result = campaign_key
-
-        query = "insert into campaigns(name) values('" + result + "')"
-        op.execute(query)
-
-    # Migrate the organisations tag in organisations table
-    organisations = conn.execute(
-        "select organisations from tags where organisations is not null"
-    ).fetchall()
-
-    # This will be used to consolidate the data in the tags table
-    org_dictionaries = {"HOTOSM": {"HOTOSM", "HOT-OSM"}, "ABC": {"abc", "ABc"}}
-
-    for org in organisations:
-        result = org[0]
-        if result.startswith("'") or result.startswith('"'):
-            print(result)
-            result = result[1:]
-        for org_key, org_values in org_dictionaries.items():
-            if result in org_values:
-                result = org_key
-
-        query = "insert into organisations(name) values ('" + result + "')"
-        op.execute(query)
-
     # ### end Alembic commands ###
 
 
@@ -194,14 +154,8 @@ def downgrade():
         ["invalidator_id", "is_closed"],
         unique=False,
     )
-    op.add_column(
-        "projects",
-        sa.Column("organisation_tag", sa.VARCHAR(), autoincrement=False, nullable=True),
-    )
+
     op.drop_constraint("fk_organisations", "projects", type_="foreignkey")
-    op.create_index(
-        "ix_projects_organisation_tag", "projects", ["organisation_tag"], unique=False
-    )
     op.drop_index(op.f("ix_projects_organisation_id"), table_name="projects")
     op.alter_column(
         "projects", "task_creation_mode", existing_type=sa.INTEGER(), nullable=True

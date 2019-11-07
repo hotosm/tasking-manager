@@ -1,6 +1,5 @@
 import os
 import unittest
-from urllib.parse import urlparse, parse_qs
 
 from server import create_app
 from server.services.users.authentication_service import AuthenticationService
@@ -43,17 +42,10 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = get_canned_osm_user_details()
 
         # Act
-        redirect_url = AuthenticationService().login_user(
-            osm_response, "/test/redirect"
-        )
+        params = AuthenticationService().login_user(osm_response)
 
-        # Assert
-        parsed_url = urlparse(redirect_url)
-        query = parse_qs(parsed_url.query)
-
-        self.assertEqual(query["username"][0], "Thinkwhere Test")
-        self.assertTrue(query["session_token"][0])
-        self.assertEqual(query["redirect_to"][0], "/test/redirect")
+        self.assertEqual(params["username"], "Thinkwhere Test")
+        self.assertTrue(params["session_token"])
 
     def test_existing_user_changed_name(self):
         if self.skip_tests:
@@ -63,14 +55,7 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = get_canned_osm_user_details_changed_name()
 
         # Act
-        redirect_url = AuthenticationService().login_user(
-            osm_response, "/test/redirect"
-        )
+        params = AuthenticationService().login_user(osm_response)
 
-        # Assert
-        parsed_url = urlparse(redirect_url)
-        query = parse_qs(parsed_url.query)
-
-        self.assertEqual(query["username"][0], "Thinkwhere Test Changed")
-        self.assertTrue(query["session_token"][0])
-        self.assertEqual(query["redirect_to"][0], "/test/redirect")
+        self.assertEqual(params["username"], "Thinkwhere Test Changed")
+        self.assertTrue(params["session_token"])

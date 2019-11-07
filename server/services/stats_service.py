@@ -307,12 +307,12 @@ class StatsService:
 
         dto.total_validated_area = tasks_validated_result.fetchone()["sum"]
 
-        unique_campaigns_sql = "select count(name) as sum from Campaign"
+        unique_campaigns_sql = "select count(name) as sum from campaigns"
 
         unique_campaigns = db.engine.execute(unique_campaigns_sql).fetchone()["sum"]
 
-        linked_campaigns_sql = "select Campaign.name, count(campaign_projects.campaign_id) from Campaign INNER JOIN campaign_projects\
-            ON Campaign.id=campaign_projects.campaign_id group by Campaign.id"
+        linked_campaigns_sql = "select campaigns.name, count(campaign_projects.campaign_id) from campaigns INNER JOIN campaign_projects\
+            ON campaigns.id=campaign_projects.campaign_id group by campaigns.id"
 
         linked_campaigns_count = db.engine.execute(linked_campaigns_sql).fetchall()
 
