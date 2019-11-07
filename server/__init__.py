@@ -155,6 +155,7 @@ def add_api_endpoints(app):
         ProjectsActionsMessageContributorsAPI,
         ProjectsActionsFeatureAPI,
         ProjectsActionsUnFeatureAPI,
+        ProjectsActionsSetInterestsAPI,
     )
 
     from server.api.projects.favorites import ProjectFavoriteAPI
@@ -198,6 +199,9 @@ def add_api_endpoints(app):
 
     # Issues API import
     from server.api.issues.resources import IssuesRestAPI, IssuesAllAPI
+
+    # Interests API import
+    from server.api.interests.resources import InterestsRestAPI, InterestsAllAPI
 
     # Licenses API import
     from server.api.licenses.resources import LicensesRestAPI, LicensesAllAPI
@@ -248,9 +252,13 @@ def add_api_endpoints(app):
         UsersActionsSetExpertModeAPI,
         UsersActionsVerifyEmailAPI,
         UsersActionsRegisterEmailAPI,
+        UsersActionsSetInterestsAPI,
     )
     from server.api.users.openstreetmap import UsersOpenStreetMapAPI
-    from server.api.users.statistics import UsersStatisticsAPI
+    from server.api.users.statistics import (
+        UsersStatisticsAPI,
+        UsersStatisticsInterestsAPI,
+    )
 
     # System API endpoint
     from server.api.system.general import SystemDocsAPI
@@ -373,6 +381,37 @@ def add_api_endpoints(app):
         ProjectFavoriteAPI,
         "/api/v2/projects/<int:project_id>/favorite/",
         methods=["GET", "POST", "DELETE"],
+    )
+
+    api.add_resource(
+        ProjectsActionsSetInterestsAPI,
+        "/api/v2/projects/<int:project_id>/actions/set-interests/",
+        methods=["POST"],
+    )
+
+    api.add_resource(
+        UsersActionsSetInterestsAPI,
+        "/api/v2/users/<int:userid>/actions/set-interests/",
+        endpoint="create_user_interest",
+        methods=["POST"],
+    )
+
+    api.add_resource(
+        UsersStatisticsInterestsAPI,
+        "/api/v2/users/<int:user_id>/statistics/interests/",
+        methods=["GET"],
+    )
+
+    api.add_resource(
+        InterestsAllAPI,
+        "/api/v2/interests/",
+        endpoint="create_interest",
+        methods=["POST", "GET"],
+    )
+    api.add_resource(
+        InterestsRestAPI,
+        "/api/v2/interests/<int:interest_id>/",
+        methods=["PATCH", "DELETE"],
     )
 
     # Tasks REST endpoint

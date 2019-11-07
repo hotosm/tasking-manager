@@ -5,6 +5,7 @@ from server.models.dtos.user_dto import UserDTO, UserRegisterEmailDTO
 from server.services.messaging.message_service import MessageService
 from server.services.users.authentication_service import token_auth, tm
 from server.services.users.user_service import UserService, UserServiceError, NotFound
+from server.services.interests_service import InterestService
 
 from sqlalchemy.exc import IntegrityError
 
@@ -348,3 +349,64 @@ class UsersActionsRegisterEmailAPI(Resource):
                 dict(email=user_dto.email, details=details_msg)
             )
             return user_dto.to_primitive(), 500
+
+
+class UsersActionsSetInterestsAPI(Resource):
+    @token_auth.login_required
+    def post(self, user_id):
+        """
+        Creates a relationship between user and interests
+        ---
+        tags:
+            - interests
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: user_id
+              in: path
+              description: The unique OSM user id
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating/updating user and interests relationships
+              schema:
+                  properties:
+                      interests:
+                          type: array
+                          items:
+                            type: integer
+        responses:
+            200:
+                description: New user interest relationship created
+            400:
+                description: Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+        try:
+            data = request.get_json()
+            if user_id != tm.authenticated_user_id:
+                raise ValueError("User id and user token mismatch")
+            user_interests = InterestService.create_or_update_user_interests(
+                tm.authenticated_user_id, data["interests"]
+            )
+            return user_interests.to_primitive(), 200
+        except ValueError as e:
+            return {"Error": str(e)}, 400
+        except NotFound:
+            return {"Error": "User not Found"}, 404
+        except Exception as e:
+            error_msg = f"User relationship POST - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 500
