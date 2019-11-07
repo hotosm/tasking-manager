@@ -65,7 +65,6 @@ class InterestsAllAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
-    @token_auth.login_required
     def get(self):
         """
         Get all interests
