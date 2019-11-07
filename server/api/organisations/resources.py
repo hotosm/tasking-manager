@@ -256,6 +256,19 @@ class OrganisationsRestAPI(Resource):
 
 
 class OrganisationsAllAPI(Resource):
+    """
+    Gets all organisations
+    ---
+    tags:
+      - organisation
+    produces:
+      - application/json
+    responses:
+        200:
+            description: Organisation tags
+        500:
+            description: Internal Server Error
+    """
     def get(self):
         try:
             orgs = OrganisationService.get_all_organisations_for_user_as_dto(

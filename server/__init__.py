@@ -555,63 +555,63 @@ def add_api_endpoints(app):
     api.add_resource(CountriesRestAPI, "/api/v2/countries/")
 
     # Organisations REST endpoints
-    api.add_resource(OrganisationsAllAPI, "/api/v2/organisations", methods=["GET"])
+    api.add_resource(OrganisationsAllAPI, "/api/v2/organisations/", methods=["GET"])
     api.add_resource(
-        OrganisationsAllAPI,
-        "/api/v2/organisations",
+        OrganisationsRestAPI,
+        "/api/v2/organisations/",
         endpoint="create_organisation",
         methods=["POST"],
     )
     api.add_resource(
         OrganisationsRestAPI,
-        "/api/v2/organisations/<int:organisation_id>",
+        "/api/v2/organisations/<int:organisation_id>/",
         endpoint="get_organisation",
         methods=["GET"],
     )
     api.add_resource(
         OrganisationsRestAPI,
-        "/api/v2/organisations/<int:organisation_id>",
+        "/api/v2/organisations/<int:organisation_id>/",
         methods=["PUT", "DELETE"],
     )
 
     # Organisations additional resources endpoints
     api.add_resource(
         OrganisationsCampaignsAPI,
-        "/api/v2/organisations/<int:organisation_id>/campaigns",
+        "/api/v2/organisations/<int:organisation_id>/campaigns/",
         endpoint="get_all_organisation_campaigns",
         methods=["GET"],
     )
     api.add_resource(
         OrganisationsCampaignsAPI,
-        "/api/v2/organisations/<int:organisation_id>/campaigns/<int:campaign_id>",
+        "/api/v2/organisations/<int:organisation_id>/campaigns/<int:campaign_id>/",
         endpoint="assign_campaign_to_organisation",
         methods=["PUT", "DELETE"],
     )
 
     # Teams REST endpoints
-    api.add_resource(TeamsAllAPI, "/api/v2/teams", methods=["GET"])
+    api.add_resource(TeamsAllAPI, "/api/v2/teams/", methods=["GET"])
     api.add_resource(
-        TeamsAllAPI, "/api/v2/teams", endpoint="create_team", methods=["POST"]
+        TeamsAllAPI, "/api/v2/teams/", endpoint="create_team", methods=["POST"]
     )
     api.add_resource(
-        TeamsRestAPI, "/api/v2/teams/<int:team_id>", methods=["GET", "PUT", "DELETE"]
+        TeamsRestAPI, "/api/v2/teams/<int:team_id>/", methods=["GET", "PUT", "DELETE"]
     )
 
     # Teams actions endpoints
     api.add_resource(
         TeamsActionsJoinAPI,
-        "/api/v2/teams/<int:team_id>/actions/join",
+        "/api/v2/teams/<int:team_id>/actions/join/",
         methods=["POST"],
     )
     api.add_resource(
         TeamsActionsLeaveAPI,
-        "/api/v2/teams/<int:team_id>/actions/leave",
+        "/api/v2/teams/<int:team_id>/actions/leave/",
         endpoint="leave_team",
         methods=["POST"],
     )
     api.add_resource(
         TeamsActionsLeaveMultipleAPI,
-        "/api/v2/teams/<int:team_id>/actions/remove-users",
+        "/api/v2/teams/<int:team_id>/actions/remove-users/",
         endpoint="remove_users_from_team",
         methods=["POST"],
     )
@@ -619,19 +619,19 @@ def add_api_endpoints(app):
     # Campaigns REST endpoints
     api.add_resource(
         CampaignsAllAPI,
-        "/api/v2/campaigns",
+        "/api/v2/campaigns/",
         endpoint="get_all_campaign",
         methods=["GET"],
     )
     api.add_resource(
         CampaignsAllAPI,
-        "/api/v2/campaigns",
+        "/api/v2/campaigns/",
         endpoint="create_campaign",
         methods=["POST"],
     )
     api.add_resource(
         CampaignsRestAPI,
-        "/api/v2/campaigns/<int:campaign_id>",
+        "/api/v2/campaigns/<int:campaign_id>/",
         methods=["GET", "PUT", "DELETE"],
     )
 
