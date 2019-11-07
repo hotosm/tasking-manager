@@ -50,7 +50,7 @@ class UserDTO(Model):
     tasks_mapped = IntType(serialized_name="tasksMapped")
     tasks_validated = IntType(serialized_name="tasksValidated")
     tasks_invalidated = IntType(serialized_name="tasksInvalidated")
-    email_address = EmailType(serialized_name="emailAddress", serialize_when_none=False)
+    email_address = EmailType(serialized_name="emailAddress")
     is_email_verified = EmailType(
         serialized_name="isEmailVerified", serialize_when_none=False
     )
@@ -195,6 +195,15 @@ class ListedUser(Model):
     username = StringType()
     role = StringType()
     mapping_level = StringType(serialized_name="mappingLevel")
+
+
+class UserRegisterEmailDTO(Model):
+    """ DTO containing data for user registration with email model """
+
+    id = IntType(serialize_when_none=False)
+    email = StringType(required=True)
+    success = BooleanType(default=False)
+    details = StringType()
 
 
 class ProjectParticipantUser(Model):
