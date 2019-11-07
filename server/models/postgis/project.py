@@ -58,6 +58,7 @@ from server.models.postgis.utils import (
     ST_Y,
 )
 from server.services.grid.grid_service import GridService
+from server.models.postgis.interests import Interest, projects_interests
 
 
 # Secondary table defining many-to-many join for projects that were favorited by users.
@@ -162,7 +163,7 @@ class Project(db.Model):
         db.ForeignKey("organisations.id", name="fk_organisations"),
         index=True,
     )
-
+    organisation_tag = db.Column(db.String, index=True)
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
 
@@ -213,6 +214,9 @@ class Project(db.Model):
     favorited = db.relationship(User, secondary=project_favorites, backref="favorites")
     organisation = db.relationship(Organisation, backref="projects")
     campaign = db.relationship(Campaign, secondary=campaign_projects, backref="project")
+    interests = db.relationship(
+        Interest, secondary=projects_interests, backref="projects"
+    )
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
@@ -1024,6 +1028,12 @@ class Project(db.Model):
         )
 
         return project_dto
+
+    def create_or_update_interests(self, interests_ids):
+        self.interests = []
+        objs = [Interest.get_by_id(i) for i in interests_ids]
+        self.interests.extend(objs)
+        db.session.commit()
 
 
 # Add index on project geometry
