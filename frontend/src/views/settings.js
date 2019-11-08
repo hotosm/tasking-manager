@@ -24,7 +24,7 @@ export function Settings() {
             <UserInterests />
             <UserSettingsForm />
             <UserNotificationsForm />
-            {userDetails.expertMode && <APIKeyCard token={token} />}
+            {userDetails.isExpert && <APIKeyCard token={token} />}
           </div>
           <div className="fl w-100 w-40-l pb3 pl3-l">
             <UserInformationForm />

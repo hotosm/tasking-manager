@@ -10,7 +10,6 @@ import { ProfileCompleteness } from './completeness';
 import { MappingLevelMessage } from '../mappingLevel';
 import { INTERMEDIATE_LEVEL_COUNT, ADVANCED_LEVEL_COUNT } from '../../config';
 
-
 export function NextMappingLevel({ changesetsCount }: Object) {
   changesetsCount = Number(changesetsCount);
   let nextLevelThreshold, nextLevel;
@@ -47,11 +46,13 @@ export function UserTopBar() {
   const user = useSelector(state => state.auth.get('userDetails'));
   const osmUserInfo = useSelector(state => state.auth.get('osm'));
 
-  const placeholder = <div className="pl2 dib">
-    <TextRow style={{ width: 150, height: '2.3em' }} color="#eee" />
-    <TextRow style={{ width: 150, height: '1em' }} color="#eee" />
-    <TextRow style={{ width: 150, height: '1em' }} color="#eee" />
-  </div>;
+  const placeholder = (
+    <div className="pl2 dib">
+      <TextRow style={{ width: 150, height: '2.3em' }} color="#eee" />
+      <TextRow style={{ width: 150, height: '1em' }} color="#eee" />
+      <TextRow style={{ width: 150, height: '1em' }} color="#eee" />
+    </div>
+  );
 
   return (
     <div className="cf ph4 pt3 pb1 mb2">
@@ -66,9 +67,7 @@ export function UserTopBar() {
           ready={user !== undefined && osmUserInfo !== undefined}
         >
           <div className="pl2 dib">
-            <h3 className="ttu f2 fw-6 mv0 barlow-condensed">
-              {user.name || user.username}
-            </h3>
+            <h3 className="ttu f2 fw-6 mv0 barlow-condensed">{user.name || user.username}</h3>
             <p className="f4 blue-dark mt3 mb2">
               <FormattedMessage
                 {...messages.mapper}

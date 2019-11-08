@@ -11,7 +11,7 @@ function CompletenessProgressBar({ completeness }: Object) {
         <div className="w-90 pr2 pt2 fl relative">
           <div
             className={'absolute bg-red br-pill hhalf hide-child'}
-            style={{ width: `${completeness * 100}%` }}
+            style={{ width: `${completeness.toPrecision(3) * 100}%` }}
           ></div>
           <div className={'bg-grey-light br-pill hhalf hide-child overflow-y-hidden'}></div>
         </div>

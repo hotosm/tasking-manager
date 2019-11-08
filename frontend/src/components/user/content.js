@@ -7,17 +7,18 @@ import ReactPlaceholder from 'react-placeholder';
 import messages from './messages';
 import { MappingIcon, ClipboardIcon } from '../svgIcons';
 
-
-export function APIKeyCard({token}) {
+export function APIKeyCard({ token }) {
   //eslint-disable-next-line
   const [isCopied, setCopied] = useCopyClipboard();
 
   const handleClick = () => {
-      setCopied(`Token ${token}`);
+    setCopied(`Token ${token}`);
   };
-  const link = <a className="link red" href="/api-docs/" target="_blank">
-    <FormattedMessage {...messages.apiDocs} />
-  </a>;
+  const link = (
+    <a className="link red" href="/api-docs/" target="_blank">
+      <FormattedMessage {...messages.apiDocs} />
+    </a>
+  );
   return (
     <div className="cf bg-white shadow-4 pa4 mb3">
       <h3 className="f3 blue-dark mt0 fw6">
@@ -29,10 +30,7 @@ export function APIKeyCard({token}) {
           <ClipboardIcon width="18px" height="18px" onClick={handleClick} />
         </span>
         <p className="f6 blue-grey pt3">
-          <FormattedMessage
-            {...messages.apiKeyDescription}
-            values={{link: link}}
-          />
+          <FormattedMessage {...messages.apiKeyDescription} values={{ link: link }} />
         </p>
       </div>
     </div>
@@ -52,29 +50,31 @@ export function OSMCard({ username }: Object) {
           <h4 className="ttu blue-grey f5 fw4 mt1 mb0">
             <FormattedMessage {...messages.joinedOSM} />
           </h4>
-          <p className="f4 blue-dark fw8 mt3">
+          <div className="f4 blue-dark fw8 mv3">
             <ReactPlaceholder
               showLoadingAnimation={true}
               rows={1}
-              ready={osmUserInfo}
+              delay={100}
+              ready={typeof osmUserInfo !== undefined}
             >
-              <FormattedRelative value={osmUserInfo && osmUserInfo.accountCreated} />
+              <FormattedRelative value={osmUserInfo ? osmUserInfo.accountCreated : new Date()} />
             </ReactPlaceholder>
-          </p>
+          </div>
         </div>
         <div className="w-50 fl">
           <h4 className="ttu blue-grey f5 fw4 mt1 mb0">
             <FormattedMessage {...messages.totalChangesets} />
           </h4>
-          <p className="f4 blue-dark fw8 mt3">
+          <div className="f4 blue-dark fw8 mv3">
             <ReactPlaceholder
               showLoadingAnimation={true}
               rows={1}
-              ready={osmUserInfo}
-              >
+              delay={100}
+              ready={typeof osmUserInfo !== undefined}
+            >
               <FormattedNumber value={osmUserInfo ? osmUserInfo.changesetCount : 0} />
             </ReactPlaceholder>
-          </p>
+          </div>
         </div>
       </div>
       <div className="cf pt1">

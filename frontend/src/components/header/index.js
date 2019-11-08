@@ -5,8 +5,7 @@ import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { createPopup } from './createPopup';
-import { ORG_URL, ORG_NAME, API_URL } from '../../config';
+import { ORG_URL, ORG_NAME } from '../../config';
 import logo from '../../assets/img/main-logo.svg';
 import { LinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
@@ -17,6 +16,7 @@ import { UpdateEmail } from './updateEmail';
 import { UserAvatar } from '../user/avatar';
 import { logout } from '../../store/actions/auth';
 import { setLocale } from '../../store/actions/userPreferences';
+import { createLoginWindow } from '../../utils/login';
 import { supportedLocales } from '../../utils/internationalization';
 
 const menuItems = [
@@ -47,33 +47,6 @@ const UserDisplay = props => {
   );
 };
 
-const createLoginWindow = redirectTo => {
-  let url = `${API_URL}system/authentication/login/?callback_url=${window.location.origin}/authorized/`
-  fetch(url)
-    .then(resp => resp.json())
-    .then(resp => {
-      createPopup('OSM auth', resp.auth_url);
-      // Perform token exchange.
-      window.authComplete = verifier => {
-        const tokens = new URLSearchParams({
-          'oauth_token': resp.oauth_token,
-          'oauth_token_secret': resp.oauth_token_secret
-        }).toString()
-        fetch(`${API_URL}system/authentication/callback/?${tokens}&oauth_verifier=${verifier}`)
-        .then(res => res.json())
-        .then(res => {
-          const params = new URLSearchParams({
-            'username': res.username,
-            'session_token': res.session_token,
-            'picture': res.picture,
-          }).toString()
-          let redirectUrl = `/authorized/?${params}`;
-          window.location.href=redirectUrl;
-        })
-      }
-    })
-};
-
 const AuthButtons = props => {
   const { logInStyle, signUpStyle, redirectTo } = props;
   return (
@@ -83,11 +56,15 @@ const AuthButtons = props => {
       </Button>
       <Popup
         contentStyle={modalStyle}
-        trigger={<Button className={signUpStyle}><FormattedMessage {...messages.signUp} /></Button>}
+        trigger={
+          <Button className={signUpStyle}>
+            <FormattedMessage {...messages.signUp} />
+          </Button>
+        }
         modal
         closeOnDocumentClick
       >
-        <SignUp />
+        {close => <SignUp closeModal={close} />}
       </Popup>
     </>
   );
@@ -131,7 +108,7 @@ class Header extends React.Component {
   renderPopupItems() {
     return (
       <div className="v-mid tc">
-        {this.props.username &&
+        {this.props.userDetails.username &&
           this.menuItems
             .filter(item => item.authenticated === true)
             .map((item, n) => (
@@ -141,7 +118,7 @@ class Header extends React.Component {
                 </Link>
               </p>
             ))}
-        {this.props.username && (
+        {this.props.userDetails.username && (
           <>
             <p>
               <Link to={'/settings'} className={this.linkCombo}>
@@ -160,7 +137,7 @@ class Header extends React.Component {
               </Link>
             </p>
           ))}
-        {this.props.username ? (
+        {this.props.userDetails.username ? (
           <Button className="bg-blue-dark white" onClick={() => this.props.logout()}>
             <FormattedMessage {...messages.logout} />
           </Button>
@@ -199,16 +176,18 @@ class Header extends React.Component {
   };
 
   checkUserEmail() {
-    return this.props.username && !this.props.email ? (
-        <Popup
-          contentStyle={modalStyle}
-          modal
-          open
-          closeOnEscape={false}
-          closeOnDocumentClick={false}>
-            {close => <UpdateEmail closeModal={close}/>}
-        </Popup>
-      ) : null;
+    return this.props.userDetails.hasOwnProperty('emailAddress') &&
+      !this.props.userDetails.emailAddress ? (
+      <Popup
+        contentStyle={modalStyle}
+        modal
+        open
+        closeOnEscape={false}
+        closeOnDocumentClick={false}
+      >
+        {close => <UpdateEmail closeModal={close} />}
+      </Popup>
+    ) : null;
   }
 
   getActiveLanguageNames() {
@@ -227,14 +206,14 @@ class Header extends React.Component {
   }
 
   renderAuthenticationButtons() {
-    return this.props.username ? (
+    return this.props.userDetails.username ? (
       <Dropdown
         onAdd={() => {}}
         onRemove={() => {}}
         onChange={this.onUserMenuSelect}
         value={[]}
         options={this.userLinks}
-        display={<UserDisplay username={this.props.username} />}
+        display={<UserDisplay username={this.props.userDetails.username} />}
         className="blue-dark bg-white mr1 v-mid dn dib-ns pv2 ph3 bn"
       />
     ) : (
@@ -304,16 +283,15 @@ class Header extends React.Component {
   }
 }
 
-const modalStyle = { 
+const modalStyle = {
   width: '44%',
-  marginTop: '5em'
-}
+  marginTop: '5em',
+};
 
 const mapStateToProps = state => ({
   userPreferences: state.preferences,
-  username: state.auth.getIn(['userDetails', 'username']),
+  userDetails: state.auth.get('userDetails'),
   token: state.auth.get('token'),
-  email: state.auth.getIn(['userDetails', 'emailAddress']),
 });
 
 Header = connect(
