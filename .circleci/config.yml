@@ -248,7 +248,7 @@ workflows:
               - deployment/hot-tasking-manager
         requires:
           - build
-        stack_name: "prod-restored"
+        stack_name: "production"
         environment_name: "production"
         postgres_db: POSTGRES_DB_PRODUCTION
         postgres_password: POSTGRES_PASSWORD_PRODUCTION
