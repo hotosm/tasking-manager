@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { registerUser } from '../../store/actions/user';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
+import { Button } from '../button';
+import { CloseIcon } from '../svgIcons';
+import { registerUser } from '../../store/actions/user';
 
 class SignUp extends Component {
   constructor(props) {
     super(props);
-    this.state = {email: '', details: '', 'success': false};
+    this.state = { email: '', details: '', success: false };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -16,92 +20,73 @@ class SignUp extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  onSubmit = (e) => {
+  onSubmit = e => {
     e.preventDefault();
     const formdata = {
       email: this.state.email,
     };
     let registerPromise = this.props.registerUser(formdata);
     registerPromise.then(res => {
-      this.setState({...this.state, success: res.success, details: res.details})
+      this.setState({ ...this.state, success: res.success, details: res.details });
 
       if (res.success === true) {
-        setTimeout(() => window.location.href = 'https://www.openstreetmap.org/user/new', 1500);
+        setTimeout(() => (window.location.href = 'https://www.openstreetmap.org/user/new'), 1500);
       }
-    })
-  }
+    });
+  };
 
   render() {
     return (
-      <div style={signUpStyle}>
-        <p style={this.state.success ? successStyle : failureStyle} >{this.state.details}</p>
-        <h1 style={{paddingBottom: '0.5em'}}>Sign up on OSM</h1>
-        <p style={paragraphStyle}>You will be redirected to the OpenStreetMap website, where you need to <br/>
-        create that you will use to login into Tasking Manager</p>
-        <p style={paragraphStyle}>
-          <b>So that we can keep in touch, could you please tell us your email
-          address?
-          </b>
+      <div className="tl pa4 bg-white">
+        <p className={this.state.details ? 'dib' : 'dn'}>{this.state.details}</p>
+        <span
+          className="fr relative blue-light pt1 link pointer"
+          onClick={() => this.props.closeModal()}
+        >
+          <CloseIcon style={{ height: '18px', width: '18px' }} />
+        </span>
+        <h1 className="pb2 ma0 barlow-condensed blue-dark">
+          <FormattedMessage {...messages.signUpOSM} />
+        </h1>
+        <p className="blue-dark lh-copy">
+          <FormattedMessage {...messages.signUpTextPart1} />
+        </p>
+        <p className="blue-dark lh-copy">
+          <FormattedMessage {...messages.signUpTextPart2} />
+        </p>
+        <p className="blue-dark lh-copy">
+          <FormattedMessage {...messages.signUpQuestion} />
         </p>
         <form onSubmit={this.onSubmit}>
           <div>
-            <label style={{color: '#555C6C', fontSize: '12px'}}>Email: </label>
-            <br />
-            <input style={{width: '100%', lineHeight: '1.7'}}
+            <input
+              className="pa2 w-60-l w-100"
               type="email"
               name="email"
-              placeholder="Enter your email"
+              placeholder="Your best email"
               onChange={this.onChange}
               value={this.state.email}
             />
           </div>
-          <br />
-          <button style={buttonStyle} type="submit">Submit & Proceed</button>
+          <p className="blue-grey lh-copy">
+            <FormattedMessage {...messages.signUpRedirect} />
+          </p>
+          <Button className="bg-red white" type="submit">
+            <FormattedMessage {...messages.submitProceed} />
+          </Button>
         </form>
       </div>
     );
   }
 }
 
-
-const failureStyle = {
-  backgroundColor: '#ffcccc',
-  fontSize: '13px',
-  lineHeight: '3.3em',
-  textAlign: 'center'
-}
-
-const successStyle = {
-  backgroundColor: '#d9f2d9',
-  fontSize: '13px',
-  lineHeight: '3.3em',
-  textAlign: 'center'
-}
-
-const paragraphStyle = {
-  color: '#555C6C',
-  fontSize: '14px',
-  paddingBottom: '1.5em'
-}
-
-const signUpStyle = {
-  textAlign: 'left',
-  padding: '2em',
-}
-
-const buttonStyle = {
-  margin: '6em 0em 1em 0em',
-  float: 'right',
-  fontSize: '14px',
-  backgroundColor: '#d73f3f',
-  color: 'white',
-  padding: '1em 2em',
-}
-
 SignUp.propTypes = {
-  registerUser: PropTypes.func.isRequired
+  registerUser: PropTypes.func.isRequired,
 };
 
-SignUp = connect(null, { registerUser })(SignUp)
+SignUp = connect(
+  null,
+  { registerUser },
+)(SignUp);
 
-export {SignUp, signUpStyle, paragraphStyle, buttonStyle, successStyle, failureStyle};
+export { SignUp };

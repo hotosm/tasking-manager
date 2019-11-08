@@ -81,6 +81,10 @@ export default defineMessages({
     id: 'user.settings.default_editor',
     defaultMessage: 'Default editor',
   },
+  selectDefaultEditor: {
+    id: 'user.settings.select_default_editor',
+    defaultMessage: 'Select default editor',
+  },
   defaultEditorDescription: {
     id: 'user.settings.default_editor.description',
     defaultMessage:
@@ -120,9 +124,9 @@ export default defineMessages({
     defaultMessage:
       "You get a notification every time someone comments on the project you've contributed to.",
   },
-  apply: {
+  learnHow: {
     id: 'user.settings.become_validator.button',
-    defaultMessage: 'Apply',
+    defaultMessage: 'Learn how',
   },
   welcomeTitle: {
     id: 'user.welcome.title',
@@ -220,7 +224,12 @@ export default defineMessages({
   },
   apiKeyDescription: {
     id: 'user.settings.apiKey.description',
-    defaultMessage: 'With this API Key, you can authenticate and use all the resources of the Tasking Manager API. For more details, checkout the {link}.',
+    defaultMessage:
+      'With this API Key, you can authenticate and use all the resources of the Tasking Manager API. For more details, checkout the {link}.',
+  },
+  emailConfirmationMsg: {
+    id: 'user.settings.email.confirmation',
+    defaultMessage: 'Please check your email account in order to confirm your email address.',
   },
 });
 // It will be useful when we enable the placeholders
