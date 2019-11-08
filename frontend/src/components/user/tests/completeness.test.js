@@ -116,17 +116,17 @@ it('test with a user who filled all profile fields', () => {
   ).toBe('100%');
 });
 
-it('test with a user whose profile is 62.5% filled', () => {
+it('test with a user whose profile is 66.7% filled', () => {
   const element = createComponentWithIntl(<ProfileCompleteness userDetails={incompleteProfile} />);
   const elementInstance = element.root;
   expect(elementInstance.findAllByType(FormattedMessage).map(i => i.props.id)).toContain(
     'user.completeness.lead.high',
   );
-  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(0.7);
+  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(2/3);
   expect(
     elementInstance.findByProps({ className: 'absolute bg-red br-pill hhalf hide-child' }).props
       .style.width,
-  ).toBe('70%');
+  ).toBe('66.7%');
 });
 
 it('test with a user whose profile is 0% filled', () => {

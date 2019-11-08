@@ -12,8 +12,8 @@ class Authorized extends React.Component {
   componentDidMount() {
     let verifier = this.params.get('oauth_verifier');
     if (verifier !== null) {
-      window.opener.authComplete(verifier)
-      window.close()
+      window.opener.authComplete(verifier);
+      window.close();
       return;
     }
     const username = this.params.get('username');
@@ -42,8 +42,7 @@ let mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = dispatch => {
   return {
-    authenticateUser: (username, token) =>
-      dispatch(setAuthDetails(username, token)),
+    authenticateUser: (username, token) => dispatch(setAuthDetails(username, token)),
   };
 };
 
