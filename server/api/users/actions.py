@@ -352,6 +352,7 @@ class UsersActionsRegisterEmailAPI(Resource):
 
 
 class UsersActionsSetInterestsAPI(Resource):
+    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, user_id):
         """

@@ -4,12 +4,13 @@ from schematics.exceptions import DataError
 from server.models.dtos.interests_dto import InterestDTO
 from server.models.postgis.utils import NotFound
 from server.services.interests_service import InterestService
-from server.services.users.authentication_service import token_auth
+from server.services.users.authentication_service import token_auth, tm
 
 from sqlalchemy.exc import IntegrityError
 
 
 class InterestsAllAPI(Resource):
+    @tm.pm_only()
     @token_auth.login_required
     def post(self):
         """
@@ -96,6 +97,7 @@ class InterestsAllAPI(Resource):
 
 
 class InterestsRestAPI(Resource):
+    @tm.pm_only()
     @token_auth.login_required
     def patch(self, interest_id):
         """
@@ -152,6 +154,7 @@ class InterestsRestAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
 
+    @tm.pm_only()
     @token_auth.login_required
     def delete(self, interest_id):
         """
