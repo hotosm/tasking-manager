@@ -231,6 +231,8 @@ class ProjectsActionsUnFeatureAPI(Resource):
 
 
 class ProjectsActionsSetInterestsAPI(Resource):
+    @tm.pm_only()
+    @token_auth.login_required
     def post(self, project_id):
         """
         Creates a relationship between project and interests
