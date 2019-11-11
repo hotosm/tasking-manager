@@ -106,8 +106,15 @@ class User(db.Model):
         for attr, value in user_dto.items():
             if attr == "gender" and value is not None:
                 value = UserGender[value].value
-            if value:
-                setattr(self, attr, value)
+
+            try:
+                is_field_nullable = self.__table__.columns[attr].nullable
+                if is_field_nullable and value is not None:
+                    setattr(self, attr, value)
+                elif value is not None:
+                    setattr(self, attr, value)
+            except KeyError:
+                continue
 
         if user_dto.gender != UserGender.SELF_DESCRIBE.name:
             self.self_description_gender = None
