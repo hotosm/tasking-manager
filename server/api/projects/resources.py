@@ -327,9 +327,9 @@ class ProjectsRestAPI(Resource):
                     campaignTag:
                         type: string
                         default: malaria
-                    organisation:
-                        type: string
-                        default: red cross
+                    organisationId:
+                        type: integer
+                        default: 1
                     countryTag:
                           type: array
                           items:
@@ -479,9 +479,13 @@ class ProjectsAllAPI(Resource):
               type: string
               default: ROADS,BUILDINGS
             - in: query
-              name: organisation
+              name: organisationName
               type: string
               default: HOT
+            - in: query
+              name: organisationId
+              type: integer
+              default: 1
             - in: query
               name: campaignTag
               type: string
@@ -516,7 +520,8 @@ class ProjectsAllAPI(Resource):
             search_dto = ProjectSearchDTO()
             search_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             search_dto.mapper_level = request.args.get("mapperLevel")
-            search_dto.organisation = request.args.get("organisation")
+            search_dto.organisation_name = request.args.get("organisationName")
+            search_dto.organisation_id = request.args.get("organisationId")
             search_dto.campaign = request.args.get("campaign")
             search_dto.order_by = request.args.get("orderBy", "priority")
             search_dto.country = request.args.get("country")

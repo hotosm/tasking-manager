@@ -193,6 +193,23 @@ class TeamsRestAPI(Resource):
 
 class TeamsAllAPI(Resource):
     def get(self):
+        """
+        Gets all teams
+        ---
+        tags:
+          - team
+        produces:
+          - application/json
+        responses:
+            201:
+                description: Team list returned successfully
+            400:
+                description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
         try:
             teams = TeamService.get_all_teams()
             return teams.to_primitive(), 200
