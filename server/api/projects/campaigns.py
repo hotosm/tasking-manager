@@ -10,7 +10,36 @@ from server.services.users.authentication_service import token_auth
 class ProjectsCampaignsAPI(Resource):
     @token_auth.login_required
     def put(self):
-        """ Assign campaign to project """
+        """
+        Assign a campaign for a project
+        ---
+        tags:
+          - campaign
+        produces:
+          - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - name: campaign_id
+              in: path
+              description: The unique campaign ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            201:
+                description: Campaign assigned successfully
+            400:
+                description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
         try:
             campaign_project_dto = CampaignProjectDTO(request.get_json())
             campaign_project_dto.validate()
@@ -29,7 +58,30 @@ class ProjectsCampaignsAPI(Resource):
             return {"error": error_msg}, 500
 
     def get(self, project_id):
-
+        """
+        Gets all campaigns for a project
+        ---
+        tags:
+          - campaign
+        produces:
+          - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            201:
+                description: Campaign list returned successfully
+            400:
+                description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
         try:
             campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
             return campaigns.to_primitive(), 200
@@ -43,34 +95,32 @@ class ProjectsCampaignsAPI(Resource):
     @token_auth.login_required
     def delete(self, project_id, campaign_id):
         """
-        Deletes a Tasking-Manager project
+        Delete a campaign for a project
         ---
         tags:
-            - project admin
+          - campaign
         produces:
-            - application/json
+          - application/json
         parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: The unique project ID
               required: true
               type: integer
               default: 1
+            - name: campaign_id
+              in: path
+              description: The unique campaign ID
+              required: true
+              type: integer
+              default: 1
         responses:
-            200:
-                description: Project deleted
+            201:
+                description: Campaign assigned successfully
+            400:
+                description: Client Error - Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
-            403:
-                description: Forbidden - users have submitted mapping
-            404:
-                description: Project not found
             500:
                 description: Internal Server Error
         """
@@ -90,7 +140,38 @@ class ProjectsCampaignsAPI(Resource):
 class ProjectsCampaignsActionsRemoveAPI(Resource):
     @token_auth.login_required
     def post(self, project_id):
-
+        """
+        Unassign campaign(s) for a project
+        ---
+        tags:
+          - campaign
+        produces:
+          - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: The unique project ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: List of campaigns to remove
+              schema:
+                  properties:
+                      campaigns:
+                        type: string
+        responses:
+            201:
+                description: Campaign assigned successfully
+            400:
+                description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
         try:
             campaigns = request.get_json(force=True)["campaigns"]
             for cam in campaigns:
