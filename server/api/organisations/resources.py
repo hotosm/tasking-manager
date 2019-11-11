@@ -259,7 +259,7 @@ class OrganisationsAllAPI(Resource):
     @token_auth.login_required
     def get(self):
         """
-        Gets all organisations
+        Gets all organisations for an user
         ---
         tags:
           - organisation
