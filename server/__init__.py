@@ -149,7 +149,10 @@ def add_api_endpoints(app):
         ProjectsStatisticsQueriesPopularAPI,
     )
     from server.api.projects.teams import ProjectsTeamsAPI
-    from server.api.projects.campaigns import ProjectsCampaignsAPI, ProjectsCampaignsActionsRemoveAPI
+    from server.api.projects.campaigns import (
+        ProjectsCampaignsAPI,
+        ProjectsCampaignsActionsRemoveAPI,
+    )
     from server.api.projects.actions import (
         ProjectsActionsTransferAPI,
         ProjectsActionsMessageContributorsAPI,
@@ -211,7 +214,10 @@ def add_api_endpoints(app):
     from server.api.campaigns.resources import CampaignsRestAPI, CampaignsAllAPI
 
     # Organisations API endpoint
-    from server.api.organisations.resources import OrganisationsRestAPI, OrganisationsAllAPI
+    from server.api.organisations.resources import (
+        OrganisationsRestAPI,
+        OrganisationsAllAPI,
+    )
     from server.api.organisations.campaigns import OrganisationsCampaignsAPI
 
     # Countries API endpoint
