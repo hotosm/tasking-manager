@@ -211,10 +211,7 @@ def add_api_endpoints(app):
     from server.api.campaigns.resources import CampaignsRestAPI, CampaignsAllAPI
 
     # Organisations API endpoint
-    from server.api.organisations.resources import (
-        OrganisationsRestAPI,
-        OrganisationsAllAPI,
-    )
+    from server.api.organisations.resources import OrganisationsRestAPI, OrganisationsAllAPI
     from server.api.organisations.campaigns import OrganisationsCampaignsAPI
 
     # Countries API endpoint
@@ -343,18 +340,18 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         ProjectsTeamsAPI,
-        "/api/v2/projects/<int:project_id>/teams/<int:team_id>",
+        "/api/v2/projects/<int:project_id>/teams/<int:team_id>/",
         methods=["PUT", "DELETE", "PATCH"],
     )
     api.add_resource(
         ProjectsCampaignsAPI,
-        "/api/v2/projects/<int:project_id>/campaigns",
+        "/api/v2/projects/<int:project_id>/campaigns/",
         endpoint="get_all_project_campaigns",
         methods=["GET"],
     )
     api.add_resource(
         ProjectsCampaignsAPI,
-        "/api/v2/projects/<int:project_id>/campaigns/<int:campaign_id>",
+        "/api/v2/projects/<int:project_id>/campaigns/<int:campaign_id>/",
         endpoint="assign_remove_campaign_to_project",
         methods=["PUT", "DELETE"],
     )
@@ -369,11 +366,11 @@ def add_api_endpoints(app):
         "/api/v2/projects/<int:project_id>/actions/transfer-ownership/",
     )
     api.add_resource(
-        ProjectsActionsFeatureAPI, "/api/v2/projects/<int:project_id>/actions/feature"
+        ProjectsActionsFeatureAPI, "/api/v2/projects/<int:project_id>/actions/feature/"
     )
     api.add_resource(
         ProjectsActionsUnFeatureAPI,
-        "/api/v2/projects/<int:project_id>/actions/remove-feature",
+        "/api/v2/projects/<int:project_id>/actions/remove-feature/",
         methods=["POST"],
     )
 
@@ -555,7 +552,7 @@ def add_api_endpoints(app):
     api.add_resource(CountriesRestAPI, "/api/v2/countries/")
 
     # Organisations REST endpoints
-    api.add_resource(OrganisationsAllAPI, "/api/v2/organisations/", methods=["GET"])
+    api.add_resource(OrganisationsAllAPI, "/api/v2/organisations/")
     api.add_resource(
         OrganisationsRestAPI,
         "/api/v2/organisations/",
