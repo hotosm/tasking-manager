@@ -256,7 +256,32 @@ class OrganisationsRestAPI(Resource):
 
 
 class OrganisationsAllAPI(Resource):
+    @token_auth.login_required
     def get(self):
+        """
+        Gets all organisations for an user
+        ---
+        tags:
+          - organisation
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+        responses:
+            201:
+                description: Organisation list returned successfully
+            400:
+                description: Client Error - Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
         try:
             orgs = OrganisationService.get_all_organisations_for_user_as_dto(
                 tm.authenticated_user_id

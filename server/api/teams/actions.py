@@ -9,7 +9,50 @@ class TeamsActionsJoinAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
     def post(self, team_id):
-
+        """
+        Request to join a team
+        ---
+        tags:
+          - team
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: team_id
+              in: path
+              description: The unique team ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                properties:
+                    user:
+                        type: string
+                        default: Tasking Manager
+                        required: true
+                    type:
+                        type: string
+                        default: join
+                        required: true
+        responses:
+            200:
+                description: Member added
+            403:
+                description: Forbidden
+            404:
+                description: Not found
+            500:
+                description: Internal Server Error
+        """
         try:
             username = request.get_json(force=True)["user"]
             request_type = request.get_json(force=True)["type"]
@@ -32,12 +75,63 @@ class TeamsActionsJoinAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
     def put(self, team_id):
-
+        """
+        Take action on a team invite
+        ---
+        tags:
+          - team
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: team_id
+              in: path
+              description: The unique team ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating draft project
+              schema:
+                properties:
+                    user_id:
+                        type: integer
+                        default: 1
+                        required: true
+                    type:
+                        type: string
+                        default: join-response
+                        required: true
+                    function:
+                        type: string
+                        default:
+                        required: true
+                    response:
+                        type: string
+                        default:
+                        require: true
+        responses:
+            200:
+                description: Member added
+            403:
+                description: Forbidden
+            404:
+                description: Not found
+            500:
+                description: Internal Server Error
+        """
         try:
             user_id = int(request.get_json(force=True)["user_id"])
             request_type = request.get_json(force=True)["type"]
             response = request.get_json(force=True)["response"]
-            function = request.get_json(force=True)["fuction"]
+            function = request.get_json(force=True)["function"]
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
@@ -67,7 +161,7 @@ class TeamsActionsLeaveAPI(Resource):
         Deletes the user from team
         ---
         tags:
-          - messaging
+          - team
         produces:
           - application/json
         parameters:
@@ -77,12 +171,16 @@ class TeamsActionsLeaveAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
-            - name: message_id
-              in: path
-              description: The unique message
+            - in: body
+              name: body
               required: true
-              type: integer
-              default: 1
+              description: JSON object for creating draft project
+              schema:
+                properties:
+                    user_id:
+                        type: integer
+                        default: 1
+                        required: true
         responses:
             200:
                 description: Member deleted
@@ -111,10 +209,10 @@ class TeamsActionsLeaveMultipleAPI(Resource):
     @token_auth.login_required
     def post(self, team_id):
         """
-        Deletes the specified message
+        Remove multiple users from team
         ---
         tags:
-          - messaging
+          - team
         produces:
           - application/json
         parameters:
@@ -124,17 +222,25 @@ class TeamsActionsLeaveMultipleAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
-            - name: message_id
+            - name: team_id
               in: path
-              description: The unique message
+              description: The unique team ID
               required: true
               type: integer
               default: 1
+            - in: body
+              name: body
+              required: true
+              description: username
+              schema:
+                properties:
+                    usernames:
+                        type: string
         responses:
             200:
                 description: Member deleted
             403:
-                description: Forbidden, if user attempting to ready other messages
+                description: Forbidden
             404:
                 description: Not found
             500:

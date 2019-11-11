@@ -1,4 +1,5 @@
 import { useEffect, useReducer } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 import { API_URL } from '../config';
@@ -16,7 +17,7 @@ const dataFetchReducer = (state, action) => {
         ...state,
         isLoading: false,
         isError: false,
-        tags: action.payload && action.payload.tags,
+        tags: action.payload && action.payload[Object.keys(action.payload)[0]],
       };
     case 'FETCH_FAILURE':
       return {
@@ -31,6 +32,7 @@ const dataFetchReducer = (state, action) => {
 };
 
 export const useTagAPI = (initialData, tagType) => {
+  const token = useSelector(state => state.auth.get('token'));
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
     isError: false,
@@ -45,7 +47,14 @@ export const useTagAPI = (initialData, tagType) => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_INIT' });
       try {
-        const result = await axios(`${API_URL}${tagType}/`);
+        let result;
+        if (token) {
+          result = await axios(
+            {url: `${API_URL}${tagType}/`, method: 'GET', headers: {Authorization: `Token ${token}`}}
+          );
+        } else {
+          result = await axios(`${API_URL}${tagType}/`);
+        }
 
         if (!didCancel) {
           dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
@@ -63,7 +72,7 @@ export const useTagAPI = (initialData, tagType) => {
     return () => {
       didCancel = true;
     };
-  }, [tagType]);
+  }, [tagType, token]);
 
   return [state];
 };

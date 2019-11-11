@@ -190,7 +190,7 @@ class ProjectDTO(Model):
         StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
     )
     campaign = ListType(ModelType(CampaignDTO), serialized_name="campaign")
-    organisation = StringType()
+    organisation = IntType()
     country_tag = ListType(StringType, serialized_name="countryTag")
 
     license_id = IntType(serialized_name="licenseId")
@@ -254,7 +254,8 @@ class ProjectSearchDTO(Model):
     mapper_level = StringType(validators=[is_known_mapping_level])
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
     project_statuses = ListType(StringType, validators=[is_known_project_status])
-    organisation = StringType()
+    organisation_name = StringType()
+    organisation_id = IntType()
     campaign = StringType()
     order_by = StringType(choices=ORDER_BY_OPTIONS)
     order_by_type = StringType(choices=("ASC", "DESC"))
@@ -298,7 +299,7 @@ class ProjectSearchDTO(Model):
                 hashable_mapping_types,
                 hashable_project_statuses,
                 hashable_teams,
-                self.organisation,
+                self.organisation_name,
                 self.campaign,
                 self.page,
                 self.text_search,
@@ -325,7 +326,8 @@ class ListSearchResultDTO(Model):
     short_description = StringType(serialized_name="shortDescription", default="")
     mapper_level = StringType(required=True, serialized_name="mapperLevel")
     priority = StringType(required=True)
-    organisation = StringType()
+    organisation_name = StringType(serialized_name="organisationName")
+    organisation_logo = StringType(serialized_name="organisationLogo")
     campaign = StringType()
     percent_mapped = IntType(serialized_name="percentMapped")
     percent_validated = IntType(serialized_name="percentValidated")
