@@ -25,7 +25,7 @@ from server.models.postgis.utils import (
     ST_Transform,
     ST_Area,
 )
-from server.services.campaign_service import CampaignService
+
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
@@ -59,22 +59,29 @@ class BBoxTooBigError(Exception):
 class ProjectSearchService:
     @staticmethod
     def create_search_query():
-        query = db.session.query(
-            Project.id.label("id"),
-            Project.mapper_level,
-            Project.priority,
-            Project.default_locale,
-            Project.centroid.ST_AsGeoJSON().label("centroid"),
-            Project.organisation_id,
-            Project.tasks_bad_imagery,
-            Project.tasks_mapped,
-            Project.tasks_validated,
-            Project.status,
-            Project.total_tasks,
-            Project.last_updated,
-            Project.due_date,
-            Project.country,
-        ).filter(Project.private is not True)
+        query = (
+            db.session.query(
+                Project.id.label("id"),
+                Project.mapper_level,
+                Project.priority,
+                Project.default_locale,
+                Project.centroid.ST_AsGeoJSON().label("centroid"),
+                Project.organisation_id,
+                Project.tasks_bad_imagery,
+                Project.tasks_mapped,
+                Project.tasks_validated,
+                Project.status,
+                Project.total_tasks,
+                Project.last_updated,
+                Project.due_date,
+                Project.country,
+                Organisation.name.label("organisation_name"),
+                Organisation.logo.label("organisation_logo"),
+            )
+            .filter(Project.private is not True)
+            .outerjoin(Organisation, Organisation.id == Project.organisation_id)
+            .group_by(Organisation.id)
+        )
 
         return query
 
@@ -90,7 +97,6 @@ class ProjectSearchService:
         list_dto.priority = ProjectPriority(project.priority).name
         list_dto.mapper_level = MappingLevel(project.mapper_level).name
         list_dto.short_description = project_info_dto.short_description
-        list_dto.organisation_id = project.organisation_id
         list_dto.last_updated = project.last_updated
         list_dto.due_date = project.due_date
         list_dto.percent_mapped = Project.calculate_tasks_percent(
@@ -111,6 +117,8 @@ class ProjectSearchService:
         list_dto.active_mappers = Project.get_active_mappers(project.id)
         list_dto.total_contributors = total_contributors
         list_dto.country = project.country
+        list_dto.organisation_name = project.organisation_name
+        list_dto.organisation_logo = project.organisation_logo
 
         return list_dto
 
@@ -163,46 +171,6 @@ class ProjectSearchService:
         contrib_counts = ProjectSearchService.get_total_contributions(
             paginated_results.items
         )
-        for project in paginated_results.items:
-            # This loop loads the paginated text results
-            # TODO would be nice to get this for an array rather than individually would be more efficient
-            project_info_dto = ProjectInfo.get_dto_for_locale(
-                project.id, search_dto.preferred_locale, project.default_locale
-            )
-            project_campaigns_dto = CampaignService.get_project_campaigns_as_dto(
-                project.id
-            )
-
-            list_dto = ListSearchResultDTO()
-            list_dto.project_id = project.id
-            list_dto.locale = project_info_dto.locale
-            list_dto.name = project_info_dto.name
-            list_dto.priority = ProjectPriority(project.priority).name
-            list_dto.mapper_level = MappingLevel(project.mapper_level).name
-            list_dto.short_description = project_info_dto.short_description
-            list_dto.organisation = project.organisation
-            list_dto.last_updated = project.last_updated
-            list_dto.campaign = project_campaigns_dto.campaigns
-            list_dto.due_date = project.due_date
-            list_dto.percent_mapped = Project.calculate_tasks_percent(
-                "mapped",
-                project.total_tasks,
-                project.tasks_mapped,
-                project.tasks_validated,
-                project.tasks_bad_imagery,
-            )
-            list_dto.percent_validated = Project.calculate_tasks_percent(
-                "validated",
-                project.total_tasks,
-                project.tasks_mapped,
-                project.tasks_validated,
-                project.tasks_bad_imagery,
-            )
-            list_dto.status = ProjectStatus(project.status).name
-            list_dto.active_mappers = Project.get_active_mappers(project.id)
-            list_dto.total_contributors = project.total_contributors
-
-            dto.results.append(list_dto)
 
         zip_items = zip(paginated_results.items, contrib_counts)
 
@@ -240,10 +208,11 @@ class ProjectSearchService:
                 Project.mapper_level == MappingLevel[search_dto.mapper_level].value
             )
 
-        if search_dto.organisation:
-            query = query.join(Organisation, Project.organisation).filter(
-                Organisation.name == search_dto.organisation
-            )
+        if search_dto.organisation_name:
+            query = query.filter(Organisation.name == search_dto.organisation_name)
+
+        if search_dto.organisation_id:
+            query = query.filter(Organisation.id == search_dto.organisation_id)
 
         if search_dto.campaign:
             query = query.join(Campaign, Project.campaign).filter(
