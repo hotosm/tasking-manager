@@ -48,7 +48,12 @@ export const useTagAPI = (initialData, tagType) => {
         const result = await axios(`${API_URL}${tagType}/`);
 
         if (!didCancel) {
-          dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+          if (result && result.headers && result.headers['content-type'].indexOf('json') !== -1) { 
+            dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+          } else {
+            console.error('Invalid return content-type for organisation tags');
+            dispatch({ type: 'FETCH_FAILURE' });
+          }
         }
       } catch (error) {
         /* if cancelled, this setting state of unmounted
