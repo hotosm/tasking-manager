@@ -291,7 +291,7 @@ class ProjectSearchDTO(Model):
                 hashable_mapping_types,
                 hashable_project_statuses,
                 hashable_teams,
-                self.organisation,
+                self.organisation_name,
                 self.campaign,
                 self.page,
                 self.text_search,
