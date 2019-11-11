@@ -16,6 +16,8 @@ import { store } from './store';
 import { getUserDetails } from './store/actions/auth';
 import { ConnectedIntl } from './utils/internationalization';
 import * as serviceWorker from './serviceWorker';
+import { ENABLE_SERVICEWORKER } from './config';
+
 
 WebFont.load({
   google: {
@@ -38,5 +40,10 @@ ReactDOM.render(
 store.dispatch(getUserDetails(store.getState()));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.register();
+// Learn more about service workers: https://bit.ly/CRA-PWA.
+// More complex to use for TM if your frontend and backend are on same server.
+if (ENABLE_SERVICEWORKER === '1' || ENABLE_SERVICEWORKER === 'true' || ENABLE_SERVICEWORKER === true) {
+  serviceWorker.register();
+} else {
+  serviceWorker.unregister();
+}
