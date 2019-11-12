@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from server import create_app, initialise_counters
 from server.services.users.authentication_service import AuthenticationService
 from server.services.users.user_service import UserService
-from server.services.translation_service import TranslationService
 from server.services.stats_service import StatsService
 
 
@@ -58,12 +57,6 @@ def refresh_levels():
     print("Started updating mapper levels...")
     users_updated = UserService.refresh_mapper_level()
     print(f"Updated {users_updated} user mapper levels")
-
-
-@manager.command
-def refresh_translatables():
-    print("Exporting translatable strings")
-    TranslationService.refresh_translatables()
 
 
 @manager.command
