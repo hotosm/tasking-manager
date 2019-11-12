@@ -10,7 +10,7 @@ class UserContribution(Model):
     username = StringType()
     mapped = IntType()
     validated = IntType()
-    picture_url = StringType()
+    picture_url = StringType(serialized_name="pictureUrl")
     name = StringType()
 
 
