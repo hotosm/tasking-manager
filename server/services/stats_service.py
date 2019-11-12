@@ -51,7 +51,9 @@ class StatsService:
         project = ProjectService.get_project_by_id(project_id)
         user = UserService.get_user_by_id(user_id)
 
-        StatsService._update_tasks_stats(project, user, last_state, new_state, action)
+        project, user = StatsService._update_tasks_stats(
+            project, user, last_state, new_state, action
+        )
         UserService.upsert_mapped_projects(user_id, project_id)
         project.last_updated = timestamp()
 
@@ -69,6 +71,9 @@ class StatsService:
 
         # Make sure you are aware that users table has it as incrementing counters,
         # while projects table reflect the actual state, and both increment and decrement happens
+
+        if new_state == last_state:
+            return project, user
 
         # Set counters for new state
         if new_state == TaskStatus.MAPPED:
@@ -101,6 +106,8 @@ class StatsService:
                 user.tasks_validated -= 1
             elif last_state == TaskStatus.INVALIDATED:
                 user.tasks_invalidated -= 1
+
+        return project, user
 
     @staticmethod
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
@@ -357,3 +364,26 @@ class StatsService:
         dto.total_organizations = unique_orgs
 
         return dto
+
+    @staticmethod
+    def update_all_project_stats():
+        projects = db.session.query(Project.id)
+        for project_id in projects.all():
+            StatsService.update_project_stats(project_id)
+
+    @staticmethod
+    def update_project_stats(project_id: int):
+        project = ProjectService.get_project_by_id(project_id)
+        tasks = Task.query.filter(Task.project_id == project_id)
+
+        project.total_tasks = tasks.count()
+        project.tasks_mapped = tasks.filter(
+            Task.task_status == TaskStatus.MAPPED.value
+        ).count()
+        project.tasks_validated = tasks.filter(
+            Task.task_status == TaskStatus.VALIDATED.value
+        ).count()
+        project.tasks_bad_imagery = tasks.filter(
+            Task.task_status == TaskStatus.BADIMAGERY.value
+        ).count()
+        project.save()
