@@ -10,6 +10,8 @@ class UserContribution(Model):
     username = StringType()
     mapped = IntType()
     validated = IntType()
+    picture_url = StringType()
+    name = StringType()
 
 
 class ProjectContributionsDTO(Model):

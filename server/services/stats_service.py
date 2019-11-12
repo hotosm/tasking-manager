@@ -235,7 +235,8 @@ class StatsService:
     @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
         """ Get all user contributions on a project"""
-        contrib_query = """select m.mapped_by, m.username, m.mapped, v.validated_by, v.username, v.validated
+        contrib_query = """select m.mapped_by, m.username, m.mapped, v.validated_by,
+                             v.username, v.validated, v.picture_url, v.name
                              from (select t.mapped_by, u.username, count(t.mapped_by) mapped
                                      from tasks t,
                                           users u
@@ -243,13 +244,14 @@ class StatsService:
                                       and t.project_id = :project_id
                                       and t.mapped_by is not null
                                     group by t.mapped_by, u.username) m FULL OUTER JOIN
-                                  (select t.validated_by, u.username, count(t.validated_by) validated
+                                  (select t.validated_by, u.username, u.picture_url,
+                                   u.name, count(t.validated_by) validated
                                      from tasks t,
                                           users u
                                     where t.validated_by = u.id
                                       and t.project_id = :project_id
                                       and t.validated_by is not null
-                                    group by t.validated_by, u.username) v
+                                    group by t.validated_by, u.username, u.picture_url, u.name) v
                                        ON m.mapped_by = v.validated_by
         """
 
@@ -264,6 +266,8 @@ class StatsService:
             user_contrib.username = row[1] if row[1] else row[4]
             user_contrib.mapped = row[2] if row[2] else 0
             user_contrib.validated = row[5] if row[5] else 0
+            user_contrib.picture_url = row[6] if row[6] else None
+            user_contrib.name = row[7] if row[7] else None
             contrib_dto.user_contributions.append(user_contrib)
         return contrib_dto
 
