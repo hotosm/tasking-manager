@@ -26,6 +26,8 @@ from server.models.postgis.utils import (
     ST_Area,
 )
 
+from server.models.postgis.interests import projects_interests
+
 from server import db
 from flask import current_app
 from geoalchemy2 import shape
@@ -200,6 +202,11 @@ class ProjectSearchService:
             project_status_array = list(
                 filter(lambda x: x != ProjectStatus.DRAFT.value, project_status_array)
             )
+
+        if search_dto.interests:
+            query = query.join(
+                projects_interests, projects_interests.c.project_id == Project.id
+            ).filter(projects_interests.c.interest_id.in_(search_dto.interests))
 
         query = query.filter(Project.status.in_(project_status_array))
 
