@@ -508,6 +508,11 @@ class ProjectsAllAPI(Resource):
               name: projectStatuses
               description: Authenticated PMs can search for archived or draft statuses
               type: string
+            - in: query
+              name: interests
+              type: string
+              description: filter by interest on project
+              default: null
         responses:
             200:
                 description: Projects found
@@ -526,6 +531,15 @@ class ProjectsAllAPI(Resource):
             search_dto.order_by = request.args.get("orderBy", "priority")
             search_dto.country = request.args.get("country")
             search_dto.order_by_type = request.args.get("orderByType", "ASC")
+
+            interests = request.args.get("interests")
+            if interests:
+                try:
+                    search_dto.interests = map(
+                        int, interests.split(",")
+                    )  # Extract list from string
+                except (ValueError, TypeError):
+                    pass
 
             search_dto.page = (
                 int(request.args.get("page")) if request.args.get("page") else 1
