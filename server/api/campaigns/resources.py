@@ -13,7 +13,7 @@ class CampaignsRestAPI(Resource):
         Search active campaign
         ---
         tags:
-            - search campaign
+            - campaigns
         produces:
             - application/json
         parameters:
@@ -98,12 +98,12 @@ class CampaignsAllAPI(Resource):
         Gets all campaigns
         ---
         tags:
-          - tags
+          - campaigns
         produces:
           - application/json
         responses:
             200:
-                description: Campaign tags
+                description: Campaigns
             500:
                 description: Internal Server Error
         """

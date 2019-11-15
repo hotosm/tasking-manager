@@ -297,7 +297,7 @@ class UsersActionsRegisterEmailAPI(Resource):
         Registers users without OSM account.
         ---
         tags:
-          - user
+          - users
         produces:
           - application/json
         parameters:

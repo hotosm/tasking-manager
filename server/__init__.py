@@ -149,10 +149,7 @@ def add_api_endpoints(app):
         ProjectsStatisticsQueriesPopularAPI,
     )
     from server.api.projects.teams import ProjectsTeamsAPI
-    from server.api.projects.campaigns import (
-        ProjectsCampaignsAPI,
-        ProjectsCampaignsActionsRemoveAPI,
-    )
+    from server.api.projects.campaigns import ProjectsCampaignsAPI
     from server.api.projects.actions import (
         ProjectsActionsTransferAPI,
         ProjectsActionsMessageContributorsAPI,
@@ -225,11 +222,7 @@ def add_api_endpoints(app):
 
     # Teams API endpoint
     from server.api.teams.resources import TeamsRestAPI, TeamsAllAPI
-    from server.api.teams.actions import (
-        TeamsActionsJoinAPI,
-        TeamsActionsLeaveAPI,
-        TeamsActionsLeaveMultipleAPI,
-    )
+    from server.api.teams.actions import TeamsActionsJoinAPI, TeamsActionsLeaveAPI
 
     # Notifications API endpoint
     from server.api.notifications.resources import (
@@ -360,11 +353,6 @@ def add_api_endpoints(app):
         "/api/v2/projects/<int:project_id>/campaigns/<int:campaign_id>/",
         endpoint="assign_remove_campaign_to_project",
         methods=["PUT", "DELETE"],
-    )
-    api.add_resource(
-        ProjectsCampaignsActionsRemoveAPI,
-        "/api/v2/projects/<int:project_id>/campaigns/remove/",
-        methods=["POST"],
     )
 
     # Projects actions endoints
@@ -615,12 +603,6 @@ def add_api_endpoints(app):
         TeamsActionsLeaveAPI,
         "/api/v2/teams/<int:team_id>/actions/leave/",
         endpoint="leave_team",
-        methods=["POST"],
-    )
-    api.add_resource(
-        TeamsActionsLeaveMultipleAPI,
-        "/api/v2/teams/<int:team_id>/actions/remove-users/",
-        endpoint="remove_users_from_team",
         methods=["POST"],
     )
 
