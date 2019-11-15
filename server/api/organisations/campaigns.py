@@ -19,10 +19,10 @@ class OrganisationsCampaignsAPI(Resource):
             return str(e), 400
 
         try:
-            new_campaigns = CampaignService.create_campaign_organisation(
+            campaigns = CampaignService.create_campaign_organisation(
                 campaign_project_dto
             )
-            return new_campaigns.to_primitive(), 200
+            return campaigns.to_primitive(), 200
         except Exception as e:
             error_msg = f"Campaign POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -45,10 +45,10 @@ class OrganisationsCampaignsAPI(Resource):
     @token_auth.login_required
     def delete(self, organisation_id, campaign_id):
         """
-        Deletes a Tasking-Manager project
+        Unassigns an organization from an campaign
         ---
         tags:
-            - project admin
+            - campaigns
         produces:
             - application/json
         parameters:
@@ -77,10 +77,8 @@ class OrganisationsCampaignsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            new_campaigns = CampaignService.delete_organisation_campaign(
-                organisation_id, campaign_id
-            )
-            return new_campaigns.to_primitive(), 200
+            CampaignService.delete_organisation_campaign(organisation_id, campaign_id)
+            return {"Success": "Campaign Deleted"}, 200
         except NotFound:
             return {"Error": "Campaign Not Found"}, 404
         except Exception as e:

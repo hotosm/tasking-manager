@@ -87,7 +87,7 @@ class TasksQueriesJsonAPI(Resource):
         Get tasks as JSON
         ---
         tags:
-            - mapping
+            - tasks
         produces:
             - application/json
         parameters:

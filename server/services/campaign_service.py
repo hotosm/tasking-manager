@@ -13,7 +13,6 @@ from server.models.postgis.campaign import (
 )
 from server.models.postgis.project import Project
 from server.models.postgis.organisation import Organisation
-from server.models.postgis.statuses import OrganisationVisibility
 from server.services.organisation_service import OrganisationService
 from server.models.dtos.organisation_dto import OrganisationDTO
 
@@ -56,25 +55,26 @@ class CampaignService:
 
         for org in orgs:
             if user_id != 0:
-                logged_in = OrganisationService.user_is_admin(org.id, user_id)
+                logged_in = OrganisationService.can_user_manage_organisation(
+                    org.id, user_id
+                )
             else:
                 logged_in = False
-            if org.visibility != OrganisationVisibility.SECRET.value or logged_in:
-                org_dto = OrganisationDTO()
-                print(org.name)
-                org_dto.projects = []
 
-                org_dto.organisation_id = org.id
-                org_dto.name = org.name
-                org_dto.logo = org.logo
-                org_dto.url = org.url
-                org_dto.visibility = org.visibility
-                org_dto.is_admin = logged_in
-                projects = OrganisationService.get_projects_by_organisation_id(org.id)
-                for project in projects:
-                    org_dto.projects.append(project.name)
+            organisation_dto = OrganisationDTO()
+            organisation_dto.projects = []
 
-                campaign_dto.organisations.append(org_dto)
+            organisation_dto.organisation_id = org.id
+            organisation_dto.name = org.name
+            organisation_dto.logo = org.logo
+            organisation_dto.url = org.url
+            organisation_dto.visibility = org.visibility
+            organisation_dto.is_manager = logged_in
+            projects = OrganisationService.get_projects_by_organisation_id(org.id)
+            for project in projects:
+                organisation_dto.projects.append(project.name)
+
+            campaign_dto.organisations.append(organisation_dto)
         return campaign_dto
 
     @staticmethod

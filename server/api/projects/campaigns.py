@@ -125,57 +125,7 @@ class ProjectsCampaignsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            new_campaigns = CampaignService.delete_project_campaign(
-                project_id, campaign_id
-            )
-            return new_campaigns.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Campaign Not Found"}, 404
-        except Exception as e:
-            error_msg = f"Project Campaigns GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
-
-
-class ProjectsCampaignsActionsRemoveAPI(Resource):
-    @token_auth.login_required
-    def post(self, project_id):
-        """
-        Unassign campaign(s) for a project
-        ---
-        tags:
-          - campaign
-        produces:
-          - application/json
-        parameters:
-            - name: project_id
-              in: path
-              description: The unique project ID
-              required: true
-              type: integer
-              default: 1
-            - in: body
-              name: body
-              required: true
-              description: List of campaigns to remove
-              schema:
-                  properties:
-                      campaigns:
-                        type: string
-        responses:
-            201:
-                description: Campaign assigned successfully
-            400:
-                description: Client Error - Invalid Request
-            401:
-                description: Unauthorized - Invalid credentials
-            500:
-                description: Internal Server Error
-        """
-        try:
-            campaigns = request.get_json(force=True)["campaigns"]
-            for cam in campaigns:
-                CampaignService.delete_project_campaign(project_id, cam["id"])
+            CampaignService.delete_project_campaign(project_id, campaign_id)
             return {"Success": "Campaigns Deleted"}, 200
         except NotFound:
             return {"Error": "Campaign Not Found"}, 404

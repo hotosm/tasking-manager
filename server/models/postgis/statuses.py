@@ -105,14 +105,6 @@ class Editors(Enum):
     CUSTOM = 4
 
 
-class OrganisationVisibility(Enum):
-    """ Describes the visibility associated with an Organisation """
-
-    PUBLIC = 0
-    PRIVATE = 1
-    SECRET = 2
-
-
 class TeamVisibility(Enum):
     """ Describes the visibility associated with an Team """
 

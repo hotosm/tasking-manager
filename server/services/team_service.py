@@ -168,7 +168,9 @@ class TeamService:
             if UserService.is_user_an_admin(user_id):
                 team_dto.is_general_admin = True
 
-            if OrganisationService.is_user_an_org_admin(team.organisation.id, user_id):
+            if OrganisationService.is_user_an_org_manager(
+                team.organisation.id, user_id
+            ):
                 team_dto.is_org_admin = True
         else:
             team_dto.is_general_admin = False
