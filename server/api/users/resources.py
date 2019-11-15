@@ -287,3 +287,45 @@ class UserRecommendedProjectsAPI(Resource):
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class UserInterestsAPI(Resource):
+    @token_auth.login_required
+    def get(self, username):
+        """
+        Gets user interests
+        ---
+        tags:
+          - interests
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: username
+              in: path
+              description: The users username
+              required: true
+              type: string
+        responses:
+            200:
+                description: User interests
+            404:
+                description: User not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            user = UserService.get_user_by_username(username)
+            interests_dto = UserService.get_interests(user)
+            return interests_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except Exception as e:
+            error_msg = f"UserInterests GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"error": error_msg}, 50

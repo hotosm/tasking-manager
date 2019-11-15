@@ -240,6 +240,7 @@ def add_api_endpoints(app):
         UsersQueriesUsernameFilterAPI,
         UserFavoritesAPI,
         UserRecommendedProjectsAPI,
+        UserInterestsAPI,
     )
     from server.api.users.actions import (
         UsersActionsSetUsersAPI,
@@ -678,6 +679,11 @@ def add_api_endpoints(app):
     api.add_resource(
         UserRecommendedProjectsAPI,
         "/api/v2/users/<string:username>/recommended-projects/",
+    )
+
+    # User Interests endpoint
+    api.add_resource(
+        UserInterestsAPI, "/api/v2/users/<string:username>/queries/interests/"
     )
 
     # Users openstreetmap endpoint
