@@ -17,7 +17,7 @@ from server.models.dtos.user_dto import (
     UserRecommendedProjectsDTO,
     UserRegisterEmailDTO,
 )
-
+from server.models.dtos.interests_dto import InterestsDTO
 from server.models.postgis.message import Message
 from server.models.postgis.task import TaskHistory, TaskAction
 from server.models.postgis.project import Project, ProjectInfo
@@ -568,3 +568,11 @@ class UserService:
         new_user.create()
 
         return new_user
+
+    @staticmethod
+    def get_interests(user: User) -> InterestsDTO:
+        dto = InterestsDTO()
+        dto.interests = []
+        for interest in user.interests:
+            dto.interests.append(interest.as_dto())
+        return dto
