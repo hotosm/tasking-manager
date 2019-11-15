@@ -61,7 +61,7 @@ class ProjectsTeamsAPI(Resource):
         Deletes the specified team project
         ---
         tags:
-          - messaging
+          - teams
         produces:
           - application/json
         parameters:

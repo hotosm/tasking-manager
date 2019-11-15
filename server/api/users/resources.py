@@ -239,7 +239,7 @@ class UserRecommendedProjectsAPI(Resource):
         Gets recommended projects for user
         ---
         tags:
-          - user
+          - users
         produces:
           - application/json
         parameters:

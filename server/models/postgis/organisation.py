@@ -1,16 +1,18 @@
-from sqlalchemy import or_
 from server import db
 
-from server.models.dtos.organisation_dto import OrganisationDTO, NewOrganisationDTO
+from server.models.dtos.organisation_dto import (
+    OrganisationDTO,
+    NewOrganisationDTO,
+    OrganisationManagerDTO,
+)
 from server.models.postgis.user import User
 from server.models.postgis.campaign import Campaign, campaign_organisations
-from server.models.postgis.statuses import OrganisationVisibility
 from server.models.postgis.utils import NotFound
 
 
-# Secondary table defining many-to-many relationship between organisations and admins
-organisation_admins = db.Table(
-    "organisation_admins",
+# Secondary table defining many-to-many relationship between organisations and managers
+organisation_managers = db.Table(
+    "organisation_managers",
     db.metadata,
     db.Column(
         "organisation_id", db.Integer, db.ForeignKey("organisations.id"), nullable=False
@@ -29,12 +31,9 @@ class Organisation(db.Model):
     name = db.Column(db.String(512), nullable=False)
     logo = db.Column(db.String)  # URL of a logo
     url = db.Column(db.String)
-    visibility = db.Column(
-        db.Integer, default=OrganisationVisibility.PUBLIC.value, nullable=False
-    )
 
-    admins = db.relationship(
-        User, secondary=organisation_admins, backref="organisations"
+    managers = db.relationship(
+        User, secondary=organisation_managers, backref="organisations"
     )
     campaign = db.relationship(
         Campaign, secondary=campaign_organisations, backref="organisation"
@@ -53,11 +52,8 @@ class Organisation(db.Model):
         new_org.name = new_organisation_dto.name
         new_org.logo = new_organisation_dto.logo
         new_org.url = new_organisation_dto.url
-        new_org.visibility = OrganisationVisibility[
-            new_organisation_dto.visibility
-        ].value
-        new_org.admins = [
-            User().get_by_id(admin) for admin in new_organisation_dto.admins
+        new_org.managers = [
+            User().get_by_username(manager) for manager in new_organisation_dto.managers
         ]
 
         new_org.create()
@@ -68,15 +64,14 @@ class Organisation(db.Model):
         self.name = organisation_dto.name
         self.logo = organisation_dto.logo
         self.url = organisation_dto.url
-        self.visibility = OrganisationVisibility[organisation_dto.visibility].value
 
-        self.admins = []
+        self.managers = []
         # Need to handle this in the loop so we can take care of NotFound users
-        for admin in organisation_dto.admins:
-            new_admin = User().get_by_username(admin)
-            if new_admin is None:
-                raise NotFound(f"User {admin} Not Found")
-            self.admins.append(new_admin)
+        for manager in organisation_dto.managers:
+            new_manager = User().get_by_username(manager)
+            if new_manager is None:
+                raise NotFound(f"User {manager} Not Found")
+            self.managers.append(new_manager)
 
         db.session.commit()
 
@@ -112,23 +107,26 @@ class Organisation(db.Model):
         return Organisation.query.all()
 
     @staticmethod
-    def get_all_organisations_for_user(user_id: int):
-        """ Gets all organisations; only returns secret orgs if user belongs to it """
+    def get_organisations_managed_by_user(user_id: int):
+        """ Gets organisations a user can manage """
+        print(Organisation.managers)
+        print(User().get_by_id(user_id))
         return Organisation.query.filter(
-            or_(
-                Organisation.visibility != OrganisationVisibility.SECRET.value,
-                # User().get_by_id(user_id) in Organisation.admins,
-            )
+            User().get_by_id(user_id) in Organisation.managers
         )
 
     def as_dto(self):
         """ Returns a dto for an organisation """
-        org_dto = OrganisationDTO()
-        org_dto.organisation_id = self.id
-        org_dto.name = self.name
-        org_dto.logo = self.logo
-        org_dto.url = self.url
-        org_dto.admins = [admin.username for admin in self.admins]
-        org_dto.visibility = OrganisationVisibility(self.visibility).name
+        organisation_dto = OrganisationDTO()
+        organisation_dto.organisation_id = self.id
+        organisation_dto.name = self.name
+        organisation_dto.logo = self.logo
+        organisation_dto.url = self.url
+        organisation_dto.managers = []
+        for manager in self.managers:
+            org_manager_dto = OrganisationManagerDTO()
+            org_manager_dto.username = manager.username
+            org_manager_dto.picture_url = manager.picture_url
+            organisation_dto.managers.append(org_manager_dto)
 
-        return org_dto
+        return organisation_dto

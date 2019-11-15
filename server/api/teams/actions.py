@@ -13,7 +13,7 @@ class TeamsActionsJoinAPI(Resource):
         Request to join a team
         ---
         tags:
-          - team
+          - teams
         produces:
           - application/json
         parameters:
@@ -79,7 +79,7 @@ class TeamsActionsJoinAPI(Resource):
         Take action on a team invite
         ---
         tags:
-          - team
+          - teams
         produces:
           - application/json
         parameters:
@@ -161,7 +161,7 @@ class TeamsActionsLeaveAPI(Resource):
         Deletes the user from team
         ---
         tags:
-          - team
+          - teams
         produces:
           - application/json
         parameters:
@@ -196,62 +196,6 @@ class TeamsActionsLeaveAPI(Resource):
             TeamService.leave_team(team_id, username)
             team_dto = TeamService.get_team_as_dto(team_id, 9507979)
             return team_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "No team member found"}, 404
-        except Exception as e:
-            error_msg = f"TeamMembers DELETE - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
-
-
-class TeamsActionsLeaveMultipleAPI(Resource):
-    @tm.pm_only(False)
-    @token_auth.login_required
-    def post(self, team_id):
-        """
-        Remove multiple users from team
-        ---
-        tags:
-          - team
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: team_id
-              in: path
-              description: The unique team ID
-              required: true
-              type: integer
-              default: 1
-            - in: body
-              name: body
-              required: true
-              description: username
-              schema:
-                properties:
-                    usernames:
-                        type: string
-        responses:
-            200:
-                description: Member deleted
-            403:
-                description: Forbidden
-            404:
-                description: Not found
-            500:
-                description: Internal Server Error
-        """
-        try:
-
-            usernames = request.get_json(force=True)["usernames"]
-            for username in usernames:
-                TeamService.leave_team(team_id, username)
-            return {"Success": True}, 200
         except NotFound:
             return {"Error": "No team member found"}, 404
         except Exception as e:
