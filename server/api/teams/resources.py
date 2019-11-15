@@ -14,7 +14,7 @@ class TeamsRestAPI(Resource):
         Updates a team
         ---
         tags:
-            - team
+            - teams
         produces:
             - application/json
         parameters:
@@ -42,9 +42,6 @@ class TeamsRestAPI(Resource):
                     logo:
                         type: string
                         default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
-                    visibility:
-                        type: string
-                        default: PUBLIC
                     members:
                         type: array
                         items:
@@ -83,7 +80,7 @@ class TeamsRestAPI(Resource):
 
             if not TeamService.user_is_manager(
                 team_id, tm.authenticated_user_id
-            ) and not OrganisationService.user_is_admin(
+            ) and not OrganisationService.can_user_manage_organisation(
                 org.id, tm.authenticated_user_id
             ):
                 return {"Error": "User is not a admin or a manager for the team"}, 401
@@ -108,7 +105,7 @@ class TeamsRestAPI(Resource):
         Retrieves a Team
         ---
         tags:
-            - team
+            - teams
         produces:
             - application/json
         parameters:
@@ -150,7 +147,7 @@ class TeamsRestAPI(Resource):
         Deletes a Team
         ---
         tags:
-            - team
+            - teams
         produces:
             - application/json
         parameters:
@@ -197,7 +194,7 @@ class TeamsAllAPI(Resource):
         Gets all teams
         ---
         tags:
-          - team
+          - teams
         produces:
           - application/json
         responses:
@@ -224,7 +221,7 @@ class TeamsAllAPI(Resource):
         Creates a new team
         ---
         tags:
-            - team
+            - teams
         produces:
             - application/json
         parameters:
@@ -246,15 +243,15 @@ class TeamsAllAPI(Resource):
                     logo:
                         type: string
                         default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
-                    visibility:
-                        type: string
-                        default: PUBLIC
                     organisation:
                         type: string
                         default: HOT
                     description:
                         type: string
                         default: HOT's mapping editors
+                    visibility:
+                        type: string
+                        default: PUBLIC
                     inviteOnly:
                         type: boolean
                         default: false

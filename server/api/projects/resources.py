@@ -588,12 +588,12 @@ class ProjectsQueriesBboxAPI(Resource):
               name: Accept-Language
               description: Language user is requesting
               type: string
-              required: true
               default: en
             - in: query
               name: bbox
               description: comma separated list xmin, ymin, xmax, ymax
               type: string
+              required: true
               default: 34.404,-1.034, 34.717,-0.624
             - in: query
               name: srid
@@ -862,7 +862,7 @@ class ProjectsQueriesNoTasksAPI(Resource):
         Retrieves a Tasking-Manager project
         ---
         tags:
-            - project admin
+            - projects
         produces:
             - application/json
         parameters:
@@ -971,7 +971,7 @@ class ProjectsQueriesFeaturedAPI(Resource):
             - in: header
               name: Authorization
               description: Base64 encoded session token
-              required: true
+              required: false
               type: string
               default: Token sessionTokenHere==
         responses:

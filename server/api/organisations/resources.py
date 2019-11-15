@@ -1,13 +1,16 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
-from server.models.dtos.organisation_dto import OrganisationDTO, NewOrganisationDTO
+from server.models.dtos.organisation_dto import NewOrganisationDTO
+from server.models.postgis.user import User
 from server.services.organisation_service import (
     OrganisationService,
     OrganisationServiceError,
     NotFound,
 )
-from server.services.users.authentication_service import token_auth, tm
+
+from server.services.users.user_service import UserService
+from server.services.users.authentication_service import token_auth, tm, verify_token
 
 
 class OrganisationsRestAPI(Resource):
@@ -17,7 +20,7 @@ class OrganisationsRestAPI(Resource):
         Creates a new organisation
         ---
         tags:
-            - organisation
+            - organisations
         produces:
             - application/json
         parameters:
@@ -42,9 +45,14 @@ class OrganisationsRestAPI(Resource):
                     url:
                         type: string
                         default: https://hotosm.org
-                    visibility:
-                        type: string
-                        default: PUBLIC
+                    managers:
+                        type: array
+                        items:
+                            type: string
+                        default: [
+                            the_node_less_traveled,
+                            the_node_less_traveled_import
+                        ]
         responses:
             201:
                 description: Organisation created successfully
@@ -57,16 +65,20 @@ class OrganisationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        request_user = User().get_by_id(tm.authenticated_user_id)
+        if request_user.role != 1:
+            return {"Error": "Only admin users can create organisations."}, 401
+
         try:
-            org_dto = NewOrganisationDTO(request.get_json())
-            org_dto.admins = [tm.authenticated_user_id]
-            org_dto.validate()
+            organisation_dto = NewOrganisationDTO(request.get_json())
+            organisation_dto.managers.append(request_user.username)
+            organisation_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
 
         try:
-            org_id = OrganisationService.create_organisation(org_dto)
+            org_id = OrganisationService.create_organisation(organisation_dto)
             return {"organisationId": org_id}, 201
         except OrganisationServiceError as e:
             return str(e), 402
@@ -78,10 +90,10 @@ class OrganisationsRestAPI(Resource):
     @token_auth.login_required
     def delete(self, organisation_id):
         """
-        Deletes an Organisation
+        Deletes an organisation
         ---
         tags:
-            - organisation
+            - organisations
         produces:
             - application/json
         parameters:
@@ -109,7 +121,7 @@ class OrganisationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not OrganisationService.user_is_admin(
+        if not OrganisationService.can_user_manage_organisation(
             organisation_id, tm.authenticated_user_id
         ):
             return {"Error": "User is not an admin for the org"}, 401
@@ -127,10 +139,10 @@ class OrganisationsRestAPI(Resource):
 
     def get(self, organisation_id):
         """
-        Retrieves a Organisation
+        Retrieves an organisation
         ---
         tags:
-            - organisation
+            - organisations
         produces:
             - application/json
         parameters:
@@ -140,12 +152,12 @@ class OrganisationsRestAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
-            - name: organisation_name
+            - name: organisation_id
               in: path
               description: The unique organisation ID
               required: true
-              type: string
-              default: HOT
+              type: integer
+              default: 1
         responses:
             200:
                 description: Organisation found
@@ -161,10 +173,10 @@ class OrganisationsRestAPI(Resource):
                 user_id = 0
             else:
                 user_id = tm.authenticated_user_id
-            org_dto = OrganisationService.get_organisation_as_dto(
+            organisation_dto = OrganisationService.get_organisation_by_id_as_dto(
                 organisation_id, user_id
             )
-            return org_dto.to_primitive(), 200
+            return organisation_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Organisation Not Found"}, 404
         except Exception as e:
@@ -178,7 +190,7 @@ class OrganisationsRestAPI(Resource):
         Updates an organisation
         ---
         tags:
-            - organisation
+            - organisations
         produces:
             - application/json
         parameters:
@@ -209,10 +221,7 @@ class OrganisationsRestAPI(Resource):
                     url:
                         type: string
                         default: https://hotosm.org
-                    visibility:
-                        type: string
-                        default: PUBLIC
-                    admins:
+                    managers:
                         type: array
                         items:
                             type: string
@@ -230,20 +239,20 @@ class OrganisationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not OrganisationService.user_is_admin(
+        if not OrganisationService.can_user_manage_organisation(
             organisation_id, tm.authenticated_user_id
         ):
             return {"Error": "User is not an admin for the org"}, 401
         try:
-            org_dto = OrganisationDTO(request.get_json())
-            org_dto.organisation_id = organisation_id
-            org_dto.validate()
+            organisation_dto = NewOrganisationDTO(request.get_json())
+            organisation_dto.organisation_id = organisation_id
+            organisation_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
 
         try:
-            OrganisationService.update_organisation(org_dto)
+            OrganisationService.update_organisation(organisation_dto)
             return {"Status": "Updated"}, 200
         except NotFound as e:
             return {"Error": str(e)}, 404
@@ -256,37 +265,69 @@ class OrganisationsRestAPI(Resource):
 
 
 class OrganisationsAllAPI(Resource):
-    @token_auth.login_required
     def get(self):
         """
-        Gets all organisations for an user
+        List organisations
         ---
         tags:
-          - organisation
+          - organisations
         produces:
           - application/json
         parameters:
             - in: header
               name: Authorization
               description: Base64 encoded session token
-              required: true
               type: string
               default: Token sessionTokenHere==
+            - name: manager_user_id
+              in: query
+              description: Filter projects on managers with this user_id
+              required: false
+              type: integer
         responses:
-            201:
-                description: Organisation list returned successfully
+            200:
+                description: Organisations found
             400:
                 description: Client Error - Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Unauthorized - Not allowed
+            404:
+                description: Organisations not found
             500:
                 description: Internal Server Error
         """
+
+        # Restrict some of the parameters to some permissions
         try:
-            orgs = OrganisationService.get_all_organisations_for_user_as_dto(
-                tm.authenticated_user_id
-            )
-            return orgs.to_primitive(), 200
+            manager_user_id = int(request.args.get("manager_user_id"))
+        except Exception:
+            manager_user_id = None
+
+        if manager_user_id is not None:
+            try:
+                # Verify login
+                verify_token(
+                    request.environ.get("HTTP_AUTHORIZATION").split(None, 1)[1]
+                )
+
+                # Check whether user is admin (can do any query) or user is checking for own projects
+                if (
+                    not UserService.is_user_an_admin(tm.authenticated_user_id)
+                    and tm.authenticated_user_id != manager_user_id
+                ):
+                    raise ValueError
+
+            except Exception:
+                return {"Error": "Unauthorized - Not allowed"}, 403
+
+        # Obtain organisations
+        try:
+            results_dto = OrganisationService.get_organisations_as_dto(manager_user_id)
+            return results_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "No projects found"}, 404
         except Exception as e:
             error_msg = f"Organisations GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

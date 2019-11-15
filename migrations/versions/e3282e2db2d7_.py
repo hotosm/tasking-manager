@@ -7,7 +7,7 @@ Create Date: 2019-06-17 18:34:11.058440
 """
 from alembic import op
 import sqlalchemy as sa
-from server.models.postgis.statuses import TeamVisibility, OrganisationVisibility
+from server.models.postgis.statuses import TeamVisibility
 
 
 # revision identifiers, used by Alembic.
@@ -25,18 +25,13 @@ def upgrade():
         sa.Column("name", sa.String(length=512), nullable=False),
         sa.Column("logo", sa.String(), nullable=True),
         sa.Column("url", sa.String(), nullable=True),
-        sa.Column(
-            "visibility",
-            sa.Integer(),
-            nullable=False,
-            server_default=str(OrganisationVisibility.SECRET.value),
-        ),
+        sa.Column("visibility", sa.Integer(), nullable=False, server_default=0),
         sa.PrimaryKeyConstraint("id")
         # ,
         # sa.UniqueConstraint("name"),
     )
     op.create_table(
-        "organisation_admins",
+        "organisation_managers",
         sa.Column("organisation_id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.BigInteger(), nullable=False),
         sa.ForeignKeyConstraint(["organisation_id"], ["organisations.id"]),
