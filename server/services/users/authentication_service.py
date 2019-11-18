@@ -99,19 +99,18 @@ class AuthenticationService:
     @staticmethod
     def authenticate_email_token(username: str, token: str):
         """ Validate that the email token is valid """
-
         try:
             user = UserService.get_user_by_username(username)
         except NotFound:
-            return AuthenticationService._get_email_validated_url(False)
+            raise AuthServiceError("Unable to authenticate")
 
         is_valid, tokenised_email = AuthenticationService.is_valid_token(token, 86400)
 
         if not is_valid:
-            return AuthenticationService._get_email_validated_url(False)
+            raise AuthServiceError("Unable to authenticate")
 
         if user.email_address != tokenised_email:
-            return AuthenticationService._get_email_validated_url(False)
+            raise AuthServiceError("Unable to authenticate")
 
         # Token is valid so update DB and return
         user.set_email_verified_status(is_verified=True)
