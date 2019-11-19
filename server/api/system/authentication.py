@@ -121,11 +121,11 @@ class SystemAuthenticationEmailAPI(Resource):
         try:
             username = request.args.get("username")
             token = request.args.get("token")
-            redirect_url = AuthenticationService.authenticate_email_token(
-                username, token
-            )
+            AuthenticationService.authenticate_email_token(username, token)
 
-            return redirect(redirect_url)
+            return {"Status": "OK"}, 200
+        except AuthServiceError as e:
+            return {"Error": "Unable to authenticate"}, 403
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
