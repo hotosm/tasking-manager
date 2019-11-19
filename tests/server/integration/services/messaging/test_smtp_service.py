@@ -72,7 +72,7 @@ class TestStatsService(unittest.TestCase):
         parsed_url = urlparse(url)
         query = parse_qs(parsed_url.query)
 
-        self.assertEqual(parsed_url.path, "/api/auth/email")
+        self.assertEqual(parsed_url.path, "/verify-email/")
         self.assertEqual(query["username"], [test_user])
         self.assertTrue(
             query["token"]

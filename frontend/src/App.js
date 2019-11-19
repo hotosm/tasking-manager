@@ -14,6 +14,7 @@ import { Welcome } from './views/welcome';
 import { Settings } from './views/settings';
 import { NotFound } from './views/notFound';
 import { SelectTask } from './views/taskSelection';
+import { EmailVerification } from './views/verifyEmail';
 
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
  *  create special sub-router for Projects page and wrap it only around that */
@@ -36,6 +37,7 @@ function App() {
             <Login path="login" />
             <Welcome path="welcome" />
             <Settings path="settings" />
+            <EmailVerification path="verify-email" />
             <SelectTask path="projects/:id/map" />
             <ProjectDetailPage path="projects/:id" />
             <Redirect from="project/:id" to="projects/:id" noThrow />
