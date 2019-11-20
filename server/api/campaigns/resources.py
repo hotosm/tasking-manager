@@ -55,7 +55,7 @@ class CampaignsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Messages GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @token_auth.login_required
     def put(self, campaign_id):
@@ -75,7 +75,7 @@ class CampaignsRestAPI(Resource):
         except Exception as e:
             error_msg = f"User PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @token_auth.login_required
     def delete(self, campaign_id):
@@ -89,7 +89,7 @@ class CampaignsRestAPI(Resource):
         except Exception as e:
             error_msg = f"User PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class CampaignsAllAPI(Resource):
@@ -113,7 +113,7 @@ class CampaignsAllAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @token_auth.login_required
     def post(self):
@@ -131,4 +131,4 @@ class CampaignsAllAPI(Resource):
         except Exception as e:
             error_msg = f"User POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500

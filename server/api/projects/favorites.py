@@ -51,7 +51,7 @@ class ProjectFavoriteAPI(Resource):
         except Exception as e:
             error_msg = f"Favorite GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @token_auth.login_required
     def post(self, project_id: int):
@@ -97,11 +97,11 @@ class ProjectFavoriteAPI(Resource):
         except NotFound:
             return {"Error": "Project Not Found"}, 404
         except ValueError as e:
-            return {"error": str(e)}, 400
+            return {"Error": str(e)}, 400
         except Exception as e:
             error_msg = f"Favorite PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
         return {"project_id": project_id}, 200
 
@@ -141,10 +141,10 @@ class ProjectFavoriteAPI(Resource):
         except NotFound:
             return {"Error": "Project Not Found"}, 404
         except ValueError as e:
-            return {"error": str(e)}, 400
+            return {"Error": str(e)}, 400
         except Exception as e:
             error_msg = f"Favorite PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
         return {"project_id": project_id}, 200

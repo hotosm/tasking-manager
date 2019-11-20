@@ -64,7 +64,7 @@ class InterestsAllAPI(Resource):
         except Exception as e:
             error_msg = f"Interest POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     def get(self):
         """
@@ -93,7 +93,7 @@ class InterestsAllAPI(Resource):
         except Exception as e:
             error_msg = f"Interest GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class InterestsRestAPI(Resource):
@@ -152,7 +152,7 @@ class InterestsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Interest PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -195,4 +195,4 @@ class InterestsRestAPI(Resource):
         except Exception as e:
             error_msg = f"License DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500

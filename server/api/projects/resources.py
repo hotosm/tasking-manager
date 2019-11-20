@@ -704,7 +704,7 @@ class ProjectsQueriesOwnerAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class ProjectsQueriesTouchedAPI(Resource):
@@ -910,7 +910,7 @@ class ProjectsQueriesNoTasksAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class ProjectsQueriesAoiAPI(Resource):
@@ -1001,4 +1001,4 @@ class ProjectsQueriesFeaturedAPI(Resource):
         except Exception as e:
             error_msg = f"FeaturedProjects GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
