@@ -25,7 +25,6 @@ def upgrade():
         sa.Column("name", sa.String(length=512), nullable=False),
         sa.Column("logo", sa.String(), nullable=True),
         sa.Column("url", sa.String(), nullable=True),
-        sa.Column("visibility", sa.Integer(), nullable=False, server_default=0),
         sa.PrimaryKeyConstraint("id")
         # ,
         # sa.UniqueConstraint("name"),
@@ -162,7 +161,7 @@ def downgrade():
     op.drop_table("campaign_organisations")
     op.drop_table("campaign_projects")
     op.drop_table("campaigns")
-    op.drop_table("organisation_admins")
+    op.drop_table("organisation_managers")
     op.drop_table("organisations")
 
     # ### end Alembic commands ###

@@ -27,7 +27,6 @@ from server.models.dtos.project_dto import (
     PMDashboardDTO,
     ProjectStatsDTO,
     ProjectUserStatsDTO,
-    CustomEditorDTO,
 )
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.organisation import Organisation
@@ -886,7 +885,6 @@ class Project(db.Model):
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset
         base_dto.id_presets = self.id_presets
-        base_dto.campaign_tag = self.campaign_tag
         base_dto.country_tag = self.country
         base_dto.organisation_id = self.organisation_id
         base_dto.license_id = self.license_id
