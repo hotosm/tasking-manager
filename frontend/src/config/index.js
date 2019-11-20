@@ -18,6 +18,7 @@ export const ENABLE_SERVICEWORKER = process.env.REACT_APP_ENABLE_SERVICEWORKER |
 export const ORG_NAME = process.env.REACT_APP_ORG_NAME || '';
 export const ORG_CODE = process.env.REACT_APP_ORG_CODE || '';
 export const ORG_URL = process.env.REACT_APP_ORG_URL || '';
+export const ORG_PRIVACY_POLICY_URL = process.env.REACT_APP_ORG_PRIVACY_POLICY_URL || '';
 export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || 'http://twitter.com';
 export const ORG_FB = process.env.REACT_APP_ORG_FB || 'https://www.facebook.com';
 export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || 'https://www.instagram.com';

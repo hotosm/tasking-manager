@@ -89,7 +89,7 @@ export function TaskFilter({ project, statusFilter, setStatusFn }: Object) {
   const activeClass = 'bg-blue-grey white';
   const inactiveClass = 'bg-white blue-grey';
 
-  if (user.expertMode || user.mappingLevel !== 'BEGINNER') {
+  if (user.isExpert || user.mappingLevel !== 'BEGINNER') {
     return (
       <div className="pt1">
         <Button
@@ -159,7 +159,7 @@ export function TaskList({ project, tasks, activeFilter, selectTask, selected }:
   return (
     <div className="cf">
       <div className="cf">
-        {user.expertMode && (
+        {user.isExpert && (
           <div>
             <div className="w-50-l w-100 dib v-mid pr2 pv1">
               <input

@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { updateUserEmail } from '../../store/actions/auth';
-import {signUpStyle, paragraphStyle, buttonStyle, successStyle, failureStyle} from './signUp';
-import { PROFILE_RELEVANT_FIELDS } from '../user/forms';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
+import { updateUserEmail } from '../../store/actions/auth';
+import { PROFILE_RELEVANT_FIELDS } from '../user/forms';
+import { ORG_PRIVACY_POLICY_URL } from '../../config';
+import { Button } from '../button';
 
 class UpdateEmail extends Component {
   constructor(props) {
     super(props);
-    this.state = {email: '', success: false, details: ''};
+    this.state = { email: '', success: false, details: '' };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -18,41 +21,55 @@ class UpdateEmail extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  onSubmit = (e) => {
+  onSubmit = e => {
     e.preventDefault();
     let userData = this.props.userDetails;
     userData.emailAddress = this.state.email;
     this.props.updateUserEmail(userData, this.props.token, PROFILE_RELEVANT_FIELDS);
-    this.setState({success: true, details: 'Email updated successfully'})
+    this.setState({
+      success: true,
+      details: <FormattedMessage {...messages.emailUpdateSuccess} />,
+    });
     this.props.closeModal();
-  }
+  };
 
   render() {
     return (
-      <div style={signUpStyle}>
-        <h1 style={{paddingBottom: '0.5em'}}>Update user email</h1>
-        <p style={paragraphStyle}>When you contribute to the Tasking Manager,
-          it is important that notifications about the tasks and projects you contributed to are
-          reaching you. Before you begin mapping: Please add your email address.</p>
-        <p>
-          <b>See <a target="_blank" rel="noopener noreferrer" href="https://www.hotosm.org/privacy"> here </a> for more information about
-          how HOT will use and share your data.</b>
+      <div className="tl pa4 bg-white">
+        <h1 className="pb2 ma0 barlow-condensed blue-dark">
+          <FormattedMessage {...messages.emailUpdateTitle} />
+        </h1>
+        <p className="blue-dark lh-copy">
+          <FormattedMessage {...messages.emailUpdateTextPart1} />
+        </p>
+        <p className="blue-dark lh-copy">
+          <FormattedMessage {...messages.emailUpdateTextPart2} />
         </p>
         <form onSubmit={this.onSubmit}>
-          <div>
-            <label style={{color: '#555C6C', fontSize: '12px'}}>Email: </label>
-            <br />
-            <input style={{width: '100%', lineHeight: '1.7'}}
+          <p>
+            <input
+              className="pa2 w-60-l w-100"
               type="email"
               name="email"
               placeholder="Enter your email address"
               onChange={this.onChange}
               value={this.state.email}
             />
-          </div>
-          <br />
-          <button style={buttonStyle} type="submit">Update</button>
-          <p style={this.state.success ? successStyle : failureStyle} >{this.state.details}</p>
+          </p>
+          <Button className="bg-red white" type="submit">
+            <FormattedMessage {...messages.emailUpdateButton} />
+          </Button>
+          <p className="mb0">
+            <a
+              className="link pointer red"
+              target="_blank"
+              rel="noopener noreferrer"
+              href={`http://${ORG_PRIVACY_POLICY_URL}`}
+            >
+              <FormattedMessage {...messages.privacyPolicy} />
+            </a>
+          </p>
+          <p className={this.state.details ? 'dib mb0' : 'dn'}>{this.state.details}</p>
         </form>
       </div>
     );
@@ -61,14 +78,17 @@ class UpdateEmail extends Component {
 
 const mapStateToProps = state => ({
   userDetails: state.auth.get('userDetails'),
-  token: state.auth.get('token')
+  token: state.auth.get('token'),
 });
 
 UpdateEmail.propTypes = {
   updateUserEmail: PropTypes.func.isRequired,
-  closeModal: PropTypes.func.isRequired
+  closeModal: PropTypes.func.isRequired,
 };
 
-UpdateEmail = connect(mapStateToProps, { updateUserEmail })(UpdateEmail)
+UpdateEmail = connect(
+  mapStateToProps,
+  { updateUserEmail },
+)(UpdateEmail);
 
 export { UpdateEmail };

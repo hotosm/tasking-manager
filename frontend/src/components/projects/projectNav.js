@@ -13,29 +13,18 @@ import { ProjectSearchBox } from './projectSearchBox';
 import { TagFilterPickerAutocompleteDownshift } from './tagFilterPicker';
 
 import OrderByPicker from './orderByPicker';
+import { SwitchToggle } from '../switch';
+
 
 const ShowMapToggle = props => {
   const dispatch = useDispatch();
   const isMapShown = useSelector(state => state.preferences['mapShown']);
   return (
-    <div className="fr pv2 dib-ns dn">
-      <div className="flex items-center justify-center bg-grey-dark">
-        <span className="di mr2 nowrap f6 blue-dark dn-m">
-          <FormattedMessage {...messages.showMapToggle} />
-        </span>
-        <div className="relative dib">
-          <input
-            className="absolute z-5 w-100 h-100 o-0 pointer checkbox"
-            type="checkbox"
-            defaultChecked={isMapShown}
-            onChange={e => dispatch({ type: 'TOGGLE_MAP' })}
-          />
-          <div className="relative z-4 dib w3 h2 bg-mid-gray overflow-hidden br4 v-mid bg-animate checkbox-wrapper">
-            <div className="absolute right-auto left-0 w2 h2 br4 bg-white ba b-grey-light shadow-4 t-cb bg-animate checkbox-toggle"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <SwitchToggle
+      onChange={() => dispatch({ type: 'TOGGLE_MAP' })}
+      isChecked={isMapShown}
+      label={<FormattedMessage {...messages.showMapToggle} />}
+    />
   );
 };
 
