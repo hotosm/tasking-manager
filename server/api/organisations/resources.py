@@ -85,7 +85,7 @@ class OrganisationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Organisation PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @token_auth.login_required
     def delete(self, organisation_id):
@@ -135,7 +135,7 @@ class OrganisationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Organisation DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     def get(self, organisation_id):
         """
@@ -182,7 +182,7 @@ class OrganisationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Organisation GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @token_auth.login_required
     def put(self, organisation_id):
@@ -261,7 +261,7 @@ class OrganisationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Organisation POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class OrganisationsAllAPI(Resource):
@@ -331,4 +331,4 @@ class OrganisationsAllAPI(Resource):
         except Exception as e:
             error_msg = f"Organisations GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500

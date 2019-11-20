@@ -70,7 +70,7 @@ class TeamsActionsJoinAPI(Resource):
         except Exception as e:
             error_msg = f"User POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -150,7 +150,7 @@ class TeamsActionsJoinAPI(Resource):
         except Exception as e:
             error_msg = f"User POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class TeamsActionsLeaveAPI(Resource):
@@ -201,4 +201,4 @@ class TeamsActionsLeaveAPI(Resource):
         except Exception as e:
             error_msg = f"TeamMembers DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500

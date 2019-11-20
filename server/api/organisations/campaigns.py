@@ -26,7 +26,7 @@ class OrganisationsCampaignsAPI(Resource):
         except Exception as e:
             error_msg = f"Campaign POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     def get(self, organisation_id):
 
@@ -40,7 +40,7 @@ class OrganisationsCampaignsAPI(Resource):
         except Exception as e:
             error_msg = f"Messages GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @token_auth.login_required
     def delete(self, organisation_id, campaign_id):
@@ -84,4 +84,4 @@ class OrganisationsCampaignsAPI(Resource):
         except Exception as e:
             error_msg = f"Organisation Campaigns GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500

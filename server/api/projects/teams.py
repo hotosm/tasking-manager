@@ -15,7 +15,7 @@ class ProjectsTeamsAPI(Resource):
         except Exception as e:
             error_msg = f"Team GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -27,7 +27,7 @@ class ProjectsTeamsAPI(Resource):
         except Exception as e:
             error_msg = f"Team PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -52,7 +52,7 @@ class ProjectsTeamsAPI(Resource):
         except Exception as e:
             error_msg = f"Team PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -96,4 +96,4 @@ class ProjectsTeamsAPI(Resource):
         except Exception as e:
             error_msg = f"TeamMembers DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500

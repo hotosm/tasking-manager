@@ -402,4 +402,4 @@ class UsersActionsSetInterestsAPI(Resource):
         except Exception as e:
             error_msg = f"User relationship POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500

@@ -124,7 +124,7 @@ class SystemAuthenticationEmailAPI(Resource):
             AuthenticationService.authenticate_email_token(username, token)
 
             return {"Status": "OK"}, 200
-        except AuthServiceError as e:
+        except AuthServiceError:
             return {"Error": "Unable to authenticate"}, 403
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
