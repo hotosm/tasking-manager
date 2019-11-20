@@ -173,11 +173,11 @@ class ProjectsActionsFeatureAPI(Resource):
             return {"Error": "Project Not Found"}, 404
         except ValueError as e:
             error_msg = f"FeaturedProjects POST: {str(e)}"
-            return {"error": error_msg}, 400
+            return {"Error": error_msg}, 400
         except Exception as e:
             error_msg = f"FeaturedProjects GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class ProjectsActionsUnFeatureAPI(Resource):
@@ -223,11 +223,11 @@ class ProjectsActionsUnFeatureAPI(Resource):
             return {"Error": "Project Not Found"}, 404
         except ValueError as e:
             error_msg = f"FeaturedProjects DELETE: {str(e)}"
-            return {"error": error_msg}, 400
+            return {"Error": error_msg}, 400
         except Exception as e:
             error_msg = f"FeaturedProjects DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class ProjectsActionsSetInterestsAPI(Resource):
@@ -285,4 +285,4 @@ class ProjectsActionsSetInterestsAPI(Resource):
         except Exception as e:
             error_msg = f"project relationship POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500

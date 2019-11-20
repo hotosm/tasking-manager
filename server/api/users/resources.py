@@ -229,7 +229,7 @@ class UserFavoritesAPI(Resource):
         except Exception as e:
             error_msg = f"UserFavorites GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class UserRecommendedProjectsAPI(Resource):
@@ -286,7 +286,7 @@ class UserRecommendedProjectsAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class UserInterestsAPI(Resource):
@@ -328,4 +328,4 @@ class UserInterestsAPI(Resource):
         except Exception as e:
             error_msg = f"UserInterests GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 50
+            return {"Error": error_msg}, 500
