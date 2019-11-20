@@ -263,7 +263,7 @@ class UsersActionsVerifyEmailAPI(Resource):
     @token_auth.login_required
     def patch(self):
         """
-        Resends the validation user to the logged in user
+        Resends the verification email token to the logged in user
         ---
         tags:
           - users
@@ -354,7 +354,7 @@ class UsersActionsRegisterEmailAPI(Resource):
 class UsersActionsSetInterestsAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
-    def post(self, user_id):
+    def post(self):
         """
         Creates a relationship between user and interests
         ---
@@ -369,12 +369,6 @@ class UsersActionsSetInterestsAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
-            - name: user_id
-              in: path
-              description: The unique OSM user id
-              required: true
-              type: integer
-              default: 1
             - in: body
               name: body
               required: true
@@ -397,8 +391,6 @@ class UsersActionsSetInterestsAPI(Resource):
         """
         try:
             data = request.get_json()
-            if user_id != tm.authenticated_user_id:
-                raise ValueError("User id and user token mismatch")
             user_interests = InterestService.create_or_update_user_interests(
                 tm.authenticated_user_id, data["interests"]
             )
@@ -406,7 +398,7 @@ class UsersActionsSetInterestsAPI(Resource):
         except ValueError as e:
             return {"Error": str(e)}, 400
         except NotFound:
-            return {"Error": "User not Found"}, 404
+            return {"Error": "Interest not Found"}, 404
         except Exception as e:
             error_msg = f"User relationship POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

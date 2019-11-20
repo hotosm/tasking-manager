@@ -388,7 +388,7 @@ def add_api_endpoints(app):
 
     api.add_resource(
         UsersActionsSetInterestsAPI,
-        "/api/v2/users/<int:user_id>/actions/set-interests/",
+        "/api/v2/users/me/actions/set-interests/",
         endpoint="create_user_interest",
         methods=["POST"],
     )
@@ -653,7 +653,7 @@ def add_api_endpoints(app):
     api.add_resource(UserFavoritesAPI, "/api/v2/users/queries/favorites/")
 
     # Users Actions endpoint
-    api.add_resource(UsersActionsSetUsersAPI, "/api/v2/users/actions/set-user/")
+    api.add_resource(UsersActionsSetUsersAPI, "/api/v2/users/me/actions/set-user/")
 
     api.add_resource(
         UsersActionsSetLevelAPI,
@@ -668,7 +668,7 @@ def add_api_endpoints(app):
         "/api/v2/users/<string:username>/actions/set-expert-mode/<string:is_expert>/",
     )
     api.add_resource(
-        UsersActionsVerifyEmailAPI, "/api/v2/users/myself/actions/verify-email/"
+        UsersActionsVerifyEmailAPI, "/api/v2/users/me/actions/verify-email/"
     )
     api.add_resource(UsersActionsRegisterEmailAPI, "/api/v2/users/actions/register/")
 
