@@ -98,7 +98,7 @@ class TeamsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Team POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     def get(self, team_id):
         """
@@ -137,7 +137,7 @@ class TeamsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Team GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     # TODO: Add delete API then do front end services and ui work
 
@@ -185,7 +185,7 @@ class TeamsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Team DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
 
 class TeamsAllAPI(Resource):
@@ -213,7 +213,7 @@ class TeamsAllAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500
 
     @token_auth.login_required
     def post(self):
@@ -281,4 +281,4 @@ class TeamsAllAPI(Resource):
         except Exception as e:
             error_msg = f"Team PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"Error": error_msg}, 500

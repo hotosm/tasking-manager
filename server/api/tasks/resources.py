@@ -341,7 +341,7 @@ class TasksQueriesAoiAPI(Resource):
             grid = GridService.trim_grid_to_aoi(grid_dto)
             return grid, 200
         except InvalidGeoJson as e:
-            return {"error": f"{str(e)}"}, 400
+            return {"Error": f"{str(e)}"}, 400
         except Exception as e:
             error_msg = f"IntersectingTiles GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
