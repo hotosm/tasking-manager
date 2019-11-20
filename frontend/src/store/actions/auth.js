@@ -26,7 +26,7 @@ export const updateUserEmail = (userDetails, token, relevant_fields) => dispatch
     }, {});
   const payload = JSON.stringify(filtered);
 
-  pushToLocalJSONAPI(`users/actions/set-user/`, payload, token, 'PATCH').then(() => {
+  pushToLocalJSONAPI(`users/me/actions/set-user/`, payload, token, 'PATCH').then(() => {
       dispatch({
         type: types.SET_USER_DETAILS,
         userDetails: userDetails
@@ -90,7 +90,7 @@ export const getUserDetails = state => dispatch => {
 };
 
 export const pushUserDetails = (userDetails, token) => dispatch => {
-  pushToLocalJSONAPI(`users/actions/set-user/`, userDetails, token, 'PATCH').then(data =>
+  pushToLocalJSONAPI(`users/me/actions/set-user/`, userDetails, token, 'PATCH').then(data =>
     dispatch(setUserDetails(safeStorage.getItem('username'), token)),
   );
 };
