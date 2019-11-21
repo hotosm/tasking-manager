@@ -13,6 +13,7 @@ export const INTERMEDIATE_LEVEL_COUNT =
 export const ADVANCED_LEVEL_COUNT = Number(process.env.REACT_APP_TM_MAPPER_LEVEL_ADVANCED) || 500;
 export const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 export const ENABLE_SERVICEWORKER = process.env.REACT_APP_ENABLE_SERVICEWORKER || 0;
+export const MAP_MAX_AREA = process.env.REACT_APP_MAP_MAX_AREA || 5000;
 
 // ORGANISATIONAL INFORMATION
 export const ORG_NAME = process.env.REACT_APP_ORG_NAME || '';

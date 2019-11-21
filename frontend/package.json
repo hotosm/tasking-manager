@@ -5,7 +5,10 @@
   "private": false,
   "dependencies": {
     "@lokibai/react-use-copy-clipboard": "^1.0.4",
+    "@mapbox/mapbox-gl-draw": "^1.1.2",
+    "@mapbox/togeojson": "^0.16.0",
     "@reach/router": "^1.2.1",
+    "@turf/turf": "^5.1.6",
     "axios": "^0.19.0",
     "d3-array": "^2.3.1",
     "dompurify": "^1.0.11",
@@ -17,6 +20,7 @@
     "mapbox-gl": "^1.5.0",
     "marked": "^0.7.0",
     "node-sass": "^4.13.0",
+    "osmtogeojson": "^3.0.0-beta.3",
     "react": "^16.11.0",
     "react-click-outside": "^3.0.1",
     "react-dom": "^16.11.0",
@@ -32,6 +36,7 @@
     "redux-thunk": "^2.3.0",
     "semiotic": "^1.20.3",
     "short-number": "^1.0.7",
+    "shpjs": "^3.4.3",
     "tachyons": "^4.11.1",
     "use-query-params": "^0.3.4",
     "webfontloader": "^1.6.28"

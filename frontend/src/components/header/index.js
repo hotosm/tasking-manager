@@ -78,10 +78,19 @@ class Header extends React.Component {
       ? { className: `${this.linkCombo} bb b--blue-dark bw1 pv2` }
       : { className: this.linkCombo };
   };
-  userLinks = [
-    { label: <FormattedMessage {...messages.settings} />, url: '/settings' },
-    { label: <FormattedMessage {...messages.logout} />, url: '/logout' },
-  ];
+
+  getUserLinks = role => {
+    let userLinks = [
+      { label: <FormattedMessage {...messages.settings} />, url: '/settings' },
+      { label: <FormattedMessage {...messages.logout} />, url: '/logout' },
+    ];
+
+    if (role === 'PROJECT_MANAGER' || role === 'ADMIN') {
+      userLinks.unshift({ label: 'Create new Project', url: '/create' });
+    }
+
+    return userLinks;
+  };
 
   renderMenuItems() {
     let filteredMenuItems;
@@ -212,8 +221,8 @@ class Header extends React.Component {
         onRemove={() => {}}
         onChange={this.onUserMenuSelect}
         value={[]}
-        options={this.userLinks}
         display={<UserDisplay username={this.props.userDetails.username} />}
+        options={this.getUserLinks(this.props.userDetails.role)}
         className="blue-dark bg-white mr1 v-mid dn dib-ns pv2 ph3 bn"
       />
     ) : (
