@@ -29,7 +29,7 @@ class Organisation(db.Model):
 
     # Columns
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(512), nullable=False)
+    name = db.Column(db.String(512), nullable=False, unique=True)
     logo = db.Column(db.String)  # URL of a logo
     url = db.Column(db.String)
 
