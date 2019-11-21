@@ -39,16 +39,10 @@ class OrganisationService:
         if org is None:
             raise NotFound()
 
-        organisation_dto = OrganisationDTO()
+        organisation_dto = org.as_dto()
 
         organisation_dto.projects = []
         organisation_dto.teams = []
-        organisation_dto.managers = []
-
-        organisation_dto.organisation_id = org.id
-        organisation_dto.name = org.name
-        organisation_dto.logo = org.logo
-        organisation_dto.url = org.url
 
         if user_id != 0:
             organisation_dto.is_manager = OrganisationService.can_user_manage_organisation(
