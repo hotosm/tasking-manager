@@ -71,7 +71,8 @@ class OrganisationsRestAPI(Resource):
 
         try:
             organisation_dto = NewOrganisationDTO(request.get_json())
-            organisation_dto.managers.append(request_user.username)
+            if request_user.username not in organisation_dto.managers:
+                organisation_dto.managers.append(request_user.username)
             organisation_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
@@ -81,7 +82,7 @@ class OrganisationsRestAPI(Resource):
             org_id = OrganisationService.create_organisation(organisation_dto)
             return {"organisationId": org_id}, 201
         except OrganisationServiceError as e:
-            return str(e), 402
+            return str(e), 400
         except Exception as e:
             error_msg = f"Organisation PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
