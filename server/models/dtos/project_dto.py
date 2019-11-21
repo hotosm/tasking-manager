@@ -122,6 +122,15 @@ class ProjectInfoDTO(Model):
     )
 
 
+class CustomEditorDTO(Model):
+    """ DTO to define a custom editor """
+
+    name = StringType(required=True)
+    description = StringType()
+    url = StringType(required=True)
+    enabled = BooleanType(default=False)
+
+
 class ProjectDTO(Model):
     """ Describes JSON model for a tasking manager project """
 
@@ -178,6 +187,7 @@ class ProjectDTO(Model):
     due_date = DateTimeType(serialized_name="dueDate")
     imagery = StringType()
     josm_preset = StringType(serialized_name="josmPreset", serialize_when_none=False)
+    id_presets = ListType(StringType, serialized_name="idPresets", default=[])
     mapping_types = ListType(
         StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
     )
@@ -217,6 +227,9 @@ class ProjectDTO(Model):
         required=True,
         serialized_name="validationEditors",
         validators=[is_known_editor],
+    )
+    custom_editor = ModelType(
+        CustomEditorDTO, serialized_name="customEditor", serialize_when_none=False
     )
 
 

@@ -30,6 +30,7 @@ from server.models.dtos.project_dto import (
 )
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.organisation import Organisation
+from server.models.postgis.custom_editors import CustomEditor
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.project_chat import ProjectChat
@@ -149,6 +150,7 @@ class Project(db.Model):
     due_date = db.Column(db.DateTime)
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
+    id_presets = db.Column(ARRAY(db.String))
     last_updated = db.Column(db.DateTime, default=timestamp)
     license_id = db.Column(db.Integer, db.ForeignKey("licenses.id", name="fk_licenses"))
     geometry = db.Column(Geometry("MULTIPOLYGON", srid=4326))
@@ -164,6 +166,7 @@ class Project(db.Model):
         index=True,
     )
     organisation_tag = db.Column(db.String, index=True)
+
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
 
@@ -175,6 +178,7 @@ class Project(db.Model):
             Editors.JOSM.value,
             Editors.POTLATCH_2.value,
             Editors.FIELD_PAPERS.value,
+            Editors.CUSTOM.value,
         ],
         index=True,
         nullable=False,
@@ -186,6 +190,7 @@ class Project(db.Model):
             Editors.JOSM.value,
             Editors.POTLATCH_2.value,
             Editors.FIELD_PAPERS.value,
+            Editors.CUSTOM.value,
         ],
         index=True,
         nullable=False,
@@ -211,6 +216,7 @@ class Project(db.Model):
         cascade="all, delete-orphan",
         single_parent=True,
     )
+    custom_editor = db.relationship(CustomEditor, uselist=False)
     favorited = db.relationship(User, secondary=project_favorites, backref="favorites")
     organisation = db.relationship(Organisation, backref="projects")
     campaign = db.relationship(Campaign, secondary=campaign_projects, backref="project")
@@ -393,6 +399,7 @@ class Project(db.Model):
         self.due_date = project_dto.due_date
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
+        self.id_presets = project_dto.id_presets
         self.last_updated = timestamp()
         self.license_id = project_dto.license_id
 
@@ -470,6 +477,18 @@ class Project(db.Model):
             for priority_area in project_dto.priority_areas:
                 pa = PriorityArea.from_dict(priority_area)
                 self.priority_areas.append(pa)
+
+        if project_dto.custom_editor:
+            if not self.custom_editor:
+                new_editor = CustomEditor.create_from_dto(
+                    self.id, project_dto.custom_editor
+                )
+                self.custom_editor = new_editor
+            else:
+                self.custom_editor.update_editor(project_dto.custom_editor)
+        else:
+            if self.custom_editor:
+                self.custom_editor.delete()
 
         db.session.commit()
 
@@ -865,6 +884,7 @@ class Project(db.Model):
         base_dto.due_date = self.due_date
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset
+        base_dto.id_presets = self.id_presets
         base_dto.country_tag = self.country
         base_dto.organisation_id = self.organisation_id
         base_dto.license_id = self.license_id
@@ -895,6 +915,9 @@ class Project(db.Model):
             self.tasks_bad_imagery,
         )
         base_dto.project_teams = self.get_project_teams()
+
+        if self.custom_editor:
+            base_dto.custom_editor = self.custom_editor.as_dto()
 
         if self.private:
             # If project is private it should have a list of allowed users
