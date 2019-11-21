@@ -18,6 +18,7 @@ organisation_managers = db.Table(
         "organisation_id", db.Integer, db.ForeignKey("organisations.id"), nullable=False
     ),
     db.Column("user_id", db.BigInteger, db.ForeignKey("users.id"), nullable=False),
+    db.UniqueConstraint("organisation_id", "user_id", name="organisation_user_key"),
 )
 
 
@@ -28,7 +29,7 @@ class Organisation(db.Model):
 
     # Columns
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(512), nullable=False)
+    name = db.Column(db.String(512), nullable=False, unique=True)
     logo = db.Column(db.String)  # URL of a logo
     url = db.Column(db.String)
 
@@ -81,8 +82,8 @@ class Organisation(db.Model):
         db.session.commit()
 
     def can_be_deleted(self) -> bool:
-        """ An Organisation can be deleted if it doesn't have any projects """
-        return len(self.projects) == 0
+        """ An Organisation can be deleted if it doesn't have any projects or teams """
+        return len(self.projects) == 0 and len(self.teams) == 0
 
     @staticmethod
     def get(organisation_id: int):
