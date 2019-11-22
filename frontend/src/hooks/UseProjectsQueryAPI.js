@@ -34,7 +34,7 @@ export const useExploreProjectsQueryParams = () => {
 };
 
 /* The API uses slightly different JSON keys than the queryParams,
-   this fn takes an object with queryparam keys and outputs JSON keys 
+   this fn takes an object with queryparam keys and outputs JSON keys
    while maintaining the same values */
 const remapParamsToAPI = param => {
   // {
@@ -48,7 +48,7 @@ const remapParamsToAPI = param => {
   const conversion = {
     difficulty: 'mapperLevel',
     campaign: 'campaignTag',
-    organisation: 'organisationTag',
+    organisation: 'organisationName',
     location: 'country',
     types: 'mappingTypes',
     text: 'textSearch',
