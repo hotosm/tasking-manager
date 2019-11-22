@@ -958,8 +958,25 @@ class Task(db.Model):
         for row in result:
             return row[0]
 
+    def as_dto(
+        self,
+        task_history: List[TaskHistoryDTO] = [],
+        last_updated: datetime.datetime = None,
+    ):
+        """Just converts to a TaskDTO"""
+        task_dto = TaskDTO()
+        task_dto.task_id = self.id
+        task_dto.project_id = self.project_id
+        task_dto.task_status = TaskStatus(self.task_status).name
+        task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
+        task_dto.task_history = task_history
+        if last_updated:
+            task_dto.last_updated = last_updated
+        task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
+        return task_dto
+
     def as_dto_with_instructions(self, preferred_locale: str = "en") -> TaskDTO:
-        """ Get dto with any task instructions """
+        """Get dto with any task instructions"""
         task_history = []
         for action in self.task_history:
             history = TaskHistoryDTO()
@@ -977,13 +994,7 @@ class Task(db.Model):
 
             task_history.append(history)
 
-        task_dto = TaskDTO()
-        task_dto.task_id = self.id
-        task_dto.project_id = self.project_id
-        task_dto.task_status = TaskStatus(self.task_status).name
-        task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
-        task_dto.task_history = task_history
-        task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
+        task_dto = self.as_dto(task_history)
 
         per_task_instructions = self.get_per_task_instructions(preferred_locale)
 

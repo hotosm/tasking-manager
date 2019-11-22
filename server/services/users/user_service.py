@@ -1,7 +1,7 @@
 from cachetools import TTLCache, cached
 from flask import current_app
 import datetime
-from sqlalchemy import text, func, or_, desc
+from sqlalchemy import text, func, or_, desc, and_
 from server import db
 from server.models.dtos.project_dto import ProjectFavoritesDTO
 from server.models.dtos.user_dto import (
@@ -19,9 +19,11 @@ from server.models.dtos.user_dto import (
 )
 from server.models.dtos.interests_dto import InterestsDTO
 from server.models.postgis.message import Message
-from server.models.postgis.task import TaskHistory, TaskAction
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.user import User, UserRole, MappingLevel, UserEmail
+from server.models.postgis.task import TaskHistory, TaskAction, Task
+from server.models.dtos.mapping_dto import TaskDTOs
+from server.models.postgis.statuses import TaskStatus
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
@@ -174,6 +176,61 @@ class UserService:
         requested_user = UserService.get_user_by_id(requested_user)
 
         return requested_user.as_dto(requested_user.username)
+
+    @staticmethod
+    def get_tasks_dto(
+        user_id: int,
+        start_date: datetime.datetime = None,
+        end_date: datetime.datetime = None,
+        status: str = None,
+        project_id: int = None,
+        sort_by: str = None,
+    ) -> TaskDTOs:
+        base_query = (
+            TaskHistory.query.with_entities(
+                TaskHistory.project_id,
+                TaskHistory.task_id,
+                func.max(TaskHistory.action_date),
+            )
+            .filter(TaskHistory.user_id == user_id)
+            .group_by(TaskHistory.task_id, TaskHistory.project_id)
+        )
+
+        if start_date:
+            base_query = base_query.filter(TaskHistory.action_date >= start_date)
+
+        if end_date:
+            base_query = base_query.filter(TaskHistory.action_date <= end_date)
+
+        if sort_by == "action_date":
+            base_query = base_query.order_by(func.max(TaskHistory.action_date))
+        elif sort_by == "-action_date":
+            base_query = base_query.order_by(desc(func.max(TaskHistory.action_date)))
+
+        task_dtos = TaskDTOs()
+        task_id_list = base_query.subquery()
+
+        tasks = Task.query.join(
+            task_id_list,
+            and_(
+                Task.id == task_id_list.c.task_id,
+                Task.project_id == task_id_list.c.project_id,
+            ),
+        )
+        tasks = tasks.add_column("max_1")
+
+        if status:
+            tasks = tasks.filter(Task.task_status == TaskStatus[status.upper()].value)
+
+        if project_id:
+            tasks = tasks.filter_by(project_id=project_id)
+
+        task_list = []
+
+        for task, action_date in tasks.all():
+            task_list.append(task.as_dto(last_updated=action_date))
+        task_dtos.tasks = task_list
+        return task_dtos
 
     @staticmethod
     def get_detailed_stats(username: str):
@@ -532,6 +589,7 @@ class UserService:
         user.save()
         return user
 
+    @staticmethod
     def notify_level_upgrade(user_id: int, username: str, level: str):
         text_template = get_template("level_upgrade_message_en.txt")
 
