@@ -37,6 +37,11 @@ class NewOrganisationDTO(Model):
     url = StringType()
 
 
+class UpdateOrganisationDTO(OrganisationDTO):
+    managers = ListType(StringType())
+    name = StringType()
+
+
 class OrganisationProjectsDTO(Model):
     """ Describes a JSON model to create a project team """
 

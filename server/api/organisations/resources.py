@@ -1,7 +1,10 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
-from server.models.dtos.organisation_dto import NewOrganisationDTO
+from server.models.dtos.organisation_dto import (
+    NewOrganisationDTO,
+    UpdateOrganisationDTO,
+)
 from server.models.postgis.user import User
 from server.services.organisation_service import (
     OrganisationService,
@@ -186,7 +189,7 @@ class OrganisationsRestAPI(Resource):
             return {"Error": error_msg}, 500
 
     @token_auth.login_required
-    def put(self, organisation_id):
+    def patch(self, organisation_id):
         """
         Updates an organisation
         ---
@@ -245,7 +248,7 @@ class OrganisationsRestAPI(Resource):
         ):
             return {"Error": "User is not an admin for the org"}, 401
         try:
-            organisation_dto = NewOrganisationDTO(request.get_json())
+            organisation_dto = UpdateOrganisationDTO(request.get_json())
             organisation_dto.organisation_id = organisation_id
             organisation_dto.validate()
         except DataError as e:
@@ -260,7 +263,7 @@ class OrganisationsRestAPI(Resource):
         except OrganisationServiceError as e:
             return str(e), 402
         except Exception as e:
-            error_msg = f"Organisation POST - unhandled error: {str(e)}"
+            error_msg = f"Organisation PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 

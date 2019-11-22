@@ -62,17 +62,28 @@ class Organisation(db.Model):
 
     def update(self, organisation_dto: OrganisationDTO):
         """ Updates Organisation from DTO """
-        self.name = organisation_dto.name
-        self.logo = organisation_dto.logo
-        self.url = organisation_dto.url
 
-        self.managers = []
-        # Need to handle this in the loop so we can take care of NotFound users
-        for manager in organisation_dto.managers:
-            new_manager = User().get_by_username(manager)
-            if new_manager is None:
-                raise NotFound(f"User {manager} Not Found")
-            self.managers.append(new_manager)
+        for attr, value in organisation_dto.items():
+            if attr == "managers":
+                continue
+
+            try:
+                is_field_nullable = self.__table__.columns[attr].nullable
+                if is_field_nullable and value is not None:
+                    setattr(self, attr, value)
+                elif value is not None:
+                    setattr(self, attr, value)
+            except KeyError:
+                continue
+
+        if organisation_dto.managers:
+            self.managers = []
+            # Need to handle this in the loop so we can take care of NotFound users
+            for manager in organisation_dto.managers:
+                new_manager = User().get_by_username(manager)
+                if new_manager is None:
+                    raise NotFound(f"User {manager} Not Found")
+                self.managers.append(new_manager)
 
         db.session.commit()
 
