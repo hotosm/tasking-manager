@@ -6,6 +6,7 @@ from server.models.dtos.organisation_dto import (
     OrganisationDTO,
     NewOrganisationDTO,
     ListOrganisationsDTO,
+    UpdateOrganisationDTO,
 )
 from server.models.postgis.organisation import Organisation
 from server.models.postgis.project import Project, ProjectInfo
@@ -59,9 +60,6 @@ class OrganisationService:
         for project in projects:
             organisation_dto.projects.append([project.id, project.name])
 
-        for manager in org.managers:
-            organisation_dto.managers.append(manager.username)
-
         return organisation_dto
 
     @staticmethod
@@ -89,7 +87,7 @@ class OrganisationService:
             )
 
     @staticmethod
-    def update_organisation(organisation_dto: NewOrganisationDTO) -> Organisation:
+    def update_organisation(organisation_dto: UpdateOrganisationDTO) -> Organisation:
         """
         Updates an organisation
         :param organisation_dto: DTO with updated info
@@ -189,7 +187,7 @@ class OrganisationService:
     @staticmethod
     def assert_validate_users(organisation_dto: OrganisationDTO):
         """ Validates that the users exist"""
-        if len(organisation_dto.managers) == 0:
+        if organisation_dto.managers and len(organisation_dto.managers) == 0:
             raise OrganisationServiceError("Must have at least one admin")
 
             managers = []
