@@ -9,7 +9,7 @@ from server.services.users.user_service import UserService, NotFound
 class UsersRestAPI(Resource):
     @tm.pm_only(False)
     @token_auth.login_required
-    def get(self, userid):
+    def get(self, user_id):
         """
         Gets user information by id
         ---
@@ -24,9 +24,9 @@ class UsersRestAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
-            - name: userid
+            - name: user_id
               in: path
-              description: The users user id
+              description: The id of the user
               required: true
               type: integer
               default: 1
@@ -39,7 +39,7 @@ class UsersRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_dto = UserService.get_user_dto_by_id(userid)
+            user_dto = UserService.get_user_dto_by_id(user_id)
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404

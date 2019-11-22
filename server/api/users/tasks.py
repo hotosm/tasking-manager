@@ -7,12 +7,12 @@ from server.services.users.user_service import UserService, NotFound
 
 class UsersTasksAPI(Resource):
     @token_auth.login_required
-    def get(self, username):
+    def get(self, user_id):
         """
         Gets tasks users has interacted
         ---
         tags:
-          - user
+          - users
         produces:
           - application/json
         parameters:
@@ -22,6 +22,11 @@ class UsersTasksAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - name: user_id
+              in: path
+              description: The id of the user
+              required: true
+              type: integer
             - in: query
               name: taskStatus
               description: Task Status filter
@@ -61,7 +66,7 @@ class UsersTasksAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user = UserService.get_user_by_username(username)
+            user = UserService.get_user_by_id(user_id)
             status = request.args.get("taskStatus")
             project_id = int(request.args.get("project_id", 0))
             start_date = (

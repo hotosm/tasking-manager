@@ -644,7 +644,7 @@ def add_api_endpoints(app):
 
     # Users REST endpoint
     api.add_resource(UsersAllAPI, "/api/v2/users/")
-    api.add_resource(UsersRestAPI, "/api/v2/users/<int:userid>/")
+    api.add_resource(UsersRestAPI, "/api/v2/users/<int:user_id>/")
     api.add_resource(
         UsersQueriesUsernameFilterAPI, "/api/v2/users/queries/filter/<string:username>/"
     )
@@ -669,7 +669,7 @@ def add_api_endpoints(app):
         "/api/v2/users/<string:username>/actions/set-expert-mode/<string:is_expert>/",
     )
 
-    api.add_resource(UsersTasksAPI, "/api/v2/users/<string:username>/tasks/")
+    api.add_resource(UsersTasksAPI, "/api/v2/users/<int:user_id>/tasks/")
     api.add_resource(
         UsersActionsVerifyEmailAPI, "/api/v2/users/me/actions/verify-email/"
     )

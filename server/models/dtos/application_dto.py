@@ -5,8 +5,8 @@ from schematics import Model
 class ApplicationDTO(Model):
     """ Describes JSON model used for creating grids """
 
-    id = IntType(required=True, serialized_name="keyid")
-    user = IntType(required=True, serialized_name="userid")
+    id = IntType(required=True, serialized_name="keyId")
+    user = IntType(required=True, serialized_name="userId")
     app_key = StringType(required=True, serialized_name="applicationkey")
     created = DateTimeType(required=True, serialized_name="createdDate")
 
