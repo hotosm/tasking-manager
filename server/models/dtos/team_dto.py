@@ -131,3 +131,19 @@ class NewTeamDTO(Model):
     visibility = StringType(
         required=True, validators=[validate_team_visibility], serialize_when_none=False
     )
+
+
+class UpdateTeamDTO(Model):
+    """ Describes a JSON model to update a team """
+
+    creator = LongType()
+    organisation = StringType()
+    organisation_id = IntType()
+    name = StringType()
+    logo = StringType()
+    description = StringType()
+    invite_only = BooleanType(default=False, serialized_name="inviteOnly")
+    visibility = StringType(
+        validators=[validate_team_visibility], serialize_when_none=False
+    )
+    members = ListType(ModelType(TeamMembersDTO), serialize_when_none=False)
