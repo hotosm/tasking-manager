@@ -463,7 +463,6 @@ class ProjectsAllAPI(Resource):
             - in: query
               name: mapperLevel
               type: string
-              default: BEGINNER
             - in: query
               name: orderBy
               type: string
@@ -477,19 +476,15 @@ class ProjectsAllAPI(Resource):
             - in: query
               name: mappingTypes
               type: string
-              default: ROADS,BUILDINGS
             - in: query
               name: organisationName
               type: string
-              default: HOT
             - in: query
               name: organisationId
               type: integer
-              default: 1
             - in: query
               name: campaignTag
               type: string
-              default: malaria
             - in: query
               name: page
               description: Page of results user requested
@@ -499,7 +494,6 @@ class ProjectsAllAPI(Resource):
               name: textSearch
               description: text to search
               type: string
-              default: serbia
             - in: query
               name: country
               description: Project country
