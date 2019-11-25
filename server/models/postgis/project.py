@@ -750,10 +750,12 @@ class Project(db.Model):
             self.restrict_validation_level_intermediate
         )
         summary.private = self.private
-        summary.organisation_tag = self.organisation_tag
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map
         summary.imagery = self.imagery
+        if self.organisation_id:
+            summary.organisation_name = self.organisation.name
+            summary.organisation_logo = self.organisation.logo
 
         # Cast MappingType values to related string array
         mapping_types_array = []
@@ -969,6 +971,10 @@ class Project(db.Model):
         project_dto.project_info = ProjectInfo.get_dto_for_locale(
             self.id, locale, project.default_locale
         )
+
+        if project.organisation_id:
+            project_dto.organisation_name = project.organisation.name
+            project_dto.organisation_logo = project.organisation.logo
 
         return project_dto
 
