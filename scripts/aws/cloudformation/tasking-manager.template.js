@@ -376,6 +376,7 @@ const Resources = {
           Action: [ "sts:AssumeRole" ]
         }]
       },
+      ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole'],
       Policies: [{
         PolicyName: "RDSPolicy",
         PolicyDocument: {
@@ -584,6 +585,51 @@ const Resources = {
         DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.t3.2xlarge', 'db.t2.small'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
+    }
+  },
+  TaskingManagerCodeDeployApplication: {
+    Type: 'AWS::CodeDeploy::Application',
+    Properties: {
+      ApplicationName: 'TaskingManager-', //staging, prod, etc
+      ComputePlatform: 'Server'
+    }
+  },
+  TaskingManagerCodeDeploymentConfig: {
+    Type: 'AWS::CodeDeploy::DeploymentConfig',
+    Properties: {
+      DeploymentConfigName: 'TaskingManager-staging-deploymentconfig',
+      MinimumHealthyHosts: {
+        Type: 'HOST_COUNT',
+        Value: 1
+      }
+    }
+  },
+  TaskingManagerCodeDeploymentGroup: {
+    Type: 'AWS::CodeDeploy::DeploymentGroup',
+    Properties: {
+      ApplicationName: cf.ref('TaskingManagerCodeDeployApplication'),
+      DeploymentConfigName: cf.ref('TaskingManagerCodeDeploymentConfig'),
+      DeploymentGroupName: 'TaskingManager-staging-DeploymentGroup',
+      DeploymentStyle: {
+        DeploymentOption: 'WITH_TRAFFIC_CONTROL',
+        DeploymentType: 'IN_PLACE'
+      },
+      ServiceRoleArn: cf.getAtt('TaskingManagerCodeDeployServiceRole', 'Arn'),
+    }
+  },
+  TaskingManagerCodeDeployServiceRole: {
+    Type: 'AWS::IAM::Role',
+    Properties: {
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [{
+          Effect: "Allow",
+          Principal: {
+             Service: [ "codedeploy.amazonaws.com" ]
+          },
+          Action: [ "sts:AssumeRole" ]
+        }]
+      },
     }
   }
 };
