@@ -420,6 +420,7 @@ class ProjectSummary(Model):
     priority = StringType(serialized_name="projectPriority")
     campaign_tag = StringType(serialized_name="campaignTag")
     organisation_name = StringType(serialized_name="organisationName")
+    organisation_logo = StringType(serialized_name="organisationLogo")
     country_tag = ListType(StringType, serialized_name="countryTag")
     entities_to_map = StringType(serialized_name="entitiesToMap")
     mapping_types = ListType(

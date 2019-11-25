@@ -755,6 +755,7 @@ class Project(db.Model):
         summary.imagery = self.imagery
         if self.organisation_id:
             summary.organisation_name = self.organisation.name
+            summary.organisation_logo = self.organisation.logo
 
         # Cast MappingType values to related string array
         mapping_types_array = []
