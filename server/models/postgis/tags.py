@@ -12,7 +12,7 @@ class Tags(db.Model):
     campaigns = db.Column(db.String, unique=True)
 
     @staticmethod
-    def upsert_organistion_tag(organisation_tag: str) -> str:
+    def upsert_organisation_tag(organisation_tag: str) -> str:
         """ Insert organisation tag if it doesn't exists otherwise return matching tag """
         org_tag = Tags.query.filter_by(organisations=organisation_tag).one_or_none()
 
