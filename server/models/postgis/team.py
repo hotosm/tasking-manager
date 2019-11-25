@@ -79,16 +79,28 @@ class Team(db.Model):
 
     def update(self, team_dto: TeamDTO):
         """ Updates Team from DTO """
-        self.organisation = Organisation().get_organisation_by_name(
-            team_dto.organisation
-        )
-        self.name = team_dto.name
-        self.logo = team_dto.logo
-        self.description = team_dto.description
-        self.invite_only = team_dto.invite_only
-        self.visibility = TeamVisibility[team_dto.visibility].value
+        if team_dto.organisation:
+            self.organisation = Organisation().get_organisation_by_name(
+                team_dto.organisation
+            )
 
-        if team_dto.members != self.get_team_members():
+        for attr, value in team_dto.items():
+            if attr == "visibility" and value is not None:
+                value = TeamVisibility[team_dto.visibility].value
+
+            if attr in ("members", "organisation"):
+                continue
+
+            try:
+                is_field_nullable = self.__table__.columns[attr].nullable
+                if is_field_nullable and value is not None:
+                    setattr(self, attr, value)
+                elif value is not None:
+                    setattr(self, attr, value)
+            except KeyError:
+                continue
+
+        if team_dto.members != self.get_team_members() and team_dto.members:
             for member in self.members:
                 db.session.delete(member)
 

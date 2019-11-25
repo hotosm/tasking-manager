@@ -569,7 +569,7 @@ def add_api_endpoints(app):
     api.add_resource(
         OrganisationsRestAPI,
         "/api/v2/organisations/<int:organisation_id>/",
-        methods=["PUT", "DELETE"],
+        methods=["PUT", "DELETE", "PATCH"],
     )
 
     # Organisations additional resources endpoints
@@ -592,7 +592,9 @@ def add_api_endpoints(app):
         TeamsAllAPI, "/api/v2/teams/", endpoint="create_team", methods=["POST"]
     )
     api.add_resource(
-        TeamsRestAPI, "/api/v2/teams/<int:team_id>/", methods=["GET", "PUT", "DELETE"]
+        TeamsRestAPI,
+        "/api/v2/teams/<int:team_id>/",
+        methods=["GET", "PUT", "DELETE", "PATCH"],
     )
 
     # Teams actions endpoints
