@@ -3,6 +3,16 @@ from schematics.types import StringType, IntType, ListType, ModelType
 from server.models.dtos.organisation_dto import OrganisationDTO
 
 
+class NewCampaignDTO(Model):
+    """ DTO used to define a campaign"""
+
+    name = StringType(serialize_when_none=False)
+    logo = StringType(serialize_when_none=False)
+    url = StringType(serialize_when_none=False)
+    description = StringType(serialize_when_none=False)
+    organisations = ListType(IntType, serialize_when_none=False)
+
+
 class CampaignDTO(Model):
     """ DTO used to define a campaign"""
 

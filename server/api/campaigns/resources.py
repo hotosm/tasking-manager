@@ -1,7 +1,7 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
-from server.models.dtos.campaign_dto import CampaignDTO
+from server.models.dtos.campaign_dto import CampaignDTO, NewCampaignDTO
 from server.services.campaign_service import CampaignService
 from server.models.postgis.utils import NotFound
 from server.services.users.authentication_service import token_auth, tm
@@ -53,7 +53,7 @@ class CampaignsRestAPI(Resource):
         except NotFound:
             return {"Error": "No campaign found"}, 404
         except Exception as e:
-            error_msg = f"Messages GET - unhandled error: {str(e)}"
+            error_msg = f"Campaign GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -73,7 +73,7 @@ class CampaignsRestAPI(Resource):
         except NotFound:
             return {"Error": "Campaign not found"}, 404
         except Exception as e:
-            error_msg = f"User PATCH - unhandled error: {str(e)}"
+            error_msg = f"Campaign PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -82,12 +82,12 @@ class CampaignsRestAPI(Resource):
 
         try:
             campaign = CampaignService.get_campaign(campaign_id)
-            campaign = CampaignService.delete_campaign(campaign_id)
-            return {campaign.id: "Deleted"}, 200
+            CampaignService.delete_campaign(campaign.id)
+            return {"Success": "Campaign deleted"}, 200
         except NotFound:
             return {"Error": "Campaign not found"}, 404
         except Exception as e:
-            error_msg = f"User PATCH - unhandled error: {str(e)}"
+            error_msg = f"Campaign DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -119,7 +119,7 @@ class CampaignsAllAPI(Resource):
     def post(self):
 
         try:
-            campaign_dto = CampaignDTO(request.get_json())
+            campaign_dto = NewCampaignDTO(request.get_json())
             campaign_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
@@ -127,8 +127,8 @@ class CampaignsAllAPI(Resource):
 
         try:
             campaign = CampaignService.create_campaign(campaign_dto)
-            return {campaign.id: "created"}, 200
+            return {"campaignId": campaign.id}, 200
         except Exception as e:
-            error_msg = f"User POST - unhandled error: {str(e)}"
+            error_msg = f"Campaign POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500

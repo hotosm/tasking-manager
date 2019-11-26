@@ -102,6 +102,11 @@ class CampaignService:
     def create_campaign(campaign_dto: CampaignDTO):
         campaign = Campaign.from_dto(campaign_dto)
         campaign.create()
+        if campaign_dto.organisations:
+            for org_id in campaign_dto.organisations:
+                organisation = OrganisationService.get_organisation_by_id(org_id)
+                campaign.organisation.append(organisation)
+            db.session.commit()
         return campaign
 
     @staticmethod
