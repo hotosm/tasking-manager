@@ -678,7 +678,8 @@ class Project(db.Model):
         project_stats.average_validation_time = 0
 
         query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                   WHERE (action='LOCKED_FOR_MAPPING' or action='AUTO_UNLOCKED_FOR_MAPPING') and project_id = :project_id;"""
+                   WHERE (action='LOCKED_FOR_MAPPING' or action='AUTO_UNLOCKED_FOR_MAPPING')
+                   and project_id = :project_id;"""
         total_mapping_time = db.engine.execute(text(query), project_id=self.id)
         for row in total_mapping_time:
             total_mapping_time = row[0]
@@ -691,7 +692,8 @@ class Project(db.Model):
                     project_stats.average_mapping_time = average_mapping_time
 
         query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                   WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION') and project_id = :project_id;"""
+                   WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
+                   and project_id = :project_id;"""
         total_validation_time = db.engine.execute(text(query), project_id=self.id)
         for row in total_validation_time:
             total_validation_time = row[0]
