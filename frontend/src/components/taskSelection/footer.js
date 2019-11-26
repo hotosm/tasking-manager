@@ -6,7 +6,7 @@ import { getEditors } from '../../utils/editorsList';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 import { Imagery } from './imagery';
-import { MappingTypes } from './mappingTypes';
+import { MappingTypes } from '../mappingTypes';
 
 export function ContributeButton({ action }: Object) {
   if (action) {

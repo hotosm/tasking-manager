@@ -9,6 +9,9 @@ class DropdownContent extends React.PureComponent {
     if (this.props.value === obj.label) {
       return true;
     }
+    if (this.props.value === obj.value) {
+      return true;
+    }
     return false;
   };
   handleClick = (data: Object) => {

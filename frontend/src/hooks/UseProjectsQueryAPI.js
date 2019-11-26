@@ -34,21 +34,13 @@ export const useExploreProjectsQueryParams = () => {
 };
 
 /* The API uses slightly different JSON keys than the queryParams,
-   this fn takes an object with queryparam keys and outputs JSON keys 
+   this fn takes an object with queryparam keys and outputs JSON keys
    while maintaining the same values */
 const remapParamsToAPI = param => {
-  // {
-  // campaign: undefined
-  // difficulty: undefined
-  // location: undefined
-  // organisation: undefined
-  // page: undefined
-  // types: Array [ "WATERWAYS" ]
-  // ​}
   const conversion = {
     difficulty: 'mapperLevel',
     campaign: 'campaignTag',
-    organisation: 'organisationTag',
+    organisation: 'organisationName',
     location: 'country',
     types: 'mappingTypes',
     text: 'textSearch',
