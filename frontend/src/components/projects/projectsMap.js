@@ -2,6 +2,10 @@ import React, { useLayoutEffect, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MAPBOX_TOKEN } from '../../config';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import mapMarker from '../../assets/img/mapMarker.png';
+
+let markerIcon = new Image(17, 20);
+markerIcon.src = mapMarker;
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
@@ -80,6 +84,7 @@ export const ProjectsMap = ({
       : ['Open Sans Semibold'];
     /* docs: https://docs.mapbox.com/mapbox-gl-js/example/cluster/ */
     const mapboxLayerDefn = () => {
+      map.addImage('mapMarker', markerIcon, { width: 15, height: 15, data: markerIcon });
       map.addSource('projects', {
         type: 'geojson',
         data: mapResults,
@@ -122,7 +127,7 @@ export const ProjectsMap = ({
         source: 'projects',
         filter: ['!', ['has', 'point_count']],
         layout: {
-          'icon-image': 'marker-15',
+          'icon-image': 'mapMarker',
           'text-field': '#{projectId}',
           'text-font': licensedFonts,
           'text-offset': [0, 0.6],

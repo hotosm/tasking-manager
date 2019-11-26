@@ -156,4 +156,8 @@ export default defineMessages({
     id: 'project.tasks.filter.readyToMap',
     defaultMessage: 'Ready to map',
   },
+  noTasksFound: {
+    id: 'project.tasks.filter.noTasksFound',
+    defaultMessage: 'No tasks were found.',
+  },
 });

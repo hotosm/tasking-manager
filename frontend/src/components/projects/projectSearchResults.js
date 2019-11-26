@@ -1,11 +1,10 @@
 import React from 'react';
-
+import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
-import { nCardPlaceholders } from '../projectcard/nCardPlaceholder';
 
+import { nCardPlaceholders } from '../projectcard/nCardPlaceholder';
 import { ProjectCard } from '../projectcard/projectCard';
-import { FormattedMessage, FormattedNumber } from 'react-intl';
 import messages from './messages';
 
 export const ProjectSearchResults = props => {

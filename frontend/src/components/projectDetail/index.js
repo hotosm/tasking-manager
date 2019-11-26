@@ -13,7 +13,7 @@ import { MappingLevelMessage } from '../mappingLevel';
 
 import { TasksMap } from '../taskSelection/map.js';
 import { HeaderLine } from '../taskSelection';
-import { MappingTypes } from '../taskSelection/mappingTypes';
+import { MappingTypes } from '../mappingTypes';
 import { Imagery } from '../taskSelection/imagery';
 
 import { htmlFromMarkdown } from './htmlFromMarkdown';

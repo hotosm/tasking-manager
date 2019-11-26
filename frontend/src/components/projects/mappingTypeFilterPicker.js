@@ -1,10 +1,12 @@
 import React from 'react';
 
+import { titledIcons } from '../mappingTypes';
+
 export const MappingTypeFilterPicker = props => {
   const pagerStyle = 'link br1 h2 w2 pa1 ma1 ba b--white bw1 dib radiobutton-wrapper';
   const checkboxStyle = 'absolute o-0 z-5 w-100 h-100 pointerinput-reset pointer checkbox';
-  const activeStyle = 'b--red ba bw1';
-  const inactiveStyle = 'pb1';
+  const activeStyle = 'blue-dark';
+  const inactiveStyle = 'pb1 grey-light';
 
   const handleMappingTypeInputChange = event => {
     const target = event.target;
@@ -16,8 +18,8 @@ export const MappingTypeFilterPicker = props => {
   };
 
   return (
-    <div className="tc ma2 base-font">
-      {props.titledIcons.map((EachIcon, key) => {
+    <div className="mv2 base-font">
+      {titledIcons.map((EachIcon, key) => {
         const isActive = props.mappingTypes
           ? props.mappingTypes.find(n => n === EachIcon.value)
           : false;
