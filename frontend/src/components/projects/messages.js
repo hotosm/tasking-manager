@@ -74,26 +74,38 @@ export default defineMessages({
   },
   sortBy: {
     id: 'project.sortby',
-    defaultMessage: 'Sort By',
+    defaultMessage: 'Sort by',
   },
-  sortBy_id: {
-    id: 'project.sortby.id',
-    defaultMessage: 'Project ID',
+  sortByIdDesc: {
+    id: 'project.sortby.id.descending',
+    defaultMessage: 'New projects first',
   },
-  sortBy_priority: {
+  sortByIdAsc: {
+    id: 'project.sortby.id.ascending',
+    defaultMessage: 'Old projects first',
+  },
+  sortByPriority: {
     id: 'project.sortby.priority',
-    defaultMessage: 'Priority',
+    defaultMessage: 'Urgent projects first',
   },
-  sortBy_status: {
-    id: 'project.sortby.status',
-    defaultMessage: 'Project Status',
+  sortByBeginner: {
+    id: 'project.sortby.difficulty.begginer',
+    defaultMessage: 'Beginner projects first',
   },
-  sortBy_last_updated: {
-    id: 'project.sortby.last_updated',
-    defaultMessage: 'Last Updated',
+  sortByAdvanced: {
+    id: 'project.sortby.difficulty.advanced',
+    defaultMessage: 'Advanced projects first',
   },
-  sortBy_due_date: {
-    id: 'project.sortby.due_date',
-    defaultMessage: 'Due Date',
+  sortByMoreActive: {
+    id: 'project.sortby.more_active',
+    defaultMessage: 'More active projects first',
+  },
+  apply: {
+    id: 'project.nav.apply',
+    defaultMessage: 'Apply',
+  },
+  clear: {
+    id: 'project.nav.clear',
+    defaultMessage: 'Clear',
   },
 });

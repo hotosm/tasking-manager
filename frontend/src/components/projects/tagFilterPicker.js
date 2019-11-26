@@ -9,28 +9,30 @@ import Select from 'react-select';
 
 export const TagFilterPickerCheckboxes = props => {
   const state = props.tagOptionsFromAPI;
+  const fieldsetTitle = <FormattedMessage {...messages[props.fieldsetName]} />;
+  const fieldsetTitlePlural = <FormattedMessage {...messages[`${props.fieldsetName}s`]} />;
 
   //fieldsetName
   return (
     <fieldset id={props.fieldsetName} className={props.fieldsetStyle}>
-      <legend className={props.titleStyle}>{props.fieldsetTitle}</legend>
+      <legend className={props.titleStyle}>{fieldsetTitle}</legend>
       {state.isError ? (
         <div className="bg-tan pa4">
           <FormattedMessage
             {...messages.errorLoadingTheXForY}
             values={{
               xWord: <FormattedMessage {...messages.filters} />,
-              yWord: props.fieldsetTitlePlural,
+              yWord: fieldsetTitlePlural,
             }}
           />
         </div>
       ) : null}
       <ReactPlaceholder type="text" rows={3} ready={!state.isLoading}>
         <TagFilterPickerAutocomplete
-          fieldsetTitle={props.fieldsetTitle}
-          defaultSelectedItem={props.fieldsetTitlePlural}
+          fieldsetTitle={fieldsetTitle}
+          defaultSelectedItem={fieldsetTitlePlural}
           fieldsetName={props.fieldsetName}
-          queryParamSelectedItem={props.selectedTag || props.fieldsetTitle}
+          queryParamSelectedItem={props.selectedTag || fieldsetTitle}
           tagOptionsFromAPI={props.tagOptionsFromAPI}
           setQuery={props.setQueryForChild}
           allQueryParams={props.allQueryParamsForChild}
@@ -55,14 +57,19 @@ export const TagFilterPickerAutocomplete = ({
   allQueryParams,
   setQuery,
 }) => {
-  const valueLabelGenerator = inputOptions => {
-    return inputOptions.map((n, i) => ({ label: n, value: n }));
-  };
+  const getLabelAndValue = (option) => {
+    if (option.name) {
+      return option.name;
+    } else {
+      return option;
+    }
+  }
 
   const handleTagChange = change => {
-    const isAllTags = change && change.value === defaultSelectedItem;
+    const value = change.name ? change.name : change;
+    const isAllTags = change && (value === defaultSelectedItem);
     /* should we encodeURIComponent the change.value? */
-    const newValue = isAllTags ? undefined : change.value;
+    const newValue = isAllTags ? undefined : value;
     setQuery(
       {
         ...allQueryParams,
@@ -73,29 +80,16 @@ export const TagFilterPickerAutocomplete = ({
     );
   };
 
-  // useLayoutEffect(() => {
-  // setSelectedItem(queryParamSelectedItem)
-  // eslint-disable-next-line
-  // },[queryParamSelectedItem])
   return (
     <Select
       onChange={handleTagChange}
+      getOptionLabel={getLabelAndValue}
+      getOptionValue={getLabelAndValue}
       autoFocus={true}
       placeholder={allQueryParams[fieldsetName] || fieldsetTitle}
-      options={valueLabelGenerator(tagOptions)}
+      options={tagOptions}
     />
   );
-};
-
-const buttonClasses = 'input-reset dim base-font bg-white button-reset';
-const menuStylesSelect = {
-  maxHeight: '200px',
-  overflowY: 'auto',
-  position: 'absolute',
-  margin: 0,
-  borderTop: 0,
-  zIndex: 3,
-  background: 'white',
 };
 
 /*
@@ -146,6 +140,16 @@ export const TagFilterPickerAutocompleteDownshift = ({
     setSelectedItem(queryParamSelectedItem);
     // eslint-disable-next-line
   }, [queryParamSelectedItem]);
+  const buttonClasses = 'input-reset dim base-font bg-white button-reset';
+  const menuStylesSelect = {
+    maxHeight: '200px',
+    overflowY: 'auto',
+    position: 'absolute',
+    margin: 0,
+    borderTop: 0,
+    zIndex: 3,
+    background: 'white',
+  };
 
   return (
     <div className={'dib'}>

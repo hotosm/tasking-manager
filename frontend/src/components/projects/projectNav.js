@@ -1,18 +1,14 @@
 import React from 'react';
-import NavLink from '../header/NavLink';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 
 import messages from './messages';
+import { useExploreProjectsQueryParams, stringify } from '../../hooks/UseProjectsQueryAPI';
 import { MappingLevelMessage } from '../mappingLevel';
 import { Dropdown } from '../dropdown';
-
-import { useExploreProjectsQueryParams, stringify } from '../../hooks/UseProjectsQueryAPI';
 import { ProjectSearchBox } from './projectSearchBox';
-import { TagFilterPickerAutocompleteDownshift } from './tagFilterPicker';
-
-import OrderByPicker from './orderByPicker';
+import { OrderBySelector } from './orderBy';
 import { SwitchToggle } from '../switch';
 
 
@@ -52,17 +48,13 @@ const DifficultyDropdown = props => {
         { label: <MappingLevelMessage level="ADVANCED" className="" />, value: 'ADVANCED' },
       ]}
       display={<FormattedMessage {...messages.mappingDifficulty} />}
-      className={'ba b--grey-light bg-white mr1 f6 v-mid dn dib-ns pv1'}
+      className={'ba b--grey-light bg-white mr1 f6 v-mid dn dib-ns pv2'}
     />
   );
 };
 
 export const ProjectNav = props => {
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
-  const {
-    organisation: queryParamOrganisation,
-    // campaign: queryParamCampaign
-  } = fullProjectsQuery;
   const encodedParams = stringify(fullProjectsQuery)
     ? ['?', stringify(fullProjectsQuery)].join('')
     : '';
@@ -74,7 +66,7 @@ export const ProjectNav = props => {
     fullProjectsQuery.location ||
     fullProjectsQuery.campaign ||
     fullProjectsQuery.types;
-  const notAnyFilter = !stringify(fullProjectsQuery);
+  const filterIsEmpty = !stringify(fullProjectsQuery);
   const moreFiltersCurrentActiveStyle = moreFiltersAnyActive
     ? 'bg-red white'
     : 'bg-white blue-dark';
@@ -93,55 +85,24 @@ export const ProjectNav = props => {
             <div className="mv2 dib">
               <DifficultyDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             </div>
-            <nav className="dn dib-l mh1">
-              {!props.orgAPIState.isError && !props.orgAPIState.isLoading && (
-                <TagFilterPickerAutocompleteDownshift
-                  className={`${linkCombo} w4 truncate`}
-                  tagOptionsFromAPI={props.orgAPIState}
-                  queryParamSelectedItem={
-                    queryParamOrganisation || <FormattedMessage {...messages.organisation} />
-                  }
-                  fieldsetName="organisation"
-                  defaultSelectedItem=<FormattedMessage {...messages.organisations} />
-                  setQuery={setQuery}
-                  allQueryParams={fullProjectsQuery}
-                />
-              )}
-              {/* <TagFilterPickerAutocomplete
-                    className={`${linkCombo} w4 truncate`}
-                    tagOptionsFromAPI={props.campaignAPIState}
-                    queryParamSelectedItem={queryParamCampaign || <FormattedMessage {...messages.campaign} />}
-                    fieldsetName="campaign"
-                    defaultSelectedItem=<FormattedMessage {...messages.campaigns} />
-                    setQuery={setQuery}
-                    allQueryParams={fullProjectsQuery}
-                  /> */}
-            </nav>
-            <NavLink
+            <Link
               to={filterRouteToggled}
               className={`dn mh1 di-l ${linkCombo} ${moreFiltersCurrentActiveStyle}`}
             >
               <FormattedMessage {...messages.moreFilters} />
-            </NavLink>
-            <NavLink
+            </Link>
+            <Link
               to={filterRouteToggled}
               className={`di di-m dn-l mh1 ${linkCombo} ${moreFiltersCurrentActiveStyle}`}
             >
               <FormattedMessage {...messages.filters} />
-            </NavLink>
-
-            <OrderByPicker
-              linkCombo={`${linkCombo} mh1`}
-              moreFiltersCurrentActiveStyle={moreFiltersCurrentActiveStyle}
+            </Link>
+            <OrderBySelector
               setQuery={setQuery}
               allQueryParams={fullProjectsQuery}
             />
-            {!notAnyFilter && (
-              <Link
-                to="./"
-                className={`red link ph3 f6 pv2 mh1 fr
-                `}
-              >
+            {!filterIsEmpty && (
+              <Link to="./" className="red link ph3 f6 pv2 mv2 mh1 fr dn dib-l">
                 <FormattedMessage {...messages.clearFilters} />
               </Link>
             )}
