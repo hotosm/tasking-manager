@@ -83,7 +83,7 @@ export default defineMessages({
     defaultMessage: 'So that we can keep in touch, could you please tell us your email address?',
   },
   signUpRedirect: {
-    id: 'signup.modal.question',
+    id: 'signup.modal.redirect',
     defaultMessage:
       'You will be redirect to the OpenStreetMap website after clicking on the button below.',
   },
@@ -109,7 +109,7 @@ export default defineMessages({
     defaultMessage: 'Before you begin mapping, please add your email address.',
   },
   privacyPolicy: {
-    id: 'emailUpdate.modal.text2',
+    id: 'emailUpdate.modal.privacy_policy',
     defaultMessage: 'Check out our Privacy Policy and how we protect the users personal data.',
   },
 });

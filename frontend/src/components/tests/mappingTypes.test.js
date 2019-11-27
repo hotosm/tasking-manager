@@ -1,7 +1,7 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
-import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, AsteriskIcon } from '../../svgIcons';
+import { RoadIcon, HomeIcon, WavesIcon, TaskIcon, AsteriskIcon } from '../svgIcons';
 import { MappingTypes } from '../mappingTypes';
 
 it('test if MappingTypes with BUILDINGS option returns the correct icon', () => {

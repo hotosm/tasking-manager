@@ -3,7 +3,7 @@ import TestRenderer from 'react-test-renderer';
 import { IntlProvider, FormattedMessage } from 'react-intl';
 
 import { Imagery } from '../imagery';
-import { MappingTypes } from '../mappingTypes';
+import { MappingTypes } from '../../mappingTypes';
 import { TaskSelectionFooter } from '../footer';
 import { Button } from '../../button';
 

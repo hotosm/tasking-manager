@@ -188,8 +188,8 @@ export function TaskList({ project, tasks, activeFilter, selectTask, selected }:
       <ReactPlaceholder
         showLoadingAnimation={true}
         rows={6}
-        delay={10}
-        ready={readyTasks && readyTasks.length}
+        delay={50}
+        ready={tasks && tasks.activity && tasks.activity.length}
       >
         {readyTasks && (
           <PaginatedList
@@ -227,6 +227,11 @@ function PaginatedList({
   return (
     <>
       <div>
+        {(!items || !items.length) &&
+          <div className="tc mt5 mb3">
+            <FormattedMessage { ...messages.noTasksFound } />
+          </div>
+        }
         {items.slice(pageSize * ((page || 1) - 1), pageSize * (page || 1)).map((item, n) => (
           <ItemComponent
             key={n}
