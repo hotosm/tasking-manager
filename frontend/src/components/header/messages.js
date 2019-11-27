@@ -56,6 +56,10 @@ export default defineMessages({
     id: 'header.nav.settings',
     defaultMessage: 'Settings',
   },
+  createProject: {
+    id: 'header.nav.create_project',
+    defaultMessage: 'Create project',
+  },
   logout: {
     id: 'header.nav.logout',
     defaultMessage: 'Logout',
