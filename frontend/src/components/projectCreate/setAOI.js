@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import * as turf from '@turf/turf';
+import { FormattedMessage } from 'react-intl';
+
+import messages from './messages';
 import { paintOptions } from './create';
+import { Button } from '../button';
 
 var tj = require('@mapbox/togeojson');
 var osmtogeojson = require('osmtogeojson');
@@ -8,16 +12,15 @@ var shp = require('shpjs');
 
 export default function SetAOI({ mapObj, metadata, updateMetadata }) {
   const [arbitraryTasks, setArbitrary] = useState(metadata.arbitraryTasks);
+  const [uploadError, setUploadError] = useState(false);
   const layer_name = 'aoi';
 
-  const setDataGeom = event => {
-    const geom = event.features[0].geometry;
-
+  const setDataGeom = geom => {
     const area = turf.area(geom) / 1e6;
     mapObj.map.fitBounds(turf.bbox(geom), { padding: 20 });
     updateMetadata({
       ...metadata,
-      geom: event,
+      geom: geom,
       area: area.toFixed(2),
     });
 
@@ -39,9 +42,18 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
     });
   };
 
+  const verifyAndSetData = event => {
+    try {
+      setDataGeom(event.features[0].geometry);
+      setUploadError(false);
+    } catch (e) {
+      deleteHandler();
+      setUploadError(true);
+    }
+  }
+
   const uploadFile = event => {
     setArbitrary(true);
-
     let files = event.target.files;
     let file = files[0];
     const format = file.name.split('.')[1].toLowerCase();
@@ -53,24 +65,31 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
         case 'json':
           geom = JSON.parse(e.target.result);
           break;
+        case 'geojson':
+          geom = JSON.parse(e.target.result);
+          break;
         case 'kml':
           let kml = new DOMParser().parseFromString(e.target.result, 'text/xml');
           geom = tj.kml(kml);
           break;
         case 'osm':
+          let osm = new DOMParser().parseFromString(e.target.result, 'text/xml');
+          geom = osmtogeojson(osm);
+          break;
+        case 'xml':
           let xml = new DOMParser().parseFromString(e.target.result, 'text/xml');
           geom = osmtogeojson(xml);
           break;
         case 'zip':
           shp(e.target.result).then(function(geom) {
-            setDataGeom(geom);
+            verifyAndSetData(geom);
           });
           break;
         default:
           break;
       }
       if (format !== 'zip') {
-        setDataGeom(geom);
+        verifyAndSetData(geom);
       }
     };
 
@@ -97,38 +116,30 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
     };
 
     mapObj.map.once('draw.create', updateArea);
-
     mapObj.draw.changeMode('draw_polygon');
   };
 
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 ttu barlow-condensed blue-dark">Step 1: Define Area</h3>
+      <h3 className="f3 fw6 mt2 mb3 ttu barlow-condensed blue-dark"><FormattedMessage {...messages.step1} /></h3>
       <div className="pb4">
-        <h3>Option 1:</h3>
-        <p>Draw the Area of Interest on the map</p>
-        <button
-          className="bg-blue-dark white v-mid dn dib-ns br1 f5 bn ph4-l pv2-l mr2"
-          type="button"
+        <h3><FormattedMessage {...messages.option1} />:</h3>
+        <p><FormattedMessage {...messages.drawDescription} /></p>
+        <Button
+          className="bg-blue-dark white"
           onClick={drawHandler}
         >
-          Draw
-        </button>
-        <button
-          className="bg-blue-dark white v-mid dn dib-ns br1 f5 bn ph4-l pv2-l"
-          type="button"
-          onClick={deleteHandler}
-        >
-          Delete
-        </button>
+          <FormattedMessage {...messages.draw} />
+        </Button>
       </div>
 
-      <div>
-        <h3>Option 2:</h3>
-        <p>Import a GeoJSON, KML, OSM or zipped SHP file.</p>
+      <div className="pb4">
+        <h3><FormattedMessage {...messages.option2} />:</h3>
+        <p><FormattedMessage {...messages.importDescription} /></p>
         <div className="pb2">
           <input
             type="checkbox"
+            className="v-mid"
             defaultChecked={metadata.arbitraryTasks}
             onChange={() => {
               if (arbitraryTasks === true) {
@@ -136,16 +147,28 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
               }
             }}
           />
-          &nbsp; Arbitrary tasks
+          <span className="pl2 v-mid"><FormattedMessage {...messages.arbitraryTasks} /></span>
         </div>
-        <label
-          for="file-upload"
-          className="bg-blue-dark white v-mid dn dib-ns br1 f5 bn ph4-l pv2-l"
-        >
-          Import
-        </label>
-        <input onChange={uploadFile} style={{ display: 'none' }} id="file-upload" type="file" />
+        <div className="pt3">
+          <label
+            for="file-upload"
+            className="bg-blue-dark white br1 f5 bn pointer"
+            style={{ padding: '.75rem 1.5rem' }}
+          >
+            <FormattedMessage {...messages.uploadFile} />
+          </label>
+          <input onChange={uploadFile} style={{ display: 'none' }} id="file-upload" type="file" />
+          {uploadError && <p><FormattedMessage {...messages.uploadError} /></p>}
+        </div>
       </div>
+      {metadata.geom && <div className="pt4">
+        <Button
+          className="bg-red white"
+          onClick={deleteHandler}
+        >
+          <FormattedMessage {...messages.deleteArea} />
+        </Button>
+      </div>}
     </>
   );
 }

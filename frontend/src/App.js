@@ -40,7 +40,7 @@ function App() {
             <SelectTask path="projects/:id/map" />
             <ProjectDetailPage path="projects/:id" />
             <Redirect from="project/:id" to="projects/:id" noThrow />
-            <ProjectCreate path="create" />
+            <ProjectCreate path="/manage/projects/new" />
             <NotFound default />
           </Router>
         </QueryParamProvider>

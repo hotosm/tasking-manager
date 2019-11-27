@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import * as turf from '@turf/turf';
+import { FormattedMessage } from 'react-intl';
+
+import messages from './messages';
 import { layerJson } from './setTaskSizes';
+import { Button } from '../button';
 
 const clipProject = (clip, metadata, map, updateMetadata) => {
   const taskGrid = metadata.tempTaskGrid;
@@ -38,33 +42,30 @@ export default function TrimProject({ metadata, mapObj, updateMetadata }) {
 
   const [clipStatus, setClipStatus] = useState(false);
 
-  const buttonStyle = 'mt2 f5 ph4-l pv2-l white bg-blue-dark';
-
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark">Step 4: Trim Project</h3>
+      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark"><FormattedMessage {...messages.step3} /></h3>
       <div>
         <p>
-          Trim the task grid to the area of interest (optional). You can keep task squares complete,
-          or clip them to the AOI.This could take some time.
+          <FormattedMessage {...messages.trimTasksDescriptionLine1} />
         </p>
-
-        <div>
-          <input
-            type="checkbox"
-            defaultChecked={clipStatus}
-            onChange={() => setClipStatus(!clipStatus)}
-          />
-          &nbsp; Clip tasks to Area of Interest
-        </div>
-        <div>
-          <button
-            type="button"
+        <p>
+          <FormattedMessage {...messages.trimTasksDescriptionLine2} />
+        </p>
+        <input
+          type="checkbox"
+          className="v-mid"
+          defaultChecked={clipStatus}
+          onChange={() => setClipStatus(!clipStatus)}
+        />
+        <span className="pl2 v-mid"><FormattedMessage {...messages.trimToAOI} /></span>
+        <div className="pt2">
+          <Button
             onClick={() => clipProject(clipStatus, metadata, mapObj.map, updateMetadata)}
-            className={buttonStyle}
+            className="white bg-blue-dark"
           >
-            Trim
-          </button>
+            <FormattedMessage {...messages.trim} />
+          </Button>
         </div>
       </div>
     </>

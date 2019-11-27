@@ -86,7 +86,7 @@ class Header extends React.Component {
     ];
 
     if (role === 'PROJECT_MANAGER' || role === 'ADMIN') {
-      userLinks.unshift({ label: 'Create new Project', url: '/create' });
+      userLinks.unshift({ label: <FormattedMessage {...messages.createProject} />, url: '/manage/projects/new' });
     }
 
     return userLinks;

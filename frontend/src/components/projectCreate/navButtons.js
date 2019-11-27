@@ -1,4 +1,8 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+
+import messages from './messages';
+import { Button } from '../button';
 
 const validateStep = props => {
   switch (props.index) {
@@ -54,19 +58,17 @@ const clearParamsStep = props => {
 };
 
 const NavButtons = props => {
-  const values = 'mt2 f5 ph4-l pv2-l white bg-blue-dark';
-
   return (
-    <div className="w-30 fl">
+    <div className="pt5">
       {props.index === 1 ? null : (
-        <button onClick={() => clearParamsStep(props)} className={values}>
-          Back to previous
-        </button>
+        <Button onClick={() => clearParamsStep(props)} className="white bg-red mr3">
+          <FormattedMessage {...messages.backToPrevious} />
+        </Button>
       )}
       {props.index === 4 ? null : (
-        <button onClick={() => validateStep(props)} className={values}>
-          Next
-        </button>
+        <Button onClick={() => validateStep(props)} className="white bg-blue-dark">
+          <FormattedMessage {...messages.next} />
+        </Button>
       )}
     </div>
   );

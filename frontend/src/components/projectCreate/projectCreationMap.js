@@ -1,6 +1,7 @@
 import React, { useLayoutEffect } from 'react';
-import { fallbackRasterStyle } from '../projects/projectsMap';
 import mapboxgl from 'mapbox-gl';
+
+import { fallbackRasterStyle } from '../projects/projectsMap';
 import { MAPBOX_TOKEN } from '../../config';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -29,6 +30,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => 
   useLayoutEffect(() => {
     if (mapObj.map !== null) {
       mapObj.map.on('load', () => {
+        mapObj.map.addControl(new mapboxgl.NavigationControl());
         mapObj.map.addControl(mapObj.draw);
       });
 
@@ -39,7 +41,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => 
     }
   }, [mapObj, metadata, updateMetadata]);
 
-  return <div id="map" className="w-70 vh-75-l" ref={mapRef}></div>;
+  return <div id="map" className="vh-75-l w-100" ref={mapRef}></div>;
 };
 
 export { ProjectCreationMap };

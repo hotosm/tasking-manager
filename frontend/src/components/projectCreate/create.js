@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
+import { FormattedMessage, FormattedNumber } from 'react-intl';
+
+import messages from './messages';
 import SetAOI from './setAOI';
 import { ProjectCreationMap } from './projectCreationMap';
 import SetTaskSizes from './setTaskSizes';
@@ -11,7 +14,7 @@ import { MAP_MAX_AREA } from '../../config';
 
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
-var MapboxDraw = require('@mapbox/mapbox-gl-draw');
+const MapboxDraw = require('@mapbox/mapbox-gl-draw');
 
 export const paintOptions = {
   'fill-color': '#00004d',
@@ -69,36 +72,42 @@ const ProjectCreate = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#f7f7f7' }} className="cf pv3 ph4">
-      <h2 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">Create project</h2>
-      <div className="fl vh-75-l w-30">{renderCurrentStep()}</div>
-      <ProjectCreationMap
-        metadata={metadata}
-        updateMetadata={updateMetadata}
-        mapObj={mapObj}
-        setMapObj={setMapObj}
-      />
-      <NavButtons
-        index={step}
-        setStep={setStep}
-        metadata={metadata}
-        mapObj={mapObj}
-        updateMetadata={updateMetadata}
-        maxArea={MAP_MAX_AREA}
-      />
-      <>
-        <p
-          style={{
-            backgroundColor: metadata.area > MAP_MAX_AREA || metadata.area === 0 ? '#800000' : 'green',
-          }}
-          className="fl white mr2 pa1 f7-ns"
-        >
-          Area size: {metadata.area} km<sup>2</sup>
-        </p>
-        <p style={{ backgroundColor: '#4d4d00' }} className="fl white mr2 pa1 f7-ns">
-          # Tasks: {metadata.tasksNo}
-        </p>
-      </>
+    <div className="cf bg-tan pb3 pl4">
+      <div className="fl vh-75-l pt3 w-30">
+        <h2 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
+          <FormattedMessage {...messages.createProject} />
+        </h2>
+        {renderCurrentStep()}
+        <NavButtons
+          index={step}
+          setStep={setStep}
+          metadata={metadata}
+          mapObj={mapObj}
+          updateMetadata={updateMetadata}
+          maxArea={MAP_MAX_AREA}
+        />
+      </div>
+      <div className="w-70 fr relative">
+        <ProjectCreationMap
+          metadata={metadata}
+          updateMetadata={updateMetadata}
+          mapObj={mapObj}
+          setMapObj={setMapObj}
+        />
+        <div className="cf left-1 bottom-2 absolute">
+          <p
+            className={`fl mr2 pa1 f7-ns white ${ metadata.area > MAP_MAX_AREA || metadata.area === 0 ? 'bg-red' : 'bg-green'}`}
+          >
+            <FormattedMessage
+              {...messages.areaSize}
+              values={{area: <FormattedNumber value={metadata.area} unit="kilometer" />, sq: <sup>2</sup>}}
+            />
+          </p>
+          <p className="fl bg-blue-light white mr2 pa1 f7-ns">
+            <FormattedMessage {...messages.taskNumber} values={{n: <FormattedNumber value={metadata.tasksNo} />}} />
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

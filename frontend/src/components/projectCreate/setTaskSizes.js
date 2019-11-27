@@ -1,5 +1,9 @@
 import React, { useLayoutEffect, useCallback } from 'react';
 import * as turf from '@turf/turf';
+import { FormattedMessage } from 'react-intl';
+
+import messages from './messages';
+import { Button } from '../button';
 
 // Maximum resolution of OSM
 const MAXRESOLUTION = 156543.0339;
@@ -128,6 +132,12 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   const geom = metadata.geom.features[0];
 
   const splitBbox = () => {
+    mapObj.map.on('mouseenter', 'grid', event => {
+      mapObj.map.getCanvas().style.cursor = 'pointer';
+    });
+    mapObj.map.on('mouseleave', 'grid', event => {
+      mapObj.map.getCanvas().style.cursor = '';
+    });
     mapObj.map.on('click', 'grid', event => {
       // Make the geom smaller to avoid borders.
       const taskGrid = mapObj.map.getSource('grid')._data;
@@ -142,6 +152,12 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   };
 
   const splitPolygon = () => {
+    mapObj.map.on('mouseenter', 'grid', event => {
+      mapObj.map.getCanvas().style.cursor = 'crosshair';
+    });
+    mapObj.map.on('mouseleave', 'grid', event => {
+      mapObj.map.getCanvas().style.cursor = '';
+    });
     mapObj.map.once('draw.create', event => {
       const taskGrid = mapObj.map.getSource('grid')._data;
       if (metadata.tempTaskGrid === null) {
@@ -188,40 +204,40 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
     mapObj.map.addLayer(layerJson(squareGrid));
   }, [metadata, mapObj, smallerSize, largerSize, geom]);
 
-  const buttonStyle = 'mt2 f5 ph4-l pv2-l white bg-blue-dark';
+  const buttonStyle = 'white bg-blue-dark';
 
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark">Step 3: Set tasks sizes</h3>
+      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark"><FormattedMessage {...messages.step2} /></h3>
       <div>
         <div>
-          <p>General task size:</p>
+          <p><FormattedMessage {...messages.taskSizes} /></p>
           <div role="group">
-            <button type="button" onClick={smallerSize} className={buttonStyle}>
-              Smaller
-            </button>
-            <button type="button" onClick={largerSize} className={buttonStyle}>
-              Larger
-            </button>
+            <Button onClick={smallerSize} className={`${buttonStyle} mr2`}>
+              <FormattedMessage {...messages.smaller} />
+            </Button>
+            <Button onClick={largerSize} className={buttonStyle}>
+              <FormattedMessage {...messages.larger} />
+            </Button>
           </div>
         </div>
-        <div>
-          <p>Split a specific area into smaller tasks by drawing an area or point:</p>
+        <div className="pt3">
+          <p><FormattedMessage {...messages.splitTaskDescription} /></p>
           <div role="group">
-            <button type="button" className={buttonStyle} onClick={splitBbox}>
-              Split (Point)
-            </button>
-            <button type="button" className={buttonStyle} onClick={splitPolygon}>
-              Split (Polygon)
-            </button>
-            <button type="button" className={buttonStyle} onClick={resetGrid}>
-              Reset
-            </button>
+            <Button className={`${buttonStyle} mr2`} onClick={splitBbox}>
+              <FormattedMessage {...messages.splitByClicking} />
+            </Button>
+            <Button className={buttonStyle} onClick={splitPolygon}>
+              <FormattedMessage {...messages.splitByDrawing} />
+            </Button>
+            <Button className="bg-red white db mt2" onClick={resetGrid}>
+              <FormattedMessage {...messages.reset} />
+            </Button>
           </div>
         </div>
-        <p>A new project will be created with n tasks.</p>
+        <p><FormattedMessage {...messages.taskNumberMessage} values={{n: metadata.taskNo || 0}} /></p>
         <p>
-          The size of each task is approximately is over 9000 km<sup>2</sup>.
+          <FormattedMessage {...messages.taskAreaMessage} values={{area: metadata.area/metadata.taskNo || 0, sq: <sup>2</sup>}} />
         </p>
       </div>
     </>

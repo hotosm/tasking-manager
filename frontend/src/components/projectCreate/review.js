@@ -1,4 +1,8 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+
+import messages from './messages';
+import { Button } from '../button';
 import { createProject } from '../../store/actions/project';
 import { store } from '../../store';
 import { API_URL } from '../../config';
@@ -33,30 +37,33 @@ export default function Review({ metadata, updateMetadata, token }) {
     event.preventDefault();
     updateMetadata({ ...metadata, projectName: event.target.value });
   };
-  const buttonStyle = 'mt2 f5 ph4-l pv2-l white bg-blue-dark';
 
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark">Step 5: Review</h3>
-      <div>
-        <p>Project has {metadata.tasksNo} task(s)</p>
-
-        <label for="name" className="f6 b db mb2">
-          Name
-        </label>
-        <input
-          onChange={setProjectName}
-          id="name"
-          className="input-reset ba b--black-20 pa2 mb2 db w-50"
-          type="text"
+      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark"><FormattedMessage {...messages.step3} /></h3>
+      <p className="pt2">
+        <FormattedMessage
+          {...messages.reviewTaskNumberMessage}
+          values={{n: metadata.tasksNo}}
         />
-        <button
-          type="button"
+      </p>
+
+      <label for="name" className="f4 b db mb2 pt3">
+        <FormattedMessage {...messages.name} />
+      </label>
+      <input
+        onChange={setProjectName}
+        id="name"
+        className="input-reset ba b--black-20 pa2 mb2 db w-50"
+        type="text"
+      />
+      <div className="mt2">
+        <Button
           onClick={() => handleCreate(metadata, updateMetadata, projectName, token)}
-          className={buttonStyle}
+          className="white bg-blue-dark"
         >
-          Create
-        </button>
+          <FormattedMessage {...messages.create} />
+        </Button>
       </div>
     </>
   );
