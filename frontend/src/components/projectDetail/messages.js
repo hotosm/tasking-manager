@@ -124,7 +124,7 @@ export default defineMessages({
   mapThroughOSMCardDescription: {
     id: 'project.detail.cards.mapthroughosm.description',
     defaultMessage:
-      'If you are new to mapping, we recommend checking the How It Works page before you start mapping.',
+      'If you are new to mapping, we recommend checking the Learn page before you start mapping.',
   },
   submitYourWorkCardDescription: {
     id: 'project.detail.cards.submityourwork.description',
