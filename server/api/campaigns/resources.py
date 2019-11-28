@@ -59,7 +59,60 @@ class CampaignsRestAPI(Resource):
 
     @token_auth.login_required
     def put(self, campaign_id):
-
+        """
+        Updates an existing campaign
+        ---
+        tags:
+          - campaigns
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              required: true
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: campaign_id
+              in: path
+              description: The ID of the campaign
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for updating a Campaign
+              schema:
+                properties:
+                    name:
+                        type: string
+                        default: HOT Campaign
+                    logo:
+                        type: string
+                        default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
+                    url:
+                        type: string
+                        default: https://hotosm.org
+                    organisations:
+                        type: array
+                        items:
+                            type: integer
+                        default: [
+                            1
+                        ]
+        responses:
+            200:
+                description: Campaign updated successfully
+            500:
+                description: Internal Server Error
+        """
         try:
             campaign_dto = CampaignDTO(request.get_json())
             campaign_dto.validate()
@@ -79,7 +132,38 @@ class CampaignsRestAPI(Resource):
 
     @token_auth.login_required
     def delete(self, campaign_id):
-
+        """
+        Deletes an existing campaign
+        ---
+        tags:
+          - campaigns
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              required: true
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: campaign_id
+              in: path
+              description: The ID of the campaign
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Campaign deleted successfully
+            500:
+                description: Internal Server Error
+        """
         try:
             campaign = CampaignService.get_campaign(campaign_id)
             CampaignService.delete_campaign(campaign.id)
