@@ -1,7 +1,7 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
-from server.services.team_service import TeamService, NotFound
+from server.services.team_service import TeamService, NotFound, TeamJoinNotAllowed
 from server.services.users.authentication_service import token_auth, tm
 
 
@@ -35,14 +35,13 @@ class TeamsActionsJoinAPI(Resource):
               description: JSON object for creating draft project
               schema:
                 properties:
-                    user:
+                    username:
                         type: string
                         default: Tasking Manager
                         required: true
-                    type:
+                    role:
                         type: string
-                        default: join
-                        required: true
+                        required: false
         responses:
             200:
                 description: Member added
@@ -54,19 +53,18 @@ class TeamsActionsJoinAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            username = request.get_json(force=True)["user"]
-            request_type = request.get_json(force=True)["type"]
-        except DataError as e:
+            post_data = request.get_json(force=True)
+            username = post_data["username"]
+            role = post_data.get("role", None)
+        except (DataError, KeyError) as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
 
         try:
-            if request_type == "join":
-                TeamService.join_team(team_id, username)
-                return {"Success": "Request Send"}, 200
-            elif request_type == "invite":
-                TeamService.send_invite(team_id, tm.authenticated_user_id, username)
-                return {"Success": "Invite Send"}, 200
+            TeamService.join_team(team_id, tm.authenticated_user_id, username, role)
+            return {"Success": "User joined to team"}, 200
+        except TeamJoinNotAllowed as e:
+            return {"Error": str(e)}, 403
         except Exception as e:
             error_msg = f"User POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -194,7 +192,7 @@ class TeamsActionsLeaveAPI(Resource):
         try:
             username = request.get_json(force=True)["user"]
             TeamService.leave_team(team_id, username)
-            team_dto = TeamService.get_team_as_dto(team_id, 9507979)
+            team_dto = TeamService.get_team_as_dto(team_id, tm.authenticated_user_id)
             return team_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "No team member found"}, 404

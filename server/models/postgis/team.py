@@ -16,6 +16,7 @@ class TeamMembers(db.Model):
         db.BigInteger, db.ForeignKey("users.id", name="fk_users"), primary_key=True
     )
     function = db.Column(db.Integer, nullable=False)  # either 'editor' or 'manager'
+    active = db.Column(db.Boolean, default=False)
 
     member = db.relationship(
         User, backref=db.backref("teams", cascade="all, delete-orphan")
@@ -23,6 +24,11 @@ class TeamMembers(db.Model):
     team = db.relationship(
         "Team", backref=db.backref("members", cascade="all, delete-orphan")
     )
+
+    def create(self):
+        """ Creates and saves the current model to the DB """
+        db.session.add(self)
+        db.session.commit()
 
 
 class Team(db.Model):
