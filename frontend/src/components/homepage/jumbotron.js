@@ -8,7 +8,7 @@ import messages from './messages';
 function JumbotronButtons() {
   return (
     <p>
-      <Link to={'contribute'}>
+      <Link to={'explore'}>
         <Button className="bg-red white mr3">
           <FormattedMessage {...messages.startButton} />
         </Button>
