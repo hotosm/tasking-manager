@@ -117,7 +117,54 @@ class CampaignsAllAPI(Resource):
 
     @token_auth.login_required
     def post(self):
-
+        """
+        Creates a new campaign
+        ---
+        tags:
+          - campaigns
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              required: true
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating a new Campaign
+              schema:
+                properties:
+                    name:
+                        type: string
+                        default: HOT Campaign
+                    logo:
+                        type: string
+                        default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
+                    url:
+                        type: string
+                        default: https://hotosm.org
+                    organisations:
+                        type: array
+                        items:
+                            type: integer
+                        default: [
+                            1
+                        ]
+        responses:
+            200:
+                description: New campaign created successfully
+            500:
+                description: Internal Server Error
+        """
         try:
             campaign_dto = NewCampaignDTO(request.get_json())
             campaign_dto.validate()

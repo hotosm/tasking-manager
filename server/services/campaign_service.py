@@ -2,6 +2,7 @@ from server.models.postgis.utils import NotFound
 from server import db
 from server.models.dtos.campaign_dto import (
     CampaignDTO,
+    NewCampaignDTO,
     CampaignProjectDTO,
     CampaignListDTO,
     CampaignOrganisationDTO,
@@ -99,7 +100,7 @@ class CampaignService:
         return Campaign.get_all_campaigns()
 
     @staticmethod
-    def create_campaign(campaign_dto: CampaignDTO):
+    def create_campaign(campaign_dto: NewCampaignDTO):
         campaign = Campaign.from_dto(campaign_dto)
         campaign.create()
         if campaign_dto.organisations:

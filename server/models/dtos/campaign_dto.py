@@ -4,7 +4,7 @@ from server.models.dtos.organisation_dto import OrganisationDTO
 
 
 class NewCampaignDTO(Model):
-    """ DTO used to define a campaign"""
+    """ Describes JSON model to create a campaign """
 
     name = StringType(serialize_when_none=False)
     logo = StringType(serialize_when_none=False)
@@ -14,7 +14,7 @@ class NewCampaignDTO(Model):
 
 
 class CampaignDTO(Model):
-    """ DTO used to define a campaign"""
+    """ Describes JSON model for an existing campaign """
 
     id = IntType(serialize_when_none=False)
     name = StringType(serialize_when_none=False)
