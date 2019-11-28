@@ -1,4 +1,13 @@
 {
+  "header.nav.projectsLink": "Explorar",
+  "header.nav.learnLink": "Aprender",
+  "header.nav.aboutLink": "Sobre",
+  "header.buttons.languageSelector": "Idioma",
+  "header.buttons.logIn": "Entrar",
+  "header.buttons.signUp": "Cadastrar",
+  "header.topBar.slogan": "Mapping our world together",
+  "header.nav.settings": "Configurações",
+  "header.nav.logout": "Sair",
    "header.nav.projectsLink": "Explorar projetos",
    "header.nav.learnLink": "Como colaborar",
    "header.nav.aboutLink": "Sobre",

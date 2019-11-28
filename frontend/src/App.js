@@ -10,6 +10,7 @@ import { ProjectCreate } from './components/projectCreate/create';
 import { ORG_NAME } from './config';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
+import { LearnPage } from './views/learn';
 import { ManageProjectsPage, ProjectsPage, ProjectsPageIndex, MoreFilters, ProjectDetailPage } from './views/project';
 import { Authorized } from './views/authorized';
 import { Login } from './views/login';
@@ -44,6 +45,7 @@ function App() {
               <ProjectsPageIndex path="/" />
               <MoreFilters path="/filters/*" />
             </ProjectsPage>
+            <LearnPage path="learn" />
             <AboutPage path="about" />
             <Authorized path="authorized" />
             <Login path="login" />
