@@ -29,7 +29,7 @@ function App() {
         <QueryParamProvider reachHistory={globalHistory}>
           <Router>
             <Home path="/" />
-            <ProjectsPage path="contribute">
+            <ProjectsPage path="explore">
               <ProjectsPageIndex path="/" />
               <MoreFilters path="/filters/*" />
             </ProjectsPage>
