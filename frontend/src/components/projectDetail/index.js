@@ -5,7 +5,6 @@ import { useMeta, useTitle } from 'react-meta-elements';
 
 import messages from './messages';
 
-import { getLogoClass } from '../projectcard/projectCard';
 import ProjectProgressBar from '../projectcard/projectProgressBar';
 import DueDateBox from '../projectcard/dueDateBox';
 
@@ -24,14 +23,6 @@ import { BigProjectTeaser } from './bigProjectTeaser';
 
 /* lazy imports must be last import */
 const TaskLineGraphViz = React.lazy(() => import('./taskLineGraphViz'));
-
-function BigProjectOrgLogo(props) {
-  return (
-    <div className={`bg-black pa1 ${props.className}`} style={{ filter: 'invert(1)' }}>
-      <div title={props.organisationTag} className={`contain ${getLogoClass(props)} w5 h2`}></div>
-    </div>
-  );
-}
 
 const ProjectDetailTypeBar = props => {
   const titleClasses = 'db ttu f6 blue-light mb2';
@@ -162,7 +153,7 @@ export const ProjectDetailLeft = props => {
                 <div className="pv2 pr2" dangerouslySetInnerHTML={htmlDescription} />
               </ShowReadMoreButton>
             </div>
-            <BigProjectOrgLogo organisationTag={props.project.organisationTag} />
+            <img className="h4 pa1" src={props.project.organisationLogo} alt=""/>
           </section>
         </ReactPlaceholder>
       </div>

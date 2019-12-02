@@ -60,41 +60,12 @@ export function ProjectTeaser({
   }
 }
 
-function ProjectOrgLogo(organisationTag) {
-  return (
-    <div className="bg-black pa1" style={{ filter: 'invert(1)' }}>
-      <div
-        title={organisationTag.organisationTag}
-        className={`contain ${getLogoClass(organisationTag)} w-auto h2`}
-      ></div>
-    </div>
-  );
-}
-
-export function getLogoClass(organisationTag: String) {
-  const orgs = [
-    { className: 'org-unicef', organisationTag: 'UNICEF' },
-    { className: 'org-usaid', organisationTag: '#YouthMappers' },
-    { className: 'org-gfdrr', organisationTag: 'UNICEF' },
-    { className: 'org-aws', organisationTag: 'AWS' },
-    { className: 'org-redcross', organisationTag: 'Missing Maps' },
-    { className: 'org-redcross', organisationTag: 'American Red Cross' },
-    { className: 'org-msf', organisationTag: 'Médecins Sans Frontières' },
-  ];
-
-  if (organisationTag.organisationTag) {
-    const searchResult = orgs.find(a => a.organisationTag === organisationTag.organisationTag);
-    return searchResult && searchResult.className;
-  } else {
-    return null;
-  }
-}
-
 export function ProjectCard({
   projectId,
   name,
   shortDescription,
-  organisationTag,
+  organisationName,
+  organisationLogo,
   lastUpdated,
   dueDate,
   priority,
@@ -113,7 +84,7 @@ export function ProjectCard({
             <PriorityBox priority={priority} extraClasses={'pv1 ph2'} />
           </div>
           <div className="w-50 red dib">
-            <ProjectOrgLogo organisationTag={organisationTag} />
+            <img className="h2 mw4 pa1" src={organisationLogo} alt={organisationLogo ? organisationName : ''} />
           </div>
           <div className="ma1 w-100">
             <div className="f7 blue-grey">#{projectId}</div>
