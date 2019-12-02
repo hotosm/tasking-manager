@@ -8,7 +8,7 @@ import { CommaArrayParam } from '../utils/CommaArrayParam';
 import { useThrottle } from '../hooks/UseThrottle';
 
 /* See also moreFiltersForm, the useQueryParams are duplicated there for specific modular usage */
-/* This one is e.g. used for updating the URL when returning to /contribute
+/* This one is e.g. used for updating the URL when returning to /explore
  *  and directly submitting the query to the API */
 
 import { useEffect, useReducer } from 'react';

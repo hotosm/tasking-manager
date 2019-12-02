@@ -91,7 +91,7 @@ export const MoreFiltersForm = props => {
         allQueryParamsForChild={formQuery}
       />
       <div className="tr w-100 mt3">
-        <Link to="/contribute">
+        <Link to="/explore">
           <Button className="bg-white blue-dark mr1 f6 pv2">
             <FormattedMessage {...messages.clear} />
           </Button>

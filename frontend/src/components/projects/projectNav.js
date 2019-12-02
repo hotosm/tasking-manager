@@ -72,7 +72,7 @@ export const ProjectNav = props => {
     : 'bg-white blue-dark';
   const filterRouteToggled =
     props.location.pathname.indexOf('filters') > -1
-      ? '/contribute' + encodedParams
+      ? '/explore' + encodedParams
       : './filters/' + encodedParams;
 
   // onSelectedItemChange={(changes) => console.log(changes)}

@@ -74,7 +74,7 @@ export const ProjectsPageIndex = props => {
 export const MoreFilters = props => {
   const [fullProjectsQuery] = useExploreProjectsQueryParams();
 
-  const currentUrl = `/contribute${
+  const currentUrl = `/explore${
     stringify(fullProjectsQuery) ? ['?', stringify(fullProjectsQuery)].join('') : ''
   }`;
   return (
