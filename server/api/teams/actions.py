@@ -3,6 +3,7 @@ from schematics.exceptions import DataError
 
 from server.services.team_service import TeamService, NotFound, TeamJoinNotAllowed
 from server.services.users.authentication_service import token_auth, tm
+from server.models.postgis.user import User
 
 
 class TeamsActionsJoinAPI(Resource):
@@ -169,14 +170,20 @@ class TeamsActionsLeaveAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
+            - name: team_id
+              in: path
+              description: The unique team ID
+              required: true
+              type: integer
+              default: 1
             - in: body
               name: body
               required: true
               description: JSON object for creating draft project
               schema:
                 properties:
-                    user_id:
-                        type: integer
+                    username:
+                        type: string
                         default: 1
                         required: true
         responses:
@@ -190,10 +197,35 @@ class TeamsActionsLeaveAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            username = request.get_json(force=True)["user"]
-            TeamService.leave_team(team_id, username)
-            team_dto = TeamService.get_team_as_dto(team_id, tm.authenticated_user_id)
-            return team_dto.to_primitive(), 200
+            username = request.get_json(force=True)["username"]
+            request_user = User().get_by_id(tm.authenticated_user_id)
+            operation_allowed = False
+            if request_user.role == 1 or request_user.username == username:
+                TeamService.leave_team(team_id, username)
+                operation_allowed = True
+            else:
+                team_dto = TeamService.get_team_as_dto(
+                    team_id, tm.authenticated_user_id
+                )
+                managers = [
+                    member
+                    for member in team_dto.members
+                    if member.function == "MANAGER"
+                ]
+                if request_user.username in [manager.username for manager in managers]:
+                    TeamService.leave_team(team_id, username)
+                    operation_allowed = True
+            if operation_allowed:
+                return {"Success": "User removed from the team"}, 200
+            else:
+                return (
+                    {
+                        "Error": "You don't have permissions to remove {} from this team.".format(
+                            username
+                        )
+                    },
+                    404,
+                )
         except NotFound:
             return {"Error": "No team member found"}, 404
         except Exception as e:

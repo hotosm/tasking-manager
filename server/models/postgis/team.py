@@ -30,6 +30,11 @@ class TeamMembers(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def delete(self):
+        """ Deletes the current model from the DB """
+        db.session.delete(self)
+        db.session.commit()
+
 
 class Team(db.Model):
     """ Describes a team """
@@ -69,7 +74,7 @@ class Team(db.Model):
         new_team.invite_only = new_team_dto.invite_only
         new_team.visibility = TeamVisibility[new_team_dto.visibility].value
 
-        org = Organisation().get_organisation_by_name(new_team_dto.organisation)
+        org = Organisation().get(new_team_dto.organisation_id)
         new_team.organisation = org
 
         # Create team member with creator as a manager
@@ -77,6 +82,7 @@ class Team(db.Model):
         new_member.team = new_team
         new_member.user_id = new_team_dto.creator
         new_member.function = TeamMemberFunctions.MANAGER.value
+        new_member.active = True
 
         new_team.members.append(new_member)
 
@@ -162,7 +168,7 @@ class Team(db.Model):
 
         return team_dto
 
-    def get_team_members(self):
+    def _get_team_members(self):
         """ Helper to get JSON serialized members """
         members = []
         for mem in self.members:
@@ -170,6 +176,7 @@ class Team(db.Model):
                 {
                     "name": mem.member.username,
                     "function": TeamMemberFunctions(mem.function).name,
+                    "pictureURL": mem.member.picture_url,
                 }
             )
 

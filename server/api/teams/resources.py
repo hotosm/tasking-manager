@@ -326,15 +326,10 @@ class TeamsAllAPI(Resource):
                     name:
                         type: string
                         default: HOT - Mappers
-                    logo:
-                        type: string
-                        default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
-                    organisation:
-                        type: string
-                        default: HOT
+                    organisation_id:
+                        type: integer
                     description:
                         type: string
-                        default: HOT's mapping editors
                     visibility:
                         type: string
                         default: PUBLIC

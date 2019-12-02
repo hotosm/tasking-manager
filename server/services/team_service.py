@@ -141,7 +141,9 @@ class TeamService:
     @staticmethod
     def leave_team(team_id, username):
         user = UserService.get_user_by_username(username)
-        team_member = TeamMembers.get_team_member(team_id, user.id)
+        team_member = TeamMembers.query.filter(
+            TeamMembers.team_id == team_id, TeamMembers.user_id == user.id
+        ).one()
         team_member.delete()
 
     @staticmethod
@@ -178,7 +180,9 @@ class TeamService:
                 user = UserService.get_user_by_id(member.user_id)
                 member_dto = TeamMembersDTO()
                 member_dto.username = user.username
-                member_dto.function = member.function
+                member_dto.function = TeamMemberFunctions(member.function).name
+                member_dto.picture_url = user.picture_url
+                member_dto.active = member.active
 
                 team_dto.members.append(member_dto)
 
@@ -221,6 +225,8 @@ class TeamService:
             member_dto = TeamMembersDTO()
             member_dto.username = user.username
             member_dto.function = TeamMemberFunctions(member.function).name
+            member_dto.picture_url = user.picture_url
+            member_dto.active = member.active
 
             team_dto.members.append(member_dto)
 
