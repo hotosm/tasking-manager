@@ -20,7 +20,7 @@ import { createLoginWindow } from '../../utils/login';
 import { supportedLocales } from '../../utils/internationalization';
 
 const menuItems = [
-  { label: messages.exploreProjects, link: 'contribute', showAlways: true },
+  { label: messages.exploreProjects, link: 'explore', showAlways: true },
   { label: messages.howItWorks, link: 'learn', authenticated: false },
   { label: messages.about, link: 'about', authenticated: false },
   { label: messages.help, link: 'help', authenticated: false },
