@@ -1,11 +1,13 @@
 import React from 'react';
 import { Router, Redirect, globalHistory } from '@reach/router';
 import { QueryParamProvider } from 'use-query-params';
+import { useMeta } from 'react-meta-elements'
 
 import './assets/styles/index.scss';
 import { Header } from './components/header';
 import { Footer } from './components/footer';
 import { ProjectCreate } from './components/projectCreate/create';
+import { ORG_NAME } from './config'
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
 import { ProjectsPage, ProjectsPageIndex, MoreFilters, ProjectDetailPage } from './views/project';
@@ -20,6 +22,9 @@ import { EmailVerification } from './views/verifyEmail';
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
  *  create special sub-router for Projects page and wrap it only around that */
 function App() {
+  useMeta({property: "og:url", content: process.env.REACT_APP_BASE_URL });
+  useMeta({name: "author", content: ORG_NAME});
+
   return (
     <div className="App w-100 base-font bg-white">
       <Router>
