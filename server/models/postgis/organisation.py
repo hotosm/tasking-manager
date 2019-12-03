@@ -34,7 +34,9 @@ class Organisation(db.Model):
     url = db.Column(db.String)
 
     managers = db.relationship(
-        User, secondary=organisation_managers, backref="organisations"
+        User,
+        secondary=organisation_managers,
+        backref=db.backref("organisations", lazy="joined"),
     )
     campaign = db.relationship(
         Campaign, secondary=campaign_organisations, backref="organisation"
@@ -121,11 +123,15 @@ class Organisation(db.Model):
     @staticmethod
     def get_organisations_managed_by_user(user_id: int):
         """ Gets organisations a user can manage """
-        print(Organisation.managers)
-        print(User().get_by_id(user_id))
-        return Organisation.query.filter(
-            User().get_by_id(user_id) in Organisation.managers
+        query_results = (
+            Organisation.query.join(organisation_managers)
+            .filter(
+                (organisation_managers.c.organisation_id == Organisation.id)
+                & (organisation_managers.c.user_id == user_id)
+            )
+            .all()
         )
+        return query_results
 
     def as_dto(self):
         """ Returns a dto for an organisation """

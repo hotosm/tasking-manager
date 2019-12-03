@@ -115,8 +115,6 @@ class OrganisationService:
 
     @staticmethod
     def get_organisations(manager_user_id: int):
-
-        print(manager_user_id)
         if manager_user_id is None:
             """ Get all organisations """
             return Organisation().get_all_organisations()
