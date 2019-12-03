@@ -50,7 +50,9 @@ class TeamService:
         user = UserService.get_user_by_username(username)
 
         if TeamService.is_user_member_of_team(team.id, user.id):
-            raise TeamJoinNotAllowed("User is already a member of this team")
+            raise TeamJoinNotAllowed(
+                "User is already a member of this team or has already requested to join"
+            )
 
         if is_manager:
             if role:
@@ -101,10 +103,23 @@ class TeamService:
         MessageService.accept_reject_request_to_join_team(
             from_user_id, from_user.username, to_user_id, team.name, response
         )
+
+        is_member = TeamService.is_user_member_of_team(team_id, to_user_id)
         if response == "accept":
-            TeamService.add_team_member(
-                team_id, to_user_id, TeamMemberFunctions[function]
-            )
+            if is_member:
+                TeamService.activate_team_member(team_id, to_user_id)
+            else:
+                TeamService.add_team_member(
+                    team_id,
+                    to_user_id,
+                    TeamMemberFunctions[function.upper()].value,
+                    True,
+                )
+        elif response == "reject":
+            if is_member:
+                TeamService.delete_invite(team_id, to_user_id)
+        else:
+            raise TeamServiceError("Invalid response type")
 
     @staticmethod
     def accept_reject_invitation_request(
@@ -126,7 +141,7 @@ class TeamService:
             )
         if response == "accept":
             TeamService.add_team_member(
-                team_id, from_user_id, TeamMemberFunctions[function]
+                team_id, from_user_id, TeamMemberFunctions[function.upper()].value
             )
 
     @staticmethod
@@ -379,6 +394,22 @@ class TeamService:
     @staticmethod
     def _get_team_members(team_id: int):
         return TeamMembers.query.filter_by(team_id=team_id).all()
+
+    @staticmethod
+    def activate_team_member(team_id: int, user_id: int):
+        member = TeamMembers.query.filter(
+            TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
+        ).first()
+        member.active = True
+        db.session.add(member)
+        db.session.commit()
+
+    @staticmethod
+    def delete_invite(team_id: int, user_id: int):
+        member = TeamMembers.query.filter(
+            TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
+        ).first()
+        member.delete()
 
     @staticmethod
     def is_user_member_of_team(team_id: int, user_id: int):

@@ -33,12 +33,11 @@ class TeamsActionsJoinAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for creating draft project
+              description: JSON object to join team
               schema:
                 properties:
                     username:
                         type: string
-                        default: Tasking Manager
                         required: true
                     role:
                         type: string
@@ -71,7 +70,7 @@ class TeamsActionsJoinAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    @tm.pm_only(False)
+    @tm.pm_only(True)
     @token_auth.login_required
     def put(self, team_id):
         """
@@ -97,24 +96,22 @@ class TeamsActionsJoinAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for creating draft project
+              description: JSON object to accept or deny request to join team
               schema:
                 properties:
                     user_id:
-                        type: integer
-                        default: 1
+                        type: string
                         required: true
                     type:
                         type: string
                         default: join-response
                         required: true
-                    function:
+                    role:
                         type: string
-                        default:
-                        required: true
+                        default: member
+                        required: false
                     response:
                         type: string
-                        default:
                         require: true
         responses:
             200:
@@ -127,10 +124,11 @@ class TeamsActionsJoinAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_id = int(request.get_json(force=True)["user_id"])
-            request_type = request.get_json(force=True)["type"]
-            response = request.get_json(force=True)["response"]
-            function = request.get_json(force=True)["function"]
+            json_data = request.get_json(force=True)
+            user_id = int(json_data["user_id"])
+            request_type = json_data.get("type", "join-response")
+            response = json_data["response"]
+            role = json_data.get("role", "member")
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
@@ -138,16 +136,17 @@ class TeamsActionsJoinAPI(Resource):
         try:
             if request_type == "join-response":
                 TeamService.accept_reject_join_request(
-                    team_id, user_id, tm.authenticated_user_id, function, response
+                    team_id, user_id, tm.authenticated_user_id, role, response
                 )
                 return {"Success": "True"}, 200
             elif request_type == "invite-response":
                 TeamService.accept_reject_invitation_request(
-                    team_id, tm.authenticated_user_id, user_id, function, response
+                    team_id, tm.authenticated_user_id, user_id, role, response
                 )
                 return {"Success": "True"}, 200
         except Exception as e:
-            error_msg = f"User POST - unhandled error: {str(e)}"
+            raise
+            error_msg = f"Team Join PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
