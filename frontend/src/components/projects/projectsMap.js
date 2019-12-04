@@ -180,5 +180,5 @@ export const ProjectsMap = ({
     }
   }, [map, mapResults, clickOnProjectID]);
 
-  return <div id="map" className={`vh-75-l vh-50 fr ${className}`} ref={mapRef}></div>;
+  return <div id="map" className={`vh-75-l vh-50 fr ${className||''}`} ref={mapRef}></div>;
 };

@@ -2,6 +2,8 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { createComponentWithIntl } from '../../../utils/testWithIntl';
+import { Provider } from 'react-redux';
+import { store } from '../../../store';
 import { OrgsManagement, OrganisationCard } from '../organisations';
 
 it('test organisation card component', () => {
@@ -14,7 +16,9 @@ it('test organisation card component', () => {
     campaigns: ['Health', 'Environement']
   };
   const element = createComponentWithIntl(
-    <OrganisationCard details={orgData}/>,
+    <Provider store={store} >
+    <OrganisationCard details={orgData}/>
+    </Provider>,
   );
   const testInstance = element.root;
   expect(
@@ -99,7 +103,9 @@ it('ADMIN role user CAN see organisations on OrgsManagement view', () => {
     }]
   };
   const element = createComponentWithIntl(
+    <Provider store={store} >
     <OrgsManagement organisations={orgData.organisations} userDetails={{role: 'ADMIN'}} />,
+    </Provider>
   );
   const testInstance = element.root;
   expect(testInstance.findByType(OrganisationCard).props.details).toStrictEqual(orgData.organisations[0]);

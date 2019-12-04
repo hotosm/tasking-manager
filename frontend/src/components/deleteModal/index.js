@@ -11,12 +11,15 @@ import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
 
 
-export function DeleteModal({id, name, type}) {
+export function DeleteModal({id, name, type, className}) {
   const token = useSelector(state => state.auth.get('token'));
   const [deleteStatus, setDeleteStatus] = useState(null);
   const [error, setErrorMessage] = useState(null);
   useEffect(
     () => {
+      if (deleteStatus === 'success' && type === 'notifications') {
+        redirectTo(`../`);
+      }
       if (deleteStatus === 'success') {
         redirectTo(`/manage/${type}/`);
       }
@@ -36,11 +39,16 @@ export function DeleteModal({id, name, type}) {
 
   return (
     <Popup
-      trigger={<DeleteButton className="dib ml3" />}
+      trigger={<DeleteButton className={`${className || ''} dib ml3`} />}
       modal
       closeOnDocumentClick
     >
-      {close => <div className="pv4">
+      {close => <div className="pv4"
+                  onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+      >
         <div className="cf tc red"><AlertIcon height="50px" width="50px"/></div>
         <div className="cf blue-dark tc">
           {!deleteStatus &&

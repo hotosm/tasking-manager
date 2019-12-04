@@ -154,7 +154,7 @@ export const TagFilterPickerAutocompleteDownshift = ({
   return (
     <div className={'dib'}>
       {/* <label {...getLabelProps()}>Choose an props.fieldsent:</label> */}
-      <button className={`${className} ${buttonClasses}`} {...getToggleButtonProps()}>
+      <button className={`${className || ''} ${buttonClasses}`} {...getToggleButtonProps()}>
         {selectedItem}
       </button>
       <ul {...getMenuProps()} className={`list pl0 ml0 center mw5  br3`} style={menuStylesSelect}>

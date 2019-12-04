@@ -127,3 +127,42 @@ https://codepen.io/nielsenramon/pen/mLMeLY
 input:disabled, textarea:disabled {
   background-color: $tan;
 }
+
+.redicon {
+  position: absolute;
+  top: -1px;
+  right: 0px;
+  background: $red;
+  box-sizing: border-box;
+  border-radius: 100%;
+  width: 0.6rem;
+  height: 0.6rem;
+}
+
+div.messageSubjectLinks, strong.messageSubjectLinks {
+  &>a {
+    color: $blue-dark;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  &:hover {
+    &>a {
+      color: $red;
+    }
+    color: $red;
+  }
+  color: $blue-grey;
+  &.bodycard>a {
+    text-decoration: underline;
+  }
+}
+
+div.messageBodyLinks {
+    &>a {
+      color: $blue-dark;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+    color: $blue-grey;
+
+}
