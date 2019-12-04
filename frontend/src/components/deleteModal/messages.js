@@ -20,6 +20,10 @@ export default defineMessages({
     id: 'deleteModal.type.campaign',
     defaultMessage: 'campaign',
   },
+  notifications: {
+    id: 'deleteModal.type.notifications',
+    defaultMessage: 'notification',
+  },
   teams: {
     id: 'deleteModal.type.team',
     defaultMessage: 'team',

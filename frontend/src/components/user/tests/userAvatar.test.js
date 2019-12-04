@@ -1,11 +1,16 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
+import { Provider } from 'react-redux';
 
 import { UserAvatar } from '../avatar';
+import { store } from '../../../store';
 import { CloseIcon } from '../../svgIcons';
 
 it('UserAvatar with picture url and default size', () => {
-  const element = TestRenderer.create(<UserAvatar username={'Mary'} picture={'http://image.xyz/photo.jpg'} />);
+  const element = TestRenderer.create(<Provider store={store}>
+      <UserAvatar username={'Mary'} picture={'http://image.xyz/photo.jpg'} />
+    </Provider>
+    );
   const elementInstance = element.root;
   expect(elementInstance.findByType('img').props.src).toBe('http://image.xyz/photo.jpg');
   expect(elementInstance.findByType('img').props.className).toBe('tc br-100 dib v-mid h2 w2 f5 ');
@@ -13,7 +18,10 @@ it('UserAvatar with picture url and default size', () => {
 });
 
 it('UserAvatar with picture url and large size', () => {
-  const element = TestRenderer.create(<UserAvatar username={'Mary'} size="large" picture={'http://image.xyz/photo.jpg'} />);
+  const element = TestRenderer.create(<Provider store={store}>
+      <UserAvatar username={'Mary'} size="large" picture={'http://image.xyz/photo.jpg'} />
+    </Provider>
+    );
   const elementInstance = element.root;
   expect(elementInstance.findByType('img').props.src).toBe('http://image.xyz/photo.jpg');
   expect(elementInstance.findByType('img').props.className).toBe('tc br-100 dib v-mid h3 w3 f2 ');
@@ -21,8 +29,9 @@ it('UserAvatar with picture url and large size', () => {
 });
 
 it('UserAvatar without picture url and with large size', () => {
-  const element = TestRenderer.create(
-    <UserAvatar username={'Mary'} size="large" colorClasses="white bg-red"/>
+  const element = TestRenderer.create(<Provider store={store}>
+      <UserAvatar username={'Mary'} size="large" colorClasses="white bg-red"/>
+    </Provider>
   );
   const elementInstance = element.root;
   expect(
@@ -33,8 +42,9 @@ it('UserAvatar without picture url and with large size', () => {
 });
 
 it('UserAvatar with name with default size', () => {
-  const element = TestRenderer.create(
-    <UserAvatar username={'Mary'} name={'Mary Poppins'} colorClasses="white bg-red"/>
+  const element = TestRenderer.create(<Provider store={store}>
+      <UserAvatar username={'Mary'} name={'Mary Poppins'} colorClasses="white bg-red"/>
+    </Provider>
   );
   const elementInstance = element.root;
   expect(
@@ -45,16 +55,18 @@ it('UserAvatar with name with default size', () => {
 });
 
 it('UserAvatar with more than 3 words name', () => {
-  const element = TestRenderer.create(
-    <UserAvatar username={'Mary'} name={'Mary Poppins Long Name'} colorClasses="white bg-red"/>
+  const element = TestRenderer.create(<Provider store={store}>
+      <UserAvatar username={'Mary'} name={'Mary Poppins Long Name'}  colorClasses="white bg-red"/>
+    </Provider>
   );
   const elementInstance = element.root;
   expect(elementInstance.findByType('span').props.children).toContain('MPL');
 });
 
 it('UserAvatar with username containing space', () => {
-  const element = TestRenderer.create(
-    <UserAvatar username={'Mary Poppins Long Name'} colorClasses="white bg-red"/>
+  const element = TestRenderer.create(<Provider store={store}>
+      <UserAvatar username={'Mary Poppins Long Name'}  colorClasses="white bg-red"/>
+    </Provider>
   );
   const elementInstance = element.root;
   expect(elementInstance.findByType('span').props.children).toContain('MPL');
@@ -64,8 +76,9 @@ it('UserAvatar with username containing space', () => {
 });
 
 it('UserAvatar with editMode TRUE but without removeFn has NOT a CloseIcon', () => {
-  const element = TestRenderer.create(
-    <UserAvatar username={'Mary Poppins Long Name'} colorClasses="white bg-red" editMode={true} />
+  const element = TestRenderer.create(<Provider store={store}>
+      <UserAvatar username={'Mary Poppins Long Name'} colorClasses="white bg-red" editMode={true} />
+    </Provider>
   );
   const elementInstance = element.root;
   expect(elementInstance.findByType('span').props.children).toContain('MPL');
@@ -75,8 +88,9 @@ it('UserAvatar with editMode TRUE but without removeFn has NOT a CloseIcon', () 
 });
 
 it('UserAvatar with removeFn, but with editMode FALSE  has NOT a CloseIcon', () => {
-  const element = TestRenderer.create(
-    <UserAvatar username={'Mary Poppins Long Name'} colorClasses="white bg-red" removeFn={() => console.log('no')} />
+  const element = TestRenderer.create(<Provider store={store}>
+      <UserAvatar username={'Mary Poppins Long Name'} colorClasses="white bg-red" removeFn={() => console.log('no')} />
+    </Provider>
   );
   const elementInstance = element.root;
   expect(elementInstance.findByType('span').props.children).toContain('MPL');
@@ -87,8 +101,9 @@ it('UserAvatar with removeFn, but with editMode FALSE  has NOT a CloseIcon', () 
 
 it('UserAvatar with removeFn and editMode TRUE has a CloseIcon', () => {
   let value = 0;
-  const element = TestRenderer.create(
-    <UserAvatar username={'Mary'} colorClasses="white bg-red" removeFn={() => value = 1} editMode={true}/>
+  const element = TestRenderer.create(<Provider store={store}>
+      <UserAvatar username={'Mary'} colorClasses="white bg-red" removeFn={() => value = 1} editMode={true}/>
+    </Provider>
   );
   const elementInstance = element.root;
   expect(
