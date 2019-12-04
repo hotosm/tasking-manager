@@ -13,7 +13,7 @@ export const RadioField = ({ name, value, className }: Object) => (
     component="input"
     type="radio"
     value={value}
-    className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light ${className}`}
+    className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light ${className || ''}`}
   />
 );
 

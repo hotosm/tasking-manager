@@ -2,7 +2,6 @@ import React, { useState, useContext, useLayoutEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import { CircleMode } from 'mapbox-gl-draw-circle';
 
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { fallbackRasterStyle } from '../projects/projectsMap';
@@ -20,7 +19,6 @@ export const PriorityAreasForm = () => {
 	const mapRef = React.createRef();
 	const modes = MapboxDraw.modes;
 	modes.draw_rectangle = DrawRectangle;
-	modes.draw_circle = CircleMode;
 
 	const draw = useState(
 		new MapboxDraw({
@@ -137,12 +135,6 @@ export const PriorityAreasForm = () => {
 					onClick={() => draw[0].changeMode('draw_rectangle')}
 				>
 					draw rectangle
-				</Button>
-				<Button
-					className={styleClasses.drawButtonClass}
-					onClick={() => draw[0].changeMode('draw_circle', { initialRadiusInKm: 0.5 })}
-				>
-					draw circle
 				</Button>
 				<Button onClick={clearAll} className={clearButtonClass}>
 					clear all

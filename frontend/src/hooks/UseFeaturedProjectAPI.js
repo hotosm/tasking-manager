@@ -72,6 +72,7 @@ export const useFeaturedProjectAPI = initialData => {
         const result = await axios({
           url: `${API_URL}projects/queries/featured`,
           method: 'get',
+          headers: {'Accept': 'application/json'},
           cancelToken: new CancelToken(function executor(c) {
             // An executor function receives a cancel function as a parameter
             cancel = { end: c };
@@ -85,7 +86,7 @@ export const useFeaturedProjectAPI = initialData => {
         if (!didCancel) {
           dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
         } else {
-          cancel.end();
+          cancel && cancel.end();
         }
       } catch (error) {
         /* if cancelled, this setting state of unmounted
@@ -93,7 +94,7 @@ export const useFeaturedProjectAPI = initialData => {
         if (!didCancel) {
           dispatch({ type: 'FETCH_FAILURE' });
         } else {
-          cancel.end();
+          cancel && cancel.end();
         }
       }
     };
@@ -101,7 +102,7 @@ export const useFeaturedProjectAPI = initialData => {
     fetchData();
     return () => {
       didCancel = true;
-      cancel.end();
+      cancel && cancel.end();
     };
   }, []);
 
