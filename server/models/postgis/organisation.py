@@ -5,6 +5,9 @@ from server.models.dtos.organisation_dto import (
     NewOrganisationDTO,
     OrganisationManagerDTO,
 )
+
+from server.models.postgis.statuses import UserRole
+
 from server.models.postgis.user import User
 from server.models.postgis.campaign import Campaign, campaign_organisations
 from server.models.postgis.utils import NotFound
@@ -20,6 +23,10 @@ organisation_managers = db.Table(
     db.Column("user_id", db.BigInteger, db.ForeignKey("users.id"), nullable=False),
     db.UniqueConstraint("organisation_id", "user_id", name="organisation_user_key"),
 )
+
+
+class InvalidRoleException(Exception):
+    pass
 
 
 class Organisation(db.Model):
@@ -55,9 +62,19 @@ class Organisation(db.Model):
         new_org.name = new_organisation_dto.name
         new_org.logo = new_organisation_dto.logo
         new_org.url = new_organisation_dto.url
-        new_org.managers = [
-            User().get_by_username(manager) for manager in new_organisation_dto.managers
-        ]
+
+        for manager in new_organisation_dto.managers:
+            user = User.get_by_username(manager)
+
+            if user is None:
+                raise NotFound(f"User {manager} Not Found")
+
+            if user.role not in [UserRole.ADMIN.value, UserRole.PROJECT_MANAGER.value]:
+                raise InvalidRoleException(
+                    "User needs to have admin or manager role to be a organisation manager"
+                )
+
+            new_org.managers.append(user)
 
         new_org.create()
         return new_org
@@ -82,9 +99,19 @@ class Organisation(db.Model):
             self.managers = []
             # Need to handle this in the loop so we can take care of NotFound users
             for manager in organisation_dto.managers:
-                new_manager = User().get_by_username(manager)
+                new_manager = User.get_by_username(manager)
+
                 if new_manager is None:
                     raise NotFound(f"User {manager} Not Found")
+
+                if new_manager.role not in [
+                    UserRole.ADMIN.value,
+                    UserRole.PROJECT_MANAGER.value,
+                ]:
+                    raise InvalidRoleException(
+                        "User needs to have admin or manager role to be a organisation manager"
+                    )
+
                 self.managers.append(new_manager)
 
         db.session.commit()
