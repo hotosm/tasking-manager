@@ -5,7 +5,6 @@ from server.models.dtos.campaign_dto import (
     NewCampaignDTO,
     CampaignProjectDTO,
     CampaignListDTO,
-    CampaignOrganisationDTO,
 )
 from server.models.postgis.campaign import (
     Campaign,
@@ -69,7 +68,6 @@ class CampaignService:
             organisation_dto.name = org.name
             organisation_dto.logo = org.logo
             organisation_dto.url = org.url
-            organisation_dto.visibility = org.visibility
             organisation_dto.is_manager = logged_in
             projects = OrganisationService.get_projects_by_organisation_id(org.id)
             for project in projects:
@@ -124,15 +122,15 @@ class CampaignService:
         return new_campaigns
 
     @staticmethod
-    def create_campaign_organisation(dto: CampaignOrganisationDTO):
+    def create_campaign_organisation(organisation_id: int, campaign_id: int):
         """ Creates new message from DTO """
         statement = campaign_organisations.insert().values(
-            campaign_id=dto.campaign_id, organisation_id=dto.organisation_id
+            campaign_id=campaign_id, organisation_id=organisation_id
         )
         db.session.execute(statement)
         db.session.commit()
         new_campaigns = CampaignService.get_organisation_campaigns_as_dto(
-            dto.organisation_id
+            organisation_id
         )
         return new_campaigns
 
