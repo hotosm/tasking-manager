@@ -95,10 +95,9 @@ class TeamService:
         )
 
     @staticmethod
-    def accept_reject_join_request(
-        team_id, to_user_id, from_user_id, function, response
-    ):
+    def accept_reject_join_request(team_id, from_user_id, username, function, response):
         from_user = UserService.get_user_by_id(from_user_id)
+        to_user_id = UserService.get_user_by_username(username).id
         team = TeamService.get_team_by_id(team_id)
         MessageService.accept_reject_request_to_join_team(
             from_user_id, from_user.username, to_user_id, team.name, response
@@ -123,10 +122,10 @@ class TeamService:
 
     @staticmethod
     def accept_reject_invitation_request(
-        team_id, from_user_id, to_user_id, function, response
+        team_id, from_user_id, username, function, response
     ):
         from_user = UserService.get_user_by_id(from_user_id)
-        to_user = UserService.get_user_by_id(to_user_id)
+        to_user = UserService.get_user_by_username(username)
         team = TeamService.get_team_by_id(team_id)
         team_members = TeamService._get_team_managers(team_id)
 
@@ -388,7 +387,7 @@ class TeamService:
     @staticmethod
     def _get_team_managers(team_id: int):
         return TeamMembers.query.filter_by(
-            team_id=team_id, function=TeamMemberFunctions.MANAGER.value
+            team_id=team_id, function=TeamMemberFunctions.MANAGER.value, active=True
         ).all()
 
     @staticmethod

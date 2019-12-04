@@ -62,7 +62,10 @@ class TeamsActionsJoinAPI(Resource):
 
         try:
             TeamService.join_team(team_id, tm.authenticated_user_id, username, role)
-            return {"Success": "User joined to team"}, 200
+            if TeamService.user_is_manager(team_id, tm.authenticated_user_id):
+                return {"Success": "User added to the team"}, 200
+            else:
+                return {"Success": "Request to join the team sent successfully."}, 200
         except TeamJoinNotAllowed as e:
             return {"Error": str(e)}, 403
         except Exception as e:
@@ -70,7 +73,7 @@ class TeamsActionsJoinAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    @tm.pm_only(True)
+    @tm.pm_only(False)
     @token_auth.login_required
     def put(self, team_id):
         """
@@ -96,10 +99,10 @@ class TeamsActionsJoinAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object to accept or deny request to join team
+              description: JSON object to accept or reject a request to join team
               schema:
                 properties:
-                    user_id:
+                    username:
                         type: string
                         required: true
                     type:
@@ -112,7 +115,8 @@ class TeamsActionsJoinAPI(Resource):
                         required: false
                     response:
                         type: string
-                        require: true
+                        default: accept
+                        required: true
         responses:
             200:
                 description: Member added
@@ -125,7 +129,7 @@ class TeamsActionsJoinAPI(Resource):
         """
         try:
             json_data = request.get_json(force=True)
-            user_id = int(json_data["user_id"])
+            username = int(json_data["username"])
             request_type = json_data.get("type", "join-response")
             response = json_data["response"]
             role = json_data.get("role", "member")
@@ -135,13 +139,21 @@ class TeamsActionsJoinAPI(Resource):
 
         try:
             if request_type == "join-response":
-                TeamService.accept_reject_join_request(
-                    team_id, user_id, tm.authenticated_user_id, role, response
-                )
-                return {"Success": "True"}, 200
+                if TeamService.user_is_manager(team_id, tm.authenticated_user_id):
+                    TeamService.accept_reject_join_request(
+                        team_id, tm.authenticated_user_id, username, role, response
+                    )
+                    return {"Success": "True"}, 200
+                else:
+                    return (
+                        {
+                            "Error": "You don't have permissions to approve this join team request"
+                        },
+                        403,
+                    )
             elif request_type == "invite-response":
                 TeamService.accept_reject_invitation_request(
-                    team_id, tm.authenticated_user_id, user_id, role, response
+                    team_id, tm.authenticated_user_id, username, role, response
                 )
                 return {"Success": "True"}, 200
         except Exception as e:
@@ -178,7 +190,7 @@ class TeamsActionsLeaveAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for creating draft project
+              description: JSON object to remove user from team
               schema:
                 properties:
                     username:
@@ -198,23 +210,11 @@ class TeamsActionsLeaveAPI(Resource):
         try:
             username = request.get_json(force=True)["username"]
             request_user = User().get_by_id(tm.authenticated_user_id)
-            operation_allowed = False
-            if request_user.role == 1 or request_user.username == username:
+            if (
+                TeamService.user_is_manager(team_id, tm.authenticated_user_id)
+                or request_user.username == username
+            ):
                 TeamService.leave_team(team_id, username)
-                operation_allowed = True
-            else:
-                team_dto = TeamService.get_team_as_dto(
-                    team_id, tm.authenticated_user_id
-                )
-                managers = [
-                    member
-                    for member in team_dto.members
-                    if member.function == "MANAGER"
-                ]
-                if request_user.username in [manager.username for manager in managers]:
-                    TeamService.leave_team(team_id, username)
-                    operation_allowed = True
-            if operation_allowed:
                 return {"Success": "User removed from the team"}, 200
             else:
                 return (
@@ -223,7 +223,7 @@ class TeamsActionsLeaveAPI(Resource):
                             username
                         )
                     },
-                    404,
+                    403,
                 )
         except NotFound:
             return {"Error": "No team member found"}, 404
