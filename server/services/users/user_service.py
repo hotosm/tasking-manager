@@ -53,7 +53,7 @@ class UserService:
 
     @staticmethod
     def get_user_by_username(username: str) -> User:
-        user = User().get_by_username(username)
+        user = User.get_by_username(username)
 
         if user is None:
             raise NotFound()
