@@ -1,9 +1,11 @@
 from flask_restful import Resource, current_app
 
 from server.services.users.user_service import UserService, UserServiceError, NotFound
+from server.services.users.authentication_service import token_auth
 
 
 class UsersOpenStreetMapAPI(Resource):
+    @token_auth.login_required
     def get(self, username):
         """
         Gets details from OSM for the specified username
@@ -13,6 +15,12 @@ class UsersOpenStreetMapAPI(Resource):
         produces:
           - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded sesesion token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: username
               in: path
               description: The users username
@@ -22,6 +30,8 @@ class UsersOpenStreetMapAPI(Resource):
         responses:
             200:
                 description: User found
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: User not found
             500:
