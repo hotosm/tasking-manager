@@ -5,6 +5,7 @@ from server.services.users.authentication_service import token_auth
 
 
 class UsersStatisticsAPI(Resource):
+    @token_auth.login_required
     def get(self, username):
         """
         Get detailed stats about user
@@ -14,6 +15,12 @@ class UsersStatisticsAPI(Resource):
         produces:
           - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: username
               in: path
               description: The users username
@@ -23,6 +30,8 @@ class UsersStatisticsAPI(Resource):
         responses:
             200:
                 description: User found
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: User not found
             500:
@@ -64,6 +73,8 @@ class UsersStatisticsInterestsAPI(Resource):
         responses:
             200:
                 description: Interest found
+            401:
+                description: Unauthorized - Invalid credentials
             500:
                 description: Internal Server Error
         """
