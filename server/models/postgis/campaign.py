@@ -14,6 +14,9 @@ campaign_organisations = db.Table(
     db.metadata,
     db.Column("campaign_id", db.Integer, db.ForeignKey("campaigns.id")),
     db.Column("organisation_id", db.Integer, db.ForeignKey("organisations.id")),
+    db.UniqueConstraint(
+        "campaign_id", "organisation_id", name="campaign_organisation_key"
+    ),
 )
 
 
