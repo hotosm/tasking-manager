@@ -601,7 +601,7 @@ def add_api_endpoints(app):
     api.add_resource(
         TeamsActionsJoinAPI,
         "/api/v2/teams/<int:team_id>/actions/join/",
-        methods=["POST"],
+        methods=["POST", "PUT"],
     )
     api.add_resource(
         TeamsActionsLeaveAPI,

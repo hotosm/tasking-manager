@@ -34,16 +34,56 @@ class TeamServiceError(Exception):
             current_app.logger.error(message)
 
 
+class TeamJoinNotAllowed(Exception):
+    """ Custom Exception to notify bad user level on joining team """
+
+    def __init__(self, message):
+        if current_app:
+            current_app.logger.error(message)
+
+
 class TeamService:
     @staticmethod
-    def join_team(team_id, username):
-        team_members = TeamService._get_team_managers(team_id)
+    def join_team(team_id: int, requesting_user: int, username: str, role: str = None):
+        is_manager = TeamService.user_is_manager(team_id, requesting_user)
         team = TeamService.get_team_by_id(team_id)
         user = UserService.get_user_by_username(username)
-        for member in team_members:
-            MessageService.send_request_to_join_team(
-                user.id, user.username, member.user_id, team.name
+
+        if TeamService.is_user_member_of_team(team.id, user.id):
+            raise TeamJoinNotAllowed(
+                "User is already a member of this team or has already requested to join"
             )
+
+        if is_manager:
+            if role:
+                try:
+                    role = TeamMemberFunctions[role.upper()].value
+                except KeyError:
+                    raise Exception("Invalid TeamMemberFunction")
+            else:
+                role = TeamMemberFunctions.MEMBER.value
+
+            TeamService.add_team_member(team_id, user.id, role, True)
+        else:
+            if user.id != requesting_user:
+                raise TeamJoinNotAllowed("User not allowed to join team")
+
+            role = TeamMemberFunctions.MEMBER.value
+
+            # active if the team is open
+            if team.invite_only:
+                active = False
+            else:
+                active = True
+
+            TeamService.add_team_member(team_id, user.id, role, active)
+
+            if team.invite_only:
+                team_managers = TeamService._get_team_managers(team_id)
+                for member in team_managers:
+                    MessageService.send_request_to_join_team(
+                        user.id, user.username, member.user_id, team.name
+                    )
 
     @staticmethod
     def send_invite(team_id, from_user_id, username):
@@ -55,25 +95,37 @@ class TeamService:
         )
 
     @staticmethod
-    def accept_reject_join_request(
-        team_id, to_user_id, from_user_id, function, response
-    ):
+    def accept_reject_join_request(team_id, from_user_id, username, function, response):
         from_user = UserService.get_user_by_id(from_user_id)
+        to_user_id = UserService.get_user_by_username(username).id
         team = TeamService.get_team_by_id(team_id)
         MessageService.accept_reject_request_to_join_team(
             from_user_id, from_user.username, to_user_id, team.name, response
         )
+
+        is_member = TeamService.is_user_member_of_team(team_id, to_user_id)
         if response == "accept":
-            TeamService.add_team_member(
-                team_id, to_user_id, TeamMemberFunctions[function]
-            )
+            if is_member:
+                TeamService.activate_team_member(team_id, to_user_id)
+            else:
+                TeamService.add_team_member(
+                    team_id,
+                    to_user_id,
+                    TeamMemberFunctions[function.upper()].value,
+                    True,
+                )
+        elif response == "reject":
+            if is_member:
+                TeamService.delete_invite(team_id, to_user_id)
+        else:
+            raise TeamServiceError("Invalid response type")
 
     @staticmethod
     def accept_reject_invitation_request(
-        team_id, from_user_id, to_user_id, function, response
+        team_id, from_user_id, username, function, response
     ):
         from_user = UserService.get_user_by_id(from_user_id)
-        to_user = UserService.get_user_by_id(to_user_id)
+        to_user = UserService.get_user_by_username(username)
         team = TeamService.get_team_by_id(team_id)
         team_members = TeamService._get_team_managers(team_id)
 
@@ -88,21 +140,24 @@ class TeamService:
             )
         if response == "accept":
             TeamService.add_team_member(
-                team_id, from_user_id, TeamMemberFunctions[function]
+                team_id, from_user_id, TeamMemberFunctions[function.upper()].value
             )
 
     @staticmethod
-    def add_team_member(team_id, user_id, function):
+    def add_team_member(team_id, user_id, function, active=False):
         team_member = TeamMembers()
         team_member.team_id = team_id
         team_member.user_id = user_id
         team_member.function = function
+        team_member.active = active
         team_member.create()
 
     @staticmethod
     def leave_team(team_id, username):
         user = UserService.get_user_by_username(username)
-        team_member = TeamMembers.get_team_member(team_id, user.id)
+        team_member = TeamMembers.query.filter(
+            TeamMembers.team_id == team_id, TeamMembers.user_id == user.id
+        ).one()
         team_member.delete()
 
     @staticmethod
@@ -139,7 +194,9 @@ class TeamService:
                 user = UserService.get_user_by_id(member.user_id)
                 member_dto = TeamMembersDTO()
                 member_dto.username = user.username
-                member_dto.function = member.function
+                member_dto.function = TeamMemberFunctions(member.function).name
+                member_dto.picture_url = user.picture_url
+                member_dto.active = member.active
 
                 team_dto.members.append(member_dto)
 
@@ -182,6 +239,8 @@ class TeamService:
             member_dto = TeamMembersDTO()
             member_dto.username = user.username
             member_dto.function = TeamMemberFunctions(member.function).name
+            member_dto.picture_url = user.picture_url
+            member_dto.active = member.active
 
             team_dto.members.append(member_dto)
 
@@ -328,12 +387,35 @@ class TeamService:
     @staticmethod
     def _get_team_managers(team_id: int):
         return TeamMembers.query.filter_by(
-            team_id=team_id, function=TeamMemberFunctions.MANAGER.value
+            team_id=team_id, function=TeamMemberFunctions.MANAGER.value, active=True
         ).all()
 
     @staticmethod
     def _get_team_members(team_id: int):
         return TeamMembers.query.filter_by(team_id=team_id).all()
+
+    @staticmethod
+    def activate_team_member(team_id: int, user_id: int):
+        member = TeamMembers.query.filter(
+            TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
+        ).first()
+        member.active = True
+        db.session.add(member)
+        db.session.commit()
+
+    @staticmethod
+    def delete_invite(team_id: int, user_id: int):
+        member = TeamMembers.query.filter(
+            TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
+        ).first()
+        member.delete()
+
+    @staticmethod
+    def is_user_member_of_team(team_id: int, user_id: int):
+        query = TeamMembers.query.filter(
+            TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
+        ).exists()
+        return db.session.query(query).scalar()
 
     @staticmethod
     def user_is_manager(team_id: int, user_id: int):
