@@ -79,7 +79,7 @@ class OrganisationService:
         :returns: ID of new Organisation
         """
         try:
-            org = Organisation().create_from_dto(new_organisation_dto)
+            org = Organisation.create_from_dto(new_organisation_dto)
             return org.id
         except IntegrityError:
             raise OrganisationServiceError(

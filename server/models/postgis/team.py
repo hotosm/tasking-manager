@@ -74,7 +74,7 @@ class Team(db.Model):
         new_team.invite_only = new_team_dto.invite_only
         new_team.visibility = TeamVisibility[new_team_dto.visibility].value
 
-        org = Organisation().get(new_team_dto.organisation_id)
+        org = Organisation.get(new_team_dto.organisation_id)
         new_team.organisation = org
 
         # Create team member with creator as a manager
@@ -117,7 +117,7 @@ class Team(db.Model):
                 db.session.delete(member)
 
             for member in team_dto.members:
-                user = User().get_by_username(member["userName"])
+                user = User.get_by_username(member["userName"])
 
                 if user is None:
                     raise NotFound("User not found")
