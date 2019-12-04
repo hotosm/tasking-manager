@@ -127,3 +127,4 @@ class TeamMemberFunctions(Enum):
 
     EDITOR = 0
     MANAGER = 1
+    MEMBER = 2

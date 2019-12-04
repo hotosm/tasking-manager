@@ -42,6 +42,8 @@ class TeamMembersDTO(Model):
 
     username = StringType(required=True)
     function = StringType(required=True)
+    active = StringType()
+    picture_url = StringType(serialized_name="pictureUrl")
 
 
 class TeamProjectDTO(Model):
