@@ -20,7 +20,7 @@ from server.models.dtos.organisation_dto import OrganisationDTO
 class CampaignService:
     @staticmethod
     def get_campaign(campaign_id: int) -> Campaign:
-        """ Gets the specified campaign """
+        """Gets the specified campaign"""
         campaign = Campaign.query.get(campaign_id)
 
         if campaign is None:
@@ -30,14 +30,14 @@ class CampaignService:
 
     @staticmethod
     def delete_campaign(campaign_id: int):
-        """ Delete campaign for a project"""
+        """Delete campaign for a project"""
         campaign = Campaign.query.get(campaign_id)
         campaign.delete()
         campaign.save()
 
     @staticmethod
     def get_campaign_as_dto(campaign_id: int, user_id: int):
-        """ Gets the specified campaign """
+        """Gets the specified campaign"""
         campaign = CampaignService.get_campaign(campaign_id)
         campaign_dto = CampaignDTO()
         campaign_dto.id = campaign.id
@@ -78,8 +78,7 @@ class CampaignService:
 
     @staticmethod
     def get_project_campaigns_as_dto(project_id: int) -> CampaignListDTO:
-        """ Gets all the campaigns for a specified project """
-
+        """Gets all the campaigns for a specified project"""
         return Campaign.get_project_campaigns_as_dto(project_id)
 
     @staticmethod
@@ -94,7 +93,7 @@ class CampaignService:
 
     @staticmethod
     def get_all_campaigns() -> CampaignListDTO:
-        """ Get all campaign tags"""
+        """List all campaigns"""
         return Campaign.get_all_campaigns()
 
     @staticmethod
@@ -110,7 +109,7 @@ class CampaignService:
 
     @staticmethod
     def create_campaign_project(dto: CampaignProjectDTO):
-        """ Creates new message from DTO """
+        """Assign a campaign with a project"""
         statement = campaign_projects.insert().values(
             campaign_id=dto.campaign_id, project_id=dto.project_id
         )
@@ -123,7 +122,7 @@ class CampaignService:
 
     @staticmethod
     def create_campaign_organisation(organisation_id: int, campaign_id: int):
-        """ Creates new message from DTO """
+        """ Creates new campaign from DTO """
         statement = campaign_organisations.insert().values(
             campaign_id=campaign_id, organisation_id=organisation_id
         )
@@ -137,12 +136,11 @@ class CampaignService:
     @staticmethod
     def get_organisation_campaigns_as_dto(organisation_id: int) -> CampaignListDTO:
         """ Gets all the campaigns for a specified project """
-
         return Campaign.get_organisation_campaigns_as_dto(organisation_id)
 
     @staticmethod
     def delete_organisation_campaign(organisation_id: int, campaign_id: int):
-        """ Delete campaign for a project"""
+        """ Delete campaign for a organisation"""
         campaign = Campaign.query.get(campaign_id)
         org = Organisation.query.get(organisation_id)
         org.campaign.remove(campaign)
