@@ -122,7 +122,7 @@ class CampaignsRestAPI(Resource):
 
         try:
             campaign = CampaignService.update_campaign(campaign_dto, campaign_id)
-            return {campaign.name: "Updated"}, 200
+            return {"Success": "Campaign {} updated".format(campaign.id)}, 200
         except NotFound:
             return {"Error": "Campaign not found"}, 404
         except Exception as e:
