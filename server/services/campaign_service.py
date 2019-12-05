@@ -1,4 +1,3 @@
-from server.models.postgis.utils import NotFound
 from server import db
 from server.models.dtos.campaign_dto import (
     CampaignDTO,
@@ -11,6 +10,7 @@ from server.models.postgis.campaign import (
     campaign_projects,
     campaign_organisations,
 )
+from server.models.postgis.utils import NotFound
 from server.models.postgis.project import Project
 from server.models.postgis.organisation import Organisation
 from server.services.organisation_service import OrganisationService
@@ -152,7 +152,8 @@ class CampaignService:
 
     @staticmethod
     def update_campaign(campaign_dto: CampaignDTO, campaign_id: int):
-        # campaign = Campaign.from_dto(campaign_dto)
         campaign = Campaign.query.get(campaign_id)
+        if not campaign:
+            raise NotFound(f"Campaign id {campaign_id} not found")
         campaign.update(campaign_dto)
         return campaign
