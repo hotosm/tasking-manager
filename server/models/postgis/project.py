@@ -251,10 +251,14 @@ class Project(db.Model):
 
     def set_default_changeset_tags(self):
         """ Sets the default changeset tags"""
-        default_tags = current_app.config['DEFAULT_CHANGESET_TAGS']
+        default_tags = current_app.config["DEFAULT_CHANGESET_TAGS"]
         if self.changeset_tags is None:
             self.changeset_tags = {}
-        self.changeset_tags["comment"] = f'{default_tags["comment"]}-{self.id} {self.changeset_tags["comment"]}' if self.changeset_tags is not None and "comment" in self.changeset_tags else f'{default_tags["comment"]}-{self.id}'
+        self.changeset_tags["comment"] = (
+            f'{default_tags["comment"]}-{self.id} {self.changeset_tags["comment"]}'
+            if self.changeset_tags is not None and "comment" in self.changeset_tags
+            else f'{default_tags["comment"]}-{self.id}'
+        )
         self.save()
 
     def set_country_info(self):
@@ -359,7 +363,11 @@ class Project(db.Model):
         #  project and the cloned. This is a best effort basis.
         default_comment = current_app.config["DEFAULT_CHANGESET_TAGS"]["comment"]
         changeset_comments = []
-        if original_project.changeset_tags is not None and "comment" in original_project.changeset_tags and original_project.changeset_tags["comment"] is not None:
+        if (
+            original_project.changeset_tags is not None
+            and "comment" in original_project.changeset_tags
+            and original_project.changeset_tags["comment"] is not None
+        ):
             changeset_comments = original_project.changeset_tags["comment"].split(" ")
         if f"{default_comment}-{original_project.id}" in changeset_comments:
             changeset_comments.remove(f"{default_comment}-{original_project.id}")

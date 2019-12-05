@@ -75,8 +75,8 @@ class UsersActionsSetUsersAPI(Resource):
             user_dto = UserDTO(request.get_json())
             if user_dto.email_address == "":
                 user_dto.email_address = (
-                    None
-                )  # Replace empty string with None so validation doesn't break
+                    None  # Replace empty string with None so validation doesn't break
+                )
 
             user_dto.validate()
         except ValueError as e:

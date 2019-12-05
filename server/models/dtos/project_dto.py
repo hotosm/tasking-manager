@@ -183,7 +183,9 @@ class ProjectDTO(Model):
     )
     private = BooleanType(required=True)
     entities_to_map = StringType(serialized_name="entitiesToMap")
-    changeset_tags = DictType(StringType, serialized_name='changesetTags', serialize_when_none=False)
+    changeset_tags = DictType(
+        StringType, serialized_name="changesetTags", serialize_when_none=False
+    )
     osmcha_filter_id = StringType(serialized_name="osmchaFilterId")
     due_date = DateTimeType(serialized_name="dueDate")
     imagery = StringType()
@@ -438,7 +440,7 @@ class ProjectSummary(Model):
         StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
     )
 
-    changeset_tags = StringType(serialized_name='changesetTags')
+    changeset_tags = StringType(serialized_name="changesetTags")
     percent_mapped = IntType(serialized_name="percentMapped")
     percent_validated = IntType(serialized_name="percentValidated")
     percent_bad_imagery = IntType(serialized_name="percentBadImagery")

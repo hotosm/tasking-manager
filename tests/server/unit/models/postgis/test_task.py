@@ -128,7 +128,7 @@ class TestTask(unittest.TestCase):
         self.assertEqual(instructions, "Test Url is http://test.com/1_2_3")
 
     def test_per_task_instructions_returns_instructions_when_no_dynamic_url_and_task_not_splittable(
-        self
+        self,
     ):
         # Arrange
         test_task = Task()

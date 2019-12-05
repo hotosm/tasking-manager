@@ -33,7 +33,7 @@ class MappingIssueCategoryService:
 
     @staticmethod
     def update_mapping_issue_category(
-        category_dto: MappingIssueCategoryDTO
+        category_dto: MappingIssueCategoryDTO,
     ) -> MappingIssueCategoryDTO:
         """ Create MappingIssueCategory in DB """
         category = MappingIssueCategoryService.get_mapping_issue_category(

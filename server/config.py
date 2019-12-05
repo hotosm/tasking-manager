@@ -27,11 +27,12 @@ class EnvironmentConfig:
     # TM_DEFAULT_CHANGESET_COMMENT is supported only as a compatibility environment variable.
     # It is overwritten by TM_DEFAULT_CHANGESET_TAGS
     def __get_default_changeset_tags():
-        comment = {"comment": os.getenv('TM_DEFAULT_CHANGESET_COMMENT', None)}
-        tags = os.getenv('TM_DEFAULT_CHANGESET_TAGS', {})
+        comment = {"comment": os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)}
+        tags = os.getenv("TM_DEFAULT_CHANGESET_TAGS", {})
         if comment["comment"]:
             return {**tags, **comment}
         return tags
+
     DEFAULT_CHANGESET_TAGS = __get_default_changeset_tags()
 
     # The address to use as the sender on auto generated emails

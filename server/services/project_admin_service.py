@@ -85,8 +85,12 @@ class ProjectAdminService:
     @staticmethod
     def _set_default_changeset_tags(draft_project: Project):
         """ Sets the default changesset comment when project created """
-        default_tags = current_app.config['DEFAULT_CHANGESET_TAGS']
-        draft_project.changeset_tags = "{\"comment\": \"" + f'{default_comment}-{draft_project.id}' + "\"}"
+        default_tags = current_app.config["DEFAULT_CHANGESET_TAGS"]
+        draft_project.changeset_tags = (
+            '{"comment": "'
+            + f"{default_tags['comment'] if 'comment' in default_tags else ''}-{draft_project.id}"
+            + '"}'
+        )
         draft_project.save()
 
     @staticmethod
@@ -155,9 +159,8 @@ class ProjectAdminService:
                 user = UserService.get_user_by_username(username)
                 allowed_users.append(user)
 
-            project_dto.allowed_users = (
-                allowed_users
-            )  # Dynamically attach the user object to the DTO for more efficient persistence
+            # Dynamically attach the user object to the DTO for more efficient persistence
+            project_dto.allowed_users = allowed_users
         except NotFound:
             raise ProjectAdminServiceError(
                 f"allowedUsers contains an unknown username {user}"
