@@ -327,7 +327,7 @@ class ProjectsRestAPI(Resource):
                     campaignTag:
                         type: string
                         default: malaria
-                    organisationId:
+                    organisation:
                         type: integer
                         default: 1
                     countryTag:

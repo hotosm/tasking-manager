@@ -79,15 +79,14 @@ export const MoreFilters = props => {
   }`;
   return (
     <>
-      <div className='absolute left-0 z-4 mt1 w-40-l w-100 h-100 bg-white h4 ph1 ph5-l'>
-        <MoreFiltersForm currentUrl={currentUrl}/>
+      <div className="absolute left-0 z-4 mt1 w-40-l w-100 h-100 bg-white h4 ph1 ph5-l">
+        <MoreFiltersForm currentUrl={currentUrl} />
         {props.children}
       </div>
       <div
         onClick={() => props.navigate(currentUrl)}
-        className='absolute right-0 z-5 br w-60-l w-0 h-100 bg-blue-dark o-70 h6'
-      >
-      </div>
+        className="absolute right-0 z-5 br w-60-l w-0 h-100 bg-blue-dark o-70 h6"
+      ></div>
     </>
   );
 };

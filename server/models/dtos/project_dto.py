@@ -189,7 +189,10 @@ class ProjectDTO(Model):
     josm_preset = StringType(serialized_name="josmPreset", serialize_when_none=False)
     id_presets = ListType(StringType, serialized_name="idPresets", default=[])
     mapping_types = ListType(
-        StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
+        StringType,
+        serialized_name="mappingTypes",
+        default=[],
+        validators=[is_known_mapping_type],
     )
     campaign = ListType(ModelType(CampaignDTO), serialized_name="campaign")
     organisation = IntType()

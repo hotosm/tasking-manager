@@ -413,7 +413,7 @@ class Project(db.Model):
             self.osmcha_filter_id = None
 
         if project_dto.organisation:
-            org = Organisation.get_organisation_by_name(project_dto.organisation)
+            org = Organisation.get(project_dto.organisation)
             if org is None:
                 raise NotFound("Organisation does not exist")
             self.organisation = org
@@ -975,6 +975,7 @@ class Project(db.Model):
         )
 
         if project.organisation_id:
+            project_dto.organisation = project.organisation.id
             project_dto.organisation_name = project.organisation.name
             project_dto.organisation_logo = project.organisation.logo
 
