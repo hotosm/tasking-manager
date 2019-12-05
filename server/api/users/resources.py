@@ -33,6 +33,8 @@ class UsersRestAPI(Resource):
         responses:
             200:
                 description: User found
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: User not found
             500:
@@ -50,6 +52,7 @@ class UsersRestAPI(Resource):
 
 
 class UsersAllAPI(Resource):
+    @token_auth.login_required
     def get(self):
         """
         Gets paged list of all usernames
@@ -59,6 +62,12 @@ class UsersAllAPI(Resource):
         produces:
           - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded sesesion token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: query
               name: page
               description: Page of results user requested
@@ -78,6 +87,8 @@ class UsersAllAPI(Resource):
         responses:
             200:
                 description: Users found
+            401:
+                description: Unauthorized - Invalid credentials
             500:
                 description: Internal Server Error
         """
@@ -130,6 +141,8 @@ class UsersQueriesUsernameAPI(Resource):
         responses:
             200:
                 description: User found
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: User not found
             500:
@@ -149,6 +162,7 @@ class UsersQueriesUsernameAPI(Resource):
 
 
 class UsersQueriesUsernameFilterAPI(Resource):
+    @token_auth.login_required
     def get(self, username):
         """
         Gets paged lists of users matching username filter
@@ -158,6 +172,12 @@ class UsersQueriesUsernameFilterAPI(Resource):
         produces:
           - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: username
               in: path
               description: Partial or full username
@@ -174,6 +194,8 @@ class UsersQueriesUsernameFilterAPI(Resource):
         responses:
             200:
                 description: Users found
+            401:
+                description: Unauthorized - Invalid credentials
             404:
                 description: User not found
             500:
