@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
@@ -10,7 +10,7 @@ import SetTaskSizes from './setTaskSizes';
 import TrimProject from './trimProject';
 import NavButtons from './navButtons';
 import Review from './review';
-import { MAP_MAX_AREA } from '../../config';
+import { MAP_MAX_AREA, API_URL } from '../../config';
 
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
@@ -21,9 +21,32 @@ export const paintOptions = {
   'fill-opacity': 0.3,
 };
 
-const ProjectCreate = () => {
+const ProjectCreate = props => {
   const token = useSelector(state => state.auth.get('token'));
   const [step, setStep] = useState(1);
+  const [cloneProjectName, setCloneProjectName] = useState(null);
+
+  const func = useCallback(
+    async projectId => {
+      const res = await fetch(`${API_URL}projects/${projectId}`);
+      const res_json = await res.json();
+      setCloneProjectName(res_json.projectInfo.name);
+    },
+    [setCloneProjectName],
+  );
+
+  const projectId = parseInt(props['*']);
+
+  useLayoutEffect(() => {
+    if (isNaN(projectId) === false) {
+      func(projectId);
+    }
+  }, [projectId, func]);
+
+  let cloneProjectData = {
+    id: projectId,
+    name: cloneProjectName,
+  };
 
   // Project information.
   const [metadata, updateMetadata] = useState({
@@ -65,7 +88,14 @@ const ProjectCreate = () => {
       case 3:
         return <TrimProject mapObj={mapObj} metadata={metadata} updateMetadata={updateMetadata} />;
       case 4:
-        return <Review metadata={metadata} updateMetadata={updateMetadata} token={token} />;
+        return (
+          <Review
+            metadata={metadata}
+            updateMetadata={updateMetadata}
+            token={token}
+            cloneProjectData={cloneProjectData}
+          />
+        );
       default:
         return;
     }
@@ -75,7 +105,11 @@ const ProjectCreate = () => {
     <div className="cf bg-tan pb3 pl4">
       <div className="fl vh-75-l pt3 w-30">
         <h2 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
-          <FormattedMessage {...messages.createProject} />
+          {cloneProjectName === null ? (
+            <FormattedMessage {...messages.createProject} />
+          ) : (
+            'Clone Project #' + cloneProjectName
+          )}
         </h2>
         {renderCurrentStep()}
         <NavButtons
@@ -96,15 +130,23 @@ const ProjectCreate = () => {
         />
         <div className="cf left-1 bottom-2 absolute">
           <p
-            className={`fl mr2 pa1 f7-ns white ${ metadata.area > MAP_MAX_AREA || metadata.area === 0 ? 'bg-red' : 'bg-green'}`}
+            className={`fl mr2 pa1 f7-ns white ${
+              metadata.area > MAP_MAX_AREA || metadata.area === 0 ? 'bg-red' : 'bg-green'
+            }`}
           >
             <FormattedMessage
               {...messages.areaSize}
-              values={{area: <FormattedNumber value={metadata.area} unit="kilometer" />, sq: <sup>2</sup>}}
+              values={{
+                area: <FormattedNumber value={metadata.area} unit="kilometer" />,
+                sq: <sup>2</sup>,
+              }}
             />
           </p>
           <p className="fl bg-blue-light white mr2 pa1 f7-ns">
-            <FormattedMessage {...messages.taskNumber} values={{n: <FormattedNumber value={metadata.tasksNo} />}} />
+            <FormattedMessage
+              {...messages.taskNumber}
+              values={{ n: <FormattedNumber value={metadata.tasksNo} /> }}
+            />
           </p>
         </div>
       </div>

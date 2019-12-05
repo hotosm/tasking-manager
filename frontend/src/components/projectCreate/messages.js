@@ -6,38 +6,35 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   createProject: {
     id: 'management.projects.create.title',
-    defaultMessage:
-      'Create project',
+    defaultMessage: 'Create project',
+  },
+  clone: {
+    id: 'management.projects.create.clone',
+    defaultMessage: 'Clone',
   },
   areaSize: {
     id: 'management.projects.create.area_size',
-    defaultMessage:
-      'Area size: {area} km{sq}',
+    defaultMessage: 'Area size: {area} km{sq}',
   },
   taskNumber: {
     id: 'management.projects.create.tasks',
-    defaultMessage:
-      'Number of tasks: {n}',
+    defaultMessage: 'Number of tasks: {n}',
   },
   step1: {
     id: 'management.projects.create.steps.1',
-    defaultMessage:
-      'Step 1: define area',
+    defaultMessage: 'Step 1: define area',
   },
   step2: {
     id: 'management.projects.create.steps.2',
-    defaultMessage:
-      'Step 2: set tasks sizes',
+    defaultMessage: 'Step 2: set tasks sizes',
   },
   step3: {
     id: 'management.projects.create.steps.3',
-    defaultMessage:
-      'Step 3: trim task grid',
+    defaultMessage: 'Step 3: trim task grid',
   },
   step4: {
     id: 'management.projects.create.steps.4',
-    defaultMessage:
-      'Step 4: review',
+    defaultMessage: 'Step 4: review',
   },
   name: {
     id: 'management.projects.create.review_tasks.name',
@@ -49,8 +46,7 @@ export default defineMessages({
   },
   reviewTaskNumberMessage: {
     id: 'management.projects.create.review_tasks.number',
-    defaultMessage:
-      'Your project will be created with {n} tasks.',
+    defaultMessage: 'Your project will be created with {n} tasks.',
   },
   task: {
     id: 'management.projects.create.review_tasks.task',
@@ -62,8 +58,7 @@ export default defineMessages({
   },
   trimTasksDescriptionLine1: {
     id: 'management.projects.create.trim_tasks.description.1',
-    defaultMessage:
-      'Trim the task grid to the area of interest (optional).',
+    defaultMessage: 'Trim the task grid to the area of interest (optional).',
   },
   trimTasksDescriptionLine2: {
     id: 'management.projects.create.trim_tasks.description.2',
@@ -72,23 +67,19 @@ export default defineMessages({
   },
   trimToAOI: {
     id: 'management.projects.create.trim_tasks.trim_to_aoi',
-    defaultMessage:
-      'Clip tasks to the Area of Interest',
+    defaultMessage: 'Clip tasks to the Area of Interest',
   },
   taskSizes: {
     id: 'management.projects.create.task_sizes.description',
-    defaultMessage:
-      'General task size',
+    defaultMessage: 'General task size',
   },
   smaller: {
     id: 'management.projects.create.task_sizes.smaller',
-    defaultMessage:
-      'Smaller',
+    defaultMessage: 'Smaller',
   },
   larger: {
     id: 'management.projects.create.task_sizes.larger',
-    defaultMessage:
-      'Larger',
+    defaultMessage: 'Larger',
   },
   splitTaskDescription: {
     id: 'management.projects.create.split_task.description',
@@ -97,87 +88,70 @@ export default defineMessages({
   },
   reset: {
     id: 'management.projects.create.reset.button',
-    defaultMessage:
-      'Reset',
+    defaultMessage: 'Reset',
   },
   taskNumberMessage: {
     id: 'management.projects.create.split.tasks.number',
-    defaultMessage:
-      'A new project will be created with {n} tasks.',
+    defaultMessage: 'A new project will be created with {n} tasks.',
   },
   taskAreaMessage: {
     id: 'management.projects.create.split.tasks.area',
-    defaultMessage:
-      'The size of each task is approximately {area} km{sq}.',
+    defaultMessage: 'The size of each task is approximately {area} km{sq}.',
   },
   splitByDrawing: {
     id: 'management.projects.create.split_task.draw.button',
-    defaultMessage:
-      'Draw area to split',
+    defaultMessage: 'Draw area to split',
   },
   splitByClicking: {
     id: 'management.projects.create.split_task.click.button',
-    defaultMessage:
-      'Click to split',
+    defaultMessage: 'Click to split',
   },
   uploadError: {
     id: 'management.projects.create.upload_file.error',
-    defaultMessage:
-      'Error when importing geometry. Verify if the file you uploaded is correct.',
+    defaultMessage: 'Error when importing geometry. Verify if the file you uploaded is correct.',
   },
   backToPrevious: {
     id: 'management.projects.create.button.back',
-    defaultMessage:
-      'Back to previous',
+    defaultMessage: 'Back to previous',
   },
   next: {
     id: 'management.projects.create.button.next',
-    defaultMessage:
-      'Next',
+    defaultMessage: 'Next',
   },
   trim: {
     id: 'management.projects.create.button.trim',
-    defaultMessage:
-      'Trim',
+    defaultMessage: 'Trim',
   },
   draw: {
     id: 'management.projects.create.button.draw',
-    defaultMessage:
-      'Draw',
+    defaultMessage: 'Draw',
   },
   uploadFile: {
     id: 'management.projects.create.button.upload_file',
-    defaultMessage:
-      'Upload file',
+    defaultMessage: 'Upload file',
   },
   deleteArea: {
     id: 'management.projects.create.button.delete_area',
-    defaultMessage:
-      'Delete area',
+    defaultMessage: 'Delete area',
   },
   arbitraryTasks: {
     id: 'management.projects.create.arbitrary_tasks',
-    defaultMessage:
-      'Arbitrary tasks',
+    defaultMessage: 'Arbitrary tasks',
   },
   drawDescription: {
     id: 'management.projects.create.draw.description',
-    defaultMessage:
-      'Draw the Area of Interest on the map.',
+    defaultMessage: 'Draw the Area of Interest on the map.',
   },
   importDescription: {
     id: 'management.projects.create.upload.description',
-    defaultMessage:
-      'Import a GeoJSON, KML, OSM or zipped SHP file.',
+    defaultMessage: 'Import a GeoJSON, KML, OSM or zipped SHP file.',
   },
   option1: {
     id: 'management.projects.create.options.1',
-    defaultMessage:
-      'Option 1',
+    defaultMessage: 'Option 1',
   },
   option2: {
     id: 'management.projects.create.options.2',
-    defaultMessage:
-      'Option 2',
+    defaultMessage: 'Option 2',
   },
 });
