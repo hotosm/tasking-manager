@@ -354,7 +354,7 @@ def add_api_endpoints(app):
         ProjectsCampaignsAPI,
         "/api/v2/projects/<int:project_id>/campaigns/<int:campaign_id>/",
         endpoint="assign_remove_campaign_to_project",
-        methods=["PUT", "DELETE"],
+        methods=["POST", "DELETE"],
     )
 
     # Projects actions endoints
@@ -583,7 +583,7 @@ def add_api_endpoints(app):
         OrganisationsCampaignsAPI,
         "/api/v2/organisations/<int:organisation_id>/campaigns/<int:campaign_id>/",
         endpoint="assign_campaign_to_organisation",
-        methods=["PUT", "DELETE"],
+        methods=["POST", "DELETE"],
     )
 
     # Teams REST endpoints
