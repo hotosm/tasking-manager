@@ -9,7 +9,7 @@ from server.services.users.authentication_service import token_auth
 
 class ProjectsCampaignsAPI(Resource):
     @token_auth.login_required
-    def put(self):
+    def post(self):
         """
         Assign a campaign for a project
         ---
