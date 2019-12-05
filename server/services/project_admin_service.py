@@ -166,7 +166,7 @@ class ProjectAdminService:
         """ Deletes project if it has no completed tasks """
 
         project = ProjectAdminService._get_project_by_id(project_id)
-        is_admin = UserService.is_user_admin(authenticated_user_id)
+        is_admin = UserService.is_user_an_admin(authenticated_user_id)
         is_pm = UserService.is_user_a_project_manager(authenticated_user_id)
 
         if is_pm and not is_admin:
