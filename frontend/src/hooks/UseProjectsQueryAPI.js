@@ -3,9 +3,11 @@ import {
   StringParam,
   stringify as stringifyUQP,
   NumberParam,
+  BooleanParam,
 } from 'use-query-params';
 import { CommaArrayParam } from '../utils/CommaArrayParam';
 import { useThrottle } from '../hooks/UseThrottle';
+import { useSelector } from 'react-redux';
 
 /* See also moreFiltersForm, the useQueryParams are duplicated there for specific modular usage */
 /* This one is e.g. used for updating the URL when returning to /explore
@@ -26,6 +28,10 @@ const projectQueryAllSpecification = {
   text: StringParam,
   orderBy: StringParam,
   orderByType: StringParam,
+  createdByMe: BooleanParam,
+  favoritedByMe: BooleanParam,
+  contributedToByMe: BooleanParam,
+  createdByMeArchived: BooleanParam
 };
 
 /* This can be passed into project API or used independently */
@@ -47,6 +53,10 @@ const remapParamsToAPI = param => {
     page: 'page',
     orderBy: 'orderBy',
     orderByType: 'orderByType',
+    createdByMe: 'createdByMe',
+    favoritedByMe: 'favoritedByMe',
+    contributedToByMe: 'contributedToByMe',
+    createdByMeArchived: 'createdByMeArchived'
   };
   function mapObject(obj, fn) {
     return Object.fromEntries(Object.entries(obj).map(fn));
@@ -106,6 +116,10 @@ export const useProjectsQueryAPI = (
   forceUpdate = null,
 ) => {
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
+
+  /* Get the user bearer token from the Redux store */
+  const token = useSelector(state => state.auth.get('token'));
+
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
     isError: false,
@@ -126,16 +140,32 @@ export const useProjectsQueryAPI = (
         type: 'FETCH_INIT',
       });
 
+
+      const headers = token ? { Authorization: `Token ${token}` } : {};
+
       try {
         const result = await axios({
           url: `${API_URL}projects/`,
           method: 'get',
           params: remapParamsToAPI(throttledExternalQueryParamsState),
+          headers: headers,
           cancelToken: new CancelToken(function executor(c) {
             // An executor function receives a cancel function as a parameter
             cancel = { end: c, params: throttledExternalQueryParamsState };
           }),
         });
+
+         const meh= {
+          url: `${API_URL}projects/`,
+          method: 'get',
+          params: remapParamsToAPI(throttledExternalQueryParamsState),
+          ...headers,
+          cancelToken: new CancelToken(function executor(c) {
+            // An executor function receives a cancel function as a parameter
+            cancel = { end: c, params: throttledExternalQueryParamsState };
+          }),
+        }
+        console.log(meh)
 
         if (!didCancel) {
           if (result && result.headers && result.headers['content-type'].indexOf('json') !== -1) {
@@ -194,7 +224,7 @@ export const useProjectsQueryAPI = (
       // console.log("tried to cancel on effect cleanup ",cancel.params)
       cancel.end();
     };
-  }, [throttledExternalQueryParamsState, forceUpdate]);
+  }, [throttledExternalQueryParamsState, forceUpdate, token]);
 
   return [state, dispatch];
 };

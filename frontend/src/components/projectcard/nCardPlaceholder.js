@@ -4,7 +4,7 @@ import { TextBlock, MediaBlock, RectShape } from 'react-placeholder/lib/placehol
 
 export const projectCardPlaceholderTemplate = (cardWidthClass = 'w-25-l') => (n, i) => (
   <div className={`fl ${cardWidthClass} base-font w-50-m w-100 mb3 ph2 blue-dark mw5`} key={i}>
-    <div className="pv3 ph3 ba br1 b--grey-light shadow-hover">
+    <div className="pv3 ph3 ba br1 b--grey-light shadow-hover bg-white">
       <div className="w-50 red dib">
         {' '}
         <MediaBlock
