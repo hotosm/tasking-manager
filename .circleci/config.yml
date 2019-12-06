@@ -323,6 +323,15 @@ workflows:
         matomo_site_id: MATOMO_SITE_ID_PRODUCTION
         matomo_endpoint: MATOMO_ENDPOINT_PRODUCTION
         mapbox_token: MAPBOX_TOKEN
+        org_name: TM_ORG_NAME
+        org_code: TM_ORG_CODE
+        org_url: TM_ORG_URL
+        org_privacy_policy: TM_ORG_PRIVACY_POLICY
+        org_twitter: TM_ORG_TWITTER
+        org_fb: TM_ORG_FB
+        org_instagram: TM_ORG_INSTAGRAM
+        org_youtube: TM_ORG_YOUTUBE
+        org_github: TM_ORG_GITHUB
     - deploy:
         name: teachosm
         filters:
@@ -354,6 +363,15 @@ workflows:
         matomo_site_id: MATOMO_SITE_ID_TEACHOSM
         matomo_endpoint: MATOMO_ENDPOINT_TEACHOSM
         mapbox_token: MAPBOX_TOKEN
+        org_name: TM_ORG_NAME
+        org_code: TM_ORG_CODE
+        org_url: TM_ORG_URL
+        org_privacy_policy: TM_ORG_PRIVACY_POLICY
+        org_twitter: TM_ORG_TWITTER
+        org_fb: TM_ORG_FB
+        org_instagram: TM_ORG_INSTAGRAM
+        org_youtube: TM_ORG_YOUTUBE
+        org_github: TM_ORG_GITHUB
     - deploy:
         name: assisted
         filters:
@@ -385,6 +403,15 @@ workflows:
         matomo_site_id: MATOMO_SITE_ID_ASSISTED
         matomo_endpoint: MATOMO_ENDPOINT_ASSISTED
         mapbox_token: MAPBOX_TOKEN
+        org_name: TM_ORG_NAME
+        org_code: TM_ORG_CODE
+        org_url: TM_ORG_URL
+        org_privacy_policy: TM_ORG_PRIVACY_POLICY
+        org_twitter: TM_ORG_TWITTER
+        org_fb: TM_ORG_FB
+        org_instagram: TM_ORG_INSTAGRAM
+        org_youtube: TM_ORG_YOUTUBE
+        org_github: TM_ORG_GITHUB
     - deploy:
         name: tm4
         filters:
@@ -416,12 +443,12 @@ workflows:
         matomo_site_id: MATOMO_SITE_ID_TM4
         matomo_endpoint: MATOMO_ENDPOINT_TM4
         mapbox_token: MAPBOX_TOKEN
-        org_name: TM_ORG_NAME                       #='Humanitarian OpenStreetMap Team'
-        org_code: TM_ORG_CODE                       #=HOT
-        org_url: TM_ORG_URL                         #='hotosm.org' # Don't use http or https
-        org_privacy_policy: TM_ORG_PRIVACY_POLICY   #='hotosm.org/privacy'
-        org_twitter: TM_ORG_TWITTER                 #=http://twitter.com/hotosm/
-        org_fb: TM_ORG_FB                           #=https://www.facebook.com/hotosm
-        org_instagram: TM_ORG_INSTAGRAM             #=https://www.instagram.com/hot.osm/
-        org_youtube: TM_ORG_YOUTUBE                 #=https://www.youtube.com/user/hotosm
-        org_github: TM_ORG_GITHUB                   #=https://github.com/hotosm/
+        org_name: TM_ORG_NAME
+        org_code: TM_ORG_CODE
+        org_url: TM_ORG_URL
+        org_privacy_policy: TM_ORG_PRIVACY_POLICY
+        org_twitter: TM_ORG_TWITTER
+        org_fb: TM_ORG_FB
+        org_instagram: TM_ORG_INSTAGRAM
+        org_youtube: TM_ORG_YOUTUBE
+        org_github: TM_ORG_GITHUB
