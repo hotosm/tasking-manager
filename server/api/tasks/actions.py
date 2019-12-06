@@ -26,11 +26,10 @@ from server.services.mapping_service import MappingService, MappingServiceError
 
 
 class TasksActionsMappingLockAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
         """
-        Locks the task for mapping
+        Locks a task for mapping
         ---
         tags:
             - tasks
@@ -51,13 +50,13 @@ class TasksActionsMappingLockAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
             - name: task_id
               in: path
-              description: The unique task ID
+              description: Unique task ID
               required: true
               type: integer
               default: 1
@@ -104,11 +103,10 @@ class TasksActionsMappingLockAPI(Resource):
 
 
 class TasksActionsMappingStopAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
         """
-        Unlock task that is locked for mapping resetting it to it's last status
+        Unlock a task that is locked for mapping resetting it to it's last status
         ---
         tags:
             - tasks
@@ -129,13 +127,13 @@ class TasksActionsMappingStopAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
             - name: task_id
               in: path
-              description: The unique task ID
+              description: Unique task ID
               required: true
               type: integer
               default: 1
@@ -189,11 +187,10 @@ class TasksActionsMappingStopAPI(Resource):
 
 
 class TasksActionsMappingUnlockAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
         """
-        Unlocks the task after mapping completed
+        Unlocks a task after mapping completed
         ---
         tags:
             - tasks
@@ -208,13 +205,13 @@ class TasksActionsMappingUnlockAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
             - name: task_id
               in: path
-              description: The unique task ID
+              description: Unique task ID
               required: true
               type: integer
               default: 1
@@ -276,11 +273,10 @@ class TasksActionsMappingUnlockAPI(Resource):
 
 
 class TasksActionsMappingUndoAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
         """
-        Get task for mapping
+        Undo a task's mapping status
         ---
         tags:
             - tasks
@@ -301,13 +297,13 @@ class TasksActionsMappingUndoAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
             - name: task_id
               in: path
-              description: The unique task ID
+              description: Unique task ID
               required: true
               type: integer
               default: 1
@@ -338,7 +334,6 @@ class TasksActionsMappingUndoAPI(Resource):
 
 
 class TasksActionsValidationLockAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -363,7 +358,7 @@ class TasksActionsValidationLockAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The ID of the project the tasks are associated with
+              description: Project ID the tasks are associated with
               required: true
               type: integer
               default: 1
@@ -421,7 +416,6 @@ class TasksActionsValidationLockAPI(Resource):
 
 
 class TasksActionsValidatioStopAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -446,7 +440,7 @@ class TasksActionsValidatioStopAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
@@ -499,7 +493,6 @@ class TasksActionsValidatioStopAPI(Resource):
 
 
 class TasksActionsValidationUnlockAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -524,7 +517,7 @@ class TasksActionsValidationUnlockAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
@@ -576,170 +569,6 @@ class TasksActionsValidationUnlockAPI(Resource):
             return {"Error": "Task unlock failed"}, 500
 
 
-class ProjectValidateAll(Resource):
-    @tm.pm_only()
-    @token_auth.login_required
-    def post(self, project_id):
-        """
-        Validate all mapped tasks on a project
-        ---
-        tags:
-            - tasks
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: project_id
-              in: path
-              description: The unique project ID
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: All mapped tasks validated
-            401:
-                description: Unauthorized - Invalid credentials
-            500:
-                description: Internal Server Error
-        """
-        try:
-            ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id)
-            return {"Success": "All tasks validated"}, 200
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": "Unable to validate tasks"}, 500
-
-
-class ProjectInvalidateAll(Resource):
-    @tm.pm_only()
-    @token_auth.login_required
-    def post(self, project_id):
-        """
-        Invalidate all mapped tasks on a project
-        ---
-        tags:
-            - tasks
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: project_id
-              in: path
-              description: The unique project ID
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: All mapped tasks invalidated
-            401:
-                description: Unauthorized - Invalid credentials
-            500:
-                description: Internal Server Error
-        """
-        try:
-            ValidatorService.invalidate_all_tasks(project_id, tm.authenticated_user_id)
-            return {"Success": "All tasks invalidated"}, 200
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": "Unable to invalidate tasks"}, 500
-
-
-class ProjectResetBadImagery(Resource):
-    @tm.pm_only()
-    @token_auth.login_required
-    def post(self, project_id):
-        """
-        Mark all bad imagery tasks ready for mapping
-        ---
-        tags:
-            - tasks
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: project_id
-              in: path
-              description: The unique project ID
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: All bad imagery tasks marked ready for mapping
-            401:
-                description: Unauthorized - Invalid credentials
-            500:
-                description: Internal Server Error
-        """
-        try:
-            MappingService.reset_all_badimagery(project_id, tm.authenticated_user_id)
-            return {"Success": "All bad imagery tasks marked ready for mapping"}, 200
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": "Unable to reset tasks"}, 500
-
-
-class ProjectResetAll(Resource):
-    @tm.pm_only()
-    @token_auth.login_required
-    def post(self, project_id):
-        """
-        Reset all tasks on project back to ready, preserving history.
-        ---
-        tags:
-            - tasks
-        produces:
-            - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: project_id
-              in: path
-              description: The unique project ID
-              required: true
-              type: integer
-              default: 1
-        responses:
-            200:
-                description: All tasks reset
-            401:
-                description: Unauthorized - Invalid credentials
-            500:
-                description: Internal Server Error
-        """
-        try:
-            ProjectAdminService.reset_all_tasks(project_id, tm.authenticated_user_id)
-            return {"Success": "All tasks reset"}, 200
-        except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": "Unable to reset tasks"}, 500
-
-
 class TasksActionsMapAllAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
@@ -760,7 +589,7 @@ class TasksActionsMapAllAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -801,7 +630,7 @@ class TasksActionsValidateAllAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -842,7 +671,7 @@ class TasksActionsInvalidateAllAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -868,7 +697,7 @@ class TasksActionsResetBadImageryAllAPI(Resource):
     @token_auth.login_required
     def post(self, project_id):
         """
-        Mark all bad imagery tasks ready for mapping
+        Set all bad imagery tasks as ready for mapping
         ---
         tags:
             - tasks
@@ -883,7 +712,7 @@ class TasksActionsResetBadImageryAllAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -909,7 +738,7 @@ class TasksActionsResetAllAPI(Resource):
     @token_auth.login_required
     def post(self, project_id):
         """
-        Reset all tasks on project back to ready, preserving history.
+        Reset all tasks on project back to ready, preserving history
         ---
         tags:
             - tasks
@@ -924,7 +753,7 @@ class TasksActionsResetAllAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -946,7 +775,6 @@ class TasksActionsResetAllAPI(Resource):
 
 
 class TasksActionsSplitAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id, task_id):
         """
@@ -971,13 +799,13 @@ class TasksActionsSplitAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
             - name: task_id
               in: path
-              description: The unique task ID
+              description: Unique task ID
               required: true
               type: integer
               default: 1
