@@ -39,7 +39,7 @@ export function OrderBySelector(props) {
       value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}` || []}
       options={options}
       display={<FormattedMessage {...messages.sortBy} />}
-      className={'ba b--grey-light bg-white mr1 f6 v-mid pv2'}
+      className={`ba b--grey-light bg-white mr1 f6 v-mid pv2 ${props.className || ""}`}
     />
   );
 }
