@@ -36,25 +36,25 @@ class UsersActionsSetUsersAPI(Resource):
                   properties:
                       name:
                           type: string
-                          default: Your Name
+                          example: Your Name
                       city:
                           type: string
-                          default: Your City
+                          example: Your City
                       country:
                           type: string
-                          default: Your Country
+                          example: Your Country
                       emailAddress:
                           type: string
-                          default: test@test.com
+                          example: test@test.com
                       twitterId:
                           type: string
-                          default: twitter handle without @
+                          example: twitter handle without @
                       facebookId:
                           type: string
-                          default: facebook username
+                          example: facebook username
                       linkedinId:
                           type: string
-                          default: linkedin username
+                          example: linkedin username
                       gender:
                           type: string
                           description: gender
@@ -103,7 +103,7 @@ class UsersActionsSetLevelAPI(Resource):
     @token_auth.login_required
     def patch(self, username, level):
         """
-        Allows PMs to set a users mapping level
+        Allows PMs to set a user's mapping level
         ---
         tags:
           - users
@@ -118,7 +118,7 @@ class UsersActionsSetLevelAPI(Resource):
               default: Token sessionTokenHere==
             - name: username
               in: path
-              description: The users username
+              description: Mapper's OpenStreetMap username
               required: true
               type: string
               default: Thinkwhere
@@ -158,7 +158,7 @@ class UsersActionsSetRoleAPI(Resource):
     @token_auth.login_required
     def patch(self, username, role):
         """
-        Allows PMs to set the users role
+        Allows PMs to set a user's role
         ---
         tags:
           - users
@@ -173,7 +173,7 @@ class UsersActionsSetRoleAPI(Resource):
               default: Token sessionTokenHere==
             - name: username
               in: path
-              description: The users username
+              description: Mapper's OpenStreetMap username
               required: true
               type: string
               default: Thinkwhere
@@ -294,7 +294,7 @@ class UsersActionsVerifyEmailAPI(Resource):
 class UsersActionsRegisterEmailAPI(Resource):
     def post(self):
         """
-        Registers users without OSM account.
+        Registers users without OpenStreetMap account
         ---
         tags:
           - users
@@ -309,7 +309,7 @@ class UsersActionsRegisterEmailAPI(Resource):
                   properties:
                       email:
                           type: string
-                          default: test@test.com
+                          example: test@test.com
         responses:
             200:
                 description: User registered
@@ -352,7 +352,6 @@ class UsersActionsRegisterEmailAPI(Resource):
 
 
 class UsersActionsSetInterestsAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self):
         """
