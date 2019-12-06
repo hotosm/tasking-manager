@@ -129,6 +129,24 @@ jobs:
         type: env_var_name
       mapbox_token:
         type: env_var_name
+      org_name:
+        type: env_var_name
+      org_code:
+        type: env_var_name
+      org_url:
+        type: env_var_name
+      org_privacy_policy:
+        type: env_var_name
+      org_twitter:
+        type: env_var_name
+      org_fb:
+        type: env_var_name
+      org_instagram:
+        type: env_var_name
+      org_youtube:
+        type: env_var_name
+      org_github:
+        type: env_var_name
     working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3.7-buster
@@ -138,7 +156,7 @@ jobs:
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"MatomoSiteID\":\"${<< parameters.matomo_site_id >>}\", \"MatomoEndpoint\":\"${<< parameters.matomo_endpoint >>}\", \"MapboxToken\":\"${<< parameters.mapbox_token >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"MatomoSiteID\":\"${<< parameters.matomo_site_id >>}\", \"MatomoEndpoint\":\"${<< parameters.matomo_endpoint >>}\", \"MapboxToken\":\"${<< parameters.mapbox_token >>}\", \"OrgName\":\"${<< parameters.org_name >>}\", \"OrgCode\":\"${<< parameters.org_code >>}\", \"OrgUrl\":\"${<< parameters.org_url >>}\", \"OrgPrivacyPolicy\":\"${<< parameters.org_privacy_policy >>}\", \"OrgTwitter\":\"${<< parameters.org_twitter >>}\", \"OrgFacebook\":\"${<< parameters.org_fb >>}\", \"OrgInstagram\":\"${<< parameters.org_instagram >>}\", \"OrgYoutube\":\"${<< parameters.org_youtube >>}\", \"OrgGitHub\":\"${<< parameters.org_github >>}\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -265,6 +283,15 @@ workflows:
         matomo_site_id: MATOMO_SITE_ID_STAGING
         matomo_endpoint: MATOMO_ENDPOINT_STAGING
         mapbox_token: MAPBOX_TOKEN
+        org_name: TM_ORG_NAME                       #='Humanitarian OpenStreetMap Team'
+        org_code: TM_ORG_CODE                       #=HOT
+        org_url: TM_ORG_URL                         #='hotosm.org' # Don't use http or https
+        org_privacy_policy: TM_ORG_PRIVACY_POLICY   #='hotosm.org/privacy'
+        org_twitter: TM_ORG_TWITTER                 #=http://twitter.com/hotosm/
+        org_fb: TM_ORG_FB                           #=https://www.facebook.com/hotosm
+        org_instagram: TM_ORG_INSTAGRAM             #=https://www.instagram.com/hot.osm/
+        org_youtube: TM_ORG_YOUTUBE                 #=https://www.youtube.com/user/hotosm
+        org_github: TM_ORG_GITHUB                   #=https://github.com/hotosm/
     - deploy:
         name: production
         filters:
@@ -389,4 +416,12 @@ workflows:
         matomo_site_id: MATOMO_SITE_ID_TM4
         matomo_endpoint: MATOMO_ENDPOINT_TM4
         mapbox_token: MAPBOX_TOKEN
-
+        org_name: TM_ORG_NAME                       #='Humanitarian OpenStreetMap Team'
+        org_code: TM_ORG_CODE                       #=HOT
+        org_url: TM_ORG_URL                         #='hotosm.org' # Don't use http or https
+        org_privacy_policy: TM_ORG_PRIVACY_POLICY   #='hotosm.org/privacy'
+        org_twitter: TM_ORG_TWITTER                 #=http://twitter.com/hotosm/
+        org_fb: TM_ORG_FB                           #=https://www.facebook.com/hotosm
+        org_instagram: TM_ORG_INSTAGRAM             #=https://www.instagram.com/hot.osm/
+        org_youtube: TM_ORG_YOUTUBE                 #=https://www.youtube.com/user/hotosm
+        org_github: TM_ORG_GITHUB                   #=https://github.com/hotosm/
