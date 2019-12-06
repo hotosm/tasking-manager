@@ -56,18 +56,19 @@ export const ProjectSearchResults = props => {
           customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
           ready={!state.isLoading}
         >
-          <ExploreProjectCards pageOfCards={state.projects} cardWidthClass={cardWidthClass} />
+          <ExploreProjectCards pageOfCards={state.projects} cardWidthClass={cardWidthClass} showBottomButtons={props.showBottomButtons}/>
         </ReactPlaceholder>
       </div>
     </div>
   );
 };
 
-function ExploreProjectCards({ pageOfCards }: Object, cardWidthClass: String) {
-  if (pageOfCards && pageOfCards.length === 0) {
+const ExploreProjectCards = props => {
+  if (props.pageOfCards && props.pageOfCards.length === 0) {
     return null;
   }
-  return pageOfCards.map((card, n) => (
-    <ProjectCard cardWidthClass={cardWidthClass} {...card} key={n} />
+  /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */
+  return props.pageOfCards.map((card, n) => (
+    <ProjectCard cardWidthClass={props.cardWidthClass} {...card} key={n} showBottomButtons={props.showBottomButtons}/>
   ));
 }

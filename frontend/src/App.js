@@ -10,7 +10,7 @@ import { ProjectCreate } from './components/projectCreate/create';
 import { ORG_NAME } from './config';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
-import { ProjectsPage, ProjectsPageIndex, MoreFilters, ProjectDetailPage } from './views/project';
+import { MyProjectsPage, ProjectsPage, ProjectsPageIndex, MoreFilters, ProjectDetailPage } from './views/project';
 import { Authorized } from './views/authorized';
 import { Login } from './views/login';
 import { Welcome } from './views/welcome';
@@ -45,6 +45,7 @@ function App() {
             <Welcome path="welcome" />
             <Settings path="settings" />
             <EmailVerification path="verify-email" />
+            <MyProjectsPage path="projects/" />
             <SelectTask path="projects/:id/map" />
             <ProjectDetailPage path="projects/:id" />
             <Redirect from="project/:id" to="projects/:id" noThrow />

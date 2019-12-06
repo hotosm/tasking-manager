@@ -12,7 +12,7 @@ import { OrderBySelector } from './orderBy';
 import { SwitchToggle } from '../switch';
 
 
-const ShowMapToggle = props => {
+export const ShowMapToggle = props => {
   const dispatch = useDispatch();
   const isMapShown = useSelector(state => state.preferences['mapShown']);
   return (
