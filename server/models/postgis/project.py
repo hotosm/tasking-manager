@@ -410,6 +410,40 @@ class Project(db.Model):
 
         return stats_dto
 
+    def get_mapped_area(project_id: int):
+        """ Get all tasks that are mapped """
+        sql = '''SELECT sum(ST_Area(geom))
+                FROM (
+                SELECT t.geometry :: geometry geom
+                FROM tasks t
+                WHERE t.project_id = :project_id AND t.task_status IN (2,4)) sub;
+                '''
+
+        result = db.engine.execute(text(sql), project_id=project_id)
+        if result.rowcount == 0:
+            raise NotFound()
+
+        area = result.next()[0]
+        result.close()
+        return area or 0
+
+    def get_validated_area(project_id: int):
+        """ Get all tasks that are validated """
+        sql = '''SELECT sum(ST_Area(geom))
+                FROM (
+                SELECT t.geometry :: geometry geom
+                FROM tasks t
+                WHERE t.project_id = :project_id AND t.task_status = 4) s;
+                '''
+
+        result = db.engine.execute(text(sql), project_id=project_id)
+        if result.rowcount == 0:
+            raise NotFound()
+
+        area = result.next()[0]
+        result.close()
+        return area or 0
+
     def get_project_stats(self) -> ProjectStatsDTO:
         """ Create Project Summary model for postgis project object"""
         project_stats = ProjectStatsDTO()
@@ -428,6 +462,8 @@ class Project(db.Model):
         project_stats.area = area
         project_stats.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
         project_stats.total_tasks = self.total_tasks
+        project_stats.tasks_mapped = self.tasks_mapped
+        project_stats.tasks_validated = self.tasks_validated
         project_stats.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
         project_stats.percent_mapped = Project.calculate_tasks_percent('mapped', self.total_tasks,
                                                                        self.tasks_mapped, self.tasks_validated,
@@ -479,6 +515,10 @@ class Project(db.Model):
                 if unique_validators:
                     average_validation_time = total_validation_seconds/unique_validators
                     project_stats.average_validation_time = average_validation_time
+
+        # Calculate area_percent_complete to get completion percentage by state according to area
+        project_stats.area_percent_mapped = int((Project.get_mapped_area(self.id) / polygon.area) * 100)
+        project_stats.area_percent_validated = int((Project.get_validated_area(self.id) / polygon.area) * 100)
 
         return project_stats
 
