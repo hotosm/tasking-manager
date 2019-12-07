@@ -307,6 +307,10 @@ class ProjectStatsDTO(Model):
     percent_validated = IntType(serialized_name='percentValidated')
     percent_bad_imagery = IntType(serialized_name='percentBadImagery')
     aoi_centroid = BaseType(serialized_name='aoiCentroid')
+    tasks_mapped = IntType(serialized_name='tasksMapped')
+    tasks_validated = IntType(serialized_name='tasksValidated')
+    area_percent_mapped = IntType(serialized_name='areaPercentMapped')
+    area_percent_validated = IntType(serialized_name='areaPercentValidated')
 
 
 class ProjectUserStatsDTO(Model):

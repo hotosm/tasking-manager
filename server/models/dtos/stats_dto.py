@@ -9,6 +9,8 @@ class UserContribution(Model):
     username = StringType()
     mapped = IntType()
     validated = IntType()
+    project_percent_mapped = IntType()
+    project_percent_validated = IntType()
 
 
 class ProjectContributionsDTO(Model):
