@@ -8,7 +8,7 @@ from server.models.dtos.project_dto import (
     Pagination,
     ProjectSearchBBoxDTO,
 )
-from server.models.postgis.project import Project, ProjectInfo
+from server.models.postgis.project import Project, ProjectInfo, ProjectTeams
 from server.models.postgis.statuses import (
     ProjectStatus,
     MappingLevel,
@@ -220,6 +220,11 @@ class ProjectSearchService:
 
         if search_dto.organisation_id:
             query = query.filter(Organisation.id == search_dto.organisation_id)
+
+        if search_dto.team_id:
+            query = query.join(
+                ProjectTeams, ProjectTeams.project_id == Project.id
+            ).filter(ProjectTeams.team_id == search_dto.team_id)
 
         if search_dto.campaign:
             query = query.join(Campaign, Project.campaign).filter(
