@@ -176,10 +176,47 @@ class TeamService:
         project.delete()
 
     @staticmethod
-    def get_all_teams() -> TeamsListDTO:
-        query = Team.query.distinct()
+    def get_all_teams(
+        team_name_filter: str = None,
+        team_role_filter: str = None,
+        member_filter: int = None,
+        member_request_filter: int = None,
+        manager_filter: int = None,
+    ) -> TeamsListDTO:
+
+        query = db.session.query(Team).outerjoin(TeamMembers).outerjoin(ProjectTeams)
+
+        if team_name_filter:
+            query = query.filter(Team.name.contains(team_name_filter))
+
+        if team_role_filter:
+            try:
+                role = TeamRoles[team_role_filter.upper()].value
+                query = query.filter(ProjectTeams.role == role)
+            except KeyError:
+                pass
+
+        if member_filter:
+            query = query.filter(
+                TeamMembers.user_id == member_filter, TeamMembers.active == True  # noqa
+            )
+
+        if manager_filter:
+            query = query.filter(
+                TeamMembers.user_id == manager_filter,
+                TeamMembers.active == True,  # noqa
+                TeamMembers.function == TeamMemberFunctions.MANAGER.value,
+            )
+
+        if member_request_filter:
+            query = query.filter(
+                TeamMembers.user_id == member_request_filter,
+                TeamMembers.active == False,  # noqa
+            )
+
         teams_list_dto = TeamsListDTO()
-        for team in query:
+
+        for team in query.all():
             team_dto = TeamDTO()
             team_dto.team_id = team.id
             team_dto.name = team.name
