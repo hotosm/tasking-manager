@@ -283,6 +283,32 @@ class TeamsAllAPI(Resource):
           - teams
         produces:
           - application/json
+        parameters:
+            - in: query
+              name: team_name
+              description: name of the team to filter by
+              type: str
+              default: null
+            - in: query
+              name: member
+              description: user id to filter teams that the users belongs to, user must be active.
+              type: str
+              default: null
+            - in: query
+              name: manager
+              description: user id to filter teams that the users has MANAGER role
+              type: str
+              default: null
+            - in: query
+              name: member_request
+              description: user id to filter teams that the user has send invite request to
+              type: str
+              default: null
+            - in: query
+              name: team_role
+              description: team role for project
+              type: str
+              default: null
         responses:
             201:
                 description: Team list returned successfully
@@ -293,8 +319,25 @@ class TeamsAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
+
+        filters = {}
+        filters["team_name_filter"] = request.args.get("team_name")
         try:
-            teams = TeamService.get_all_teams()
+            member_filter = request.args.get("member")
+            filters["member_filter"] = int(member_filter) if member_filter else None
+
+            manager_filter = request.args.get("manager")
+            filters["manager_filter"] = int(manager_filter) if manager_filter else None
+
+            role_filter = request.args.get("team_role")
+            filters["team_role_filter"] = role_filter
+
+            member_request_filter = request.args.get("member_request")
+            filters["member_request_filter"] = (
+                int(member_request_filter) if member_request_filter else None
+            )
+
+            teams = TeamService.get_all_teams(**filters)
             return teams.to_primitive(), 200
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
