@@ -462,7 +462,7 @@ class Project(db.Model):
         project_stats.area = area
         project_stats.total_mappers = db.session.query(User).filter(User.projects_mapped.any(self.id)).count()
         project_stats.total_tasks = self.total_tasks
-        project_stats.tasks_mapped = self.tasks_mapped
+        project_stats.tasks_mapped = self.tasks_mapped + self.tasks_validated
         project_stats.tasks_validated = self.tasks_validated
         project_stats.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
         project_stats.percent_mapped = Project.calculate_tasks_percent('mapped', self.total_tasks,
