@@ -428,6 +428,23 @@ class Project(db.Model):
         result.close()
         return area or 0
 
+    def get_bad_imagery_area(project_id: int):
+        """ Get all tasks that are marked as bad imagery """
+        sql = '''SELECT sum(ST_Area(geom))
+                FROM (
+                SELECT t.geometry :: geometry geom
+                FROM tasks t
+                WHERE t.project_id = :project_id AND t.task_status = 6) sub;
+                '''
+
+        result = db.engine.execute(text(sql), project_id=project_id)
+        if result.rowcount == 0:
+            raise NotFound()
+
+        area = result.next()[0]
+        result.close()
+        return area or 0
+
     def get_project_stats(self) -> ProjectStatsDTO:
         """ Create Project Summary model for postgis project object"""
         project_stats = ProjectStatsDTO()
@@ -448,6 +465,7 @@ class Project(db.Model):
         project_stats.total_tasks = self.total_tasks
         project_stats.tasks_mapped = self.tasks_mapped + self.tasks_validated
         project_stats.tasks_validated = self.tasks_validated
+        project_stats.tasks_bad_imagery = self.tasks_bad_imagery
         project_stats.total_comments = db.session.query(ProjectChat).filter(ProjectChat.project_id == self.id).count()
         project_stats.percent_mapped = Project.calculate_tasks_percent('mapped', self.total_tasks,
                                                                        self.tasks_mapped, self.tasks_validated,
@@ -501,8 +519,8 @@ class Project(db.Model):
                     project_stats.average_validation_time = average_validation_time
 
         # Calculate area_percent_complete to get completion percentage by state according to area
-        project_stats.area_percent_mapped = int((Project.get_mapped_area(self.id) / polygon.area) * 100)
-        project_stats.area_percent_validated = int((Project.get_validated_area(self.id) / polygon.area) * 100)
+        project_stats.area_percent_mapped = int((Project.get_mapped_area(self.id) / (polygon.area - Project.get_bad_imagery_area(self.id))) * 100)
+        project_stats.area_percent_validated = int((Project.get_validated_area(self.id) / (polygon.area - Project.get_bad_imagery_area(self.id))) * 100)
 
         return project_stats
 
