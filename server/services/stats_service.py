@@ -140,6 +140,11 @@ class StatsService:
             user_contrib.username = row[1] if row[1] else row[4]
             user_contrib.mapped = row[2] if row[2] else 0
             user_contrib.validated = row[5] if row[5] else 0
+
+            # Calculate user's contribution percentages
+            project = Project.get(project_id)
+            user_contrib.project_percent_mapped = (user_contrib.mapped / (project.tasks_mapped or 1)) * 100
+            user_contrib.project_percent_validated = (user_contrib.validated / (project.tasks_validated or 1)) * 100
             contrib_dto.user_contributions.append(user_contrib)
         return contrib_dto
 
