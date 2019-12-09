@@ -15,6 +15,9 @@ client/yarn.lock
 server/web/static/dist
 server/web/static/dist/
 
+# Ignore project files #
+server/project-files
+
 # Ignore local logs
 logs/
 *.log
@@ -56,3 +59,7 @@ venv_aws/
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# emacs files #
+\#*\#
+*~
