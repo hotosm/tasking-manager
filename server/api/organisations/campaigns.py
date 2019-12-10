@@ -103,7 +103,7 @@ class OrganisationsCampaignsAPI(Resource):
         except NotFound:
             return {"Error": "No campaign found"}, 404
         except Exception as e:
-            error_msg = f"Messages GET - unhandled error: {str(e)}"
+            error_msg = f"Organisation Campaigns GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -161,8 +161,8 @@ class OrganisationsCampaignsAPI(Resource):
             else:
                 return {"Error": "User is not a manager of the organisation"}, 403
         except NotFound:
-            return {"Error": "Campaign Not Found"}, 404
+            return {"Error": "Organisation Campaign Not Found"}, 404
         except Exception as e:
-            error_msg = f"Organisation Campaigns GET - unhandled error: {str(e)}"
+            error_msg = f"Organisation Campaigns DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
