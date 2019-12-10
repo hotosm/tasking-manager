@@ -76,7 +76,7 @@ class TasksRestAPI(Resource):
         except NotFound:
             return {"Error": "Task Not Found"}, 404
         except Exception as e:
-            error_msg = f"Task GET API - unhandled error: {str(e)}"
+            error_msg = f"TasksRestAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch task"}, 500
 
@@ -201,7 +201,7 @@ class TasksQueriesXmlAPI(Resource):
                 404,
             )
         except Exception as e:
-            error_msg = f"Task as OSM API - unhandled error: {str(e)}"
+            error_msg = f"TasksQueriesXmlAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch task XML"}, 500
 
@@ -268,7 +268,7 @@ class TasksQueriesGpxAPI(Resource):
                 404,
             )
         except Exception as e:
-            error_msg = f"Task as GPX API - unhandled error: {str(e)}"
+            error_msg = f"TasksQueriesGpxAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch task GPX"}, 500
 
@@ -343,7 +343,7 @@ class TasksQueriesAoiAPI(Resource):
         except InvalidGeoJson as e:
             return {"Error": f"{str(e)}"}, 400
         except Exception as e:
-            error_msg = f"IntersectingTiles GET API - unhandled error: {str(e)}"
+            error_msg = f"TasksQueriesAoiAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch tiles intersecting AOI"}, 500
 
@@ -367,7 +367,7 @@ class TasksQueriesOwnLockedAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Unique Project ID
               required: true
               type: integer
               default: 1
@@ -382,14 +382,17 @@ class TasksQueriesOwnLockedAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            locked_tasks = ProjectService.get_task_for_logged_in_user(project_id, tm.authenticated_user_id)
+            locked_tasks = ProjectService.get_task_for_logged_in_user(
+                project_id, tm.authenticated_user_id
+            )
             return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
-            error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
+            error_msg = f"TasksQueriesOwnLockedAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
+
 
 class TasksQueriesOwnLockedDetailsAPI(Resource):
     @token_auth.login_required
@@ -416,7 +419,7 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -431,13 +434,15 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
-            locked_tasks = ProjectService.get_task_details_for_logged_in_user(project_id, tm.authenticated_user_id, preferred_locale)
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            locked_tasks = ProjectService.get_task_details_for_logged_in_user(
+                project_id, tm.authenticated_user_id, preferred_locale
+            )
             return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
-            error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
+            error_msg = f"TasksQueriesOwnLockedDetailsAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -577,6 +582,6 @@ class TasksQueriesOwnInvalidatedAPI(Resource):
         except NotFound:
             return {"Error": "No invalidated tasks"}, 404
         except Exception as e:
-            error_msg = f"Invalidated Tasks API - unhandled error: {str(e)}"
+            error_msg = f"TasksQueriesMappedAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch invalidated tasks for user"}, 500
