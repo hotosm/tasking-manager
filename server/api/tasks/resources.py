@@ -8,7 +8,6 @@ from schematics.exceptions import DataError
 from server.services.mapping_service import MappingService, NotFound
 from server.models.dtos.grid_dto import GridDTO
 
-from server.models.postgis.statuses import TaskStatus
 from server.services.users.authentication_service import token_auth, tm, verify_token
 from server.services.validator_service import ValidatorService
 
