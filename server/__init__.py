@@ -496,7 +496,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksActionsSplitAPI,
-        "/api/v2/projects/<int:project_id>/tasks/<int:task_id>/actions/split/",
+        "/api/v2/projects/<int:project_id>/tasks/actions/split/{task_id}/",
     )
 
     # Comments REST endoints

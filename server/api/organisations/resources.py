@@ -17,6 +17,7 @@ from server.services.users.authentication_service import token_auth, tm, verify_
 
 
 class OrganisationsRestAPI(Resource):
+    @tm.pm_only()
     @token_auth.login_required
     def post(self):
         """
@@ -91,6 +92,7 @@ class OrganisationsRestAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+    @tm.pm_only()
     @token_auth.login_required
     def delete(self, organisation_id):
         """
@@ -188,6 +190,7 @@ class OrganisationsRestAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+    @tm.pm_only()
     @token_auth.login_required
     def patch(self, organisation_id):
         """
@@ -271,7 +274,7 @@ class OrganisationsRestAPI(Resource):
 class OrganisationsAllAPI(Resource):
     def get(self):
         """
-        List organisations
+        List all organisations
         ---
         tags:
           - organisations
