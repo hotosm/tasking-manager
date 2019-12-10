@@ -84,6 +84,17 @@ class Campaign(db.Model):
         return campaign_list_dto
 
     @staticmethod
+    def campaign_organisation_exists(campaign_id: int, org_id: int):
+        return (
+            Campaign.query.join(campaign_organisations)
+            .filter(
+                campaign_organisations.c.organisation_id == org_id,
+                campaign_organisations.c.campaign_id == campaign_id,
+            )
+            .one_or_none()
+        )
+
+    @staticmethod
     def get_organisation_campaigns_as_dto(org_id: int) -> CampaignListDTO:
 
         query = (
