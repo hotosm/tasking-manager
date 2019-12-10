@@ -9,9 +9,9 @@ from server.services.organisation_service import OrganisationService
 
 class TeamsRestAPI(Resource):
     @token_auth.login_required
-    def put(self, team_id):
+    def post(self, team_id):
         """
-        Updates a team
+        Updates a team information
         ---
         tags:
             - teams
@@ -26,7 +26,7 @@ class TeamsRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: team_id
               in: path
-              description: The unique team ID
+              description: Unique team ID
               required: true
               type: integer
               default: 1
@@ -197,7 +197,7 @@ class TeamsRestAPI(Resource):
         parameters:
             - name: team_id
               in: path
-              description: The unique team ID
+              description: Unique team ID
               required: true
               type: integer
               default: 1

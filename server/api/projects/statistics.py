@@ -6,7 +6,7 @@ from server.services.project_service import ProjectService
 class ProjectsStatisticsQueriesPopularAPI(Resource):
     def get(self):
         """
-        Get Popular project Stats
+        Get popular projects
         ---
         tags:
           - projects
@@ -45,6 +45,7 @@ class ProjectsStatisticsAPI(Resource):
               default: en
             - name: project_id
               in: path
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -80,12 +81,13 @@ class ProjectsStatisticsQueriesUsernameAPI(Resource):
         parameters:
             - name: project_id
               in: path
+              description: Unique project ID
               required: true
               type: integer
               default: 1
             - name: username
               in: path
-              description: The users username
+              description: Mapper's OpenStreetMap username
               required: true
               type: string
               default: Thinkwhere

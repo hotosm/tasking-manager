@@ -8,7 +8,7 @@ class UsersStatisticsAPI(Resource):
     @token_auth.login_required
     def get(self, username):
         """
-        Get detailed stats about user
+        Get detailed stats about a user by OpenStreetMap username
         ---
         tags:
           - users
@@ -23,7 +23,7 @@ class UsersStatisticsAPI(Resource):
               default: Token sessionTokenHere==
             - name: username
               in: path
-              description: The users username
+              description: Mapper's OpenStreetMap username
               required: true
               type: string
               default: Thinkwhere
@@ -67,7 +67,7 @@ class UsersStatisticsInterestsAPI(Resource):
               default: Token sessionTokenHere==
             - name: user_id
               in: path
-              description: User id
+              description: User ID
               required: true
               type: integer
         responses:
