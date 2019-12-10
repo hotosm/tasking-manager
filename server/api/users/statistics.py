@@ -67,7 +67,7 @@ class UsersStatisticsInterestsAPI(Resource):
               default: Token sessionTokenHere==
             - name: user_id
               in: path
-              description: User id
+              description: User ID
               required: true
               type: integer
         responses:

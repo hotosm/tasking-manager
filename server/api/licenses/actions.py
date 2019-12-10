@@ -5,11 +5,10 @@ from server.services.users.user_service import UserService, NotFound
 
 
 class LicensesActionsAcceptAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, license_id):
         """
-        Post to indicate user has accepted license terms
+        Capture user acceptance of license terms
         ---
         tags:
           - licenses
@@ -24,7 +23,7 @@ class LicensesActionsAcceptAPI(Resource):
               default: Token sessionTokenHere==
             - name: license_id
               in: path
-              description: ID of license terms have been accepted for
+              description: License ID terms have been accepted for
               required: true
               type: integer
               default: 1
