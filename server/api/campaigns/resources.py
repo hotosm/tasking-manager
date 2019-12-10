@@ -10,7 +10,7 @@ from server.services.users.authentication_service import token_auth, tm
 class CampaignsRestAPI(Resource):
     def get(self, campaign_id):
         """
-        Search active campaign
+        Get an active campaign's information
         ---
         tags:
             - campaigns
@@ -30,7 +30,7 @@ class CampaignsRestAPI(Resource):
               default: en
             - name: campaign_id
               in: path
-              description: The ID of the campaign
+              description: Campaign ID
               required: true
               type: integer
               default: 1
@@ -58,7 +58,7 @@ class CampaignsRestAPI(Resource):
             return {"Error": error_msg}, 500
 
     @token_auth.login_required
-    def put(self, campaign_id):
+    def patch(self, campaign_id):
         """
         Updates an existing campaign
         ---
@@ -81,7 +81,7 @@ class CampaignsRestAPI(Resource):
               default: en
             - name: campaign_id
               in: path
-              description: The ID of the campaign
+              description: Campaign ID
               required: true
               type: integer
               default: 1
@@ -93,13 +93,13 @@ class CampaignsRestAPI(Resource):
                 properties:
                     name:
                         type: string
-                        default: HOT Campaign
+                        example: HOT Campaign
                     logo:
                         type: string
-                        default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
+                        example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
                     url:
                         type: string
-                        default: https://hotosm.org
+                        example: https://hotosm.org
                     organisations:
                         type: array
                         items:
@@ -154,7 +154,7 @@ class CampaignsRestAPI(Resource):
               default: en
             - name: campaign_id
               in: path
-              description: The ID of the campaign
+              description: Campaign ID
               required: true
               type: integer
               default: 1
@@ -179,7 +179,7 @@ class CampaignsRestAPI(Resource):
 class CampaignsAllAPI(Resource):
     def get(self):
         """
-        Gets all campaigns
+        Get all active campaigns
         ---
         tags:
           - campaigns
@@ -187,7 +187,7 @@ class CampaignsAllAPI(Resource):
           - application/json
         responses:
             200:
-                description: Campaigns
+                description: All Campaigns returned successfully
             500:
                 description: Internal Server Error
         """
@@ -229,13 +229,13 @@ class CampaignsAllAPI(Resource):
                 properties:
                     name:
                         type: string
-                        default: HOT Campaign
+                        example: HOT Campaign
                     logo:
                         type: string
-                        default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
+                        example: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
                     url:
                         type: string
-                        default: https://hotosm.org
+                        example: https://hotosm.org
                     organisations:
                         type: array
                         items:
