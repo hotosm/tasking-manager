@@ -352,10 +352,10 @@ class TasksQueriesOwnLockedAPI(Resource):
     @token_auth.login_required
     def get(self, project_id):
         """
-        Get any locked task on the project for the logged in user
+        Gets any locked task on the project from logged in user
         ---
         tags:
-            - tasks
+            - mapping
         produces:
             - application/json
         parameters:
@@ -367,29 +367,10 @@ class TasksQueriesOwnLockedAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: Project ID the task is associated with
+              description: The ID of the project the task is associated with
               required: true
               type: integer
               default: 1
-            - in: query
-              name: as_file
-              type: boolean
-              description: Set to true if file download preferred
-              default: True
-            - in: query
-              name: status
-              type: string
-              description: task status to filter by
-            - in: query
-              name: orderBy
-              type:  string
-              description: Field name to sort tasks by, available last_updated, effort_prediction
-              default: null
-            - in: query
-              name: orderByType
-              type: string
-              default: ASC
-              enum: [ASC, DESC]
         responses:
             200:
                 description: Task user is working on
@@ -401,56 +382,23 @@ class TasksQueriesOwnLockedAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            order_by = request.args.get("orderBy")
-            status = request.args.get("status")
-
-            as_file = (
-                strtobool(request.args.get("as_file"))
-                if request.args.get("as_file")
-                else True
-            )
-
-            if status:
-                try:
-                    status = TaskStatus[status.upper()].value
-                except KeyError:
-                    status = None
-
-            if order_by not in ["effort_prediction", "last_updated"]:
-                order_by = None
-
-            order_by_type = request.args.get("orderByType", "ASC")
-
-            tasks = ProjectService.get_project_tasks(
-                int(project_id), order_by, order_by_type, status
-            )
-
-            if as_file:
-                tasks = str(tasks).encode("utf-8")
-                return send_file(
-                    io.BytesIO(tasks),
-                    mimetype="application/json",
-                    as_attachment=True,
-                    attachment_filename=f"{str(project_id)}-tasks.geoJSON",
-                )
-
-            return tasks, 200
+            locked_tasks = ProjectService.get_task_for_logged_in_user(project_id, tm.authenticated_user_id)
+            return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
-            error_msg = f"HasUserTaskOnProject - unhandled error: {str(e)}"
+            error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch locked tasks for user"}, 500
-
+            return {"Error": error_msg}, 500
 
 class TasksQueriesOwnLockedDetailsAPI(Resource):
     @token_auth.login_required
     def get(self, project_id):
         """
-        Get details of any locked task on the project for the logged in user
+        Gets details of any locked task on the project from logged in user
         ---
         tags:
-            - tasks
+            - mapping
         produces:
             - application/json
         parameters:
@@ -468,7 +416,7 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: Project ID the task is associated with
+              description: The ID of the project the task is associated with
               required: true
               type: integer
               default: 1
@@ -483,17 +431,15 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            locked_tasks = ProjectService.get_task_details_for_logged_in_user(
-                project_id, tm.authenticated_user_id, preferred_locale
-            )
+            preferred_locale = request.environ.get('HTTP_ACCEPT_LANGUAGE')
+            locked_tasks = ProjectService.get_task_details_for_logged_in_user(project_id, tm.authenticated_user_id, preferred_locale)
             return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
-            error_msg = f"HasUserTaskOnProject - unhandled error: {str(e)}"
+            error_msg = f'HasUserTaskOnProject - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch task details for user"}, 500
+            return {"Error": error_msg}, 500
 
 
 class TasksQueriesMappedAPI(Resource):
