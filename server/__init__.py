@@ -626,7 +626,7 @@ def add_api_endpoints(app):
     api.add_resource(
         CampaignsRestAPI,
         "/api/v2/campaigns/<int:campaign_id>/",
-        methods=["GET", "PUT", "DELETE"],
+        methods=["GET", "PATCH", "DELETE"],
     )
 
     # Notifications REST endpoints

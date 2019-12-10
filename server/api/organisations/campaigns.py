@@ -7,11 +7,10 @@ from server.services.users.authentication_service import token_auth, tm
 
 
 class OrganisationsCampaignsAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, organisation_id, campaign_id):
         """
-        Assigns an campaign to a organisation
+        Assigns a campaign to an organisation
         ---
         tags:
             - campaigns
@@ -26,13 +25,13 @@ class OrganisationsCampaignsAPI(Resource):
               default: Token sessionTokenHere==
             - name: organisation_id
               in: path
-              description: The unique organisation ID
+              description: Unique organisation ID
               required: true
               type: integer
               default: 1
             - name: campaign_id
               in: path
-              description: The unique campaign ID
+              description: Unique campaign ID
               required: true
               type: integer
               default: 1
@@ -68,7 +67,7 @@ class OrganisationsCampaignsAPI(Resource):
 
     def get(self, organisation_id):
         """
-        Returns campaigns related to an organisation
+        Returns all campaigns related to an organisation
         ---
         tags:
             - campaigns
@@ -125,13 +124,13 @@ class OrganisationsCampaignsAPI(Resource):
               default: Token sessionTokenHere==
             - name: organisation_id
               in: path
-              description: The unique organisation ID
+              description: Unique organisation ID
               required: true
               type: integer
               default: 1
             - name: campaign_id
               in: path
-              description: The unique campaign ID
+              description: Unique campaign ID
               required: true
               type: integer
               default: 1
