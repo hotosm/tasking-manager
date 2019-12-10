@@ -16,6 +16,7 @@ class ProjectsContributionsAPI(Resource):
         parameters:
             - name: project_id
               in: path
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -41,7 +42,7 @@ class ProjectsContributionsAPI(Resource):
 class ProjectsContributionsQueriesDayAPI(Resource):
     def get(self, project_id):
         """
-        Get contributions by day of a project
+        Get contributions by day for a project
         ---
         tags:
           - projects
@@ -50,6 +51,7 @@ class ProjectsContributionsQueriesDayAPI(Resource):
         parameters:
             - name: project_id
               in: path
+              description: Unique project ID
               required: true
               type: integer
               default: 1

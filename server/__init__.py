@@ -169,7 +169,7 @@ def add_api_endpoints(app):
         TasksQueriesAoiAPI,
         TasksQueriesOwnLockedAPI,
         TasksQueriesOwnLockedDetailsAPI,
-        TasksQueriesOwnMappedAPI,
+        TasksQueriesMappedAPI,
         TasksQueriesOwnInvalidatedAPI,
     )
     from server.api.tasks.actions import (
@@ -437,7 +437,7 @@ def add_api_endpoints(app):
         "/api/v2/projects/<int:project_id>/tasks/queries/own/locked/details/",
     )
     api.add_resource(
-        TasksQueriesOwnMappedAPI,
+        TasksQueriesMappedAPI,
         "/api/v2/projects/<int:project_id>/tasks/queries/own/mapped/",
     )
     api.add_resource(
@@ -496,7 +496,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksActionsSplitAPI,
-        "/api/v2/projects/<int:project_id>/tasks/<int:task_id>/actions/split/",
+        "/api/v2/projects/<int:project_id>/tasks/actions/split/{task_id}/",
     )
 
     # Comments REST endoints
@@ -626,7 +626,7 @@ def add_api_endpoints(app):
     api.add_resource(
         CampaignsRestAPI,
         "/api/v2/campaigns/<int:campaign_id>/",
-        methods=["GET", "PUT", "DELETE"],
+        methods=["GET", "PATCH", "DELETE"],
     )
 
     # Notifications REST endpoints

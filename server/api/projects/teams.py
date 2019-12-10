@@ -73,7 +73,7 @@ class ProjectsTeamsAPI(Resource):
               default: Token sessionTokenHere==
             - name: message_id
               in: path
-              description: The unique message
+              description: Unique message ID
               required: true
               type: integer
               default: 1

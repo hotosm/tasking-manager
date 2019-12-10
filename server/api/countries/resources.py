@@ -5,7 +5,7 @@ from server.services.tags_service import TagsService
 class CountriesRestAPI(Resource):
     def get(self):
         """
-        Gets all country tags
+        Fetch all Country tags
         ---
         tags:
           - countries
@@ -13,7 +13,7 @@ class CountriesRestAPI(Resource):
           - application/json
         responses:
             200:
-                description: Country tags
+                description: All Country tags returned
             500:
                 description: Internal Server Error
         """

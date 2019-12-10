@@ -7,11 +7,10 @@ from server.services.users.user_service import UserService, NotFound
 
 
 class UsersRestAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def get(self, user_id):
         """
-        Gets user information by id
+        Get user information by id
         ---
         tags:
           - users
@@ -55,7 +54,7 @@ class UsersAllAPI(Resource):
     @token_auth.login_required
     def get(self):
         """
-        Gets paged list of all usernames
+        Get paged list of all usernames
         ---
         tags:
           - users
@@ -115,11 +114,10 @@ class UsersAllAPI(Resource):
 
 
 class UsersQueriesUsernameAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def get(self, username):
         """
-        Gets user information
+        Get user information by OpenStreetMap username
         ---
         tags:
           - users
@@ -134,7 +132,7 @@ class UsersQueriesUsernameAPI(Resource):
               default: Token sessionTokenHere==
             - name: username
               in: path
-              description: The users username
+              description: Mapper's OpenStreetMap username
               required: true
               type: string
               default: Thinkwhere
@@ -165,7 +163,7 @@ class UsersQueriesUsernameFilterAPI(Resource):
     @token_auth.login_required
     def get(self, username):
         """
-        Gets paged lists of users matching username filter
+        Get paged lists of users matching OpenStreetMap username filter
         ---
         tags:
           - users
@@ -180,7 +178,7 @@ class UsersQueriesUsernameFilterAPI(Resource):
               default: Token sessionTokenHere==
             - name: username
               in: path
-              description: Partial or full username
+              description: Mapper's partial or full OpenStreetMap username
               type: string
               default: ab
             - in: query
@@ -218,11 +216,10 @@ class UsersQueriesUsernameFilterAPI(Resource):
 
 
 class UserFavoritesAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def get(self):
         """
-        Gets projects favorited by user
+        Get projects favorited by a user
         ---
         tags:
           - favorites
@@ -258,7 +255,7 @@ class UserRecommendedProjectsAPI(Resource):
     @token_auth.login_required
     def get(self, username):
         """
-        Gets recommended projects for user
+        Get recommended projects for a user
         ---
         tags:
           - users
@@ -279,7 +276,7 @@ class UserRecommendedProjectsAPI(Resource):
               default: Token sessionTokenHere==
             - name: username
               in: path
-              description: The users username
+              description: Mapper's OpenStreetMap username
               required: true
               type: string
               default: Thinkwhere
@@ -315,7 +312,7 @@ class UserInterestsAPI(Resource):
     @token_auth.login_required
     def get(self, username):
         """
-        Gets user interests
+        Get interests by username
         ---
         tags:
           - interests
@@ -330,12 +327,12 @@ class UserInterestsAPI(Resource):
               default: Token sessionTokenHere==
             - name: username
               in: path
-              description: The users username
+              description: Mapper's OpenStreetMap username
               required: true
               type: string
         responses:
             200:
-                description: User interests
+                description: User interests returned
             404:
                 description: User not found
             500:
