@@ -30,7 +30,7 @@ class CommentsProjectsRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The ID of the project to attach the chat message to
+              description: Project ID to attach the chat message to
               required: true
               type: integer
               default: 1
@@ -74,7 +74,7 @@ class CommentsProjectsRestAPI(Resource):
 
     def get(self, project_id):
         """
-        Get all chat messages for project
+        Get all chat messages for a project
         ---
         tags:
           - comments
@@ -83,7 +83,7 @@ class CommentsProjectsRestAPI(Resource):
         parameters:
             - name: project_id
               in: path
-              description: The ID of the project to attach the chat message to
+              description: Project ID to attach the chat message to
               required: true
               type: integer
               default: 1
@@ -132,13 +132,13 @@ class CommentsTasksRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
             - name: task_id
               in: path
-              description: The unique task ID
+              description: Unique task ID
               required: true
               type: integer
               default: 1
@@ -192,7 +192,7 @@ class CommentsTasksRestAPI(Resource):
 
     def get(self, project_id, task_id):
         """
-        Gets comments for a task
+        Get comments for a task
         ---
         tags:
             - comments
@@ -207,13 +207,13 @@ class CommentsTasksRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
             - name: task_id
               in: path
-              description: The unique task ID
+              description: Unique task ID
               required: true
               type: integer
               default: 1

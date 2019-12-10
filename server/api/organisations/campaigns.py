@@ -83,7 +83,7 @@ class OrganisationsCampaignsAPI(Resource):
               default: Token sessionTokenHere==
             - name: organisation_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1

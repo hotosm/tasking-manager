@@ -26,7 +26,7 @@ class AnnotationsRestAPI(Resource):
               in: path
               description: The type of annotation to fetch
               required: false
-              type: string
+              type: integer
         responses:
             200:
                 description: Project Annotations
@@ -71,7 +71,7 @@ class AnnotationsRestAPI(Resource):
               default: application/json
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
             - name: annotation_type

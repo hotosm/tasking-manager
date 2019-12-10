@@ -20,13 +20,13 @@ class ProjectsCampaignsAPI(Resource):
         parameters:
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
             - name: campaign_id
               in: path
-              description: The unique campaign ID
+              description: Unique campaign ID
               required: true
               type: integer
               default: 1
@@ -68,7 +68,7 @@ class ProjectsCampaignsAPI(Resource):
         parameters:
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -104,13 +104,13 @@ class ProjectsCampaignsAPI(Resource):
         parameters:
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
             - name: campaign_id
               in: path
-              description: The unique campaign ID
+              description: Unique campaign ID
               required: true
               type: integer
               default: 1
