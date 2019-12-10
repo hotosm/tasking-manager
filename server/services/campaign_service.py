@@ -143,7 +143,10 @@ class CampaignService:
         """ Delete campaign for a organisation"""
         campaign = Campaign.query.get(campaign_id)
         org = Organisation.query.get(organisation_id)
-        org.campaign.remove(campaign)
+        try:
+            org.campaign.remove(campaign)
+        except ValueError:
+            raise NotFound()
         db.session.commit()
         new_campaigns = CampaignService.get_organisation_campaigns_as_dto(
             organisation_id
