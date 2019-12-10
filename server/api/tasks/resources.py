@@ -20,7 +20,7 @@ from server.models.postgis.utils import InvalidGeoJson
 class TasksRestAPI(Resource):
     def get(self, project_id, task_id):
         """
-        Get task metadata
+        Get a task's metadata
         ---
         tags:
             - tasks
@@ -41,13 +41,13 @@ class TasksRestAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
             - name: task_id
               in: path
-              description: The unique task ID
+              description: Unique task ID
               required: true
               type: integer
               default: 1
@@ -84,7 +84,7 @@ class TasksRestAPI(Resource):
 class TasksQueriesJsonAPI(Resource):
     def get(self, project_id):
         """
-        Get tasks as JSON
+        Get all tasks for a project as JSON
         ---
         tags:
             - tasks
@@ -93,7 +93,7 @@ class TasksQueriesJsonAPI(Resource):
         parameters:
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
@@ -143,7 +143,7 @@ class TasksQueriesJsonAPI(Resource):
 class TasksQueriesXmlAPI(Resource):
     def get(self, project_id):
         """
-        Get tasks as OSM XML
+        Get all tasks for a project as OSM XML
         ---
         tags:
             - tasks
@@ -152,7 +152,7 @@ class TasksQueriesXmlAPI(Resource):
         parameters:
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
@@ -209,7 +209,7 @@ class TasksQueriesXmlAPI(Resource):
 class TasksQueriesGpxAPI(Resource):
     def get(self, project_id):
         """
-        Get tasks as GPX
+        Get all tasks for a project as GPX
         ---
         tags:
             - tasks
@@ -218,7 +218,7 @@ class TasksQueriesGpxAPI(Resource):
         parameters:
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
@@ -278,7 +278,7 @@ class TasksQueriesAoiAPI(Resource):
     @token_auth.login_required
     def put(self):
         """
-        Gets the tiles intersecting the aoi
+        Get task tiles intersecting with the aoi provided
         ---
         tags:
             - tasks
@@ -349,11 +349,10 @@ class TasksQueriesAoiAPI(Resource):
 
 
 class TasksQueriesOwnLockedAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def get(self, project_id):
         """
-        Gets any locked task on the project from logged in user
+        Get any locked task on the project for the logged in user
         ---
         tags:
             - tasks
@@ -368,7 +367,7 @@ class TasksQueriesOwnLockedAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
@@ -445,11 +444,10 @@ class TasksQueriesOwnLockedAPI(Resource):
 
 
 class TasksQueriesOwnLockedDetailsAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def get(self, project_id):
         """
-        Gets details of any locked task on the project from logged in user
+        Get details of any locked task on the project for the logged in user
         ---
         tags:
             - tasks
@@ -470,7 +468,7 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Project ID the task is associated with
               required: true
               type: integer
               default: 1
@@ -498,10 +496,10 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
             return {"Error": "Unable to fetch task details for user"}, 500
 
 
-class TasksQueriesOwnMappedAPI(Resource):
+class TasksQueriesMappedAPI(Resource):
     def get(self, project_id):
         """
-        Get mapped tasks grouped by user
+        Get all mapped tasks for a project grouped by username
         ---
         tags:
             - tasks
@@ -510,13 +508,13 @@ class TasksQueriesOwnMappedAPI(Resource):
         parameters:
             - name: project_id
               in: path
-              description: The ID of the project the task is associated with
+              description: Unique project ID
               required: true
               type: integer
               default: 1
         responses:
             200:
-                description: Task user is working on
+                description: Mapped tasks returned
             404:
                 description: No mapped tasks
             500:

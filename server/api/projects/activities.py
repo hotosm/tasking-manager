@@ -5,7 +5,7 @@ from server.services.stats_service import StatsService, NotFound
 class ProjectsActivitiesAPI(Resource):
     def get(self, project_id):
         """
-        Get user activity on a project
+        Get all user activity on a project
         ---
         tags:
           - projects
@@ -14,6 +14,7 @@ class ProjectsActivitiesAPI(Resource):
         parameters:
             - name: project_id
               in: path
+              description: Unique project ID
               required: true
               type: integer
               default: 1

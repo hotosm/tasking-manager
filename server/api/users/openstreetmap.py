@@ -8,7 +8,7 @@ class UsersOpenStreetMapAPI(Resource):
     @token_auth.login_required
     def get(self, username):
         """
-        Gets details from OSM for the specified username
+        Get details from OpenStreetMap for a specified username
         ---
         tags:
           - users
@@ -23,7 +23,7 @@ class UsersOpenStreetMapAPI(Resource):
               default: Token sessionTokenHere==
             - name: username
               in: path
-              description: The users username
+              description: Mapper's OpenStreetMap username
               required: true
               type: string
               default: Thinkwhere

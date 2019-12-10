@@ -16,7 +16,7 @@ class ProjectsActionsTransferAPI(Resource):
     @token_auth.login_required
     def post(self, project_id):
         """
-        Transfers a project to a new user.
+        Transfers a project to a new user
         ---
         tags:
             - projects
@@ -31,14 +31,14 @@ class ProjectsActionsTransferAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
             - in: body
               name: body
               required: true
-              description: the username of the new owner
+              description: username of the new owner
               schema:
                   properties:
                       username:
@@ -68,7 +68,7 @@ class ProjectsActionsMessageContributorsAPI(Resource):
     @token_auth.login_required
     def post(self, project_id):
         """
-        Send message to all contributors to a project
+        Send message to all contributors of a project
         ---
         tags:
             - projects
@@ -83,7 +83,7 @@ class ProjectsActionsMessageContributorsAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -150,7 +150,7 @@ class ProjectsActionsFeatureAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -200,7 +200,7 @@ class ProjectsActionsUnFeatureAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -250,7 +250,7 @@ class ProjectsActionsSetInterestsAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1

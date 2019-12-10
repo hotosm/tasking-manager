@@ -26,7 +26,7 @@ class ProjectFavoriteAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: the id of a project
+              description: Unique project ID
               required: true
               type: integer
         responses:
@@ -56,7 +56,7 @@ class ProjectFavoriteAPI(Resource):
     @token_auth.login_required
     def post(self, project_id: int):
         """
-        Sets project as favorite
+        Set a project as favorite
         ---
         tags:
             - favorites
@@ -71,7 +71,7 @@ class ProjectFavoriteAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: the id of a project
+              description: Unique project ID
               required: true
               type: integer
         responses:
@@ -108,7 +108,7 @@ class ProjectFavoriteAPI(Resource):
     @token_auth.login_required
     def delete(self, project_id: int):
         """
-        Unsets a project as favorite.
+        Unsets a project as favorite
         ---
         tags:
             - favorites
@@ -123,7 +123,7 @@ class ProjectFavoriteAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: the id of a project
+              description: Unique project ID
               required: true
               type: integer
         responses:

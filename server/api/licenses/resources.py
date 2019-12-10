@@ -67,7 +67,7 @@ class LicensesRestAPI(Resource):
 
     def get(self, license_id):
         """
-        Get specified mapping license
+        Get a specified mapping license
         ---
         tags:
             - licenses
@@ -76,7 +76,7 @@ class LicensesRestAPI(Resource):
         parameters:
             - name: license_id
               in: path
-              description: The unique license ID
+              description: Unique license ID
               required: true
               type: integer
               default: 1
@@ -117,7 +117,7 @@ class LicensesRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: license_id
               in: path
-              description: The unique license ID
+              description: Unique license ID
               required: true
               type: integer
               default: 1
@@ -168,7 +168,7 @@ class LicensesRestAPI(Resource):
     @token_auth.login_required
     def delete(self, license_id):
         """
-        Delete the specified mapping license
+        Delete a specified mapping license
         ---
         tags:
             - licenses
@@ -183,7 +183,7 @@ class LicensesRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: license_id
               in: path
-              description: The unique license ID
+              description: Unique license ID
               required: true
               type: integer
               default: 1

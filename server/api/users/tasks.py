@@ -9,7 +9,7 @@ class UsersTasksAPI(Resource):
     @token_auth.login_required
     def get(self, user_id):
         """
-        Gets tasks users has interacted
+        Get a list of tasks a user has interacted with
         ---
         tags:
           - users
@@ -24,7 +24,7 @@ class UsersTasksAPI(Resource):
               default: Token sessionTokenHere==
             - name: user_id
               in: path
-              description: The id of the user
+              description: Mapper's OpenStreetMap ID
               required: true
               type: integer
             - in: query

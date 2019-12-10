@@ -48,7 +48,7 @@ class ProjectsRestAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -217,7 +217,7 @@ class ProjectsRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -260,7 +260,7 @@ class ProjectsRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -410,7 +410,7 @@ class ProjectsRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -813,7 +813,7 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -888,7 +888,7 @@ class ProjectsQueriesNoTasksAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -925,7 +925,7 @@ class ProjectsQueriesAoiAPI(Resource):
         parameters:
             - name: project_id
               in: path
-              description: The unique project ID
+              description: Unique project ID
               required: true
               type: integer
               default: 1
