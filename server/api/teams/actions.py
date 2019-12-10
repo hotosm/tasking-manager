@@ -168,7 +168,7 @@ class TeamsActionsLeaveAPI(Resource):
     @token_auth.login_required
     def post(self, team_id):
         """
-        Deletes a user from a team
+        Removes a user from a team
         ---
         tags:
           - teams

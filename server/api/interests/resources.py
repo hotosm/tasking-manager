@@ -101,7 +101,7 @@ class InterestsRestAPI(Resource):
     @token_auth.login_required
     def patch(self, interest_id):
         """
-        Update an exsiting interest
+        Update an existing interest
         ---
         tags:
             - interests
