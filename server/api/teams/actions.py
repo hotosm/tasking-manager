@@ -26,7 +26,7 @@ class TeamsActionsJoinAPI(Resource):
               default: Token sessionTokenHere==
             - name: team_id
               in: path
-              description: The unique team ID
+              description: Unique team ID
               required: true
               type: integer
               default: 1
@@ -75,7 +75,7 @@ class TeamsActionsJoinAPI(Resource):
 
     @tm.pm_only(False)
     @token_auth.login_required
-    def put(self, team_id):
+    def patch(self, team_id):
         """
         Take action on a team invite
         ---
@@ -92,7 +92,7 @@ class TeamsActionsJoinAPI(Resource):
               default: Token sessionTokenHere==
             - name: team_id
               in: path
-              description: The unique team ID
+              description: Unique team ID
               required: true
               type: integer
               default: 1
@@ -168,7 +168,7 @@ class TeamsActionsLeaveAPI(Resource):
     @token_auth.login_required
     def post(self, team_id):
         """
-        Deletes the user from team
+        Deletes a user from a team
         ---
         tags:
           - teams
@@ -183,7 +183,7 @@ class TeamsActionsLeaveAPI(Resource):
               default: Token sessionTokenHere==
             - name: team_id
               in: path
-              description: The unique team ID
+              description: Unique team ID
               required: true
               type: integer
               default: 1

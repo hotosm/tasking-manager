@@ -169,7 +169,7 @@ def add_api_endpoints(app):
         TasksQueriesAoiAPI,
         TasksQueriesOwnLockedAPI,
         TasksQueriesOwnLockedDetailsAPI,
-        TasksQueriesOwnMappedAPI,
+        TasksQueriesMappedAPI,
         TasksQueriesOwnInvalidatedAPI,
     )
     from server.api.tasks.actions import (
@@ -437,7 +437,7 @@ def add_api_endpoints(app):
         "/api/v2/projects/<int:project_id>/tasks/queries/own/locked/details/",
     )
     api.add_resource(
-        TasksQueriesOwnMappedAPI,
+        TasksQueriesMappedAPI,
         "/api/v2/projects/<int:project_id>/tasks/queries/own/mapped/",
     )
     api.add_resource(
