@@ -101,7 +101,7 @@ class InterestsRestAPI(Resource):
     @token_auth.login_required
     def patch(self, interest_id):
         """
-        Update interest
+        Update an exsiting interest
         ---
         tags:
             - interests
@@ -116,7 +116,7 @@ class InterestsRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: interest_id
               in: path
-              description: The ID of the interest
+              description: Interest ID
               required: true
               type: integer
               default: 1
@@ -131,7 +131,7 @@ class InterestsRestAPI(Resource):
                           default: Public Domain
         responses:
             200:
-                description: interest updated
+                description: Interest updated
             400:
                 description: Invalid Request
             401:
@@ -158,7 +158,7 @@ class InterestsRestAPI(Resource):
     @token_auth.login_required
     def delete(self, interest_id):
         """
-        Delete the specified interest
+        Delete a specified interest
         ---
         tags:
             - interests
@@ -173,7 +173,7 @@ class InterestsRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: interest_id
               in: path
-              description: The unique interest ID
+              description: Unique interest ID
               required: true
               type: integer
               default: 1
