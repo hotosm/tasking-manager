@@ -103,7 +103,7 @@ const ProjectCreate = props => {
 
   return (
     <div className="cf bg-tan pb3 pl4">
-      <div className="fl vh-75-l pt3 w-30">
+      <div className="fl pt3 w-30">
         <h2 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
           {cloneProjectName === null ? (
             <FormattedMessage {...messages.createProject} />

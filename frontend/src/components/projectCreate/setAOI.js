@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { paintOptions } from './create';
 import { Button } from '../button';
+import { makeGrid } from './setTaskSizes';
 
 var tj = require('@mapbox/togeojson');
 var osmtogeojson = require('osmtogeojson');
@@ -17,11 +18,16 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
 
   const setDataGeom = geom => {
     const area = turf.area(geom) / 1e6;
+    const zoomLevel = mapObj.map.getZoom() + 4;
+    const grid = makeGrid(geom, zoomLevel, {});
     mapObj.map.fitBounds(turf.bbox(geom), { padding: 20 });
     updateMetadata({
       ...metadata,
       geom: geom,
       area: area.toFixed(2),
+      zoomLevel: zoomLevel,
+      taskGrid: grid,
+      tempTaskGrid: grid,
     });
 
     if (mapObj.map.getLayer(layer_name)) {
@@ -50,7 +56,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
       deleteHandler();
       setUploadError(true);
     }
-  }
+  };
 
   const uploadFile = event => {
     setArbitrary(true);
@@ -109,7 +115,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
     const updateArea = event => {
       // Validate area first.
       const id = event.features[0].id;
-      const geom = turf.featureCollection(event.features)
+      const geom = turf.featureCollection(event.features);
       mapObj.draw.delete(id);
       setArbitrary(false);
       setDataGeom(geom);
@@ -121,21 +127,28 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
 
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 ttu barlow-condensed blue-dark"><FormattedMessage {...messages.step1} /></h3>
+      <h3 className="f3 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
+        <FormattedMessage {...messages.step1} />
+      </h3>
       <div className="pb4">
-        <h3><FormattedMessage {...messages.option1} />:</h3>
-        <p><FormattedMessage {...messages.drawDescription} /></p>
-        <Button
-          className="bg-blue-dark white"
-          onClick={drawHandler}
-        >
+        <h3>
+          <FormattedMessage {...messages.option1} />:
+        </h3>
+        <p>
+          <FormattedMessage {...messages.drawDescription} />
+        </p>
+        <Button className="bg-blue-dark white" onClick={drawHandler}>
           <FormattedMessage {...messages.draw} />
         </Button>
       </div>
 
       <div className="pb4">
-        <h3><FormattedMessage {...messages.option2} />:</h3>
-        <p><FormattedMessage {...messages.importDescription} /></p>
+        <h3>
+          <FormattedMessage {...messages.option2} />:
+        </h3>
+        <p>
+          <FormattedMessage {...messages.importDescription} />
+        </p>
         <div className="pb2">
           <input
             type="checkbox"
@@ -147,7 +160,9 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
               }
             }}
           />
-          <span className="pl2 v-mid"><FormattedMessage {...messages.arbitraryTasks} /></span>
+          <span className="pl2 v-mid">
+            <FormattedMessage {...messages.arbitraryTasks} />
+          </span>
         </div>
         <div className="pt3">
           <label
@@ -158,17 +173,20 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
             <FormattedMessage {...messages.uploadFile} />
           </label>
           <input onChange={uploadFile} style={{ display: 'none' }} id="file-upload" type="file" />
-          {uploadError && <p><FormattedMessage {...messages.uploadError} /></p>}
+          {uploadError && (
+            <p>
+              <FormattedMessage {...messages.uploadError} />
+            </p>
+          )}
         </div>
       </div>
-      {metadata.geom && <div className="pt4">
-        <Button
-          className="bg-red white"
-          onClick={deleteHandler}
-        >
-          <FormattedMessage {...messages.deleteArea} />
-        </Button>
-      </div>}
+      {metadata.geom && (
+        <div className="pt4">
+          <Button className="bg-red white" onClick={deleteHandler}>
+            <FormattedMessage {...messages.deleteArea} />
+          </Button>
+        </div>
+      )}
     </>
   );
 }
