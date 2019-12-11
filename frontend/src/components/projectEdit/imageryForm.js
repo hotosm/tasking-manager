@@ -1,6 +1,6 @@
 import React, { useContext, useState, useLayoutEffect } from 'react';
-import { StateContext, styleClasses } from '../../views/projectEdit';
 
+import { StateContext, styleClasses } from '../../views/projectEdit';
 import { API_URL } from '../../config';
 
 export const ImageryForm = () => {
@@ -48,7 +48,7 @@ export const ImageryForm = () => {
 			</div>
 			<div className={styleClasses.divClass}>
 				<label className={styleClasses.labelClass}>Required license</label>
-				<select name="LicenseId" onChange={handleLicense}>
+				<select name="LicenseId" onChange={handleLicense} className="pa2">
 					{licenses.map(l => (
 						<option value={l.licenseId}>{l.name}</option>
 					))}

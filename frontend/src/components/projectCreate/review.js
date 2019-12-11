@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { navigate } from '@reach/router';
 
 import messages from './messages';
 import { Button } from '../button';
 import { createProject } from '../../store/actions/project';
 import { store } from '../../store';
-import { API_URL } from '../../config';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
-const handleCreate = (metadata, updateMetadata, projectName, token, cloneProjectData) => {
+const handleCreate = (metadata, updateMetadata, projectName, token, cloneProjectData, setError) => {
   updateMetadata({ ...metadata, projectName: projectName });
   store.dispatch(createProject(metadata));
 
@@ -22,20 +23,13 @@ const handleCreate = (metadata, updateMetadata, projectName, token, cloneProject
     projectParams.projectName = '';
     projectParams.cloneFromProjectId = cloneProjectData.id;
   }
-
-  const url = `${API_URL}projects/`;
-  const reqParams = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: token ? `Token ${token}` : '',
-    },
-    body: JSON.stringify(projectParams),
-  };
-  fetch(url, reqParams);
+  pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
+    .then(res => navigate(`/manage/projects/${res.projectId}`))
+    .catch(e => setError(e));
 };
 
 export default function Review({ metadata, updateMetadata, token, projectId, cloneProjectData }) {
+  const [error, setError] = useState(null);
   const projectName = metadata.projectName;
 
   const setProjectName = event => {
@@ -66,10 +60,10 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
         </>
       ) : null}
 
-      <div className="mt2">
+      <div className="mt3">
         <Button
           onClick={() =>
-            handleCreate(metadata, updateMetadata, projectName, token, cloneProjectData)
+            handleCreate(metadata, updateMetadata, projectName, token, cloneProjectData, setError)
           }
           className="white bg-blue-dark"
         >
@@ -79,6 +73,9 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
             <FormattedMessage {...messages.clone} />
           )}
         </Button>
+      </div>
+      <div className="mt2">
+        {error && <span><FormattedMessage {...messages.creationFailed} values={{error: error}}/></span>}
       </div>
     </>
   );

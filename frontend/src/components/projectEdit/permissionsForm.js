@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
-import { StateContext, styleClasses } from '../../views/projectEdit';
-
-import { API_URL } from '../../config';
 import Popup from 'reactjs-popup';
+
+import { StateContext, styleClasses } from '../../views/projectEdit';
+import { API_URL } from '../../config';
 
 export const PermissionsForm = () => {
 	const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -150,7 +150,7 @@ export const PermissionsForm = () => {
 				<Popup
 					contentStyle={{ padding: 0, border: 0 }}
 					arrow={false}
-					trigger={<input value={searchUser} onChange={handleUsers} className="w-50" type="text" />}
+					trigger={<input value={searchUser} onChange={handleUsers} className="w-50 pa2" type="text" />}
 					on="focus"
 					position="bottom left"
 					open={users.length !== 0 ? true : false}
