@@ -798,7 +798,11 @@ class Task(db.Model):
 
     @staticmethod
     def get_tasks_as_geojson_feature_collection(
-        project_id, task_ids_str: str, order_by: str = None, order_by_type: str = "ASC", status: int = None
+        project_id,
+        task_ids_str: str,
+        order_by: str = None,
+        order_by_type: str = "ASC",
+        status: int = None,
     ):
         """
         Creates a geoJson.FeatureCollection object for tasks related to the supplied project ID
