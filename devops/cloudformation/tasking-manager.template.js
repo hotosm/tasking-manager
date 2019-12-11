@@ -163,7 +163,7 @@ const Resources = {
         'dpkg-reconfigure --frontend=noninteractive locales',
         'sudo apt-get -y update',
         'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
-        'sudo add-apt-repository ppa:jonathonf/python-3.6 -y',
+        'sudo add-apt-repository ppa:deadsnakes/ppa -y',
         'sudo apt-get update',
         'sudo apt-get -y install python3.6',
         'sudo apt-get -y install python3.6-dev',
