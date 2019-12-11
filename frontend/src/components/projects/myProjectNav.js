@@ -10,16 +10,20 @@ import { OrderBySelector } from './orderBy';
 import { ShowMapToggle } from './projectNav';
 
 const isActiveButton = (buttonName, projectQuery) => {
-  const allBoolean = projectQuery.createdByMe &&
+  const allBoolean =
+    projectQuery.createdByMe &&
     projectQuery.contributedToByMe &&
     projectQuery.favoritedByMe &&
     projectQuery.createdByMeArchived;
-  if (Boolean(projectQuery[buttonName] === true) ^ Boolean(allBoolean) || (buttonName ==='All' && allBoolean)) {
-    return 'bg-blue-dark grey-light';
+  if (
+    Boolean(projectQuery[buttonName] === true) ^ Boolean(allBoolean) ||
+    (buttonName === 'All' && allBoolean)
+  ) {
+    return 'bg-blue-grey white';
   } else {
     return 'bg-white grey-light';
   }
-}
+};
 
 export const MyProjectNav = props => {
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
@@ -33,78 +37,78 @@ export const MyProjectNav = props => {
     <header className="bt bb b--tan ">
       <div className="cf">
         <div className="w-75-l w-60 fl">
-          <h3 className="dib fl f2 ttu barlow-condensed fw8 ph3">
+          <h3 className="dib fl f2 ttu barlow-condensed fw8">
             <FormattedMessage {...messages.myProjects} />
           </h3>
-          <div className="w-10-ns pt4 fr">
-          <ShowMapToggle />
-        </div>
         </div>
       </div>
-      <div className="mt2 mb1 ph2 dib lh-copy w-100 cf">
+      <div className="dib lh-copy w-100 cf">
         <div className="w-90-ns w-100 fl dib">
-          <div className="dib w-100">
-
-            <div className="dib fl w-70-l"> <ProjectSearchBox
-              className="dib fl mh1 w-70-l w-50"
+          <div className="cf w-100">
+            <ProjectSearchBox
+              className="dib fl mh1 w-40"
               setQuery={setQuery}
               fullProjectsQuery={fullProjectsQuery}
-              placeholder="Search (localize)" />
-
+              placeholder="Search (localize)"
+            />
             <OrderBySelector
-              className={`fl mt2`}
+              className={`fl mt1 mt2-ns`}
               setQuery={setQuery}
               allQueryParams={fullProjectsQuery}
             />
-            </div>
 
             {!notAnyFilter && (
-              <Link
-                to="./"
-                className={`red link ph3 f6 pv3-l mh1 fl`}
-              >
+              <Link to="./" className={`red link ph3 f6 v-top mh1 mt1 mt2-ns pv2 dib`}>
                 <FormattedMessage {...messages.clearFilters} />
               </Link>
             )}
-
           </div>
         </div>
-
-      </div>
-      <div className="ma2-ns">
-              <Link
-                to="/projects/?favoritedByMe=1&contributedToByMe=1&createdByMe=1&createdByMeArchived=1"
-                className={`di di-m mh1 ${isActiveButton('All',fullProjectsQuery)}  strike ${linkCombo}
-                `}
-              >
-                <FormattedMessage {...messages.allprojects} />
-              </Link>
-              <Link
-                to="/projects/?favoritedByMe=1"
-                className={`di di-m mh1 ${isActiveButton('favoritedByMe',fullProjectsQuery)} strike ${linkCombo}
-                `}
-              >
-                <FormattedMessage {...messages.favorite} />
-              </Link>
-              <Link
-              to={`/projects/?contributedToByMe=1`}
-              className={`di di-m mh1  ${isActiveButton('contributedToByMe',fullProjectsQuery)} strike ${linkCombo} `}
-            >
-              <FormattedMessage {...messages.contributed} />
-            </Link>
-              <Link
-              to={`/projects/?createdByMe=1`}
-              className={`di di-m mh1 ${isActiveButton('createdByMe',fullProjectsQuery)}  ${linkCombo}`}
-            >
-              <FormattedMessage {...messages.created} />
-            </Link>
-              <Link
-              to={`/projects/?createdByMeArchived=1`}
-              className={`dib di-m mh1 ${isActiveButton('createdByMeArchived',fullProjectsQuery)} strike  ${linkCombo}`}
-            >
-              <FormattedMessage {...messages.archived} />
-            </Link>
+        <div className="w-10-ns w-100 fr">
+          <ShowMapToggle />
         </div>
+      </div>
+      <div className="mt2 mb3">
+        <Link
+          to="/projects/?favoritedByMe=1&contributedToByMe=1&createdByMe=1&createdByMeArchived=1"
+          className={`di mh1 ${isActiveButton('All', fullProjectsQuery)} strike ${linkCombo}`}
+        >
+          <FormattedMessage {...messages.allprojects} />
+        </Link>
+        <Link
+          to="/projects/?favoritedByMe=1"
+          className={`di mh1 ${isActiveButton(
+            'favoritedByMe',
+            fullProjectsQuery,
+          )} strike ${linkCombo}`}
+        >
+          <FormattedMessage {...messages.favorite} />
+        </Link>
+        <Link
+          to={`/projects/?contributedToByMe=1`}
+          className={`di mh1 ${isActiveButton(
+            'contributedToByMe',
+            fullProjectsQuery,
+          )} strike ${linkCombo}`}
+        >
+          <FormattedMessage {...messages.contributed} />
+        </Link>
+        <Link
+          to={`/projects/?createdByMe=1`}
+          className={`di mh1 ${isActiveButton('createdByMe', fullProjectsQuery)} ${linkCombo}`}
+        >
+          <FormattedMessage {...messages.created} />
+        </Link>
+        <Link
+          to={`/projects/?createdByMeArchived=1`}
+          className={`di mh1 ${isActiveButton(
+            'createdByMeArchived',
+            fullProjectsQuery,
+          )} strike ${linkCombo}`}
+        >
+          <FormattedMessage {...messages.archived} />
+        </Link>
+      </div>
       {props.children}
     </header>
   );

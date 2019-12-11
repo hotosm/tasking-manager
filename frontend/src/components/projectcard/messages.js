@@ -40,4 +40,12 @@ export default defineMessages({
     id: 'project.card.dueDateLeft',
     defaultMessage: '{daysLeftHumanize} left',
   },
+  editProject: {
+    id: 'project.card.edit_project.button',
+    defaultMessage: 'Edit project',
+  },
+  projectTasks: {
+    id: 'project.card.project_tasks.button',
+    defaultMessage: 'Go to tasks',
+  },
 });
