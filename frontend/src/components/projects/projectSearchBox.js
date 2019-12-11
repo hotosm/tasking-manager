@@ -11,6 +11,7 @@ export const ProjectSearchBox = ({
   setQuery,
   className,
   isMobile,
+  placeholder,
 }) => {
   const [isFocus, setFocus] = useState(false);
   // const [searchTerm, setSearchTerm] = useState(props.fullProjectsQuery.text);
@@ -56,8 +57,8 @@ export const ProjectSearchBox = ({
             const value = event.target.value;
             setQuerySearch(value);
           }}
-          placeholder="Search Projects"
-          className={'input-reset ba b--grey-light pa1 lh-copy db'}
+          placeholder={placeholder || "Search Projects"}
+          className={'input-reset ba b--grey-light pa1 lh-copy db w-100'}
           style={{ textIndent: '30px' }}
           type="text"
           aria-describedby="name-desc"

@@ -64,6 +64,30 @@ export default defineMessages({
     id: 'project.nav.projects',
     defaultMessage: 'Projects',
   },
+  myProjects: {
+    id: 'project.nav.myprojects',
+    defaultMessage: 'My Projects',
+  },
+  favorite: {
+    id: 'project.nav.favorite',
+    defaultMessage: 'Favorite',
+  },
+  contributed: {
+    id: 'project.nav.contributed',
+    defaultMessage: 'Contributed',
+  },
+  allprojects: {
+    id: 'project.nav.allprojects',
+    defaultMessage: 'All',
+  },
+  created: {
+    id: 'project.nav.created',
+    defaultMessage: 'Created',
+  },
+  archived: {
+    id: 'project.nav.archived',
+    defaultMessage: 'Archived',
+  },
   showingXProjectsOfTotal: {
     id: 'project.nav.showing',
     defaultMessage: 'Showing {numProjects} projects{numRange} of {numTotalProjects}',

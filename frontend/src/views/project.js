@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { ProjectNav } from '../components/projects/projectNav';
+import { MyProjectNav } from '../components/projects/myProjectNav';
 import { MoreFiltersForm } from '../components/projects/moreFiltersForm';
 import { ProjectDetail } from '../components/projectDetail/index';
 
@@ -38,7 +39,7 @@ export const ProjectsPage = props => {
   const searchResultWidth = isMapShown ? 'w-60-l w-100' : 'w-100';
 
   return (
-    <div className="pt180 pull-center">
+    <div className="pull-center">
       <ProjectNav location={props.location} orgAPIState={orgAPIState}>
         {
           props.children
@@ -52,6 +53,70 @@ export const ProjectsPage = props => {
           state={state}
           retryFn={forceUpdate}
           className={`${searchResultWidth} fl`}
+        />
+        {isMapShown && (
+          <ProjectsMap
+            state={state}
+            fullProjectsQuery={fullProjectsQuery}
+            setQuery={setProjectQuery}
+            className={`dib w-40-l w-100 fl`}
+          />
+        )}
+      </section>
+      <ProjectCardPaginator projectAPIstate={state} setQueryParam={setProjectQuery} />
+    </div>
+  );
+};
+
+export const MyProjectsPage = props => {
+  const userToken = useSelector(state => state.auth.get('token'));
+  const initialData = {
+    mapResults: {
+      features: [],
+      type: 'FeatureCollection',
+    },
+    results: [],
+    pagination: { hasNext: false, hasPrev: false, page: 1 },
+  };
+
+  const [fullProjectsQuery, setProjectQuery] = useExploreProjectsQueryParams();
+  const [forceUpdated, forceUpdate] = useForceUpdate();
+  const [state] = useProjectsQueryAPI(initialData, fullProjectsQuery, forceUpdated);
+  const [orgAPIState] = useTagAPI([], 'organisations');
+
+  const isMapShown = useSelector(state => state.preferences['mapShown']);
+  const searchResultWidth = isMapShown ? 'w-60-l w-100' : 'w-100';
+
+  if (!userToken) {
+    /* use replace to so the back button does not get interrupted */
+    props.navigate('/login', {replace: true})
+  }
+
+  if (
+     !fullProjectsQuery.createdByMe &&
+     !fullProjectsQuery.contributedToByMe &&
+     !fullProjectsQuery.favoritedByMe &&
+     !fullProjectsQuery.createdByMeArchived
+  ) {
+    setProjectQuery({createdByMe: true});
+  }
+
+  return (
+    <div className="pull-center ph5-l bg-tan">
+      <MyProjectNav location={props.location} orgAPIState={orgAPIState}>
+        {
+          props.children
+          /* This is where the MoreFilters component is rendered
+        using the router, as a child route.
+        */
+        }
+      </MyProjectNav>
+      <section className="cf">
+        <ProjectSearchResults
+          state={state}
+          retryFn={forceUpdate}
+          className={`${searchResultWidth} fl`}
+          showBottomButtons={true}
         />
         {isMapShown && (
           <ProjectsMap
