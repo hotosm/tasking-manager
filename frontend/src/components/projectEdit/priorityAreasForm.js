@@ -1,13 +1,16 @@
 import React, { useState, useContext, useLayoutEffect } from 'react';
-import { StateContext, styleClasses } from '../../views/projectEdit';
-import { fallbackRasterStyle } from '../../components/projects/projectsMap';
 import mapboxgl from 'mapbox-gl';
-import { MAPBOX_TOKEN } from '../../config';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import { CircleMode } from 'mapbox-gl-draw-circle';
 
+import { StateContext, styleClasses } from '../../views/projectEdit';
+import { fallbackRasterStyle } from '../projects/projectsMap';
+import { Button } from '../button';
+import { MAPBOX_TOKEN } from '../../config';
+
 const MapboxDraw = require('@mapbox/mapbox-gl-draw');
+
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
 export const PriorityAreasForm = () => {
@@ -40,8 +43,7 @@ export const PriorityAreasForm = () => {
 		setMap(
 			new mapboxgl.Map({
 				container: mapRef.current,
-				// style: 'mapbox://styles/mapbox/bright-v9',
-				style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/streets-v11' : fallbackRasterStyle,
+				style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/bright-v9' : fallbackRasterStyle,
 				zoom: 0,
 			}),
 		);
@@ -124,27 +126,27 @@ export const PriorityAreasForm = () => {
 				within the project area.
 			</p>
 			<div className="ttu">
-				<button
+				<Button
 					className={styleClasses.drawButtonClass}
 					onClick={() => draw[0].changeMode('draw_polygon')}
 				>
 					draw polygon
-				</button>
-				<button
+				</Button>
+				<Button
 					className={styleClasses.drawButtonClass}
 					onClick={() => draw[0].changeMode('draw_rectangle')}
 				>
 					draw rectangle
-				</button>
-				<button
+				</Button>
+				<Button
 					className={styleClasses.drawButtonClass}
 					onClick={() => draw[0].changeMode('draw_circle', { initialRadiusInKm: 0.5 })}
 				>
 					draw circle
-				</button>
-				<button onClick={clearAll} className={clearButtonClass}>
+				</Button>
+				<Button onClick={clearAll} className={clearButtonClass}>
 					clear all
-				</button>
+				</Button>
 			</div>
 
 			<div id="map" ref={mapRef} className="vh-50 w-75"></div>

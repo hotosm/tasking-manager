@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+
 import { StateContext, styleClasses } from '../../views/projectEdit';
 
 export const DescriptionForm = () => {
@@ -39,7 +40,7 @@ export const DescriptionForm = () => {
 		<div className="w-100">
 			<div className={styleClasses.divClass}>
 				<label className={styleClasses.labelClass}>Status</label>
-				<select name="status" onChange={handleChange}>
+				<select name="status" onChange={handleChange} className="pa2">
 					{projectStatusFields.map(f => (
 						<option selected={f.item === projectInfo.projectStatus ? true : false} value={f.item}>
 							{f.showItem}
@@ -49,7 +50,7 @@ export const DescriptionForm = () => {
 			</div>
 			<div className={styleClasses.divClass}>
 				<label className={styleClasses.labelClass}>Priority</label>
-				<select name="projectPriority" onChange={handleChange}>
+				<select name="projectPriority" onChange={handleChange} className="pa2">
 					{projectPriorityFields.map(f => (
 						<option selected={f.item === projectInfo.projectPriority ? true : false} value={f.item}>
 							{f.showItem}

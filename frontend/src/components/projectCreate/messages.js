@@ -40,6 +40,10 @@ export default defineMessages({
     id: 'management.projects.create.review_tasks.name',
     defaultMessage: 'Name',
   },
+  creationFailed: {
+    id: 'management.projects.create.review_tasks.failure.message',
+    defaultMessage: 'It was not possible to save your project due to an error: {error}',
+  },
   create: {
     id: 'management.projects.create.review_tasks.button.create',
     defaultMessage: 'Create',

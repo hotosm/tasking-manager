@@ -1,6 +1,7 @@
 import React, { useContext, useState, useLayoutEffect } from 'react';
-import { StateContext, styleClasses, handleCheckButton } from '../../views/projectEdit';
 
+import { StateContext, styleClasses, handleCheckButton } from '../../views/projectEdit';
+import { Button } from '../button';
 import { API_URL } from '../../config';
 
 export const MetadataForm = () => {
@@ -43,16 +44,16 @@ export const MetadataForm = () => {
 			<div className={styleClasses.divClass}>
 				<label className={styleClasses.labelClass}>Mapper level</label>
 				{mapperLevels.map(e => (
-					<button
+					<Button
 						className={
 							e === projectInfo.mapperLevel
-								? styleClasses.buttonClass.concat(' bg-navy')
-								: styleClasses.buttonClass.concat(' bg-dark-blue')
+								? 'bg-blue-dark white mr2'
+								: 'bg-white blue-dark mr2'
 						}
 						onClick={() => setProjectInfo({ ...projectInfo, mapperLevel: e })}
 					>
 						{e}
-					</button>
+					</Button>
 				))}
 				<p className={styleClasses.pClass}>
 					Setting the level will help the mappers find suitable projects to work on. You can enforce
@@ -80,6 +81,7 @@ export const MetadataForm = () => {
 				<p className={styleClasses.pClass}>Only one organisationis allowed.</p>
 				<select
 					name="LicenseId"
+					className="pa2"
 					onChange={e => setProjectInfo({ ...projectInfo, organisation: parseInt(e.target.value) })}
 				>
 					{orgs.map(o => (

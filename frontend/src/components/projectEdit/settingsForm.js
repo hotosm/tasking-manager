@@ -1,4 +1,6 @@
 import React, { useContext } from 'react';
+
+import { getEditors } from '../../utils/editorsList';
 import { StateContext, styleClasses, handleCheckButton } from '../../views/projectEdit';
 
 export const SettingsForm = () => {
@@ -16,12 +18,7 @@ export const SettingsForm = () => {
 		setProjectInfo({ ...projectInfo, validationEditors: editors });
 	};
 
-	const editors = [
-		{ showItem: 'ID Editor', item: 'ID' },
-		{ showItem: 'Josm', item: 'JOSM' },
-		{ showItem: 'Potlatch 2', item: 'POTLATCH_2' },
-		{ showItem: 'Field Papers', item: 'FIELD_PAPERS' },
-	];
+	const editors = getEditors();
 	return (
 		<div className="w-100">
 			<div className={styleClasses.divClass}>
@@ -32,11 +29,11 @@ export const SettingsForm = () => {
 							className="mr2"
 							name="mapping_editors"
 							onChange={handleMappingEditors}
-							checked={projectInfo.mappingEditors.includes(elm.item)}
+							checked={projectInfo.mappingEditors.includes(elm.backendValue)}
 							type="checkbox"
-							value={elm.item}
+							value={elm.backendValue}
 						/>
-						{elm.showItem}
+						{elm.label}
 					</label>
 				))}
 			</div>
@@ -48,11 +45,11 @@ export const SettingsForm = () => {
 							className="mr2"
 							name="validation_editors"
 							onChange={handleValidationEditors}
-							checked={projectInfo.validationEditors.includes(elm.item)}
+							checked={projectInfo.validationEditors.includes(elm.backendValue)}
 							type="checkbox"
-							value={elm.item}
+							value={elm.backendValue}
 						/>
-						{elm.showItem}
+						{elm.label}
 					</label>
 				))}
 			</div>

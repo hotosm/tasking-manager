@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { styleClasses } from '../../views/projectEdit';
-import { API_URL } from '../../config';
 import Popup from 'reactjs-popup';
 import { navigate } from '@reach/router';
+
+import { Button } from '../button';
+import { styleClasses } from '../../views/projectEdit';
+import { API_URL } from '../../config';
 
 const checkError = (error, modal) => {
 	let successMessage = '';
@@ -82,12 +84,12 @@ const ResetTasksModal = ({ projectId, close, token }) => {
 			</p>
 
 			{checkError(error, 'RESET_ALL')}
-			<button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
-				reset all tasks
-			</button>
-			<button className={styleClasses.deleteButtonClass} onClick={close}>
-				cancel
-			</button>
+			<Button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
+				Reset all tasks
+			</Button>
+			<Button className={styleClasses.deleteButtonClass} onClick={close}>
+				Cancel
+			</Button>
 		</div>
 	);
 };
@@ -126,12 +128,12 @@ const DeleteProjectModal = ({ projectId, close, token }) => {
 			</p>
 
 			{checkError(error, 'DELETE_PROJECT')}
-			<button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
-				delete project
-			</button>
-			<button className={styleClasses.deleteButtonClass} onClick={close}>
-				cancel
-			</button>
+			<Button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
+				Delete project
+			</Button>
+			<Button className={styleClasses.deleteButtonClass} onClick={close}>
+				Cancel
+			</Button>
 		</div>
 	);
 };
@@ -167,12 +169,12 @@ const ResetBadImageryModal = ({ projectId, close, token }) => {
 			</p>
 
 			{checkError(error, 'RESET_BAD_IMAGERY')}
-			<button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
-				reset all bad imagery tasks
-			</button>
-			<button className={styleClasses.deleteButtonClass} onClick={close}>
-				cancel
-			</button>
+			<Button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
+				Reset all bad imagery tasks
+			</Button>
+			<Button className={styleClasses.deleteButtonClass} onClick={close}>
+				Cancel
+			</Button>
 		</div>
 	);
 };
@@ -207,12 +209,12 @@ const ValidateAllTasksModal = ({ projectId, close, token }) => {
 			</p>
 
 			{checkError(error, 'VALIDATE_ALL_TASKS')}
-			<button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
-				validate all tasks
-			</button>
-			<button className={styleClasses.deleteButtonClass} onClick={close}>
-				cancel
-			</button>
+			<Button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
+				Validate all tasks
+			</Button>
+			<Button className={styleClasses.deleteButtonClass} onClick={close}>
+				Cancel
+			</Button>
 		</div>
 	);
 };
@@ -247,12 +249,12 @@ const InvalidateAllTasksModal = ({ projectId, close, token }) => {
 			</p>
 
 			{checkError(error, 'INVALIDATE_ALL_TASKS')}
-			<button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
+			<Button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
 				Invalidate all tasks
-			</button>
-			<button className={styleClasses.deleteButtonClass} onClick={close}>
-				cancel
-			</button>
+			</Button>
+			<Button className={styleClasses.deleteButtonClass} onClick={close}>
+				Cancel
+			</Button>
 		</div>
 	);
 };
@@ -285,12 +287,12 @@ const MapAllTasksModal = ({ projectId, close, token }) => {
 				are sure of what you are doing.
 			</p>
 			{checkError(error, 'MAP_ALL_TASKS')}
-			<button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
-				map all tasks
-			</button>
-			<button className={styleClasses.deleteButtonClass} onClick={close}>
-				cancel
-			</button>
+			<Button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
+				Map all tasks
+			</Button>
+			<Button className={styleClasses.deleteButtonClass} onClick={close}>
+				Cancel
+			</Button>
 		</div>
 	);
 };
@@ -355,12 +357,12 @@ const MessageContributorsModal = ({ projectId, close, token }) => {
 				include your own translations.
 			</p>
 			{checkError(error, 'MESSAGE_CONTRIBUTORS')}
-			<button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
-				message all contributors
-			</button>
-			<button className={styleClasses.deleteButtonClass} onClick={close}>
-				cancel
-			</button>
+			<Button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
+				Message all contributors
+			</Button>
+			<Button className={styleClasses.deleteButtonClass} onClick={close}>
+				Cancel
+			</Button>
 		</div>
 	);
 };
@@ -419,7 +421,7 @@ const TransferProject = ({ projectId, token }) => {
 				arrow={false}
 				trigger={
 					<input
-						className={styleClasses.inputClass.replace('80', '40') + ' pv2 fl'}
+						className={styleClasses.inputClass.replace('80', '40') + ' pa2 fl mr2'}
 						type="text"
 						value={username}
 						name="transferuser"
@@ -443,9 +445,9 @@ const TransferProject = ({ projectId, token }) => {
 					))}
 				</div>
 			</Popup>
-			<button onClick={handlerButton} className={styleClasses.actionClass}>
-				transfer project
-			</button>
+			<Button onClick={handlerButton} className={styleClasses.buttonClass}>
+				Transfer project
+			</Button>
 			{checkError(error, 'TRANSFER_PROJECT')}
 		</div>
 	);
@@ -464,7 +466,7 @@ export const ActionsForm = ({ projectId, token }) => {
 			<div className={styleClasses.divClass}>
 				<label className={styleClasses.labelClass}>Message all contributors</label>
 				<Popup
-					trigger={<button className={styleClasses.actionClass}>Message all contributors</button>}
+					trigger={<Button className={styleClasses.actionClass}>Message all contributors</Button>}
 					contentStyle={modalStyle}
 					modal
 					closeOnDocumentClick
@@ -482,7 +484,7 @@ export const ActionsForm = ({ projectId, token }) => {
 					<b>Warning:</b> This cannot be undone.
 				</p>
 				<Popup
-					trigger={<button className={styleClasses.actionClass}>map all tasks</button>}
+					trigger={<Button className={styleClasses.actionClass}>Map all tasks</Button>}
 					contentStyle={modalStyle}
 					modal
 					closeOnDocumentClick
@@ -490,7 +492,7 @@ export const ActionsForm = ({ projectId, token }) => {
 					{close => <MapAllTasksModal projectId={projectId} close={close} token={token} />}
 				</Popup>
 				<Popup
-					trigger={<button className={styleClasses.actionClass}>invalidate all tasks</button>}
+					trigger={<Button className={styleClasses.actionClass}>Invalidate all tasks</Button>}
 					contentStyle={modalStyle}
 					modal
 					closeOnDocumentClick
@@ -498,7 +500,7 @@ export const ActionsForm = ({ projectId, token }) => {
 					{close => <InvalidateAllTasksModal projectId={projectId} close={close} token={token} />}
 				</Popup>
 				<Popup
-					trigger={<button className={styleClasses.actionClass}>validate all tasks</button>}
+					trigger={<Button className={styleClasses.actionClass}>Validate all tasks</Button>}
 					contentStyle={modalStyle}
 					modal
 					closeOnDocumentClick
@@ -507,7 +509,7 @@ export const ActionsForm = ({ projectId, token }) => {
 				</Popup>
 				<Popup
 					trigger={
-						<button className={styleClasses.actionClass}>reset all bad imagery tasks</button>
+						<Button className={styleClasses.actionClass}>Reset all bad imagery tasks</Button>
 					}
 					contentStyle={modalStyle}
 					modal
@@ -523,7 +525,7 @@ export const ActionsForm = ({ projectId, token }) => {
 					<b>Warning:</b> This cannot be undone.
 				</p>
 				<Popup
-					trigger={<button className={styleClasses.actionClass}>delete project</button>}
+					trigger={<Button className={styleClasses.actionClass}>Delete project</Button>}
 					contentStyle={modalStyle}
 					modal
 					closeOnDocumentClick
@@ -547,7 +549,7 @@ export const ActionsForm = ({ projectId, token }) => {
 					<b>Warning:</b> This cannot be undone.
 				</p>
 				<Popup
-					trigger={<button className={styleClasses.actionClass}>reset tasks</button>}
+					trigger={<Button className={styleClasses.actionClass}>Reset tasks</Button>}
 					contentStyle={modalStyle}
 					modal
 					closeOnDocumentClick
@@ -562,12 +564,12 @@ export const ActionsForm = ({ projectId, token }) => {
 					tasks and the priority areas will not be cloned. You will have to redraw/import these.
 					Your newly cloned project will be in draft status.
 				</p>
-				<button
+				<Button
 					onClick={() => navigate(`/manage/projects/new/${projectId}/`)}
 					className={styleClasses.actionClass}
 				>
-					clone project
-				</button>
+					Clone project
+				</Button>
 			</div>
 		</div>
 	);
