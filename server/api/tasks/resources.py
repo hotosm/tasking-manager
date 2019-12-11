@@ -8,7 +8,6 @@ from schematics.exceptions import DataError
 from server.services.mapping_service import MappingService, NotFound
 from server.models.dtos.grid_dto import GridDTO
 
-from server.models.postgis.statuses import TaskStatus
 from server.services.users.authentication_service import token_auth, tm, verify_token
 from server.services.validator_service import ValidatorService
 
@@ -76,7 +75,7 @@ class TasksRestAPI(Resource):
         except NotFound:
             return {"Error": "Task Not Found"}, 404
         except Exception as e:
-            error_msg = f"Task GET API - unhandled error: {str(e)}"
+            error_msg = f"TasksRestAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch task"}, 500
 
@@ -98,6 +97,11 @@ class TasksQueriesJsonAPI(Resource):
               type: integer
               default: 1
             - in: query
+              name: tasks
+              type: string
+              description: List of tasks; leave blank to retrieve all
+              default: 1,2
+            - in: query
               name: as_file
               type: boolean
               description: Set to true if file download preferred
@@ -113,24 +117,25 @@ class TasksQueriesJsonAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            tasks = request.args.get("tasks") if request.args.get("tasks") else None
             as_file = (
                 strtobool(request.args.get("as_file"))
                 if request.args.get("as_file")
                 else True
             )
 
-            tasks = ProjectService.get_project_tasks(int(project_id))
+            tasksJson = ProjectService.get_project_tasks(int(project_id), tasks)
 
             if as_file:
-                tasks = str(tasks).encode("utf-8")
+                tasksJson = str(tasksJson).encode("utf-8")
                 return send_file(
-                    io.BytesIO(tasks),
+                    io.BytesIO(tasksJson),
                     mimetype="application/json",
                     as_attachment=True,
                     attachment_filename=f"{str(project_id)}-tasks.geoJSON",
                 )
 
-            return tasks, 200
+            return tasksJson, 200
         except NotFound:
             return {"Error": "Project or Task Not Found"}, 404
         except ProjectServiceError as e:
@@ -201,7 +206,7 @@ class TasksQueriesXmlAPI(Resource):
                 404,
             )
         except Exception as e:
-            error_msg = f"Task as OSM API - unhandled error: {str(e)}"
+            error_msg = f"TasksQueriesXmlAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch task XML"}, 500
 
@@ -268,7 +273,7 @@ class TasksQueriesGpxAPI(Resource):
                 404,
             )
         except Exception as e:
-            error_msg = f"Task as GPX API - unhandled error: {str(e)}"
+            error_msg = f"TasksQueriesGpxAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch task GPX"}, 500
 
@@ -343,7 +348,7 @@ class TasksQueriesAoiAPI(Resource):
         except InvalidGeoJson as e:
             return {"Error": f"{str(e)}"}, 400
         except Exception as e:
-            error_msg = f"IntersectingTiles GET API - unhandled error: {str(e)}"
+            error_msg = f"TasksQueriesAoiAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch tiles intersecting AOI"}, 500
 
@@ -352,10 +357,10 @@ class TasksQueriesOwnLockedAPI(Resource):
     @token_auth.login_required
     def get(self, project_id):
         """
-        Get any locked task on the project for the logged in user
+        Gets any locked task on the project from logged in user
         ---
         tags:
-            - tasks
+            - mapping
         produces:
             - application/json
         parameters:
@@ -367,29 +372,10 @@ class TasksQueriesOwnLockedAPI(Resource):
               default: Token sessionTokenHere==
             - name: project_id
               in: path
-              description: Project ID the task is associated with
+              description: Unique Project ID
               required: true
               type: integer
               default: 1
-            - in: query
-              name: as_file
-              type: boolean
-              description: Set to true if file download preferred
-              default: True
-            - in: query
-              name: status
-              type: string
-              description: task status to filter by
-            - in: query
-              name: orderBy
-              type:  string
-              description: Field name to sort tasks by, available last_updated, effort_prediction
-              default: null
-            - in: query
-              name: orderByType
-              type: string
-              default: ASC
-              enum: [ASC, DESC]
         responses:
             200:
                 description: Task user is working on
@@ -401,56 +387,26 @@ class TasksQueriesOwnLockedAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            order_by = request.args.get("orderBy")
-            status = request.args.get("status")
-
-            as_file = (
-                strtobool(request.args.get("as_file"))
-                if request.args.get("as_file")
-                else True
+            locked_tasks = ProjectService.get_task_for_logged_in_user(
+                project_id, tm.authenticated_user_id
             )
-
-            if status:
-                try:
-                    status = TaskStatus[status.upper()].value
-                except KeyError:
-                    status = None
-
-            if order_by not in ["effort_prediction", "last_updated"]:
-                order_by = None
-
-            order_by_type = request.args.get("orderByType", "ASC")
-
-            tasks = ProjectService.get_project_tasks(
-                int(project_id), order_by, order_by_type, status
-            )
-
-            if as_file:
-                tasks = str(tasks).encode("utf-8")
-                return send_file(
-                    io.BytesIO(tasks),
-                    mimetype="application/json",
-                    as_attachment=True,
-                    attachment_filename=f"{str(project_id)}-tasks.geoJSON",
-                )
-
-            return tasks, 200
+            return locked_tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
-            error_msg = f"HasUserTaskOnProject - unhandled error: {str(e)}"
+            error_msg = f"TasksQueriesOwnLockedAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch locked tasks for user"}, 500
+            return {"Error": error_msg}, 500
 
 
 class TasksQueriesOwnLockedDetailsAPI(Resource):
     @token_auth.login_required
     def get(self, project_id):
         """
-        Get details of any locked task on the project for the logged in user
+        Gets details of any locked task on the project from logged in user
         ---
         tags:
-            - tasks
+            - mapping
         produces:
             - application/json
         parameters:
@@ -468,7 +424,7 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
               default: en
             - name: project_id
               in: path
-              description: Project ID the task is associated with
+              description: Unique project ID
               required: true
               type: integer
               default: 1
@@ -491,9 +447,9 @@ class TasksQueriesOwnLockedDetailsAPI(Resource):
         except NotFound:
             return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
-            error_msg = f"HasUserTaskOnProject - unhandled error: {str(e)}"
+            error_msg = f"TasksQueriesOwnLockedDetailsAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch task details for user"}, 500
+            return {"Error": error_msg}, 500
 
 
 class TasksQueriesMappedAPI(Resource):
@@ -631,6 +587,6 @@ class TasksQueriesOwnInvalidatedAPI(Resource):
         except NotFound:
             return {"Error": "No invalidated tasks"}, 404
         except Exception as e:
-            error_msg = f"Invalidated Tasks API - unhandled error: {str(e)}"
+            error_msg = f"TasksQueriesMappedAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch invalidated tasks for user"}, 500
