@@ -1,5 +1,7 @@
 import React, { useState, useLayoutEffect } from 'react';
+import { Redirect, navigate } from '@reach/router';
 import { useSelector } from 'react-redux';
+
 import { DescriptionForm } from '../components/projectEdit/descriptionForm';
 import { InstructionsForm } from '../components/projectEdit/instructionsForm';
 import { MetadataForm } from '../components/projectEdit/metadataForm';
@@ -8,26 +10,24 @@ import { ImageryForm } from '../components/projectEdit/imageryForm';
 import { PermissionsForm } from '../components/projectEdit/permissionsForm';
 import { SettingsForm } from '../components/projectEdit/settingsForm';
 import { ActionsForm } from '../components/projectEdit/actionsForm';
-
-import { Redirect } from '@reach/router';
+import { Button } from '../components/button';
 import { API_URL } from '../config';
-import { navigate } from '@reach/router';
-const buttonClass = 'f6 link dim ph3 pv2 mb2 dib white';
+import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 
 export const StateContext = React.createContext();
 
 export const styleClasses = {
-  divClass: 'w-70 pb5 mb4 bb b--light-silver',
+  divClass: 'w-70 pb5 mb4 bb b--grey-light',
   labelClass: 'f4 barlow-condensed db mb3',
   pClass: 'db mb3 f5',
-  inputClass: 'w-80',
+  inputClass: 'w-80 pa2',
   numRows: '4',
-  buttonClass: 'f6 link dim ph3 pv2 mb2 dib white',
+  buttonClass: 'bg-blue-dark dib white',
   modalTitleClass: 'f3 barlow-condensed pb3 bb',
-  drawButtonClass: buttonClass.concat(' bg-navy ttu'),
-  deleteButtonClass: buttonClass.concat(' bg-gray ttu'),
+  drawButtonClass: 'bg-blue-dark ttu white mr2',
+  deleteButtonClass: 'bg-red ttu white',
   modalClass: 'w-40 vh-50 center pv5',
-  actionClass: 'f6 bg-gray white ttu dim ph3 pv2 link dib mr2',
+  actionClass: 'bg-blue-dark white dib mr2 mt2 pointer',
 };
 
 export const handleCheckButton = (event, arrayElement) => {
@@ -42,6 +42,8 @@ export const handleCheckButton = (event, arrayElement) => {
 
 export function ProjectEdit({ id }) {
   const token = useSelector(state => state.auth.get('token'));
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [option, setOption] = useState('description');
   const [projectInfo, setProjectInfo] = useState({
     mappingTypes: [],
@@ -78,9 +80,8 @@ export function ProjectEdit({ id }) {
     const checkSelected = optionSelected => {
       let liClass = 'w-90 link barlow-condensed f4 pv2 pointer';
       if (option === optionSelected) {
-        liClass = liClass.concat(' bg-light-gray');
+        liClass = liClass.concat(' bg-grey-light');
       }
-
       return liClass;
     };
 
@@ -97,7 +98,6 @@ export function ProjectEdit({ id }) {
 
     return (
       <div>
-        <p className="ma0 fw2 ttu f7"> In this area </p>
         <ul className="list pl0 mt0">
           {elements.map(elm => (
             <li className={checkSelected(elm.item)} onClick={() => setOption(elm.item)}>
@@ -133,34 +133,29 @@ export function ProjectEdit({ id }) {
   };
 
   const saveChanges = () => {
-    const updateProject = async () => {
-      await fetch(`${API_URL}projects/${id}/`, {
-        method: 'PATCH',
-        body: JSON.stringify(projectInfo),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token ? `Token ${token}` : '',
-        },
-      });
-    };
-    updateProject();
+    pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')
+      .then(res => setSuccess(true))
+      .catch(e => setError(e));
   };
 
   return (
-    <div style={{ backgroundColor: '#f7f7f7' }} className="cf pv3 ph4">
+    <div className="cf pv3 ph4 bg-tan">
       <h2 className="ml6 pb2 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">Edit project</h2>
       <div className="fl vh-75-l w-30 ml6">
         {renderList()}
-        <button onClick={saveChanges} className={styleClasses.drawButtonClass}>
-          save
-        </button>
-
-        <button
+        <Button onClick={saveChanges} className="bg-red white">
+          Save
+        </Button>
+        <Button
           onClick={() => navigate(`/projects/${id}`)}
-          className={styleClasses.deleteButtonClass}
+          className="bg-white blue-dark ml2"
         >
-          go to project
-        </button>
+          Go to project page
+        </Button>
+        <p className="pt2">
+          {success && <span className="blue-dark bg-grey-light pa2">Project updated successfully</span>}
+          {error && <span className="bg-red white pa2">Project update failed: {error}</span>}
+        </p>
       </div>
       <StateContext.Provider value={{ projectInfo: projectInfo, setProjectInfo: setProjectInfo }}>
         <div className="fl w-60">{renderForm(option)}</div>
