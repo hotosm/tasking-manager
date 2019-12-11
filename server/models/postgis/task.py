@@ -801,13 +801,12 @@ class Task(db.Model):
         project_id, task_ids_str: str, order_by: str = None, order_by_type: str = "ASC", status: int = None
     ):
         """
-        Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID
+        Creates a geoJson.FeatureCollection object for tasks related to the supplied project ID
         :param project_id: Owning project ID
         :order_by: sorting option: available values update_date and building_area_diff
         :status: task status id to filter by
         :return: geojson.FeatureCollection
         """
-        print('get_tasks_as_geojson_feature_collection: ', task_ids_str)
         subquery = (
             db.session.query(func.max(TaskHistory.action_date))
             .filter(
@@ -832,10 +831,15 @@ class Task(db.Model):
         filters = [Task.project_id == project_id]
 
         if task_ids_str:
+            tasks_filters = []
             task_ids = map(int, task_ids_str.split(","))
             tasks = Task.get_tasks(project_id, task_ids)
             if not tasks or len(tasks) == 0:
                 raise NotFound()
+            else:
+                for task in tasks:
+                    tasks_filters.append(task.id)
+            filters = [Task.project_id == project_id, Task.id.in_(tasks_filters)]
         else:
             tasks = Task.get_all_tasks(project_id)
             if not tasks or len(tasks) == 0:

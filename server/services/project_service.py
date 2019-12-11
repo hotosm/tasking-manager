@@ -133,8 +133,7 @@ class ProjectService:
         project_id, task_ids_str: str, order_by: str = None, order_by_type: str = "ASC", status: int = None
     ):
         project = ProjectService.get_project_by_id(project_id)
-        print('get_project_tasks: ', task_ids_str)
-        return project.all_tasks_as_geojson(task_ids_str, order_by, order_by_type, status)
+        return project.tasks_as_geojson(task_ids_str, order_by, order_by_type, status)
 
     @staticmethod
     def get_project_aoi(project_id):

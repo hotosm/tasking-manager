@@ -96,12 +96,11 @@ class TasksQueriesJsonAPI(Resource):
               required: true
               type: integer
               default: 1
-            - name: task_id
-              in: path
-              description: Unique task ID
-              required: true
-              type: integer
-              default: 1
+            - in: query
+              name: tasks
+              type: string
+              description: List of tasks; leave blank to retrieve all
+              default: 1,2
             - in: query
               name: as_file
               type: boolean
