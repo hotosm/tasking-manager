@@ -96,6 +96,12 @@ class TasksQueriesJsonAPI(Resource):
               required: true
               type: integer
               default: 1
+            - name: task_id
+              in: path
+              description: Unique task ID
+              required: true
+              type: integer
+              default: 1
             - in: query
               name: as_file
               type: boolean
@@ -112,24 +118,25 @@ class TasksQueriesJsonAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            tasks = request.args.get("tasks") if request.args.get("tasks") else None
             as_file = (
                 strtobool(request.args.get("as_file"))
                 if request.args.get("as_file")
                 else True
             )
 
-            tasks = ProjectService.get_project_tasks(int(project_id))
+            tasksJson = ProjectService.get_project_tasks(int(project_id), tasks)
 
             if as_file:
-                tasks = str(tasks).encode("utf-8")
+                tasksJson = str(tasksJson).encode("utf-8")
                 return send_file(
-                    io.BytesIO(tasks),
+                    io.BytesIO(tasksJson),
                     mimetype="application/json",
                     as_attachment=True,
                     attachment_filename=f"{str(project_id)}-tasks.geoJSON",
                 )
 
-            return tasks, 200
+            return tasksJson, 200
         except NotFound:
             return {"Error": "Project or Task Not Found"}, 404
         except ProjectServiceError as e:

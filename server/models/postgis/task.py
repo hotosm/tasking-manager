@@ -798,7 +798,7 @@ class Task(db.Model):
 
     @staticmethod
     def get_tasks_as_geojson_feature_collection(
-        project_id, order_by: str = None, order_by_type: str = "ASC", status: int = None
+        project_id, task_ids_str: str, order_by: str = None, order_by_type: str = "ASC", status: int = None
     ):
         """
         Creates a geoJson.FeatureCollection object for all tasks related to the supplied project ID
@@ -807,6 +807,7 @@ class Task(db.Model):
         :status: task status id to filter by
         :return: geojson.FeatureCollection
         """
+        print('get_tasks_as_geojson_feature_collection: ', task_ids_str)
         subquery = (
             db.session.query(func.max(TaskHistory.action_date))
             .filter(
@@ -829,6 +830,16 @@ class Task(db.Model):
         )
 
         filters = [Task.project_id == project_id]
+
+        if task_ids_str:
+            task_ids = map(int, task_ids_str.split(","))
+            tasks = Task.get_tasks(project_id, task_ids)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
+        else:
+            tasks = Task.get_all_tasks(project_id)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
 
         if status:
             filters.append(Task.task_status == status)
