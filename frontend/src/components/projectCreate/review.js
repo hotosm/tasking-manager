@@ -1,36 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { navigate } from '@reach/router';
 
 import messages from './messages';
 import { Button } from '../button';
 import { createProject } from '../../store/actions/project';
 import { store } from '../../store';
-import { API_URL } from '../../config';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
-const handleCreate = (metadata, updateMetadata, projectName, token) => {
+const handleCreate = (metadata, updateMetadata, projectName, token, cloneProjectData, setError) => {
   updateMetadata({ ...metadata, projectName: projectName });
   store.dispatch(createProject(metadata));
 
-  const projectParams = {
+  let projectParams = {
     areaOfInterest: metadata.geom,
     projectName: metadata.projectName,
     tasks: metadata.taskGrid,
     arbitraryTasks: metadata.arbitraryTasks,
   };
 
-  const url = `${API_URL}projects/`;
-  const reqParams = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: token ? `Token ${token}` : '',
-    },
-    body: JSON.stringify(projectParams),
-  };
-  fetch(url, reqParams);
+  if (cloneProjectData.name !== null) {
+    projectParams.projectName = '';
+    projectParams.cloneFromProjectId = cloneProjectData.id;
+  }
+  pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
+    .then(res => navigate(`/manage/projects/${res.projectId}`))
+    .catch(e => setError(e));
 };
 
-export default function Review({ metadata, updateMetadata, token }) {
+export default function Review({ metadata, updateMetadata, token, projectId, cloneProjectData }) {
+  const [error, setError] = useState(null);
   const projectName = metadata.projectName;
 
   const setProjectName = event => {
@@ -40,30 +39,43 @@ export default function Review({ metadata, updateMetadata, token }) {
 
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark"><FormattedMessage {...messages.step3} /></h3>
+      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark">
+        <FormattedMessage {...messages.step3} />
+      </h3>
       <p className="pt2">
-        <FormattedMessage
-          {...messages.reviewTaskNumberMessage}
-          values={{n: metadata.tasksNo}}
-        />
+        <FormattedMessage {...messages.reviewTaskNumberMessage} values={{ n: metadata.tasksNo }} />
       </p>
 
-      <label for="name" className="f4 b db mb2 pt3">
-        <FormattedMessage {...messages.name} />
-      </label>
-      <input
-        onChange={setProjectName}
-        id="name"
-        className="input-reset ba b--black-20 pa2 mb2 db w-50"
-        type="text"
-      />
-      <div className="mt2">
+      {cloneProjectData.name === null ? (
+        <>
+          <label for="name" className="f4 b db mb2 pt3">
+            <FormattedMessage {...messages.name} />
+          </label>
+          <input
+            onChange={setProjectName}
+            id="name"
+            className="input-reset ba b--black-20 pa2 mb2 db w-50"
+            type="text"
+          />
+        </>
+      ) : null}
+
+      <div className="mt3">
         <Button
-          onClick={() => handleCreate(metadata, updateMetadata, projectName, token)}
+          onClick={() =>
+            handleCreate(metadata, updateMetadata, projectName, token, cloneProjectData, setError)
+          }
           className="white bg-blue-dark"
         >
-          <FormattedMessage {...messages.create} />
+          {cloneProjectData.name === null ? (
+            <FormattedMessage {...messages.create} />
+          ) : (
+            <FormattedMessage {...messages.clone} />
+          )}
         </Button>
+      </div>
+      <div className="mt2">
+        {error && <span><FormattedMessage {...messages.creationFailed} values={{error: error}}/></span>}
       </div>
     </>
   );

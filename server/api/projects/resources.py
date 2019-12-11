@@ -327,7 +327,7 @@ class ProjectsRestAPI(Resource):
                     campaignTag:
                         type: string
                         default: malaria
-                    organisationId:
+                    organisation:
                         type: integer
                         default: 1
                     countryTag:
@@ -387,7 +387,7 @@ class ProjectsRestAPI(Resource):
         except ProjectAdminServiceError:
             return {"Error": "Unable to update project"}, 400
         except Exception as e:
-            error_msg = f"Project POST - unhandled error: {str(e)}"
+            error_msg = f"Project PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to update project"}, 500
 

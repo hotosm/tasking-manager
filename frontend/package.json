@@ -18,6 +18,8 @@
     "humanize-duration": "^3.21.0",
     "immutable": "^4.0.0-rc.12",
     "mapbox-gl": "^1.5.0",
+    "mapbox-gl-draw-circle": "^1.1.1",
+    "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "marked": "^0.7.0",
     "node-sass": "^4.13.0",
     "osmtogeojson": "^3.0.0-beta.3",
@@ -48,7 +50,7 @@
     "build": "npm run preparation && react-scripts build",
     "prettier": "prettier --write src/**/*.js",
     "lint": "eslint src",
-    "test": "npm run lint && react-scripts test"
+    "test": "npm run lint && react-scripts test --transformIgnorePatterns \"node_modules/(?!mapbox-gl-draw-circle)/\""
   },
   "eslintConfig": {
     "extends": "react-app"
