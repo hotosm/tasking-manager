@@ -136,7 +136,9 @@ class User(db.Model):
         """ Search and filter all users """
 
         # Base query that applies to all searches
-        base = db.session.query(User.id, User.username, User.mapping_level, User.role)
+        base = db.session.query(
+            User.id, User.username, User.mapping_level, User.role, User.picture_url
+        )
 
         # Add filter to query as required
         if query.mapping_level:
@@ -156,6 +158,7 @@ class User(db.Model):
             listed_user.id = result.id
             listed_user.mapping_level = MappingLevel(result.mapping_level).name
             listed_user.username = result.username
+            listed_user.picture_url = result.picture_url
             listed_user.role = UserRole(result.role).name
 
             dto.users.append(listed_user)

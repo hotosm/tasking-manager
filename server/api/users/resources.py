@@ -74,7 +74,7 @@ class UsersAllAPI(Resource):
             - in: query
               name: username
               description: Full or part username
-              type: integer
+              type: string
             - in: query
               name: role
               description: Role of User, eg ADMIN, PROJECT_MANAGER

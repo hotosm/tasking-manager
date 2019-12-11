@@ -5,7 +5,7 @@ import ReactPlaceholder from 'react-placeholder';
 import { TextRow } from 'react-placeholder/lib/placeholders';
 
 import messages from './messages';
-import { UserAvatar } from './avatar';
+import { CurrentUserAvatar } from './avatar';
 import { ProfileCompleteness } from './completeness';
 import { MappingLevelMessage } from '../mappingLevel';
 import { INTERMEDIATE_LEVEL_COUNT, ADVANCED_LEVEL_COUNT } from '../../config';
@@ -58,7 +58,7 @@ export function UserTopBar() {
     <div className="cf ph4 pt3 pb1 mb2">
       <div className="w-100 w-75-l fl pb2">
         <div className="fl dib mr3">
-          <UserAvatar className="h4 w4 br-100 pa1 ba b--grey-light bw3 red" />
+          <CurrentUserAvatar className="h4 w4 br-100 pa1 ba b--grey-light bw3 red" />
         </div>
         <ReactPlaceholder
           showLoadingAnimation={true}

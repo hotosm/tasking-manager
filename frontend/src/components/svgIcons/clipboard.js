@@ -1,6 +1,7 @@
 import React from 'react';
 
 // Icon produced by FontAwesome project: https://github.com/FortAwesome/Font-Awesome/
+// License: CC-By 4.0
 export class ClipboardIcon extends React.PureComponent {
   render() {
     return (

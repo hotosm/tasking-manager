@@ -5,7 +5,10 @@ import { ProjectNav } from '../components/projects/projectNav';
 import { MyProjectNav } from '../components/projects/myProjectNav';
 import { MoreFiltersForm } from '../components/projects/moreFiltersForm';
 import { ProjectDetail } from '../components/projectDetail/index';
-
+import { ManagementMenu } from '../components/teamsAndOrgs/menu';
+import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
+import { ProjectSearchResults } from '../components/projects/projectSearchResults';
+import { ProjectsMap } from '../components/projects/projectsMap';
 import {
   useProjectsQueryAPI,
   useExploreProjectsQueryParams,
@@ -13,12 +16,8 @@ import {
 } from '../hooks/UseProjectsQueryAPI';
 import { useTagAPI } from '../hooks/UseTagAPI';
 import useForceUpdate from '../hooks/UseForceUpdate';
-
 import { useFetch } from '../hooks/UseFetch';
 
-import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
-import { ProjectSearchResults } from '../components/projects/projectSearchResults';
-import { ProjectsMap } from '../components/projects/projectsMap';
 
 export const ProjectsPage = props => {
   const initialData = {
@@ -68,8 +67,10 @@ export const ProjectsPage = props => {
   );
 };
 
-export const MyProjectsPage = props => {
+export const ManageProjectsPage = props => {
+  const userDetails = useSelector(state => state.auth.get('userDetails'));
   const userToken = useSelector(state => state.auth.get('token'));
+
   const initialData = {
     mapResults: {
       features: [],
@@ -103,6 +104,9 @@ export const MyProjectsPage = props => {
 
   return (
     <div className="pull-center ph5-l bg-tan">
+      {userDetails && ['ADMIN', 'PROJECT_MANAGER'].includes(userDetails.role) &&
+        <ManagementMenu />
+      }
       <MyProjectNav location={props.location} orgAPIState={orgAPIState}>
         {
           props.children

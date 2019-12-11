@@ -620,7 +620,7 @@ class ProjectsAllAPI(ProjectSearchBase):
             results_dto = ProjectSearchService.search_projects(search_dto)
             return results_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "No projects found"}, 404
+            return {"mapResults": {}, "results": []}, 200
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

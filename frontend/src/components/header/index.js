@@ -11,9 +11,10 @@ import { LinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 import { BurgerMenu } from './burgerMenu';
+import { TopNavLink } from './NavLink';
 import { SignUp } from './signUp';
 import { UpdateEmail } from './updateEmail';
-import { UserAvatar } from '../user/avatar';
+import { CurrentUserAvatar } from '../user/avatar';
 import { logout } from '../../store/actions/auth';
 import { setLocale } from '../../store/actions/userPreferences';
 import { createLoginWindow } from '../../utils/login';
@@ -21,27 +22,16 @@ import { supportedLocales } from '../../utils/internationalization';
 
 const menuItems = [
   { label: messages.exploreProjects, link: 'explore', showAlways: true },
-  { label: messages.howItWorks, link: 'learn', authenticated: false },
-  { label: messages.about, link: 'about', authenticated: false },
-  { label: messages.help, link: 'help', authenticated: false },
-  { label: messages.myProjects, link: 'projects', authenticated: true },
-  { label: messages.myTasks, link: 'tasks', authenticated: true },
-  { label: messages.statsBadges, link: 'user', authenticated: true },
+  { label: messages.myContributions, link: 'user', authenticated: true },
+  { label: messages.manage, link: 'manage', authenticated: true, manager: true },
+  { label: messages.learn, link: 'learn', showAlways: true },
+  { label: messages.about, link: 'about', showAlways: true },
 ];
-
-const TopNavLink = props => {
-  const { isActive, ...otherProps } = props;
-  return (
-    <Link getProps={isActive} {...otherProps}>
-      {props.children}
-    </Link>
-  );
-};
 
 const UserDisplay = props => {
   return (
     <span>
-      <UserAvatar className="br-100 v-mid red" width="32px" height="32px" />
+      <CurrentUserAvatar className="br-100 v-mid red" width="32px" height="32px" />
       <span className="pl2">{props.username}</span>
     </span>
   );
@@ -98,6 +88,9 @@ class Header extends React.Component {
       filteredMenuItems = this.menuItems.filter(
         item => item.authenticated === true || item.showAlways,
       );
+      if (!['PROJECT_MANAGER', 'ADMIN'].includes(this.props.userDetails.role)) {
+        filteredMenuItems = filteredMenuItems.filter(item => !item.manager);
+      }
     } else {
       filteredMenuItems = this.menuItems.filter(
         item => item.authenticated === false || item.showAlways,

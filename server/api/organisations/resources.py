@@ -155,7 +155,6 @@ class OrganisationsRestAPI(Resource):
             - in: header
               name: Authorization
               description: Base64 encoded session token
-              required: true
               type: string
               default: Token sessionTokenHere==
             - name: organisation_id

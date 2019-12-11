@@ -16,13 +16,10 @@ export function PriorityBox({ priority, extraClasses }: Object) {
     color = 'red';
     borderColor = 'b--red';
   }
-  const translated = priority ? (
-    <FormattedMessage {...messages['projectPriority' + priority]} />
-  ) : (
-    ''
-  );
+  const text = priority ? <FormattedMessage {...messages[`projectPriority${priority}`]} /> : '';
+
   return (
-    <div className={`tc br1 f7 ttu ba ${borderColor} ${color} ${extraClasses}`}>{translated}</div>
+    <div className={`tc br1 f7 ttu ba ${borderColor} ${color} ${extraClasses}`}>{text}</div>
   );
 }
 

@@ -20,6 +20,54 @@ export default defineMessages({
     id: 'loginPage.title',
     defaultMessage: 'Login or register an account',
   },
+  newOrganisation: {
+    id: 'teamsAndOrgs.management.organisation.creation',
+    defaultMessage: 'Create new organisation',
+  },
+  newTeam: {
+    id: 'teamsAndOrgs.management.team.creation',
+    defaultMessage: 'Create new team',
+  },
+  newCampaign: {
+    id: 'teamsAndOrgs.management.campaign.creation',
+    defaultMessage: 'Create new campaign',
+  },
+  createOrganisation: {
+    id: 'teamsAndOrgs.management.organisation.button.create',
+    defaultMessage: 'Create organisation',
+  },
+  createTeam: {
+    id: 'teamsAndOrgs.management.team.button.create',
+    defaultMessage: 'Create team',
+  },
+  createCampaign: {
+    id: 'teamsAndOrgs.management.campaign.button.create',
+    defaultMessage: 'Create campaign',
+  },
+  cancel: {
+    id: 'teamsAndOrgs.management.button.cancel',
+    defaultMessage: 'Cancel',
+  },
+  manageOrganisation: {
+    id: 'teamsAndOrgs.management.organisation.manage',
+    defaultMessage: 'Manage organisation',
+  },
+  manageTeam: {
+    id: 'teamsAndOrgs.management.team.manage',
+    defaultMessage: 'Manage team',
+  },
+  manageCampaign: {
+    id: 'teamsAndOrgs.management.campaign.manage',
+    defaultMessage: 'Manage campaign',
+  },
+  teamInfo: {
+    id: 'teamsAndOrgs.management.titles.team_information',
+    defaultMessage: 'Team information',
+  },
+  campaignInfo: {
+    id: 'teamsAndOrgs.management.titles.campaign_information',
+    defaultMessage: 'Campaign information',
+  },
   profileSettings: {
     id: 'EmailVerification.link.profileSettings',
     defaultMessage: 'your profile settings',

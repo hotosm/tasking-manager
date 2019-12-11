@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from '@reach/router';
+import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-
+import { AddButton } from '../teamsAndOrgs/management';
 import { useExploreProjectsQueryParams, stringify } from '../../hooks/UseProjectsQueryAPI';
 import { ProjectSearchBox } from './projectSearchBox';
 import { OrderBySelector } from './orderBy';
@@ -26,6 +27,7 @@ const isActiveButton = (buttonName, projectQuery) => {
 };
 
 export const MyProjectNav = props => {
+  const userDetails = useSelector(state => state.auth.get('userDetails'));
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
 
   const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
@@ -34,12 +36,17 @@ export const MyProjectNav = props => {
   // onSelectedItemChange={(changes) => console.log(changes)}
   return (
     /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
-    <header className="bt bb b--tan ">
+    <header className="bt bb b--tan">
       <div className="cf">
         <div className="w-75-l w-60 fl">
-          <h3 className="dib fl f2 ttu barlow-condensed fw8">
+          <h3 className="barlow-condensed f2 ma0 pv3 v-mid dib ttu">
             <FormattedMessage {...messages.myProjects} />
           </h3>
+          {userDetails && ['ADMIN', 'PROJECT_MANAGER'].includes(userDetails.role) &&
+            <Link to={'new/'} className="dib ml3">
+              <AddButton />
+            </Link>
+          }
         </div>
       </div>
       <div className="dib lh-copy w-100 cf">
