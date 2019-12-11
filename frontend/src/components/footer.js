@@ -16,7 +16,14 @@ const socialNetworks = [
 ];
 
 export function Footer({ location }: Object) {
-  if (location.pathname.endsWith('/map') || location.pathname.endsWith('/map/')) {
+  if (
+    location.pathname.endsWith('/map') ||
+    location.pathname.endsWith('/map/') ||
+    location.pathname.endsWith('/validate') ||
+    location.pathname.endsWith('/validate/') ||
+    location.pathname.endsWith('/new') ||
+    location.pathname.endsWith('/new/')
+  ) {
     return <></>;
   } else {
     return (

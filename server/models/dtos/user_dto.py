@@ -194,6 +194,7 @@ class ListedUser(Model):
     username = StringType()
     role = StringType()
     mapping_level = StringType(serialized_name="mappingLevel")
+    picture_url = StringType(serialized_name="pictureUrl")
 
 
 class UserRegisterEmailDTO(Model):

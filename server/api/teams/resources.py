@@ -328,6 +328,7 @@ class TeamsAllAPI(Resource):
                         default: HOT - Mappers
                     organisation_id:
                         type: integer
+                        default: 1
                     description:
                         type: string
                     visibility:
@@ -358,8 +359,8 @@ class TeamsAllAPI(Resource):
             team_id = TeamService.create_team(team_dto)
             return {"teamId": team_id}, 201
         except TeamServiceError as e:
-            return str(e), 402
+            return str(e), 400
         except Exception as e:
-            error_msg = f"Team PUT - unhandled error: {str(e)}"
+            error_msg = f"Team POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500

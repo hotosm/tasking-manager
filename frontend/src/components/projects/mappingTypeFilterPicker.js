@@ -3,8 +3,8 @@ import React from 'react';
 import { titledIcons } from '../mappingTypes';
 
 export const MappingTypeFilterPicker = props => {
-  const pagerStyle = 'link br1 h2 w2 pa1 ma1 ba b--white bw1 dib radiobutton-wrapper';
-  const checkboxStyle = 'absolute o-0 z-5 w-100 h-100 pointerinput-reset pointer checkbox';
+  const pagerStyle = 'link br1 h2 w2 pa1 ma1 ba b--white bw1 dib pointer';
+  const checkboxStyle = 'absolute o-0 z-5 w-100 h-100 pointer input-reset checkbox';
   const activeStyle = 'blue-dark';
   const inactiveStyle = 'pb1 grey-light';
 

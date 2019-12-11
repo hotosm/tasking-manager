@@ -83,6 +83,14 @@ button:focus, button:active, a:focus, a:active {
   border: dashed red !important;
  }
 
+.radio-input {
+  background-color: $white;
+}
+.radio-input:checked {
+  background-color: $red;
+  border: none;
+}
+
 /* mapping type by RADIO BUTTONs
 https://codepen.io/nielsenramon/pen/mLMeLY
  */
@@ -111,4 +119,8 @@ https://codepen.io/nielsenramon/pen/mLMeLY
 
 .bottom-3 {
   bottom: 3rem;
+}
+
+input:disabled, textarea:disabled {
+  background-color: $tan;
 }
