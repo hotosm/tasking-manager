@@ -10,11 +10,15 @@ import { ProjectCreate } from './components/projectCreate/create';
 import { ORG_NAME } from './config';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
-import { MyProjectsPage, ProjectsPage, ProjectsPageIndex, MoreFilters, ProjectDetailPage } from './views/project';
+import { ManageProjectsPage, ProjectsPage, ProjectsPageIndex, MoreFilters, ProjectDetailPage } from './views/project';
 import { Authorized } from './views/authorized';
 import { Login } from './views/login';
 import { Welcome } from './views/welcome';
 import { Settings } from './views/settings';
+import { Management } from './views/management';
+import { ListOrganisations, CreateOrganisation, EditOrganisation } from './views/organisations';
+import { ListTeams, CreateTeam, EditTeam } from './views/teams';
+import { ListCampaigns, CreateCampaign, EditCampaign } from './views/campaigns';
 import { NotFound } from './views/notFound';
 import { SelectTask } from './views/taskSelection';
 import { EmailVerification } from './views/verifyEmail';
@@ -45,12 +49,23 @@ function App() {
             <Welcome path="welcome" />
             <Settings path="settings" />
             <EmailVerification path="verify-email" />
-            <MyProjectsPage path="projects/" />
+            <Management path="manage/" />
+            <ListOrganisations path="manage/organisations/" />
+            <CreateOrganisation path="manage/organisations/new/" />
+            <EditOrganisation path="manage/organisations/:id/" />
+            <ListTeams path="manage/teams/" />
+            <CreateTeam path="manage/teams/new" />
+            <EditTeam path="manage/teams/:id" />
+            <ListCampaigns path="manage/campaigns/" />
+            <CreateCampaign path="manage/campaigns/new" />
+            <EditCampaign path="manage/campaigns/:id" />
+            <ProjectCreate path="manage/projects/new" />
+            <ProjectEdit path="manage/projects/:id" />
+            <ManageProjectsPage path="manage/projects/" />
+            <ManageProjectsPage path="projects/" />
             <SelectTask path="projects/:id/map" />
             <ProjectDetailPage path="projects/:id" />
             <Redirect from="project/:id" to="projects/:id" noThrow />
-            <ProjectCreate path="/manage/projects/new/*" />
-            <ProjectEdit path="manage/projects/:id" />
             <NotFound default />
           </Router>
         </QueryParamProvider>

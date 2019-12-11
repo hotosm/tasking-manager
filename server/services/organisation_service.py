@@ -54,7 +54,7 @@ class OrganisationService:
 
         teams = OrganisationService.get_teams_by_organisation_id(organisation_id)
         for team in teams:
-            organisation_dto.teams.append([team.id, team.name])
+            organisation_dto.teams.append(team.as_dto_inside_org())
 
         projects = OrganisationService.get_projects_by_organisation_id(organisation_id)
         for project in projects:
@@ -165,11 +165,7 @@ class OrganisationService:
 
     @staticmethod
     def get_teams_by_organisation_id(organisation_id: int) -> Organisation:
-        teams = (
-            db.session.query(Team.id, Team.name)
-            .filter(Team.organisation_id == organisation_id)
-            .all()
-        )
+        teams = Team.query.filter(Team.organisation_id == organisation_id).all()
 
         if teams is None:
             raise NotFound()

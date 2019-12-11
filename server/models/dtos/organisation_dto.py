@@ -1,5 +1,12 @@
 from schematics import Model
-from schematics.types import StringType, IntType, ListType, ModelType, BooleanType
+from schematics.types import (
+    StringType,
+    IntType,
+    ListType,
+    ModelType,
+    BooleanType,
+    DictType,
+)
 
 
 class OrganisationManagerDTO(Model):
@@ -7,6 +14,17 @@ class OrganisationManagerDTO(Model):
 
     username = StringType(required=True)
     picture_url = StringType(serialized_name="pictureUrl")
+
+
+class OrganisationTeamsDTO(Model):
+    """ Describes JSON model for a team. To be used in the Organisations endpoints."""
+
+    team_id = IntType(serialized_name="teamId")
+    name = StringType(required=True)
+    description = StringType()
+    invite_only = BooleanType(default=False, serialized_name="inviteOnly")
+    visibility = StringType()
+    members = ListType(DictType(StringType, serialize_when_none=False))
 
 
 class OrganisationDTO(Model):
@@ -19,7 +37,7 @@ class OrganisationDTO(Model):
     url = StringType()
     is_manager = BooleanType(serialized_name="isManager")
     projects = ListType(StringType)
-    teams = ListType(ListType(StringType))
+    teams = ListType(ModelType(OrganisationTeamsDTO))
     campaigns = ListType(ListType(StringType))
 
 

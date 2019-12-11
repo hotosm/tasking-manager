@@ -28,7 +28,7 @@ export const ProjectSearchResults = props => {
                   state.pagination.page * state.pagination.perPage <= state.pagination.total &&
                   [': ', state.pagination.page * state.pagination.perPage, ' '].join(''),
                 numTotalProjects: (
-                  <FormattedNumber value={state.pagination && state.pagination.total} />
+                  <FormattedNumber value={state.pagination ? state.pagination.total : 0} />
                 ),
               }}
             />

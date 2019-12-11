@@ -4,6 +4,10 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on header.
  */
 export default defineMessages({
+  selectOrganisation: {
+    id: 'formInputs.organisation.select',
+    defaultMessage: 'Select organisation',
+  },
   definition: {
     id: 'foooter.definition',
     defaultMessage:
