@@ -9,18 +9,20 @@ import { MappingLevelMessage } from '../mappingLevel';
 import { Dropdown } from '../dropdown';
 import { ProjectSearchBox } from './projectSearchBox';
 import { OrderBySelector } from './orderBy';
-import { SwitchToggle } from '../switch';
+import { SwitchToggle } from '../formInputs';
 
 
 export const ShowMapToggle = props => {
   const dispatch = useDispatch();
   const isMapShown = useSelector(state => state.preferences['mapShown']);
   return (
-    <SwitchToggle
-      onChange={() => dispatch({ type: 'TOGGLE_MAP' })}
-      isChecked={isMapShown}
-      label={<FormattedMessage {...messages.showMapToggle} />}
-    />
+    <div className="fr pv2 dib-ns dn blue-dark">
+      <SwitchToggle
+        onChange={() => dispatch({ type: 'TOGGLE_MAP' })}
+        isChecked={isMapShown}
+        label={<FormattedMessage {...messages.showMapToggle} />}
+      />
+    </div>
   );
 };
 

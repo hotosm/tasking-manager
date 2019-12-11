@@ -5,24 +5,24 @@ import { defineMessages } from 'react-intl';
  */
 export default defineMessages({
   exploreProjects: {
-    id: 'header.nav.projectsLink',
+    id: 'header.nav.projects',
     defaultMessage: 'Explore projects',
   },
-  howItWorks: {
-    id: 'header.nav.learnLink',
-    defaultMessage: 'How it works',
+  learn: {
+    id: 'header.nav.learn',
+    defaultMessage: 'Learn',
   },
   about: {
     id: 'header.nav.aboutLink',
     defaultMessage: 'About',
   },
-  help: {
-    id: 'header.nav.helpLink',
-    defaultMessage: 'Help',
+  myContributions: {
+    id: 'header.nav.my_contributions',
+    defaultMessage: 'My contributions',
   },
-  myProjects: {
-    id: 'header.nav.myProjects',
-    defaultMessage: 'My projects',
+  manage: {
+    id: 'header.nav.manage',
+    defaultMessage: 'Manage',
   },
   myTasks: {
     id: 'header.nav.myTasks',

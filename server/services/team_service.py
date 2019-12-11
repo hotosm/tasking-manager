@@ -186,8 +186,9 @@ class TeamService:
             team_dto.invite_only = team.invite_only
             team_dto.visibility = TeamVisibility(team.visibility).name
             team_dto.description = team.description
+            team_dto.logo = team.organisation.logo
             team_dto.organisation = team.organisation.name
-            team_dto.logo = team.logo
+            team_dto.organisation_id = team.organisation.id
             team_dto.members = []
             team_members = TeamService._get_team_members(team.id)
             for member in team_members:
@@ -217,7 +218,7 @@ class TeamService:
         team_dto.invite_only = team.invite_only
         team_dto.visibility = TeamVisibility(team.visibility).name
         team_dto.description = team.description
-        team_dto.logo = team.logo
+        team_dto.logo = team.organisation.logo
         team_dto.organisation = team.organisation.name
         team_dto.organisation_id = team.organisation.id
 
@@ -238,6 +239,7 @@ class TeamService:
             user = UserService.get_user_by_id(member.user_id)
             member_dto = TeamMembersDTO()
             member_dto.username = user.username
+            member_dto.pictureUrl = user.picture_url
             member_dto.function = TeamMemberFunctions(member.function).name
             member_dto.picture_url = user.picture_url
             member_dto.active = member.active

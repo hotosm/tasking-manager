@@ -1,6 +1,6 @@
 from server import db
-
 from server.models.dtos.team_dto import TeamDTO, NewTeamDTO
+from server.models.dtos.organisation_dto import OrganisationTeamsDTO
 from server.models.postgis.organisation import Organisation
 from server.models.postgis.statuses import TeamVisibility, TeamMemberFunctions
 from server.models.postgis.user import User
@@ -69,7 +69,6 @@ class Team(db.Model):
         new_team = cls()
 
         new_team.name = new_team_dto.name
-        new_team.logo = new_team_dto.logo
         new_team.description = new_team_dto.description
         new_team.invite_only = new_team_dto.invite_only
         new_team.visibility = TeamVisibility[new_team_dto.visibility].value
@@ -160,12 +159,23 @@ class Team(db.Model):
         team_dto.team_id = self.id
         team_dto.description = self.description
         team_dto.invite_only = self.invite_only
-        team_dto.logo = self.logo
         team_dto.members = self.get_team_members()
         team_dto.name = self.name
         team_dto.organisation = self.organisation.name
+        team_dto.organisation_id = self.organisation.id
+        team_dto.logo = self.organisation.logo
         team_dto.visibility = TeamVisibility(self.visibility).name
+        return team_dto
 
+    def as_dto_inside_org(self):
+        """ Returns a dto for the team """
+        team_dto = OrganisationTeamsDTO()
+        team_dto.team_id = self.id
+        team_dto.name = self.name
+        team_dto.description = self.description
+        team_dto.invite_only = self.invite_only
+        team_dto.members = self.get_team_members()
+        team_dto.visibility = TeamVisibility(self.visibility).name
         return team_dto
 
     def _get_team_members(self):
@@ -174,7 +184,8 @@ class Team(db.Model):
         for mem in self.members:
             members.append(
                 {
-                    "name": mem.member.username,
+                    "username": mem.member.username,
+                    "pictureUrl": mem.member.picture_url,
                     "function": TeamMemberFunctions(mem.function).name,
                     "pictureURL": mem.member.picture_url,
                 }

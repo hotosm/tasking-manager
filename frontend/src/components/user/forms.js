@@ -7,7 +7,7 @@ import { Form, Field } from 'react-final-form';
 import messages from './messages';
 import { FormSubmitButton, Button } from '../button';
 import { Dropdown } from '../dropdown';
-import { SwitchToggle } from '../switch';
+import { SwitchToggle, RadioField } from '../formInputs';
 import { pushUserDetails } from '../../store/actions/auth';
 import { getEditors } from '../../utils/editorsList';
 
@@ -40,7 +40,6 @@ function _UserInformationForm(props) {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
   const formFields = PROFILE_RELEVANT_FIELDS.concat(['selfDescriptionGender']);
-  const radioButtonStyle = { padding: '0.5em 0' };
   const prepareUserDetailsToPush = (values, fields) => {
     let data = {};
     fields.filter(key => values.hasOwnProperty(key)).forEach(key => (data[key] = values[key]));
@@ -127,20 +126,20 @@ function _UserInformationForm(props) {
                   <label className={labelClasses}>
                     <FormattedMessage {...messages.gender} />
                   </label>
-                  <div style={radioButtonStyle}>
-                    <Field name="gender" component="input" type="radio" value="FEMALE" />{' '}
+                  <div className="pv2">
+                    <RadioField name="gender" value="FEMALE" />
                     <FormattedMessage {...messages.female} />
                   </div>
-                  <div style={radioButtonStyle}>
-                    <Field name="gender" component="input" type="radio" value="MALE" />{' '}
+                  <div className="pv2">
+                    <RadioField name="gender" value="MALE" />
                     <FormattedMessage {...messages.male} />
                   </div>
-                  <div style={radioButtonStyle}>
-                    <Field name="gender" component="input" type="radio" value="PREFER_NOT" />{' '}
+                  <div className="pv2">
+                    <RadioField name="gender" value="PREFER_NOT" />
                     <FormattedMessage {...messages.preferNotToSay} />
                   </div>
-                  <div style={radioButtonStyle}>
-                    <Field name="gender" component="input" type="radio" value="SELF_DESCRIBE" />{' '}
+                  <div className="pv2">
+                    <RadioField name="gender" value="SELF_DESCRIBE" />
                     <FormattedMessage {...messages.selfDescribe} />
                   </div>
                   <Field name="gender" subscription={{ value: true }}>
@@ -209,7 +208,9 @@ function _SwitchToggleField(props) {
     setValue(!value);
   };
 
-  return <SwitchToggle onChange={e => onSwitchChange()} isChecked={value} />;
+  return <div className="fr pv2 dib">
+    <SwitchToggle onChange={e => onSwitchChange()} isChecked={value} />
+  </div>;
 }
 
 const SwitchToggleField = connect(
