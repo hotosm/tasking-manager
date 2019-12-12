@@ -178,7 +178,7 @@ def add_api_endpoints(app):
         TasksActionsMappingUnlockAPI,
         TasksActionsMappingUndoAPI,
         TasksActionsValidationLockAPI,
-        TasksActionsValidatioStopAPI,
+        TasksActionsValidationStopAPI,
         TasksActionsValidationUnlockAPI,
         TasksActionsMapAllAPI,
         TasksActionsValidateAllAPI,
@@ -459,15 +459,15 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksActionsMappingUndoAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/undo-mapping/<int:task_id>/",
+        "/api/v2/projects/<int:project_id>/tasks/actions/undo-last-action/<int:task_id>/",
     )
     api.add_resource(
         TasksActionsValidationLockAPI,
         "/api/v2/projects/<int:project_id>/tasks/actions/lock-for-validation/",
     )
     api.add_resource(
-        TasksActionsValidatioStopAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/stop-validating/",
+        TasksActionsValidationStopAPI,
+        "/api/v2/projects/<int:project_id>/tasks/actions/stop-validation/",
     )
     api.add_resource(
         TasksActionsValidationUnlockAPI,
@@ -495,7 +495,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksActionsSplitAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/split/{task_id}/",
+        "/api/v2/projects/<int:project_id>/tasks/actions/split/<int:task_id>/",
     )
 
     # Comments REST endoints

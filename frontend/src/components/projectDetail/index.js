@@ -11,11 +11,11 @@ import DueDateBox from '../projectcard/dueDateBox';
 import { MappingLevelMessage } from '../mappingLevel';
 
 import { TasksMap } from '../taskSelection/map.js';
-import { HeaderLine } from '../taskSelection';
+import { HeaderLine, TagLine } from '../taskSelection';
 import { MappingTypes } from '../mappingTypes';
 import { Imagery } from '../taskSelection/imagery';
 
-import { htmlFromMarkdown } from './htmlFromMarkdown';
+import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { NewMapperFlow } from './newMapperFlow';
 import { ShowReadMoreButton } from './showReadMoreButton';
 import { ProjectDetailFooter } from './projectDetailFooter';
@@ -81,7 +81,6 @@ const ProjectDetailMap = props => {
         taskBordersMap={taskBordersGeoJSON}
         taskCentroidMap={centroidGeoJSON}
         taskBordersOnly={taskBordersOnly}
-        projectId={props.project.projectId}
         disableScrollZoom={true}
         navigate={props.navigate}
         type={props.type}
@@ -138,13 +137,7 @@ export const ProjectDetailLeft = props => {
             <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
               {props.project.projectInfo && props.project.projectInfo.name}
             </h3>
-            <span className="blue-light">{props.project.campaignTag}</span>
-            {props.project.countryTag && (
-              <span className="blue-light">
-                <span className="ph2">&#183;</span>
-                {props.project.countryTag.map(country => country).join(', ')}
-              </span>
-            )}
+            < TagLine campaigns={props.project.campaigns} countries={props.project.countryTag} />
           </div>
           <section className={`lh-copy h5 overflow-x-scroll`}>
             <div className="pr2" dangerouslySetInnerHTML={htmlShortDescription} />

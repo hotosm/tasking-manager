@@ -4,6 +4,10 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on header.
  */
 export default defineMessages({
+  legend: {
+    id: 'project.tasks.map.legend',
+    defaultMessage: 'Legend',
+  },
   createBy: {
     id: 'project.createdBy',
     defaultMessage: '{id} | Created by {user}',
@@ -106,11 +110,15 @@ export default defineMessages({
   },
   taskStatus_READY: {
     id: 'project.tasks.status.ready',
-    defaultMessage: 'Ready to map',
+    defaultMessage: 'Available for mapping',
   },
   taskStatus_MAPPED: {
     id: 'project.tasks.status.mapped',
-    defaultMessage: 'Mapped',
+    defaultMessage: 'Ready for validation',
+  },
+  taskStatus_LOCKED: {
+    id: 'project.tasks.status.locked',
+    defaultMessage: 'Locked',
   },
   taskStatus_LOCKED_FOR_MAPPING: {
     id: 'project.tasks.status.lockedForMapping',
@@ -122,15 +130,15 @@ export default defineMessages({
   },
   taskStatus_VALIDATED: {
     id: 'project.tasks.status.validated',
-    defaultMessage: 'Validated',
+    defaultMessage: 'Finished',
   },
   taskStatus_INVALIDATED: {
     id: 'project.tasks.status.invalidated',
-    defaultMessage: 'Invalidated',
+    defaultMessage: 'More mapping needed',
   },
   taskStatus_BADIMAGERY: {
     id: 'project.tasks.status.badImagery',
-    defaultMessage: 'Bad imagery',
+    defaultMessage: 'Unavailable',
   },
   taskStatus_SPLIT: {
     id: 'project.tasks.status.split',
@@ -159,5 +167,73 @@ export default defineMessages({
   noTasksFound: {
     id: 'project.tasks.filter.noTasksFound',
     defaultMessage: 'No tasks were found.',
+  },
+  completion: {
+    id: 'project.tasks.action.completion',
+    defaultMessage: 'Completion',
+  },
+  history: {
+    id: 'project.tasks.action.history',
+    defaultMessage: 'History',
+  },
+  finishMappingTitle: {
+    id: 'project.tasks.action.finish_mapping.title',
+    defaultMessage: 'Once you have finished mapping',
+  },
+  instructionsSelect: {
+    id: 'project.tasks.action.instructions.select_task',
+    defaultMessage: 'Select one of the options below that matches your edit status',
+  },
+  instructionsComment: {
+    id: 'project.tasks.action.instructions.leave_comment',
+    defaultMessage: 'Leave a comment (optional)',
+  },
+  instructionsSubmit: {
+    id: 'project.tasks.action.instructions.submit_task',
+    defaultMessage: 'Submit your work',
+  },
+  comment: {
+    id: 'project.tasks.action.comment.title',
+    defaultMessage: 'Comment',
+  },
+  commentPlaceholder: {
+    id: 'project.tasks.action.comment.input.placeholder',
+    defaultMessage: 'Write a comment on this task',
+  },
+  editStatus: {
+    id: 'project.tasks.action.selection.title',
+    defaultMessage: 'Edit status',
+  },
+  badImagery: {
+    id: 'project.tasks.action.options.bad_imagery',
+    defaultMessage: "It wasn't possible to map due to bad imagery",
+  },
+  incomplete: {
+    id: 'project.tasks.action.options.mapping_incomplete',
+    defaultMessage: "I couldn't map everything",
+  },
+  completelyMapped: {
+    id: 'project.tasks.action.options.mapping_complete',
+    defaultMessage: "I completely mapped this task",
+  },
+  markAsValid: {
+    id: 'project.tasks.action.options.validate',
+    defaultMessage: "Validate and mark as finished",
+  },
+  markAsInvalid: {
+    id: 'project.tasks.action.options.invalidate',
+    defaultMessage: "More mapping is needed",
+  },
+  splitTask: {
+    id: 'project.tasks.action.split_task',
+    defaultMessage: "Split task",
+  },
+  selectAnotherTask: {
+    id: 'project.tasks.action.select_another_task',
+    defaultMessage: "Select another task",
+  },
+  submitTask: {
+    id: 'project.tasks.action.submit_task',
+    defaultMessage: "Submit task",
   },
 });
