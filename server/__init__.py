@@ -437,8 +437,7 @@ def add_api_endpoints(app):
         "/api/v2/projects/<int:project_id>/tasks/queries/own/locked/details/",
     )
     api.add_resource(
-        TasksQueriesMappedAPI,
-        "/api/v2/projects/<int:project_id>/tasks/queries/own/mapped/",
+        TasksQueriesMappedAPI, "/api/v2/projects/<int:project_id>/tasks/queries/mapped/"
     )
     api.add_resource(
         TasksQueriesOwnInvalidatedAPI,
