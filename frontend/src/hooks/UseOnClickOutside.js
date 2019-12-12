@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-// Hook
 export function useOnClickOutside(ref, handler) {
   useEffect(
     () => {

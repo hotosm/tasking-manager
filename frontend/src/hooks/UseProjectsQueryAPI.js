@@ -1,7 +1,8 @@
 import {
   useQueryParams,
-  StringParam,
+  encodeQueryParams,
   stringify as stringifyUQP,
+  StringParam,
   NumberParam,
   BooleanParam,
 } from 'use-query-params';
@@ -229,4 +230,7 @@ export const useProjectsQueryAPI = (
   return [state, dispatch];
 };
 
-export const stringify = stringifyUQP;
+export const stringify = obj => {
+  const encodedQuery = encodeQueryParams(projectQueryAllSpecification, obj);
+  return stringifyUQP(encodedQuery);
+};

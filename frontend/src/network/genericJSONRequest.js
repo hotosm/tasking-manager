@@ -14,9 +14,12 @@ export function fetchExternalJSONAPI(url): Promise<*> {
     });
 }
 
-export function fetchLocalJSONAPI(endpoint, token, method = 'GET'): Promise<*> {
+export function fetchLocalJSONAPI(endpoint, token, method="GET", language = 'en'): Promise<*> {
   const url = new URL(endpoint, API_URL);
-  let headers = { 'Content-Type': 'application/json' };
+  let headers = {
+    'Content-Type': 'application/json',
+    'Accept-Language': language,
+  };
   if (token) {
     headers['Authorization'] = `Token ${token}`;
   }
@@ -30,12 +33,13 @@ export function fetchLocalJSONAPI(endpoint, token, method = 'GET'): Promise<*> {
     });
 }
 
-export function pushToLocalJSONAPI(endpoint, payload, token, method = 'POST'): Promise<*> {
+export function pushToLocalJSONAPI(endpoint, payload, token, method = 'POST', language = 'en'): Promise<*> {
   const url = new URL(endpoint, API_URL);
   return fetch(url, {
     method: method,
     headers: {
       'Content-Type': 'application/json',
+      'Accept-Language': language,
       Authorization: `Token ${token}`,
     },
     body: payload,

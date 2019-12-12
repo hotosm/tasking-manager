@@ -4,23 +4,25 @@ import { useSelector } from 'react-redux';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { useInterval } from './UseInterval';
 
-export const useFetch = url => {
+export const useFetch = (url, trigger=true) => {
   const token = useSelector(state => state.auth.get('token'));
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   useEffect(() => {
     (async () => {
-      setLoading(true);
-      try {
-        const response = await fetchLocalJSONAPI(url, token);
-        setData(response);
-      } catch (e) {
-        setError(e);
+      if (trigger) {
+        setLoading(true);
+        try {
+          const response = await fetchLocalJSONAPI(url, token);
+          setData(response);
+        } catch (e) {
+          setError(e);
+        }
+        setLoading(false);
       }
-      setLoading(false);
     })();
-  }, [url, token]);
+  }, [url, token, trigger]);
   return [error, loading, data];
 };
 

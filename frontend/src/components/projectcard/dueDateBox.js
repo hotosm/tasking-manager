@@ -5,7 +5,7 @@ import humanizeDuration from 'humanize-duration';
 import { ClockIcon } from '../svgIcons';
 import messages from './messages';
 
-export function DueDateBox({ intl, dueDate }: Object) {
+function DueDateBox({ intl, dueDate, align="right" }: Object) {
   if (dueDate === undefined) {
     return null;
   } else if (new Date(dueDate) === undefined) {
@@ -16,7 +16,7 @@ export function DueDateBox({ intl, dueDate }: Object) {
 
   if (milliDifference > 0) {
     return (
-      <span className="fr relative w-40 lh-solid f7 tr br1 link ph1 pv2 bg-grey-light blue-grey truncate mw4">
+      <span className={`relative w-40 lh-solid f7 tr br1 link ph1 pv2 bg-grey-light blue-grey truncate mw4 ${align === 'right' ? 'fr' : 'fl'}`}>
         <span>
           <ClockIcon className="absolute pl1 top-0 pt1 left-0" />
         </span>

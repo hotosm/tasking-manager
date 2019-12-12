@@ -9,7 +9,7 @@ import { Login } from './login';
 const Error = ({ error }) => <span>Error:{error.message}</span>;
 
 export function SelectTask({ id }: Object) {
-  const [error, loading, data] = useFetch(`projects/${id}/queries/summary/`);
+  const [error, loading, data] = useFetch(`projects/${id}/queries/summary/`, id);
   const token = useSelector(state => state.auth.get('token'));
   if (error) {
     if (error.message === 'NOT FOUND') {
@@ -24,6 +24,6 @@ export function SelectTask({ id }: Object) {
       </div>
     );
   } else {
-    return <Login redirect_to={`projects/${id}/map`} />;
+    return <Login redirect_to={`projects/${id}/tasks`} />;
   }
 }

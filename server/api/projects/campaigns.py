@@ -1,23 +1,30 @@
-from flask_restful import Resource, request, current_app
+from flask_restful import Resource, current_app
 from schematics.exceptions import DataError
 
 from server.models.dtos.campaign_dto import CampaignProjectDTO
 from server.services.campaign_service import CampaignService
 from server.models.postgis.utils import NotFound
-from server.services.users.authentication_service import token_auth
+from server.services.users.authentication_service import token_auth, tm
 
 
 class ProjectsCampaignsAPI(Resource):
+    @tm.pm_only()
     @token_auth.login_required
-    def post(self):
+    def post(self, project_id, campaign_id):
         """
         Assign a campaign for a project
         ---
         tags:
-          - campaign
+          - campaigns
         produces:
           - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: Unique project ID
@@ -41,17 +48,20 @@ class ProjectsCampaignsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            campaign_project_dto = CampaignProjectDTO(request.get_json())
+            campaign_project_dto = CampaignProjectDTO()
+            campaign_project_dto.campaign_id = campaign_id
+            campaign_project_dto.project_id = project_id
             campaign_project_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
 
         try:
-            new_campaigns = CampaignService.create_campaign_project(
-                campaign_project_dto
+            CampaignService.create_campaign_project(campaign_project_dto)
+            message = "campaign with id {} assigned successfully for project with id {}".format(
+                campaign_id, project_id
             )
-            return new_campaigns.to_primitive(), 200
+            return ({"Success": message}, 200)
         except Exception as e:
             error_msg = f"User POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -62,7 +72,7 @@ class ProjectsCampaignsAPI(Resource):
         Gets all campaigns for a project
         ---
         tags:
-          - campaign
+          - campaigns
         produces:
           - application/json
         parameters:
@@ -73,7 +83,7 @@ class ProjectsCampaignsAPI(Resource):
               type: integer
               default: 1
         responses:
-            201:
+            200:
                 description: Campaign list returned successfully
             400:
                 description: Client Error - Invalid Request
@@ -92,16 +102,23 @@ class ProjectsCampaignsAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
+    @tm.pm_only()
     @token_auth.login_required
     def delete(self, project_id, campaign_id):
         """
         Delete a campaign for a project
         ---
         tags:
-          - campaign
+          - campaigns
         produces:
           - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: Unique project ID
@@ -115,7 +132,7 @@ class ProjectsCampaignsAPI(Resource):
               type: integer
               default: 1
         responses:
-            201:
+            200:
                 description: Campaign assigned successfully
             400:
                 description: Client Error - Invalid Request

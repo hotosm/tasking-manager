@@ -21,6 +21,7 @@ import { ListTeams, CreateTeam, EditTeam } from './views/teams';
 import { ListCampaigns, CreateCampaign, EditCampaign } from './views/campaigns';
 import { NotFound } from './views/notFound';
 import { SelectTask } from './views/taskSelection';
+import { MapTask, ValidateTask } from './views/taskAction';
 import { EmailVerification } from './views/verifyEmail';
 import { ProjectEdit } from './views/projectEdit';
 
@@ -63,7 +64,9 @@ function App() {
             <ProjectEdit path="manage/projects/:id" />
             <ManageProjectsPage path="manage/projects/" />
             <ManageProjectsPage path="projects/" />
-            <SelectTask path="projects/:id/map" />
+            <SelectTask path="projects/:id/tasks" />
+            <MapTask path="projects/:id/map" />
+            <ValidateTask path="projects/:id/validate" />
             <ProjectDetailPage path="projects/:id" />
             <Redirect from="project/:id" to="projects/:id" noThrow />
             <NotFound default />
