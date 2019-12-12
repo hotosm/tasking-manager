@@ -7,12 +7,14 @@ import ReactPlaceholder from 'react-placeholder';
 import messages from './messages';
 import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
 import { getTaskAction } from '../../utils/projectPermissions';
+import { getRandomArrayItem } from '../../utils/random';
 import { updateTasksStatus } from '../../utils/updateTasksStatus';
 import { PriorityBox } from '../projectcard/projectCard';
 import { TasksMap } from './map.js';
 import { TaskSelectionFooter } from './footer';
 import { TaskList } from './taskList';
-import { htmlFromMarkdown } from '../projectDetail/htmlFromMarkdown';
+import { TasksMapLegend } from './legend';
+import { ProjectInstructions } from './instructions';
 
 export function HeaderLine({ author, projectId, priority }: Object) {
   const userLink = (
@@ -32,19 +34,62 @@ export function HeaderLine({ author, projectId, priority }: Object) {
           <FormattedMessage {...messages.createBy} values={{ user: userLink, id: projectIdLink }} />
         </span>
       </div>
-      <div className="mw4 dib fr">
-        <PriorityBox priority={priority} extraClasses={'pv2 ph3'} />
-      </div>
+      {priority &&
+        <div className="mw4 dib fr">
+          <PriorityBox priority={priority} extraClasses={'pv2 ph3'} />
+        </div>
+      }
     </div>
   );
 }
 
+export function TagLine({campaigns=[], countries=[]}: Object) {
+  let tags = [];
+  tags = campaigns.map(i => i.name).concat(countries);
+  return (
+    <span className="blue-light">
+      {tags.map((tag, n) => <>
+          <span className={n === 0 ? 'dn' : 'ph2'}>&#183;</span>
+          {tag}
+        </>
+      )}
+    </span>
+  );
+}
+
+const getRandomTaskByAction = (activities, taskAction) => {
+  if (['validateATask', 'validateAnotherTask'].includes(taskAction)) {
+    return getRandomArrayItem(
+      activities.filter(
+        task => ['MAPPED', 'BADIMAGERY'].includes(task.taskStatus)
+      ).map(task => task.taskId)
+    );
+  }
+  if (['mapATask', 'mapAnotherTask'].includes(taskAction)) {
+    return getRandomArrayItem(
+      activities.filter(
+        task => ['READY', 'INVALIDATED'].includes(task.taskStatus)
+      ).map(task => task.taskId)
+    );
+  }
+}
+
 export function TaskSelection({ project, type, loading }: Object) {
+  const user = useSelector(state => state.auth.get('userDetails'));
+  const [tasks, setTasks] = useState([]);
+  const [activeSection, setActiveSection] = useState(null);
+  const [selected, setSelectedTasks] = useState([]);
+  const [randomTask, setRandomTask] = useState([]);
+  const [taskAction, setTaskAction] = useState('mapATask');
   // these two fetches are needed to initialize the component
-  const [tasksError, tasksLoading, initialTasks] = useFetch(`projects/${project.projectId}/tasks/`);
+  const [tasksError, tasksLoading, initialTasks] = useFetch(
+    `projects/${project.projectId}/tasks/`,
+    project.projectId !== undefined
+  );
   /* eslint-disable-next-line */
   const [tasksActivitiesError, tasksActivitiesLoading, initialActivities] = useFetch(
     `projects/${project.projectId}/activities/latest/`,
+    project.projectId !== undefined
   );
   // get activities each 60 seconds
   /* eslint-disable-next-line */
@@ -52,11 +97,6 @@ export function TaskSelection({ project, type, loading }: Object) {
     `projects/${project.projectId}/activities/latest/`,
     60000,
   );
-  const user = useSelector(state => state.auth.get('userDetails'));
-  const [tasks, setTasks] = useState([]);
-  const [activeSection, setActiveSection] = useState(null);
-  const [selected, setSelectedTasks] = useState([]);
-  const [taskAction, setTaskAction] = useState('mapATask');
 
   useEffect(() => {
     setActiveSection(user.mappingLevel === 'BEGINNER' ? 'instructions' : 'tasks');
@@ -69,8 +109,16 @@ export function TaskSelection({ project, type, loading }: Object) {
     }
   }, [initialTasks, activities]);
 
-  const htmlInstructions =
-    project.projectInfo && htmlFromMarkdown(project.projectInfo.instructions);
+  useEffect(
+    () => {
+      if (!activities && initialActivities && initialActivities.activity) {
+        setRandomTask([getRandomTaskByAction(initialActivities.activity, taskAction)]);
+      }
+      if (activities && activities.activity) {
+        setRandomTask([getRandomTaskByAction(activities.activity, taskAction)]);
+      }
+    }, [activities, initialActivities, taskAction]
+  );
 
   function selectTask(selection, status = null) {
     if (typeof selection === 'object') {
@@ -105,13 +153,7 @@ export function TaskSelection({ project, type, loading }: Object) {
                 <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
                   {project.projectInfo && project.projectInfo.name}
                 </h3>
-                <span className="blue-light">{project.campaignTag}</span>
-                {project.countryTag && (
-                  <span className="blue-light">
-                    <span className="ph2">&#183;</span>
-                    {project.countryTag.map(country => country).join(', ')}
-                  </span>
-                )}
+                <TagLine campaigns={project.campaigns} countries={project.countryTag} />
               </div>
               <div className="cf">
                 <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
@@ -138,17 +180,14 @@ export function TaskSelection({ project, type, loading }: Object) {
                       selected={selected}
                     />
                   ) : (
-                    <div
-                      className="markdown-content base-font blue-dark"
-                      dangerouslySetInnerHTML={htmlInstructions}
-                    />
+                    <ProjectInstructions instructions={project.projectInfo && project.projectInfo.instructions} />
                   )}
                 </div>
               </div>
             </ReactPlaceholder>
           </div>
         </div>
-        <div className="w-100 w-50-ns fl h-100">
+        <div className="w-100 w-50-ns fl h-100 relative">
           <ReactPlaceholder
             showLoadingAnimation={true}
             type={'media'}
@@ -166,6 +205,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               selected={selected}
               taskBordersOnly={false}
             />
+            <TasksMapLegend />
           </ReactPlaceholder>
         </div>
       </div>
@@ -182,7 +222,9 @@ export function TaskSelection({ project, type, loading }: Object) {
             mappingEditors={project.mappingEditors}
             validationEditors={project.validationEditors}
             defaultUserEditor={user ? user.defaultEditor : 'iD'}
+            projectId={project.projectId}
             taskAction={taskAction}
+            selectedTasks={selected.length && !taskAction.endsWith('AnotherTask') ? selected : randomTask}
           />
         </ReactPlaceholder>
       </div>

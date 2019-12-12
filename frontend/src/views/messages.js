@@ -68,6 +68,18 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.titles.campaign_information',
     defaultMessage: 'Campaign information',
   },
+  noLockedTasksOnProjectMessage: {
+    id: 'taskAction.messages.error.no_locked_tasks_on_project.text',
+    defaultMessage: 'You can not do any action on the Project #{currentProject}, because you have locked tasks on project #{lockedProject}. Unlock the tasks on Project #{currentProject}, so you will be able to map and validate other projects.',
+  },
+  noLockedTasksMessage: {
+    id: 'taskAction.messages.error.no_locked_tasks.text',
+    defaultMessage: "You don't have any locked tasks. Access the Project #{currentProject} to select a task to map.",
+  },
+  goToProjectButton: {
+    id: 'taskAction.go_to_project.button',
+    defaultMessage: 'Go to Project #{project}',
+  },
   profileSettings: {
     id: 'EmailVerification.link.profileSettings',
     defaultMessage: 'your profile settings',

@@ -39,7 +39,7 @@ export const ProjectDetailFooter = props => {
           <AddToFavorites projectId={props.projectId} />
         </div>
         <div className="dib w-40 tr fr">
-          <Link to={`./map`} className="">
+          <Link to={`./tasks`} className="">
             <Button className="white bg-red h3 w-100">
               <FormattedMessage {...messages.contribute} />
             </Button>

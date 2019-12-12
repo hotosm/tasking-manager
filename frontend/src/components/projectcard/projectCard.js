@@ -90,7 +90,7 @@ export function ProjectCard({
         <FormattedMessage {...messages.editProject} />
       </Link>
       <Link
-        to={`/projects/${projectId}/map`}
+        to={`/projects/${projectId}/tasks`}
         className={`fr f6 di w-50 tc bg-red white bn ${linkCombo}`}
       >
         <FormattedMessage {...messages.projectTasks} />
