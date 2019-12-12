@@ -976,7 +976,9 @@ class Project(db.Model):
         project, project_dto = self._get_project_and_base_dto()
 
         if abbrev is False:
-            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(self.id)
+            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(
+                self.id, None
+            )
         else:
             project_dto.tasks = Task.get_tasks_as_geojson_feature_collection_no_geom(
                 self.id
