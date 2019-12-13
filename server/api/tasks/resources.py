@@ -355,7 +355,7 @@ class TasksQueriesAoiAPI(Resource):
 
 class TasksQueriesOwnLockedAPI(Resource):
     @token_auth.login_required
-    def get(self, project_id):
+    def get(self):
         """
         Gets any locked task on the project from logged in user
         ---
@@ -370,12 +370,6 @@ class TasksQueriesOwnLockedAPI(Resource):
               required: true
               type: string
               default: Token sessionTokenHere==
-            - name: project_id
-              in: path
-              description: Unique Project ID
-              required: true
-              type: integer
-              default: 1
         responses:
             200:
                 description: Task user is working on
@@ -388,7 +382,7 @@ class TasksQueriesOwnLockedAPI(Resource):
         """
         try:
             locked_tasks = ProjectService.get_task_for_logged_in_user(
-                project_id, tm.authenticated_user_id
+                tm.authenticated_user_id
             )
             return locked_tasks.to_primitive(), 200
         except NotFound:

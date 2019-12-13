@@ -9,6 +9,7 @@ from server.services.project_service import (
     UserService,
     MappingNotAllowed,
 )
+from server.models.postgis.task import Task
 
 
 class TestProjectService(unittest.TestCase):
@@ -43,7 +44,7 @@ class TestProjectService(unittest.TestCase):
             )
         )
 
-    @patch.object(Project, "get_locked_tasks_for_user")
+    @patch.object(Task, "get_locked_tasks_for_user")
     @patch.object(Project, "get")
     def test_user_not_permitted_to_map_if_already_locked_tasks(
         self, mock_project, mock_user_tasks
@@ -81,7 +82,7 @@ class TestProjectService(unittest.TestCase):
 
     @patch.object(UserService, "has_user_accepted_license")
     @patch.object(UserService, "is_user_blocked")
-    @patch.object(Project, "get_locked_tasks_for_user")
+    @patch.object(Task, "get_locked_tasks_for_user")
     @patch.object(Project, "get")
     def test_user_not_permitted_to_map_if_user_has_not_accepted_license(
         self, mock_project, mock_user_tasks, mock_user_blocked, mock_user_service
@@ -102,7 +103,7 @@ class TestProjectService(unittest.TestCase):
         # Assert
         self.assertFalse(allowed)
 
-    @patch.object(Project, "get_locked_tasks_for_user")  # noqa
+    @patch.object(Task, "get_locked_tasks_for_user")  # noqa
     @patch.object(Project, "get")
     def test_user_not_permitted_to_map_if_already_locked_tasks(
         self, mock_project, mock_user_tasks
@@ -113,7 +114,7 @@ class TestProjectService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(NotFound):
-            ProjectService.get_task_for_logged_in_user(1, 1)
+            ProjectService.get_task_for_logged_in_user(1)
 
     @patch.object(UserService, "is_user_blocked")
     @patch.object(Project, "get")
