@@ -429,8 +429,7 @@ def add_api_endpoints(app):
         TasksQueriesAoiAPI, "/api/v2/projects/<int:project_id>/tasks/queries/aoi/"
     )
     api.add_resource(
-        TasksQueriesOwnLockedAPI,
-        "/api/v2/projects/<int:project_id>/tasks/queries/own/locked/",
+        TasksQueriesOwnLockedAPI, "/api/v2/projects/tasks/queries/own/locked/"
     )
     api.add_resource(
         TasksQueriesOwnLockedDetailsAPI,
@@ -495,7 +494,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksActionsSplitAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/split/{task_id}/",
+        "/api/v2/projects/<int:project_id>/tasks/actions/split/<int:task_id>/",
     )
 
     # Comments REST endoints
