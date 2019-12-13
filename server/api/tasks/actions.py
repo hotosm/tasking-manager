@@ -106,7 +106,7 @@ class TasksActionsMappingStopAPI(Resource):
     @token_auth.login_required
     def post(self, project_id, task_id):
         """
-        Unlock a task that is locked for mapping resetting it to it's last status
+        Unlock a task that is locked for mapping resetting it to its last status
         ---
         tags:
             - tasks
@@ -190,7 +190,7 @@ class TasksActionsMappingUnlockAPI(Resource):
     @token_auth.login_required
     def post(self, project_id, task_id):
         """
-        Unlocks a task after mapping completed
+        Set a task as mapped
         ---
         tags:
             - tasks
@@ -415,7 +415,8 @@ class TasksActionsValidationLockAPI(Resource):
             return {"Error": "Unable to lock task"}, 500
 
 
-class TasksActionsValidatioStopAPI(Resource):
+class TasksActionsValidationStopAPI(Resource):
+    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -496,7 +497,7 @@ class TasksActionsValidationUnlockAPI(Resource):
     @token_auth.login_required
     def post(self, project_id):
         """
-        Unlocks tasks after validation completed
+        Set tasks as validated
         ---
         tags:
             - tasks

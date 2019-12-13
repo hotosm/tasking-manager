@@ -28,7 +28,7 @@ class UsersTasksAPI(Resource):
               required: true
               type: integer
             - in: query
-              name: taskStatus
+              name: status
               description: Task Status filter
               required: false
               type: string
@@ -67,7 +67,7 @@ class UsersTasksAPI(Resource):
         """
         try:
             user = UserService.get_user_by_id(user_id)
-            status = request.args.get("taskStatus")
+            status = request.args.get("status")
             project_id = int(request.args.get("project_id", 0))
             start_date = (
                 date_parse(request.args.get("start_date"))

@@ -115,9 +115,7 @@ class CampaignService:
         )
         db.session.execute(statement)
         db.session.commit()
-        new_campaigns = CampaignService.get_organisation_campaigns_as_dto(
-            dto.project_id
-        )
+        new_campaigns = CampaignService.get_project_campaigns_as_dto(dto.project_id)
         return new_campaigns
 
     @staticmethod

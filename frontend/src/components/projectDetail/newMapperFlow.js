@@ -1,7 +1,8 @@
 import React from 'react';
-import { TaskSelectionIcon, AreaIcon, SubmitWorkIcon } from '../svgIcons';
-import messages from './messages';
 import { FormattedMessage } from 'react-intl';
+
+import messages from './messages';
+import { TaskSelectionIcon, AreaIcon, SubmitWorkIcon } from '../svgIcons';
 
 function MappingCard({ image, title, description }: Object) {
   return (

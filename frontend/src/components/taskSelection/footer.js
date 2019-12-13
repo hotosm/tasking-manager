@@ -1,24 +1,55 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { navigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { getEditors } from '../../utils/editorsList';
+import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 import { Imagery } from './imagery';
 import { MappingTypes } from '../mappingTypes';
 
-export function ContributeButton({ action }: Object) {
-  if (action) {
-    return (
-      <Button className="white bg-red">
-        <FormattedMessage {...messages[action]} />
-      </Button>
-    );
+export function ContributeButton({ action, projectId, selectedTasks, activities }: Object) {
+  const token = useSelector(state => state.auth.get('token'));
+  const dispatch = useDispatch();
+
+  const updateReduxState = (tasks, project, status) => {
+    dispatch({type: 'SET_LOCKED_TASKS', tasks: tasks});
+    dispatch({type: 'SET_PROJECT', project: project});
+    dispatch({type: 'SET_TASKS_STATUS', status: status});
   }
+  const lockTasks = () => {
+    if (action.startsWith('validate')) {
+      pushToLocalJSONAPI(
+        `/api/v2/projects/${projectId}/tasks/actions/lock-for-validation/`,
+        JSON.stringify({taskIds: selectedTasks}),
+        token
+      ).then(
+        res => {
+          updateReduxState(selectedTasks, projectId, 'LOCKED_FOR_VALIDATION');
+          navigate(`/projects/${projectId}/validate/`);
+        }
+      ).catch(e => console.log(e));
+    }
+    if (action.startsWith('map')) {
+      fetchLocalJSONAPI(
+        `/api/v2/projects/${projectId}/tasks/actions/lock-for-mapping/${selectedTasks[0]}/`,
+        token,
+        'POST'
+      ).then(
+        res => {
+          updateReduxState(selectedTasks, projectId, 'LOCKED_FOR_MAPPING');
+          navigate(`/projects/${projectId}/map/`);
+        }
+      ).catch(e => console.log(e));
+    }
+  };
+
   return (
-    <Button className="white bg-red">
-      <FormattedMessage {...messages.mapATask} />
+    <Button className="white bg-red" onClick={() => lockTasks()}>
+      <FormattedMessage {...messages[action]} />
     </Button>
   );
 }
@@ -72,7 +103,7 @@ export const TaskSelectionFooter = props => {
       <div className="w-30-ns w-60 fl tr">
         <div className="mt3">
           {/* type value will be changed soon */}
-          <ContributeButton action={props.taskAction} />
+          <ContributeButton action={props.taskAction} selectedTasks={props.selectedTasks} projectId={props.projectId} />
         </div>
       </div>
     </div>

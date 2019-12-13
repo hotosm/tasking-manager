@@ -16,14 +16,14 @@ const socialNetworks = [
 ];
 
 export function Footer({ location }: Object) {
-  if (
-    location.pathname.endsWith('/map') ||
-    location.pathname.endsWith('/map/') ||
-    location.pathname.endsWith('/validate') ||
-    location.pathname.endsWith('/validate/') ||
-    location.pathname.endsWith('/new') ||
-    location.pathname.endsWith('/new/')
-  ) {
+  const noFooterViews = [
+    'tasks',
+    'map',
+    'validate',
+    'new'
+  ];
+  const activeView = location.pathname.split('/').filter(i => i !== "").splice(-1)[0];
+  if (noFooterViews.includes(activeView)) {
     return <></>;
   } else {
     return (

@@ -747,7 +747,6 @@ class Project(db.Model):
         )
         area = polygon_aea.area / 1000000
         summary.area = area
-        summary.campaign_tag = self.campaign
         summary.country_tag = self.country
         summary.changeset_comment = self.changeset_comment
         summary.created = self.created
@@ -769,6 +768,9 @@ class Project(db.Model):
         if self.organisation_id:
             summary.organisation_name = self.organisation.name
             summary.organisation_logo = self.organisation.logo
+
+        if self.campaign:
+            summary.campaigns = [i.as_dto() for i in self.campaign]
 
         # Cast MappingType values to related string array
         mapping_types_array = []
@@ -947,6 +949,9 @@ class Project(db.Model):
                 mapping_types.append(MappingTypes(mapping_type).name)
 
             base_dto.mapping_types = mapping_types
+
+        if self.campaign:
+            base_dto.campaigns = [i.as_dto() for i in self.campaign]
 
         if self.mapping_editors:
             mapping_editors = []

@@ -194,7 +194,7 @@ class ProjectDTO(Model):
         default=[],
         validators=[is_known_mapping_type],
     )
-    campaign = ListType(ModelType(CampaignDTO), serialized_name="campaign")
+    campaigns = ListType(ModelType(CampaignDTO), default=[])
     organisation = IntType()
     organisation_name = StringType(serialized_name="organisationName")
     organisation_logo = StringType(serialized_name="organisationLogo")
@@ -424,7 +424,7 @@ class ProjectSummary(Model):
     due_date = DateTimeType(serialized_name="dueDate")
     last_updated = DateTimeType(serialized_name="lastUpdated")
     priority = StringType(serialized_name="projectPriority")
-    campaign_tag = StringType(serialized_name="campaignTag")
+    campaigns = ListType(ModelType(CampaignDTO), default=[])
     organisation_name = StringType(serialized_name="organisationName")
     organisation_logo = StringType(serialized_name="organisationLogo")
     country_tag = ListType(StringType, serialized_name="countryTag")

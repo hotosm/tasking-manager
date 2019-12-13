@@ -13,26 +13,23 @@ import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 
-function TaskStatus({ status }: Object) {
-  const dotSize = ['READY', 'LOCKED_FOR_MAPPING'].includes(status) ? '7px' : '10px';
+export function TaskStatus({ status }: Object) {
+  const dotSize = ['READY', 'LOCKED_FOR_MAPPING'].includes(status) ? '0.875rem' : '1rem';
   return (
     <span>
       <span
-        className={`${['READY', 'LOCKED_FOR_MAPPING'].includes(status) && 'ba b--grey-light'} dib`}
+        className={`${['READY', 'LOCKED_FOR_MAPPING'].includes(status) &&
+          'ba bw1 b--grey-light'} dib v-mid`}
         style={{
           height: dotSize,
           width: dotSize,
-          borderWidth: '2px',
           backgroundColor: TASK_COLOURS[status],
         }}
       ></span>
       {status.startsWith('LOCKED_FOR_') && (
-        <LockIcon
-          style={{ width: '12px', height: '12px', paddingTop: '1px' }}
-          className="v-mid pl1"
-        />
+        <LockIcon style={{ paddingTop: '1px' }} className="v-mid pl1 h1 w1" />
       )}
-      <span className="pl2">
+      <span className="pl2 v-mid">
         <FormattedMessage {...messages[`taskStatus_${status}`]} />
       </span>
     </span>
@@ -227,11 +224,11 @@ function PaginatedList({
   return (
     <>
       <div>
-        {(!items || !items.length) &&
+        {(!items || !items.length) && (
           <div className="tc mt5 mb3">
-            <FormattedMessage { ...messages.noTasksFound } />
+            <FormattedMessage {...messages.noTasksFound} />
           </div>
-        }
+        )}
         {items.slice(pageSize * ((page || 1) - 1), pageSize * (page || 1)).map((item, n) => (
           <ItemComponent
             key={n}

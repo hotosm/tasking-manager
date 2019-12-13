@@ -15,7 +15,6 @@ mapboxgl.accessToken = MAPBOX_TOKEN;
 export const TasksMap = ({
   mapResults,
   className,
-  projectId,
   taskBordersMap,
   taskBordersOnly,
   taskCentroidMap,
@@ -133,6 +132,7 @@ export const TasksMap = ({
                 TASK_COLOURS.BADIMAGERY,
                 'rgba(0,0,0,0)',
               ],
+              'fill-opacity': 0.8,
             },
           },
           'tasks-icon',
@@ -155,8 +155,8 @@ export const TasksMap = ({
             type: 'line',
             source: 'tasks',
             paint: {
-              'line-color': '#f6f6f6',
-              'line-width': 2,
+              'line-color': '#999db6',
+              'line-width': 1,
             },
           },
           'selected-tasks-border',
@@ -242,8 +242,8 @@ export const TasksMap = ({
         map.on('mouseleave', 'point-tasks-centroid', function(e) {
           map.getCanvas().style.cursor = '';
         });
-        map.on('click', 'point-tasks-centroid', () => navigate('./map'));
-        map.on('click', 'point-tasks-centroid-inner', () => navigate('./map'));
+        map.on('click', 'point-tasks-centroid', () => navigate('./tasks'));
+        map.on('click', 'point-tasks-centroid-inner', () => navigate('./tasks'));
       }
 
       map.on('click', 'tasks-fill', onSelectTaskClick);
@@ -280,6 +280,7 @@ export const TasksMap = ({
     /* refill the source on mapResults changes */
     if (mapLayersAlreadyDefined && someResultsReady) {
       map.getSource('tasks').setData(mapResults);
+      updateTMZoom();
 
       /* update the click event so its functional scope can see the
        *  new selectedOnMap to be able to toggle it off.
