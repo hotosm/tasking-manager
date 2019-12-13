@@ -145,11 +145,9 @@ class ProjectService:
         return project.get_aoi_geometry_as_geojson()
 
     @staticmethod
-    def get_task_for_logged_in_user(project_id: int, user_id: int):
+    def get_task_for_logged_in_user(user_id: int):
         """ if the user is working on a task in the project return it """
-        project = ProjectService.get_project_by_id(project_id)
-
-        tasks = project.get_locked_tasks_for_user(user_id)
+        tasks = Task.get_locked_tasks_for_user(user_id)
 
         if len(tasks) == 0:
             raise NotFound()
@@ -159,13 +157,9 @@ class ProjectService:
         return tasks_dto
 
     @staticmethod
-    def get_task_details_for_logged_in_user(
-        project_id: int, user_id: int, preferred_locale: str
-    ):
+    def get_task_details_for_logged_in_user(user_id: int, preferred_locale: str):
         """ if the user is working on a task in the project return it """
-        project = ProjectService.get_project_by_id(project_id)
-
-        tasks = project.get_locked_tasks_details_for_user(user_id)
+        tasks = Task.get_locked_tasks_details_for_user(user_id)
 
         if len(tasks) == 0:
             raise NotFound()
@@ -195,7 +189,7 @@ class ProjectService:
         ):
             return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
 
-        tasks = project.get_locked_tasks_for_user(user_id)
+        tasks = Task.get_locked_tasks_for_user(user_id)
 
         if len(tasks) > 0:
             return False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
