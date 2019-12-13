@@ -1074,3 +1074,23 @@ class Task(db.Model):
             copies.append(entry)
 
         return copies
+
+    def get_locked_tasks_for_user(user_id: int):
+        """ Gets tasks on project owned by specified user id"""
+        tasks = Task.query.filter_by(locked_by=user_id)
+
+        locked_tasks = []
+        for task in tasks:
+            locked_tasks.append(task.id)
+
+        return locked_tasks
+
+    def get_locked_tasks_details_for_user(user_id: int):
+        """ Gets tasks on project owned by specified user id"""
+        tasks = Task.query.filter_by(locked_by=user_id)
+
+        locked_tasks = []
+        for task in tasks:
+            locked_tasks.append(task)
+
+        return locked_tasks
