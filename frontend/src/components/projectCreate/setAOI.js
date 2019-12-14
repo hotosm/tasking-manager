@@ -174,7 +174,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
           </label>
           <input onChange={uploadFile} style={{ display: 'none' }} id="file-upload" type="file" />
           {uploadError && (
-            <p>
+            <p className="red fw6">
               <FormattedMessage {...messages.uploadError} />
             </p>
           )}

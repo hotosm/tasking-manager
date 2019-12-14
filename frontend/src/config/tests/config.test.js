@@ -1,7 +1,8 @@
 import * as config from '../index';
 
+// API_URL can be a URL object or a string
 it('exports API_URL', () => {
-  expect(typeof config.API_URL).toBe('string');
+  expect(['object', 'string']).toContain(typeof config.API_URL);
 });
 it('exports EDITS_API_URL', () => {
   expect(typeof config.EDITS_API_URL).toBe('string');

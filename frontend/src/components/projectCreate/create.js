@@ -1,6 +1,7 @@
 import React, { useState, useLayoutEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
+import { useQueryParam, NumberParam } from 'use-query-params';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 
 import messages from './messages';
@@ -10,7 +11,8 @@ import SetTaskSizes from './setTaskSizes';
 import TrimProject from './trimProject';
 import NavButtons from './navButtons';
 import Review from './review';
-import { MAP_MAX_AREA, API_URL } from '../../config';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { MAP_MAX_AREA } from '../../config';
 
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
@@ -23,28 +25,27 @@ export const paintOptions = {
 
 const ProjectCreate = props => {
   const token = useSelector(state => state.auth.get('token'));
+  // eslint-disable-next-line
+  const [cloneFromId, setCloneFromId] = useQueryParam('cloneFrom', NumberParam);
   const [step, setStep] = useState(1);
   const [cloneProjectName, setCloneProjectName] = useState(null);
 
-  const func = useCallback(
-    async projectId => {
-      const res = await fetch(`${API_URL}projects/${projectId}`);
-      const res_json = await res.json();
-      setCloneProjectName(res_json.projectInfo.name);
+  const fetchCloneProjectInfo = useCallback(
+    async cloneFromId => {
+      const res = await fetchLocalJSONAPI(`projects/${cloneFromId}/`);
+      setCloneProjectName(res.projectInfo.name);
     },
     [setCloneProjectName],
   );
 
-  const projectId = parseInt(props['*']);
-
   useLayoutEffect(() => {
-    if (isNaN(projectId) === false) {
-      func(projectId);
+    if (cloneFromId && !isNaN(Number(cloneFromId))) {
+      fetchCloneProjectInfo(cloneFromId);
     }
-  }, [projectId, func]);
+  }, [cloneFromId, fetchCloneProjectInfo]);
 
   let cloneProjectData = {
-    id: projectId,
+    id: cloneFromId,
     name: cloneProjectName,
   };
 
@@ -102,15 +103,16 @@ const ProjectCreate = props => {
   };
 
   return (
-    <div className="cf bg-tan pb3 pl4">
-      <div className="fl pt3 w-30">
+    <div className="cf bg-tan vh-minus-122-ns h-100 pl4-l pr0-l ph2">
+      <div className="fl pt3 w-30-l cf w-100">
         <h2 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
-          {cloneProjectName === null ? (
-            <FormattedMessage {...messages.createProject} />
-          ) : (
-            'Clone Project #' + cloneProjectName
-          )}
+          <FormattedMessage {...messages.createProject} />
         </h2>
+        {cloneFromId &&
+          <p className="fw6 pv2 blue-grey">
+            <FormattedMessage {...messages.cloneProject} values={{id: cloneFromId, name: cloneProjectName}}/>
+          </p>
+        }
         {renderCurrentStep()}
         <NavButtons
           index={step}
@@ -121,7 +123,7 @@ const ProjectCreate = props => {
           maxArea={MAP_MAX_AREA}
         />
       </div>
-      <div className="w-70 fr relative">
+      <div className="w-70-l w-100 h-100-l h-50 pt3 pt0-l fr relative">
         <ProjectCreationMap
           metadata={metadata}
           updateMetadata={updateMetadata}
