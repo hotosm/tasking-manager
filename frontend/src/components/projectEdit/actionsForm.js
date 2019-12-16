@@ -565,7 +565,7 @@ export const ActionsForm = ({ projectId, token }) => {
 					Your newly cloned project will be in draft status.
 				</p>
 				<Button
-					onClick={() => navigate(`/manage/projects/new/${projectId}/`)}
+					onClick={() => navigate(`/manage/projects/new/?cloneFrom=${projectId}`)}
 					className={styleClasses.actionClass}
 				>
 					Clone project

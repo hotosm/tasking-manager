@@ -110,7 +110,7 @@ export const layerJson = grid => {
   return jsonData;
 };
 
-const splitTaskGrid = (taskGrid, geom, zoom) => {
+const splitTaskGrid = (taskGrid, geom) => {
   let newTaskGrid = [];
   taskGrid.features.forEach(f => {
     let poly = turf.polygon(f.geometry.coordinates[0]);
@@ -118,7 +118,7 @@ const splitTaskGrid = (taskGrid, geom, zoom) => {
     if (contains === null) {
       newTaskGrid.push(f);
     } else {
-      const splitGrid = makeGrid(f, zoom + 1, {});
+      const splitGrid = makeGrid(f, f.properties.zoom + 1, {});
       splitGrid.features.forEach(g => {
         newTaskGrid.push(g);
       });
@@ -139,15 +139,21 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       mapObj.map.getCanvas().style.cursor = '';
     });
     mapObj.map.on('click', 'grid', event => {
-      // Make the geom smaller to avoid borders.
       const taskGrid = mapObj.map.getSource('grid')._data;
+
       if (metadata.tempTaskGrid === null) {
         updateMetadata({ ...metadata, tempTaskGrid: taskGrid });
       }
+      // Make the geom smaller to avoid borders.
       const geom = turf.transformScale(event.features[0].geometry, 0.5);
-      const newTaskGrid = splitTaskGrid(taskGrid, geom, metadata.zoomLevel);
+      const newTaskGrid = splitTaskGrid(taskGrid, geom);
+      const featureCollection = turf.featureCollection(newTaskGrid);
 
-      updateMetadata({ ...metadata, taskGrid: turf.featureCollection(newTaskGrid) });
+      updateMetadata({
+        ...metadata,
+        taskGrid: featureCollection,
+        tasksNo: featureCollection.features.length,
+      });
     });
   };
 
@@ -169,7 +175,13 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
 
       const geom = event.features[0].geometry;
       const newTaskGrid = splitTaskGrid(taskGrid, geom, metadata.zoomLevel);
-      updateMetadata({ ...metadata, taskGrid: turf.featureCollection(newTaskGrid) });
+      const featureCollection = turf.featureCollection(newTaskGrid);
+
+      updateMetadata({
+        ...metadata,
+        taskGrid: featureCollection,
+        tasksNo: featureCollection.features.length,
+      });
     });
 
     mapObj.draw.changeMode('draw_polygon');
@@ -180,38 +192,53 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   };
 
   const smallerSize = useCallback(() => {
-    updateMetadata({ ...metadata, zoomLevel: metadata.zoomLevel + 1 });
-  }, [metadata, updateMetadata]);
+    const zoomLevel = metadata.zoomLevel + 1;
+    const squareGrid = makeGrid(geom, zoomLevel, {});
+    updateMetadata({
+      ...metadata,
+      zoomLevel: zoomLevel,
+      tempTaskGrid: squareGrid,
+      taskGrid: squareGrid,
+      tasksNo: squareGrid.features.length,
+    });
+  }, [metadata, updateMetadata, geom]);
 
   const largerSize = useCallback(() => {
-    if (metadata.zoomLevel > 0) {
-      updateMetadata({ ...metadata, zoomLevel: metadata.zoomLevel - 1 });
+    const zoomLevel = metadata.zoomLevel - 1;
+    const squareGrid = makeGrid(geom, zoomLevel, {});
+    if (zoomLevel > 0) {
+      updateMetadata({
+        ...metadata,
+        zoomLevel: zoomLevel,
+        tempTaskGrid: squareGrid,
+        taskGrid: squareGrid,
+        tasksNo: squareGrid.features.length,
+      });
     }
-  }, [metadata, updateMetadata]);
+  }, [metadata, updateMetadata, geom]);
 
   useLayoutEffect(() => {
-    let squareGrid = metadata.taskGrid;
-    if (squareGrid === null) {
-      squareGrid = makeGrid(geom, metadata.zoomLevel, {});
-    }
-
     if (mapObj.map.getLayer('grid')) {
       mapObj.map.removeLayer('grid');
     }
     if (mapObj.map.getSource('grid')) {
       mapObj.map.removeSource('grid');
     }
-    mapObj.map.addLayer(layerJson(squareGrid));
+    mapObj.map.addLayer(layerJson(metadata.taskGrid));
   }, [metadata, mapObj, smallerSize, largerSize, geom]);
 
   const buttonStyle = 'white bg-blue-dark';
 
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark"><FormattedMessage {...messages.step2} /></h3>
+      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark">
+        <FormattedMessage {...messages.step2} />
+      </h3>
       <div>
         <div>
-          <p><FormattedMessage {...messages.taskSizes} /></p>
+          <p>
+            <FormattedMessage {...messages.taskSizes} />
+          </p>
           <div role="group">
             <Button onClick={smallerSize} className={`${buttonStyle} mr2`}>
               <FormattedMessage {...messages.smaller} />
@@ -222,7 +249,9 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
           </div>
         </div>
         <div className="pt3">
-          <p><FormattedMessage {...messages.splitTaskDescription} /></p>
+          <p>
+            <FormattedMessage {...messages.splitTaskDescription} />
+          </p>
           <div role="group">
             <Button className={`${buttonStyle} mr2`} onClick={splitBbox}>
               <FormattedMessage {...messages.splitByClicking} />
@@ -235,9 +264,14 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
             </Button>
           </div>
         </div>
-        <p><FormattedMessage {...messages.taskNumberMessage} values={{n: metadata.taskNo || 0}} /></p>
         <p>
-          <FormattedMessage {...messages.taskAreaMessage} values={{area: metadata.area/metadata.taskNo || 0, sq: <sup>2</sup>}} />
+          <FormattedMessage {...messages.taskNumberMessage} values={{ n: metadata.taskNo || 0 }} />
+        </p>
+        <p>
+          <FormattedMessage
+            {...messages.taskAreaMessage}
+            values={{ area: metadata.area / metadata.taskNo || 0, sq: <sup>2</sup> }}
+          />
         </p>
       </div>
     </>
