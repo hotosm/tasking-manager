@@ -1,20 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
+import { AlertIcon } from '../svgIcons';
 
 const validateStep = props => {
   switch (props.index) {
     case 1: // Set Project AOI.
       if (props.metadata.area >= props.maxArea) {
-        alert('Project AOI is higher than 5000 squared kilometers');
-        return;
+        const message = 'Project AOI is higher than 5000 squared kilometers';
+        return { error: true, message: message };
+      } else if (props.metadata.area === 0) {
+        const message = 'Project geometry not set';
+        return { error: true, message: message };
+      } else {
+        props.updateMetadata({
+          ...props.metadata,
+          tasksNo: props.metadata.taskGrid.features.length,
+        });
       }
-      if (props.metadata.area === 0) {
-        alert('Project geometry not set');
-        return;
-      }
+
       break;
     case 2: // Set Task grid.
       const taskGrid = props.mapObj.map.getSource('grid')._data;
@@ -33,6 +39,7 @@ const validateStep = props => {
     nextStep = 4;
   }
   props.setStep(nextStep);
+  return { error: false, message: '' };
 };
 
 const clearParamsStep = props => {
@@ -42,7 +49,7 @@ const clearParamsStep = props => {
       props.updateMetadata({ ...props.metadata, tasksNo: 0 });
       break;
     case 3:
-      props.updateMetadata({ ...props.metadata, taskGrid: null, tempTaskGrid: null });
+      props.updateMetadata({ ...props.metadata, tempTaskGrid: null });
       break;
     default:
       break;
@@ -58,15 +65,26 @@ const clearParamsStep = props => {
 };
 
 const NavButtons = props => {
+  const [err, setErr] = useState({ error: false, message: '' });
+
+  const stepHandler = event => {
+    const resp = validateStep(props);
+    setErr(resp);
+  };
+
   return (
-    <div className="pt5">
+    <div className="pt3">
+      <p className={`w-80 pv2 tc f6 fw6 ${!err.error ? 'dn' : 'red'}`}>
+        <span className="ph1"><AlertIcon className="red mr2" height="15px" width="15px"/>{err.message}</span>
+      </p>
+
       {props.index === 1 ? null : (
         <Button onClick={() => clearParamsStep(props)} className="white bg-red mr3">
           <FormattedMessage {...messages.backToPrevious} />
         </Button>
       )}
       {props.index === 4 ? null : (
-        <Button onClick={() => validateStep(props)} className="white bg-blue-dark">
+        <Button onClick={stepHandler} className="white bg-blue-dark">
           <FormattedMessage {...messages.next} />
         </Button>
       )}

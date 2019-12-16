@@ -8,6 +8,10 @@ export default defineMessages({
     id: 'management.projects.create.title',
     defaultMessage: 'Create project',
   },
+  cloneProject: {
+    id: 'management.projects.clone.message',
+    defaultMessage: 'The new project will be a clone of the project #{id} ({name}).',
+  },
   clone: {
     id: 'management.projects.create.clone',
     defaultMessage: 'Clone',

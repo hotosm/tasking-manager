@@ -41,7 +41,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => 
     }
   }, [mapObj, metadata, updateMetadata]);
 
-  return <div id="map" className="vh-75-l w-100" ref={mapRef}></div>;
+  return <div id="map" className="vh-50 h-100-l w-100" ref={mapRef}></div>;
 };
 
 export { ProjectCreationMap };
