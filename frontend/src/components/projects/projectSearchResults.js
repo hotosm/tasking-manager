@@ -46,7 +46,7 @@ export const ProjectSearchResults = props => {
           />
           <div className="pa2">
             <button className="pa1" onClick={() => props.retryFn()}>
-              Retry
+              <FormattedMessage {...messages.retry} />
             </button>
           </div>
         </div>
@@ -56,7 +56,11 @@ export const ProjectSearchResults = props => {
           customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
           ready={!state.isLoading}
         >
-          <ExploreProjectCards pageOfCards={state.projects} cardWidthClass={cardWidthClass} showBottomButtons={props.showBottomButtons}/>
+          <ExploreProjectCards
+            pageOfCards={state.projects}
+            cardWidthClass={cardWidthClass}
+            showBottomButtons={props.showBottomButtons}
+          />
         </ReactPlaceholder>
       </div>
     </div>
@@ -69,6 +73,11 @@ const ExploreProjectCards = props => {
   }
   /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */
   return props.pageOfCards.map((card, n) => (
-    <ProjectCard cardWidthClass={props.cardWidthClass} {...card} key={n} showBottomButtons={props.showBottomButtons}/>
+    <ProjectCard
+      cardWidthClass={props.cardWidthClass}
+      {...card}
+      key={n}
+      showBottomButtons={props.showBottomButtons}
+    />
   ));
-}
+};

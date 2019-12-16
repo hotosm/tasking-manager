@@ -132,4 +132,8 @@ export default defineMessages({
     id: 'project.nav.clear',
     defaultMessage: 'Clear',
   },
+  retry: {
+    id: 'project.results.retry',
+    defaultMessage: 'Retry',
+  },
 });

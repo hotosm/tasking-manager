@@ -39,7 +39,7 @@ export const MyProjectNav = props => {
     <header className="bt bb b--tan">
       <div className="cf">
         <div className="w-75-l w-60 fl">
-          <h3 className="barlow-condensed f2 ma0 pv3 v-mid dib ttu">
+          <h3 className="barlow-condensed f2 ma0 pv3 v-mid dib ttu pl2 pl0-l">
             <FormattedMessage {...messages.myProjects} />
           </h3>
           {userDetails && ['ADMIN', 'PROJECT_MANAGER'].includes(userDetails.role) &&
