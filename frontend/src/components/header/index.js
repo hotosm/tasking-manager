@@ -20,13 +20,29 @@ import { setLocale } from '../../store/actions/userPreferences';
 import { createLoginWindow } from '../../utils/login';
 import { supportedLocales } from '../../utils/internationalization';
 
-const menuItems = [
-  { label: messages.exploreProjects, link: 'explore', showAlways: true },
-  { label: messages.myContributions, link: 'user', authenticated: true },
-  { label: messages.manage, link: 'manage', authenticated: true, manager: true },
-  { label: messages.learn, link: 'learn', showAlways: true },
-  { label: messages.about, link: 'about', showAlways: true },
-];
+function getMenuItensForUser(userDetails) {
+  const menuItems = [
+    { label: messages.exploreProjects, link: 'explore', showAlways: true },
+    { label: messages.myContributions, link: 'user', authenticated: true },
+    { label: messages.manage, link: 'manage', authenticated: true, manager: true },
+    { label: messages.learn, link: 'learn', showAlways: true },
+    { label: messages.about, link: 'about', showAlways: true },
+  ];
+  let filteredMenuItems;
+  if (userDetails.username) {
+    filteredMenuItems = menuItems.filter(
+      item => item.authenticated === true || item.showAlways,
+    );
+    if (!['PROJECT_MANAGER', 'ADMIN'].includes(userDetails.role)) {
+      filteredMenuItems = filteredMenuItems.filter(item => !item.manager);
+    }
+  } else {
+    filteredMenuItems = menuItems.filter(
+      item => item.authenticated === false || item.showAlways,
+    );
+  }
+  return filteredMenuItems;
+}
 
 const UserDisplay = props => {
   return (
@@ -61,7 +77,6 @@ const AuthButtons = props => {
 };
 
 class Header extends React.Component {
-  menuItems = menuItems;
   linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu';
   isActive = ({ isCurrent }) => {
     return isCurrent
@@ -75,27 +90,12 @@ class Header extends React.Component {
       { label: <FormattedMessage {...messages.logout} />, url: '/logout' },
     ];
 
-    if (role === 'PROJECT_MANAGER' || role === 'ADMIN') {
-      userLinks.unshift({ label: <FormattedMessage {...messages.createProject} />, url: '/manage/projects/new' });
-    }
-
     return userLinks;
   };
 
   renderMenuItems() {
-    let filteredMenuItems;
-    if (this.props.token) {
-      filteredMenuItems = this.menuItems.filter(
-        item => item.authenticated === true || item.showAlways,
-      );
-      if (!['PROJECT_MANAGER', 'ADMIN'].includes(this.props.userDetails.role)) {
-        filteredMenuItems = filteredMenuItems.filter(item => !item.manager);
-      }
-    } else {
-      filteredMenuItems = this.menuItems.filter(
-        item => item.authenticated === false || item.showAlways,
-      );
-    }
+    let filteredMenuItems = getMenuItensForUser(this.props.userDetails);
+
     return (
       <div className="v-mid">
         {filteredMenuItems.map((item, n) => (
@@ -110,16 +110,16 @@ class Header extends React.Component {
   renderPopupItems() {
     return (
       <div className="v-mid tc">
-        {this.props.userDetails.username &&
-          this.menuItems
-            .filter(item => item.authenticated === true)
-            .map((item, n) => (
-              <p key={n}>
-                <Link to={item.link} className={this.linkCombo}>
-                  <FormattedMessage {...item.label} />
-                </Link>
-              </p>
-            ))}
+        {getMenuItensForUser(this.props.userDetails)
+          .filter(item => item.authenticated === true)
+          .map((item, n) => (
+            <p key={n}>
+              <Link to={item.link} className={this.linkCombo}>
+                <FormattedMessage {...item.label} />
+              </Link>
+            </p>
+          ))
+        }
         {this.props.userDetails.username && (
           <>
             <p>
@@ -130,7 +130,7 @@ class Header extends React.Component {
             <p className="bb b--grey-light"></p>
           </>
         )}
-        {this.menuItems
+        {getMenuItensForUser(this.props.userDetails)
           .filter(item => item.authenticated === false || item.showAlways)
           .map((item, n) => (
             <p key={n}>
@@ -138,7 +138,8 @@ class Header extends React.Component {
                 <FormattedMessage {...item.label} />
               </Link>
             </p>
-          ))}
+          ))
+        }
         {this.props.userDetails.username ? (
           <Button className="bg-blue-dark white" onClick={() => this.props.logout()}>
             <FormattedMessage {...messages.logout} />
@@ -301,4 +302,4 @@ Header = connect(
   { logout, setLocale },
 )(Header);
 
-export { Header, menuItems, AuthButtons };
+export { Header, getMenuItensForUser, AuthButtons };

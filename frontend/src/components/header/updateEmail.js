@@ -61,7 +61,7 @@ class UpdateEmail extends Component {
           </Button>
           <p className="mb0">
             <a
-              className="link pointer red"
+              className="link pointer red fw5"
               target="_blank"
               rel="noopener noreferrer"
               href={`http://${ORG_PRIVACY_POLICY_URL}`}
