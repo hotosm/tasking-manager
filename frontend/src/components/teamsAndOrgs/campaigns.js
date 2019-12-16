@@ -33,7 +33,7 @@ export function CampaignsManagement({ campaigns, userDetails }: Object) {
 
 export function CampaignCard({ campaign }: Object) {
   return (
-    <Link to={`${campaign.id}/`} className="w-50 fl ph1">
+    <Link to={`${campaign.id}/`} className="w-50-ns w-100 fl ph1">
       <div className="cf bg-white blue-dark br1 mv2 pv4 ph3 ba br1 b--grey-light shadow-hover">
         <div className="dib v-mid pr3">
           <div className="z-1 fl br-100 tc h2 w2 bg-blue-light white">

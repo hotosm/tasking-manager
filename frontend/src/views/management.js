@@ -17,8 +17,14 @@ export function Management() {
   return (
     <div className="w-100 ph6-l cf pb4">
       <ManagementMenu />
-      <Projects projects={!projectsLoading && !projectsError && projects} viewAllQuery="queries/myself/owner/" />
-      <Teams teams={!teamsLoading && !teamsError && teams.teams} viewAllQuery={`?manager=${userDetails.id}`} />
+      <Projects
+        projects={!projectsLoading && !projectsError && projects}
+        viewAllQuery="?createdByMe=1"
+      />
+      <Teams
+        teams={!teamsLoading && !teamsError && teams.teams}
+        viewAllQuery={`?manager=${userDetails.id}`}
+      />
     </div>
   );
 }
