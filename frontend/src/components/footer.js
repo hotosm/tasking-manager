@@ -1,10 +1,11 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import { TwitterIcon, FacebookIcon, YoutubeIcon, GithubIcon, InstagramIcon } from './svgIcons';
 import messages from './messages';
-import { menuItems } from './header';
+import { getMenuItensForUser } from './header';
 import { ORG_TWITTER, ORG_GITHUB, ORG_INSTAGRAM, ORG_FB, ORG_YOUTUBE } from '../config';
 
 const socialNetworks = [
@@ -16,13 +17,11 @@ const socialNetworks = [
 ];
 
 export function Footer({ location }: Object) {
-  const noFooterViews = [
-    'tasks',
-    'map',
-    'validate',
-    'new'
-  ];
+  const userDetails = useSelector(state => state.auth.get('userDetails'));
+
+  const noFooterViews = ['tasks', 'map', 'validate', 'new'];
   const activeView = location.pathname.split('/').filter(i => i !== "").splice(-1)[0];
+
   if (noFooterViews.includes(activeView)) {
     return <></>;
   } else {
@@ -33,8 +32,7 @@ export function Footer({ location }: Object) {
             <FormattedMessage {...messages.definition} />
           </div>
           <div className="pt2 mb2 w-50-l w-100 tl tr-l fr">
-            {menuItems
-              .filter(item => item.authenticated === false || item.showAlways)
+            {getMenuItensForUser(userDetails)
               .map((item, n) => (
                 <Link
                   key={n}
