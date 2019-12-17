@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
-import { AlertIcon } from '../svgIcons';
 
 const validateStep = props => {
   switch (props.index) {
@@ -65,19 +64,13 @@ const clearParamsStep = props => {
 };
 
 const NavButtons = props => {
-  const [err, setErr] = useState({ error: false, message: '' });
-
   const stepHandler = event => {
     const resp = validateStep(props);
-    setErr(resp);
+    props.setErr(resp);
   };
 
   return (
     <div className="pt3">
-      <p className={`w-80 pv2 tc f6 fw6 ${!err.error ? 'dn' : 'red'}`}>
-        <span className="ph1"><AlertIcon className="red mr2" height="15px" width="15px"/>{err.message}</span>
-      </p>
-
       {props.index === 1 ? null : (
         <Button onClick={() => clearParamsStep(props)} className="white bg-red mr3">
           <FormattedMessage {...messages.backToPrevious} />

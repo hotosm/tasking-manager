@@ -131,14 +131,8 @@ const splitTaskGrid = (taskGrid, geom) => {
 export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   const geom = metadata.geom.features[0];
 
-  const splitBbox = () => {
-    mapObj.map.on('mouseenter', 'grid', event => {
-      mapObj.map.getCanvas().style.cursor = 'pointer';
-    });
-    mapObj.map.on('mouseleave', 'grid', event => {
-      mapObj.map.getCanvas().style.cursor = '';
-    });
-    mapObj.map.on('click', 'grid', event => {
+  const splitHandler = useCallback(
+    event => {
       const taskGrid = mapObj.map.getSource('grid')._data;
 
       if (metadata.tempTaskGrid === null) {
@@ -154,7 +148,18 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         taskGrid: featureCollection,
         tasksNo: featureCollection.features.length,
       });
+    },
+    [updateMetadata, metadata, mapObj.map],
+  );
+
+  const splitBbox = () => {
+    mapObj.map.on('mouseenter', 'grid', event => {
+      mapObj.map.getCanvas().style.cursor = 'pointer';
     });
+    mapObj.map.on('mouseleave', 'grid', event => {
+      mapObj.map.getCanvas().style.cursor = '';
+    });
+    mapObj.map.on('click', 'grid', splitHandler);
   };
 
   const splitPolygon = () => {
@@ -225,7 +230,11 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       mapObj.map.removeSource('grid');
     }
     mapObj.map.addLayer(layerJson(metadata.taskGrid));
-  }, [metadata, mapObj, smallerSize, largerSize, geom]);
+
+    return () => {
+      mapObj.map.off('click', 'grid', splitHandler);
+    };
+  }, [metadata, mapObj, smallerSize, largerSize, geom, splitHandler]);
 
   const buttonStyle = 'white bg-blue-dark';
 
