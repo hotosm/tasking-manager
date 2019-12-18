@@ -42,7 +42,7 @@ export const DescriptionForm = () => {
 				<label className={styleClasses.labelClass}>Status</label>
 				<select name="status" onChange={handleChange} className="pa2">
 					{projectStatusFields.map(f => (
-						<option selected={f.item === projectInfo.projectStatus ? true : false} value={f.item}>
+						<option selected={f.item === projectInfo.status ? true : false} value={f.item}>
 							{f.showItem}
 						</option>
 					))}
