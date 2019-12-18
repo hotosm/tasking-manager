@@ -153,6 +153,14 @@ class Team(db.Model):
         """
         return Team.query.filter_by(name=team_name).one_or_none()
 
+    def get_team_by_org_id(org_id: int):
+        """
+        Gets team associated with a specific organisation ID
+        :param org_id: organisation ID
+        :return: Team if found otherwise None
+        """
+        return Team.query.filter_by(organisation_id=org_id).one_or_none()
+
     def as_dto(self):
         """ Returns a dto for the team """
         team_dto = TeamDTO()
