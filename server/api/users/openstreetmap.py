@@ -5,7 +5,6 @@ from server.services.users.authentication_service import token_auth
 
 
 class UsersOpenStreetMapAPI(Resource):
-    @token_auth.login_required
     def get(self, username):
         """
         Get details from OpenStreetMap for a specified username
