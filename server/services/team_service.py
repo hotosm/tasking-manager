@@ -216,7 +216,7 @@ class TeamService:
             )
 
         if organisation_filter:
-            query = query.filter(TeamMembers.org_id == organisation_filter)
+            query = query.filter(Team.organisation_id == organisation_filter)
 
         teams_list_dto = TeamsListDTO()
 
