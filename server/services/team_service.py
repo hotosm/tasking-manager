@@ -215,6 +215,9 @@ class TeamService:
                 TeamMembers.active == False,  # noqa
             )
 
+        if organisation_filter:
+            query = query.filter(TeamMembers.org_id == organisation_filter)
+
         teams_list_dto = TeamsListDTO()
 
         for team in query.all():
