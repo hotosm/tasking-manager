@@ -182,6 +182,7 @@ class TeamService:
         member_filter: int = None,
         member_request_filter: int = None,
         manager_filter: int = None,
+        organisation_filter: int = None,
     ) -> TeamsListDTO:
 
         query = db.session.query(Team).outerjoin(TeamMembers).outerjoin(ProjectTeams)
