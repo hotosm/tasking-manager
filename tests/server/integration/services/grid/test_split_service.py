@@ -1,6 +1,6 @@
 import json
 import os
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon
 from geoalchemy2 import shape
 import unittest
 from unittest.mock import patch
@@ -57,6 +57,9 @@ class TestSplitService(unittest.TestCase):
         x = 1010
         y = 1399
         zoom = 11
+        task_stub = Task()
+        task_stub.is_square = True
+
         expected = geojson.loads(json.dumps(get_canned_json("split_task.json")))
 
         # act
@@ -106,7 +109,17 @@ class TestSplitService(unittest.TestCase):
         task_stub.x = 16856
         task_stub.y = 17050
         task_stub.zoom = 15
-        task_stub.geometry = shape.from_shape(Polygon([(5.1855468740711421, 7.2970875628719796), (5.1855468740711421, 7.3079847788619219), (5.1965332021941588, 7.3079847788619219), (5.1965332021941588, 7.2970875628719796), (5.1855468740711421, 7.2970875628719796)]))
+        task_stub.geometry = shape.from_shape(
+            Polygon(
+                [
+                    (5.1855468740711421, 7.2970875628719796),
+                    (5.1855468740711421, 7.3079847788619219),
+                    (5.1965332021941588, 7.3079847788619219),
+                    (5.1965332021941588, 7.2970875628719796),
+                    (5.1855468740711421, 7.2970875628719796),
+                ]
+            )
+        )
         mock_task_get.return_value = task_stub
         mock_task_get_max_task_id_for_project.return_value = 1
         mock_project_get.return_value = Project()
