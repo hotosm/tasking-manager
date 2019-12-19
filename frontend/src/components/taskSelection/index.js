@@ -217,12 +217,9 @@ export function TaskSelection({ project, type, loading }: Object) {
           ready={typeof project.projectId === 'number' && project.projectId > 0}
         >
           <TaskSelectionFooter
-            mappingTypes={project.mappingTypes}
-            imagery={project.imagery}
-            mappingEditors={project.mappingEditors}
-            validationEditors={project.validationEditors}
             defaultUserEditor={user ? user.defaultEditor : 'iD'}
-            projectId={project.projectId}
+            project={project}
+            tasks={tasks}
             taskAction={taskAction}
             selectedTasks={selected.length && !taskAction.endsWith('AnotherTask') ? selected : randomTask}
           />
