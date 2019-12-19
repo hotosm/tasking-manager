@@ -1,11 +1,5 @@
 import geojson
-from shapely.geometry import (
-    mapping,
-    Polygon,
-    MultiPolygon,
-    LineString,
-    shape as shapely_shape,
-)
+from shapely.geometry import Polygon, MultiPolygon, LineString, shape as shapely_shape
 from shapely.ops import split
 from server import db
 from flask import current_app
@@ -40,14 +34,6 @@ class SplitService:
             return SplitService._create_split_tasks_from_geometry(task)
 
         try:
-            task_geojson = False
-
-            if task and not task.is_square:
-                query = db.session.query(
-                    Task.id, Task.geometry.ST_AsGeoJSON().label("geometry")
-                ).filter(Task.id == task.id, Task.project_id == task.project_id)
-
-                task_geojson = geojson.loads(query[0].geometry)
             split_geoms = []
             for i in range(0, 2):
                 for j in range(0, 2):
@@ -57,26 +43,11 @@ class SplitService:
                     new_square = SplitService._create_square(new_x, new_y, new_zoom)
                     feature = geojson.Feature()
                     feature.geometry = new_square
-                    feature_shape = shapely_shape(feature.geometry)
-                    if task and not task.is_square:
-                        intersection = shapely_shape(task_geojson).intersection(
-                            feature_shape
-                        )
-                        multipolygon = MultiPolygon([intersection])
-                        feature.geometry = geojson.loads(
-                            geojson.dumps(mapping(multipolygon))
-                        )
-
-                    if task and not task.is_square:
-                        is_square = False
-                    else:
-                        is_square = True
-
                     feature.properties = {
                         "x": new_x,
                         "y": new_y,
                         "zoom": new_zoom,
-                        "isSquare": is_square,
+                        "isSquare": True,
                     }
 
                     if len(feature.geometry.coordinates) > 0:
@@ -223,7 +194,7 @@ class SplitService:
             # Sanity check: ensure the new task geometry intersects the original task geometry
             new_geometry = shapely_shape(new_task_geojson.geometry)
             if not new_geometry.intersects(original_geometry):
-                raise InvalidGeoJson('New split task does not intersect original task')
+                raise InvalidGeoJson("New split task does not intersect original task")
 
             # insert new tasks into database
             i = i + 1
@@ -250,7 +221,7 @@ class SplitService:
         # delete original task from the database
         try:
             original_task.delete()
-        except:
+        except Exception:
             db.session.rollback()
             # Ensure the new tasks are cleaned up
             for new_task in new_tasks:
