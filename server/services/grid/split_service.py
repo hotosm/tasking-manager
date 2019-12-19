@@ -9,7 +9,7 @@ from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.postgis.utils import ST_Transform
 from server.models.postgis.task import Task, TaskStatus, TaskAction
 from server.models.postgis.project import Project
-from server.models.postgis.utils import NotFound
+from server.models.postgis.utils import NotFound, InvalidGeoJson
 
 
 class SplitServiceError(Exception):
@@ -30,17 +30,11 @@ class SplitService:
         """
         # If the task's geometry doesn't correspond to an OSM tile identified by an
         # x, y, zoom then we need to take a different approach to splitting
-        if x is None or y is None or zoom is None:
+        if x is None or y is None or zoom is None or not task.is_square:
             return SplitService._create_split_tasks_from_geometry(task)
 
         try:
             task_geojson = False
-
-            if task and not task.is_square:
-                query = db.session.query(Task.id, Task.geometry.ST_AsGeoJSON().label('geometry')) \
-                    .filter(Task.id == task.id, Task.project_id == task.project_id)
-
-                task_geojson = geojson.loads(query[0].geometry)
             split_geoms = []
             for i in range(0, 2):
                 for j in range(0, 2):
@@ -50,22 +44,11 @@ class SplitService:
                     new_square = SplitService._create_square(new_x, new_y, new_zoom)
                     feature = geojson.Feature()
                     feature.geometry = new_square
-                    feature_shape = shapely_shape(feature.geometry)
-                    if task and not task.is_square:
-                        intersection = shapely_shape(task_geojson).intersection(feature_shape)
-                        multipolygon = MultiPolygon([intersection])
-                        feature.geometry = geojson.loads(geojson.dumps(mapping(multipolygon)))
-
-                    if task and not task.is_square:
-                        is_square = False
-                    else:
-                        is_square = True
-
                     feature.properties = {
                         'x': new_x,
                         'y': new_y,
                         'zoom': new_zoom,
-                        'isSquare': is_square
+                        'isSquare': True
                     }
 
                     if (len(feature.geometry.coordinates) > 0):
@@ -171,6 +154,8 @@ class SplitService:
         if original_task is None:
             raise NotFound()
 
+        original_geometry = shape.to_shape(original_task.geometry)
+
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
             raise SplitServiceError('Status must be LOCKED_FOR_MAPPING to split')
@@ -187,8 +172,14 @@ class SplitService:
 
         # create new tasks from the new geojson
         i = Task.get_max_task_id_for_project(split_task_dto.project_id)
+        new_tasks = []
         new_tasks_dto = []
         for new_task_geojson in new_tasks_geojson:
+            # Sanity check: ensure the new task geometry intersects the original task geometry
+            new_geometry = shapely_shape(new_task_geojson.geometry)
+            if not new_geometry.intersects(original_geometry):
+                raise InvalidGeoJson('New split task does not intersect original task')
+
             # insert new tasks into database
             i = i + 1
             new_task = Task.from_geojson_feature(i, new_task_geojson)
@@ -201,11 +192,20 @@ class SplitService:
             new_task.set_task_history(TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.SPLIT)
             new_task.set_task_history(TaskAction.STATE_CHANGE, split_task_dto.user_id, None, TaskStatus.READY)
             new_task.task_status = TaskStatus.READY.value
+            new_tasks.append(new_task)
             new_task.update()
             new_tasks_dto.append(new_task.as_dto_with_instructions(split_task_dto.preferred_locale))
 
         # delete original task from the database
-        original_task.delete()
+        try:
+            original_task.delete()
+        except:
+            db.session.rollback()
+            # Ensure the new tasks are cleaned up
+            for new_task in new_tasks:
+                new_task.delete()
+            db.session.commit()
+            raise
 
         # update project task counts
         project = Project.get(split_task_dto.project_id)
