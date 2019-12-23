@@ -24,6 +24,7 @@ import { SelectTask } from './views/taskSelection';
 import { MapTask, ValidateTask } from './views/taskAction';
 import { EmailVerification } from './views/verifyEmail';
 import { ProjectEdit } from './views/projectEdit';
+import { ContributionsPage, ContributionsPageIndex, ContributionDetail } from './views/contributions';
 import { NotificationsPage, NotificationPageIndex, NotificationDetail } from './views/notifications'
 
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
@@ -46,6 +47,10 @@ function App() {
               <MoreFilters path="/filters/*" />
             </ProjectsPage>
             <LearnPage path="learn" />
+            <ContributionsPage path="user">
+              <ContributionsPageIndex path="/"/>
+              <ContributionDetail path="contribution/:projectIdUrl/:taskIdUrl" />
+            </ContributionsPage>
             <AboutPage path="about" />
             <Authorized path="authorized" />
             <Login path="login" />
