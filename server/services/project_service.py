@@ -245,6 +245,11 @@ class ProjectService:
         ):
             return False, ValidatingNotAllowed.PROJECT_NOT_PUBLISHED
 
+        tasks = Task.get_locked_tasks_for_user(user_id)
+
+        if len(tasks) > 0:
+            return False, ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
+
         if project.restrict_validation_role and not UserService.is_user_validator(
             user_id
         ):
