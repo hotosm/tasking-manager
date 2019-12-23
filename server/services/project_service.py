@@ -1,6 +1,7 @@
 import datetime
 from cachetools import TTLCache, cached
 from flask import current_app
+from server import db
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.project_dto import (
     ProjectDTO,
@@ -42,6 +43,11 @@ class ProjectService:
             raise NotFound()
 
         return project
+
+    @staticmethod
+    def exists(project_id: int) -> bool:
+        query = Project.query.filter_by(id=project_id).exists()
+        return db.session.query(query).scalar()
 
     @staticmethod
     def get_project_by_name(project_id: int) -> Project:

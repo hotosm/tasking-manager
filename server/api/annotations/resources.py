@@ -35,10 +35,7 @@ class AnnotationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            ProjectService.get_project_by_id(project_id)
-        except NotFound as e:
-            current_app.logger.error(f"Error validating project: {str(e)}")
+        if not ProjectService.exists(project_id):
             return {"Error": "Project not found"}, 404
 
         try:
