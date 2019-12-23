@@ -86,7 +86,8 @@ class MessageService:
         validation_message.message = text_template
         validation_message.add_message()
 
-        SMTPService.send_email_alert(user.email_address, user.username)
+        if user.email_validation_messages:
+            SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
