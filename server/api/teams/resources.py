@@ -291,22 +291,27 @@ class TeamsAllAPI(Resource):
               default: null
             - in: query
               name: member
-              description: user id to filter teams that the users belongs to, user must be active.
+              description: user ID to filter teams that the users belongs to, user must be active.
               type: str
               default: null
             - in: query
               name: manager
-              description: user id to filter teams that the users has MANAGER role
+              description: user ID to filter teams that the users has MANAGER role
               type: str
               default: null
             - in: query
               name: member_request
-              description: user id to filter teams that the user has send invite request to
+              description: user ID to filter teams that the user has send invite request to
               type: str
               default: null
             - in: query
               name: team_role
               description: team role for project
+              type: str
+              default: null
+            - in: query
+              name: organisation
+              description: organisation ID to filter teams
               type: str
               default: null
         responses:
@@ -335,6 +340,11 @@ class TeamsAllAPI(Resource):
             member_request_filter = request.args.get("member_request")
             filters["member_request_filter"] = (
                 int(member_request_filter) if member_request_filter else None
+            )
+
+            organisation_filter = request.args.get("organisation")
+            filters["organisation_filter"] = (
+                int(organisation_filter) if organisation_filter else None
             )
 
             teams = TeamService.get_all_teams(**filters)
