@@ -13,7 +13,7 @@ import NavButtons from './navButtons';
 import Review from './review';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { MAP_MAX_AREA } from '../../config';
-
+import { AlertIcon } from '../svgIcons';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 const MapboxDraw = require('@mapbox/mapbox-gl-draw');
@@ -23,12 +23,28 @@ export const paintOptions = {
   'fill-opacity': 0.3,
 };
 
+const AlertMessage = ({ err }) => {
+  if (err.error === true) {
+    return (
+      <p className={'w-80 pv2 tc f6 fw6 red'}>
+        <span className="ph1">
+          <AlertIcon className="red mr2" height="15px" width="15px" />
+          {err.message}
+        </span>
+      </p>
+    );
+  } else {
+    return null;
+  }
+};
+
 const ProjectCreate = props => {
   const token = useSelector(state => state.auth.get('token'));
   // eslint-disable-next-line
   const [cloneFromId, setCloneFromId] = useQueryParam('cloneFrom', NumberParam);
   const [step, setStep] = useState(1);
   const [cloneProjectName, setCloneProjectName] = useState(null);
+  const [err, setErr] = useState({ error: false, message: null });
 
   const fetchCloneProjectInfo = useCallback(
     async cloneFromId => {
@@ -61,6 +77,18 @@ const ProjectCreate = props => {
     arbitraryTasks: false,
   });
 
+  useLayoutEffect(() => {
+    let err = { error: false, message: null };
+    if (metadata.area > MAP_MAX_AREA) {
+      err = {
+        error: true,
+        message: `Project AOI is higher than ${MAP_MAX_AREA} squared kilometers`,
+      };
+    }
+
+    setErr(err);
+  }, [metadata]);
+
   const drawOptions = {
     displayControlsDefault: false,
     styles: [
@@ -83,7 +111,14 @@ const ProjectCreate = props => {
   const renderCurrentStep = () => {
     switch (step) {
       case 1:
-        return <SetAOI mapObj={mapObj} metadata={metadata} updateMetadata={updateMetadata} />;
+        return (
+          <SetAOI
+            mapObj={mapObj}
+            metadata={metadata}
+            updateMetadata={updateMetadata}
+            setErr={setErr}
+          />
+        );
       case 2:
         return <SetTaskSizes mapObj={mapObj} metadata={metadata} updateMetadata={updateMetadata} />;
       case 3:
@@ -108,12 +143,17 @@ const ProjectCreate = props => {
         <h2 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
           <FormattedMessage {...messages.createProject} />
         </h2>
-        {cloneFromId &&
+        {cloneFromId && (
           <p className="fw6 pv2 blue-grey">
-            <FormattedMessage {...messages.cloneProject} values={{id: cloneFromId, name: cloneProjectName}}/>
+            <FormattedMessage
+              {...messages.cloneProject}
+              values={{ id: cloneFromId, name: cloneProjectName }}
+            />
           </p>
-        }
+        )}
         {renderCurrentStep()}
+        <AlertMessage err={err} />
+
         <NavButtons
           index={step}
           setStep={setStep}
@@ -121,6 +161,7 @@ const ProjectCreate = props => {
           mapObj={mapObj}
           updateMetadata={updateMetadata}
           maxArea={MAP_MAX_AREA}
+          setErr={setErr}
         />
       </div>
       <div className="w-70-l w-100 h-100-l h-50 pt3 pt0-l fr relative">

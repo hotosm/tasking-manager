@@ -11,9 +11,8 @@ var tj = require('@mapbox/togeojson');
 var osmtogeojson = require('osmtogeojson');
 var shp = require('shpjs');
 
-export default function SetAOI({ mapObj, metadata, updateMetadata }) {
+export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
   const [arbitraryTasks, setArbitrary] = useState(metadata.arbitraryTasks);
-  const [uploadError, setUploadError] = useState(false);
   const layer_name = 'aoi';
 
   const setDataGeom = geom => {
@@ -51,10 +50,9 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
   const verifyAndSetData = event => {
     try {
       setDataGeom(event.features[0].geometry);
-      setUploadError(false);
     } catch (e) {
       deleteHandler();
-      setUploadError(true);
+      setErr({ error: true, message: 'Invalid file' });
     }
   };
 
@@ -62,6 +60,10 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
     setArbitrary(true);
     let files = event.target.files;
     let file = files[0];
+    if (!file) {
+      return null;
+    }
+
     const format = file.name.split('.')[1].toLowerCase();
 
     let fileReader = new FileReader();
@@ -107,8 +109,13 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
   };
 
   const deleteHandler = () => {
-    mapObj.map.removeLayer(layer_name);
-    mapObj.map.removeSource(layer_name);
+    if (mapObj.map.getLayer(layer_name)) {
+      mapObj.map.removeLayer(layer_name);
+    }
+    if (mapObj.map.getSource(layer_name)) {
+      mapObj.map.removeSource(layer_name);
+    }
+    updateMetadata({ ...metadata, area: 0 });
   };
 
   const drawHandler = () => {
@@ -173,11 +180,6 @@ export default function SetAOI({ mapObj, metadata, updateMetadata }) {
             <FormattedMessage {...messages.uploadFile} />
           </label>
           <input onChange={uploadFile} style={{ display: 'none' }} id="file-upload" type="file" />
-          {uploadError && (
-            <p className="red fw6">
-              <FormattedMessage {...messages.uploadError} />
-            </p>
-          )}
         </div>
       </div>
       {metadata.geom && (
