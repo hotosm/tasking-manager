@@ -145,7 +145,6 @@ class ProjectSearchService:
     @cached(search_cache)
     def search_projects(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
         """ Searches all projects for matches to the criteria provided by the user """
-
         all_results, paginated_results = ProjectSearchService._filter_projects(
             search_dto
         )
