@@ -99,7 +99,12 @@ export const InputLocale = props => {
         ></textarea>
       )}
 
-      {preview ? <div dangerouslySetInnerHTML={preview} /> : null}
+      {preview &&
+        <>
+          <h3 className="ttu f6 fw6 blue-grey mb1">Preview:</h3>
+          <div dangerouslySetInnerHTML={preview} className="pa2 bg-grey-light blue-dark"/>
+        </>
+      }
     </div>
   );
 };
