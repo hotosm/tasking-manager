@@ -219,7 +219,9 @@ class Project(db.Model):
     custom_editor = db.relationship(CustomEditor, uselist=False)
     favorited = db.relationship(User, secondary=project_favorites, backref="favorites")
     organisation = db.relationship(Organisation, backref="projects")
-    campaign = db.relationship(Campaign, secondary=campaign_projects, backref="project")
+    campaign = db.relationship(
+        Campaign, secondary=campaign_projects, backref="projects"
+    )
     interests = db.relationship(
         Interest, secondary=projects_interests, backref="projects"
     )

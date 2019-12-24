@@ -84,7 +84,6 @@ class ProjectSearchService:
             .outerjoin(Organisation, Organisation.id == Project.organisation_id)
             .group_by(Organisation.id)
         )
-
         return query
 
     @staticmethod
@@ -228,10 +227,11 @@ class ProjectSearchService:
                 ProjectTeams, ProjectTeams.project_id == Project.id
             ).filter(ProjectTeams.team_id == search_dto.team_id)
 
-        if search_dto.campaign:
-            query = query.join(Campaign, Project.campaign).filter(
-                Campaign.name == search_dto.campaign
+        if search_dto.campaign_tag:
+            query = query.join(Campaign, Project.campaign).group_by(
+                Project.id, Campaign.name
             )
+            query = query.filter(Campaign.name == search_dto.campaign_tag)
 
         if search_dto.mapping_types:
             # Construct array of mapping types for query

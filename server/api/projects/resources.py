@@ -575,7 +575,7 @@ class ProjectsAllAPI(ProjectSearchBase):
             search_dto.organisation_name = request.args.get("organisationName")
             search_dto.organisation_id = request.args.get("organisationId")
             search_dto.team_id = request.args.get("teamId")
-            search_dto.campaign = request.args.get("campaign")
+            search_dto.campaign = request.args.get("campaignTag")
             search_dto.order_by = request.args.get("orderBy", "priority")
             search_dto.country = request.args.get("country")
             search_dto.order_by_type = request.args.get("orderByType", "ASC")
