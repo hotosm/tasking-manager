@@ -11,7 +11,7 @@ jobs:
         name: Install Node and modules
         command: |
           sudo apt-get update
-          curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
+          curl -sL https://deb.nodesource.com/setup_13.x | sudo bash -
           sudo apt-get install -y nodejs libgeos-dev # Required for shapely
           sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
           sudo pip3 install awscli --upgrade
@@ -32,6 +32,7 @@ jobs:
           # Install NPM packages and build frontend
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend
           npm install
+          npm rebuild node-sass
           npm run build
           cd ${CIRCLE_WORKING_DIRECTORY}
           # Install Python dependencies
