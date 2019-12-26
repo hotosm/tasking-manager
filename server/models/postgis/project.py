@@ -450,8 +450,7 @@ class Project(db.Model):
                 db.session.delete(team)
 
             for project_team in project_dto.project_teams:
-
-                team = Team.get(project_team["teamId"])
+                team = Team.get(project_team.team_id)
 
                 if team is None:
                     raise NotFound(f"Team not found")
@@ -459,7 +458,7 @@ class Project(db.Model):
                 new_project_team = ProjectTeams()
                 new_project_team.project = self
                 new_project_team.team = team
-                new_project_team.role = TeamRoles[project_team["role"]].value
+                new_project_team.role = TeamRoles[project_team.role].value
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:

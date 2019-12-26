@@ -12,6 +12,7 @@ from schematics.types.compound import ListType, ModelType
 from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
+from server.models.dtos.team_dto import ProjectTeamDTO
 from server.models.postgis.statuses import (
     ProjectStatus,
     ProjectPriority,
@@ -218,7 +219,7 @@ class ProjectDTO(Model):
         validators=[is_known_task_creation_mode],
         serialize_when_none=False,
     )
-    project_teams = BaseType(serialized_name="projectTeams")
+    project_teams = ListType(ModelType(ProjectTeamDTO), serialized_name="projectTeams")
     mapping_editors = ListType(
         StringType,
         min_size=1,
