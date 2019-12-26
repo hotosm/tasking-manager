@@ -57,8 +57,8 @@ class TeamProjectDTO(Model):
 class ProjectTeamDTO(Model):
     """ Describes a JSON model to create a project team """
 
-    team_id = IntType(required=True)
-    team_name = StringType(required=True)
+    team_id = IntType(required=True, serialized_name="teamId")
+    team_name = StringType(serialized_name="teamName")
     role = StringType(required=True)
 
 
