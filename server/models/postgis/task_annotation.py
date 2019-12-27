@@ -1,4 +1,4 @@
-from server.models.postgis.utils import timestamp, NotFound
+from server.models.postgis.utils import timestamp
 from server import db
 from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from server.models.dtos.project_dto import ProjectTaskAnnotationsDTO
