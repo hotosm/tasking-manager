@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
 
 import { StateContext, styleClasses } from '../../views/projectEdit';
+import { InputLocale } from './inputLocale';
 
-export const InstructionsForm = () => {
+export const InstructionsForm = ({ languages }) => {
 	const { projectInfo, setProjectInfo } = useContext(StateContext);
 	const handleChange = event => {
 		const localesFields = ['instructions', 'perTaskInstructions'];
@@ -52,26 +53,14 @@ export const InstructionsForm = () => {
 				</p>
 			</div>
 			<div className={styleClasses.divClass}>
-				<label className={styleClasses.labelClass}>Detailed Instructions *</label>
-				<textarea
-					className={styleClasses.inputClass}
-					rows={styleClasses.numRows}
-					type="text"
-					name="instructions"
-					value={projectInfo.projectInfoLocales[0].instructions}
-					onChange={handleChange}
-				></textarea>
+				<InputLocale languages={languages} name="instructions">
+					<label className={styleClasses.labelClass}>Detailed Instructions *</label>
+				</InputLocale>
 			</div>
 			<div className={styleClasses.divClass}>
-				<label className={styleClasses.labelClass}>Per task instructions</label>
-				<textarea
-					className={styleClasses.inputClass}
-					rows={styleClasses.numRows}
-					type="text"
-					value={projectInfo.projectInfoLocales[0].perTaskInstructions}
-					name="perTaskInstructions"
-					onChange={handleChange}
-				></textarea>
+				<InputLocale languages={languages} name="perTaskInstructions">
+					<label className={styleClasses.labelClass}>Per task instructions</label>
+				</InputLocale>
 				<p className={styleClasses.pClass}>
 					Put here anything that can be useful to users while taking a task. {'{x}'}, {'{y}'} and{' '}
 					{'{z}'}

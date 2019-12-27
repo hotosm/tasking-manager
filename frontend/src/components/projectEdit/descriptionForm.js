@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
 
 import { StateContext, styleClasses } from '../../views/projectEdit';
+import { InputLocale } from './inputLocale';
 
-export const DescriptionForm = () => {
+export const DescriptionForm = ({ languages }) => {
 	const { projectInfo, setProjectInfo } = useContext(StateContext);
 
 	const handleChange = event => {
@@ -59,36 +60,19 @@ export const DescriptionForm = () => {
 				</select>
 			</div>
 			<div className={styleClasses.divClass}>
-				<label className={styleClasses.labelClass}>Name of the project*</label>
-				<input
-					className={styleClasses.inputClass}
-					type="text"
-					value={projectInfo.projectInfoLocales[0].name}
-					name="name"
-					onChange={handleChange}
-				/>
+				<InputLocale languages={languages} name="name" type="text" preview={false}>
+					<label className={styleClasses.labelClass}>Name of the project*</label>
+				</InputLocale>
 			</div>
 			<div className={styleClasses.divClass}>
-				<label className={styleClasses.labelClass}>Short Description*</label>
-				<textarea
-					className={styleClasses.inputClass}
-					rows={styleClasses.numRows}
-					type="text"
-					name="shortDescription"
-					value={projectInfo.projectInfoLocales[0].shortDescription}
-					onChange={handleChange}
-				></textarea>
+				<InputLocale languages={languages} name="shortDescription">
+					<label className={styleClasses.labelClass}>Short Description*</label>
+				</InputLocale>
 			</div>
 			<div className={styleClasses.divClass}>
-				<label className={styleClasses.labelClass}>Description*</label>
-				<textarea
-					className={styleClasses.inputClass}
-					rows={styleClasses.numRows}
-					type="text"
-					name="description"
-					value={projectInfo.projectInfoLocales[0].description}
-					onChange={handleChange}
-				></textarea>
+				<InputLocale languages={languages} name="description">
+					<label className={styleClasses.labelClass}>Description*</label>
+				</InputLocale>
 			</div>
 		</div>
 	);

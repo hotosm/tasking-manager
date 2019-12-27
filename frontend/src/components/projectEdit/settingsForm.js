@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { getEditors } from '../../utils/editorsList';
 import { StateContext, styleClasses, handleCheckButton } from '../../views/projectEdit';
 
-export const SettingsForm = () => {
+export const SettingsForm = ({ languages, defaultLocale }) => {
 	const { projectInfo, setProjectInfo } = useContext(StateContext);
 
 	const handleMappingEditors = event => {
@@ -18,9 +18,23 @@ export const SettingsForm = () => {
 		setProjectInfo({ ...projectInfo, validationEditors: editors });
 	};
 
+	const updateDefaultLocale = event => {
+		setProjectInfo({ ...projectInfo, defaultLocale: event.target.value });
+	};
+
 	const editors = getEditors();
 	return (
 		<div className="w-100">
+			<div className={styleClasses.divClass}>
+				<label className={styleClasses.labelClass}>Default Language</label>
+				<select name="defaultLocale" onChange={updateDefaultLocale} className="pa2">
+					{languages.map(l => (
+						<option selected={l.code === defaultLocale ? true : false} value={l.code}>
+							{l.language} ({l.code})
+						</option>
+					))}
+				</select>
+			</div>
 			<div className={styleClasses.divClass}>
 				<label className={styleClasses.labelClass}>Editors for mapping</label>
 				{editors.map(elm => (

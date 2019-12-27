@@ -12,7 +12,6 @@ import { SettingsForm } from '../components/projectEdit/settingsForm';
 import { ActionsForm } from '../components/projectEdit/actionsForm';
 import { Button } from '../components/button';
 import { API_URL } from '../config';
-import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 
 export const StateContext = React.createContext();
 
@@ -20,7 +19,7 @@ export const styleClasses = {
   divClass: 'w-70 pb5 mb4 bb b--grey-light',
   labelClass: 'f4 barlow-condensed db mb3',
   pClass: 'db mb3 f5',
-  inputClass: 'w-80 pa2',
+  inputClass: 'w-80 pa2 db mb2',
   numRows: '4',
   buttonClass: 'bg-blue-dark dib white',
   modalTitleClass: 'f3 barlow-condensed pb3 bb',
@@ -44,6 +43,7 @@ export function ProjectEdit({ id }) {
   const token = useSelector(state => state.auth.get('token'));
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [languages, setLanguages] = useState(null);
   const [option, setOption] = useState('description');
   const [projectInfo, setProjectInfo] = useState({
     mappingTypes: [],
@@ -62,6 +62,15 @@ export function ProjectEdit({ id }) {
   });
 
   useLayoutEffect(() => {
+    async function getSupportedLanguages() {
+      const res = await fetch(`${API_URL}system/languages/`);
+      let resp_json = await res.json();
+      setLanguages(resp_json.supportedLanguages);
+    }
+    getSupportedLanguages();
+  }, []);
+
+  useLayoutEffect(() => {
     async function fetchData() {
       const res = await fetch(`${API_URL}projects/${id}/`);
       let resp_json = await res.json();
@@ -69,6 +78,7 @@ export function ProjectEdit({ id }) {
       resp_json = { ...resp_json, projectInfoLocales: array };
       setProjectInfo(resp_json);
     }
+
     fetchData();
   }, [id]);
 
@@ -112,9 +122,9 @@ export function ProjectEdit({ id }) {
   const renderForm = option => {
     switch (option) {
       case 'description':
-        return <DescriptionForm />;
+        return <DescriptionForm languages={languages} />;
       case 'instructions':
-        return <InstructionsForm />;
+        return <InstructionsForm languages={languages} />;
       case 'metadata':
         return <MetadataForm />;
       case 'imagery':
@@ -122,7 +132,7 @@ export function ProjectEdit({ id }) {
       case 'permissions':
         return <PermissionsForm />;
       case 'settings':
-        return <SettingsForm />;
+        return <SettingsForm languages={languages} defaultLocale={projectInfo.defaultLocale} />;
       case 'priority_areas':
         return <PriorityAreasForm />;
       case 'actions':
@@ -133,9 +143,29 @@ export function ProjectEdit({ id }) {
   };
 
   const saveChanges = () => {
-    pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')
-      .then(res => setSuccess(true))
-      .catch(e => setError(e));
+    const updateProject = async () => {
+      const url = `${API_URL}projects/${id}/`;
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept-Language': 'en',
+        Authorization: `Token ${token}`,
+      };
+
+      const options = {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify(projectInfo),
+      };
+
+      const res = await fetch(url, options);
+      if (res.status !== 200) {
+        setError(true);
+      } else {
+        setSuccess(true);
+      }
+    };
+
+    updateProject();
   };
 
   return (
@@ -146,14 +176,13 @@ export function ProjectEdit({ id }) {
         <Button onClick={saveChanges} className="bg-red white">
           Save
         </Button>
-        <Button
-          onClick={() => navigate(`/projects/${id}`)}
-          className="bg-white blue-dark ml2"
-        >
+        <Button onClick={() => navigate(`/projects/${id}`)} className="bg-white blue-dark ml2">
           Go to project page
         </Button>
         <p className="pt2">
-          {success && <span className="blue-dark bg-grey-light pa2">Project updated successfully</span>}
+          {success && (
+            <span className="blue-dark bg-grey-light pa2">Project updated successfully</span>
+          )}
           {error && <span className="bg-red white pa2">Project update failed: {error}</span>}
         </p>
       </div>
