@@ -44,10 +44,6 @@ export default defineMessages({
     id: 'project.tasks.map.legend',
     defaultMessage: 'Legend',
   },
-  createBy: {
-    id: 'project.createdBy',
-    defaultMessage: '{id} | Created by {user}',
-  },
   typesOfMapping: {
     id: 'project.typesOfMapping',
     defaultMessage: 'Types of Mapping',
