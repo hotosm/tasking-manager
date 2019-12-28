@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from '@reach/router';
+
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 
@@ -9,55 +9,13 @@ import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
 import { getTaskAction } from '../../utils/projectPermissions';
 import { getRandomArrayItem } from '../../utils/random';
 import { updateTasksStatus } from '../../utils/updateTasksStatus';
-import { PriorityBox } from '../projectcard/projectCard';
 import { TasksMap } from './map.js';
 import { TaskList } from './taskList';
 import { TasksMapLegend } from './legend';
 import { ProjectInstructions } from './instructions';
+import { ProjectHeader } from '../projectDetail/header';
 
 const TaskSelectionFooter = React.lazy(() => import('./footer'));
-
-export function HeaderLine({ author, projectId, priority }: Object) {
-  const userLink = (
-    <Link to={`/users/${author}`} className="link blue-dark underline">
-      {author}
-    </Link>
-  );
-  const projectIdLink = (
-    <Link to={`/projects/${projectId}`} className="no-underline">
-      <span className="blue-light">#{projectId}</span>
-    </Link>
-  );
-  return (
-    <div className="cf">
-      <div className="w-70 dib fl">
-        <span className="blue-dark">
-          <FormattedMessage {...messages.createBy} values={{ user: userLink, id: projectIdLink }} />
-        </span>
-      </div>
-      {priority && (
-        <div className="mw4 dib fr">
-          <PriorityBox priority={priority} extraClasses={'pv2 ph3'} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function TagLine({ campaigns = [], countries = [] }: Object) {
-  let tags = [];
-  tags = campaigns.map(i => i.name).concat(countries);
-  return (
-    <span className="blue-light">
-      {tags.map((tag, n) => (
-        <>
-          <span className={n === 0 ? 'dn' : 'ph2'}>&#183;</span>
-          {tag}
-        </>
-      ))}
-    </span>
-  );
-}
 
 const getRandomTaskByAction = (activities, taskAction) => {
   if (['validateATask', 'validateAnotherTask'].includes(taskAction)) {
@@ -147,17 +105,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               rows={3}
               ready={typeof project.projectId === 'number' && project.projectId > 0}
             >
-              <HeaderLine
-                author={project.author}
-                priority={project.projectPriority}
-                projectId={project.projectId}
-              />
-              <div className="cf pb3">
-                <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
-                  {project.projectInfo && project.projectInfo.name}
-                </h3>
-                <TagLine campaigns={project.campaigns} countries={project.countryTag} />
-              </div>
+              <ProjectHeader project={project} />
               <div className="cf">
                 <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
                   <span
