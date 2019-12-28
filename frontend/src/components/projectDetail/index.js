@@ -11,7 +11,7 @@ import DueDateBox from '../projectcard/dueDateBox';
 import { MappingLevelMessage } from '../mappingLevel';
 
 import { TasksMap } from '../taskSelection/map.js';
-import { HeaderLine, TagLine } from '../taskSelection';
+import { ProjectHeader } from './header';
 import { MappingTypes } from '../mappingTypes';
 import { Imagery } from '../taskSelection/imagery';
 
@@ -128,18 +128,7 @@ export const ProjectDetailLeft = props => {
           delay={500}
           ready={typeof props.project.projectId === 'number'}
         >
-          <HeaderLine
-            author={props.project.author}
-            projectId={props.project.projectId}
-            priority={props.project.projectPriority}
-          />
-
-          <div className="cf pb3">
-            <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
-              {props.project.projectInfo && props.project.projectInfo.name}
-            </h3>
-            <TagLine campaigns={props.project.campaigns} countries={props.project.countryTag} />
-          </div>
+          <ProjectHeader project={props.project} />
           <section className={`lh-copy h5 overflow-x-scroll`}>
             <div className="pr2" dangerouslySetInnerHTML={htmlShortDescription} />
             <div className="pv2">
