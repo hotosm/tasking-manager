@@ -1,16 +1,15 @@
 import React from 'react';
-
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
-
-import { NotificationCard, NotificationCardMini } from './notificationCard';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
+
 import messages from './messages';
+import { NotificationCard, NotificationCardMini } from './notificationCard';
+import { RefreshIcon } from '../svgIcons';
 
 export const NotificationResultsMini = props => {
   return <NotificationResults {...props} useMiniCard={true} />;
 };
-
 
 export const NotificationResults = props => {
   const state = props.state;
@@ -22,7 +21,6 @@ export const NotificationResults = props => {
     props.useMiniCard &&
     props.state.unreadNotificationsMini &&
     props.liveUnreadCount !== props.state.unreadNotificationsMini.filter(n => !n.read).length;
-  // console.log ("server count-all:",props.liveUnreadCount, " vs. client read count:",props.state.unreadNotificationsMini && props.state.unreadNotificationsMini.filter(n => !n.read).length)
   return (
     <div className={props.className || ''}>
       {!stateNotifications ? (
@@ -69,19 +67,15 @@ export const NotificationResults = props => {
           </div>
         </div>
       ) : null}
-      <div className={`cf ${!props.useMiniCard ? 'mh5 mh2-ns' : ''} db`}>
-        <ReactPlaceholder
-          ready={!state.isFirstLoading}
-          type="media"
-          rows={10}
-        >
+      <div className={`cf ${!props.useMiniCard ? 'mh2 db' : 'dib'}`}>
+        <ReactPlaceholder ready={!state.isFirstLoading} type="media" rows={10}>
           <NotificationCards pageOfCards={stateNotifications} useMiniCard={props.useMiniCard} />
         </ReactPlaceholder>
       </div>
       {showRefreshButton && (
-        <div className="pa2 tc">
-          <button className="pa1" onClick={() => props.retryFn()}>
-            <FormattedMessage {...messages.notificationsRefresh} />
+        <div className="pa2 tc dib mb2">
+          <button className="pa1 pointer" onClick={() => props.retryFn()}>
+            <RefreshIcon height="15px" className="pt1" />
           </button>
         </div>
       )}
@@ -91,7 +85,11 @@ export const NotificationResults = props => {
 
 const NotificationCards = props => {
   if (!props || !props.pageOfCards || props.pageOfCards.length === 0) {
-    return null;
+    return (
+      <div className="mb3 blue-grey">
+        <FormattedMessage {...messages.noMessages} />
+      </div>
+    );
   }
   const filterFn = props.useMiniCard ? n => !n.read : n => n;
   const filteredCards = props.pageOfCards.filter(filterFn);

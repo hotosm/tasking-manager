@@ -18,20 +18,20 @@ export const NotificationBell = props => {
 
   const [isPopoutFocus, setPopoutFocus] = useState(false);
 
-  /*TODO Replace this backend with websockets, eventsource or RESTSockets 
+  /*TODO Replace this backend with websockets, eventsource or RESTSockets
     to save batteries and capacity*/
   const [unreadNotifsStartError, unreadNotifsStartLoading, unreadNotifsStart] = useFetch(
-    `/api/v2/notifications/queries/myself/count-unread/`,
+    `/api/v2/notifications/queries/own/count-unread/`,
   );
   const [unreadNotifsRepeatError, unreadNotifsRepeat] = useFetchIntervaled(
-    `/api/v2/notifications/queries/myself/count-unread/`,
+    `/api/v2/notifications/queries/own/count-unread/`,
     30000,
   );
 
   const isNotificationBellActive = ({ isCurrent }) => {
     return isCurrent
       ? { className: `link barlow-condensed blue-dark f4 ttu bb b--blue-dark bw1 pv2` }
-      : { className: `link barlow-condensed blue-dark f4 ttu` };
+      : { className: `link barlow-condensed blue-dark f4 ttu v-mid pt1` };
   };
 
   const lightTheBell =

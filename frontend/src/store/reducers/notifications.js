@@ -9,14 +9,14 @@ const initialState = Map({
 
 export const notificationsReducer = (state = initialState, action) => {
   switch (action.type) {
-    case types.FETCH_INIT:
+    case types.NOTIFICATIONS_INIT:
       return {
         ...state,
         isLoading: true,
         isFirstLoading: state.isLoading !== false && true,
         isError: false,
       };
-    case types.FETCH_SUCCESS:
+    case types.NOTIFICATIONS_SUCCESS:
       const pagedNotifs = action.payload.userMessages.map(n => ({
         ...n,
         page: action.payload.pagination.page,
@@ -37,7 +37,7 @@ export const notificationsReducer = (state = initialState, action) => {
           (goodForMiniResults && pagedNotifs) || state.unreadNotificationsMini,
         pagination: action.payload.pagination,
       };
-    case types.FETCH_FAILURE:
+    case types.NOTIFICATIONS_FAILURE:
       return {
         ...state,
         isLoading: false,
