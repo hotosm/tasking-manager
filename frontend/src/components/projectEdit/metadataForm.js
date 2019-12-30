@@ -10,7 +10,7 @@ export const MetadataForm = () => {
     { item: 'ROADS', showItem: 'Roads' },
     { item: 'BUILDINGS', showItem: 'Buildings' },
     { item: 'WATERWAYS', showItem: 'Waterways' },
-    { item: 'LANDUSE', showItem: 'Landuse' },
+    { item: 'LAND_USE', showItem: 'Landuse' },
     { item: 'OTHER', showItem: 'Other' },
   ];
 
