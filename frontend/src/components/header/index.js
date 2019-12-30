@@ -213,7 +213,7 @@ class Header extends React.Component {
   }
 
   renderAuthenticationButtons() {
-    
+
     return this.props.userDetails.username ? (
       <>
         <NotificationBell />
@@ -244,7 +244,7 @@ class Header extends React.Component {
           signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
           redirectTo={this.props.location.pathname}
         />
-        
+
       </div>
     );
   }
@@ -287,13 +287,13 @@ class Header extends React.Component {
               <Popup  trigger={open => <BurgerMenu open={open}/>} modal closeOnDocumentClick>
                 <div>
                   <PopupItems
-                 userDetails={this.props.userDetails}
-                 menuItems={this.menuItems}
-                 linkCombo={this.linkCombo}
-                 logout={this.logout}
-                 location={this.props.location}
+                   userDetails={this.props.userDetails}
+                   menuItems={getMenuItensForUser(this.props.userDetails)}
+                   linkCombo={this.linkCombo}
+                   logout={this.logout}
+                   location={this.props.location}
                  />
-               </div> 
+               </div>
               </Popup>
             </div>
           </div>

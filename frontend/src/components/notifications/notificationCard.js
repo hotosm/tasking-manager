@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from '@reach/router';
 import DOMPurify from 'dompurify';
+import { FormattedRelative } from 'react-intl';
+// import { FormattedRelativeTime } from 'react-intl';
+// import {selectUnit} from '@formatjs/intl-utils';
+
 import { EyeIcon, ListIcon } from '../svgIcons';
 import { UserAvatar } from '../user/avatar';
 import systemAvatar from '../../assets/img/hot-system-avatar-square-opaque.png';
-// import { FormattedRelativeTime } from 'react-intl';
-// import {selectUnit} from '@formatjs/intl-utils';
-import { FormattedRelative } from 'react-intl';
 import { DeleteModal } from '../deleteModal';
 
 export const rawHtmlNotification = notificationHtml => ({

@@ -50,11 +50,19 @@ export default defineMessages({
   },
   viewAll: {
     id: 'notifications.nav.viewAll',
-    defaultMessage: 'View All',
+    defaultMessage: 'View all',
+  },
+  goToNotifications: {
+    id: 'notifications.nav.goToNotifications',
+    defaultMessage: 'Go to notifications',
   },
   noUnreadMessages: {
     id: 'notifications.nav.noUnread',
     defaultMessage: 'No unread messages',
+  },
+  noMessages: {
+    id: 'notifications.nav.noMessages',
+    defaultMessage: "You don't have any messages.",
   },
   sortBy: {
     id: 'notifications.sortby',
@@ -78,7 +86,7 @@ export default defineMessages({
   },
   sortByDateAsc: {
     id: 'notifications.sortby.date.asc',
-    defaultMessage: 'New notifications last',
+    defaultMessage: 'Old notifications first',
   },
   notificationsRetry: {
     id: 'notifications.error.tryagain',
