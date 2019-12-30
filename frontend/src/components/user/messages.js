@@ -132,6 +132,10 @@ export default defineMessages({
     id: 'user.welcome.title',
     defaultMessage: 'Welcome to Tasking Manager!',
   },
+  interestsH3: {
+    id: 'user.interests.h3',
+    defaultMessage: 'Interests',
+  },
   interestsTitle: {
     id: 'user.interests.title',
     defaultMessage: "Tell us about you and the kind of projects you're interested in.",

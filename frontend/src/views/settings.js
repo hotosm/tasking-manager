@@ -21,7 +21,7 @@ export function Settings() {
         <UserTopBar />
         <div className="cf pa4 bg-tan">
           <div className="fl w-100 w-60-l pb3 pr3-l">
-            <UserInterests />
+            <UserInterests token={token} userDetails={userDetails} />
             <UserSettingsForm />
             <UserNotificationsForm />
             {userDetails.isExpert && <APIKeyCard token={token} />}

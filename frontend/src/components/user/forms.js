@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
@@ -10,6 +10,8 @@ import { Dropdown } from '../dropdown';
 import { SwitchToggle, RadioField } from '../formInputs';
 import { pushUserDetails } from '../../store/actions/auth';
 import { getEditors } from '../../utils/editorsList';
+import { CheckIcon } from '../svgIcons';
+import { API_URL } from '../../config';
 
 const PROFILE_RELEVANT_FIELDS = [
   'name',
@@ -28,10 +30,107 @@ const mapStateToProps = state => ({
   token: state.auth.get('token'),
 });
 
-function UserInterests() {
+function UserInterests({ token, userDetails }) {
+  const [interests, setInterests] = useState([]);
+  const [success, setSuccess] = useState(null);
+
+  useLayoutEffect(() => {
+    const getInterests = async username => {
+      const url = `${API_URL}users/${username}/queries/interests/`;
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept-Language': 'en',
+        Authorization: `Token ${token}`,
+      };
+      const res = await fetch(url, { headers: headers });
+      const data = await res.json();
+      setInterests(data.interests);
+    };
+
+    if (userDetails.username) {
+      getInterests(userDetails.username);
+    }
+  }, [token, userDetails]);
+
+  const interestStyle = 'w-30 ba pv3 ph3 f6 tc mb2 mr3 relative ttc';
+  const selectedStyle = 'f7 pa1 br-100 bg-black white absolute right-0 top-0';
+
+  const changeSelect = id => {
+    const index = interests.findIndex(i => i.id === id);
+
+    const copy = interests.map((interest, idx) => {
+      if (idx === index) {
+        interest.userSelected = !interest.userSelected;
+      }
+      return interest;
+    });
+
+    setInterests(copy);
+  };
+
+  const updateInterests = () => {
+    const postUpdate = async ids => {
+      const url = `${API_URL}users/me/actions/set-interests/`;
+      const headers = {
+        'Content-Type': 'application/json',
+        'Accept-Language': 'en',
+        Authorization: `Token ${token}`,
+      };
+
+      const options = {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ interests: ids }),
+      };
+
+      const res = await fetch(url, options);
+      if (res.status !== 200) {
+        setSuccess(false);
+      } else {
+        setSuccess(true);
+      }
+    };
+
+    // Get all true ids.
+    const trueInterests = interests.filter(i => i.userSelected === true);
+    const ids = trueInterests.map(i => i.id);
+    postUpdate(ids);
+  };
+
   return (
-    <div className="bg-white blue-dark shadow-4 pa4 mb3">
-      <span>Interests selection card</span>
+    <div className="cf bg-white shadow-4 pa4 mb3">
+      <h3 className="f3 blue-dark mt0 fw6">
+        <FormattedMessage {...messages.interestsH3} />
+      </h3>
+      <p>
+        <FormattedMessage {...messages.interestsTitle} />
+      </p>
+      <p>
+        <FormattedMessage {...messages.interestsLead} />
+      </p>
+      <ul className="list w-100 pa0 flex flex-wrap">
+        {interests.map(i => (
+          <li
+            onClick={() => changeSelect(i.id)}
+            className={
+              (i.userSelected === true ? 'b--black bw1 bg-washed-blue ' : 'b--light-silver ') +
+              interestStyle
+            }
+            key={i.id}
+          >
+            {i.name}
+            {i.userSelected === true ? <CheckIcon className={selectedStyle} /> : null}
+          </li>
+        ))}
+      </ul>
+      {success === null ? null : success === true ? (
+        <span className="blue-dark bg-grey-light pa2 db">Interests updated successfully</span>
+      ) : (
+        <span className="bg-red white pa2 db">Interests update failed</span>
+      )}
+      <Button onClick={updateInterests} className="bg-blue-dark white mh1 mv2 dib">
+        <FormattedMessage {...messages.save} />
+      </Button>
     </div>
   );
 }
@@ -208,9 +307,11 @@ function _SwitchToggleField(props) {
     setValue(!value);
   };
 
-  return <div className="fr pv2 dib">
-    <SwitchToggle onChange={e => onSwitchChange()} isChecked={value} />
-  </div>;
+  return (
+    <div className="fr pv2 dib">
+      <SwitchToggle onChange={e => onSwitchChange()} isChecked={value} />
+    </div>
+  );
 }
 
 const SwitchToggleField = connect(
