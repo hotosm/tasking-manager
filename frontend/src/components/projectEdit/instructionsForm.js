@@ -41,8 +41,8 @@ export const InstructionsForm = ({ languages }) => {
         <input
           className={styleClasses.inputClass}
           type="text"
-          value={projectInfo.changesetComment}
-          name="changesetComment"
+          value={projectInfo.changesetTags["comment"]}
+          name="changesetTags"
           onChange={handleChange}
         />
         <p className={styleClasses.pClass}>

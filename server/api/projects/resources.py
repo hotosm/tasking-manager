@@ -294,9 +294,9 @@ class ProjectsRestAPI(Resource):
                     private:
                         type: boolean
                         default: false
-                    changesetComment:
+                    changesetTags:
                         type: string
-                        default: hotosm-project-1
+                        default: {"comment": "hotosm-project-1"}
                     entitiesToMap:
                         type: string
                         default: Buildings only
