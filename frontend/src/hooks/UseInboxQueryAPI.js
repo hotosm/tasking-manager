@@ -1,25 +1,22 @@
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   useQueryParams,
   StringParam,
   stringify as stringifyUQP,
   NumberParam,
 } from 'use-query-params';
+import axios from 'axios';
+
 import { CommaArrayParam } from '../utils/CommaArrayParam';
 import { useSelector } from 'react-redux';
 import { useThrottle } from '../hooks/UseThrottle';
-import { remapParamsToAPI } from '../utils/remapParamsToAPI'
-
-import { useDispatch } from 'react-redux'
+import { remapParamsToAPI } from '../utils/remapParamsToAPI';
+import { API_URL } from '../config';
 
 /* See also moreFiltersForm, the useQueryParams are duplicated there for specific modular usage */
 /* This one is e.g. used for updating the URL when returning to /contribute
  *  and directly submitting the query to the API */
-
-import { useEffect } from 'react';
-import axios from 'axios';
-
-import { API_URL } from '../config';
-
 const inboxQueryAllSpecification = {
   types: CommaArrayParam,
   fromUsername: StringParam,
@@ -38,20 +35,19 @@ export const useInboxQueryParams = () => {
 };
 
 /* The API uses slightly different JSON keys than the queryParams,
-   this fn takes an object with queryparam keys and outputs JSON keys 
+   this fn takes an object with queryparam keys and outputs JSON keys
    while maintaining the same values */
-  /* TODO support full text search and change text=>project for that */
-  const backendToQueryConversion = {
-    types: 'messageType',
-    fromUsername: 'from',
-    project: 'project',
-    taskId: 'taskId',
-    orderByType: 'sortBy',
-    orderBy: 'sortDirection',
-    page: 'page',
-    pageSize: 'pageSize'
-  };
-
+/* TODO support full text search and change text=>project for that */
+const backendToQueryConversion = {
+  types: 'messageType',
+  fromUsername: 'from',
+  project: 'project',
+  taskId: 'taskId',
+  orderByType: 'sortBy',
+  orderBy: 'sortDirection',
+  page: 'page',
+  pageSize: 'pageSize',
+};
 
 const defaultInitialData = {
   mapResults: {
@@ -68,12 +64,11 @@ export const useInboxQueryAPI = (
   forceUpdate = null,
 ) => {
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
-  // console.log(throttledExternalQueryParamsState)
   /* Get the user bearer token from the Redux store */
   const token = useSelector(state => state.auth.get('token'));
 
-  const state = useSelector(state => state.notifications)
-  const dispatch = useDispatch()
+  const state = useSelector(state => state.notifications);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let didCancel = false;
@@ -87,21 +82,21 @@ export const useInboxQueryAPI = (
       });
 
       const remappedParams = remapParamsToAPI(
-         throttledExternalQueryParamsState,
-         backendToQueryConversion
-         )
+        throttledExternalQueryParamsState,
+        backendToQueryConversion,
+      );
 
       try {
         if (!token) {
-          throw Error("No authentication token specified for inbox query")
+          throw Error('No authentication token specified for inbox query');
         }
         const result = await axios({
           url: `${API_URL}notifications/`,
           method: 'get',
           params: remappedParams,
           headers: {
-            'Authorization': `Token ${token}`,
-            'Accept': 'application/json'
+            Authorization: `Token ${token}`,
+            Accept: 'application/json',
           },
           cancelToken: new CancelToken(function executor(c) {
             // An executor function receives a cancel function as a parameter
@@ -111,10 +106,14 @@ export const useInboxQueryAPI = (
 
         if (!didCancel) {
           if (result && result.headers && result.headers['content-type'].indexOf('json') !== -1) {
-            dispatch({ type: 'FETCH_SUCCESS', payload: result.data, params: throttledExternalQueryParamsState });
+            dispatch({
+              type: 'NOTIFICATIONS_SUCCESS',
+              payload: result.data,
+              params: throttledExternalQueryParamsState,
+            });
           } else {
             console.error('Invalid return type for inbox search');
-            dispatch({ type: 'FETCH_FAILURE' });
+            dispatch({ type: 'NOTIFICATIONS_FAILURE' });
           }
         } else {
           cancel.end();
@@ -130,8 +129,7 @@ export const useInboxQueryAPI = (
           error.response.data.Error === 'No messages found'
         ) {
           const zeroPayload = Object.assign(defaultInitialData, { pagination: { total: 0 } });
-          /* TODO(tdk): when 404 and page > 1, re-request page 1 */
-          dispatch({ type: 'FETCH_SUCCESS', payload: zeroPayload });
+          dispatch({ type: 'NOTIFICATIONS_SUCCESS', payload: zeroPayload });
         } else if (!didCancel && error.response) {
           const errorResPayload = Object.assign(defaultInitialData, { error: error.response });
           // The request was made and the server responded with a status code
@@ -143,18 +141,17 @@ export const useInboxQueryAPI = (
             error.response.headers,
             errorResPayload,
           );
-          dispatch({ type: 'FETCH_FAILURE', payload: errorResPayload });
+          dispatch({ type: 'NOTIFICATIONS_FAILURE', payload: errorResPayload });
         } else if (!didCancel && error.request) {
           const errorReqPayload = Object.assign(defaultInitialData, { error: error.request });
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js
           console.log('req failure', error.request, errorReqPayload);
-          dispatch({ type: 'FETCH_FAILURE', payload: errorReqPayload });
+          dispatch({ type: 'NOTIFICATIONS_FAILURE', payload: errorReqPayload });
         } else if (!didCancel) {
-          dispatch({ type: 'FETCH_FAILURE' });
+          dispatch({ type: 'NOTIFICATIONS_FAILURE' });
         } else {
-          // console.log("tried to cancel on failure",cancel.params);
           cancel && cancel.end();
         }
       }
@@ -163,7 +160,6 @@ export const useInboxQueryAPI = (
     fetchData();
     return () => {
       didCancel = true;
-      // console.log("tried to cancel on effect cleanup ",cancel.params)
       cancel && cancel.end();
     };
   }, [throttledExternalQueryParamsState, forceUpdate, token, dispatch]);

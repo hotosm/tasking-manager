@@ -42,7 +42,11 @@ export const NotificationPopout = props => {
         state={props.state}
         className="tl"
       />
-      <InboxNavMiniBottom className="tl" setPopoutFocus={props.setPopoutFocus} />
+      <InboxNavMiniBottom
+        className="tl"
+        setPopoutFocus={props.setPopoutFocus}
+        msgCount={props.state && props.state.notifications && props.state.notifications.length}
+      />
     </div>
   );
 };
@@ -69,7 +73,7 @@ export const NotificationsPage = props => {
 
   return (
     <>
-      <div className="pt4-l pb5 ph5-l ph4 pt180 pull-center bg-tan">
+      <div className="pt4-l pb5 ph5-l ph2 pt180 pull-center bg-tan">
         {
           props.children
           /* This is where the full notification body component is rendered

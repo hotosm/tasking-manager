@@ -3,7 +3,12 @@ import { Link } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
-import { MessageAvatar, typesThatUseSystemAvatar, rawHtmlNotification, stripHtmlToText } from './notificationCard';
+import {
+  MessageAvatar,
+  typesThatUseSystemAvatar,
+  rawHtmlNotification,
+  stripHtmlToText,
+} from './notificationCard';
 import { CloseIcon } from '../../components/svgIcons';
 import { FormattedRelative, FormattedMessage } from 'react-intl';
 import messages from './messages';
