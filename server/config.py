@@ -22,8 +22,18 @@ class EnvironmentConfig:
 
     FRONTEND_BASE_URL = os.getenv("TM_FRONTEND_BASE_URL", APP_BASE_URL)
     API_VERSION = os.getenv("TM_APP_API_VERSION", "v2")
-    # The default tag used in the OSM changeset comment
-    DEFAULT_CHANGESET_COMMENT = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)
+
+    # Setup the default changset tags. Only comment and source are supported by most editors.
+    # TM_DEFAULT_CHANGESET_COMMENT is supported only as a compatibility environment variable.
+    # It is overwritten by TM_DEFAULT_CHANGESET_TAGS
+    def __get_default_changeset_tags():
+        comment = {"comment": os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)}
+        tags = os.getenv("TM_DEFAULT_CHANGESET_TAGS", {})
+        if comment["comment"]:
+            return {**tags, **comment}
+        return tags
+
+    DEFAULT_CHANGESET_TAGS = __get_default_changeset_tags()
 
     # The address to use as the sender on auto generated emails
     EMAIL_FROM_ADDRESS = os.getenv("TM_EMAIL_FROM_ADDRESS", None)

@@ -78,15 +78,19 @@ class ProjectAdminService:
         else:
             draft_project.create()  # Create the new project
 
-        draft_project.set_default_changeset_comment()
+        draft_project.set_default_changeset_tags()
         draft_project.set_country_info()
         return draft_project.id
 
     @staticmethod
-    def _set_default_changeset_comment(draft_project: Project):
+    def _set_default_changeset_tags(draft_project: Project):
         """ Sets the default changesset comment when project created """
-        default_comment = current_app.config["DEFAULT_CHANGESET_COMMENT"]
-        draft_project.changeset_comment = f"{default_comment}-{draft_project.id}"
+        default_tags = current_app.config["DEFAULT_CHANGESET_TAGS"]
+        draft_project.changeset_tags = (
+            '{"comment": "'
+            + f"{default_tags['comment'] if 'comment' in default_tags else ''}-{draft_project.id}"
+            + '"}'
+        )
         draft_project.save()
 
     @staticmethod

@@ -143,7 +143,7 @@ class Project(db.Model):
         db.Boolean, default=False
     )  # Only PMs can set a project as featured
     entities_to_map = db.Column(db.String)
-    changeset_comment = db.Column(db.String)
+    changeset_tags = db.Column(db.JSON)
     osmcha_filter_id = db.Column(
         db.String
     )  # Optional custom filter id for filtering on OSMCha
@@ -249,13 +249,15 @@ class Project(db.Model):
         self.geometry = ST_SetSRID(ST_GeomFromGeoJSON(valid_geojson), 4326)
         self.centroid = ST_Centroid(self.geometry)
 
-    def set_default_changeset_comment(self):
-        """ Sets the default changeset comment"""
-        default_comment = current_app.config["DEFAULT_CHANGESET_COMMENT"]
-        self.changeset_comment = (
-            f"{default_comment}-{self.id} {self.changeset_comment}"
-            if self.changeset_comment is not None
-            else f"{default_comment}-{self.id}"
+    def set_default_changeset_tags(self):
+        """ Sets the default changeset tags"""
+        default_tags = current_app.config["DEFAULT_CHANGESET_TAGS"]
+        if self.changeset_tags is None:
+            self.changeset_tags = {}
+        self.changeset_tags["comment"] = (
+            f'{default_tags["comment"]}-{self.id} {self.changeset_tags["comment"]}'
+            if self.changeset_tags is not None and "comment" in self.changeset_tags
+            else f'{default_tags["comment"]}-{self.id}'
         )
         self.save()
 
@@ -359,10 +361,14 @@ class Project(db.Model):
         # We try to remove the changeset comment referencing the old project. This
         #  assumes the default changeset comment has not changed between the old
         #  project and the cloned. This is a best effort basis.
-        default_comment = current_app.config["DEFAULT_CHANGESET_COMMENT"]
+        default_comment = current_app.config["DEFAULT_CHANGESET_TAGS"]["comment"]
         changeset_comments = []
-        if original_project.changeset_comment is not None:
-            changeset_comments = original_project.changeset_comment.split(" ")
+        if (
+            original_project.changeset_tags is not None
+            and "comment" in original_project.changeset_tags
+            and original_project.changeset_tags["comment"] is not None
+        ):
+            changeset_comments = original_project.changeset_tags["comment"].split(" ")
         if f"{default_comment}-{original_project.id}" in changeset_comments:
             changeset_comments.remove(f"{default_comment}-{original_project.id}")
         cloned_project.changeset_comment = " ".join(changeset_comments)
@@ -397,7 +403,7 @@ class Project(db.Model):
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
         self.entities_to_map = project_dto.entities_to_map
-        self.changeset_comment = project_dto.changeset_comment
+        self.changeset_tags = project_dto.changeset_tags
         self.due_date = project_dto.due_date
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
@@ -730,7 +736,7 @@ class Project(db.Model):
         area = polygon_aea.area / 1000000
         summary.area = area
         summary.country_tag = self.country
-        summary.changeset_comment = self.changeset_comment
+        summary.changeset_tags = self.changeset_tags
         summary.created = self.created
         summary.last_updated = self.last_updated
         summary.due_date = self.due_date
@@ -878,7 +884,7 @@ class Project(db.Model):
         base_dto.private = self.private
         base_dto.mapper_level = MappingLevel(self.mapper_level).name
         base_dto.entities_to_map = self.entities_to_map
-        base_dto.changeset_comment = self.changeset_comment
+        base_dto.changeset_tags = self.changeset_tags
         base_dto.osmcha_filter_id = self.osmcha_filter_id
         base_dto.due_date = self.due_date
         base_dto.imagery = self.imagery

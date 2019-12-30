@@ -10,7 +10,7 @@ import {
 
 it('test if getIdUrl returns the correct url', () => {
   const testProject = {
-    changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
+    changesetTags: '{"comment": "#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm", "source": "not important"}',
     projectId: 1234,
     imagery:
       'tms[1,22]:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{zoom}/{x}/{y}?access_token=pk.123',
@@ -26,7 +26,7 @@ it('test if getIdUrl returns the correct url', () => {
 
 it('test if getIdUrl without imagery and with multiple tasks returns the correct url', () => {
   const testProject = {
-    changesetComment: '#hotosm-project-5522',
+    changesetTags: '{"comment": "#hotosm-project-5522", "source": "not important"}',
     projectId: 1234,
   };
   expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1, 2])).toBe(
