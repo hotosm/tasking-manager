@@ -82,7 +82,7 @@ class ProjectSearchService:
             )
             .filter(Project.private is not True)
             .outerjoin(Organisation, Organisation.id == Project.organisation_id)
-            .group_by(Organisation.id)
+            .group_by(Organisation.id, Project.id)
         )
 
         return query
