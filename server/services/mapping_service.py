@@ -220,6 +220,13 @@ class MappingService:
         )
         ET.SubElement(link, "text").text = "HOT Tasking Manager"
         ET.SubElement(metadata, "time").text = timestamp.isoformat()
+        ET.SubElement(metadata, "name").text = (
+            "Task Boundaries: Project "
+            + str(project_id)
+            + ", Task "
+            + task_ids_str
+            + " - Do not edit or upload"
+        )
         root.append(metadata)
 
         # Create trk element
@@ -245,16 +252,19 @@ class MappingService:
             for poly in task_geom:
                 trkseg = ET.SubElement(trk, "trkseg")
                 for point in poly.exterior.coords:
-                    ET.SubElement(
-                        trkseg,
-                        "trkpt",
-                        attrib=dict(lon=str(point[0]), lat=str(point[1])),
+                    trkpt = ET.Element(
+                        "trkpt", attrib=dict(lon=str(point[0]), lat=str(point[1])),
                     )
 
                     # Append wpt elements to end of doc
                     wpt = ET.Element(
                         "wpt", attrib=dict(lon=str(point[0]), lat=str(point[1]))
                     )
+                    time = ET.Element("time", attrib={})
+                    time.text = "1970-01-01T00:00:00Z"
+                    wpt.append(time)
+                    trkpt.append(time)
+                    trkseg.append(trkpt)
                     root.append(wpt)
 
         xml_gpx = ET.tostring(root, encoding="utf8")
