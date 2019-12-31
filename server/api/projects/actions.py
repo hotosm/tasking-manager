@@ -45,7 +45,7 @@ class ProjectsActionsTransferAPI(Resource):
                         type: string
         responses:
             200:
-                description: All tasks reset
+                description: Project ownership transfered successfully
             401:
                 description: Unauthorized - Invalid credentials
             500:
@@ -103,7 +103,7 @@ class ProjectsActionsMessageContributorsAPI(Resource):
                         required: true
         responses:
             200:
-                description: All mapped tasks validated
+                description: Message sent successfully
             401:
                 description: Unauthorized - Invalid credentials
             500:
