@@ -161,12 +161,12 @@ class TeamService:
         team_member.delete()
 
     @staticmethod
-    def add_team_project(team_id, project_id):
-        project = ProjectTeams()
-        project.project_id = project_id
-        project.team_id = team_id
-        project.role = 1
-        project.create()
+    def add_team_project(team_id, project_id, role):
+        team_project = ProjectTeams()
+        team_project.project_id = project_id
+        team_project.team_id = team_id
+        team_project.role = TeamRoles[role].value
+        team_project.create()
 
     @staticmethod
     def delete_team_project(team_id, project_id):
