@@ -149,9 +149,6 @@ class ProjectService:
         """ if the user is working on a task in the project return it """
         tasks = Task.get_locked_tasks_for_user(user_id)
 
-        if len(tasks) == 0:
-            raise NotFound()
-
         tasks_dto = LockedTasksForUser()
         tasks_dto.locked_tasks = tasks
         return tasks_dto

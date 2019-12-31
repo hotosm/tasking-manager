@@ -113,8 +113,7 @@ class TestProjectService(unittest.TestCase):
         mock_user_tasks.return_value = []
 
         # Act / Assert
-        with self.assertRaises(NotFound):
-            ProjectService.get_task_for_logged_in_user(1)
+        self.assertFalse(ProjectService.get_task_for_logged_in_user(1).locked_tasks)
 
     @patch.object(UserService, "is_user_blocked")
     @patch.object(Project, "get")
