@@ -385,8 +385,6 @@ class TasksQueriesOwnLockedAPI(Resource):
                 tm.authenticated_user_id
             )
             return locked_tasks.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User has no locked tasks"}, 404
         except Exception as e:
             error_msg = f"TasksQueriesOwnLockedAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
