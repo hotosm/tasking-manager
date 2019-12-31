@@ -176,7 +176,6 @@ class StatsService:
             .limit(10)
             .subquery()
         )
-
         projects_query = ProjectSearchService.create_search_query()
         projects = projects_query.filter(Project.id == sq.c.id)
 
