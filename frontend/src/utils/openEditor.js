@@ -51,8 +51,9 @@ export function getPotlatch2Url(centroid, zoomLevel) {
 export function getIdUrl(project, centroid, zoomLevel, selectedTasks) {
   const base = 'https://www.openstreetmap.org/edit?editor=id&';
   let url = base + '#map=' + [zoomLevel, centroid[1], centroid[0]].join('/');
-  if (project.changesetTags){
-    url += '&comment=' + encodeURIComponent(project.changesetTags["comment"]);
+  var changesetTags = JSON.parse(project.changesetTags);
+  if (changesetTags && "comment" in changesetTags) {
+    url += '&comment=' + encodeURIComponent(changesetTags["comment"]);
   }
   if (project.imagery) {
     // url is supposed to look like tms[22]:http://hiu...
