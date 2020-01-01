@@ -13,7 +13,11 @@ from server import db
 from typing import List
 from server.models.dtos.mapping_dto import TaskDTO, TaskHistoryDTO
 from server.models.dtos.validator_dto import MappedTasksByUser, MappedTasks
-from server.models.dtos.project_dto import ProjectComment, ProjectCommentsDTO
+from server.models.dtos.project_dto import (
+    ProjectComment,
+    ProjectCommentsDTO,
+    LockedTasksForUser,
+)
 from server.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.user import User
@@ -1078,12 +1082,14 @@ class Task(db.Model):
     def get_locked_tasks_for_user(user_id: int):
         """ Gets tasks on project owned by specified user id"""
         tasks = Task.query.filter_by(locked_by=user_id)
-
-        locked_tasks = []
+        tasks_dto = LockedTasksForUser()
+        tasks_dto.locked_tasks = []
         for task in tasks:
-            locked_tasks.append(task.id)
+            tasks_dto.locked_tasks.append(task.id)
+            tasks_dto.project = task.project_id
+            tasks_dto.task_status = TaskStatus(task.task_status).name
 
-        return locked_tasks
+        return tasks_dto
 
     def get_locked_tasks_details_for_user(user_id: int):
         """ Gets tasks on project owned by specified user id"""

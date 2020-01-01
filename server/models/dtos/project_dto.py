@@ -370,6 +370,8 @@ class LockedTasksForUser(Model):
     """ Describes all tasks locked by an individual user"""
 
     locked_tasks = ListType(IntType, serialized_name="lockedTasks")
+    project = IntType(serialized_name="projectId")
+    task_status = StringType(serialized_name="taskStatus")
 
 
 class ProjectComment(Model):
