@@ -149,8 +149,7 @@ class ProjectService:
         """ if the user is working on a task in the project return it """
         tasks = Task.get_locked_tasks_for_user(user_id)
 
-        tasks_dto = LockedTasksForUser()
-        tasks_dto.locked_tasks = tasks
+        tasks_dto = tasks
         return tasks_dto
 
     @staticmethod
@@ -188,7 +187,7 @@ class ProjectService:
 
         tasks = Task.get_locked_tasks_for_user(user_id)
 
-        if len(tasks) > 0:
+        if len(tasks.locked_tasks) > 0:
             return False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
         if project.restrict_mapping_level_to_project:
@@ -344,7 +343,6 @@ class ProjectService:
     @staticmethod
     def get_project_user_stats(project_id: int, username: str) -> ProjectUserStatsDTO:
         """ Gets the user stats for a specific project """
-        print(project_id)
         project = ProjectService.get_project_by_id(project_id)
         user = UserService.get_user_by_username(username)
         return project.get_project_user_stats(user.id)
