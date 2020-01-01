@@ -185,6 +185,7 @@ class ProjectService:
             return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
 
         tasks = Task.get_locked_tasks_for_user(user_id)
+        print(tasks)
 
         if len(tasks.locked_tasks) > 0:
             return False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED

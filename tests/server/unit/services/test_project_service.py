@@ -9,6 +9,7 @@ from server.services.project_service import (
     UserService,
     MappingNotAllowed,
 )
+from server.models.dtos.project_dto import LockedTasksForUser
 from server.models.postgis.task import Task
 
 
@@ -51,7 +52,8 @@ class TestProjectService(unittest.TestCase):
     ):
         # Arrange
         mock_project.return_value = Project()
-        mock_user_tasks.return_value = [1]
+        mock_user_tasks.return_value = LockedTasksForUser()
+        mock_user_tasks.return_value.lockedTasks = [1]
 
         # Act
         allowed, reason = ProjectService.is_user_permitted_to_map(1, 1)
@@ -93,7 +95,8 @@ class TestProjectService(unittest.TestCase):
         stub_project.license_id = 11
 
         mock_project.return_value = stub_project
-        mock_user_tasks.return_value = []
+        mock_user_tasks.return_value = LockedTasksForUser()
+        mock_user_tasks.return_value.locked_tasks = []
         mock_user_service.return_value = False
         mock_user_blocked.return_value = False
 
@@ -110,7 +113,7 @@ class TestProjectService(unittest.TestCase):
     ):
         # Arrange
         mock_project.return_value = Project()
-        mock_user_tasks.return_value = []
+        mock_user_tasks.return_value = LockedTasksForUser()
 
         # Act / Assert
         self.assertFalse(ProjectService.get_task_for_logged_in_user(1).locked_tasks)
