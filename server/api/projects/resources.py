@@ -520,12 +520,15 @@ class ProjectsAllAPI(ProjectSearchBase):
               type: string
             - in: query
               name: organisationName
+              description: Organisation name to search for
               type: string
             - in: query
               name: organisationId
+              description: Organisation ID to search for
               type: integer
             - in: query
-              name: campaignTag
+              name: campaign
+              description: Campaign name to search for
               type: string
             - in: query
               name: page
@@ -534,7 +537,7 @@ class ProjectsAllAPI(ProjectSearchBase):
               default: 1
             - in: query
               name: textSearch
-              description: text to search
+              description: Text to search
               type: string
             - in: query
               name: country
@@ -547,18 +550,18 @@ class ProjectsAllAPI(ProjectSearchBase):
             - in: query
               name: interests
               type: string
-              description: filter by interest on project
+              description: Filter by interest on project
               default: null
             - in: query
               name: createdByMe
-              description: limit to projects created by authenticated user
+              description: Limit to projects created by authenticated user
               type: boolean
               required: true
               default: false
             - in: query
               name: teamId
               type: string
-              description: filter by team on project
+              description: Filter by team on project
               default: null
         responses:
             200:
@@ -575,7 +578,7 @@ class ProjectsAllAPI(ProjectSearchBase):
             search_dto.organisation_name = request.args.get("organisationName")
             search_dto.organisation_id = request.args.get("organisationId")
             search_dto.team_id = request.args.get("teamId")
-            search_dto.campaign = request.args.get("campaignTag")
+            search_dto.campaign = request.args.get("campaign")
             search_dto.order_by = request.args.get("orderBy", "priority")
             search_dto.country = request.args.get("country")
             search_dto.order_by_type = request.args.get("orderByType", "ASC")
