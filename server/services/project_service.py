@@ -4,7 +4,6 @@ from flask import current_app
 from server.models.dtos.mapping_dto import TaskDTOs
 from server.models.dtos.project_dto import (
     ProjectDTO,
-    LockedTasksForUser,
     ProjectSummary,
     ProjectStatsDTO,
     ProjectUserStatsDTO,
