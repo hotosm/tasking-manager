@@ -1,5 +1,6 @@
 import base64
 import urllib.parse
+import os
 
 from flask import current_app, request, session
 from flask_httpauth import HTTPTokenAuth
@@ -80,6 +81,8 @@ class AuthenticationService:
         try:
             UserService.get_user_by_id(osm_id)
             UserService.update_user(osm_id, username, user_picture)
+            if "CI" not in os.environ.keys():
+                MessageService.send_favorite_project_activities(osm_id)
         except NotFound:
             # User not found, so must be new user
             changesets = osm_user.find("changesets")

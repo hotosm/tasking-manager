@@ -1,19 +1,23 @@
 import re
 import time
+import datetime
 
 from cachetools import TTLCache, cached
 from typing import List
 from flask import current_app
+from sqlalchemy import text, func
 
 from server import create_app, db
 from server.models.dtos.message_dto import MessageDTO, MessagesDTO
 from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.message import Message, MessageType, NotFound
+from server.models.postgis.notification import Notification
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.task import TaskStatus
 from server.services.messaging.smtp_service import SMTPService
 from server.services.messaging.template_service import get_template, get_profile_url
 from server.services.users.user_service import UserService, User
+from server.services.project_service import Project
 
 
 message_cache = TTLCache(maxsize=512, ttl=30)
@@ -127,29 +131,55 @@ class MessageService:
     ):
         """ Will send a canned message to anyone @'d in a comment """
         usernames = MessageService._parse_message_for_username(comment)
+        # if len(usernames) == 0:
+        #     return  # Nobody @'d so return
 
-        if len(usernames) == 0:
-            return  # Nobody @'d so return
+        if len(usernames) != 0:
+            task_link = MessageService.get_task_link(project_id, task_id)
+            # project_title = ProjectService.get_project_title(project_id)
+            for username in usernames:
 
-        task_link = MessageService.get_task_link(project_id, task_id)
-        # project_title = ProjectService.get_project_title(project_id)
-        for username in usernames:
+                try:
+                    user = UserService.get_user_by_username(username)
+                except NotFound:
+                    continue  # If we can't find the user, keep going no need to fail
 
-            try:
-                user = UserService.get_user_by_username(username)
-            except NotFound:
-                continue  # If we can't find the user, keep going no need to fail
+                message = Message()
+                message.message_type = MessageType.MENTION_NOTIFICATION.value
+                message.project_id = project_id
+                message.task_id = task_id
+                message.from_user_id = comment_from
+                message.to_user_id = user.id
+                message.subject = f"You were mentioned in a comment in Project {project_id} on {task_link}"
+                message.message = comment
+                message.add_message()
+                SMTPService.send_email_alert(user.email_address, user.username)
 
-            message = Message()
-            message.message_type = MessageType.MENTION_NOTIFICATION.value
-            message.project_id = project_id
-            message.task_id = task_id
-            message.from_user_id = comment_from
-            message.to_user_id = user.id
-            message.subject = f"You were mentioned in a comment in Project {project_id} on {task_link}"
-            message.message = comment
-            message.add_message()
-            SMTPService.send_email_alert(user.email_address, user.username)
+        query = """ select user_id from task_history where project_id = :project_id and task_id = :task_id
+                    and action = 'STATE_CHANGE'"""
+        result = db.engine.execute(text(query), project_id=project_id, task_id=task_id)
+        result = result[0]
+        contributed_users = [r[0] for r in result]
+
+        if len(contributed_users) != 0:
+            task_link = MessageService.get_task_link(project_id, task_id)
+            # project_title = ProjectService.get_project_title(project_id)
+            for user_id in contributed_users:
+
+                try:
+                    user = UserService.get_user_dto_by_id(user_id)
+                except NotFound:
+                    continue  # If we can't find the user, keep going no need to fail
+
+                message = Message()
+                message.message_type = MessageType.TASK_COMMENT_NOTIFICATION.value
+                message.project_id = project_id
+                message.task_id = task_id
+                message.to_user_id = user.id
+                message.subject = f"{comment_from} left a comment in Project {project_id} on {task_link}"
+                message.message = comment
+                message.add_message()
+                SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
     def send_request_to_join_team(
@@ -241,6 +271,86 @@ class MessageService:
             message.subject = f"You were mentioned in Project Chat on {link}"
             message.message = chat
             message.add_message()
+            # SMTPService.send_email_alert(user.email_address, user.username)
+
+        query = (
+            """ select user_id from project_favorites where project_id = :project_id"""
+        )
+        result = db.engine.execute(text(query), project_id=project_id)
+        result = result[0]
+        favorited_users = [r[0] for r in result]
+
+        if len(favorited_users) != 0:
+            project_link = MessageService.get_project_link(project_id)
+            # project_title = ProjectService.get_project_title(project_id)
+            for user_id in favorited_users:
+
+                try:
+                    user = UserService.get_user_dto_by_id(user_id)
+                except NotFound:
+                    continue  # If we can't find the user, keep going no need to fail
+
+                message = Message()
+                message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
+                message.project_id = project_id
+                message.to_user_id = user.id
+                message.subject = (
+                    f"{chat_from} left a comment in Project {project_link}"
+                )
+                message.message = chat
+                message.add_message()
+                SMTPService.send_email_alert(user.email_address, user.username)
+
+    @staticmethod
+    def send_favorite_project_activities(user_id: int):
+        current_app.logger.debug("Sending Favorite Project Activities")
+        favorited_projects = UserService.get_projects_favorited(user_id)
+        contributed_projects = UserService.get_projects_mapped(user_id)
+        projects_list = contributed_projects
+        for favorited_project in favorited_projects.favorited_projects:
+            print(favorited_project.project_id)
+            projects_list.append(favorited_project.project_id)
+        print(projects_list)
+        recently_updated_projects = (
+            Project.query.with_entities(
+                Project.id, func.DATE(Project.last_updated).label("last_updated")
+            )
+            .filter(Project.id.in_(projects_list))
+            .filter(
+                func.DATE(Project.last_updated)
+                > datetime.date.today() - datetime.timedelta(days=300)
+            )
+        )
+        user = UserService.get_user_dto_by_id(user_id)
+        for project in recently_updated_projects:
+            activity_message = []
+            query_last_active_users = """ select distinct(user_id) from
+                                        (select user_id from task_history where project_id = :project_id
+                                        order by action_date desc limit 15 ) t """
+            last_active_users = db.engine.execute(
+                text(query_last_active_users), project_id=project.id
+            )
+
+            for recent_user_id in last_active_users:
+                recent_user_details = UserService.get_user_by_id(recent_user_id)
+                user_profile_link = MessageService.get_user_profile_link(
+                    recent_user_details.username
+                )
+                activity_message.append(user_profile_link)
+
+            activity_message = str(activity_message)[1:-1]
+            project_link = MessageService.get_project_link(project.id)
+            message = Message()
+            message.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
+            message.project_id = project.id
+            message.to_user_id = user.id
+            message.subject = (
+                "Recent activities from your contributed/favorited Projects"
+            )
+            message.message = (
+                f"{activity_message} contributed to Project {project_link} recently"
+            )
+            message.add_message()
             SMTPService.send_email_alert(user.email_address, user.username)
 
     @staticmethod
@@ -268,7 +378,7 @@ class MessageService:
     @cached(message_cache)
     def has_user_new_messages(user_id: int) -> dict:
         """ Determines if the user has any unread messages """
-        count = Message.get_unread_message_count(user_id)
+        count = Notification.get_unread_message_count(user_id)
 
         new_messages = False
         if count > 0:
@@ -309,8 +419,9 @@ class MessageService:
         if task_id is not None:
             query = query.filter(Message.task_id == task_id)
 
-        if message_type is not None:
-            query = query.filter(Message.message_type == message_type)
+        if message_type:
+            message_type_filters = map(int, message_type.split(","))
+            query = query.filter(Message.message_type.in_(message_type_filters))
 
         if from_username is not None:
             query = query.join(Message.from_user).filter(
@@ -322,8 +433,8 @@ class MessageService:
             .order_by(sort_column)
             .paginate(page, page_size, True)
         )
-        if results.total == 0:
-            raise NotFound()
+        # if results.total == 0:
+        #     raise NotFound()
 
         messages_dto = MessagesDTO()
         for item in results.items:
@@ -390,4 +501,13 @@ class MessageService:
             base_url = current_app.config["APP_BASE_URL"]
 
         link = f'<a href="{base_url}/project/{project_id}?tab=chat">Project {project_id}</a>'
+        return link
+
+    @staticmethod
+    def get_user_profile_link(user_name: str, base_url=None) -> str:
+        """ Helper method to generate a link to a user profile"""
+        if not base_url:
+            base_url = current_app.config["APP_BASE_URL"]
+
+        link = f'<a href="{base_url}/users/queries/{user_name}>{user_name}</a>'
         return link
