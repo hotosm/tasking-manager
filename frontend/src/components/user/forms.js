@@ -9,9 +9,9 @@ import { FormSubmitButton, Button } from '../button';
 import { Dropdown } from '../dropdown';
 import { SwitchToggle, RadioField } from '../formInputs';
 import { pushUserDetails } from '../../store/actions/auth';
+import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { getEditors } from '../../utils/editorsList';
 import { CheckIcon } from '../svgIcons';
-import { API_URL } from '../../config';
 
 const PROFILE_RELEVANT_FIELDS = [
   'name',
@@ -32,18 +32,12 @@ const mapStateToProps = state => ({
 
 function UserInterests({ token, userDetails }) {
   const [interests, setInterests] = useState([]);
+  const [enableSaveButton, setEnableSaveButton] = useState(false);
   const [success, setSuccess] = useState(null);
 
   useLayoutEffect(() => {
     const getInterests = async username => {
-      const url = `${API_URL}users/${username}/queries/interests/`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'Accept-Language': 'en',
-        Authorization: `Token ${token}`,
-      };
-      const res = await fetch(url, { headers: headers });
-      const data = await res.json();
+      const data = await fetchLocalJSONAPI(`users/${username}/queries/interests/`, token);
       setInterests(data.interests);
     };
 
@@ -52,7 +46,6 @@ function UserInterests({ token, userDetails }) {
     }
   }, [token, userDetails]);
 
-  const interestStyle = 'w-30 ba pv3 ph3 f6 tc mb2 mr3 relative ttc';
   const selectedStyle = 'f7 pa1 br-100 bg-black white absolute right-0 top-0';
 
   const changeSelect = id => {
@@ -64,31 +57,23 @@ function UserInterests({ token, userDetails }) {
       }
       return interest;
     });
-
+    setEnableSaveButton(true);
+    setSuccess(null);
     setInterests(copy);
   };
 
   const updateInterests = () => {
-    const postUpdate = async ids => {
-      const url = `${API_URL}users/me/actions/set-interests/`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'Accept-Language': 'en',
-        Authorization: `Token ${token}`,
-      };
-
-      const options = {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify({ interests: ids }),
-      };
-
-      const res = await fetch(url, options);
-      if (res.status !== 200) {
-        setSuccess(false);
-      } else {
-        setSuccess(true);
-      }
+    const postUpdate = ids => {
+      pushToLocalJSONAPI(
+        'users/me/actions/set-interests/',
+        JSON.stringify({ interests: ids }),
+        token,
+      )
+        .then(res => {
+          setSuccess(true);
+          setEnableSaveButton(false);
+        })
+        .catch(e => setSuccess(false));
     };
 
     // Get all true ids.
@@ -112,23 +97,31 @@ function UserInterests({ token, userDetails }) {
         {interests.map(i => (
           <li
             onClick={() => changeSelect(i.id)}
-            className={
-              (i.userSelected === true ? 'b--black bw1 bg-washed-blue ' : 'b--light-silver ') +
-              interestStyle
-            }
+            className={`${
+              i.userSelected === true ? 'b--blue-dark bw1' : 'b--grey-light'
+            } bg-white w-30-ns w-100 ba pa3 f6 tc mb2 mr3 relative ttc pointer`}
             key={i.id}
           >
             {i.name}
-            {i.userSelected === true ? <CheckIcon className={selectedStyle} /> : null}
+            {i.userSelected === true && <CheckIcon className={selectedStyle} />}
           </li>
         ))}
       </ul>
-      {success === null ? null : success === true ? (
-        <span className="blue-dark bg-grey-light pa2 db">Interests updated successfully</span>
-      ) : (
-        <span className="bg-red white pa2 db">Interests update failed</span>
+      {success === true && (
+        <span className="blue-dark bg-grey-light pa2 db">
+          <FormattedMessage {...messages.interestsUpdateSuccess} />
+        </span>
       )}
-      <Button onClick={updateInterests} className="bg-blue-dark white mh1 mv2 dib">
+      {success === false && (
+        <span className="bg-red white pa2 db">
+          <FormattedMessage {...messages.interestsUpdateError} />
+        </span>
+      )}
+      <Button
+        onClick={updateInterests}
+        className={`${enableSaveButton ? 'bg-blue-dark' : 'bg-grey-light'} white mh1 mv2 dib`}
+        disabled={!enableSaveButton}
+      >
         <FormattedMessage {...messages.save} />
       </Button>
     </div>
