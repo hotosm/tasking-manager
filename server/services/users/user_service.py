@@ -18,6 +18,7 @@ from server.models.dtos.user_dto import (
     UserRegisterEmailDTO,
 )
 from server.models.dtos.interests_dto import InterestsDTO
+from server.models.postgis.interests import Interest
 from server.models.postgis.message import Message
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.user import User, UserRole, MappingLevel, UserEmail
@@ -631,6 +632,10 @@ class UserService:
     def get_interests(user: User) -> InterestsDTO:
         dto = InterestsDTO()
         dto.interests = []
-        for interest in user.interests:
-            dto.interests.append(interest.as_dto())
+        for interest in Interest.query.all():
+            int_dto = interest.as_dto()
+            if interest in user.interests:
+                int_dto.user_selected = True
+            dto.interests.append(int_dto)
+
         return dto

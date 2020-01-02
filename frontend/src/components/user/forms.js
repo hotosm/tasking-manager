@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
@@ -9,7 +9,9 @@ import { FormSubmitButton, Button } from '../button';
 import { Dropdown } from '../dropdown';
 import { SwitchToggle, RadioField } from '../formInputs';
 import { pushUserDetails } from '../../store/actions/auth';
+import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { getEditors } from '../../utils/editorsList';
+import { CheckIcon } from '../svgIcons';
 
 const PROFILE_RELEVANT_FIELDS = [
   'name',
@@ -28,10 +30,100 @@ const mapStateToProps = state => ({
   token: state.auth.get('token'),
 });
 
-function UserInterests() {
+function UserInterests({ token, userDetails }) {
+  const [interests, setInterests] = useState([]);
+  const [enableSaveButton, setEnableSaveButton] = useState(false);
+  const [success, setSuccess] = useState(null);
+
+  useLayoutEffect(() => {
+    const getInterests = async username => {
+      const data = await fetchLocalJSONAPI(`users/${username}/queries/interests/`, token);
+      setInterests(data.interests);
+    };
+
+    if (userDetails.username) {
+      getInterests(userDetails.username);
+    }
+  }, [token, userDetails]);
+
+  const selectedStyle = 'f7 pa1 br-100 bg-black white absolute right-0 top-0';
+
+  const changeSelect = id => {
+    const index = interests.findIndex(i => i.id === id);
+
+    const copy = interests.map((interest, idx) => {
+      if (idx === index) {
+        interest.userSelected = !interest.userSelected;
+      }
+      return interest;
+    });
+    setEnableSaveButton(true);
+    setSuccess(null);
+    setInterests(copy);
+  };
+
+  const updateInterests = () => {
+    const postUpdate = ids => {
+      pushToLocalJSONAPI(
+        'users/me/actions/set-interests/',
+        JSON.stringify({ interests: ids }),
+        token,
+      )
+        .then(res => {
+          setSuccess(true);
+          setEnableSaveButton(false);
+        })
+        .catch(e => setSuccess(false));
+    };
+
+    // Get all true ids.
+    const trueInterests = interests.filter(i => i.userSelected === true);
+    const ids = trueInterests.map(i => i.id);
+    postUpdate(ids);
+  };
+
   return (
-    <div className="bg-white blue-dark shadow-4 pa4 mb3">
-      <span>Interests selection card</span>
+    <div className="cf bg-white shadow-4 pa4 mb3">
+      <h3 className="f3 blue-dark mt0 fw6">
+        <FormattedMessage {...messages.interestsH3} />
+      </h3>
+      <p>
+        <FormattedMessage {...messages.interestsTitle} />
+      </p>
+      <p>
+        <FormattedMessage {...messages.interestsLead} />
+      </p>
+      <ul className="list w-100 pa0 flex flex-wrap">
+        {interests.map(i => (
+          <li
+            onClick={() => changeSelect(i.id)}
+            className={`${
+              i.userSelected === true ? 'b--blue-dark bw1' : 'b--grey-light'
+            } bg-white w-30-ns w-100 ba pa3 f6 tc mb2 mr3 relative ttc pointer`}
+            key={i.id}
+          >
+            {i.name}
+            {i.userSelected === true && <CheckIcon className={selectedStyle} />}
+          </li>
+        ))}
+      </ul>
+      {success === true && (
+        <span className="blue-dark bg-grey-light pa2 db">
+          <FormattedMessage {...messages.interestsUpdateSuccess} />
+        </span>
+      )}
+      {success === false && (
+        <span className="bg-red white pa2 db">
+          <FormattedMessage {...messages.interestsUpdateError} />
+        </span>
+      )}
+      <Button
+        onClick={updateInterests}
+        className={`${enableSaveButton ? 'bg-blue-dark' : 'bg-grey-light'} white mh1 mv2 dib`}
+        disabled={!enableSaveButton}
+      >
+        <FormattedMessage {...messages.save} />
+      </Button>
     </div>
   );
 }
@@ -208,9 +300,11 @@ function _SwitchToggleField(props) {
     setValue(!value);
   };
 
-  return <div className="fr pv2 dib">
-    <SwitchToggle onChange={e => onSwitchChange()} isChecked={value} />
-  </div>;
+  return (
+    <div className="fr pv2 dib">
+      <SwitchToggle onChange={e => onSwitchChange()} isChecked={value} />
+    </div>
+  );
 }
 
 const SwitchToggleField = connect(

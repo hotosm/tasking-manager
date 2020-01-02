@@ -1,11 +1,12 @@
 from schematics import Model
-from schematics.types import IntType, StringType, FloatType
+from schematics.types import IntType, StringType, FloatType, BooleanType
 from schematics.types.compound import ListType, ModelType
 
 
 class InterestDTO(Model):
     id = IntType()
     name = StringType()
+    user_selected = BooleanType(serialized_name="userSelected", default=False)
     count_projects = IntType(serialize_when_none=False, serialized_name="countProjects")
     count_users = IntType(serialize_when_none=False, serialized_name="countUsers")
 
