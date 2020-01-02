@@ -84,7 +84,6 @@ class ProjectSearchService:
             .outerjoin(Organisation, Organisation.id == Project.organisation_id)
             .group_by(Organisation.id, Project.id)
         )
-
         return query
 
     @staticmethod
@@ -145,7 +144,6 @@ class ProjectSearchService:
     @cached(search_cache)
     def search_projects(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
         """ Searches all projects for matches to the criteria provided by the user """
-
         all_results, paginated_results = ProjectSearchService._filter_projects(
             search_dto
         )
@@ -230,9 +228,10 @@ class ProjectSearchService:
             ).filter(ProjectTeams.team_id == search_dto.team_id)
 
         if search_dto.campaign:
-            query = query.join(Campaign, Project.campaign).filter(
-                Campaign.name == search_dto.campaign
+            query = query.join(Campaign, Project.campaign).group_by(
+                Project.id, Campaign.name
             )
+            query = query.filter(Campaign.name == search_dto.campaign)
 
         if search_dto.mapping_types:
             # Construct array of mapping types for query
