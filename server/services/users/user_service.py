@@ -134,6 +134,19 @@ class UserService:
         return fav_dto
 
     @staticmethod
+    def get_projects_mapped(user_id: int):
+        projects_mapped = (
+            TaskHistory.query.with_entities(TaskHistory.project_id)
+            .filter(
+                TaskHistory.user_id == user_id, TaskHistory.action == "STATE_CHANGE"
+            )
+            .distinct(TaskHistory.project_id)
+            .all()
+        )
+        projects_mapped = [r[0] for r in projects_mapped]
+        return projects_mapped
+
+    @staticmethod
     def register_user(osm_id, username, changeset_count, picture_url):
         """
         Creates user in DB
@@ -248,14 +261,7 @@ class UserService:
         tasks_validated = TaskHistory.query.filter(
             TaskHistory.user_id == user.id, TaskHistory.action_text == "VALIDATED"
         ).count()
-        projects_mapped = (
-            TaskHistory.query.with_entities(TaskHistory.project_id)
-            .filter(
-                TaskHistory.user_id == user.id, TaskHistory.action == "STATE_CHANGE"
-            )
-            .distinct(TaskHistory.project_id)
-            .all()
-        )
+        projects_mapped = UserService.get_projects_mapped(user.id)
         countries_result = (
             Project.query.with_entities(Project.country)
             .filter(Project.id.in_(projects_mapped), Project.country.isnot(None))
@@ -269,7 +275,7 @@ class UserService:
         stats_dto.tasks_mapped = tasks_mapped
         stats_dto.tasks_validated = tasks_validated
         stats_dto.projects_mapped = len(projects_mapped)
-        stats_dto.countries_touched = countries_touched
+        stats_dto.countries_mapped = countries_touched
         stats_dto.total_time_spent = 0
         stats_dto.time_spent_mapping = 0
         stats_dto.time_spent_validating = 0
