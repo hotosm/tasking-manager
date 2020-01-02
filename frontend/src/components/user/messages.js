@@ -132,6 +132,18 @@ export default defineMessages({
     id: 'user.welcome.title',
     defaultMessage: 'Welcome to Tasking Manager!',
   },
+  interestsUpdateSuccess: {
+    id: 'user.interests.update.success',
+    defaultMessage: 'Interests updated successfully.',
+  },
+  interestsUpdateError: {
+    id: 'user.interests.update.error',
+    defaultMessage: 'Interests update failed.',
+  },
+  interestsH3: {
+    id: 'user.interests.h3',
+    defaultMessage: 'Interests',
+  },
   interestsTitle: {
     id: 'user.interests.title',
     defaultMessage: "Tell us about you and the kind of projects you're interested in.",
