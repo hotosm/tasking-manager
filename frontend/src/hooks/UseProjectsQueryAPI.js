@@ -46,7 +46,7 @@ export const useExploreProjectsQueryParams = () => {
 const remapParamsToAPI = param => {
   const conversion = {
     difficulty: 'mapperLevel',
-    campaign: 'campaignTag',
+    campaign: 'campaign',
     organisation: 'organisationName',
     location: 'country',
     types: 'mappingTypes',
