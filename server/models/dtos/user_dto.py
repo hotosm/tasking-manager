@@ -97,7 +97,7 @@ class UserStatsDTO(Model):
     time_spent_mapping = IntType(serialized_name="timeSpentMapping")
     time_spent_validating = IntType(serialized_name="timeSpentValidating")
     projects_mapped = IntType(serialized_name="projectsMapped")
-    countries_touched = IntType(serialized_name="countriesTouched")
+    countries_mapped = IntType(serialized_name="countriesMapped")
     tasks_mapped = IntType(serialized_name="tasksMapped")
     tasks_validated = IntType(serialized_name="tasksValidated")
 

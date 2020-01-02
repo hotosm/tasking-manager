@@ -25,6 +25,7 @@ import { SelectTask } from './views/taskSelection';
 import { MapTask, ValidateTask } from './views/taskAction';
 import { EmailVerification } from './views/verifyEmail';
 import { ProjectEdit } from './views/projectEdit';
+import { NotificationsPage, NotificationPageIndex, NotificationDetail } from './views/notifications'
 
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
  *  create special sub-router for Projects page and wrap it only around that */
@@ -69,6 +70,10 @@ function App() {
             <SelectTask path="projects/:id/tasks" />
             <MapTask path="projects/:id/map" />
             <ValidateTask path="projects/:id/validate" />
+            <NotificationsPage path="inbox">
+              <NotificationPageIndex path="/"/>
+              <NotificationDetail path="message/:id" />
+            </NotificationsPage>
             <ProjectDetailPage path="projects/:id" />
             <Redirect from="project/:id" to="projects/:id" noThrow />
             <NotFound default />

@@ -1,4 +1,5 @@
 import datetime
+import os
 import xml.etree.ElementTree as ET
 
 from flask import current_app
@@ -127,12 +128,13 @@ class MappingService:
 
         if mapped_task.comment:
             # Parses comment to see if any users have been @'d
-            MessageService.send_message_after_comment(
-                mapped_task.user_id,
-                mapped_task.comment,
-                task.id,
-                mapped_task.project_id,
-            )
+            if "CI" not in os.environ.keys():
+                MessageService.send_message_after_comment(
+                    mapped_task.user_id,
+                    mapped_task.comment,
+                    task.id,
+                    mapped_task.project_id,
+                )
 
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
 

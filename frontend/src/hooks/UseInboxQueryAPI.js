@@ -1,87 +1,52 @@
-import { useEffect, useReducer } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   useQueryParams,
-  encodeQueryParams,
-  stringify as stringifyUQP,
   StringParam,
+  stringify as stringifyUQP,
   NumberParam,
-  BooleanParam,
 } from 'use-query-params';
 import axios from 'axios';
 
 import { CommaArrayParam } from '../utils/CommaArrayParam';
+import { useSelector } from 'react-redux';
 import { useThrottle } from '../hooks/UseThrottle';
-import { remapParamsToAPI } from '../utils/remapParamsToAPI'
+import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import { API_URL } from '../config';
 
-const projectQueryAllSpecification = {
-  difficulty: StringParam,
-  organisation: StringParam,
-  campaign: StringParam,
-  location: StringParam,
+/* See also moreFiltersForm, the useQueryParams are duplicated there for specific modular usage */
+/* This one is e.g. used for updating the URL when returning to /contribute
+ *  and directly submitting the query to the API */
+const inboxQueryAllSpecification = {
   types: CommaArrayParam,
-  page: NumberParam,
+  fromUsername: StringParam,
   text: StringParam,
+  taskId: NumberParam,
+  page: NumberParam,
+  pageSize: NumberParam,
   orderBy: StringParam,
   orderByType: StringParam,
-  createdByMe: BooleanParam,
-  favoritedByMe: BooleanParam,
-  contributedToByMe: BooleanParam,
-  createdByMeArchived: BooleanParam,
 };
 
-/* This can be passed into project API or used independently */
-export const useExploreProjectsQueryParams = () => {
-  return useQueryParams(projectQueryAllSpecification);
+/* This can be passed into inbox API or used independently */
+export const useInboxQueryParams = () => {
+  const uqp = useQueryParams(inboxQueryAllSpecification);
+  return uqp;
 };
 
 /* The API uses slightly different JSON keys than the queryParams,
    this fn takes an object with queryparam keys and outputs JSON keys
    while maintaining the same values */
- const backendToQueryConversion = {
-   difficulty: 'mapperLevel',
-   campaign: 'campaign',
-   organisation: 'organisationName',
-   location: 'country',
-   types: 'mappingTypes',
-   text: 'textSearch',
-   page: 'page',
-   orderBy: 'orderBy',
-   orderByType: 'orderByType',
-   createdByMe: 'createdByMe',
-   favoritedByMe: 'favoritedByMe',
-   contributedToByMe: 'contributedToByMe',
-   createdByMeArchived: 'createdByMeArchived'
- };
-
-const dataFetchReducer = (state, action) => {
-  switch (action.type) {
-    case 'FETCH_INIT':
-      return {
-        ...state,
-        isLoading: true,
-        isError: false,
-      };
-    case 'FETCH_SUCCESS':
-      return {
-        ...state,
-        isLoading: false,
-        isError: false,
-        projects: action.payload.results,
-        mapResults: action.payload.mapResults,
-        pagination: action.payload.pagination,
-      };
-    case 'FETCH_FAILURE':
-      return {
-        ...state,
-        isLoading: false,
-        isError: true,
-      };
-    default:
-      console.log(action);
-      throw new Error();
-  }
+/* TODO support full text search and change text=>project for that */
+const backendToQueryConversion = {
+  types: 'messageType',
+  fromUsername: 'from',
+  project: 'project',
+  taskId: 'taskId',
+  orderByType: 'sortBy',
+  orderBy: 'sortDirection',
+  page: 'page',
+  pageSize: 'pageSize',
 };
 
 const defaultInitialData = {
@@ -93,28 +58,22 @@ const defaultInitialData = {
   pagination: { hasNext: false, hasPrev: false, page: 1 },
 };
 
-export const useProjectsQueryAPI = (
+export const useInboxQueryAPI = (
   initialData = defaultInitialData,
   ExternalQueryParamsState,
   forceUpdate = null,
 ) => {
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
-
   /* Get the user bearer token from the Redux store */
   const token = useSelector(state => state.auth.get('token'));
 
-  const [state, dispatch] = useReducer(dataFetchReducer, {
-    isLoading: true,
-    isError: false,
-    projects: initialData.results,
-    mapResults: initialData.mapResults,
-    pagination: initialData.pagination,
-    queryParamsState: ExternalQueryParamsState[0],
-  });
+  const state = useSelector(state => state.notifications);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let didCancel = false;
     let cancel;
+
     const fetchData = async () => {
       const CancelToken = axios.CancelToken;
 
@@ -122,18 +81,23 @@ export const useProjectsQueryAPI = (
         type: 'FETCH_INIT',
       });
 
-      const headers = token ? { Authorization: `Token ${token}` } : {};
-      const paramsRemapped = remapParamsToAPI(
+      const remappedParams = remapParamsToAPI(
         throttledExternalQueryParamsState,
         backendToQueryConversion,
       );
 
       try {
+        if (!token) {
+          throw Error('No authentication token specified for inbox query');
+        }
         const result = await axios({
-          url: `${API_URL}projects/`,
+          url: `${API_URL}notifications/`,
           method: 'get',
-          headers: headers,
-          params: paramsRemapped,
+          params: remappedParams,
+          headers: {
+            Authorization: `Token ${token}`,
+            Accept: 'application/json',
+          },
           cancelToken: new CancelToken(function executor(c) {
             // An executor function receives a cancel function as a parameter
             cancel = { end: c, params: throttledExternalQueryParamsState };
@@ -142,13 +106,17 @@ export const useProjectsQueryAPI = (
 
         if (!didCancel) {
           if (result && result.headers && result.headers['content-type'].indexOf('json') !== -1) {
-            dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+            dispatch({
+              type: 'NOTIFICATIONS_SUCCESS',
+              payload: result.data,
+              params: throttledExternalQueryParamsState,
+            });
           } else {
-            console.error('Invalid return type for project search');
-            dispatch({ type: 'FETCH_FAILURE' });
+            console.error('Invalid return type for inbox search');
+            dispatch({ type: 'NOTIFICATIONS_FAILURE' });
           }
         } else {
-          cancel && cancel.end();
+          cancel.end();
         }
       } catch (error) {
         /* if cancelled, this setting state of unmounted
@@ -158,11 +126,10 @@ export const useProjectsQueryAPI = (
           error &&
           error.response &&
           error.response.data &&
-          error.response.data.Error === 'No projects found'
+          error.response.data.Error === 'No messages found'
         ) {
           const zeroPayload = Object.assign(defaultInitialData, { pagination: { total: 0 } });
-          /* TODO(tdk): when 404 and page > 1, re-request page 1 */
-          dispatch({ type: 'FETCH_SUCCESS', payload: zeroPayload });
+          dispatch({ type: 'NOTIFICATIONS_SUCCESS', payload: zeroPayload });
         } else if (!didCancel && error.response) {
           const errorResPayload = Object.assign(defaultInitialData, { error: error.response });
           // The request was made and the server responded with a status code
@@ -174,18 +141,17 @@ export const useProjectsQueryAPI = (
             error.response.headers,
             errorResPayload,
           );
-          dispatch({ type: 'FETCH_FAILURE', payload: errorResPayload });
+          dispatch({ type: 'NOTIFICATIONS_FAILURE', payload: errorResPayload });
         } else if (!didCancel && error.request) {
           const errorReqPayload = Object.assign(defaultInitialData, { error: error.request });
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js
           console.log('req failure', error.request, errorReqPayload);
-          dispatch({ type: 'FETCH_FAILURE', payload: errorReqPayload });
+          dispatch({ type: 'NOTIFICATIONS_FAILURE', payload: errorReqPayload });
         } else if (!didCancel) {
-          dispatch({ type: 'FETCH_FAILURE' });
+          dispatch({ type: 'NOTIFICATIONS_FAILURE' });
         } else {
-          console.log('tried to cancel on failure', cancel && cancel.params);
           cancel && cancel.end();
         }
       }
@@ -194,15 +160,11 @@ export const useProjectsQueryAPI = (
     fetchData();
     return () => {
       didCancel = true;
-      console.log('tried to cancel on effect cleanup ', cancel && cancel.params);
       cancel && cancel.end();
     };
-  }, [throttledExternalQueryParamsState, forceUpdate, token]);
+  }, [throttledExternalQueryParamsState, forceUpdate, token, dispatch]);
 
   return [state, dispatch];
 };
 
-export const stringify = obj => {
-  const encodedQuery = encodeQueryParams(projectQueryAllSpecification, obj);
-  return stringifyUQP(encodedQuery);
-};
+export const stringify = stringifyUQP;

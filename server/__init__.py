@@ -632,7 +632,7 @@ def add_api_endpoints(app):
     api.add_resource(NotificationsAllAPI, "/api/v2/notifications/")
     api.add_resource(
         NotificationsQueriesCountUnreadAPI,
-        "/api/v2/notifications/queries/myself/count-unread/",
+        "/api/v2/notifications/queries/own/count-unread/",
     )
 
     # Notifications Actions endpoints

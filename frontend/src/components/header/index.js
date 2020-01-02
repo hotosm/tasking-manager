@@ -18,7 +18,9 @@ import { CurrentUserAvatar } from '../user/avatar';
 import { logout } from '../../store/actions/auth';
 import { setLocale } from '../../store/actions/userPreferences';
 import { createLoginWindow } from '../../utils/login';
+import { NotificationBell } from './notificationBell';
 import { supportedLocales } from '../../utils/internationalization';
+import { useDebouncedCallback } from '../../hooks/UseThrottle'
 
 function getMenuItensForUser(userDetails) {
   const menuItems = [
@@ -55,18 +57,20 @@ const UserDisplay = props => {
 
 const AuthButtons = props => {
   const { logInStyle, signUpStyle, redirectTo } = props;
+  const [debouncedCreateLoginWindow] = useDebouncedCallback((redirectToPass)=>createLoginWindow(redirectToPass),3000, { leading: true })
+
   return (
     <>
-      <Button onClick={() => createLoginWindow(redirectTo)} className={logInStyle}>
-        <FormattedMessage {...messages.logIn} />
+      <Button onClick={()=>debouncedCreateLoginWindow(redirectTo)} className={`${logInStyle}`}>
+        <FormattedMessage {...messages.logIn}/>
       </Button>
       <Popup
         contentStyle={modalStyle}
-        trigger={
-          <Button className={signUpStyle}>
+       trigger={
+         <Button className={signUpStyle}>
             <FormattedMessage {...messages.signUp} />
-          </Button>
-        }
+         </Button>
+         }
         modal
         closeOnDocumentClick
       >
@@ -75,6 +79,55 @@ const AuthButtons = props => {
     </>
   );
 };
+
+const PopupItems = props => {
+  return (
+    <div className="v-mid tc">
+      {props.userDetails.username &&
+        props.menuItems
+          .filter(item => item.authenticated === true)
+          .map((item, n) => (
+            <p key={n}>
+              <Link to={item.link} className={props.linkCombo}>
+                <FormattedMessage {...item.label} />
+              </Link>
+            </p>
+          ))}
+      {props.userDetails.username && (
+        <>
+          <p>
+            <Link to={'/settings'} className={props.linkCombo}>
+              <FormattedMessage {...messages.settings} />
+            </Link>
+          </p>
+          <p className="bb b--grey-light"></p>
+        </>
+      )}
+      {props.menuItems
+        .filter(item => item.authenticated === false || item.showAlways)
+        .map((item, n) => (
+          <p key={n}>
+            <Link to={item.link} className={props.linkCombo}>
+              <FormattedMessage {...item.label} />
+            </Link>
+          </p>
+        ))}
+      {props.userDetails.username ? (
+        <Button className="bg-blue-dark white" onClick={() => props.logout()}>
+          <FormattedMessage {...messages.logout} />
+        </Button>
+      ) : (
+        <div>
+          <AuthButtons
+            logInStyle="bg-red white"
+            signUpStyle="bg-blue-dark white mh1 mv2 dib"
+            redirectTo={props.location.pathname}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 class Header extends React.Component {
   linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu';
@@ -103,56 +156,7 @@ class Header extends React.Component {
             <FormattedMessage {...item.label} />
           </TopNavLink>
         ))}
-      </div>
-    );
-  }
 
-  renderPopupItems() {
-    return (
-      <div className="v-mid tc">
-        {getMenuItensForUser(this.props.userDetails)
-          .filter(item => item.authenticated === true)
-          .map((item, n) => (
-            <p key={n}>
-              <Link to={item.link} className={this.linkCombo}>
-                <FormattedMessage {...item.label} />
-              </Link>
-            </p>
-          ))
-        }
-        {this.props.userDetails.username && (
-          <>
-            <p>
-              <Link to={'/settings'} className={this.linkCombo}>
-                <FormattedMessage {...messages.settings} />
-              </Link>
-            </p>
-            <p className="bb b--grey-light"></p>
-          </>
-        )}
-        {getMenuItensForUser(this.props.userDetails)
-          .filter(item => item.authenticated === false || item.showAlways)
-          .map((item, n) => (
-            <p key={n}>
-              <Link to={item.link} className={this.linkCombo}>
-                <FormattedMessage {...item.label} />
-              </Link>
-            </p>
-          ))
-        }
-        {this.props.userDetails.username ? (
-          <Button className="bg-blue-dark white" onClick={() => this.props.logout()}>
-            <FormattedMessage {...messages.logout} />
-          </Button>
-        ) : (
-          <div>
-            <AuthButtons
-              logInStyle="bg-red white"
-              signUpStyle="bg-blue-dark white mh1 mv2 dib"
-              redirectTo={this.props.location.pathname}
-            />
-          </div>
-        )}
       </div>
     );
   }
@@ -209,16 +213,20 @@ class Header extends React.Component {
   }
 
   renderAuthenticationButtons() {
+
     return this.props.userDetails.username ? (
-      <Dropdown
-        onAdd={() => {}}
-        onRemove={() => {}}
-        onChange={this.onUserMenuSelect}
-        value={[]}
-        display={<UserDisplay username={this.props.userDetails.username} />}
-        options={this.getUserLinks(this.props.userDetails.role)}
-        className="blue-dark bg-white mr1 v-mid dn dib-ns pv2 ph3 bn"
-      />
+      <>
+        <NotificationBell />
+        <Dropdown
+          onAdd={() => {}}
+          onRemove={() => {}}
+          onChange={this.onUserMenuSelect}
+          value={[]}
+          display={<UserDisplay username={this.props.userDetails.username} />}
+          options={this.getUserLinks(this.props.userDetails.role)}
+          className="blue-dark bg-white mr1 v-mid dn dib-ns pv2 ph3 bn"
+        />
+      </>
     ) : (
       <div className="dib">
         <Dropdown
@@ -236,6 +244,7 @@ class Header extends React.Component {
           signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
           redirectTo={this.props.location.pathname}
         />
+
       </div>
     );
   }
@@ -275,8 +284,16 @@ class Header extends React.Component {
           <div className="fr dib tr mb1">
             {this.renderAuthenticationButtons()}
             <div className="dib v-mid dn-l">
-              <Popup trigger={open => <BurgerMenu open={open} />} modal closeOnDocumentClick>
-                <div>{this.renderPopupItems()}</div>
+              <Popup  trigger={open => <BurgerMenu open={open}/>} modal closeOnDocumentClick>
+                <div>
+                  <PopupItems
+                   userDetails={this.props.userDetails}
+                   menuItems={getMenuItensForUser(this.props.userDetails)}
+                   linkCombo={this.linkCombo}
+                   logout={this.logout}
+                   location={this.props.location}
+                 />
+               </div>
               </Popup>
             </div>
           </div>

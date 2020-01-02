@@ -50,3 +50,4 @@ export { PencilIcon } from './pencil';
 export { PlusIcon } from './plus';
 export { ProfilePictureIcon } from './profilePicture';
 export { HashtagIcon } from './hashtag';
+export { RefreshIcon } from './refresh';

@@ -7,7 +7,7 @@ export default function ProjectProgressBar({ percentMapped, percentValidated, cl
   /* tooltip component credit: https://codepen.io/syndicatefx/pen/QVPbJg */
   return (
     <>
-      <div className={`cf db ${className}`}>
+      <div className={`cf db ${className || ''}`}>
         <div className="relative">
           <div
             className="absolute bg-blue-grey br-pill hhalf hide-child"

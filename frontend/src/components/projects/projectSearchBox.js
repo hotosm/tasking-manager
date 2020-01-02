@@ -39,7 +39,7 @@ export const ProjectSearchBox = ({
   const clearIconStyleForInputtedText = !fullProjectsQuery.text ? 'dn' : 'red dib-ns';
 
   return (
-    <nav ref={navRef} className={`${className} mt1 mt2-ns`}>
+    <nav ref={navRef} className={`${className || ''} mt1 mt2-ns`}>
       <form className="relative">
         <div>
           <SearchIcon
