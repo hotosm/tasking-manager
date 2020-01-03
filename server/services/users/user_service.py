@@ -422,16 +422,12 @@ class UserService:
             .filter(TaskHistory.user_id == user.id)
             .subquery()
         )
-
         # Get all campaigns for all contributed projects.
         campaign_tags = (
-            Project.query.with_entities(Project.campaign_tag.label("tag"))
-            .distinct()
-            .filter(Project.campaign_tag != "")
+            Project.query.with_entities(Project.campaign.label("tag"))
             .filter(or_(Project.author_id == user.id, Project.id == sq.c.project_id))
             .subquery()
         )
-
         # Get projects with given campaign tags but without user contributions.
         query = (
             Project.query.with_entities(
@@ -444,14 +440,12 @@ class UserService:
                 Project.total_tasks,
             )
             .join(ProjectInfo)
-            .distinct()
             .filter(Project.private is not True)
             .filter(Project.id != sq.c.project_id)
             .filter(Project.mapper_level <= user.mapping_level)
         )
-
         projs = (
-            query.filter(Project.campaign_tag == campaign_tags.c.tag).limit(limit).all()
+            query.filter(Project.campaign.any(campaign_tags.c.tag)).limit(limit).all()
         )
 
         # Get only user mapping level projects.
