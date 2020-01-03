@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
@@ -11,10 +11,11 @@ import { getRandomArrayItem } from '../../utils/random';
 import { updateTasksStatus } from '../../utils/updateTasksStatus';
 import { PriorityBox } from '../projectcard/projectCard';
 import { TasksMap } from './map.js';
-import { TaskSelectionFooter } from './footer';
 import { TaskList } from './taskList';
 import { TasksMapLegend } from './legend';
 import { ProjectInstructions } from './instructions';
+
+const TaskSelectionFooter = React.lazy(() => import('./footer'));
 
 export function HeaderLine({ author, projectId, priority }: Object) {
   const userLink = (
@@ -34,25 +35,26 @@ export function HeaderLine({ author, projectId, priority }: Object) {
           <FormattedMessage {...messages.createBy} values={{ user: userLink, id: projectIdLink }} />
         </span>
       </div>
-      {priority &&
+      {priority && (
         <div className="mw4 dib fr">
           <PriorityBox priority={priority} extraClasses={'pv2 ph3'} />
         </div>
-      }
+      )}
     </div>
   );
 }
 
-export function TagLine({campaigns=[], countries=[]}: Object) {
+export function TagLine({ campaigns = [], countries = [] }: Object) {
   let tags = [];
   tags = campaigns.map(i => i.name).concat(countries);
   return (
     <span className="blue-light">
-      {tags.map((tag, n) => <>
+      {tags.map((tag, n) => (
+        <>
           <span className={n === 0 ? 'dn' : 'ph2'}>&#183;</span>
           {tag}
         </>
-      )}
+      ))}
     </span>
   );
 }
@@ -60,19 +62,19 @@ export function TagLine({campaigns=[], countries=[]}: Object) {
 const getRandomTaskByAction = (activities, taskAction) => {
   if (['validateATask', 'validateAnotherTask'].includes(taskAction)) {
     return getRandomArrayItem(
-      activities.filter(
-        task => ['MAPPED', 'BADIMAGERY'].includes(task.taskStatus)
-      ).map(task => task.taskId)
+      activities
+        .filter(task => ['MAPPED', 'BADIMAGERY'].includes(task.taskStatus))
+        .map(task => task.taskId),
     );
   }
   if (['mapATask', 'mapAnotherTask'].includes(taskAction)) {
     return getRandomArrayItem(
-      activities.filter(
-        task => ['READY', 'INVALIDATED'].includes(task.taskStatus)
-      ).map(task => task.taskId)
+      activities
+        .filter(task => ['READY', 'INVALIDATED'].includes(task.taskStatus))
+        .map(task => task.taskId),
     );
   }
-}
+};
 
 export function TaskSelection({ project, type, loading }: Object) {
   const user = useSelector(state => state.auth.get('userDetails'));
@@ -84,41 +86,42 @@ export function TaskSelection({ project, type, loading }: Object) {
   // these two fetches are needed to initialize the component
   const [tasksError, tasksLoading, initialTasks] = useFetch(
     `projects/${project.projectId}/tasks/`,
-    project.projectId !== undefined
+    project.projectId !== undefined,
   );
   /* eslint-disable-next-line */
   const [tasksActivitiesError, tasksActivitiesLoading, initialActivities] = useFetch(
     `projects/${project.projectId}/activities/latest/`,
-    project.projectId !== undefined
+    project.projectId !== undefined,
   );
-  // get activities each 60 seconds
+  // refresh activities each 60 seconds
   /* eslint-disable-next-line */
   const [activitiesError, activities] = useFetchIntervaled(
     `projects/${project.projectId}/activities/latest/`,
     60000,
   );
 
+  // if the user is a beginner, open the page with the instructions tab activated
   useEffect(() => {
     setActiveSection(user.mappingLevel === 'BEGINNER' ? 'instructions' : 'tasks');
     setTasks(initialTasks);
   }, [user.mappingLevel, initialTasks]);
 
+  // refresh the task status on the map each time the activities are updated
   useEffect(() => {
     if (initialTasks && activities) {
       setTasks(updateTasksStatus(initialTasks, activities));
     }
   }, [initialTasks, activities]);
 
-  useEffect(
-    () => {
-      if (!activities && initialActivities && initialActivities.activity) {
-        setRandomTask([getRandomTaskByAction(initialActivities.activity, taskAction)]);
-      }
-      if (activities && activities.activity) {
-        setRandomTask([getRandomTaskByAction(activities.activity, taskAction)]);
-      }
-    }, [activities, initialActivities, taskAction]
-  );
+  // chooses a random task to the user
+  useEffect(() => {
+    if (!activities && initialActivities && initialActivities.activity) {
+      setRandomTask([getRandomTaskByAction(initialActivities.activity, taskAction)]);
+    }
+    if (activities && activities.activity) {
+      setRandomTask([getRandomTaskByAction(activities.activity, taskAction)]);
+    }
+  }, [activities, initialActivities, taskAction]);
 
   function selectTask(selection, status = null) {
     if (typeof selection === 'object') {
@@ -180,7 +183,9 @@ export function TaskSelection({ project, type, loading }: Object) {
                       selected={selected}
                     />
                   ) : (
-                    <ProjectInstructions instructions={project.projectInfo && project.projectInfo.instructions} />
+                    <ProjectInstructions
+                      instructions={project.projectInfo && project.projectInfo.instructions}
+                    />
                   )}
                 </div>
               </div>
@@ -216,13 +221,17 @@ export function TaskSelection({ project, type, loading }: Object) {
           delay={500}
           ready={typeof project.projectId === 'number' && project.projectId > 0}
         >
-          <TaskSelectionFooter
-            defaultUserEditor={user ? user.defaultEditor : 'iD'}
-            project={project}
-            tasks={tasks}
-            taskAction={taskAction}
-            selectedTasks={selected.length && !taskAction.endsWith('AnotherTask') ? selected : randomTask}
-          />
+          <Suspense fallback={<div>Loading...</div>}>
+            <TaskSelectionFooter
+              defaultUserEditor={user ? user.defaultEditor : 'iD'}
+              project={project}
+              tasks={tasks}
+              taskAction={taskAction}
+              selectedTasks={
+                selected.length && !taskAction.endsWith('AnotherTask') ? selected : randomTask
+              }
+            />
+          </Suspense>
         </ReactPlaceholder>
       </div>
     </div>

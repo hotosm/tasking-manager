@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSelector } from 'react-redux';
 
 import { ProjectNav } from '../components/projects/projectNav';
@@ -18,6 +18,15 @@ import { useTagAPI } from '../hooks/UseTagAPI';
 import useForceUpdate from '../hooks/UseForceUpdate';
 import { useFetch } from '../hooks/UseFetch';
 
+const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
+
+export const CreateProject = (props) => {
+  return(
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProjectCreate {...props} />
+    </Suspense>
+  );
+}
 
 export const ProjectsPage = props => {
   const initialData = {

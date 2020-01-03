@@ -12,13 +12,13 @@ it('test getRandomInt', () => {
 it('test getRandomArrayItem with integers', () => {
   let arr = [235, 1003, 5495, 7921, 9094376];
   expect(arr).toContain(getRandomArrayItem(arr));
-  expect(typeof(getRandomArrayItem(arr))).toBe("number");
+  expect(typeof getRandomArrayItem(arr)).toBe('number');
 });
 
 it('test getRandomArrayItem with two items', () => {
   let arr = [235, 1003];
   expect(arr).toContain(getRandomArrayItem(arr));
-  expect(typeof(getRandomArrayItem(arr))).toBe("number");
+  expect(typeof getRandomArrayItem(arr)).toBe('number');
 });
 
 it('test getRandomArrayItem with one item', () => {
@@ -30,5 +30,5 @@ it('test getRandomArrayItem with one item', () => {
 it('test getRandomArrayItem with strings', () => {
   let arr = ['Bomba Stereo', 'Jorge Drexler', 'Fito Paez', 'Caetano Veloso'];
   expect(arr).toContain(getRandomArrayItem(arr));
-  expect(typeof(getRandomArrayItem(arr))).toBe("string");
+  expect(typeof getRandomArrayItem(arr)).toBe('string');
 });

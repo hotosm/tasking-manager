@@ -4,6 +4,42 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on header.
  */
 export default defineMessages({
+  anotherProjectLock: {
+    id: 'project.tasks.lock_error.another_project',
+    defaultMessage: 'Locked tasks on another project',
+  },
+  currentProjectLock: {
+    id: 'project.tasks.lock_error.current_project',
+    defaultMessage: 'Previously locked task',
+  },
+  anotherProjectLockTextSingular: {
+    id: 'project.tasks.lock_error.another_project.description.singular',
+    defaultMessage: 'You selected {n} task to {action} on the Project #{project}. You need to update the status of that task before map or validate this project.',
+  },
+  anotherProjectLockTextPlural: {
+    id: 'project.tasks.lock_error.another_project.description.plural',
+    defaultMessage: 'You selected {n} tasks to {action} on the Project #{project}. You need to update the status of those tasks before map or validate this project.',
+  },
+  currentProjectLockTextSingular: {
+    id: 'project.tasks.lock_error.current_project.description.singular',
+    defaultMessage: 'You already have {n} task selected to {action} on this project. Update the status of that task before map or validate another one.',
+  },
+  currentProjectLockTextPlural: {
+    id: 'project.tasks.lock_error.current_project.description.plural',
+    defaultMessage: 'You already have {n} tasks selected to {action} on this project. Update the status of those tasks before map or validate another one.',
+  },
+  goToProject: {
+    id: 'project.tasks.lock_error.go_to_project.button',
+    defaultMessage: 'Go to Project #{project}',
+  },
+  workOnTasksSingular: {
+    id: 'project.tasks.lock_error.work_on_tasks.singular.button',
+    defaultMessage: '{mapOrValidate} that task',
+  },
+  workOnTasksPlural: {
+    id: 'project.tasks.lock_error.work_on_tasks.plural.button',
+    defaultMessage: '{mapOrValidate} those tasks',
+  },
   legend: {
     id: 'project.tasks.map.legend',
     defaultMessage: 'Legend',
@@ -43,6 +79,10 @@ export default defineMessages({
   selectEditor: {
     id: 'project.editor.select',
     defaultMessage: 'Select editor',
+  },
+  task: {
+    id: 'project.task',
+    defaultMessage: 'Task',
   },
   tasks: {
     id: 'project.tasks',
@@ -235,5 +275,13 @@ export default defineMessages({
   submitTask: {
     id: 'project.tasks.action.submit_task',
     defaultMessage: "Submit task",
+  },
+  map: {
+    id: 'project.tasks.action.map',
+    defaultMessage: "Map",
+  },
+  validate: {
+    id: 'project.tasks.action.validate',
+    defaultMessage: "Validate",
   },
 });
