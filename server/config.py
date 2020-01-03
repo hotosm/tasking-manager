@@ -16,9 +16,12 @@ class EnvironmentConfig:
     )
 
     # The base url the application is reachable
-    APP_BASE_URL = os.getenv("TM_APP_BASE_URL", "http://127.0.0.1:5000")
-    FRONTEND_BASE_URL = os.getenv("TM_FRONTEND_BASE_URL", APP_BASE_URL)
+    APP_BASE_URL = os.getenv("TM_APP_BASE_URL", "http://127.0.0.1:5000/")
+    if APP_BASE_URL.endswith("/"):
+        APP_BASE_URL = APP_BASE_URL[:-1]
 
+    FRONTEND_BASE_URL = os.getenv("TM_FRONTEND_BASE_URL", APP_BASE_URL)
+    API_VERSION = os.getenv("TM_APP_VERSION", "v2")
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)
 
@@ -90,7 +93,6 @@ class EnvironmentConfig:
     }
 
     # Some more definitions (not overridable)
-    API_VERSION = "v2"
     API_DOCS_URL = f"{APP_BASE_URL}/api/{API_VERSION}/system/docs/json"
     SEND_FILE_MAX_AGE_DEFAULT = 0
     SQLALCHEMY_TRACK_MODIFICATIONS = False
