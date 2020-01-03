@@ -6,12 +6,11 @@ import { useMeta } from 'react-meta-elements';
 import './assets/styles/index.scss';
 import { Header } from './components/header';
 import { Footer } from './components/footer';
-import { ProjectCreate } from './components/projectCreate/create';
 import { ORG_NAME } from './config';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
 import { LearnPage } from './views/learn';
-import { ManageProjectsPage, ProjectsPage, ProjectsPageIndex, MoreFilters, ProjectDetailPage } from './views/project';
+import { ManageProjectsPage, CreateProject, ProjectsPage, ProjectsPageIndex, MoreFilters, ProjectDetailPage } from './views/project';
 import { Authorized } from './views/authorized';
 import { Login } from './views/login';
 import { Welcome } from './views/welcome';
@@ -63,7 +62,7 @@ function App() {
             <ListCampaigns path="manage/campaigns/" />
             <CreateCampaign path="manage/campaigns/new" />
             <EditCampaign path="manage/campaigns/:id" />
-            <ProjectCreate path="manage/projects/new" />
+            <CreateProject path="manage/projects/new" />
             <ProjectEdit path="manage/projects/:id" />
             <ManageProjectsPage path="manage/projects/" />
             <ManageProjectsPage path="projects/" />

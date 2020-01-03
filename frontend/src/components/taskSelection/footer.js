@@ -2,104 +2,88 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { navigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
+import Popup from 'reactjs-popup';
 
 import messages from './messages';
 import { getEditors } from '../../utils/editorsList';
 import { openEditor } from '../../utils/openEditor';
+import { useFetchLockedTasks } from '../../hooks/UseLockedTasks';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 import { Imagery } from './imagery';
 import { MappingTypes } from '../mappingTypes';
+import { LockedTaskModalContent } from './lockedTasks';
 
-export function ContributeButton({ action, projectId, selectedTasks, activities }: Object) {
-  const token = useSelector(state => state.auth.get('token'));
-  const dispatch = useDispatch();
-
-  const updateReduxState = (tasks, project, status) => {
-    dispatch({type: 'SET_LOCKED_TASKS', tasks: tasks});
-    dispatch({type: 'SET_PROJECT', project: project});
-    dispatch({type: 'SET_TASKS_STATUS', status: status});
-  }
-  const lockTasks = () => {
-    if (action.startsWith('validate')) {
-      pushToLocalJSONAPI(
-        `/api/v2/projects/${projectId}/tasks/actions/lock-for-validation/`,
-        JSON.stringify({taskIds: selectedTasks}),
-        token
-      ).then(
-        res => {
-          updateReduxState(selectedTasks, projectId, 'LOCKED_FOR_VALIDATION');
-          navigate(`/projects/${projectId}/validate/`);
-        }
-      ).catch(e => console.log(e));
-    }
-    if (action.startsWith('map')) {
-      fetchLocalJSONAPI(
-        `/api/v2/projects/${projectId}/tasks/actions/lock-for-mapping/${selectedTasks[0]}/`,
-        token,
-        'POST'
-      ).then(
-        res => {
-          updateReduxState(selectedTasks, projectId, 'LOCKED_FOR_MAPPING');
-          navigate(`/projects/${projectId}/map/`);
-        }
-      ).catch(e => console.log(e));
-    }
-  };
-
-  return (
-    <Button className="white bg-red" onClick={() => lockTasks()}>
-      <FormattedMessage {...messages[action]} />
-    </Button>
-  );
-}
-
-export const TaskSelectionFooter = props => {
+const TaskSelectionFooter = props => {
   const [editor, setEditor] = useState(props.defaultUserEditor);
   const [editorOptions, setEditorOptions] = useState([]);
+  const [lockError, setLockError] = useState(false);
   const token = useSelector(state => state.auth.get('token'));
   const dispatch = useDispatch();
+  const fetchLockedTasks = useFetchLockedTasks();
+
+  const lockSuccess = (status, endpoint) => {
+    updateReduxState(props.selectedTasks, props.project.projectId, status);
+    openEditor(editor, props.project, props.tasks, props.selectedTasks, [
+      window.innerWidth,
+      window.innerHeight,
+    ]);
+    navigate(`/projects/${props.project.projectId}/${endpoint}/`);
+  }
+
+  const lockFailed = () => {
+    fetchLockedTasks();
+    setLockError(true);
+  }
 
   const updateReduxState = (tasks, project, status) => {
-    dispatch({type: 'SET_LOCKED_TASKS', tasks: tasks});
-    dispatch({type: 'SET_PROJECT', project: project});
-    dispatch({type: 'SET_TASKS_STATUS', status: status});
-  }
+    dispatch({ type: 'SET_LOCKED_TASKS', tasks: tasks });
+    dispatch({ type: 'SET_PROJECT', project: project });
+    dispatch({ type: 'SET_TASKS_STATUS', status: status });
+  };
   const lockTasks = () => {
     if (props.taskAction.startsWith('validate')) {
       pushToLocalJSONAPI(
         `projects/${props.project.projectId}/tasks/actions/lock-for-validation/`,
-        JSON.stringify({taskIds: props.selectedTasks}),
-        token
-      ).then(
-        res => {
-          updateReduxState(props.selectedTasks, props.project.projectId, 'LOCKED_FOR_VALIDATION');
-          openEditor(editor, props.project, props.tasks, props.selectedTasks);
-          navigate(`/projects/${props.project.projectId}/validate/`);
-        }
-      ).catch(e => console.log(e));
+        JSON.stringify({ taskIds: props.selectedTasks }),
+        token,
+      )
+        .then(res => {
+          lockSuccess('LOCKED_FOR_VALIDATION', 'validate');
+        })
+        .catch(e => lockFailed());
     }
     if (props.taskAction.startsWith('map')) {
       fetchLocalJSONAPI(
-        `projects/${props.project.projectId}/tasks/actions/lock-for-mapping/${props.selectedTasks[0]}/`,
+        `projects/${props.project.projectId}/tasks/actions/lock-for-mapping/${
+          props.selectedTasks[0]
+        }/`,
         token,
-        'POST'
-      ).then(
-        res => {
-          openEditor(editor, props.project, props.tasks, props.selectedTasks);
-          updateReduxState(props.selectedTasks, props.project.projectId, 'LOCKED_FOR_MAPPING');
-          navigate(`/projects/${props.project.projectId}/map/`);
-        }
-      ).catch(e => console.log(e));
+        'POST',
+      )
+        .then(res => {
+          lockSuccess('LOCKED_FOR_MAPPING', 'map');
+        })
+        .catch(e => lockFailed());
     }
   };
 
+  // update the editors options for mapping or for validation,
+  // according to the status of the task that is currently selected
   useEffect(() => {
-    if (props.taskAction && props.project.mappingEditors && props.taskAction.startsWith('validate')) {
-      setEditorOptions(getEditors().filter(i => props.project.validationEditors.includes(i.backendValue)));
+    if (
+      props.taskAction &&
+      props.project.mappingEditors &&
+      props.taskAction.startsWith('validate')
+    ) {
+      setEditorOptions(
+        getEditors().filter(i => props.project.validationEditors.includes(i.backendValue)),
+      );
     } else {
-      setEditorOptions(getEditors().filter(i => props.project.mappingEditors.includes(i.backendValue)));
+      setEditorOptions(
+        getEditors().filter(i => props.project.mappingEditors.includes(i.backendValue)),
+      );
     }
   }, [props.taskAction, props.project.mappingEditors, props.project.validationEditors]);
 
@@ -108,6 +92,17 @@ export const TaskSelectionFooter = props => {
 
   return (
     <div className="cf bg-white pb2 ph4-l ph2">
+      {lockError &&
+        <Popup
+          modal
+          open
+          closeOnEscape={true}
+          closeOnDocumentClick={true}
+          onClose={() => setLockError(false)}
+        >
+          {close => <LockedTaskModalContent project={props.project.projectId} />}
+        </Popup>
+      }
       <div className="w-25-ns w-40 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.typesOfMapping} />
@@ -147,3 +142,5 @@ export const TaskSelectionFooter = props => {
     </div>
   );
 };
+
+export default TaskSelectionFooter;

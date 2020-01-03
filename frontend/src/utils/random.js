@@ -5,5 +5,5 @@ export function getRandomInt(min, max) {
 }
 
 export function getRandomArrayItem(arr) {
-  return arr[getRandomInt(0, arr.length)]
+  return arr[getRandomInt(0, arr.length)];
 }

@@ -9,8 +9,9 @@ import { ProjectInstructions } from './instructions';
 import { HeaderLine } from './index';
 import { TasksMap } from './map';
 import { Button } from '../button';
+import { CheckCircle } from '../checkCircle';
 import DueDateBox from '../projectcard/dueDateBox';
-import { CheckIcon, CloseIcon } from '../svgIcons';
+import { CloseIcon } from '../svgIcons';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export function TaskMapAction({ project, tasks, action, editor }) {
@@ -25,7 +26,7 @@ export function TaskMapAction({ project, tasks, action, editor }) {
           type="media"
           rows={26}
           delay={10}
-          ready={tasks && tasks.features && tasks.features.length}
+          ready={tasks !== undefined && tasks.features !== undefined}
         >
           <TasksMap
             mapResults={tasks}
@@ -45,8 +46,8 @@ export function TaskMapAction({ project, tasks, action, editor }) {
             <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
               {project.projectInfo && project.projectInfo.name}
               <span className="pl2">&#183;</span>
-              {tasksIds.map(task => (
-                <span className="red ph2">{`#${task}`}</span>
+              {tasksIds.map((task, n) => (
+                <span key={n} className="red ph2">{`#${task}`}</span>
               ))}
             </h3>
             <div>
@@ -305,15 +306,15 @@ function CompletionInstructions() {
         </span>
         <div className="blue-grey">
           <p>
-            <CheckBall />
+            <CheckCircle />
             <FormattedMessage {...messages.instructionsSelect} />
           </p>
           <p>
-            <CheckBall />
+            <CheckCircle />
             <FormattedMessage {...messages.instructionsComment} />
           </p>
           <p>
-            <CheckBall />
+            <CheckCircle />
             <FormattedMessage {...messages.instructionsSubmit} />
           </p>
         </div>
@@ -322,9 +323,3 @@ function CompletionInstructions() {
     </>
   );
 }
-
-const CheckBall = () => (
-  <span className="br-100 bg-red white h1 w1 ph1 mr2">
-    <CheckIcon height="10px" width="10px" />
-  </span>
-);
