@@ -121,7 +121,8 @@ function loadOsmDataToTasks(project, bbox, selectedTasks) {
     top: bbox[3],
     changeset_comment: project.changesetTags["comment"],
     changeset_source: project.changesetSource,
-    new_layer: false,
+    changeset_tags: encodeChangesetTags(project.changesetTags),
+    new_layer: false
   };
 
   return fetch(formatJosmUrl('load_data', emptyOSMLayerParams)).then(result => {
@@ -150,3 +151,13 @@ export function formatUrlParams(params) {
     .join('&');
   return `?${urlParams}`;
 }
+
+
+export function encodeChangesetTags(changesetTags) {
+  let encodedTags = "";
+  for (var tag in changesetTags) {
+    encodedTags += tag + '=' + changesetTags[tag] + "|"
+  }
+  return encodedTags.replace(/\|+$/, '');
+}
+
