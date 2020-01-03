@@ -10,6 +10,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { Button } from '../components/button';
 import { TaskMapAction } from '../components/taskSelection/action';
+import { AnotherProjectLock } from '../components/taskSelection/lockedTasks';
 import { Login } from './login';
 
 export function MapTask({ id }: Object) {
@@ -32,7 +33,6 @@ export function TaskAction({ project, action }: Object) {
       if (userDetails.id && token && action) {
         fetchLocalJSONAPI(`users/${userDetails.id}/tasks/?status=LOCKED_FOR_${action}`, token).then(
           res => {
-            console.log(res);
             setTasks(res.tasks);
             setLoading(false);
           }
@@ -49,8 +49,10 @@ export function TaskAction({ project, action }: Object) {
         delay={10}
         ready={!loading}
       >
+        Loading...
       </ReactPlaceholder>
     }
+    // if user has not locked tasks on the system, suggest him to go to the task selection page of the current project
     if (tasks.length === 0) {
       return (
         <div className="cf pull-center pa4">
@@ -63,15 +65,12 @@ export function TaskAction({ project, action }: Object) {
         </div>
       );
     }
+    // if user has locked tasks on another project, suggest him to go update it
     if (tasks.length > 0 && tasks[0].projectId !== Number(project)) {
+      const action = tasks[0].taskStatus === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
       return (
         <div className="cf tc blue-dark pull-center pa4">
-          <p className="pv4">
-            <FormattedMessage {...messages.noLockedTasksOnProjectMessage} values={{currentProject: project, lockedProject: tasks[0].projectId }} />
-          </p>
-          <Button className="bg-red white" onClick={() => navigate(`/projects/${project}/tasks/`)}>
-            <FormattedMessage {...messages.goToProjectButton} values={{project: tasks[0].projectId}}/>
-          </Button>
+          <AnotherProjectLock projectId={tasks[0].projectId} action={action} lockedTasksLength={tasks.length} />
         </div>
       );
     }

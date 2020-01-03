@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 
 import { Imagery } from '../imagery';
 import { MappingTypes } from '../../mappingTypes';
-import { TaskSelectionFooter } from '../footer';
+import TaskSelectionFooter from '../footer';
 import { Button } from '../../button';
 import { store } from '../../../store';
 

@@ -3,7 +3,7 @@ import * as turf from '@turf/turf';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { paintOptions } from './create';
+import { paintOptions } from './index';
 import { Button } from '../button';
 import { makeGrid } from './setTaskSizes';
 

@@ -197,4 +197,4 @@ const ProjectCreate = props => {
   );
 };
 
-export { ProjectCreate };
+export default ProjectCreate;
