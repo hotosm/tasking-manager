@@ -1,13 +1,13 @@
-import * as turf from '@turf/turf';
+import { featureCollection, bbox } from '@turf/turf';
+import { viewport } from '@mapbox/geo-viewport';
 
-export function getCentroidAndZoomFromSelectedTasks(tasks, selectedTaskIds) {
-  const selectedTasksGeom = turf.featureCollection(
-    tasks.features.filter(task => selectedTaskIds.includes(task.properties.taskId))
+export function getCentroidAndZoomFromSelectedTasks(tasks, selectedTaskIds, windowSize) {
+  return viewport(getSelectedTasksBBox(tasks, selectedTaskIds), windowSize);
+}
+
+export function getSelectedTasksBBox(tasks, selectedTaskIds) {
+  const selectedTasksGeom = featureCollection(
+    tasks.features.filter(task => selectedTaskIds.includes(task.properties.taskId)),
   );
-  const selectedTasksCentroid = turf.centroid(selectedTasksGeom).geometry.coordinates;
-  let zoomLevel = 15;
-  if (selectedTaskIds.length === 1) {
-    zoomLevel = selectedTasksGeom.features[0].properties.taskZoom;
-  }
-  return [selectedTasksCentroid, zoomLevel];
+  return bbox(selectedTasksGeom);
 }
