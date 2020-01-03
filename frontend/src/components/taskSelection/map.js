@@ -21,6 +21,7 @@ export const TasksMap = ({
   disableScrollZoom,
   selectTask,
   navigate,
+  animateZoom = true,
   selected: selectedOnMap,
 }) => {
   const mapRef = React.createRef();
@@ -66,9 +67,9 @@ export const TasksMap = ({
 
     const updateTMZoom = () => {
       if (!taskBordersOnly) {
-        map.fitBounds(extent(mapResults), { padding: 40 });
+        map.fitBounds(extent(mapResults), { padding: 40, animate: animateZoom });
       } else {
-        map.fitBounds(extent(mapResults), { padding: 220, maxZoom: 6.5 });
+        map.fitBounds(extent(mapResults), { padding: 220, maxZoom: 6.5, animate: animateZoom });
       }
     };
 
@@ -251,6 +252,7 @@ export const TasksMap = ({
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = '';
       });
+      updateTMZoom();
     };
 
     const someResultsReady = mapResults && mapResults.features && mapResults.features.length > 0;
@@ -272,7 +274,7 @@ export const TasksMap = ({
       mapboxLayerDefn();
     } else if (tasksReadyMapLoading && !mapLayersAlreadyDefined) {
       map.on('load', mapboxLayerDefn);
-      updateTMZoom();
+
     } else if (tasksReadyMapLoading || mapReadyTasksReady) {
       console.error('One of the hook dependencies changed and try to redefine the map');
     }
@@ -322,6 +324,7 @@ export const TasksMap = ({
     taskBordersOnly,
     disableScrollZoom,
     navigate,
+    animateZoom
   ]);
 
   return <div id="map" className={className} ref={mapRef}></div>;
