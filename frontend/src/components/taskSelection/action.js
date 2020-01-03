@@ -32,6 +32,7 @@ export function TaskMapAction({ project, tasks, action, editor }) {
             mapResults={tasks}
             className="dib w-100 fl h-100-ns vh-75"
             taskBordersOnly={false}
+            animateZoom={false}
           />
         </ReactPlaceholder>
       </div>
