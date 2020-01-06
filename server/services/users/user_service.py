@@ -136,14 +136,12 @@ class UserService:
     @staticmethod
     def get_projects_mapped(user_id: int):
         projects_mapped = (
-            TaskHistory.query.with_entities(TaskHistory.project_id)
-            .filter(
-                TaskHistory.user_id == user_id, TaskHistory.action == "STATE_CHANGE"
-            )
-            .distinct(TaskHistory.project_id)
+            User.query.with_entities(User.projects_mapped)
+            .filter(User.id == user_id)
             .all()
         )
-        projects_mapped = [r[0] for r in projects_mapped]
+        results = [r[0] for r in projects_mapped]
+        projects_mapped = results[0]
         return projects_mapped
 
     @staticmethod
