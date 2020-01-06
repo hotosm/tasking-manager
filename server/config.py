@@ -21,7 +21,7 @@ class EnvironmentConfig:
         APP_BASE_URL = APP_BASE_URL[:-1]
 
     FRONTEND_BASE_URL = os.getenv("TM_FRONTEND_BASE_URL", APP_BASE_URL)
-    API_VERSION = os.getenv("TM_APP_VERSION", "v2")
+    API_VERSION = os.getenv("TM_APP_API_VERSION", "v2")
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)
 
