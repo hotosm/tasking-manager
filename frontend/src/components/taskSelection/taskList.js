@@ -5,6 +5,7 @@ import ReactPlaceholder from 'react-placeholder';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 
 import messages from './messages';
+import { TaskActivity } from './taskActivity';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
 import { userCanValidate } from '../../utils/projectPermissions';
 import { TASK_COLOURS } from '../../config';
@@ -12,6 +13,7 @@ import { LockIcon, ListIcon, EyeIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
+import Popup from 'reactjs-popup';
 
 export function TaskStatus({ status, lockHolder }: Object) {
   const dotSize = ['READY', 'LOCKED_FOR_MAPPING'].includes(status) ? '0.875rem' : '1rem';
@@ -33,18 +35,25 @@ export function TaskStatus({ status, lockHolder }: Object) {
         {status.startsWith('LOCKED_FOR_') && lockHolder ? (
           <FormattedMessage
             {...messages.lockedBy}
-            values={{user: lockHolder, lockStatus: <FormattedMessage {...messages[`taskStatus_${status}`]} />}}
+            values={{
+              user: lockHolder,
+              lockStatus: <FormattedMessage {...messages[`taskStatus_${status}`]} />,
+            }}
           />
         ) : (
           <FormattedMessage {...messages[`taskStatus_${status}`]} />
-        )
-        }
+        )}
       </span>
     </span>
   );
 }
 
-function TaskItem({ data, projectId, selectTask, selected = [] }: Object) {
+function TaskItem({ data, projectId, selectTask, selected = [], projectName }: Object) {
+  const modalStyle = {
+    width: '45%',
+    padding: '0',
+  };
+
   return (
     <div
       className={`cf db ba br1 mt2 ${
@@ -78,7 +87,21 @@ function TaskItem({ data, projectId, selectTask, selected = [] }: Object) {
       </div>
       <div className="w-10-l w-20 pv3 fl dib blue-light">
         <div className="dib v-mid">
-          <ListIcon width="18px" height="18px" className="pointer hover-blue-grey" />
+          <Popup
+            trigger={<ListIcon width="18px" height="18px" className="pointer hover-blue-grey" />}
+            contentStyle={modalStyle}
+            modal
+            closeOnDocumentClick
+          >
+            {close => (
+              <TaskActivity
+                taskId={data.taskId}
+                projectName={projectName}
+                projectId={projectId}
+                close={close}
+              />
+            )}
+          </Popup>
         </div>
         <div className="pl2 dib v-mid">
           <EyeIcon width="18px" height="18px" className="pointer hover-blue-grey" />
@@ -208,6 +231,7 @@ export function TaskList({ project, tasks, activeFilter, selectTask, selected }:
             selected={selected}
             selectTask={selectTask}
             projectId={project.projectId}
+            projectName={project.projectInfo.name}
           />
         )}
       </ReactPlaceholder>
@@ -222,6 +246,7 @@ function PaginatedList({
   projectId,
   selectTask,
   selected,
+  projectName,
 }: Object) {
   const [page, setPage] = useQueryParam('page', NumberParam);
   const lastPage = howManyPages(items.length, pageSize);
@@ -244,6 +269,7 @@ function PaginatedList({
             projectId={projectId}
             selectTask={selectTask}
             selected={selected}
+            projectName={projectName}
           />
         ))}
       </div>
