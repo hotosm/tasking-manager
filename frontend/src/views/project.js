@@ -104,7 +104,7 @@ export const ManageProjectsPage = props => {
 
   if (
      !fullProjectsQuery.createdByMe &&
-     !fullProjectsQuery.contributedToByMe &&
+     !fullProjectsQuery.mappedByMe &&
      !fullProjectsQuery.favoritedByMe &&
      !fullProjectsQuery.createdByMeArchived
   ) {
