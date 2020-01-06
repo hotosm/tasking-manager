@@ -16,9 +16,9 @@ export default defineMessages({
     id: 'mytasks.filter.all',
     defaultMessage: 'All',
   },
-  archive: {
-    id: 'mytasks.filter.archive',
-    defaultMessage: 'Archive',
+  archived: {
+    id: 'mytasks.filter.archived',
+    defaultMessage: 'Archived',
   },
   projects: {
     id: 'mytasks.filter.projects',
@@ -46,7 +46,7 @@ export default defineMessages({
   },
   lastUpdatedByUser: {
     id: 'mytasks.nav.lastUpdatedBy',
-    defaultMessage: 'Last updated by {user}',
+    defaultMessage: 'You worked on this task {time}',
   },
   viewAll: {
     id: 'mytasks.nav.viewAll',
@@ -54,18 +54,22 @@ export default defineMessages({
   },
   noContributed: {
     id: 'mytasks.nav.noContributedItems',
-    defaultMessage: 'No Contributed Items'
+    defaultMessage: 'No Contributed Items',
   },
   resumeTask: {
     id: 'mytasks.nav.resumeMappingTask',
-    defaultMessage: 'Resume task'
+    defaultMessage: 'Resume task',
   },
   lockedByLockholder: {
     id: 'mytasks.nav.lockedByLockholder',
-    defaultMessage: 'Locked by {lockholder}'
+    defaultMessage: 'Locked by {lockholder}',
   },
   unlock: {
     id: 'mytasks.unlock',
-    defaultMessage: 'unlock',
-  }
+    defaultMessage: 'unlock {time}',
+  },
+  projectTask: {
+    id: 'mytasks.tasks.title',
+    defaultMessage: 'Task #{task} · Project #{project}',
+  },
 });

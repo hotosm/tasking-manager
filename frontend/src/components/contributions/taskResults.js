@@ -1,25 +1,22 @@
 import React from 'react';
-
+import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
-// import { nCardPlaceholders } from '../projectcard/nCardPlaceholder';
 
-import { TaskCard} from './taskCard';
-import { FormattedMessage, FormattedNumber } from 'react-intl';
 import messages from './messages';
+import { TaskCard } from './taskCard';
 
 export const TaskResults = props => {
   const state = props.state;
-  // const cardWidthClass = 'w-third-l';
 
   return (
     <div className={props.className}>
-        {state.isLoading ? (
-          <span>&nbsp;</span>
-        ) : (
-          !state.isError && (
-            
-             <p className="blue-grey ml3 pt2 f7"><FormattedMessage
+      {state.isLoading ? (
+        <span>&nbsp;</span>
+      ) : (
+        !state.isError && (
+          <p className="blue-grey ml3 pt2 f7">
+            <FormattedMessage
               {...messages.showingXProjectsOfTotal}
               values={{
                 numProjects: state.tasks && state.tasks.length,
@@ -32,9 +29,10 @@ export const TaskResults = props => {
                   <FormattedNumber value={state.pagination && state.pagination.total} />
                 ),
               }}
-            /></p>
-          )
-        )}
+            />
+          </p>
+        )
+      )}
       {state.isError ? (
         <div className="bg-tan pa4 mt3">
           <FormattedMessage
@@ -52,13 +50,8 @@ export const TaskResults = props => {
         </div>
       ) : null}
       <div className={`cf db`}>
-        <ReactPlaceholder
-          // customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
-          ready={!state.isLoading}
-          type="media"
-          rows={10}
-        >
-          <TaskCards pageOfCards={state.tasks}  />
+        <ReactPlaceholder ready={!state.isLoading} type="media" rows={10}>
+          <TaskCards pageOfCards={state.tasks} />
         </ReactPlaceholder>
       </div>
     </div>
@@ -73,10 +66,12 @@ const TaskCards = props => {
   const filteredCards = props.pageOfCards.filter(filterFn);
 
   if (filteredCards < 1) {
-    return (<div className="mb3 blue-grey"><FormattedMessage {...messages.noContributed}/></div>);
+    return (
+      <div className="mb3 blue-grey">
+        <FormattedMessage {...messages.noContributed} />
+      </div>
+    );
   }
 
-  return filteredCards.map((card, n) =>
-      <TaskCard {...card} key={n} />
-  );
+  return filteredCards.map((card, n) => <TaskCard {...card} key={n} />);
 };

@@ -49,7 +49,7 @@ function App() {
             <LearnPage path="learn" />
             <ContributionsPage path="user">
               <ContributionsPageIndex path="/"/>
-              <ContributionDetail path="contribution/:projectIdUrl/:taskIdUrl" />
+              <ContributionDetail path="contributions/:projectIdUrl/:taskIdUrl" />
             </ContributionsPage>
             <AboutPage path="about" />
             <Authorized path="authorized" />

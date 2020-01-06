@@ -72,7 +72,7 @@ export const ProjectSearchBox = ({
             setFocus(false);
           }}
           onFocus={() => setFocus(true)}
-          className={`absolute ${clearIconStyleForInputtedText} w1 h1 top-0 pt2 ${
+          className={`absolute ${clearIconStyleForInputtedText} w1 h1 top-0 pt2 pointer ${
             !isFocusMobile ? 'pr2 right-0 dn ' : 'pr2 right-0'
           }`}
         />

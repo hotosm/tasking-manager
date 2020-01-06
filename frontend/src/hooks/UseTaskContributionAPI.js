@@ -1,3 +1,7 @@
+import { useSelector } from 'react-redux';
+import { useEffect, useReducer } from 'react';
+import axios from 'axios';
+
 import {
   useQueryParams,
   StringParam,
@@ -5,17 +9,8 @@ import {
   BooleanParam,
 } from 'use-query-params';
 import { CommaArrayParam } from '../utils/CommaArrayParam';
-import { useSelector } from 'react-redux';
 import { useThrottle } from '../hooks/UseThrottle';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI'
-
-/* See also moreFiltersForm, the useQueryParams are duplicated there for specific modular usage */
-/* This one is e.g. used for updating the URL when returning to /contribute
- *  and directly submitting the query to the API */
-
-import { useEffect, useReducer } from 'react';
-import axios from 'axios';
-
 import { API_URL } from '../config';
 
 const contributionsQueryAllSpecification = {
@@ -34,14 +29,14 @@ export const useTaskContributionQueryParams = () => {
 };
 
 /* The API uses slightly different JSON keys than the queryParams,
-   this fn takes an object with queryparam keys and outputs JSON keys 
+   this fn takes an object with queryparam keys and outputs JSON keys
    while maintaining the same values */
-/* TODO backend–add pagination: 
+/* TODO backend–add pagination:
   orderByType: 'sortBy',
   orderBy: 'sortDirection',
   page: 'page',
   pageSize: 'pageSize'
-  */ 
+  */
    /* TODO support full text search and change text=>project for that */
   const backendToQueryConversion = {
     status: 'status',

@@ -284,4 +284,8 @@ export default defineMessages({
     id: 'project.tasks.action.validate',
     defaultMessage: "Validate",
   },
+  lockedBy: {
+    id: 'project.tasks.locked_by_user',
+    defaultMessage: "{lockStatus} by {user}",
+  },
 });

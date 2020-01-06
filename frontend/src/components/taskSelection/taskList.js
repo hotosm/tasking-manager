@@ -13,7 +13,7 @@ import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
 
-export function TaskStatus({ status }: Object) {
+export function TaskStatus({ status, lockHolder }: Object) {
   const dotSize = ['READY', 'LOCKED_FOR_MAPPING'].includes(status) ? '0.875rem' : '1rem';
   return (
     <span>
@@ -30,7 +30,15 @@ export function TaskStatus({ status }: Object) {
         <LockIcon style={{ paddingTop: '1px' }} className="v-mid pl1 h1 w1" />
       )}
       <span className="pl2 v-mid">
-        <FormattedMessage {...messages[`taskStatus_${status}`]} />
+        {status.startsWith('LOCKED_FOR_') && lockHolder ? (
+          <FormattedMessage
+            {...messages.lockedBy}
+            values={{user: lockHolder, lockStatus: <FormattedMessage {...messages[`taskStatus_${status}`]} />}}
+          />
+        ) : (
+          <FormattedMessage {...messages[`taskStatus_${status}`]} />
+        )
+        }
       </span>
     </span>
   );
