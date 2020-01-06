@@ -13,7 +13,7 @@ import { ShowMapToggle } from './projectNav';
 const isActiveButton = (buttonName, projectQuery) => {
   const allBoolean =
     projectQuery.createdByMe &&
-    projectQuery.contributedToByMe &&
+    projectQuery.mappedByMe &&
     projectQuery.favoritedByMe &&
     projectQuery.createdByMeArchived;
   if (
@@ -42,11 +42,11 @@ export const MyProjectNav = props => {
           <h3 className="barlow-condensed f2 ma0 pv3 v-mid dib ttu pl2 pl0-l">
             <FormattedMessage {...messages.myProjects} />
           </h3>
-          {userDetails && ['ADMIN', 'PROJECT_MANAGER'].includes(userDetails.role) &&
+          {userDetails && ['ADMIN', 'PROJECT_MANAGER'].includes(userDetails.role) && (
             <Link to={'new/'} className="dib ml3">
               <AddButton />
             </Link>
-          }
+          )}
         </div>
       </div>
       <div className="dib lh-copy w-100 cf">
@@ -77,7 +77,7 @@ export const MyProjectNav = props => {
       </div>
       <div className="mt2 mb3">
         <Link
-          to="/projects/?favoritedByMe=1&contributedToByMe=1&createdByMe=1&createdByMeArchived=1"
+          to="/projects/?favoritedByMe=1&mappedByMe=1&createdByMe=1&createdByMeArchived=1"
           className={`di mh1 ${isActiveButton('All', fullProjectsQuery)} strike ${linkCombo}`}
         >
           <FormattedMessage {...messages.allprojects} />
@@ -92,11 +92,8 @@ export const MyProjectNav = props => {
           <FormattedMessage {...messages.favorite} />
         </Link>
         <Link
-          to={`/projects/?contributedToByMe=1`}
-          className={`di mh1 ${isActiveButton(
-            'contributedToByMe',
-            fullProjectsQuery,
-          )} strike ${linkCombo}`}
+          to={`/projects/?mappedByMe=1`}
+          className={`di mh1 ${isActiveButton('mappedByMe', fullProjectsQuery)} ${linkCombo}`}
         >
           <FormattedMessage {...messages.contributed} />
         </Link>

@@ -27,7 +27,7 @@ const projectQueryAllSpecification = {
   orderByType: StringParam,
   createdByMe: BooleanParam,
   favoritedByMe: BooleanParam,
-  contributedToByMe: BooleanParam,
+  mappedByMe: BooleanParam,
   createdByMeArchived: BooleanParam,
 };
 
@@ -51,7 +51,7 @@ export const useExploreProjectsQueryParams = () => {
    orderByType: 'orderByType',
    createdByMe: 'createdByMe',
    favoritedByMe: 'favoritedByMe',
-   contributedToByMe: 'contributedToByMe',
+   mappedByMe: 'mappedByMe',
    createdByMeArchived: 'createdByMeArchived'
  };
 
