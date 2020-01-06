@@ -209,7 +209,13 @@ class ProjectSearchService:
         query = query.filter(Project.status.in_(project_status_array))
 
         if search_dto.created_by:
+            print("created_by: ", search_dto.created_by)
             query = query.filter(Project.author_id == search_dto.created_by)
+
+        if search_dto.mapped_by:
+            # query = query.filter()
+            print(search_dto.mapped_by)
+            print("created_by: ", search_dto.created_by)
 
         if search_dto.mapper_level and search_dto.mapper_level.upper() != "ALL":
             query = query.filter(
