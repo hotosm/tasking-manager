@@ -462,9 +462,12 @@ class ProjectSearchBase(Resource):
             if UserService.is_user_a_project_manager(tm.authenticated_user_id):
                 search_dto.is_project_manager = True
 
-            search_dto.created_by = (
-                tm.authenticated_user_id if request.args.get("createdByMe") else False
-            )
+            if request.args.get("createdByMe") == "true":
+                search_dto.created_by = tm.authenticated_user_id
+
+            if request.args.get("mappedByMe") == "true":
+                search_dto.mapped_by = tm.authenticated_user_id
+
         except Exception:
             pass
 
@@ -556,7 +559,11 @@ class ProjectsAllAPI(ProjectSearchBase):
               name: createdByMe
               description: Limit to projects created by authenticated user
               type: boolean
-              required: true
+              default: false
+            - in: query
+              name: mappedByMe
+              description: Limit to projects mapped/validated by authenticated user
+              type: boolean
               default: false
             - in: query
               name: teamId

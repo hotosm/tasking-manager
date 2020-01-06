@@ -278,6 +278,7 @@ class ProjectSearchDTO(Model):
     teams = ListType(StringType())
     interests = ListType(IntType())
     created_by = IntType(required=False)
+    mapped_by = IntType(required=False)
 
     def __hash__(self):
         """ Make object hashable so we can cache user searches"""
