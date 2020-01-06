@@ -30,16 +30,15 @@ export const MyTasksNav = props => {
     <header className=" w-100 ">
       <div className="cf">
         <div className="w-75-l w-60 fl">
-          <h3 className="f2 ttu barlow-condensed fw8">
+          <h3 className="mb2 f2 ttu barlow-condensed fw8">
             <FormattedMessage {...messages.myContributions} />
           </h3>
         </div>
       </div>
-      <div className="mt2 mb1 ph2 dib lh-copy w-100 cf">
-        <div className="w-90-ns w-100 fl dib">
+      <div className="mt2 mb1 dib lh-copy w-100 cf">
+        <div className="w-100 fl dib">
           <div className="dib">
             <div className="mv2 dib"></div>
-
             <ProjectSearchBox
               className="dib fl mh1"
               setQuery={setContributionsQuery}
@@ -47,20 +46,15 @@ export const MyTasksNav = props => {
               placeholder="Search by Project ID"
             />
 
-            {!notAnyFilter && (
-              <Link
-                to="./"
-                className={`red link ph3 f6 pv2 mh1 fr
-                    `}
-              >
+            {!notAnyFilter &&
+              <Link to="./" className="red link ph3 f6 v-mid dib pv2 mh1 mt1 mt2-ns fr">
                 <FormattedMessage {...messages.clearFilters} />
               </Link>
-            )}
+            }
           </div>
         </div>
-        <div className="w-10-ns w-100 fr">{/* <ShowMapToggle /> */}</div>
       </div>
-      <div className="ma2">
+      <div className="mv2">
         <Link
           to=""
           className={`di di-m mh1 ${isActiveButton('All', contributionsQuery)} ${linkCombo}`}
@@ -69,9 +63,12 @@ export const MyTasksNav = props => {
         </Link>
         <Link
           to="?archivedProjects=1"
-          className={`di di-m mh1 ${isActiveButton('archivedProjects', contributionsQuery)}  ${linkCombo}`}
+          className={`di di-m mh1 ${isActiveButton(
+            'archivedProjects',
+            contributionsQuery,
+          )}  ${linkCombo}`}
         >
-          <FormattedMessage {...messages.archive} />
+          <FormattedMessage {...messages.archived} />
         </Link>
       </div>
       {props.children}
