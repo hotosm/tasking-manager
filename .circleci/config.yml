@@ -98,6 +98,8 @@ jobs:
         type: env_var_name
       base_url:
         type: env_var_name
+      api_version:
+        type: env_var_name
       consumer_key:
         type: env_var_name
       consumer_secret:
@@ -157,7 +159,7 @@ jobs:
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"MatomoSiteID\":\"${<< parameters.matomo_site_id >>}\", \"MatomoEndpoint\":\"${<< parameters.matomo_endpoint >>}\", \"MapboxToken\":\"${<< parameters.mapbox_token >>}\", \"OrgName\":\"${<< parameters.org_name >>}\", \"OrgCode\":\"${<< parameters.org_code >>}\", \"OrgUrl\":\"${<< parameters.org_url >>}\", \"OrgPrivacyPolicy\":\"${<< parameters.org_privacy_policy >>}\", \"OrgTwitter\":\"${<< parameters.org_twitter >>}\", \"OrgFacebook\":\"${<< parameters.org_fb >>}\", \"OrgInstagram\":\"${<< parameters.org_instagram >>}\", \"OrgYoutube\":\"${<< parameters.org_youtube >>}\", \"OrgGitHub\":\"${<< parameters.org_github >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerApiVersion\":\"${<< parameters.api_version >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"MatomoSiteID\":\"${<< parameters.matomo_site_id >>}\", \"MatomoEndpoint\":\"${<< parameters.matomo_endpoint >>}\", \"MapboxToken\":\"${<< parameters.mapbox_token >>}\", \"OrgName\":\"${<< parameters.org_name >>}\", \"OrgCode\":\"${<< parameters.org_code >>}\", \"OrgUrl\":\"${<< parameters.org_url >>}\", \"OrgPrivacyPolicy\":\"${<< parameters.org_privacy_policy >>}\", \"OrgTwitter\":\"${<< parameters.org_twitter >>}\", \"OrgFacebook\":\"${<< parameters.org_fb >>}\", \"OrgInstagram\":\"${<< parameters.org_instagram >>}\", \"OrgYoutube\":\"${<< parameters.org_youtube >>}\", \"OrgGitHub\":\"${<< parameters.org_github >>}\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -268,6 +270,7 @@ workflows:
         postgres_password: POSTGRES_PASSWORD_STAGING
         postgres_user: POSTGRES_USER_STAGING
         base_url: TM_APP_BASE_URL_STAGING
+        api_version: TM_APP_API_VERSION_STAGING
         consumer_key: TM_CONSUMER_KEY_STAGING
         consumer_secret: TM_CONSUMER_SECRET_STAGING
         tm_secret: TM_SECRET_STAGING
@@ -308,6 +311,7 @@ workflows:
         postgres_password: POSTGRES_PASSWORD_PRODUCTION
         postgres_user: POSTGRES_USER_PRODUCTION
         base_url: TM_APP_BASE_URL_PRODUCTION
+        api_version: TM_APP_API_VERSION_PRODUCTION
         consumer_key: TM_CONSUMER_KEY_PRODUCTION
         consumer_secret: TM_CONSUMER_SECRET_PRODUCTION
         tm_secret: TM_SECRET_PRODUCTION
@@ -348,6 +352,7 @@ workflows:
         postgres_password: POSTGRES_PASSWORD_TEACHOSM
         postgres_user: POSTGRES_USER_TEACHOSM
         base_url: TM_APP_BASE_URL_TEACHOSM
+        api_version: TM_APP_API_VERSION_TEACHOSM
         consumer_key: TM_CONSUMER_KEY_TEACHOSM
         consumer_secret: TM_CONSUMER_SECRET_TEACHOSM
         tm_secret: TM_SECRET_TEACHOSM
@@ -388,6 +393,7 @@ workflows:
         postgres_password: POSTGRES_PASSWORD_ASSISTED
         postgres_user: POSTGRES_USER_ASSISTED
         base_url: TM_APP_BASE_URL_ASSISTED
+        api_version: TM_APP_API_VERSION_ASSISTED
         consumer_key: TM_CONSUMER_KEY_ASSISTED
         consumer_secret: TM_CONSUMER_SECRET_ASSISTED
         tm_secret: TM_SECRET_ASSISTED
@@ -428,6 +434,7 @@ workflows:
         postgres_password: POSTGRES_PASSWORD_TM4
         postgres_user: POSTGRES_USER_TM4
         base_url: TM_APP_BASE_URL_TM4
+        api_version: TM_APP_API_VERSION_TM4
         consumer_key: TM_CONSUMER_KEY_TM4
         consumer_secret: TM_CONSUMER_SECRET_TM4
         tm_secret: TM_SECRET_TM4
