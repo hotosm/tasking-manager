@@ -27,6 +27,7 @@ from server.models.postgis.utils import (
 )
 
 from server.models.postgis.interests import projects_interests
+from server.services.users.user_service import UserService
 
 from server import db
 from flask import current_app
@@ -209,13 +210,11 @@ class ProjectSearchService:
         query = query.filter(Project.status.in_(project_status_array))
 
         if search_dto.created_by:
-            print("created_by: ", search_dto.created_by)
             query = query.filter(Project.author_id == search_dto.created_by)
 
         if search_dto.mapped_by:
-            # query = query.filter()
-            print(search_dto.mapped_by)
-            print("created_by: ", search_dto.created_by)
+            projects_mapped = UserService.get_projects_mapped(search_dto.mapped_by)
+            query = query.filter(Project.id.in_(projects_mapped))
 
         if search_dto.mapper_level and search_dto.mapper_level.upper() != "ALL":
             query = query.filter(

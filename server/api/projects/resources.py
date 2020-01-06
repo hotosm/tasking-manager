@@ -462,23 +462,11 @@ class ProjectSearchBase(Resource):
             if UserService.is_user_a_project_manager(tm.authenticated_user_id):
                 search_dto.is_project_manager = True
 
-            print(search_dto.created_by)
-            print("createdByMeArgs: ", request.args.get("createdByMe"))
             if request.args.get("createdByMe") == "true":
-                print("Created args present")
                 search_dto.created_by = tm.authenticated_user_id
-            else:
-                print("Created Args not Present")
-            print(search_dto.created_by)
 
-            print(search_dto.mapped_by)
-            print("createdByMeArgs: ", request.args.get("mappedByMe"))
             if request.args.get("mappedByMe") == "true":
-                print("Mapped args present")
                 search_dto.mapped_by = tm.authenticated_user_id
-            else:
-                print("Mapped Args not Present")
-            print(search_dto.created_by)
 
         except Exception:
             pass
