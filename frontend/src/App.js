@@ -36,12 +36,12 @@ function App() {
   return (
     <div className="App w-100 base-font bg-white">
       <Router>
-        <Header path="/*" />
+        <Header path="/*"/>
       </Router>
       <div className="cf w-100 base-font">
         <QueryParamProvider reachHistory={globalHistory}>
-          <Router>
-            <Home path="/" />
+          <Router primary={false}>
+            <Home path="/"/>
             <ProjectsPage path="explore">
               <ProjectsPageIndex path="/" />
               <MoreFilters path="/filters/*" />
