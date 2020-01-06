@@ -559,13 +559,11 @@ class ProjectsAllAPI(ProjectSearchBase):
               name: createdByMe
               description: Limit to projects created by authenticated user
               type: boolean
-              required: true
               default: false
             - in: query
               name: mappedByMe
               description: Limit to projects mapped/validated by authenticated user
               type: boolean
-              required: true
               default: false
             - in: query
               name: teamId
