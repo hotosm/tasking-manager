@@ -42,9 +42,9 @@ const Parameters = {
     Type: 'String',
     Description: 'TM_APP_BASE_URL'
   },
-  TaskingManagerAppVersion: {
+  TaskingManagerApiVersion: {
     Type: 'String',
-    Description: 'TM_APP_VERSION'
+    Description: 'TM_APP_API_VERSION'
   },
   TaskingManagerConsumerKey: {
     Description: 'TM_CONSUMER_KEY',
@@ -375,7 +375,7 @@ const Resources = {
         cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
         cf.sub('export POSTGRES_USER="${PostgresUser}"'),
         cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
-        cf.sub('export TM_APP_VERSION="${TaskingManagerAppVersion}"'),
+        cf.sub('export TM_APP_API_VERSION="${TaskingManagerApiVersion}"'),
         cf.sub('export TM_CONSUMER_KEY="${TaskingManagerConsumerKey}"'),
         cf.sub('export TM_CONSUMER_SECRET="${TaskingManagerConsumerSecret}"'),
         cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),

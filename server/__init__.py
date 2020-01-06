@@ -9,6 +9,14 @@ from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
+from server.config import API_VERSION
+
+
+def format_url(endpoint):
+    parts = "/".join([i for i in endpoint.split('/') if i])
+    return "/api/{}/{}/".format(API_VERSION, parts)
+
+
 db = SQLAlchemy()
 migrate = Migrate()
 oauth = OAuth()
@@ -271,88 +279,88 @@ def add_api_endpoints(app):
     from server.api.system.applications import SystemApplicationsRestAPI
 
     # Projects REST endpoint
-    api.add_resource(ProjectsAllAPI, "/api/v2/projects/", methods=["GET"])
+    api.add_resource(ProjectsAllAPI, format_url("projects"), methods=["GET"])
     api.add_resource(
         ProjectsRestAPI,
-        "/api/v2/projects/",
+        format_url("projects"),
         endpoint="create_project",
         methods=["POST"],
     )
     api.add_resource(
         ProjectsRestAPI,
-        "/api/v2/projects/<int:project_id>/",
+        format_url("projects/<int:project_id>"),
         methods=["GET", "PATCH", "DELETE"],
     )
 
     # Projects queries endoints (TODO: Refactor them into the REST endpoints)
-    api.add_resource(ProjectsQueriesBboxAPI, "/api/v2/projects/queries/bbox/")
-    api.add_resource(ProjectsQueriesOwnerAPI, "/api/v2/projects/queries/myself/owner/")
+    api.add_resource(ProjectsQueriesBboxAPI, format_url("projects/queries/bbox"))
+    api.add_resource(ProjectsQueriesOwnerAPI, format_url("projects/queries/myself/owner"))
     api.add_resource(
-        ProjectsQueriesTouchedAPI, "/api/v2/projects/queries/<string:username>/touched/"
+        ProjectsQueriesTouchedAPI, format_url("projects/queries/<string:username>/touched")
     )
     api.add_resource(
-        ProjectsQueriesSummaryAPI, "/api/v2/projects/<int:project_id>/queries/summary/"
+        ProjectsQueriesSummaryAPI, format_url("projects/<int:project_id>/queries/summary")
     )
     api.add_resource(
         ProjectsQueriesNoGeometriesAPI,
-        "/api/v2/projects/<int:project_id>/queries/nogeometries/",
+        format_url("projects/<int:project_id>/queries/nogeometries"),
     )
     api.add_resource(
-        ProjectsQueriesNoTasksAPI, "/api/v2/projects/<int:project_id>/queries/notasks/"
+        ProjectsQueriesNoTasksAPI, format_url("projects/<int:project_id>/queries/notasks")
     )
     api.add_resource(
-        ProjectsQueriesAoiAPI, "/api/v2/projects/<int:project_id>/queries/aoi/"
+        ProjectsQueriesAoiAPI, format_url("projects/<int:project_id>/queries/aoi")
     )
-    api.add_resource(ProjectsQueriesFeaturedAPI, "/api/v2/projects/queries/featured")
+    api.add_resource(ProjectsQueriesFeaturedAPI, format_url("projects/queries/featured"))
 
     # Projects' addtional resources
     api.add_resource(
-        ProjectsActivitiesAPI, "/api/v2/projects/<int:project_id>/activities/"
+        ProjectsActivitiesAPI, format_url("projects/<int:project_id>/activities")
     )
     api.add_resource(
         ProjectsLastActivitiesAPI,
-        "/api/v2/projects/<int:project_id>/activities/latest/",
+        format_url("projects/<int:project_id>/activities/latest"),
     )
     api.add_resource(
-        ProjectsContributionsAPI, "/api/v2/projects/<int:project_id>/contributions/"
+        ProjectsContributionsAPI, format_url("projects/<int:project_id>/contributions")
     )
     api.add_resource(
         ProjectsContributionsQueriesDayAPI,
-        "/api/v2/projects/<int:project_id>/contributions/queries/day/",
+        format_url("projects/<int:project_id>/contributions/queries/day"),
     )
     api.add_resource(
-        ProjectsStatisticsAPI, "/api/v2/projects/<int:project_id>/statistics/"
+        ProjectsStatisticsAPI, format_url("projects/<int:project_id>/statistics")
     )
 
     api.add_resource(
         ProjectsStatisticsQueriesUsernameAPI,
-        "/api/v2/projects/<int:project_id>/statistics/queries/<string:username>/",
+        format_url("projects/<int:project_id>/statistics/queries/<string:username>"),
     )
 
     api.add_resource(
-        ProjectsStatisticsQueriesPopularAPI, "/api/v2/projects/queries/popular/"
+        ProjectsStatisticsQueriesPopularAPI, format_url("projects/queries/popular/")
     )
 
     api.add_resource(
         ProjectsTeamsAPI,
-        "/api/v2/projects/<int:project_id>/teams",
+        format_url("projects/<int:project_id>/teams"),
         endpoint="get_all_project_teams",
         methods=["GET"],
     )
     api.add_resource(
         ProjectsTeamsAPI,
-        "/api/v2/projects/<int:project_id>/teams/<int:team_id>/",
+        format_url("projects/<int:project_id>/teams/<int:team_id>"),
         methods=["PUT", "DELETE", "PATCH"],
     )
     api.add_resource(
         ProjectsCampaignsAPI,
-        "/api/v2/projects/<int:project_id>/campaigns/",
+        format_url("projects/<int:project_id>/campaigns"),
         endpoint="get_all_project_campaigns",
         methods=["GET"],
     )
     api.add_resource(
         ProjectsCampaignsAPI,
-        "/api/v2/projects/<int:project_id>/campaigns/<int:campaign_id>/",
+        format_url("projects/<int:project_id>/campaigns/<int:campaign_id>"),
         endpoint="assign_remove_campaign_to_project",
         methods=["POST", "DELETE"],
     )
@@ -360,250 +368,250 @@ def add_api_endpoints(app):
     # Projects actions endoints
     api.add_resource(
         ProjectsActionsMessageContributorsAPI,
-        "/api/v2/projects/<int:project_id>/actions/message-contributors/",
+        format_url("projects/<int:project_id>/actions/message-contributors"),
     )
     api.add_resource(
         ProjectsActionsTransferAPI,
-        "/api/v2/projects/<int:project_id>/actions/transfer-ownership/",
+        format_url("projects/<int:project_id>/actions/transfer-ownership"),
     )
     api.add_resource(
-        ProjectsActionsFeatureAPI, "/api/v2/projects/<int:project_id>/actions/feature/"
+        ProjectsActionsFeatureAPI, format_url("projects/<int:project_id>/actions/feature")
     )
     api.add_resource(
         ProjectsActionsUnFeatureAPI,
-        "/api/v2/projects/<int:project_id>/actions/remove-feature/",
+        format_url("projects/<int:project_id>/actions/remove-feature"),
         methods=["POST"],
     )
 
     api.add_resource(
         ProjectFavoriteAPI,
-        "/api/v2/projects/<int:project_id>/favorite/",
+        format_url("projects/<int:project_id>/favorite"),
         methods=["GET", "POST", "DELETE"],
     )
 
     api.add_resource(
         ProjectsActionsSetInterestsAPI,
-        "/api/v2/projects/<int:project_id>/actions/set-interests/",
+        format_url("projects/<int:project_id>/actions/set-interests"),
         methods=["POST"],
     )
 
     api.add_resource(
         UsersActionsSetInterestsAPI,
-        "/api/v2/users/me/actions/set-interests/",
+        format_url("users/me/actions/set-interests"),
         endpoint="create_user_interest",
         methods=["POST"],
     )
 
     api.add_resource(
         UsersStatisticsInterestsAPI,
-        "/api/v2/users/<int:user_id>/statistics/interests/",
+        format_url("users/<int:user_id>/statistics/interests"),
         methods=["GET"],
     )
 
     api.add_resource(
         InterestsAllAPI,
-        "/api/v2/interests/",
+        format_url("interests"),
         endpoint="create_interest",
         methods=["POST", "GET"],
     )
     api.add_resource(
         InterestsRestAPI,
-        "/api/v2/interests/<int:interest_id>/",
+        format_url("interests/<int:interest_id>"),
         methods=["PATCH", "DELETE"],
     )
 
     # Tasks REST endpoint
     api.add_resource(
-        TasksRestAPI, "/api/v2/projects/<int:project_id>/tasks/<int:task_id>/"
+        TasksRestAPI, format_url("projects/<int:project_id>/tasks/<int:task_id>")
     )
 
     # Tasks queries endoints (TODO: Refactor them into the REST endpoints)
-    api.add_resource(TasksQueriesJsonAPI, "/api/v2/projects/<int:project_id>/tasks/")
+    api.add_resource(TasksQueriesJsonAPI, format_url("projects/<int:project_id>/tasks"))
     api.add_resource(
-        TasksQueriesXmlAPI, "/api/v2/projects/<int:project_id>/tasks/queries/xml/"
+        TasksQueriesXmlAPI, format_url("projects/<int:project_id>/tasks/queries/xml")
     )
     api.add_resource(
-        TasksQueriesGpxAPI, "/api/v2/projects/<int:project_id>/tasks/queries/gpx/"
+        TasksQueriesGpxAPI, format_url("projects/<int:project_id>/tasks/queries/gpx")
     )
     api.add_resource(
-        TasksQueriesAoiAPI, "/api/v2/projects/<int:project_id>/tasks/queries/aoi/"
+        TasksQueriesAoiAPI, format_url("projects/<int:project_id>/tasks/queries/aoi")
     )
     api.add_resource(
-        TasksQueriesOwnLockedAPI, "/api/v2/projects/tasks/queries/own/locked/"
+        TasksQueriesOwnLockedAPI, format_url("projects/tasks/queries/own/locked/")
     )
     api.add_resource(
         TasksQueriesOwnLockedDetailsAPI,
-        "/api/v2/projects/<int:project_id>/tasks/queries/own/locked/details/",
+        format_url("projects/<int:project_id>/tasks/queries/own/locked/details"),
     )
     api.add_resource(
-        TasksQueriesMappedAPI, "/api/v2/projects/<int:project_id>/tasks/queries/mapped/"
+        TasksQueriesMappedAPI, format_url("projects/<int:project_id>/tasks/queries/mapped/")
     )
     api.add_resource(
         TasksQueriesOwnInvalidatedAPI,
-        "/api/v2/projects/<int:project_id>/tasks/queries/own/invalidated/",
+        format_url("projects/<int:project_id>/tasks/queries/own/invalidated"),
     )
 
     # Tasks actions endoints
     api.add_resource(
         TasksActionsMappingLockAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/lock-for-mapping/<int:task_id>/",
+        format_url("projects/<int:project_id>/tasks/actions/lock-for-mapping/<int:task_id>"),
     )
     api.add_resource(
         TasksActionsMappingStopAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/stop-mapping/<int:task_id>/",
+        format_url("projects/<int:project_id>/tasks/actions/stop-mapping/<int:task_id>"),
     )
     api.add_resource(
         TasksActionsMappingUnlockAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/unlock-after-mapping/<int:task_id>/",
+        format_url("projects/<int:project_id>/tasks/actions/unlock-after-mapping/<int:task_id>"),
     )
     api.add_resource(
         TasksActionsMappingUndoAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/undo-last-action/<int:task_id>/",
+        format_url("projects/<int:project_id>/tasks/actions/undo-last-action/<int:task_id>"),
     )
     api.add_resource(
         TasksActionsValidationLockAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/lock-for-validation/",
+        format_url("projects/<int:project_id>/tasks/actions/lock-for-validation"),
     )
     api.add_resource(
         TasksActionsValidationStopAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/stop-validation/",
+        format_url("projects/<int:project_id>/tasks/actions/stop-validation"),
     )
     api.add_resource(
         TasksActionsValidationUnlockAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/unlock-after-validation/",
+        format_url("projects/<int:project_id>/tasks/actions/unlock-after-validation"),
     )
     api.add_resource(
         TasksActionsMapAllAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/map-all/",
+        format_url("projects/<int:project_id>/tasks/actions/map-all"),
     )
     api.add_resource(
         TasksActionsValidateAllAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/validate-all/",
+        format_url("projects/<int:project_id>/tasks/actions/validate-all"),
     )
     api.add_resource(
         TasksActionsInvalidateAllAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/invalidate-all/",
+        format_url("projects/<int:project_id>/tasks/actions/invalidate-all"),
     )
     api.add_resource(
         TasksActionsResetBadImageryAllAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/reset-all-badimagery/",
+        format_url("projects/<int:project_id>/tasks/actions/reset-all-badimagery"),
     )
     api.add_resource(
         TasksActionsResetAllAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/reset-all/",
+        format_url("projects/<int:project_id>/tasks/actions/reset-all"),
     )
     api.add_resource(
         TasksActionsSplitAPI,
-        "/api/v2/projects/<int:project_id>/tasks/actions/split/<int:task_id>/",
+        format_url("projects/<int:project_id>/tasks/actions/split/<int:task_id>"),
     )
 
     # Comments REST endoints
     api.add_resource(
         CommentsProjectsRestAPI,
-        "/api/v2/projects/<int:project_id>/comments/",
+        format_url("projects/<int:project_id>/comments"),
         methods=["GET", "POST"],
     )
     api.add_resource(
         CommentsTasksRestAPI,
-        "/api/v2/projects/<int:project_id>/comments/tasks/<int:task_id>/",
+        format_url("projects/<int:project_id>/comments/tasks/<int:task_id>"),
         methods=["GET", "POST"],
     )
 
     # Annotations REST endoints
     api.add_resource(
         AnnotationsRestAPI,
-        "/api/v2/projects/<int:project_id>/annotations/<string:annotation_type>/",
-        "/api/v2/projects/<int:project_id>/annotations/",
+        format_url("projects/<int:project_id>/annotations/<string:annotation_type>"),
+        format_url("projects/<int:project_id>/annotations"),
         methods=["GET", "POST"],
     )
 
     # Issues REST endpoints
     api.add_resource(
-        IssuesAllAPI, "/api/v2/tasks/issues/categories/", methods=["GET", "POST"]
+        IssuesAllAPI, format_url("tasks/issues/categories"), methods=["GET", "POST"]
     )
     api.add_resource(
         IssuesRestAPI,
-        "/api/v2/tasks/issues/categories/<int:category_id>/",
+        format_url("tasks/issues/categories/<int:category_id>"),
         methods=["GET", "PATCH", "DELETE"],
     )
 
     # Licenses REST endpoints
-    api.add_resource(LicensesAllAPI, "/api/v2/licenses/")
+    api.add_resource(LicensesAllAPI, format_url("licenses/"))
     api.add_resource(
         LicensesRestAPI,
-        "/api/v2/licenses/",
+        format_url("licenses"),
         endpoint="create_license",
         methods=["POST"],
     )
     api.add_resource(
         LicensesRestAPI,
-        "/api/v2/licenses/<int:license_id>/",
+        format_url("licenses/<int:license_id>"),
         methods=["GET", "PATCH", "DELETE"],
     )
 
     # Licenses actions endpoint
     api.add_resource(
         LicensesActionsAcceptAPI,
-        "/api/v2/licenses/<int:license_id>/actions/accept-for-me/",
+        format_url("licenses/<int:license_id>/actions/accept-for-me"),
     )
 
     # Countries REST endpoints
-    api.add_resource(CountriesRestAPI, "/api/v2/countries/")
+    api.add_resource(CountriesRestAPI, format_url("countries/"))
 
     # Organisations REST endpoints
-    api.add_resource(OrganisationsAllAPI, "/api/v2/organisations/")
+    api.add_resource(OrganisationsAllAPI, format_url("organisations/"))
     api.add_resource(
         OrganisationsRestAPI,
-        "/api/v2/organisations/",
+        format_url("organisations"),
         endpoint="create_organisation",
         methods=["POST"],
     )
     api.add_resource(
         OrganisationsRestAPI,
-        "/api/v2/organisations/<int:organisation_id>/",
+        format_url("organisations/<int:organisation_id>"),
         endpoint="get_organisation",
         methods=["GET"],
     )
     api.add_resource(
         OrganisationsRestAPI,
-        "/api/v2/organisations/<int:organisation_id>/",
+        format_url("organisations/<int:organisation_id>"),
         methods=["PUT", "DELETE", "PATCH"],
     )
 
     # Organisations additional resources endpoints
     api.add_resource(
         OrganisationsCampaignsAPI,
-        "/api/v2/organisations/<int:organisation_id>/campaigns/",
+        format_url("organisations/<int:organisation_id>/campaigns"),
         endpoint="get_all_organisation_campaigns",
         methods=["GET"],
     )
     api.add_resource(
         OrganisationsCampaignsAPI,
-        "/api/v2/organisations/<int:organisation_id>/campaigns/<int:campaign_id>/",
+        format_url("organisations/<int:organisation_id>/campaigns/<int:campaign_id>"),
         endpoint="assign_campaign_to_organisation",
         methods=["POST", "DELETE"],
     )
 
     # Teams REST endpoints
-    api.add_resource(TeamsAllAPI, "/api/v2/teams/", methods=["GET"])
+    api.add_resource(TeamsAllAPI, format_url("teams"), methods=["GET"])
     api.add_resource(
-        TeamsAllAPI, "/api/v2/teams/", endpoint="create_team", methods=["POST"]
+        TeamsAllAPI, format_url("teams"), endpoint="create_team", methods=["POST"]
     )
     api.add_resource(
         TeamsRestAPI,
-        "/api/v2/teams/<int:team_id>/",
+        format_url("teams/<int:team_id>"),
         methods=["GET", "PUT", "DELETE", "PATCH"],
     )
 
     # Teams actions endpoints
     api.add_resource(
         TeamsActionsJoinAPI,
-        "/api/v2/teams/<int:team_id>/actions/join/",
+        format_url("teams/<int:team_id>/actions/join"),
         methods=["POST", "PUT"],
     )
     api.add_resource(
         TeamsActionsLeaveAPI,
-        "/api/v2/teams/<int:team_id>/actions/leave/",
+        format_url("teams/<int:team_id>/actions/leave"),
         endpoint="leave_team",
         methods=["POST"],
     )
@@ -611,117 +619,117 @@ def add_api_endpoints(app):
     # Campaigns REST endpoints
     api.add_resource(
         CampaignsAllAPI,
-        "/api/v2/campaigns/",
+        format_url("campaigns"),
         endpoint="get_all_campaign",
         methods=["GET"],
     )
     api.add_resource(
         CampaignsAllAPI,
-        "/api/v2/campaigns/",
+        format_url("campaigns"),
         endpoint="create_campaign",
         methods=["POST"],
     )
     api.add_resource(
         CampaignsRestAPI,
-        "/api/v2/campaigns/<int:campaign_id>/",
+        format_url("campaigns/<int:campaign_id>"),
         methods=["GET", "PATCH", "DELETE"],
     )
 
     # Notifications REST endpoints
-    api.add_resource(NotificationsRestAPI, "/api/v2/notifications/<int:message_id>/")
-    api.add_resource(NotificationsAllAPI, "/api/v2/notifications/")
+    api.add_resource(NotificationsRestAPI, format_url("notifications/<int:message_id>/"))
+    api.add_resource(NotificationsAllAPI, format_url("notifications/"))
     api.add_resource(
         NotificationsQueriesCountUnreadAPI,
-        "/api/v2/notifications/queries/own/count-unread/",
+        format_url("notifications/queries/own/count-unread"),
     )
 
     # Notifications Actions endpoints
     api.add_resource(
         NotificationsActionsDeleteMultipleAPI,
-        "/api/v2/notifications/delete-multiple/",
+        format_url("notifications/delete-multiple"),
         methods=["DELETE"],
     )
 
     # Users REST endpoint
-    api.add_resource(UsersAllAPI, "/api/v2/users/")
-    api.add_resource(UsersRestAPI, "/api/v2/users/<int:user_id>/")
+    api.add_resource(UsersAllAPI, format_url("users/"))
+    api.add_resource(UsersRestAPI, format_url("users/<int:user_id>/"))
     api.add_resource(
-        UsersQueriesUsernameFilterAPI, "/api/v2/users/queries/filter/<string:username>/"
+        UsersQueriesUsernameFilterAPI, format_url("users/queries/filter/<string:username>/")
     )
     api.add_resource(
-        UsersQueriesUsernameAPI, "/api/v2/users/queries/<string:username>/"
+        UsersQueriesUsernameAPI, format_url("users/queries/<string:username>/")
     )
-    api.add_resource(UserFavoritesAPI, "/api/v2/users/queries/favorites/")
+    api.add_resource(UserFavoritesAPI, format_url("users/queries/favorites/"))
 
     # Users Actions endpoint
-    api.add_resource(UsersActionsSetUsersAPI, "/api/v2/users/me/actions/set-user/")
+    api.add_resource(UsersActionsSetUsersAPI, format_url("users/me/actions/set-user/"))
 
     api.add_resource(
         UsersActionsSetLevelAPI,
-        "/api/v2/users/<string:username>/actions/set-level/<string:level>/",
+        format_url("users/<string:username>/actions/set-level/<string:level>"),
     )
     api.add_resource(
         UsersActionsSetRoleAPI,
-        "/api/v2/users/<string:username>/actions/set-role/<string:role>/",
+        format_url("users/<string:username>/actions/set-role/<string:role>"),
     )
     api.add_resource(
         UsersActionsSetExpertModeAPI,
-        "/api/v2/users/<string:username>/actions/set-expert-mode/<string:is_expert>/",
+        format_url("users/<string:username>/actions/set-expert-mode/<string:is_expert>"),
     )
 
-    api.add_resource(UsersTasksAPI, "/api/v2/users/<int:user_id>/tasks/")
+    api.add_resource(UsersTasksAPI, format_url("users/<int:user_id>/tasks/"))
     api.add_resource(
-        UsersActionsVerifyEmailAPI, "/api/v2/users/me/actions/verify-email/"
+        UsersActionsVerifyEmailAPI, format_url("users/me/actions/verify-email/")
     )
-    api.add_resource(UsersActionsRegisterEmailAPI, "/api/v2/users/actions/register/")
+    api.add_resource(UsersActionsRegisterEmailAPI, format_url("users/actions/register/"))
 
     # Users Statistics endpoint
-    api.add_resource(UsersStatisticsAPI, "/api/v2/users/<string:username>/statistics/")
+    api.add_resource(UsersStatisticsAPI, format_url("users/<string:username>/statistics"))
 
     # User RecommendedProjects endpoint
     api.add_resource(
         UserRecommendedProjectsAPI,
-        "/api/v2/users/<string:username>/recommended-projects/",
+        format_url("users/<string:username>/recommended-projects"),
     )
 
     # User Interests endpoint
     api.add_resource(
-        UserInterestsAPI, "/api/v2/users/<string:username>/queries/interests/"
+        UserInterestsAPI, format_url("users/<string:username>/queries/interests")
     )
 
     # Users openstreetmap endpoint
     api.add_resource(
-        UsersOpenStreetMapAPI, "/api/v2/users/<string:username>/openstreetmap/"
+        UsersOpenStreetMapAPI, format_url("users/<string:username>/openstreetmap")
     )
 
     # System endpoint
-    api.add_resource(SystemDocsAPI, "/api/v2/system/docs/json/")
-    api.add_resource(SystemHeartbeatAPI, "/api/v2/system/heartbeat/")
-    api.add_resource(SystemLanguagesAPI, "/api/v2/system/languages/")
-    api.add_resource(SystemStatisticsAPI, "/api/v2/system/statistics/")
+    api.add_resource(SystemDocsAPI, format_url("system/docs/json/"))
+    api.add_resource(SystemHeartbeatAPI, format_url("system/heartbeat/"))
+    api.add_resource(SystemLanguagesAPI, format_url("system/languages/"))
+    api.add_resource(SystemStatisticsAPI, format_url("system/statistics/"))
     api.add_resource(
-        SystemAuthenticationLoginAPI, "/api/v2/system/authentication/login/"
+        SystemAuthenticationLoginAPI, format_url("system/authentication/login/")
     )
     api.add_resource(
-        SystemAuthenticationCallbackAPI, "/api/v2/system/authentication/callback/"
+        SystemAuthenticationCallbackAPI, format_url("system/authentication/callback/")
     )
     api.add_resource(
-        SystemAuthenticationEmailAPI, "/api/v2/system/authentication/email/"
+        SystemAuthenticationEmailAPI, format_url("system/authentication/email/")
     )
     api.add_resource(
         SystemApplicationsRestAPI,
-        "/api/v2/system/authentication/applications/",
+        format_url("system/authentication/applications"),
         methods=["POST", "GET"],
     )
     api.add_resource(
         SystemApplicationsRestAPI,
-        "/api/v2/system/authentication/applications/<string:application_key>/",
+        format_url("system/authentication/applications/<string:application_key>"),
         endpoint="delete_application",
         methods=["DELETE"],
     )
     api.add_resource(
         SystemApplicationsRestAPI,
-        "/api/v2/system/authentication/applications/<string:application_key>/",
+        format_url("system/authentication/applications/<string:application_key>"),
         endpoint="check_application",
         methods=["PATCH"],
     )
