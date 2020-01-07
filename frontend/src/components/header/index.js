@@ -284,13 +284,13 @@ class Header extends React.Component {
           <div className="fr dib tr mb1">
             {this.renderAuthenticationButtons()}
             <div className="dib v-mid dn-l">
-              <Popup  trigger={open => <BurgerMenu open={open}/>} modal closeOnDocumentClick>
+              <Popup trigger={open => <BurgerMenu open={open}/>} modal closeOnDocumentClick>
                 <div>
                   <PopupItems
                    userDetails={this.props.userDetails}
                    menuItems={getMenuItensForUser(this.props.userDetails)}
                    linkCombo={this.linkCombo}
-                   logout={this.logout}
+                   logout={this.props.logout}
                    location={this.props.location}
                  />
                </div>
