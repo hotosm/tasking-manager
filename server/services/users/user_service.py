@@ -126,12 +126,11 @@ class UserService:
     @staticmethod
     def get_projects_favorited(user_id: int) -> ProjectFavoritesDTO:
         user = UserService.get_user_by_id(user_id)
-        print(user.favorites)
         projects_dto = [f.as_dto_for_admin(f.id) for f in user.favorites]
 
         fav_dto = ProjectFavoritesDTO()
         fav_dto.favorited_projects = projects_dto
-        print(fav_dto.favorited_projects)
+
         return fav_dto
 
     @staticmethod
