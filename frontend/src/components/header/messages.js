@@ -56,6 +56,10 @@ export default defineMessages({
     id: 'header.nav.settings',
     defaultMessage: 'Settings',
   },
+  myTeams: {
+    id: 'header.nav.my_teams',
+    defaultMessage: 'My teams',
+  },
   logout: {
     id: 'header.nav.logout',
     defaultMessage: 'Logout',

@@ -7,7 +7,7 @@ import messages from './messages';
 import { ProjectCard } from '../projectcard/projectCard';
 import { AddButton, ViewAllLink } from './management';
 
-export function Projects({ projects, viewAllQuery }: Object) {
+export function Projects({ projects, viewAllQuery, ownerEntity }: Object) {
   return (
     <div className="bg-white b--grey-light ba pa4 mb3">
       <div className="cf db">
@@ -37,7 +37,7 @@ export function Projects({ projects, viewAllQuery }: Object) {
               <span className="blue-grey">
                 <FormattedMessage
                   {...messages.noProjectsFound}
-                  values={{entity: <span className="ttl"><FormattedMessage {...messages.organisation}/></span>}}
+                  values={{entity: <span className="ttl"><FormattedMessage {...messages[ownerEntity]}/></span>}}
                 />
               </span>
             }

@@ -6,13 +6,13 @@ import { Form, Field } from 'react-final-form';
 
 import messages from './messages';
 import { UserAvatar } from '../user/avatar';
-import { AddButton, ViewAllLink, Management } from './management';
+import { AddButton, ViewAllLink, Management, VisibilityBox } from './management';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { SwitchToggle, RadioField, OrganisationSelect } from '../formInputs';
 import { EditModeControl } from './editMode';
 import { Button } from '../button';
 
-export function TeamsManagement({ teams, userDetails }: Object) {
+export function TeamsManagement({ teams, userDetails, managementView }: Object) {
   const [isOrgManager, setIsOrgManager] = useState(false);
   useEffect(() => {
     if (userDetails.role !== 'ADMIN' && userDetails.id) {
@@ -26,10 +26,11 @@ export function TeamsManagement({ teams, userDetails }: Object) {
   return (
     <Management
       title={<FormattedMessage {...messages.myTeams} />}
-      showAddButton={userDetails.role === 'ADMIN' || isOrgManager}
+      showAddButton={(userDetails.role === 'ADMIN' || isOrgManager) && managementView}
+      managementView={managementView}
     >
       {teams.length ? (
-        teams.map((team, n) => <TeamCard team={team} key={n} />)
+        teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)
       ) : (
         <div>
           <FormattedMessage {...messages.noTeams} />
@@ -72,17 +73,21 @@ export function Teams({ teams, viewAllQuery }: Object) {
   );
 }
 
-export function TeamCard({ team }: Object) {
+export function TeamCard({ team, managementView }: Object) {
   return (
-    <Link to={`/manage/teams/${team.teamId}/`}>
+    <Link to={managementView ? `/manage/teams/${team.teamId}/` : `/teams/${team.teamId}/membership/`}>
       <article className="fl w-30-l base-font w-50-m w-100 mb3 pr3 blue-dark mw5">
         <div className="bg-white ph3 pb3 ba br1 b--grey-light shadow-hover">
           <h3 className="fw7">{team.name}</h3>
+          <div className="db h2" title={team.organisation}>
+            <img src={team.logo} alt={team.organisation} className="h2"/>
+          </div>
           <h4 className="f6 fw5 mb3 ttu blue-light">
             <FormattedMessage {...messages.managers} />
           </h4>
           <div className="db h2">
             {team.members
+              .filter(user => user.function === 'MANAGER')
               .filter(user => user.function === 'MANAGER')
               .map((user, n) => (
                 <UserAvatar
@@ -233,5 +238,55 @@ export function TeamForm(props) {
         );
       }}
     ></Form>
+  );
+}
+
+export function TeamSideBar({team, members, managers}: Object) {
+  return (
+    <ReactPlaceholder
+      showLoadingAnimation={true}
+      type="media"
+      rows={20}
+      ready={typeof(team.teamId) === 'number'}
+    >
+      <div className="cf">
+        <div className="w-70 dib fl">
+          <span className="blue-grey">
+            #{team.teamId}
+          </span>
+        </div>
+        <div className="mw4 dib fr">
+          <VisibilityBox visibility={team.visibility} extraClasses={'pv2 ph3'} />
+        </div>
+      </div>
+      <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">
+        {team.name}
+      </h3>
+      <p className="blue-grey">{team.description}</p>
+      <h4><FormattedMessage {...messages.organisation} /></h4>
+      <p><img src={team.logo} alt="organisation logo"/></p>
+      <h4><FormattedMessage {...messages.managers} /></h4>
+      <div className="cf db mt3">
+        {managers.map((user, n) => (
+          <UserAvatar
+            key={n}
+            username={user.username}
+            picture={user.pictureUrl}
+            colorClasses="white bg-blue-grey"
+          />
+        ))}
+      </div>
+      <h4><FormattedMessage {...messages.members} /></h4>
+      <div className="cf db mt3">
+        {members.map((user, n) => (
+          <UserAvatar
+            key={n}
+            username={user.username}
+            picture={user.pictureUrl}
+            colorClasses="white bg-blue-grey"
+          />
+        ))}
+      </div>
+    </ReactPlaceholder>
   );
 }

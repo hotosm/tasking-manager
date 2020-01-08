@@ -111,7 +111,7 @@ class Team(db.Model):
             except KeyError:
                 continue
 
-        if team_dto.members != self.get_team_members() and team_dto.members:
+        if team_dto.members != self._get_team_members() and team_dto.members:
             for member in self.members:
                 db.session.delete(member)
 
@@ -159,7 +159,7 @@ class Team(db.Model):
         team_dto.team_id = self.id
         team_dto.description = self.description
         team_dto.invite_only = self.invite_only
-        team_dto.members = self.get_team_members()
+        team_dto.members = self._get_team_members()
         team_dto.name = self.name
         team_dto.organisation = self.organisation.name
         team_dto.organisation_id = self.organisation.id
@@ -174,7 +174,7 @@ class Team(db.Model):
         team_dto.name = self.name
         team_dto.description = self.description
         team_dto.invite_only = self.invite_only
-        team_dto.members = self.get_team_members()
+        team_dto.members = self._get_team_members()
         team_dto.visibility = TeamVisibility(self.visibility).name
         return team_dto
 

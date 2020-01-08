@@ -10,14 +10,23 @@ import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { Members } from '../components/teamsAndOrgs/members';
-import { TeamInformation, TeamForm, TeamsManagement } from '../components/teamsAndOrgs/teams';
+import { TeamInformation, TeamForm, TeamsManagement, TeamSideBar } from '../components/teamsAndOrgs/teams';
+import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
+import { NotFound } from './notFound';
 
-export function ListTeams() {
+export function ManageTeams() {
+  return <ListTeams managementView={true} />;
+}
+
+export function ListTeams({managementView = false}: Object) {
   const userDetails = useSelector(state => state.auth.get('userDetails'));
   // TO DO: filter teams of current user
-  const [error, loading, teams] = useFetch(`teams/`);
+  const [error, loading, teams] = useFetch(
+    `teams/?${managementView ? `manager=${userDetails.id}` : `member=${userDetails.id}`}`,
+    userDetails.id !== undefined
+  );
 
   const placeHolder = (
     <div className="pb4 bg-tan">
@@ -37,7 +46,7 @@ export function ListTeams() {
       delay={10}
       ready={!error && !loading}
     >
-      <TeamsManagement teams={teams.teams} userDetails={userDetails} />
+      <TeamsManagement teams={teams.teams} userDetails={userDetails} managementView={managementView}/>
     </ReactPlaceholder>
   );
 }
@@ -265,4 +274,87 @@ export function EditTeam(props) {
       </div>
     </div>
   );
+}
+
+export function TeamDetail(props) {
+  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  const token = useSelector(state => state.auth.get('token'));
+  const [error, loading, team] = useFetch(`teams/${props.id}/`);
+  // eslint-disable-next-line
+  const [projectsError, projectsLoading, projects] = useFetch(`projects/?teamId=${props.id}`, props.id);
+  const [isMember, setIsMember] = useState(false);
+  const [managers, setManagers] = useState([]);
+  const [members, setMembers] = useState([]);
+  useEffect(() => {
+    if (team && team.members) {
+      setManagers(team.members.filter(member => member.active && member.function === 'MANAGER'));
+      setMembers(team.members.filter(member => member.active && member.function === 'MEMBER'));
+      if (team.members.map(member => member.username).includes(userDetails.username)) {
+        setIsMember(true);
+      }
+    }
+  }, [team, managers, userDetails.username]);
+
+  const joinTeam = () => {
+    pushToLocalJSONAPI(
+      `teams/${props.id}/actions/join/`,
+      JSON.stringify({role: 'MEMBER', username: userDetails.username}),
+      token,
+      'POST'
+    ).then(res => setIsMember(true));
+  };
+
+  const leaveTeam = () => {
+    pushToLocalJSONAPI(
+      `teams/${props.id}/actions/leave/`,
+      JSON.stringify({username: userDetails.username}),
+      token,
+      'POST'
+    ).then(res => setIsMember(false));
+  };
+
+  if (!loading && error) {
+    return <NotFound />;
+  } else {
+    return (
+      <>
+        <div className="cf pa4 bg-tan vh-100">
+          <div className="w-40-l w-100 mt4 fl">
+            <TeamSideBar team={team} members={members} managers={managers} />
+          </div>
+          <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
+            <Projects projects={projects} viewAllQuery={`?team=${props.id}`} ownerEntity="team" />
+          </div>
+        </div>
+        <div className="fixed bottom-0 cf bg-white h3 w-100">
+          <div className="w-80-ns w-60-m w-50 h-100 fl tr">
+            <Link to={'/teams'}>
+              <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
+                <FormattedMessage {...messages.myTeams} />
+              </CustomButton>
+            </Link>
+          </div>
+          <div className="w-20-l w-40-m w-50 h-100 fr">
+            {isMember ? (
+              <CustomButton
+                className="w-100 h-100 bg-red white"
+                disabledClassName="bg-red o-50 white w-100 h-100"
+                onClick={() => leaveTeam()}
+              >
+                <FormattedMessage {...messages.leaveTeam} />
+              </CustomButton>
+            ) : (
+              <CustomButton
+                className="w-100 h-100 bg-red white"
+                disabledClassName="bg-red o-50 white w-100 h-100"
+                onClick={() => joinTeam()}
+              >
+                <FormattedMessage {...messages.joinTeam} />
+              </CustomButton>
+            )}
+          </div>
+        </div>
+      </>
+    );
+  }
 }

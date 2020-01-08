@@ -19,7 +19,7 @@ const socialNetworks = [
 export function Footer({ location }: Object) {
   const userDetails = useSelector(state => state.auth.get('userDetails'));
 
-  const noFooterViews = ['tasks', 'map', 'validate', 'new'];
+  const noFooterViews = ['tasks', 'map', 'validate', 'new', 'membership'];
   const activeView = location.pathname.split('/').filter(i => i !== "").splice(-1)[0];
 
   if (noFooterViews.includes(activeView)) {
