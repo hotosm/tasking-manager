@@ -38,13 +38,13 @@ class ProjectChat(db.Model):
         return new_message
 
     @staticmethod
-    def get_messages(project_id: int, page: int) -> ProjectChatDTO:
+    def get_messages(project_id: int, page: int, per_page: int = 20) -> ProjectChatDTO:
         """ Get all messages on the project """
 
         project_messages = (
             ProjectChat.query.filter_by(project_id=project_id)
             .order_by(ProjectChat.time_stamp.desc())
-            .paginate(page, 50, True)
+            .paginate(page, per_page, True)
         )
 
         if project_messages.total == 0:
@@ -55,6 +55,7 @@ class ProjectChat(db.Model):
             chat_dto = ChatMessageDTO()
             chat_dto.message = message.message
             chat_dto.username = message.posted_by.username
+            chat_dto.picture_url = message.posted_by.picture_url
             chat_dto.timestamp = message.time_stamp
 
             dto.chat.append(chat_dto)
