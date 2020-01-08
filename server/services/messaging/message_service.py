@@ -131,8 +131,8 @@ class MessageService:
     ):
         """ Will send a canned message to anyone @'d in a comment """
         usernames = MessageService._parse_message_for_username(comment)
-        # if len(usernames) == 0:
-        #     return  # Nobody @'d so return
+        if len(usernames) == 0:
+            return  # Nobody @'d so return
 
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
