@@ -78,11 +78,11 @@ const TaskSelectionFooter = props => {
       props.taskAction.startsWith('validate')
     ) {
       setEditorOptions(
-        getEditors().filter(i => props.project.validationEditors.includes(i.backendValue)),
+        getEditors().filter(i => props.project.validationEditors.includes(i.value)),
       );
     } else {
       setEditorOptions(
-        getEditors().filter(i => props.project.mappingEditors.includes(i.backendValue)),
+        getEditors().filter(i => props.project.mappingEditors.includes(i.value)),
       );
     }
   }, [props.taskAction, props.project.mappingEditors, props.project.validationEditors]);
@@ -123,7 +123,7 @@ const TaskSelectionFooter = props => {
         </h3>
         <Dropdown
           options={editorOptions}
-          value={editor}
+          value={ editorOptions.map(i => i.value).includes(editor) ? editor : editorOptions.length && editorOptions[0].value}
           display={<FormattedMessage {...messages.selectEditor} />}
           className="bg-white bn"
           toTop={true}
