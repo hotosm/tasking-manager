@@ -304,15 +304,17 @@ class MessageService:
         current_app.logger.debug("Sending Favorite Project Activities")
         favorited_projects = UserService.get_projects_favorited(user_id)
         contributed_projects = UserService.get_projects_mapped(user_id)
-        projects_list = contributed_projects
+        if contributed_projects is None:
+            contributed_projects = []
+
         for favorited_project in favorited_projects.favorited_projects:
-            projects_list.append(favorited_project.project_id)
+            contributed_projects.append(favorited_project.project_id)
 
         recently_updated_projects = (
             Project.query.with_entities(
                 Project.id, func.DATE(Project.last_updated).label("last_updated")
             )
-            .filter(Project.id.in_(projects_list))
+            .filter(Project.id.in_(contributed_projects))
             .filter(
                 func.DATE(Project.last_updated)
                 > datetime.date.today() - datetime.timedelta(days=300)
