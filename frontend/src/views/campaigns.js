@@ -14,6 +14,7 @@ import {
   CampaignInformation,
   CampaignForm,
 } from '../components/teamsAndOrgs/campaigns';
+import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 
@@ -109,6 +110,7 @@ export function EditCampaign(props) {
   const userDetails = useSelector(state => state.auth.get('userDetails'));
   const token = useSelector(state => state.auth.get('token'));
   const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`);
+  const [projectsError, projectsLoading, projects] = useFetch(`projects/?campaign=${campaign.name}`, campaign.name);
 
   const updateCampaign = payload => {
     pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
@@ -130,7 +132,13 @@ export function EditCampaign(props) {
           disabledForm={error || loading}
         />
       </div>
-      <div className="w-40-l w-100 mt4 pl5-l pl0 fl"></div>
+      <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
+        <Projects
+          projects={!projectsLoading && !projectsError && projects}
+          viewAllQuery={`?campaign=${campaign.name}`}
+          ownerEntity="campaign"
+        />
+      </div>
     </div>
   );
 }

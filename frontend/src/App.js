@@ -17,7 +17,7 @@ import { Welcome } from './views/welcome';
 import { Settings } from './views/settings';
 import { Management } from './views/management';
 import { ListOrganisations, CreateOrganisation, EditOrganisation } from './views/organisations';
-import { ListTeams, CreateTeam, EditTeam } from './views/teams';
+import { ListTeams, ManageTeams, CreateTeam, EditTeam, TeamDetail } from './views/teams';
 import { ListCampaigns, CreateCampaign, EditCampaign } from './views/campaigns';
 import { NotFound } from './views/notFound';
 import { SelectTask } from './views/taskSelection';
@@ -61,7 +61,7 @@ function App() {
             <ListOrganisations path="manage/organisations/" />
             <CreateOrganisation path="manage/organisations/new/" />
             <EditOrganisation path="manage/organisations/:id/" />
-            <ListTeams path="manage/teams/" />
+            <ManageTeams path="manage/teams/" />
             <CreateTeam path="manage/teams/new" />
             <EditTeam path="manage/teams/:id" />
             <ListCampaigns path="manage/campaigns/" />
@@ -70,6 +70,8 @@ function App() {
             <CreateProject path="manage/projects/new" />
             <ProjectEdit path="manage/projects/:id" />
             <ManageProjectsPage path="manage/projects/" />
+            <ListTeams path="teams" />
+            <TeamDetail path="teams/:id/membership" />
             <ManageProjectsPage path="projects/" />
             <SelectTask path="projects/:id/tasks" />
             <MapTask path="projects/:id/map" />
