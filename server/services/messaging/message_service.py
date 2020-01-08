@@ -158,14 +158,12 @@ class MessageService:
         query = """ select user_id from task_history where project_id = :project_id and task_id = :task_id
                     and action = 'STATE_CHANGE'"""
         result = db.engine.execute(text(query), project_id=project_id, task_id=task_id)
-        result = result[0]
         contributed_users = [r[0] for r in result]
 
         if len(contributed_users) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
             # project_title = ProjectService.get_project_title(project_id)
             for user_id in contributed_users:
-
                 try:
                     user = UserService.get_user_dto_by_id(user_id)
                 except NotFound:
@@ -308,9 +306,8 @@ class MessageService:
         contributed_projects = UserService.get_projects_mapped(user_id)
         projects_list = contributed_projects
         for favorited_project in favorited_projects.favorited_projects:
-            print(favorited_project.project_id)
             projects_list.append(favorited_project.project_id)
-        print(projects_list)
+
         recently_updated_projects = (
             Project.query.with_entities(
                 Project.id, func.DATE(Project.last_updated).label("last_updated")
