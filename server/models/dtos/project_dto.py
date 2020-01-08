@@ -239,14 +239,14 @@ class ProjectDTO(Model):
 
 
 class ProjectFavoriteDTO(Model):
-    """ DTO used to define project favorite by user """
+    """ DTO used to favorite a project """
 
     project_id = IntType(required=True)
     user_id = IntType(required=True)
 
 
 class ProjectFavoritesDTO(Model):
-    """ DTO for projects a user has mapped """
+    """ DTO to retrieve favorited projects """
 
     def __init__(self):
         super().__init__()
@@ -280,6 +280,7 @@ class ProjectSearchDTO(Model):
     interests = ListType(IntType())
     created_by = IntType(required=False)
     mapped_by = IntType(required=False)
+    favorited_by = IntType(required=False)
 
     def __hash__(self):
         """ Make object hashable so we can cache user searches"""
