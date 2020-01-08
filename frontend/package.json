@@ -10,6 +10,7 @@
     "@mapbox/togeojson": "^0.16.0",
     "@reach/router": "^1.2.1",
     "@turf/turf": "^5.1.6",
+    "@webscopeio/react-textarea-autocomplete": "^4.6.2",
     "axios": "^0.19.0",
     "d3-array": "^2.3.1",
     "dompurify": "^1.0.11",
