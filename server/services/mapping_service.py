@@ -184,7 +184,6 @@ class MappingService:
         task.set_task_history(
             TaskAction.COMMENT, task_comment.user_id, task_comment.comment
         )
-
         # Parse comment to see if any users have been @'d
         MessageService.send_message_after_comment(
             task_comment.user_id, task_comment.comment, task.id, task_comment.project_id
