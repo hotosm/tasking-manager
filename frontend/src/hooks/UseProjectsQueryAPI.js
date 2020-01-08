@@ -19,6 +19,7 @@ const projectQueryAllSpecification = {
   difficulty: StringParam,
   organisation: StringParam,
   campaign: StringParam,
+  team: NumberParam,
   location: StringParam,
   types: CommaArrayParam,
   page: NumberParam,
@@ -42,6 +43,7 @@ export const useExploreProjectsQueryParams = () => {
  const backendToQueryConversion = {
    difficulty: 'mapperLevel',
    campaign: 'campaign',
+   team: 'teamId',
    organisation: 'organisationName',
    location: 'country',
    types: 'mappingTypes',
