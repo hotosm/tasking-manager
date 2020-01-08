@@ -803,7 +803,7 @@ class Task(db.Model):
     @staticmethod
     def get_tasks_as_geojson_feature_collection(
         project_id,
-        task_ids_str: str,
+        task_ids_str: str = None,
         order_by: str = None,
         order_by_type: str = "ASC",
         status: int = None,

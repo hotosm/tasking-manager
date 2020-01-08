@@ -63,10 +63,14 @@ class TestProject(unittest.TestCase):
 
         # Act
         feature_collection = Task.get_tasks_as_geojson_feature_collection(
-            self.test_project.id
+            self.test_project.id, "1"
         )
+        self.assertIsInstance(feature_collection, geojson.FeatureCollection)
+        self.assertEqual(1, len(feature_collection.features))
 
-        # Assert
+        feature_collection = Task.get_tasks_as_geojson_feature_collection(
+            self.test_project.id, None
+        )
         self.assertIsInstance(feature_collection, geojson.FeatureCollection)
         self.assertEqual(2, len(feature_collection.features))
 
