@@ -43,9 +43,9 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
 							className="mr2"
 							name="mapping_editors"
 							onChange={handleMappingEditors}
-							checked={projectInfo.mappingEditors.includes(elm.backendValue)}
+							checked={projectInfo.mappingEditors.includes(elm.value)}
 							type="checkbox"
-							value={elm.backendValue}
+							value={elm.value}
 						/>
 						{elm.label}
 					</label>
@@ -59,9 +59,9 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
 							className="mr2"
 							name="validation_editors"
 							onChange={handleValidationEditors}
-							checked={projectInfo.validationEditors.includes(elm.backendValue)}
+							checked={projectInfo.validationEditors.includes(elm.value)}
 							type="checkbox"
-							value={elm.backendValue}
+							value={elm.value}
 						/>
 						{elm.label}
 					</label>
