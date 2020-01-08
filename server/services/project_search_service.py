@@ -214,7 +214,17 @@ class ProjectSearchService:
 
         if search_dto.mapped_by:
             projects_mapped = UserService.get_projects_mapped(search_dto.mapped_by)
-            query = query.filter(Project.id.in_(projects_mapped))
+            if projects_mapped:
+                query = query.filter(Project.id.in_(projects_mapped))
+
+        if search_dto.favorited_by:
+            user = UserService.get_user_by_id(search_dto.favorited_by)
+            projects_favorited = user.favorites
+            if projects_favorited:
+                project_list = []
+                for project in projects_favorited:
+                    project_list.append(project.id)
+                query = query.filter(Project.id.in_(project_list))
 
         if search_dto.mapper_level and search_dto.mapper_level.upper() != "ALL":
             query = query.filter(

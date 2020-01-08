@@ -468,6 +468,9 @@ class ProjectSearchBase(Resource):
             if request.args.get("mappedByMe") == "true":
                 search_dto.mapped_by = tm.authenticated_user_id
 
+            if request.args.get("favoritedByMe") == "true":
+                search_dto.favorited_by = tm.authenticated_user_id
+
         except Exception:
             pass
 
@@ -563,6 +566,11 @@ class ProjectsAllAPI(ProjectSearchBase):
             - in: query
               name: mappedByMe
               description: Limit to projects mapped/validated by authenticated user
+              type: boolean
+              default: false
+            - in: query
+              name: favoritedByMe
+              description: Limit to projects favorited by authenticated user
               type: boolean
               default: false
             - in: query
