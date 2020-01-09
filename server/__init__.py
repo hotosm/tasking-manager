@@ -259,9 +259,12 @@ def add_api_endpoints(app):
     )
 
     # System API endpoint
-    from server.api.system.general import SystemDocsAPI
-    from server.api.system.general import SystemHeartbeatAPI
-    from server.api.system.general import SystemLanguagesAPI
+    from server.api.system.general import (
+        SystemDocsAPI,
+        SystemHeartbeatAPI,
+        SystemLanguagesAPI,
+        SystemContactAdminRestAPI,
+    )
     from server.api.system.statistics import SystemStatisticsAPI
     from server.api.system.authentication import (
         SystemAuthenticationEmailAPI,
@@ -724,4 +727,7 @@ def add_api_endpoints(app):
         "/api/v2/system/authentication/applications/<string:application_key>/",
         endpoint="check_application",
         methods=["PATCH"],
+    )
+    api.add_resource(
+        SystemContactAdminRestAPI, "/api/v2/system/contact-admin/", methods=["POST"]
     )

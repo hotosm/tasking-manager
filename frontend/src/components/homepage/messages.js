@@ -120,7 +120,32 @@ export default defineMessages({
     defaultMessage: 'Contact us',
   },
   errorLoadingTheX: {
-    id: 'project.featuredProjects.error',
+    id: 'home.featuredProjects.error',
     defaultMessage: 'Error loading the {xWord}',
   },
+  contacterTitle: {
+    id: 'home.contact.contacterTitle',
+    defaultMessage: 'Send us a Note',
+  },
+  contacterName: {
+    id: 'home.contact.contacterName',
+    defaultMessage: 'Name',
+  },
+  contacterEmail: {
+    id: 'home.contact.contacterEmail',
+    defaultMessage: 'Email',
+  },
+  contacterMessage: {
+    id: 'home.contact.contacterMessage',
+    defaultMessage: 'Message',
+  },
+  contacterHeaderText: {
+    id: 'home.contact.contacterHeadText',
+    defaultMessage: 'Have an inquiry or some feedback for us? Fill out the form below to contact our team.',
+  },
+  contacterSend: {
+    id: 'home.contact.submit',
+    defaultMessage: 'Send',
+  },
+
 });
