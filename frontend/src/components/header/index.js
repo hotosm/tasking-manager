@@ -99,6 +99,11 @@ const PopupItems = props => {
               <FormattedMessage {...messages.settings} />
             </Link>
           </p>
+          <p>
+            <Link to={'/teams'} className={props.linkCombo}>
+              <FormattedMessage {...messages.myTeams} />
+            </Link>
+          </p>
           <p className="bb b--grey-light"></p>
         </>
       )}
@@ -139,6 +144,7 @@ class Header extends React.Component {
   getUserLinks = role => {
     let userLinks = [
       { label: <FormattedMessage {...messages.settings} />, url: '/settings' },
+      { label: <FormattedMessage {...messages.myTeams} />, url: '/teams' },
       { label: <FormattedMessage {...messages.logout} />, url: '/logout' },
     ];
 

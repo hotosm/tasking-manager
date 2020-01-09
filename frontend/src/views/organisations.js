@@ -195,6 +195,7 @@ export function EditOrganisation(props) {
         <Projects
           projects={!projectsLoading && !projectsError && projects}
           viewAllQuery={`?organisation=${organisation.name}`}
+          ownerEntity="organisation"
         />
         <Teams teams={organisation.teams} viewAllQuery={`?organisationId=${props.id}`}/>
       </div>

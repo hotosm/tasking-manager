@@ -36,10 +36,20 @@ export const DeleteButton = ({ className, onClick }: Object) => (
   </CustomButton>
 );
 
+export function VisibilityBox({ visibility, extraClasses }: Object) {
+  let color = visibility === 'PUBLIC' ? 'blue-grey' : 'red';
+  let borderColor = visibility === 'PUBLIC' ? 'b--grey': 'b--red';
+  const text = visibility ? <FormattedMessage {...messages[visibility.toLowerCase()]} /> : '';
+
+  return (
+    <div className={`tc br1 f7 ttu ba ${borderColor} ${color} ${extraClasses}`}>{text}</div>
+  );
+}
+
 export function Management(props) {
   return (
     <div className="pull-center cf pb4 ph5-l bg-tan">
-      <ManagementMenu />
+      {props.managementView && <ManagementMenu />}
       <div className="cf">
         <h3 className="barlow-condensed f2 ma0 pv3 dib v-mid ttu pl2 pl0-l">{props.title}</h3>
         {props.showAddButton && (

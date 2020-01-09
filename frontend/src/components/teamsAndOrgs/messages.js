@@ -28,6 +28,10 @@ export default defineMessages({
     id: 'management.teams',
     defaultMessage: 'Teams',
   },
+  team: {
+    id: 'management.team',
+    defaultMessage: 'Team',
+  },
   projects: {
     id: 'management.projects',
     defaultMessage: 'Projects',
@@ -35,6 +39,10 @@ export default defineMessages({
   campaigns: {
     id: 'management.campaigns',
     defaultMessage: 'Campaigns',
+  },
+  campaign: {
+    id: 'management.campaign',
+    defaultMessage: 'Campaign',
   },
   editMembersLater: {
     id: 'management.edit_members',
