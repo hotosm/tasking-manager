@@ -1,37 +1,32 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, FormattedRelative } from 'react-intl';
-import { CurrentUserAvatar } from '../user/avatar';
-import { API_URL } from '../../config';
+
 import messages from './messages';
+import { CloseIcon } from '../svgIcons';
+import { CurrentUserAvatar } from '../user/avatar';
+import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Button } from '../button';
 
-const PostComment = ({ token, projectId, taskId, setStat }) => {
+const PostComment = ({  projectId, taskId, setStat, setCommentPayload }) => {
+  const token = useSelector(state => state.auth.get('token'));
   const [comment, setComment] = useState('');
 
+  const pushComment = () => {
+    pushToLocalJSONAPI(
+      `projects/${projectId}/comments/tasks/${taskId}/`,
+      JSON.stringify({ comment: comment }),
+      token
+    ).then(res => {
+      setStat(true);
+      setCommentPayload(res);
+      setComment('');
+    });
+  };
+
   const saveComment = () => {
-    const setComment = async () => {
-      const url = `${API_URL}projects/${projectId}/comments/tasks/${taskId}/`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'Accept-Language': 'en',
-        Authorization: `Token ${token}`,
-      };
-
-      const options = {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify({ comment: comment }),
-      };
-
-      const res = await fetch(url, options);
-      if (res.status === 200) {
-        setStat(true);
-      }
-    };
-
-    if (comment !== '') {
-      setComment();
+    if (comment) {
+      pushComment();
     }
   };
 
@@ -42,48 +37,46 @@ const PostComment = ({ token, projectId, taskId, setStat }) => {
           <CurrentUserAvatar className="h2 w2 br-100" />
         </div>
         <div className="fl w-90 h-100">
-          <input
+          <textarea
             value={comment}
             onChange={e => setComment(e.target.value)}
             name="comment"
             type="textarea"
             placeholder="Write a comment"
-            className="w-90 h-75 f6"
+            className="w-90 h-75 pa2 f6"
             rows="4"
           />
         </div>
       </div>
 
       <div className="w-100 pv3 black bg-light-gray tr pr2">
-        <Button onClick={saveComment} className="bg-black white f6">
-          Comment
+        <Button onClick={() => saveComment()} className="bg-black white f6">
+          <FormattedMessage {...messages.comment}/>
         </Button>
       </div>
     </div>
   );
 };
 
-const TaskHistory = ({ projectId, taskId, token, commentStat, setStat }) => {
+const TaskHistory = ({ projectId, taskId, commentStat, setStat, commentPayload }) => {
+  const token = useSelector(state => state.auth.get('token'));
   const [response, setResponse] = useState(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const getTaskInfo = async () => {
-      const url = `${API_URL}projects/${projectId}/tasks/${taskId}/`;
-      const headers = {
-        'Content-Type': 'application/json',
-        'Accept-Language': 'en',
-        Authorization: `Token ${token}`,
-      };
-      const res = await fetch(url, { headers: headers });
-      const res_json = await res.json();
-      setResponse(res_json);
+      const url = `projects/${projectId}/tasks/${taskId}/`;
+      const res = await fetchLocalJSONAPI(url, token);
+      setResponse(res);
     };
 
     if (commentStat === true) {
       getTaskInfo();
       setStat(false);
     }
-  }, [projectId, taskId, token, commentStat, setStat]);
+    if (commentPayload) {
+      setResponse(commentPayload);
+    }
+  }, [projectId, taskId, token, commentStat, setStat, commentPayload]);
 
   const getTaskActionMessage = (action, actionText) => {
     let message = '';
@@ -131,29 +124,30 @@ const TaskHistory = ({ projectId, taskId, token, commentStat, setStat }) => {
       default:
         break;
     }
-
-    return <FormattedMessage {...message} />;
+    if (message) {
+      return <FormattedMessage {...message} />;
+    }
   };
 
   if (response === null) {
     return null;
   } else {
-    return response.taskHistory.map(t => (
-      <div className="w-90 mh3 pv3 bb b--light-gray f6 cf">
-        <div className="fl w-10 ph2">
+    return response.taskHistory.map((t, n) => (
+      <div className="w-90 mh3 pv3 bb b--light-gray f6 cf" key={n}>
+        <div className="fl w-10-ns w-100 ph2">
           <div className="h2 w2 bg-light-gray br-100 ma0">
             {t.pictureUrl === null ? null : (
               <img className="h2 w2 br-100" src={t.pictureUrl} alt={t.actionBy} />
             )}
           </div>
         </div>
-        <div className="w-80 fl">
+        <div className="w-80-ns w-100 fl">
           <p className="ma0 pt2">
             <a href={'/user/' + t.actionBy} className="black b underline">
               {t.actionBy}
             </a>{' '}
-            {getTaskActionMessage(t.action, t.actionText)}{' '}
-            <span className="moon-gray">{<FormattedRelative value={t.actionDate} />} </span>
+            {getTaskActionMessage(t.action, t.actionText)}
+            <span className="moon-gray pl2">{<FormattedRelative value={t.actionDate} />} </span>
           </p>
           {t.action === 'COMMENT' ? <p className="i ma0 mt2">{t.actionText}</p> : null}
         </div>
@@ -163,31 +157,32 @@ const TaskHistory = ({ projectId, taskId, token, commentStat, setStat }) => {
 };
 
 export const TaskActivity = props => {
-  const token = useSelector(state => state.auth.get('token'));
   const [commentStat, setStat] = useState(true);
+  const [commentPayload, setCommentPayload] = useState(null);
 
   return (
     <div className="h-100">
       <div className="w-100 pv3 ph4 black bg-light-gray relative">
-        <p className="ttu f3 pa0 ma0 barlow-condensed b mb2">task activity</p>
+        <CloseIcon className="h1 w1 blue-dark fr pointer" onClick={() => props.close()} />
+        <p className="ttu f3 pa0 ma0 barlow-condensed b mb2"><FormattedMessage {...messages.taskActivity}/></p>
         <p className="f5 pa0 ma0">
           <b>#{props.taskId}:</b> {props.projectName}
         </p>
       </div>
       <div className="gray h5 overflow-scroll">
         <TaskHistory
-          token={token}
           projectId={props.projectId}
           taskId={props.taskId}
           commentStat={commentStat}
           setStat={setStat}
+          commentPayload={commentPayload}
         />
       </div>
       <PostComment
-        token={token}
         projectId={props.projectId}
         taskId={props.taskId}
         setStat={setStat}
+        setCommentPayload={setCommentPayload}
       />
     </div>
   );
