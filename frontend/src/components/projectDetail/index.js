@@ -20,6 +20,7 @@ import { NewMapperFlow } from './newMapperFlow';
 import { ShowReadMoreButton } from './showReadMoreButton';
 import { ProjectDetailFooter } from './projectDetailFooter';
 import { BigProjectTeaser } from './bigProjectTeaser';
+import { QuestionsAndComments } from './questionsAndComments';
 
 /* lazy imports must be last import */
 const TaskLineGraphViz = React.lazy(() => import('./taskLineGraphViz'));
@@ -137,7 +138,7 @@ export const ProjectDetailLeft = props => {
             <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
               {props.project.projectInfo && props.project.projectInfo.name}
             </h3>
-            < TagLine campaigns={props.project.campaigns} countries={props.project.countryTag} />
+            <TagLine campaigns={props.project.campaigns} countries={props.project.countryTag} />
           </div>
           <section className={`lh-copy h5 overflow-x-scroll`}>
             <div className="pr2" dangerouslySetInnerHTML={htmlShortDescription} />
@@ -146,7 +147,7 @@ export const ProjectDetailLeft = props => {
                 <div className="pv2 pr2" dangerouslySetInnerHTML={htmlDescription} />
               </ShowReadMoreButton>
             </div>
-            <img className="h4 pa1" src={props.project.organisationLogo} alt=""/>
+            <img className="h4 pa1" src={props.project.organisationLogo} alt="" />
           </section>
         </ReactPlaceholder>
       </div>
@@ -194,7 +195,7 @@ export const ProjectDetailLeft = props => {
 };
 
 export const ProjectDetail = props => {
-  const h2Classes = 'pl4 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dar';
+  const h2Classes = 'pl4 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark';
   return (
     <div className={`${props.className || ''}`}>
       <div className="bb b--grey-light">
@@ -226,9 +227,10 @@ export const ProjectDetail = props => {
       <a href="#questionsAndComments" style={{ visibility: 'hidden' }} name="questionsAndComments">
         <FormattedMessage {...messages.questionsAndComments} />
       </a>
-      <h3 className={`${h2Classes} mb6 `}>
+      <h3 className={`${h2Classes} mv0 pv4 bg-tan`}>
         <FormattedMessage {...messages.questionsAndComments} />
       </h3>
+      <QuestionsAndComments projectId={props.project.projectId} />
 
       <a href="#contributions" name="contributions" style={{ visibility: 'hidden' }}>
         <FormattedMessage {...messages.contributors} />

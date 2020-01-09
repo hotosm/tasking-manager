@@ -68,7 +68,7 @@ class CommentsProjectsRestAPI(Resource):
             project_messages = ChatService.post_message(chat_dto)
             return project_messages.to_primitive(), 201
         except Exception as e:
-            error_msg = f"Chat PUT - unhandled error: {str(e)}"
+            error_msg = f"Chat POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to add chat message"}, 500
 
@@ -92,6 +92,11 @@ class CommentsProjectsRestAPI(Resource):
               description: Page of results user requested
               type: integer
               default: 1
+            - in: query
+              name: perPage
+              description: Number of elements per page.
+              type: integer
+              default: 20
         responses:
             200:
                 description: All messages
@@ -102,12 +107,13 @@ class CommentsProjectsRestAPI(Resource):
         """
         try:
             page = int(request.args.get("page")) if request.args.get("page") else 1
-            project_messages = ChatService.get_messages(project_id, page)
+            per_page = int(request.args.get("perPage", 20))
+            project_messages = ChatService.get_messages(project_id, page, per_page)
             return project_messages.to_primitive(), 200
         except NotFound:
             return {"Error": "No chat messages found for project"}, 404
         except Exception as e:
-            error_msg = f"Chat PUT - unhandled error: {str(e)}"
+            error_msg = f"Chat GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch chat messages"}, 500
 

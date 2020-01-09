@@ -29,6 +29,6 @@ class ChatService:
 
     @staticmethod
     @cached(chat_cache)
-    def get_messages(project_id: int, page: int) -> ProjectChatDTO:
+    def get_messages(project_id: int, page: int, per_page: int) -> ProjectChatDTO:
         """ Get all messages attached to a project """
-        return ProjectChat.get_messages(project_id, page)
+        return ProjectChat.get_messages(project_id, page, per_page)
