@@ -491,7 +491,7 @@ class MessageService:
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
-        link = f'<a href="{base_url}/project/{project_id}/?task={task_id}">Task {task_id}</a>'
+        link = f'<a href="{base_url}/projects/{project_id}/tasks/?search={task_id}">Task {task_id}</a>'
         return link
 
     @staticmethod
@@ -500,7 +500,7 @@ class MessageService:
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
-        link = f'<a href="{base_url}/project/{project_id}?tab=chat">Project {project_id}</a>'
+        link = f'<a href="{base_url}/projects/{project_id}#questionsAndComments">Project {project_id}</a>'
         return link
 
     @staticmethod
@@ -509,5 +509,5 @@ class MessageService:
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
-        link = f'<a href="{base_url}/users/queries/{user_name}>{user_name}</a>'
+        link = f'<a href="{base_url}/users/{user_name}>{user_name}</a>'
         return link

@@ -276,6 +276,10 @@ export default defineMessages({
     id: 'project.tasks.action.submit_task',
     defaultMessage: 'Submit task',
   },
+  taskActivity: {
+    id: 'project.tasks.history.title',
+    defaultMessage: 'Task activity',
+  },
   taskHistoryComment: {
     id: 'project.tasks.history.comment',
     defaultMessage: 'commented',
