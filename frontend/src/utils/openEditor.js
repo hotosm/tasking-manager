@@ -6,14 +6,14 @@ export function openEditor(editor, project, tasks, selectedTasks, windowSize) {
     sendJosmCommands(project, tasks, selectedTasks, windowSize);
   }
   const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
-  if (editor === 'iD Editor') {
+  if (editor === 'ID') {
     const idUrl = getIdUrl(project, center, zoom, selectedTasks);
     window.open(idUrl);
   }
-  if (editor === 'Potlatch 2') {
+  if (editor === 'POTLATCH_2') {
     window.open(getPotlatch2Url(center, zoom));
   }
-  if (editor === 'Field Papers') {
+  if (editor === 'FIELD_PAPERS') {
     window.open(getFieldPapersUrl(center, zoom));
   }
 }
