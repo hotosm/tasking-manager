@@ -1,11 +1,15 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
+import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
-import { Button } from '../button';
 import messages from './messages';
+import { Button } from '../button';
+import { SignUp } from '../header/signUp';
 
 function JumbotronButtons() {
+  const token = useSelector(state => state.auth.get('token'));
   return (
     <p>
       <Link to={'explore'}>
@@ -13,11 +17,17 @@ function JumbotronButtons() {
           <FormattedMessage {...messages.startButton} />
         </Button>
       </Link>
-      <Link to={'sign-up'}>
-        <Button className="bg-white blue-dark mt3 mt0-ns">
-          <FormattedMessage {...messages.joinButton} />
-        </Button>
-      </Link>
+      {!token && <Popup
+        trigger={
+          <Button className="bg-white blue-dark mt3 mt0-ns">
+            <FormattedMessage {...messages.joinButton} />
+          </Button>
+         }
+        modal
+        closeOnDocumentClick
+      >
+        {close => <SignUp closeModal={close} />}
+      </Popup>}
     </p>
   );
 }
