@@ -1,7 +1,10 @@
 from flask import jsonify
-from flask_restful import Resource, current_app
+from flask_restful import Resource, request, current_app
 from flask_swagger import swagger
+
 from server.services.settings_service import SettingsService
+from server.services.messaging.smtp_service import SMTPService
+from server.services.users.authentication_service import token_auth, tm
 
 
 class SystemDocsAPI(Resource):
@@ -176,3 +179,71 @@ class SystemLanguagesAPI(Resource):
             error_msg = f"Languages GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch supported languages"}, 500
+
+
+class SystemContactAdminRestAPI(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self):
+        """
+        Send an email to the system admin
+        ---
+        tags:
+          - system
+        produces:
+          - application/json
+        parameters:
+          - in: header
+            name: Authorization
+            description: Base64 encoded session token
+            required: true
+            type: string
+            default: Token sessionTokenHere==
+          - in: body
+            name: body
+            required: true
+            description: JSON object with the data of the message to send to the system admin
+            schema:
+                properties:
+                    name:
+                        type: string
+                        default: The name of the sender
+                    email:
+                        type: string
+                        default: The email of the sender
+                    content:
+                        type: string
+                        default: The content of the message
+        responses:
+          201:
+            description: Email sent successfully
+          400:
+              description: Invalid Request
+          401:
+              description: Unauthorized - Invalid credentials
+          403:
+              description: Forbidden
+          500:
+            description: A problem occurred
+        """
+        try:
+            data = request.get_json()
+            message = """New contact from {} <{}> (UID: {}).
+                <p>{}</p>
+                """.format(
+                data.get("name"),
+                data.get("email"),
+                tm.authenticated_user_id,
+                data.get("content"),
+            )
+            SMTPService._send_message(
+                current_app.config["EMAIL_FROM_ADDRESS"],
+                "Tasking Manager Contact",
+                message,
+                message,
+            )
+            return {"Success": "Email sent"}, 201
+        except Exception as e:
+            error_msg = f"Application GET API - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": "Unable to fetch application keys"}, 500
