@@ -2,7 +2,7 @@ import bleach
 from flask import current_app
 from server import db
 from server.models.postgis.user import User
-from server.models.postgis.utils import timestamp, NotFound
+from server.models.postgis.utils import timestamp
 from server.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO, Pagination
 
 
@@ -46,9 +46,6 @@ class ProjectChat(db.Model):
             .order_by(ProjectChat.time_stamp.desc())
             .paginate(page, per_page, True)
         )
-
-        if project_messages.total == 0:
-            raise NotFound()
 
         dto = ProjectChatDTO()
         for message in project_messages.items:
