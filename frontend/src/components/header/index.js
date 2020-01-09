@@ -65,8 +65,7 @@ const AuthButtons = props => {
         <FormattedMessage {...messages.logIn}/>
       </Button>
       <Popup
-        contentStyle={modalStyle}
-       trigger={
+        trigger={
          <Button className={signUpStyle}>
             <FormattedMessage {...messages.signUp} />
          </Button>
@@ -186,7 +185,6 @@ class Header extends React.Component {
     return this.props.userDetails.hasOwnProperty('emailAddress') &&
       !this.props.userDetails.emailAddress ? (
       <Popup
-        contentStyle={modalStyle}
         modal
         open
         closeOnEscape={false}
@@ -303,10 +301,6 @@ class Header extends React.Component {
   }
 }
 
-const modalStyle = {
-  width: '44%',
-  marginTop: '5em',
-};
 
 const mapStateToProps = state => ({
   userPreferences: state.preferences,
