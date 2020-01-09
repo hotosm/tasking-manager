@@ -1,4 +1,5 @@
 import { API_URL } from '../config';
+import * as safeStorage from '../utils/safe_storage';
 
 // Code taken from https://github.com/mapbox/osmcha-frontend/blob/master/src/utils/create_popup.js
 export function createPopup(title: string = 'Authentication', location: string) {
@@ -31,7 +32,15 @@ export const createLoginWindow = redirectTo => {
           oauth_token: resp.oauth_token,
           oauth_token_secret: resp.oauth_token_secret,
         }).toString();
-        fetch(`${API_URL}system/authentication/callback/?${tokens}&oauth_verifier=${verifier}`)
+        let callback_url = `${API_URL}system/authentication/callback/?${tokens}&oauth_verifier=${verifier}`
+
+        const emailAddress = safeStorage.getItem('email_address')
+        if (emailAddress !== null) {
+          callback_url += `&email_address=${emailAddress}`
+          safeStorage.removeItem('email_address')
+        }
+
+        fetch(callback_url)
           .then(res => res.json())
           .then(res => {
             const params = new URLSearchParams({

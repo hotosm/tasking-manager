@@ -42,7 +42,7 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = get_canned_osm_user_details()
 
         # Act
-        params = AuthenticationService().login_user(osm_response)
+        params = AuthenticationService().login_user(osm_response, None)
 
         self.assertEqual(params["username"], "Thinkwhere Test")
         self.assertTrue(params["session_token"])
@@ -55,7 +55,7 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = get_canned_osm_user_details_changed_name()
 
         # Act
-        params = AuthenticationService().login_user(osm_response)
+        params = AuthenticationService().login_user(osm_response, None)
 
         self.assertEqual(params["username"], "Thinkwhere Test Changed")
         self.assertTrue(params["session_token"])
