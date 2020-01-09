@@ -52,6 +52,10 @@ export default defineMessages({
     id: 'mytasks.nav.viewAll',
     defaultMessage: 'View All',
   },
+  delete: {
+    id: 'mytasks.nav.delete.button',
+    defaultMessage: 'Delete',
+  },
   noContributed: {
     id: 'mytasks.nav.noContributedItems',
     defaultMessage: 'No Contributed Items',
