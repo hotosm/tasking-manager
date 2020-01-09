@@ -66,6 +66,7 @@ class SystemAuthenticationCallbackAPI(Resource):
         if token_secret is None:
             return {"Error": "Missing oauth_token_secret parameter"}, 500
 
+        email = request.args.get("email_address", None)
         session["osm_oauthtok"] = (
             request.args.get("oauth_token"),
             request.args.get("oauth_token_secret"),
@@ -87,7 +88,7 @@ class SystemAuthenticationCallbackAPI(Resource):
             return redirect(AuthenticationService.get_authentication_failed_url())
 
         try:
-            user_params = AuthenticationService.login_user(osm_response.data)
+            user_params = AuthenticationService.login_user(osm_response.data, email)
             user_params["session"] = osm_resp
             return user_params, 200
         except AuthServiceError:

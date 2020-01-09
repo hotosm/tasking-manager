@@ -78,7 +78,7 @@ class TestAuthenticationService(unittest.TestCase):
     def test_user_can_register_with_correct_mapping_level(self, mock_user):
         # Act
         test_user = UserService().register_user(
-            12, "Thinkwhere", 300, "some_picture_url"
+            12, "Thinkwhere", 300, "some_picture_url", None
         )
 
         # Assert
