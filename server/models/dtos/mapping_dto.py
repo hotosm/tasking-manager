@@ -59,6 +59,7 @@ class TaskHistoryDTO(Model):
     action_text = StringType(serialized_name="actionText")
     action_date = DateTimeType(serialized_name="actionDate")
     action_by = StringType(serialized_name="actionBy")
+    picture_url = StringType(serialized_name="pictureUrl")
     issues = ListType(ModelType(TaskMappingIssueDTO))
 
 

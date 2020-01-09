@@ -180,7 +180,7 @@ class CommentsTasksRestAPI(Resource):
 
         try:
             task = MappingService.add_task_comment(task_comment)
-            return task.to_primitive(), 200
+            return task.to_primitive(), 201
         except NotFound:
             return {"Error": "Task Not Found"}, 404
         except MappingServiceError:

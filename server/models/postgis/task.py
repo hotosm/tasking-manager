@@ -1010,6 +1010,9 @@ class Task(db.Model):
             history.action_by = (
                 action.actioned_by.username if action.actioned_by else None
             )
+            history.picture_url = (
+                action.actioned_by.picture_url if action.actioned_by else None
+            )
             if action.task_mapping_issues:
                 history.issues = [
                     issue.as_dto() for issue in action.task_mapping_issues

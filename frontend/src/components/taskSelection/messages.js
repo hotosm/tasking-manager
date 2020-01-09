@@ -254,27 +254,75 @@ export default defineMessages({
   },
   completelyMapped: {
     id: 'project.tasks.action.options.mapping_complete',
-    defaultMessage: "I completely mapped this task",
+    defaultMessage: 'I completely mapped this task',
   },
   markAsValid: {
     id: 'project.tasks.action.options.validate',
-    defaultMessage: "Validate and mark as finished",
+    defaultMessage: 'Validate and mark as finished',
   },
   markAsInvalid: {
     id: 'project.tasks.action.options.invalidate',
-    defaultMessage: "More mapping is needed",
+    defaultMessage: 'More mapping is needed',
   },
   splitTask: {
     id: 'project.tasks.action.split_task',
-    defaultMessage: "Split task",
+    defaultMessage: 'Split task',
   },
   selectAnotherTask: {
     id: 'project.tasks.action.select_another_task',
-    defaultMessage: "Select another task",
+    defaultMessage: 'Select another task',
   },
   submitTask: {
     id: 'project.tasks.action.submit_task',
-    defaultMessage: "Submit task",
+    defaultMessage: 'Submit task',
+  },
+  taskActivity: {
+    id: 'project.tasks.history.title',
+    defaultMessage: 'Task activity',
+  },
+  taskHistoryComment: {
+    id: 'project.tasks.history.comment',
+    defaultMessage: 'commented',
+  },
+  taskHistoryLockedMapping: {
+    id: 'project.tasks.history.lockedmapping',
+    defaultMessage: 'locked for mapping',
+  },
+  taskHistoryLockedValidation: {
+    id: 'project.tasks.history.lockedvalidation',
+    defaultMessage: 'locked for validation',
+  },
+  taskHistoryAutoUnlockedMapping: {
+    id: 'project.tasks.history.autounlockedmapping',
+    defaultMessage: 'automatically unlocked for mapping',
+  },
+  taskHistoryAutoUnlockedValidation: {
+    id: 'project.tasks.history.autounlockedvalidation',
+    defaultMessage: 'automatically unlocked for validation',
+  },
+  taskHistoryBadImagery: {
+    id: 'project.tasks.history.badimagery',
+    defaultMessage: 'marked as bad imagery',
+  },
+  taskHistoryMapped: {
+    id: 'project.tasks.history.mapped',
+    defaultMessage: 'marked as mapped',
+  },
+  taskHistoryValidated: {
+    id: 'project.tasks.history.validated',
+    defaultMessage: 'marked as validated',
+  },
+  taskHistoryInvalidated: {
+    id: 'project.tasks.history.invalidated',
+    defaultMessage: 'marked as invalidated',
+  },
+  taskHistorySplit: {
+    id: 'project.tasks.history.split',
+    defaultMessage: 'split a task',
+  },
+  taskHistoryReady: {
+    id: 'project.tasks.history.ready',
+    defaultMessage: 'marked as ready',
   },
   map: {
     id: 'project.tasks.action.map',
