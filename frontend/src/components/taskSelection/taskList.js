@@ -49,10 +49,6 @@ export function TaskStatus({ status, lockHolder }: Object) {
 }
 
 function TaskItem({ data, projectId, selectTask, selected = [], projectName }: Object) {
-  const modalStyle = {
-    width: '45%',
-    padding: '0',
-  };
 
   return (
     <div
@@ -89,7 +85,6 @@ function TaskItem({ data, projectId, selectTask, selected = [], projectName }: O
         <div className="dib v-mid">
           <Popup
             trigger={<ListIcon width="18px" height="18px" className="pointer hover-blue-grey" />}
-            contentStyle={modalStyle}
             modal
             closeOnDocumentClick
           >
