@@ -24,6 +24,7 @@ import { SelectTask } from './views/taskSelection';
 import { MapTask, ValidateTask } from './views/taskAction';
 import { EmailVerification } from './views/verifyEmail';
 import { ProjectEdit } from './views/projectEdit';
+import {ContactPage} from './views/contact';
 import { ContributionsPage, ContributionsPageIndex, ContributionDetail } from './views/contributions';
 import { NotificationsPage, NotificationPageIndex, NotificationDetail } from './views/notifications'
 
@@ -79,6 +80,7 @@ function App() {
               <NotificationDetail path="message/:id" />
             </NotificationsPage>
             <ProjectDetailPage path="projects/:id" />
+            <ContactPage path="contact/" />
             <Redirect from="project/:id" to="projects/:id" noThrow />
             <NotFound default />
           </Router>

@@ -28,7 +28,7 @@ class SMTPService:
         text_template = text_template.replace("[VEFIFICATION_LINK]", verification_url)
 
         subject = "HOT Tasking Manager - Email Verification"
-        SMTPService._send_mesage(to_address, subject, html_template, text_template)
+        SMTPService._send_message(to_address, subject, html_template, text_template)
 
         return True
 
@@ -51,12 +51,12 @@ class SMTPService:
         text_template = text_template.replace("[PROFILE_LINK]", inbox_url)
 
         subject = "You have a new message on the HOT Tasking Manager"
-        SMTPService._send_mesage(to_address, subject, html_template, text_template)
+        SMTPService._send_message(to_address, subject, html_template, text_template)
 
         return True
 
     @staticmethod
-    def _send_mesage(
+    def _send_message(
         to_address: str, subject: str, html_message: str, text_message: str
     ):
         """ Helper sends SMTP message """
