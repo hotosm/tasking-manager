@@ -124,6 +124,27 @@ export default defineMessages({
     defaultMessage:
       'Learn',
   },
+  contactUs: {
+    id: 'pages.learn.title',
+    defaultMessage:
+      'Contact Us',
+  }, 
+  contactUsThanksTitle: {
+    id: 'home.contact.thanksTitle',
+    defaultMessage: 'Thank You!'
+  },
+  contactUsThanksError: {
+    id: 'home.contact.thanksError',
+    defaultMessage: 'One moment, there was a problem sending your message.'
+  },
+  contactUsThanksBody: {
+    id: 'home.contact.thanksBody',
+    defaultMessage: 'You\'ll be hearing from us soon!'
+  },
+  contactUsThanksProceed: {
+    id: 'home.contact.thanksProceed',
+    defaultMessage: 'Proceed'
+  },
   howToValidate: {
     id: 'pages.learn.sections.howToValidate',
     defaultMessage:
