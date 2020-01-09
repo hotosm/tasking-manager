@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FormattedMessage, FormattedRelative } from 'react-intl';
 import { useSelector } from 'react-redux';
-import ReactPlaceholder from 'react-placeholder';
+import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
+import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
 import { TaskActivity } from './taskActivity';
@@ -13,7 +14,6 @@ import { LockIcon, ListIcon, EyeIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
-import Popup from 'reactjs-popup';
 
 export function TaskStatus({ status, lockHolder }: Object) {
   const dotSize = ['READY', 'LOCKED_FOR_MAPPING'].includes(status) ? '0.875rem' : '1rem';
@@ -49,7 +49,6 @@ export function TaskStatus({ status, lockHolder }: Object) {
 }
 
 function TaskItem({ data, projectId, selectTask, selected = [], projectName }: Object) {
-
   return (
     <div
       className={`cf db ba br1 mt2 ${

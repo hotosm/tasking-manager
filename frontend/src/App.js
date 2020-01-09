@@ -24,8 +24,8 @@ import { SelectTask } from './views/taskSelection';
 import { MapTask, ValidateTask } from './views/taskAction';
 import { EmailVerification } from './views/verifyEmail';
 import { ProjectEdit } from './views/projectEdit';
-import {ContactPage} from './views/contact';
-import { ContributionsPage, ContributionsPageIndex, ContributionDetail } from './views/contributions';
+import { ContactPage } from './views/contact';
+import { ContributionsPage, ContributionsPageIndex } from './views/contributions';
 import { NotificationsPage, NotificationPageIndex, NotificationDetail } from './views/notifications'
 
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
@@ -50,7 +50,6 @@ function App() {
             <LearnPage path="learn" />
             <ContributionsPage path="user">
               <ContributionsPageIndex path="/"/>
-              <ContributionDetail path="contributions/:projectIdUrl/:taskIdUrl" />
             </ContributionsPage>
             <AboutPage path="about" />
             <Authorized path="authorized" />
