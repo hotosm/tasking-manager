@@ -96,6 +96,14 @@ export default defineMessages({
     id: 'project.detail.removeFromFavorites',
     defaultMessage: 'Remove from Favorites',
   },
+  noComments: {
+    id: 'project.detail.questionsAndComments.none',
+    defaultMessage: 'There are no questions or comments on this project yet. Be the first to post one!',
+  },
+  post: {
+    id: 'project.detail.questionsAndComments.button',
+    defaultMessage: 'Post',
+  },
   share: {
     id: 'project.detail.share',
     defaultMessage: 'Share',

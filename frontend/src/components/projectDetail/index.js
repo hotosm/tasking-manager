@@ -195,7 +195,7 @@ export const ProjectDetailLeft = props => {
 };
 
 export const ProjectDetail = props => {
-  const h2Classes = 'pl4 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dar';
+  const h2Classes = 'pl4 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark';
   return (
     <div className={`${props.className || ''}`}>
       <div className="bb b--grey-light">
@@ -227,7 +227,7 @@ export const ProjectDetail = props => {
       <a href="#questionsAndComments" style={{ visibility: 'hidden' }} name="questionsAndComments">
         <FormattedMessage {...messages.questionsAndComments} />
       </a>
-      <h3 className={`${h2Classes} mb1`}>
+      <h3 className={`${h2Classes} mv0 pv4 bg-tan`}>
         <FormattedMessage {...messages.questionsAndComments} />
       </h3>
       <QuestionsAndComments projectId={props.project.projectId} />
