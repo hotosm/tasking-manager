@@ -8,6 +8,8 @@ import { Button } from '../button';
 import { CloseIcon } from '../svgIcons';
 import { registerUser } from '../../store/actions/user';
 
+import * as safeStorage from '../../utils/safe_storage';
+
 class SignUp extends Component {
   constructor(props) {
     super(props);
@@ -31,6 +33,7 @@ class SignUp extends Component {
 
       if (res.success === true) {
         setTimeout(() => (window.location.href = 'https://www.openstreetmap.org/user/new'), 1500);
+        safeStorage.setItem('email_address', formdata.email)
       }
     });
   };
