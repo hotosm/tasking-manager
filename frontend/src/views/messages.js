@@ -82,7 +82,8 @@ export default defineMessages({
   },
   noLockedTasksMessage: {
     id: 'taskAction.messages.error.no_locked_tasks.text',
-    defaultMessage: "You don't have any locked tasks. Access the Project #{currentProject} to select a task to map.",
+    defaultMessage:
+      "You don't have any locked tasks. Access the Project #{currentProject} to select a task to map.",
   },
   goToProjectButton: {
     id: 'taskAction.go_to_project.button',
@@ -116,44 +117,39 @@ export default defineMessages({
   },
   about: {
     id: 'pages.about.title',
-    defaultMessage:
-      'About Tasking Manager',
+    defaultMessage: 'About Tasking Manager',
   },
   learn: {
     id: 'pages.learn.title',
-    defaultMessage:
-      'Learn',
+    defaultMessage: 'Learn',
   },
   contactUs: {
-    id: 'pages.learn.title',
-    defaultMessage:
-      'Contact Us',
-  }, 
+    id: 'pages.concact.title',
+    defaultMessage: 'Contact Us',
+  },
   contactUsThanksTitle: {
     id: 'home.contact.thanksTitle',
-    defaultMessage: 'Thank You!'
+    defaultMessage: 'Thank You!',
   },
   contactUsThanksError: {
     id: 'home.contact.thanksError',
-    defaultMessage: 'One moment, there was a problem sending your message.'
+    defaultMessage: 'One moment, there was a problem sending your message.',
   },
   contactUsThanksBody: {
     id: 'home.contact.thanksBody',
-    defaultMessage: 'You\'ll be hearing from us soon!'
+    defaultMessage: "You'll be hearing from us soon!",
   },
   contactUsThanksProceed: {
     id: 'home.contact.thanksProceed',
-    defaultMessage: 'Proceed'
+    defaultMessage: 'Proceed',
   },
   howToValidate: {
     id: 'pages.learn.sections.howToValidate',
-    defaultMessage:
-      'How to validate',
+    defaultMessage: 'How to validate',
   },
   howToMap: {
     id: 'pages.learn.sections.howToMap',
-    defaultMessage:
-      'How to map',
+    defaultMessage: 'How to map',
   },
   tmDescription: {
     id: 'pages.about.description',
@@ -167,8 +163,7 @@ export default defineMessages({
   },
   howItWorks: {
     id: 'pages.about.howItWorks.title',
-    defaultMessage:
-      'How does it work?',
+    defaultMessage: 'How does it work?',
   },
   howItWorksPart1: {
     id: 'pages.about.howItWorks.description.part_1',
@@ -182,8 +177,7 @@ export default defineMessages({
   },
   floss: {
     id: 'pages.about.floss.title',
-    defaultMessage:
-      'Free and Open Source Software',
+    defaultMessage: 'Free and Open Source Software',
   },
   flossDescription: {
     id: 'pages.about.floss.description',
@@ -192,12 +186,10 @@ export default defineMessages({
   },
   repositoryLink: {
     id: 'pages.about.floss.repository_link',
-    defaultMessage:
-      'The {code} is available for you.',
+    defaultMessage: 'The {code} is available for you.',
   },
   appCode: {
     id: 'pages.about.floss.application_code',
-    defaultMessage:
-      'application code',
+    defaultMessage: 'application code',
   },
 });
