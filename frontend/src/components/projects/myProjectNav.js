@@ -87,7 +87,7 @@ export const MyProjectNav = props => {
           className={`di mh1 ${isActiveButton(
             'favoritedByMe',
             fullProjectsQuery,
-          )} strike ${linkCombo}`}
+          )} ${linkCombo}`}
         >
           <FormattedMessage {...messages.favorite} />
         </Link>
