@@ -118,8 +118,9 @@ export const useFavProjectAPI = (initialData, projectId, token) => {
         }
       }
     };
-
-    fetchData(toggleFetchType);
+    if (token) {
+      fetchData(toggleFetchType);
+    }
 
     return () => {
       didCancel = true;
