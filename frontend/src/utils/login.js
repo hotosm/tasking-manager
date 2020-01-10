@@ -1,4 +1,4 @@
-import { API_URL } from '../config';
+import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import * as safeStorage from '../utils/safe_storage';
 
 // Code taken from https://github.com/mapbox/osmcha-frontend/blob/master/src/utils/create_popup.js
@@ -21,9 +21,8 @@ export function createPopup(title: string = 'Authentication', location: string) 
 }
 
 export const createLoginWindow = redirectTo => {
-  let url = `${API_URL}system/authentication/login/?callback_url=${window.location.origin}/authorized/`;
-  fetch(url)
-    .then(resp => resp.json())
+  let url = `system/authentication/login/?callback_url=${window.location.origin}/authorized/`;
+  fetchLocalJSONAPI(url)
     .then(resp => {
       createPopup('OSM auth', resp.auth_url);
       // Perform token exchange.
@@ -32,7 +31,7 @@ export const createLoginWindow = redirectTo => {
           oauth_token: resp.oauth_token,
           oauth_token_secret: resp.oauth_token_secret,
         }).toString();
-        let callback_url = `${API_URL}system/authentication/callback/?${tokens}&oauth_verifier=${verifier}`
+        let callback_url = `system/authentication/callback/?${tokens}&oauth_verifier=${verifier}`
 
         const emailAddress = safeStorage.getItem('email_address')
         if (emailAddress !== null) {
@@ -40,8 +39,7 @@ export const createLoginWindow = redirectTo => {
           safeStorage.removeItem('email_address')
         }
 
-        fetch(callback_url)
-          .then(res => res.json())
+        fetchLocalJSONAPI(callback_url)
           .then(res => {
             const params = new URLSearchParams({
               username: res.username,
