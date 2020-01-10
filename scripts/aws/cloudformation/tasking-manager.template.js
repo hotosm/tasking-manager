@@ -42,6 +42,10 @@ const Parameters = {
     Type: 'String',
     Description: 'TM_APP_BASE_URL'
   },
+  TaskingManagerApiVersion: {
+    Type: 'String',
+    Description: 'TM_APP_API_VERSION'
+  },
   TaskingManagerConsumerKey: {
     Description: 'TM_CONSUMER_KEY',
     Type: 'String'
@@ -207,8 +211,8 @@ const Resources = {
       "AWS::CloudFormation::Init": {
         "configSets": {
           "default": [
-            "01_setupCfnHup", 
-            "02_config-amazon-cloudwatch-agent", 
+            "01_setupCfnHup",
+            "02_config-amazon-cloudwatch-agent",
             "03_restart_amazon-cloudwatch-agent"
           ],
           "UpdateEnvironment": [
@@ -371,6 +375,7 @@ const Resources = {
         cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
         cf.sub('export POSTGRES_USER="${PostgresUser}"'),
         cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
+        cf.sub('export TM_APP_API_VERSION="${TaskingManagerApiVersion}"'),
         cf.sub('export TM_CONSUMER_KEY="${TaskingManagerConsumerKey}"'),
         cf.sub('export TM_CONSUMER_SECRET="${TaskingManagerConsumerSecret}"'),
         cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),

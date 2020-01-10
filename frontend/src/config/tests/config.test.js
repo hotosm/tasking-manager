@@ -4,6 +4,9 @@ import * as config from '../index';
 it('exports API_URL', () => {
   expect(['object', 'string']).toContain(typeof config.API_URL);
 });
+it('exports API_VERSION', () => {
+  expect(['object', 'string']).toContain(typeof config.API_VERSION);
+});
 it('exports EDITS_API_URL', () => {
   expect(typeof config.EDITS_API_URL).toBe('string');
 });
