@@ -37,7 +37,7 @@ export default defineMessages({
     defaultMessage: 'Error loading the {xWord} for {yWord}',
   },
   errorLoadingTheX: {
-    id: 'notifications.navFilters.error',
+    id: 'notifications.navFilters.error.simple',
     defaultMessage: 'Error loading the {xWord}',
   },
   showingXProjectsOfTotal: {
