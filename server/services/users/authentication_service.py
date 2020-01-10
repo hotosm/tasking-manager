@@ -56,7 +56,7 @@ class AuthServiceError(Exception):
 
 class AuthenticationService:
     @staticmethod
-    def login_user(osm_user_details, user_element="user") -> str:
+    def login_user(osm_user_details, email, user_element="user") -> str:
         """
         Generates authentication details for user, creating in DB if user is unknown to us
         :param osm_user_details: XML response from OSM
@@ -88,7 +88,7 @@ class AuthenticationService:
             changesets = osm_user.find("changesets")
             changeset_count = int(changesets.attrib["count"])
             new_user = UserService.register_user(
-                osm_id, username, changeset_count, user_picture
+                osm_id, username, changeset_count, user_picture, email
             )
             MessageService.send_welcome_message(new_user)
 

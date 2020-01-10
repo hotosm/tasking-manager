@@ -145,7 +145,7 @@ class UserService:
         return projects_mapped
 
     @staticmethod
-    def register_user(osm_id, username, changeset_count, picture_url):
+    def register_user(osm_id, username, changeset_count, picture_url, email):
         """
         Creates user in DB
         :param osm_id: Unique OSM user id
@@ -167,6 +167,9 @@ class UserService:
             new_user.mapping_level = MappingLevel.INTERMEDIATE.value
         else:
             new_user.mapping_level = MappingLevel.BEGINNER.value
+
+        if email is not None:
+            new_user.email_address = email
 
         new_user.create()
         return new_user

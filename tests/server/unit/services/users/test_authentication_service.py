@@ -29,7 +29,7 @@ class TestAuthenticationService(unittest.TestCase):
 
         # Act / Assert
         with self.assertRaises(AuthServiceError):
-            AuthenticationService().login_user(osm_response, "wont-find")
+            AuthenticationService().login_user(osm_response, None, "wont-find")
 
     @patch.object(UserService, "get_user_by_id")
     def test_if_user_get_called_with_osm_id(self, mock_user_get):
@@ -37,7 +37,7 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = get_canned_osm_user_details()
 
         # Act
-        AuthenticationService.login_user(osm_response)
+        AuthenticationService.login_user(osm_response, None)
 
         # Assert
         mock_user_get.assert_called_with(7777777)
@@ -53,10 +53,12 @@ class TestAuthenticationService(unittest.TestCase):
         mock_user_get.side_effect = NotFound()
 
         # Act
-        AuthenticationService.login_user(osm_response)
+        AuthenticationService.login_user(osm_response, None)
 
         # Assert
-        mock_user_register.assert_called_with(7777777, "Thinkwhere Test", 16, None)
+        mock_user_register.assert_called_with(
+            7777777, "Thinkwhere Test", 16, None, None
+        )
 
     @patch.object(UserService, "get_user_by_id")
     def test_valid_auth_request_gets_token(self, mock_user_get):
@@ -64,7 +66,7 @@ class TestAuthenticationService(unittest.TestCase):
         osm_response = get_canned_osm_user_details()
 
         # Act
-        params = AuthenticationService.login_user(osm_response)
+        params = AuthenticationService.login_user(osm_response, None)
 
         self.assertEqual(params["username"], "Thinkwhere Test")
         self.assertTrue(params["session_token"])
