@@ -18,7 +18,7 @@ export const StatsNumber = props => {
       {value.substr(-1)}
     </span>
   );
-}
+};
 
 export class StatsSection extends React.Component {
   tmStatsPromise;

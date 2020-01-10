@@ -16,7 +16,6 @@ const persistedState = {
     locale: safeStorage.getItem('locale'),
     mapShown: 'true' === safeStorage.getItem('mapShown'),
   },
-
 };
 
 const enhancers = [];

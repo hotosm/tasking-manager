@@ -2,7 +2,7 @@ import React from 'react';
 
 import { MenuIcon, CloseIcon } from '../svgIcons';
 
-export const BurgerMenu = React.forwardRef(( props, ref ) => (
+export const BurgerMenu = React.forwardRef((props, ref) => (
   <button
     className="blue-dark bg-white br1 f5 bn pointer"
     style={{ padding: '.75rem 1.5rem' }}

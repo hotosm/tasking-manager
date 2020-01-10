@@ -30,12 +30,12 @@ const TaskSelectionFooter = props => {
       window.innerHeight,
     ]);
     navigate(`/projects/${props.project.projectId}/${endpoint}/`);
-  }
+  };
 
   const lockFailed = () => {
     fetchLockedTasks();
     setLockError(true);
-  }
+  };
 
   const updateReduxState = (tasks, project, status) => {
     dispatch({ type: 'SET_LOCKED_TASKS', tasks: tasks });
@@ -77,13 +77,9 @@ const TaskSelectionFooter = props => {
       props.project.mappingEditors &&
       props.taskAction.startsWith('validate')
     ) {
-      setEditorOptions(
-        getEditors().filter(i => props.project.validationEditors.includes(i.value)),
-      );
+      setEditorOptions(getEditors().filter(i => props.project.validationEditors.includes(i.value)));
     } else {
-      setEditorOptions(
-        getEditors().filter(i => props.project.mappingEditors.includes(i.value)),
-      );
+      setEditorOptions(getEditors().filter(i => props.project.mappingEditors.includes(i.value)));
     }
   }, [props.taskAction, props.project.mappingEditors, props.project.validationEditors]);
 
@@ -92,7 +88,7 @@ const TaskSelectionFooter = props => {
 
   return (
     <div className="cf bg-white pb2 ph4-l ph2">
-      {lockError &&
+      {lockError && (
         <Popup
           modal
           open
@@ -102,7 +98,7 @@ const TaskSelectionFooter = props => {
         >
           {close => <LockedTaskModalContent project={props.project.projectId} />}
         </Popup>
-      }
+      )}
       <div className="w-25-ns w-40 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.typesOfMapping} />
@@ -123,7 +119,11 @@ const TaskSelectionFooter = props => {
         </h3>
         <Dropdown
           options={editorOptions}
-          value={ editorOptions.map(i => i.value).includes(editor) ? editor : editorOptions.length && editorOptions[0].value}
+          value={
+            editorOptions.map(i => i.value).includes(editor)
+              ? editor
+              : editorOptions.length && editorOptions[0].value
+          }
           display={<FormattedMessage {...messages.selectEditor} />}
           className="bg-white bn"
           toTop={true}

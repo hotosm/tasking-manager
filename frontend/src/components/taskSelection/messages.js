@@ -14,19 +14,23 @@ export default defineMessages({
   },
   anotherProjectLockTextSingular: {
     id: 'project.tasks.lock_error.another_project.description.singular',
-    defaultMessage: 'You selected {n} task to {action} on the Project #{project}. You need to update the status of that task before map or validate this project.',
+    defaultMessage:
+      'You selected {n} task to {action} on the Project #{project}. You need to update the status of that task before map or validate this project.',
   },
   anotherProjectLockTextPlural: {
     id: 'project.tasks.lock_error.another_project.description.plural',
-    defaultMessage: 'You selected {n} tasks to {action} on the Project #{project}. You need to update the status of those tasks before map or validate this project.',
+    defaultMessage:
+      'You selected {n} tasks to {action} on the Project #{project}. You need to update the status of those tasks before map or validate this project.',
   },
   currentProjectLockTextSingular: {
     id: 'project.tasks.lock_error.current_project.description.singular',
-    defaultMessage: 'You already have {n} task selected to {action} on this project. Update the status of that task before map or validate another one.',
+    defaultMessage:
+      'You already have {n} task selected to {action} on this project. Update the status of that task before map or validate another one.',
   },
   currentProjectLockTextPlural: {
     id: 'project.tasks.lock_error.current_project.description.plural',
-    defaultMessage: 'You already have {n} tasks selected to {action} on this project. Update the status of those tasks before map or validate another one.',
+    defaultMessage:
+      'You already have {n} tasks selected to {action} on this project. Update the status of those tasks before map or validate another one.',
   },
   goToProject: {
     id: 'project.tasks.lock_error.go_to_project.button',
@@ -322,14 +326,14 @@ export default defineMessages({
   },
   map: {
     id: 'project.tasks.action.map',
-    defaultMessage: "Map",
+    defaultMessage: 'Map',
   },
   validate: {
     id: 'project.tasks.action.validate',
-    defaultMessage: "Validate",
+    defaultMessage: 'Validate',
   },
   lockedBy: {
     id: 'project.tasks.locked_by_user',
-    defaultMessage: "{lockStatus} by {user}",
+    defaultMessage: '{lockStatus} by {user}',
   },
 });

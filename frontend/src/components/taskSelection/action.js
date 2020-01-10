@@ -79,8 +79,12 @@ export function TaskMapAction({ project, tasks, action, editor }) {
             </div>
           </div>
           <div className="pt3">
-            {activeSection === 'completion' && action === 'MAPPING' && <CompletionTabForMapping project={project} tasks={tasksIds} />}
-            {activeSection === 'completion' && action === "VALIDATION" && <CompletionTabForValidation project={project} tasks={tasksIds} />}
+            {activeSection === 'completion' && action === 'MAPPING' && (
+              <CompletionTabForMapping project={project} tasks={tasksIds} />
+            )}
+            {activeSection === 'completion' && action === 'VALIDATION' && (
+              <CompletionTabForValidation project={project} tasks={tasksIds} />
+            )}
             {activeSection === 'instructions' && (
               <ProjectInstructions
                 instructions={project.projectInfo && project.projectInfo.instructions}
@@ -101,22 +105,25 @@ function CompletionTabForMapping({ project, tasks, action }: Object) {
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
 
   const splitTask = () => {
-    fetchLocalJSONAPI(`projects/${project.projectId}/tasks/actions/split/${tasks[0]}/`, token, 'POST')
-      .then(r => navigate(`../tasks/`));
-  }
+    fetchLocalJSONAPI(
+      `projects/${project.projectId}/tasks/actions/split/${tasks[0]}/`,
+      token,
+      'POST',
+    ).then(r => navigate(`../tasks/`));
+  };
 
   const stopMapping = () => {
     pushToLocalJSONAPI(
       `projects/${project.projectId}/tasks/actions/stop-mapping/${tasks[0]}/`,
       '{}',
-      token
+      token,
     ).then(r => navigate(`/projects/${project.projectId}/tasks/`));
-  }
+  };
 
   const submitTask = () => {
     if (selectedStatus) {
       let url;
-      let payload = {comment: taskComment};
+      let payload = { comment: taskComment };
       if (selectedStatus === 'MAPPED') {
         url = `projects/${project.projectId}/tasks/actions/unlock-after-mapping/${tasks[0]}/`;
         payload.status = 'MAPPED';
@@ -127,13 +134,11 @@ function CompletionTabForMapping({ project, tasks, action }: Object) {
       if (selectedStatus === 'BADIMAGERY') {
         url = `projects/${project.projectId}/tasks/actions/stop-mapping/${tasks[0]}/`;
       }
-      pushToLocalJSONAPI(
-        url,
-        JSON.stringify(payload),
-        token
-      ).then(r => navigate(`/projects/${project.projectId}/tasks/`));
+      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then(r =>
+        navigate(`/projects/${project.projectId}/tasks/`),
+      );
     }
-  }
+  };
 
   return (
     <div>
@@ -196,7 +201,11 @@ function CompletionTabForMapping({ project, tasks, action }: Object) {
         </Button>
       </div>
       <div className="cf mv2">
-        <Button className="bg-red white w-100 fl" onClick={() => submitTask()} disabled={!selectedStatus}>
+        <Button
+          className="bg-red white w-100 fl"
+          onClick={() => submitTask()}
+          disabled={!selectedStatus}
+        >
           <FormattedMessage {...messages.submitTask} />
         </Button>
       </div>
@@ -213,15 +222,15 @@ function CompletionTabForValidation({ project, tasks }: Object) {
   const stopValidation = () => {
     pushToLocalJSONAPI(
       `projects/${project.projectId}/tasks/actions/stop-validation/`,
-      JSON.stringify({resetTasks: [{taskId: tasks[0], comment: taskComment}]}),
-      token
+      JSON.stringify({ resetTasks: [{ taskId: tasks[0], comment: taskComment }] }),
+      token,
     ).then(r => navigate(`../tasks/`));
-  }
+  };
 
   const submitTask = () => {
     if (selectedStatus) {
       let url;
-      let payload = {validatedTasks: [{comment: taskComment, taskId: tasks[0]}]};
+      let payload = { validatedTasks: [{ comment: taskComment, taskId: tasks[0] }] };
       if (selectedStatus === 'VALIDATED') {
         url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
         payload.validatedTasks[0].status = 'VALIDATED';
@@ -230,13 +239,9 @@ function CompletionTabForValidation({ project, tasks }: Object) {
         url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
         payload.validatedTasks[0].status = 'INVALIDATED';
       }
-      pushToLocalJSONAPI(
-        url,
-        JSON.stringify(payload),
-        token
-      ).then(r => navigate(`../tasks/`));
+      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then(r => navigate(`../tasks/`));
     }
-  }
+  };
 
   return (
     <div>
@@ -283,7 +288,11 @@ function CompletionTabForValidation({ project, tasks }: Object) {
         </Button>
       </div>
       <div className="cf mv2">
-        <Button className="bg-red white w-100 fl" onClick={() => submitTask()} disabled={!selectedStatus}>
+        <Button
+          className="bg-red white w-100 fl"
+          onClick={() => submitTask()}
+          disabled={!selectedStatus}
+        >
           <FormattedMessage {...messages.submitTask} />
         </Button>
       </div>

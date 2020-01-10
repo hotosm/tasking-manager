@@ -110,7 +110,10 @@ export function EditCampaign(props) {
   const userDetails = useSelector(state => state.auth.get('userDetails'));
   const token = useSelector(state => state.auth.get('token'));
   const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`);
-  const [projectsError, projectsLoading, projects] = useFetch(`projects/?campaign=${campaign.name}`, campaign.name);
+  const [projectsError, projectsLoading, projects] = useFetch(
+    `projects/?campaign=${campaign.name}`,
+    campaign.name,
+  );
 
   const updateCampaign = payload => {
     pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH');

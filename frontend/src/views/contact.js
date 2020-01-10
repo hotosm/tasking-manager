@@ -59,22 +59,24 @@ export const ContactPage = props => {
     setSentStatus('started');
     if (token) {
       pushToLocalJSONAPI(`system/contact-admin/`, JSON.stringify(form), token, 'POST')
-      .then(success => setSentStatus('success'))
-      .catch(e => {
-        setSentStatus('failure');
-        setPopupMessage(
-          <ContactUsPopup
-          icon={<AlertIcon height="50px" width="50px" />}
-          title={<FormattedMessage {...messages.contactUsThanksError} />}
-          body={e.message}
-          proceed={<FormattedMessage {...messages.contactUsThanksProceed} />}
-          proceedFn={() => null}
-          />,
-        );
-      });
+        .then(success => setSentStatus('success'))
+        .catch(e => {
+          setSentStatus('failure');
+          setPopupMessage(
+            <ContactUsPopup
+              icon={<AlertIcon height="50px" width="50px" />}
+              title={<FormattedMessage {...messages.contactUsThanksError} />}
+              body={e.message}
+              proceed={<FormattedMessage {...messages.contactUsThanksProceed} />}
+              proceedFn={() => null}
+            />,
+          );
+        });
     } else {
-      window.open(`mailto:sysadmin@hotosm.org?subject="Tasking Manager contact"&body=${form.content}`);
-      setSentStatus('success')
+      window.open(
+        `mailto:sysadmin@hotosm.org?subject="Tasking Manager contact"&body=${form.content}`,
+      );
+      setSentStatus('success');
     }
   };
 

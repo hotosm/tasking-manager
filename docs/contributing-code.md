@@ -62,9 +62,28 @@ of the commit message can be left out.
 
 Before sending a PR, make sure you run the following commands and include the changes into your commit.
 
-* Code formatting: Format all code correctly by running [Black](https://pypi.org/project/black/): `black manage.py server tests migrations`
+* Code formatting: Format all server code correctly by running [Black](https://pypi.org/project/black/): `black manage.py server tests migrations` and all frontend code by running [prettier](https://prettier.io/): `yarn prettier` (inside the `frontend` directory).
 * Coding standards: Make sure you adhere to the coding standards eventually risen by [Flake8](http://flake8.pycqa.org/en/latest/): `flake8 manage.py server tests migrations`
 * Prepare for translations: In case you have introduced new strings on the frontend, the translation source file must be updated this can be done via `make refresh-translatables` or `yarn build-locales` (inside the `frontend` directory).
 
 If you have forked this project on GitHub then the best way to submit your patches is to
 push your changes back to your GitHub repository and then send a "pull request" via GitHub to the main repository.
+
+You can use this [git pre-commit hook](https://git-scm.com/docs/githooks#_pre_commit) to format both the frontend and the backend code:
+
+```
+#!/bin/sh
+JS_FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.js" "*.jsx" | sed 's| |\\ |g')
+PY_FILES=$(git diff --cached --name-only --diff-filter=ACMR "*.py" | sed 's| |\\ |g')
+([ -z "$JS_FILES" ] && [ -z "$PY_FILES" ]) && exit 0
+
+# Prettify all selected files
+echo "$JS_FILES" | xargs ./frontend/node_modules/.bin/prettier --write
+echo "$PY_FILES" | xargs black
+
+# Add back the modified/prettified files to staging
+echo "$JS_FILES" | xargs git add
+echo "$PY_FILES" | xargs git add
+
+exit 0
+```

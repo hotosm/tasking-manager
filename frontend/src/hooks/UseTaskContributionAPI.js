@@ -10,7 +10,7 @@ import {
 } from 'use-query-params';
 import { CommaArrayParam } from '../utils/CommaArrayParam';
 import { useThrottle } from '../hooks/UseThrottle';
-import { remapParamsToAPI } from '../utils/remapParamsToAPI'
+import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import { API_URL } from '../config';
 
 const contributionsQueryAllSpecification = {
@@ -18,8 +18,7 @@ const contributionsQueryAllSpecification = {
   minDate: StringParam,
   text: StringParam,
   maxDate: StringParam,
-  archivedProjects: BooleanParam
-
+  archivedProjects: BooleanParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -37,15 +36,14 @@ export const useTaskContributionQueryParams = () => {
   page: 'page',
   pageSize: 'pageSize'
   */
-   /* TODO support full text search and change text=>project for that */
-  const backendToQueryConversion = {
-    status: 'status',
-    minDate: 'min_action_date',
-    text: 'project_id',
-    maxDate: 'max_action_date',
-    archivedProjects: 'archived_projects',
-  };
-
+/* TODO support full text search and change text=>project for that */
+const backendToQueryConversion = {
+  status: 'status',
+  minDate: 'min_action_date',
+  text: 'project_id',
+  maxDate: 'max_action_date',
+  archivedProjects: 'archived_projects',
+};
 
 const dataFetchReducer = (state, action) => {
   switch (action.type) {
@@ -67,7 +65,16 @@ const dataFetchReducer = (state, action) => {
         isLoading: false,
         isError: false,
         tasks: action.payload.tasks,
-        pagination: {"hasNext": false, "hasPrev": false, "nextNum": null, "page": 1, "pages": 1, "prevNum": null, "perPage": 100, "total": (action.payload.tasks && action.payload.tasks.length) || 0},
+        pagination: {
+          hasNext: false,
+          hasPrev: false,
+          nextNum: null,
+          page: 1,
+          pages: 1,
+          prevNum: null,
+          perPage: 100,
+          total: (action.payload.tasks && action.payload.tasks.length) || 0,
+        },
         // pagination: action.payload.pagination,
       };
     case 'FETCH_FAILURE':
@@ -84,7 +91,16 @@ const dataFetchReducer = (state, action) => {
 
 const defaultInitialData = {
   tasks: [],
-  pagination: {"hasNext": false, "hasPrev": false, "nextNum": null, "page": 1, "pages": 1, "prevNum": null, "perPage": 100, "total": 0},
+  pagination: {
+    hasNext: false,
+    hasPrev: false,
+    nextNum: null,
+    page: 1,
+    pages: 1,
+    prevNum: null,
+    perPage: 100,
+    total: 0,
+  },
 };
 
 /* suggested URL /api/v2/users/{user_id}/tasks?status=READY&project_id=2&min_action_date=2019-04-9&max_action_date=2019-04-10 */
@@ -97,8 +113,9 @@ export const useTaskContributionAPI = (
 
   /* Get the user bearer token from the Redux store */
   const token = useSelector(state => state.auth.get('token'));
-  const user_id = useSelector(state => state.auth.get('userDetails') &&
-    state.auth.get('userDetails').id );
+  const user_id = useSelector(
+    state => state.auth.get('userDetails') && state.auth.get('userDetails').id,
+  );
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
@@ -120,10 +137,13 @@ export const useTaskContributionAPI = (
 
       try {
         if (!token || !user_id) {
-          dispatch({type:'FETCH_MISSINGUSER'});
-          didCancel=true;
+          dispatch({ type: 'FETCH_MISSINGUSER' });
+          didCancel = true;
         }
-        const remappedParams = remapParamsToAPI(throttledExternalQueryParamsState, backendToQueryConversion);
+        const remappedParams = remapParamsToAPI(
+          throttledExternalQueryParamsState,
+          backendToQueryConversion,
+        );
         const result = await axios({
           url: `${API_URL}users/${user_id}/tasks/`,
           method: 'get',

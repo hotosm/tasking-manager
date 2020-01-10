@@ -8,7 +8,12 @@ export function ManagementMenu() {
   const links = ['projects', 'organisations', 'teams', 'campaigns'];
   const items = links.map(item => ({
     url: `/manage/${item}/`,
-    label: <FormattedMessage {...messages.manage} values={{ entity: <FormattedMessage {...messages[item]} /> }} />
+    label: (
+      <FormattedMessage
+        {...messages.manage}
+        values={{ entity: <FormattedMessage {...messages[item]} /> }}
+      />
+    ),
   }));
 
   return <SectionMenu items={items} />;

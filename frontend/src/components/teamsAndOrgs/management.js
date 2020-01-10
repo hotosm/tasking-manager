@@ -38,12 +38,10 @@ export const DeleteButton = ({ className, onClick }: Object) => (
 
 export function VisibilityBox({ visibility, extraClasses }: Object) {
   let color = visibility === 'PUBLIC' ? 'blue-grey' : 'red';
-  let borderColor = visibility === 'PUBLIC' ? 'b--grey': 'b--red';
+  let borderColor = visibility === 'PUBLIC' ? 'b--grey' : 'b--red';
   const text = visibility ? <FormattedMessage {...messages[visibility.toLowerCase()]} /> : '';
 
-  return (
-    <div className={`tc br1 f7 ttu ba ${borderColor} ${color} ${extraClasses}`}>{text}</div>
-  );
+  return <div className={`tc br1 f7 ttu ba ${borderColor} ${color} ${extraClasses}`}>{text}</div>;
 }
 
 export function Management(props) {
@@ -54,10 +52,9 @@ export function Management(props) {
         <h3 className="barlow-condensed f2 ma0 pv3 dib v-mid ttu pl2 pl0-l">{props.title}</h3>
         {props.showAddButton && (
           <Link to={'new/'} className="dib ml3">
-          <AddButton />
+            <AddButton />
           </Link>
         )}
-
       </div>
       <div className="w-100 cf dib">{props.children}</div>
     </div>

@@ -31,16 +31,21 @@ export function Projects({ projects, viewAllQuery, ownerEntity }: Object) {
               projects.results &&
               projects.results
                 .slice(0, 6)
-                .map((card, n) => <ProjectCard cardWidthClass="w-third-l" {...card} key={n} />)
-            }
-            {projects && projects.results && projects.results.length === 0 &&
+                .map((card, n) => <ProjectCard cardWidthClass="w-third-l" {...card} key={n} />)}
+            {projects && projects.results && projects.results.length === 0 && (
               <span className="blue-grey">
                 <FormattedMessage
                   {...messages.noProjectsFound}
-                  values={{entity: <span className="ttl"><FormattedMessage {...messages[ownerEntity]}/></span>}}
+                  values={{
+                    entity: (
+                      <span className="ttl">
+                        <FormattedMessage {...messages[ownerEntity]} />
+                      </span>
+                    ),
+                  }}
                 />
               </span>
-            }
+            )}
           </ReactPlaceholder>
         </div>
       </div>
