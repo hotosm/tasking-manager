@@ -20,13 +20,13 @@ import { useFetch } from '../hooks/UseFetch';
 
 const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
 
-export const CreateProject = (props) => {
-  return(
+export const CreateProject = props => {
+  return (
     <Suspense fallback={<div>Loading...</div>}>
       <ProjectCreate {...props} />
     </Suspense>
   );
-}
+};
 
 export const ProjectsPage = props => {
   const initialData = {
@@ -99,23 +99,21 @@ export const ManageProjectsPage = props => {
 
   if (!userToken) {
     /* use replace to so the back button does not get interrupted */
-    props.navigate('/login', {replace: true})
+    props.navigate('/login', { replace: true });
   }
 
   if (
-     !fullProjectsQuery.createdByMe &&
-     !fullProjectsQuery.mappedByMe &&
-     !fullProjectsQuery.favoritedByMe &&
-     !fullProjectsQuery.createdByMeArchived
+    !fullProjectsQuery.createdByMe &&
+    !fullProjectsQuery.mappedByMe &&
+    !fullProjectsQuery.favoritedByMe &&
+    !fullProjectsQuery.createdByMeArchived
   ) {
-    setProjectQuery({createdByMe: true});
+    setProjectQuery({ createdByMe: true });
   }
 
   return (
     <div className="pull-center ph5-l bg-tan">
-      {userDetails && ['ADMIN', 'PROJECT_MANAGER'].includes(userDetails.role) &&
-        <ManagementMenu />
-      }
+      {userDetails && ['ADMIN', 'PROJECT_MANAGER'].includes(userDetails.role) && <ManagementMenu />}
       <MyProjectNav location={props.location} orgAPIState={orgAPIState}>
         {
           props.children

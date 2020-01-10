@@ -5,18 +5,18 @@ const initialState = {
     email: '',
     success: false,
     details: '',
-    id: 0
-  }
+    id: 0,
+  },
 };
 
-export function userReducer (state = initialState, action) {
+export function userReducer(state = initialState, action) {
   switch (action.type) {
     case types.REGISTER_USER: {
       return {
-          ...state,
-          user: action.payload
-        };
-      }
+        ...state,
+        user: action.payload,
+      };
+    }
     default:
       return state;
   }

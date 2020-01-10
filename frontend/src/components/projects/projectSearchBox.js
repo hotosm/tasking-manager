@@ -57,7 +57,7 @@ export const ProjectSearchBox = ({
             const value = event.target.value;
             setQuerySearch(value);
           }}
-          placeholder={placeholder || "Search Projects"}
+          placeholder={placeholder || 'Search Projects'}
           className={'input-reset ba b--grey-light pa1 lh-copy db w-100'}
           style={{ textIndent: '30px' }}
           type="text"

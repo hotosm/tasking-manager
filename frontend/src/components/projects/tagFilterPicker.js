@@ -57,17 +57,17 @@ export const TagFilterPickerAutocomplete = ({
   allQueryParams,
   setQuery,
 }) => {
-  const getLabelAndValue = (option) => {
+  const getLabelAndValue = option => {
     if (option.name) {
       return option.name;
     } else {
       return option;
     }
-  }
+  };
 
   const handleTagChange = change => {
     const value = change.name ? change.name : change;
-    const isAllTags = change && (value === defaultSelectedItem);
+    const isAllTags = change && value === defaultSelectedItem;
     /* should we encodeURIComponent the change.value? */
     const newValue = isAllTags ? undefined : value;
     setQuery(

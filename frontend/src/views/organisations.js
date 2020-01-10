@@ -26,8 +26,9 @@ export function ListOrganisations() {
   const [organisations, setOrganisations] = useState(null);
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
-      fetchLocalJSONAPI(`organisations/?manager_user_id=${userDetails.id}`, token)
-        .then(orgs => setOrganisations(orgs.organisations));
+      fetchLocalJSONAPI(`organisations/?manager_user_id=${userDetails.id}`, token).then(orgs =>
+        setOrganisations(orgs.organisations),
+      );
     }
   }, [userDetails, token]);
 
@@ -107,7 +108,7 @@ export function CreateOrganisation() {
                 />
               </div>
             </div>
-            <div className="bottom-0 cf bg-white h3 w-100" style={{position: "sticky"}}>
+            <div className="bottom-0 cf bg-white h3 w-100" style={{ position: 'sticky' }}>
               <div className="w-80-ns w-60-m w-50 h-100 fl tr">
                 <Link to={'../'}>
                   <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
@@ -138,7 +139,10 @@ export function EditOrganisation(props) {
   const [initManagers, setInitManagers] = useState(false);
   const [managers, setManagers] = useState([]);
   const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);
-  const [projectsError, projectsLoading, projects] = useFetch(`projects/?organisationId=${props.id}`, props.id);
+  const [projectsError, projectsLoading, projects] = useFetch(
+    `projects/?organisationId=${props.id}`,
+    props.id,
+  );
   useEffect(() => {
     if (!initManagers && organisation && organisation.managers) {
       setManagers(organisation.managers);
@@ -197,7 +201,7 @@ export function EditOrganisation(props) {
           viewAllQuery={`?organisation=${organisation.name}`}
           ownerEntity="organisation"
         />
-        <Teams teams={organisation.teams} viewAllQuery={`?organisationId=${props.id}`}/>
+        <Teams teams={organisation.teams} viewAllQuery={`?organisationId=${props.id}`} />
       </div>
     </div>
   );

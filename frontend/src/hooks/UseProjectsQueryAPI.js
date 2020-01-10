@@ -12,7 +12,7 @@ import axios from 'axios';
 
 import { CommaArrayParam } from '../utils/CommaArrayParam';
 import { useThrottle } from '../hooks/UseThrottle';
-import { remapParamsToAPI } from '../utils/remapParamsToAPI'
+import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import { API_URL } from '../config';
 
 const projectQueryAllSpecification = {
@@ -40,22 +40,22 @@ export const useExploreProjectsQueryParams = () => {
 /* The API uses slightly different JSON keys than the queryParams,
    this fn takes an object with queryparam keys and outputs JSON keys
    while maintaining the same values */
- const backendToQueryConversion = {
-   difficulty: 'mapperLevel',
-   campaign: 'campaign',
-   team: 'teamId',
-   organisation: 'organisationName',
-   location: 'country',
-   types: 'mappingTypes',
-   text: 'textSearch',
-   page: 'page',
-   orderBy: 'orderBy',
-   orderByType: 'orderByType',
-   createdByMe: 'createdByMe',
-   favoritedByMe: 'favoritedByMe',
-   mappedByMe: 'mappedByMe',
-   createdByMeArchived: 'createdByMeArchived'
- };
+const backendToQueryConversion = {
+  difficulty: 'mapperLevel',
+  campaign: 'campaign',
+  team: 'teamId',
+  organisation: 'organisationName',
+  location: 'country',
+  types: 'mappingTypes',
+  text: 'textSearch',
+  page: 'page',
+  orderBy: 'orderBy',
+  orderByType: 'orderByType',
+  createdByMe: 'createdByMe',
+  favoritedByMe: 'favoritedByMe',
+  mappedByMe: 'mappedByMe',
+  createdByMeArchived: 'createdByMeArchived',
+};
 
 const dataFetchReducer = (state, action) => {
   switch (action.type) {

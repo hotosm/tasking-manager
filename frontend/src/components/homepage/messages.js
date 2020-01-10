@@ -141,11 +141,11 @@ export default defineMessages({
   },
   contacterHeaderText: {
     id: 'home.contact.contacterHeadText',
-    defaultMessage: 'Have an inquiry or some feedback for us? Fill out the form below to contact our team.',
+    defaultMessage:
+      'Have an inquiry or some feedback for us? Fill out the form below to contact our team.',
   },
   contacterSend: {
     id: 'home.contact.submit',
     defaultMessage: 'Send',
   },
-
 });

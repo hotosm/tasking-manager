@@ -8,12 +8,42 @@ import { Dropdown } from '../dropdown';
 
 export function OrderBySelector(props) {
   const options = [
-    {label: <FormattedMessage {...messages.sortByPriority} />, value: 'priority.ASC', sort: 'priority', type: 'ASC'},
-    {label: <FormattedMessage {...messages.sortByMoreActive} />, value: 'last_updated.DESC', sort: 'last_updated', type: 'DESC'},
-    {label: <FormattedMessage {...messages.sortByIdDesc} />, value: 'id.DESC', sort: 'id', type: 'DESC'},
-    {label: <FormattedMessage {...messages.sortByIdAsc} />, value: 'id.ASC', sort: 'id', type: 'ASC'},
-    {label: <FormattedMessage {...messages.sortByBeginner} />, value: 'mapper_level.ASC', sort: 'mapper_level', type: 'ASC'},
-    {label: <FormattedMessage {...messages.sortByAdvanced} />, value: 'mapper_level.DESC', sort: 'mapper_level', type: 'DESC'},
+    {
+      label: <FormattedMessage {...messages.sortByPriority} />,
+      value: 'priority.ASC',
+      sort: 'priority',
+      type: 'ASC',
+    },
+    {
+      label: <FormattedMessage {...messages.sortByMoreActive} />,
+      value: 'last_updated.DESC',
+      sort: 'last_updated',
+      type: 'DESC',
+    },
+    {
+      label: <FormattedMessage {...messages.sortByIdDesc} />,
+      value: 'id.DESC',
+      sort: 'id',
+      type: 'DESC',
+    },
+    {
+      label: <FormattedMessage {...messages.sortByIdAsc} />,
+      value: 'id.ASC',
+      sort: 'id',
+      type: 'ASC',
+    },
+    {
+      label: <FormattedMessage {...messages.sortByBeginner} />,
+      value: 'mapper_level.ASC',
+      sort: 'mapper_level',
+      type: 'ASC',
+    },
+    {
+      label: <FormattedMessage {...messages.sortByAdvanced} />,
+      value: 'mapper_level.DESC',
+      sort: 'mapper_level',
+      type: 'DESC',
+    },
   ];
   const onSortSelect = arr => {
     if (arr.length === 1) {
@@ -26,12 +56,11 @@ export function OrderBySelector(props) {
         },
         'pushIn',
       );
-      ;
     } else if (arr.length > 1) {
       throw new Error('filter select array is bigger.');
     }
   };
-  return(
+  return (
     <Dropdown
       onAdd={() => {}}
       onRemove={() => {}}
@@ -39,7 +68,7 @@ export function OrderBySelector(props) {
       value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}` || []}
       options={options}
       display={<FormattedMessage {...messages.sortBy} />}
-      className={`ba b--grey-light bg-white mr1 f6 v-mid pv2 ${props.className || ""}`}
+      className={`ba b--grey-light bg-white mr1 f6 v-mid pv2 ${props.className || ''}`}
     />
   );
 }

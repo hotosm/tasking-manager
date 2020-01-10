@@ -1,4 +1,3 @@
-
 export function getEditors() {
   let editors = [
     {
@@ -9,7 +8,7 @@ export function getEditors() {
     {
       label: 'JOSM',
       value: 'JOSM',
-      url: 'http://127.0.0.1:8111'
+      url: 'http://127.0.0.1:8111',
     },
     {
       label: 'Potlatch 2',

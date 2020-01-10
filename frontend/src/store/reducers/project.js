@@ -1,10 +1,9 @@
 import { Map } from 'immutable';
 import { types } from '../actions/project';
 
-
 const initialState = Map({
   projectId: null,
-  params: {}
+  params: {},
 });
 
 export function projectReducer(state = initialState, action) {

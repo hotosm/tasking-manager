@@ -44,7 +44,9 @@ export default function TrimProject({ metadata, mapObj, updateMetadata }) {
 
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark"><FormattedMessage {...messages.step3} /></h3>
+      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark">
+        <FormattedMessage {...messages.step3} />
+      </h3>
       <div>
         <p>
           <FormattedMessage {...messages.trimTasksDescriptionLine1} />
@@ -58,7 +60,9 @@ export default function TrimProject({ metadata, mapObj, updateMetadata }) {
           defaultChecked={clipStatus}
           onChange={() => setClipStatus(!clipStatus)}
         />
-        <span className="pl2 v-mid"><FormattedMessage {...messages.trimToAOI} /></span>
+        <span className="pl2 v-mid">
+          <FormattedMessage {...messages.trimToAOI} />
+        </span>
         <div className="pt2">
           <Button
             onClick={() => clipProject(clipStatus, metadata, mapObj.map, updateMetadata)}

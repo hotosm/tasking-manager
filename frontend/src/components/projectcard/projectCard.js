@@ -18,9 +18,7 @@ export function PriorityBox({ priority, extraClasses }: Object) {
   }
   const text = priority ? <FormattedMessage {...messages[`projectPriority${priority}`]} /> : '';
 
-  return (
-    <div className={`tc br1 f7 ttu ba ${borderColor} ${color} ${extraClasses}`}>{text}</div>
-  );
+  return <div className={`tc br1 f7 ttu ba ${borderColor} ${color} ${extraClasses}`}>{text}</div>;
 }
 
 export function ProjectTeaser({

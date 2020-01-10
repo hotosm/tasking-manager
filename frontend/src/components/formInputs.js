@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Field } from 'react-final-form';
 import Select from 'react-select';
@@ -13,7 +13,8 @@ export const RadioField = ({ name, value, className }: Object) => (
     component="input"
     type="radio"
     value={value}
-    className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light ${className || ''}`}
+    className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light ${className ||
+      ''}`}
   />
 );
 
@@ -38,17 +39,15 @@ export const SwitchToggle = ({ label, isChecked, onChange, labelPosition }: Obje
 export function OrganisationSelect({ className }: Object) {
   const userDetails = useSelector(state => state.auth.get('userDetails'));
   const [organisations, setOrganisations] = useState([]);
-  useEffect(
-    () => {
-      if (userDetails && userDetails.id) {
-        const query = userDetails.role === 'ADMIN' ? '' : `?manager_user_id=${userDetails.id}`;
-        fetchLocalJSONAPI(`organisations/${query}`).then(
-          result => setOrganisations(result.organisations)
-        ).catch(e => console.log(e));
-      }
-    }, [userDetails]
-  );
-  return(
+  useEffect(() => {
+    if (userDetails && userDetails.id) {
+      const query = userDetails.role === 'ADMIN' ? '' : `?manager_user_id=${userDetails.id}`;
+      fetchLocalJSONAPI(`organisations/${query}`)
+        .then(result => setOrganisations(result.organisations))
+        .catch(e => console.log(e));
+    }
+  }, [userDetails]);
+  return (
     <Field name="organisation" className={className} required>
       {props => (
         <Select
@@ -56,7 +55,7 @@ export function OrganisationSelect({ className }: Object) {
           getOptionLabel={option => option.name}
           getOptionValue={option => option.organisationId}
           options={organisations}
-          placeholder={props.input.value || <FormattedMessage {...messages.selectOrganisation}/>}
+          placeholder={props.input.value || <FormattedMessage {...messages.selectOrganisation} />}
           onChange={value => props.input.onChange(value.organisationId || '')}
           className="z-5"
         />
