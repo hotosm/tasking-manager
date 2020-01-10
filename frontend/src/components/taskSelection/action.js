@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { ProjectInstructions } from './instructions';
-import { HeaderLine } from './index';
+import { HeaderLine } from '../projectDetail/header';
 import { TasksMap } from './map';
 import { Button } from '../button';
 import { CheckCircle } from '../checkCircle';

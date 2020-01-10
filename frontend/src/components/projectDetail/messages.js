@@ -40,9 +40,9 @@ export default defineMessages({
     id: 'project.detail.dueDateLeft',
     defaultMessage: '{daysLeftHumanize} left',
   },
-  createBy: {
-    id: 'project.detail.createdBy',
-    defaultMessage: 'Created by {user}',
+  createdBy: {
+    id: 'project.createdBy',
+    defaultMessage: '{id} | Created by {user}',
   },
   typesOfMapping: {
     id: 'project.detail.typesOfMapping',
@@ -182,5 +182,17 @@ export default defineMessages({
   mapped: {
     id: 'project.detail.visualisation.mapped',
     defaultMessage: 'Mapped',
+  },
+  status_DRAFT: {
+    id: 'project.status.draft',
+    defaultMessage: 'Draft',
+  },
+  status_ARCHIVED: {
+    id: 'project.status.archived',
+    defaultMessage: 'Archived',
+  },
+  status_PUBLISHED: {
+    id: 'project.status.published',
+    defaultMessage: 'Published',
   },
 });
