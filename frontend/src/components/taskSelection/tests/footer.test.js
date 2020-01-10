@@ -9,19 +9,23 @@ import TaskSelectionFooter from '../footer';
 import { Button } from '../../button';
 import { store } from '../../../store';
 
-describe("test if footer", () => {
+describe('test if footer', () => {
   const createComponentWithReduxAndIntl = (children, props = { locale: 'en' }) => {
     return TestRenderer.create(
       <Provider store={store}>
         <IntlProvider {...props}>{children}</IntlProvider>
-      </Provider>
+      </Provider>,
     );
   };
 
   it('has MappingTypes with ROADS and BUILDINGS', () => {
     const element = createComponentWithReduxAndIntl(
       <TaskSelectionFooter
-        project={{projectId: 1, mappingTypes: ['ROADS', 'BUILDINGS'], mappingEditors: ['ID', 'JOSM'],}}
+        project={{
+          projectId: 1,
+          mappingTypes: ['ROADS', 'BUILDINGS'],
+          mappingEditors: ['ID', 'JOSM'],
+        }}
         taskAction={'mapSelectedTask'}
       />,
     );
@@ -36,7 +40,8 @@ describe("test if footer", () => {
           projectId: 3,
           mappingEditors: ['ID', 'JOSM'],
           mappingTypes: ['ROADS', 'BUILDINGS'],
-          imagery: 'tms[1,22]:https://service.com/earthservice/tms/Layer@EPSG:3857@jpg/{zoom}/{x}/{-y}.jpg',
+          imagery:
+            'tms[1,22]:https://service.com/earthservice/tms/Layer@EPSG:3857@jpg/{zoom}/{x}/{-y}.jpg',
         }}
         taskAction={'mapATask'}
       />,
@@ -50,7 +55,7 @@ describe("test if footer", () => {
   it('returns the correct contribute button message when action is "mapATask"', () => {
     const element = createComponentWithReduxAndIntl(
       <TaskSelectionFooter
-        project={{projectId: 1, mappingTypes: ['LAND_USE'], mappingEditors: ['ID', 'JOSM']}}
+        project={{ projectId: 1, mappingTypes: ['LAND_USE'], mappingEditors: ['ID', 'JOSM'] }}
         taskAction={'mapATask'}
       />,
     );
@@ -63,7 +68,12 @@ describe("test if footer", () => {
   it('returns the correct contribute button message when taskAction is "validateSelectedTask"', () => {
     const element = createComponentWithReduxAndIntl(
       <TaskSelectionFooter
-        project={{projectId: 1, mappingTypes: ['LAND_USE'], mappingEditors: ['ID', 'JOSM'], validationEditors: ['ID', 'JOSM']}}
+        project={{
+          projectId: 1,
+          mappingTypes: ['LAND_USE'],
+          mappingEditors: ['ID', 'JOSM'],
+          validationEditors: ['ID', 'JOSM'],
+        }}
         taskAction={'validateSelectedTask'}
       />,
     );

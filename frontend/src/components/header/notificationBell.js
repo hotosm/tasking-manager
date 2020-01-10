@@ -22,12 +22,13 @@ export const NotificationBell = props => {
   /*TODO Replace this backend with websockets, eventsource or RESTSockets
     to save batteries and capacity*/
   const [unreadNotifsStartError, unreadNotifsStartLoading, unreadNotifsStart] = useFetch(
-    `/api/v2/notifications/queries/own/count-unread/`, token
+    `/api/v2/notifications/queries/own/count-unread/`,
+    token,
   );
   const [unreadNotifsRepeatError, unreadNotifsRepeat] = useFetchIntervaled(
     `/api/v2/notifications/queries/own/count-unread/`,
     30000,
-    token
+    token,
   );
 
   const isNotificationBellActive = ({ isCurrent }) => {

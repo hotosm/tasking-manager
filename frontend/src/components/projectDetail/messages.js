@@ -98,7 +98,8 @@ export default defineMessages({
   },
   noComments: {
     id: 'project.detail.questionsAndComments.none',
-    defaultMessage: 'There are no questions or comments on this project yet. Be the first to post one!',
+    defaultMessage:
+      'There are no questions or comments on this project yet. Be the first to post one!',
   },
   post: {
     id: 'project.detail.questionsAndComments.button',

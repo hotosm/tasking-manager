@@ -14,7 +14,7 @@ export function fetchExternalJSONAPI(url): Promise<*> {
     });
 }
 
-export function fetchLocalJSONAPI(endpoint, token, method="GET", language = 'en'): Promise<*> {
+export function fetchLocalJSONAPI(endpoint, token, method = 'GET', language = 'en'): Promise<*> {
   const url = new URL(endpoint, API_URL);
   let headers = {
     'Content-Type': 'application/json',
@@ -33,7 +33,13 @@ export function fetchLocalJSONAPI(endpoint, token, method="GET", language = 'en'
     });
 }
 
-export function pushToLocalJSONAPI(endpoint, payload, token, method = 'POST', language = 'en'): Promise<*> {
+export function pushToLocalJSONAPI(
+  endpoint,
+  payload,
+  token,
+  method = 'POST',
+  language = 'en',
+): Promise<*> {
   const url = new URL(endpoint, API_URL);
   return fetch(url, {
     method: method,

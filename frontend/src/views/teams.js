@@ -10,7 +10,12 @@ import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { Members } from '../components/teamsAndOrgs/members';
-import { TeamInformation, TeamForm, TeamsManagement, TeamSideBar } from '../components/teamsAndOrgs/teams';
+import {
+  TeamInformation,
+  TeamForm,
+  TeamsManagement,
+  TeamSideBar,
+} from '../components/teamsAndOrgs/teams';
 import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
@@ -20,12 +25,12 @@ export function ManageTeams() {
   return <ListTeams managementView={true} />;
 }
 
-export function ListTeams({managementView = false}: Object) {
+export function ListTeams({ managementView = false }: Object) {
   const userDetails = useSelector(state => state.auth.get('userDetails'));
   // TO DO: filter teams of current user
   const [error, loading, teams] = useFetch(
     `teams/?${managementView ? `manager=${userDetails.id}` : `member=${userDetails.id}`}`,
-    userDetails.id !== undefined
+    userDetails.id !== undefined,
   );
 
   const placeHolder = (
@@ -46,7 +51,11 @@ export function ListTeams({managementView = false}: Object) {
       delay={10}
       ready={!error && !loading}
     >
-      <TeamsManagement teams={teams.teams} userDetails={userDetails} managementView={managementView}/>
+      <TeamsManagement
+        teams={teams.teams}
+        userDetails={userDetails}
+        managementView={managementView}
+      />
     </ReactPlaceholder>
   );
 }
@@ -108,13 +117,13 @@ export function CreateTeam() {
   const createTeam = payload => {
     payload.organisation_id = payload.organisation;
     delete payload['organisation'];
-    pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST')
-      .then(result => {
-        managers.filter(user => user.username !== userDetails.username)
-          .map(user => joinTeamRequest(result.teamId, user.username, 'MANAGER', token));
-        members.map(user => joinTeamRequest(result.teamId, user.username, 'MEMBER', token));
-        setNewTeamId(result.teamId);
-      });
+    pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST').then(result => {
+      managers
+        .filter(user => user.username !== userDetails.username)
+        .map(user => joinTeamRequest(result.teamId, user.username, 'MANAGER', token));
+      members.map(user => joinTeamRequest(result.teamId, user.username, 'MEMBER', token));
+      setNewTeamId(result.teamId);
+    });
   };
 
   return (
@@ -281,7 +290,10 @@ export function TeamDetail(props) {
   const token = useSelector(state => state.auth.get('token'));
   const [error, loading, team] = useFetch(`teams/${props.id}/`);
   // eslint-disable-next-line
-  const [projectsError, projectsLoading, projects] = useFetch(`projects/?teamId=${props.id}`, props.id);
+  const [projectsError, projectsLoading, projects] = useFetch(
+    `projects/?teamId=${props.id}`,
+    props.id,
+  );
   const [isMember, setIsMember] = useState(false);
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
@@ -298,18 +310,18 @@ export function TeamDetail(props) {
   const joinTeam = () => {
     pushToLocalJSONAPI(
       `teams/${props.id}/actions/join/`,
-      JSON.stringify({role: 'MEMBER', username: userDetails.username}),
+      JSON.stringify({ role: 'MEMBER', username: userDetails.username }),
       token,
-      'POST'
+      'POST',
     ).then(res => setIsMember(true));
   };
 
   const leaveTeam = () => {
     pushToLocalJSONAPI(
       `teams/${props.id}/actions/leave/`,
-      JSON.stringify({username: userDetails.username}),
+      JSON.stringify({ username: userDetails.username }),
       token,
-      'POST'
+      'POST',
     ).then(res => setIsMember(false));
   };
 

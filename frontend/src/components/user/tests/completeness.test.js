@@ -122,7 +122,7 @@ it('test with a user whose profile is 66.7% filled', () => {
   expect(elementInstance.findAllByType(FormattedMessage).map(i => i.props.id)).toContain(
     'user.completeness.lead.high',
   );
-  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(2/3);
+  expect(elementInstance.findByType(FormattedNumber).props.value).toBe(2 / 3);
   expect(
     elementInstance.findByProps({ className: 'absolute bg-red br-pill hhalf hide-child' }).props
       .style.width,
