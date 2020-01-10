@@ -9,7 +9,7 @@ export default defineMessages({
     defaultMessage: 'My Contributions',
   },
   contribution: {
-    id: 'mytasks.mainSection.title',
+    id: 'mytasks.contribution',
     defaultMessage: 'Contribution',
   },
   all: {

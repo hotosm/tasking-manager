@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { useInterval } from './UseInterval';
 
-export const useFetch = (url, trigger=true) => {
+export const useFetch = (url, trigger = true) => {
   const token = useSelector(state => state.auth.get('token'));
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,17 +26,19 @@ export const useFetch = (url, trigger=true) => {
   return [error, loading, data];
 };
 
-export function useFetchIntervaled(url, delay) {
+export function useFetchIntervaled(url, delay, trigger = true) {
   const token = useSelector(state => state.auth.get('token'));
   const [data, setData] = useState();
   const [error, setError] = useState(null);
   useInterval(() => {
     (async () => {
-      try {
-        const response = await fetchLocalJSONAPI(url, token);
-        setData(response);
-      } catch (e) {
-        setError(e);
+      if (trigger) {
+        try {
+          const response = await fetchLocalJSONAPI(url, token);
+          setData(response);
+        } catch (e) {
+          setError(e);
+        }
       }
     })();
   }, delay);
