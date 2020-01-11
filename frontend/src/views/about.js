@@ -8,8 +8,8 @@ export function AboutPage() {
   return <div className="pt180 pull-center bg-white blue-dark cf">
     <TopBar pageName={<FormattedMessage {...messages.about} />} />
     <div className="pl6-l ph4 mr4-l pt4 f4 w-60-l">
-      <FormattedMessage {...messages.tmDescription} />
-      <blockquote className="pt3 f5 pb2">
+      <p className="avenir b f4 tracked mt0"><FormattedMessage {...messages.tmDescription} /></p>
+      <blockquote className="pt3 f5 pb2 helvetica normal tracked mt0">
         <FormattedMessage
           {...messages.osmDescription}
           values={{
@@ -20,9 +20,9 @@ export function AboutPage() {
       </blockquote>
     </div>
     <div className="pl6-l ph4 pt2 mr4-l f4 w-60-l">
-      <h3><FormattedMessage {...messages.howItWorks} /></h3>
-      <p><FormattedMessage {...messages.howItWorksPart1} /></p>
-      <p><FormattedMessage {...messages.howItWorksPart2} /></p>
+      <h3 className="avenir b f4 tracked mt0"><FormattedMessage {...messages.howItWorks} /></h3>
+      <p className="avenir f4 normal tracked mt0"><FormattedMessage {...messages.howItWorksPart1} /></p>
+      <p className="avenir f4 normal tracked mt0"><FormattedMessage {...messages.howItWorksPart2} /></p>
     </div>
     <div className="ph6-l ph4 pt2">
       <div className="w-100 w-50-l fl">
