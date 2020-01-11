@@ -9,7 +9,7 @@ import useForceUpdate from '../../hooks/UseForceUpdate';
 import { useInboxQueryAPI } from '../../hooks/UseInboxQueryAPI';
 
 export const NotificationBell = props => {
-  const token = useSelector(state => state.auth.get('token'));
+  const trigger = useSelector(state => state.auth.get('token') !== null);
   const [forceUpdated, forceUpdate] = useForceUpdate();
 
   /* these below make the references stable so hooks doesn't re-request forever */
@@ -18,17 +18,16 @@ export const NotificationBell = props => {
   const [notificationState] = useInboxQueryAPI(nothing.current, sortByRead.current, forceUpdated);
 
   const [isPopoutFocus, setPopoutFocus] = useState(false);
-
   /*TODO Replace this backend with websockets, eventsource or RESTSockets
     to save batteries and capacity*/
   const [unreadNotifsStartError, unreadNotifsStartLoading, unreadNotifsStart] = useFetch(
     `/api/v2/notifications/queries/own/count-unread/`,
-    token,
+    trigger,
   );
   const [unreadNotifsRepeatError, unreadNotifsRepeat] = useFetchIntervaled(
     `/api/v2/notifications/queries/own/count-unread/`,
     30000,
-    token,
+    trigger,
   );
 
   const isNotificationBellActive = ({ isCurrent }) => {
