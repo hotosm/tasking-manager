@@ -69,7 +69,8 @@ export const ProjectsMap = ({
         container: mapRef.current,
         style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/bright-v9' : fallbackRasterStyle,
         zoom: 0,
-      }),
+        attributionControl: false,
+      }).addControl(new mapboxgl.AttributionControl({ compact: false })),
     );
 
     return () => {

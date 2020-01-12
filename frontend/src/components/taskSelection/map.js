@@ -37,7 +37,8 @@ export const TasksMap = ({
         style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/bright-v9' : fallbackRasterStyle,
         zoom: 2,
         minZoom: 2,
-      }),
+        attributionControl: false,
+      }).addControl(new mapboxgl.AttributionControl({ compact: false })),
     );
 
     return () => {
