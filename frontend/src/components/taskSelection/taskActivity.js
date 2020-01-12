@@ -33,22 +33,22 @@ const PostComment = ({ projectId, taskId, setStat, setCommentPayload }) => {
   return (
     <>
       <div className="w-100 pt3 h4">
-        <div className="fl w-10 tr pr2">
+        <div className="fl w-10 pr2 pl4">
           <CurrentUserAvatar className="h2 w2 br-100" />
         </div>
-        <div className="fl w-90 h-100">
+        <div className="fl w-90 h-100 pr3">
           <textarea
             value={comment}
             onChange={e => setComment(e.target.value)}
             name="comment"
             type="textarea"
             placeholder="Write a comment"
-            className="w-90 h-75 pa2 f6"
+            className="w-100 h-75 pa2 f6"
             rows="4"
           />
         </div>
       </div>
-      <div className="w-100 pb3 tr pr2">
+      <div className="w-100 pb3 tr pr3">
         <Button onClick={() => saveComment()} className="bg-red white f6">
           <FormattedMessage {...messages.comment} />
         </Button>
