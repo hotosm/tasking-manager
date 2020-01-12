@@ -69,7 +69,8 @@ export const ProjectsMap = ({
         container: mapRef.current,
         style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/bright-v9' : fallbackRasterStyle,
         zoom: 0,
-      }),
+        attributionControl: false,
+      }).addControl(new mapboxgl.AttributionControl({ compact: false })),
     );
 
     return () => {
@@ -180,5 +181,5 @@ export const ProjectsMap = ({
     }
   }, [map, mapResults, clickOnProjectID]);
 
-  return <div id="map" className={`vh-75-l vh-50 fr ${className||''}`} ref={mapRef}></div>;
+  return <div id="map" className={`vh-75-l vh-50 fr ${className || ''}`} ref={mapRef}></div>;
 };

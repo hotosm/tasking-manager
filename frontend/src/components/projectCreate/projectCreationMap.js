@@ -18,7 +18,8 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => 
         // style: 'mapbox://styles/mapbox/bright-v9',
         style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/streets-v11' : fallbackRasterStyle,
         zoom: 0,
-      }),
+        attributionControl: false,
+      }).addControl(new mapboxgl.AttributionControl({ compact: false })),
     });
 
     return () => {

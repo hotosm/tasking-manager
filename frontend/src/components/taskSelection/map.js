@@ -37,7 +37,8 @@ export const TasksMap = ({
         style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/bright-v9' : fallbackRasterStyle,
         zoom: 2,
         minZoom: 2,
-      }),
+        attributionControl: false,
+      }).addControl(new mapboxgl.AttributionControl({ compact: false })),
     );
 
     return () => {
@@ -274,7 +275,6 @@ export const TasksMap = ({
       mapboxLayerDefn();
     } else if (tasksReadyMapLoading && !mapLayersAlreadyDefined) {
       map.on('load', mapboxLayerDefn);
-
     } else if (tasksReadyMapLoading || mapReadyTasksReady) {
       console.error('One of the hook dependencies changed and try to redefine the map');
     }
@@ -324,7 +324,7 @@ export const TasksMap = ({
     taskBordersOnly,
     disableScrollZoom,
     navigate,
-    animateZoom
+    animateZoom,
   ]);
 
   return <div id="map" className={className} ref={mapRef}></div>;
