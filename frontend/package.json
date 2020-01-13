@@ -13,7 +13,7 @@
     "@webscopeio/react-textarea-autocomplete": "^4.6.2",
     "axios": "^0.19.0",
     "d3-array": "^2.3.1",
-    "dompurify": "^1.0.11",
+    "dompurify": "^2.0.7",
     "downshift-hooks": "^0.8.1",
     "final-form": "^4.18.4",
     "fromentries": "^1.2.0",
@@ -26,9 +26,9 @@
     "marked": "^0.8.0",
     "node-sass": "^4.13.0",
     "osmtogeojson": "^3.0.0-beta.3",
-    "react": "^16.11.0",
+    "react": "^16.12.0",
     "react-click-outside": "^3.0.1",
-    "react-dom": "^16.11.0",
+    "react-dom": "^16.12.0",
     "react-final-form": "^6.3.0",
     "react-intl": "^2.9.0",
     "react-meta-elements": "^1.0.0",
@@ -43,7 +43,7 @@
     "short-number": "^1.0.7",
     "shpjs": "^3.4.3",
     "tachyons": "^4.11.1",
-    "use-query-params": "^0.3.4",
+    "use-query-params": "^0.6.0",
     "webfontloader": "^1.6.28"
   },
   "scripts": {
@@ -53,7 +53,8 @@
     "build": "npm run preparation && react-scripts build",
     "prettier": "prettier --write src/**/*.js",
     "lint": "eslint src",
-    "test": "npm run lint && react-scripts test --transformIgnorePatterns \"node_modules/(?!mapbox-gl-draw-circle)/\""
+    "test": "npm run lint && react-scripts test --transformIgnorePatterns \"node_modules/(?!mapbox-gl-draw-circle)/\"",
+    "coverage": "npm run test -- --coverage --watchAll=false"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -71,8 +72,11 @@
     ]
   },
   "devDependencies": {
-    "combine-react-intl-messages": "^2.0.2",
+    "combine-react-intl-messages": "^3.0.4",
     "prettier": "^1.18.2",
-    "react-test-renderer": "^16.11.0"
+    "react-test-renderer": "^16.12.0"
+  },
+  "jest": {
+    "coverageReporters": ["html"]
   }
 }
