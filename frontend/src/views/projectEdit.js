@@ -44,11 +44,12 @@ export function ProjectEdit({ id }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [languages, setLanguages] = useState(null);
-  const [option, setOption] = useState('description');
+  const [option, setOption] = useState('permissions');
   const [projectInfo, setProjectInfo] = useState({
     mappingTypes: [],
     mappingEditors: [],
     validationEditors: [],
+    projectTeams: [{ name: 'Power rangers', id: 6, role: 'MAPPER' }],
     projectInfoLocales: [
       {
         locale: '',

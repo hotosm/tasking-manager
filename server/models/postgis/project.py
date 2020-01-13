@@ -27,6 +27,7 @@ from server.models.dtos.project_dto import (
     ProjectStatsDTO,
     ProjectUserStatsDTO,
     ProjectSearchDTO,
+    ProjectTeamDTO,
 )
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.organisation import Organisation
@@ -444,7 +445,7 @@ class Project(db.Model):
             for user in project_dto.allowed_users:
                 self.allowed_users.append(user)
 
-        if project_dto.project_teams and self.get_project_teams() != self.teams:
+        if project_dto.project_teams:
             # Clear out all current teams to update with new list
             for team in self.teams:
                 db.session.delete(team)
@@ -912,7 +913,17 @@ class Project(db.Model):
             self.tasks_validated,
             self.tasks_bad_imagery,
         )
-        base_dto.project_teams = self.get_project_teams()
+
+        base_dto.project_teams = [
+            ProjectTeamDTO(
+                dict(
+                    team_id=t.team.id,
+                    team_name=t.team.name,
+                    role=TeamRoles(t.role).name,
+                )
+            )
+            for t in self.teams
+        ]
 
         if self.custom_editor:
             base_dto.custom_editor = self.custom_editor.as_dto()
