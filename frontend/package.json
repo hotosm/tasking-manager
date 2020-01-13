@@ -43,7 +43,7 @@
     "short-number": "^1.0.7",
     "shpjs": "^3.4.3",
     "tachyons": "^4.11.1",
-    "use-query-params": "^0.3.4",
+    "use-query-params": "^0.6.0",
     "webfontloader": "^1.6.28"
   },
   "scripts": {
