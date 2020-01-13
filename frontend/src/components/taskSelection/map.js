@@ -200,7 +200,7 @@ export const TasksMap = ({
         });
       }
 
-      if (map.getSource('tasks-centroid') === undefined && taskBordersMap) {
+      if (map.getSource('tasks-centroid') === undefined && taskBordersMap && taskCentroidMap) {
         map.addSource('tasks-centroid', {
           type: 'geojson',
           data: taskCentroidMap,
