@@ -70,9 +70,9 @@ export const useFeaturedProjectAPI = initialData => {
       dispatch({ type: 'FETCH_INIT' });
       try {
         const result = await axios({
-          url: `${API_URL}projects/queries/featured`,
+          url: `${API_URL}projects/queries/featured/`,
           method: 'get',
-          headers: {'Accept': 'application/json'},
+          headers: { Accept: 'application/json' },
           cancelToken: new CancelToken(function executor(c) {
             // An executor function receives a cancel function as a parameter
             cancel = { end: c };
