@@ -187,7 +187,7 @@ export const TasksMap = ({
         });
       }
 
-      if (map.getSource('tasks-centroid') === undefined && taskBordersMap) {
+      if (map.getSource('tasks-centroid') === undefined && taskBordersMap && taskCentroidMap) {
         map.addSource('tasks-centroid', {
           type: 'geojson',
           data: taskCentroidMap,
@@ -274,7 +274,6 @@ export const TasksMap = ({
       mapboxLayerDefn();
     } else if (tasksReadyMapLoading && !mapLayersAlreadyDefined) {
       map.on('load', mapboxLayerDefn);
-
     } else if (tasksReadyMapLoading || mapReadyTasksReady) {
       console.error('One of the hook dependencies changed and try to redefine the map');
     }
@@ -324,7 +323,7 @@ export const TasksMap = ({
     taskBordersOnly,
     disableScrollZoom,
     navigate,
-    animateZoom
+    animateZoom,
   ]);
 
   return <div id="map" className={className} ref={mapRef}></div>;
