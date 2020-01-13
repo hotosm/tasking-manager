@@ -11,7 +11,7 @@
   .button--outline--white:hover {
     color: #d34143;
   }
-  .modal__button-dismiss {
-    top: 1rem;
+  @include media(large-up) {
+  	display: none;
   }
 }
