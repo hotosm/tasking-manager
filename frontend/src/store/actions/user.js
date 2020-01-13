@@ -4,17 +4,17 @@ import { types } from '../actions/auth';
 
 export const registerUser = postData => dispatch => {
   let response = postNewUser(postData).then(res => {
-  	if (res.success === true) {
-		  safeStorage.setItem('userId', res.id)
-  	}
+    if (res.success === true) {
+      safeStorage.setItem('userId', res.id);
+    }
 
     dispatch({
       type: types.REGISTER_USER,
-      payload: res
-    })
+      payload: res,
+    });
 
-    return res 
-  })
+    return res;
+  });
 
-  return response
+  return response;
 };

@@ -20,7 +20,7 @@ import { setLocale } from '../../store/actions/userPreferences';
 import { createLoginWindow } from '../../utils/login';
 import { NotificationBell } from './notificationBell';
 import { supportedLocales } from '../../utils/internationalization';
-import { useDebouncedCallback } from '../../hooks/UseThrottle'
+import { useDebouncedCallback } from '../../hooks/UseThrottle';
 
 function getMenuItensForUser(userDetails) {
   const menuItems = [
@@ -32,16 +32,12 @@ function getMenuItensForUser(userDetails) {
   ];
   let filteredMenuItems;
   if (userDetails.username) {
-    filteredMenuItems = menuItems.filter(
-      item => item.authenticated === true || item.showAlways,
-    );
+    filteredMenuItems = menuItems.filter(item => item.authenticated === true || item.showAlways);
     if (!['PROJECT_MANAGER', 'ADMIN'].includes(userDetails.role)) {
       filteredMenuItems = filteredMenuItems.filter(item => !item.manager);
     }
   } else {
-    filteredMenuItems = menuItems.filter(
-      item => item.authenticated === false || item.showAlways,
-    );
+    filteredMenuItems = menuItems.filter(item => item.authenticated === false || item.showAlways);
   }
   return filteredMenuItems;
 }
@@ -57,19 +53,23 @@ const UserDisplay = props => {
 
 const AuthButtons = props => {
   const { logInStyle, signUpStyle, redirectTo } = props;
-  const [debouncedCreateLoginWindow] = useDebouncedCallback((redirectToPass)=>createLoginWindow(redirectToPass),3000, { leading: true })
+  const [debouncedCreateLoginWindow] = useDebouncedCallback(
+    redirectToPass => createLoginWindow(redirectToPass),
+    3000,
+    { leading: true },
+  );
 
   return (
     <>
-      <Button onClick={()=>debouncedCreateLoginWindow(redirectTo)} className={`${logInStyle}`}>
-        <FormattedMessage {...messages.logIn}/>
+      <Button onClick={() => debouncedCreateLoginWindow(redirectTo)} className={`${logInStyle}`}>
+        <FormattedMessage {...messages.logIn} />
       </Button>
       <Popup
         trigger={
-         <Button className={signUpStyle}>
+          <Button className={signUpStyle}>
             <FormattedMessage {...messages.signUp} />
-         </Button>
-         }
+          </Button>
+        }
         modal
         closeOnDocumentClick
       >
@@ -131,7 +131,7 @@ const PopupItems = props => {
       )}
     </div>
   );
-}
+};
 
 class Header extends React.Component {
   linkCombo = 'link mh3 barlow-condensed blue-dark f4 ttu';
@@ -161,7 +161,6 @@ class Header extends React.Component {
             <FormattedMessage {...item.label} />
           </TopNavLink>
         ))}
-
       </div>
     );
   }
@@ -190,12 +189,7 @@ class Header extends React.Component {
   checkUserEmail() {
     return this.props.userDetails.hasOwnProperty('emailAddress') &&
       !this.props.userDetails.emailAddress ? (
-      <Popup
-        modal
-        open
-        closeOnEscape={false}
-        closeOnDocumentClick={false}
-      >
+      <Popup modal open closeOnEscape={false} closeOnDocumentClick={false}>
         {close => <UpdateEmail closeModal={close} />}
       </Popup>
     ) : null;
@@ -217,7 +211,6 @@ class Header extends React.Component {
   }
 
   renderAuthenticationButtons() {
-
     return this.props.userDetails.username ? (
       <>
         <NotificationBell />
@@ -248,7 +241,6 @@ class Header extends React.Component {
           signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
           redirectTo={this.props.location.pathname}
         />
-
       </div>
     );
   }
@@ -288,16 +280,16 @@ class Header extends React.Component {
           <div className="fr dib tr mb1">
             {this.renderAuthenticationButtons()}
             <div className="dib v-mid dn-l">
-              <Popup trigger={open => <BurgerMenu open={open}/>} modal closeOnDocumentClick>
+              <Popup trigger={open => <BurgerMenu open={open} />} modal closeOnDocumentClick>
                 <div>
                   <PopupItems
-                   userDetails={this.props.userDetails}
-                   menuItems={getMenuItensForUser(this.props.userDetails)}
-                   linkCombo={this.linkCombo}
-                   logout={this.props.logout}
-                   location={this.props.location}
-                 />
-               </div>
+                    userDetails={this.props.userDetails}
+                    menuItems={getMenuItensForUser(this.props.userDetails)}
+                    linkCombo={this.linkCombo}
+                    logout={this.props.logout}
+                    location={this.props.location}
+                  />
+                </div>
               </Popup>
             </div>
           </div>
@@ -306,7 +298,6 @@ class Header extends React.Component {
     );
   }
 }
-
 
 const mapStateToProps = state => ({
   userPreferences: state.preferences,

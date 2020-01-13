@@ -27,12 +27,11 @@ export const updateUserEmail = (userDetails, token, relevant_fields) => dispatch
   const payload = JSON.stringify(filtered);
 
   pushToLocalJSONAPI(`users/me/actions/set-user/`, payload, token, 'PATCH').then(() => {
-      dispatch({
-        type: types.SET_USER_DETAILS,
-        userDetails: userDetails
-      })
-    }
-  )
+    dispatch({
+      type: types.SET_USER_DETAILS,
+      userDetails: userDetails,
+    });
+  });
 };
 
 export const logout = () => dispatch => {

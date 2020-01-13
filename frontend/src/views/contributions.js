@@ -46,9 +46,6 @@ export const ContributionsPage = props => {
           {/* TODO support pagination on this API
         <ProjectCardPaginator projectAPIstate={state} setQueryParam={setContributionsQuery} />
         */}
-
-          {/* delete me! TDK */}
-          <code className={`dn`}>{JSON.stringify(state)}</code>
         </section>
       </div>
     </>

@@ -11,7 +11,6 @@ import { ProjectSearchBox } from './projectSearchBox';
 import { OrderBySelector } from './orderBy';
 import { SwitchToggle } from '../formInputs';
 
-
 export const ShowMapToggle = props => {
   const dispatch = useDispatch();
   const isMapShown = useSelector(state => state.preferences['mapShown']);
@@ -99,10 +98,7 @@ export const ProjectNav = props => {
             >
               <FormattedMessage {...messages.filters} />
             </Link>
-            <OrderBySelector
-              setQuery={setQuery}
-              allQueryParams={fullProjectsQuery}
-            />
+            <OrderBySelector setQuery={setQuery} allQueryParams={fullProjectsQuery} />
             {!filterIsEmpty && (
               <Link to="./" className="red link ph3 f6 pv2 mv2 mh1 fr dn dib-l">
                 <FormattedMessage {...messages.clearFilters} />

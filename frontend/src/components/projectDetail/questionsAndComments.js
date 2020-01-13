@@ -89,7 +89,7 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
       </div>
       <div className="fl w-20 tc pt3">
         <Button onClick={saveComment} className="bg-red white f5" disabled={comment === ''}>
-          <FormattedMessage {...messages.post}/>
+          <FormattedMessage {...messages.post} />
         </Button>
       </div>
     </div>
@@ -125,29 +125,32 @@ export const QuestionsAndComments = ({ projectId }) => {
       <div className="ph6-l ph4 pb3 w-100 w-70-l">
         {response && response.chat.length ? (
           <CommentList comments={response.chat} />
-        ) : <div className="pv4 blue-grey tc"><FormattedMessage {...messages.noComments}/></div>
-        }
+        ) : (
+          <div className="pv4 blue-grey tc">
+            <FormattedMessage {...messages.noComments} />
+          </div>
+        )}
 
-        {response && response.pagination && response.pagination.pages > 0 &&
+        {response && response.pagination && response.pagination.pages > 0 && (
           <PaginatorLine
             activePage={page}
             setPageFn={handlePagination}
             lastPage={response.pagination.pages}
             className="tr w-90 center pv3"
           />
-        }
-        {token !== null &&
+        )}
+        {token !== null && (
           <PostProjectComment projectId={projectId} token={token} setStat={setStat} />
-        }
+        )}
       </div>
     </div>
   );
 };
 
-
-function CommentList({comments}: Object) {
-  return <div className="pt3">
-    {comments.map((comment, n) => (
+function CommentList({ comments }: Object) {
+  return (
+    <div className="pt3">
+      {comments.map((comment, n) => (
         <div className="w-90 center cf mb2 pa3 ba b--grey-light bg-white" key={n}>
           <div className="cf db">
             <div className="fl">
@@ -163,7 +166,9 @@ function CommentList({comments}: Object) {
                   {comment.username}
                 </a>
               </p>
-              <span className="blue-grey f6">{<FormattedRelative value={comment.timestamp} />} </span>
+              <span className="blue-grey f6">
+                {<FormattedRelative value={comment.timestamp} />}{' '}
+              </span>
             </div>
           </div>
           <div className="cf db">
@@ -174,7 +179,7 @@ function CommentList({comments}: Object) {
             />
           </div>
         </div>
-      ))
-    }
-  </div>;
+      ))}
+    </div>
+  );
 }

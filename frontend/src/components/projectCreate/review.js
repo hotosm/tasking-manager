@@ -75,7 +75,11 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
         </Button>
       </div>
       <div className="mt2">
-        {error && <span><FormattedMessage {...messages.creationFailed} values={{error: error}}/></span>}
+        {error && (
+          <span>
+            <FormattedMessage {...messages.creationFailed} values={{ error: error }} />
+          </span>
+        )}
       </div>
     </>
   );

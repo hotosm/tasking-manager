@@ -1,14 +1,15 @@
 import React, { useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
 
 import { TopNavLink } from './NavLink';
 import { BellIcon } from '../svgIcons';
-import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
-
 import { NotificationPopout } from '../../views/notifications';
+import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
 import useForceUpdate from '../../hooks/UseForceUpdate';
 import { useInboxQueryAPI } from '../../hooks/UseInboxQueryAPI';
 
 export const NotificationBell = props => {
+  const trigger = useSelector(state => state.auth.get('token') !== null);
   const [forceUpdated, forceUpdate] = useForceUpdate();
 
   /* these below make the references stable so hooks doesn't re-request forever */
@@ -17,15 +18,16 @@ export const NotificationBell = props => {
   const [notificationState] = useInboxQueryAPI(nothing.current, sortByRead.current, forceUpdated);
 
   const [isPopoutFocus, setPopoutFocus] = useState(false);
-
   /*TODO Replace this backend with websockets, eventsource or RESTSockets
     to save batteries and capacity*/
   const [unreadNotifsStartError, unreadNotifsStartLoading, unreadNotifsStart] = useFetch(
     `/api/v2/notifications/queries/own/count-unread/`,
+    trigger,
   );
   const [unreadNotifsRepeatError, unreadNotifsRepeat] = useFetchIntervaled(
     `/api/v2/notifications/queries/own/count-unread/`,
     30000,
+    trigger,
   );
 
   const isNotificationBellActive = ({ isCurrent }) => {

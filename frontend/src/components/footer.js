@@ -20,7 +20,10 @@ export function Footer({ location }: Object) {
   const userDetails = useSelector(state => state.auth.get('userDetails'));
 
   const noFooterViews = ['tasks', 'map', 'validate', 'new', 'membership'];
-  const activeView = location.pathname.split('/').filter(i => i !== "").splice(-1)[0];
+  const activeView = location.pathname
+    .split('/')
+    .filter(i => i !== '')
+    .splice(-1)[0];
 
   if (noFooterViews.includes(activeView)) {
     return <></>;
@@ -32,16 +35,15 @@ export function Footer({ location }: Object) {
             <FormattedMessage {...messages.definition} />
           </div>
           <div className="pt2 mb2 w-50-l w-100 tl tr-l fr">
-            {getMenuItensForUser(userDetails)
-              .map((item, n) => (
-                <Link
-                  key={n}
-                  to={item.link}
-                  className="link barlow-condensed white f5 ttu di-l dib pt3 pt3-m pl4-l w-100 w-auto-l"
-                >
-                  <FormattedMessage {...item.label} />
-                </Link>
-              ))}
+            {getMenuItensForUser(userDetails).map((item, n) => (
+              <Link
+                key={n}
+                to={item.link}
+                className="link barlow-condensed white f5 ttu di-l dib pt3 pt3-m pl4-l w-100 w-auto-l"
+              >
+                <FormattedMessage {...item.label} />
+              </Link>
+            ))}
             <p className="pt5-l pt4 pb3">
               {socialNetworks.map((item, n) => (
                 <a

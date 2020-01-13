@@ -13,5 +13,5 @@ export default combineReducers({
   notifications: notificationsReducer,
   lockedTasks: tasksReducer,
   user: userReducer,
-  project: projectReducer
+  project: projectReducer,
 });

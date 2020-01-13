@@ -61,11 +61,11 @@ export function Teams({ teams, viewAllQuery }: Object) {
             ready={teams}
           >
             {teams && teams.slice(0, 6).map((team, n) => <TeamCard team={team} key={n} />)}
-            {teams && teams.length === 0 &&
+            {teams && teams.length === 0 && (
               <span className="blue-grey">
                 <FormattedMessage {...messages.noTeamsFound} />
               </span>
-            }
+            )}
           </ReactPlaceholder>
         </div>
       </div>
@@ -75,12 +75,14 @@ export function Teams({ teams, viewAllQuery }: Object) {
 
 export function TeamCard({ team, managementView }: Object) {
   return (
-    <Link to={managementView ? `/manage/teams/${team.teamId}/` : `/teams/${team.teamId}/membership/`}>
+    <Link
+      to={managementView ? `/manage/teams/${team.teamId}/` : `/teams/${team.teamId}/membership/`}
+    >
       <article className="fl w-30-l base-font w-50-m w-100 mb3 pr3 blue-dark mw5">
         <div className="bg-white ph3 pb3 ba br1 b--grey-light shadow-hover">
           <h3 className="fw7">{team.name}</h3>
           <div className="db h2" title={team.organisation}>
-            <img src={team.logo} alt={team.organisation} className="h2"/>
+            <img src={team.logo} alt={team.organisation} className="h2" />
           </div>
           <h4 className="f6 fw5 mb3 ttu blue-light">
             <FormattedMessage {...messages.managers} />
@@ -241,31 +243,33 @@ export function TeamForm(props) {
   );
 }
 
-export function TeamSideBar({team, members, managers}: Object) {
+export function TeamSideBar({ team, members, managers }: Object) {
   return (
     <ReactPlaceholder
       showLoadingAnimation={true}
       type="media"
       rows={20}
-      ready={typeof(team.teamId) === 'number'}
+      ready={typeof team.teamId === 'number'}
     >
       <div className="cf">
         <div className="w-70 dib fl">
-          <span className="blue-grey">
-            #{team.teamId}
-          </span>
+          <span className="blue-grey">#{team.teamId}</span>
         </div>
         <div className="mw4 dib fr">
           <VisibilityBox visibility={team.visibility} extraClasses={'pv2 ph3'} />
         </div>
       </div>
-      <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">
-        {team.name}
-      </h3>
+      <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">{team.name}</h3>
       <p className="blue-grey">{team.description}</p>
-      <h4><FormattedMessage {...messages.organisation} /></h4>
-      <p><img src={team.logo} alt="organisation logo"/></p>
-      <h4><FormattedMessage {...messages.managers} /></h4>
+      <h4>
+        <FormattedMessage {...messages.organisation} />
+      </h4>
+      <p>
+        <img src={team.logo} alt="organisation logo" />
+      </p>
+      <h4>
+        <FormattedMessage {...messages.managers} />
+      </h4>
       <div className="cf db mt3">
         {managers.map((user, n) => (
           <UserAvatar
@@ -276,7 +280,9 @@ export function TeamSideBar({team, members, managers}: Object) {
           />
         ))}
       </div>
-      <h4><FormattedMessage {...messages.members} /></h4>
+      <h4>
+        <FormattedMessage {...messages.members} />
+      </h4>
       <div className="cf db mt3">
         {members.map((user, n) => (
           <UserAvatar
