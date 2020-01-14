@@ -23,12 +23,14 @@ from server.models.postgis.message import Message
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.user import User, UserRole, MappingLevel, UserEmail
 from server.models.postgis.task import TaskHistory, TaskAction, Task
-from server.models.dtos.mapping_dto import TaskDTOs
-from server.models.postgis.statuses import TaskStatus
+from server.models.dtos.user_dto import UserTaskDTOs
+from server.models.dtos.stats_dto import Pagination
+from server.models.postgis.statuses import TaskStatus, ProjectStatus
 from server.models.postgis.utils import NotFound
 from server.services.users.osm_service import OSMService, OSMServiceError
 from server.services.messaging.smtp_service import SMTPService
 from server.services.messaging.template_service import get_template
+
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 user_all_cache = TTLCache(maxsize=1024, ttl=600)
@@ -197,10 +199,13 @@ class UserService:
         user_id: int,
         start_date: datetime.datetime = None,
         end_date: datetime.datetime = None,
-        status: str = None,
+        task_status: str = None,
+        project_status: str = None,
         project_id: int = None,
+        page=1,
+        page_size=10,
         sort_by: str = None,
-    ) -> TaskDTOs:
+    ) -> UserTaskDTOs:
         base_query = (
             TaskHistory.query.with_entities(
                 TaskHistory.project_id,
@@ -222,7 +227,7 @@ class UserService:
         elif sort_by == "-action_date":
             base_query = base_query.order_by(desc(func.max(TaskHistory.action_date)))
 
-        task_dtos = TaskDTOs()
+        user_task_dtos = UserTaskDTOs()
         task_id_list = base_query.subquery()
 
         tasks = Task.query.join(
@@ -234,18 +239,30 @@ class UserService:
         )
         tasks = tasks.add_column("max_1")
 
-        if status:
-            tasks = tasks.filter(Task.task_status == TaskStatus[status.upper()].value)
+        if task_status:
+            tasks = tasks.filter(
+                Task.task_status == TaskStatus[task_status.upper()].value
+            )
+
+        if project_status:
+            tasks = tasks.filter(
+                Task.project_id == Project.id,
+                Project.status == ProjectStatus[project_status.upper()].value,
+            )
 
         if project_id:
             tasks = tasks.filter_by(project_id=project_id)
 
+        results = tasks.paginate(page, page_size, True)
+
         task_list = []
 
-        for task, action_date in tasks.all():
+        for task, action_date in results.items:
             task_list.append(task.as_dto(last_updated=action_date))
-        task_dtos.tasks = task_list
-        return task_dtos
+
+        user_task_dtos.user_tasks = task_list
+        user_task_dtos.pagination = Pagination(results)
+        return user_task_dtos
 
     @staticmethod
     def get_detailed_stats(username: str):
