@@ -28,8 +28,14 @@ class UsersTasksAPI(Resource):
               required: true
               type: integer
             - in: query
-              name: status
+              name: task_status
               description: Task Status filter
+              required: false
+              type: string
+              default: null
+            - in: query
+              name: project_status
+              description: Project Status filter
               required: false
               type: string
               default: null
@@ -57,6 +63,14 @@ class UsersTasksAPI(Resource):
               required: false
               type: string
               default: null
+            - in: query
+              name: page
+              description: Page of results user requested
+              type: integer
+            - in: query
+              name: pageSize
+              description: Size of page, defaults to 10
+              type: integer
         responses:
             200:
                 description: Mapped projects found
@@ -67,7 +81,8 @@ class UsersTasksAPI(Resource):
         """
         try:
             user = UserService.get_user_by_id(user_id)
-            status = request.args.get("status")
+            task_status = request.args.get("task_status")
+            project_status = request.args.get("project_status")
             project_id = int(request.args.get("project_id", 0))
             start_date = (
                 date_parse(request.args.get("start_date"))
@@ -84,9 +99,12 @@ class UsersTasksAPI(Resource):
             tasks = UserService.get_tasks_dto(
                 user.id,
                 project_id=project_id,
-                status=status,
+                project_status=project_status,
+                task_status=task_status,
                 start_date=start_date,
                 end_date=end_date,
+                page=request.args.get("page", None, type=int),
+                page_size=request.args.get("pageSize", None, type=int),
                 sort_by=sort_by,
             )
             return tasks.to_primitive(), 200
