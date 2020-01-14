@@ -4,6 +4,7 @@ from schematics.types import StringType, IntType, EmailType, LongType, BooleanTy
 
 from schematics.types.compound import ListType, ModelType, BaseType
 from server.models.dtos.stats_dto import Pagination
+from server.models.dtos.mapping_dto import TaskDTO
 from server.models.postgis.statuses import MappingLevel, UserRole
 
 
@@ -236,3 +237,15 @@ class UserFilterDTO(Model):
     pagination = ModelType(Pagination)
     usernames = ListType(StringType)
     users = ListType(ModelType(ProjectParticipantUser))
+
+
+class UserTaskDTOs(Model):
+    """ Describes an array of Task DTOs"""
+
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.user_tasks = []
+
+    user_tasks = ListType(ModelType(TaskDTO), serialized_name="userTasks")
+    pagination = ModelType(Pagination)
