@@ -51,6 +51,12 @@
   }
 }
 
+@media screen and (max-height: 930px) {
+  .dn-h-930 {
+    display: none;
+  }
+}
+
 .bg-split-white-grey-light {
   background: linear-gradient(to right, $white, $white 20%, $grey-light 20%, $grey-light);
 }

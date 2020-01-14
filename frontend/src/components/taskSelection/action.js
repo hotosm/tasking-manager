@@ -58,20 +58,22 @@ export function TaskMapAction({ project, tasks, action, editor }) {
           <div className="cf">
             <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
               <span
-                className={`mr4 pb2 pointer ${activeSection === 'completion' && 'bb b--blue-dark'}`}
+                className={`mr4-l mr3 pb2 pointer ${activeSection === 'completion' &&
+                  'bb b--blue-dark'}`}
                 onClick={() => setActiveSection('completion')}
               >
                 <FormattedMessage {...messages.completion} />
               </span>
               <span
-                className={`mr4 pb2 pointer ${activeSection === 'instructions' &&
+                className={`mr4-l mr3 pb2 pointer ${activeSection === 'instructions' &&
                   'bb b--blue-dark'}`}
                 onClick={() => setActiveSection('instructions')}
               >
                 <FormattedMessage {...messages.instructions} />
               </span>
               <span
-                className={`mr4 pb2 pointer ${activeSection === 'history' && 'bb b--blue-dark'}`}
+                className={`mr4-l mr3 pb2 pointer ${activeSection === 'history' &&
+                  'bb b--blue-dark'}`}
                 onClick={() => setActiveSection('history')}
               >
                 <FormattedMessage {...messages.history} />
@@ -304,7 +306,7 @@ function CompletionInstructions() {
   const [active, setActive] = useState(true);
   return (
     <>
-      <div className={active ? 'dib ph4-l w-100 cf' : 'dn'}>
+      <div className={active ? 'dib ph4-l w-100 cf dn-h-930' : 'dn'}>
         <h4 className="fw8 f5 blue-dark di">
           <FormattedMessage {...messages.finishMappingTitle} />
         </h4>
