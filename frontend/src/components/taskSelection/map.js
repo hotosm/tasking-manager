@@ -148,7 +148,10 @@ export const TasksMap = ({
             'line-color': '#2c3038',
             'line-width': 2,
           },
-          filter: ['in', 'taskId', ''],
+          filter:
+            selectedOnMap === undefined || selectedOnMap.length === 0
+              ? ['in', 'taskId', '']
+              : ['in', 'taskId'].concat(selectedOnMap),
         });
 
         map.addLayer(
@@ -282,7 +285,6 @@ export const TasksMap = ({
     /* refill the source on mapResults changes */
     if (mapLayersAlreadyDefined && someResultsReady) {
       map.getSource('tasks').setData(mapResults);
-      updateTMZoom();
 
       /* update the click event so its functional scope can see the
        *  new selectedOnMap to be able to toggle it off.

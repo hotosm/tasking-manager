@@ -10,7 +10,7 @@ import { TaskActivity } from './taskActivity';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
 import { userCanValidate } from '../../utils/projectPermissions';
 import { TASK_COLOURS } from '../../config';
-import { LockIcon, ListIcon, EyeIcon } from '../svgIcons';
+import { LockIcon, ListIcon, EyeIcon, CloseIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
@@ -183,7 +183,7 @@ export function TaskList({ project, tasks, activeFilter, selectTask, selected }:
       <div className="cf">
         {user.isExpert && (
           <div>
-            <div className="w-50-l w-100 dib v-mid pr2 pv1">
+            <div className="w-50-l w-100 dib v-mid pr2 pv1 relative">
               <input
                 type="text"
                 placeholder="Filter tasks by id or username"
@@ -191,13 +191,21 @@ export function TaskList({ project, tasks, activeFilter, selectTask, selected }:
                 value={textSearch || ''}
                 onChange={e => setTextSearch(e.target.value)}
               />
+              <CloseIcon
+                onClick={() => {
+                  setTextSearch('');
+                }}
+                className={`absolute w1 h1 top-0 red pt3 pointer pr3 right-0 ${
+                  textSearch ? 'dib' : 'dn'
+                }`}
+              />
             </div>
             <div className="w-50-l w-100 dib pv1">
               <Dropdown
                 onAdd={() => {}}
                 onRemove={() => {}}
                 onChange={updateSortingOption}
-                value={sortBy || 'id'}
+                value={sortBy || 'date'}
                 options={sortingOptions}
                 display={sortBy || <FormattedMessage {...messages.sortById} />}
                 className="blue-dark bg-white mr1 v-mid pv2 ph2 ba b--grey-light"
@@ -217,9 +225,7 @@ export function TaskList({ project, tasks, activeFilter, selectTask, selected }:
           <PaginatedList
             pageSize={6}
             items={
-              sortBy === 'date'
-                ? readyTasks.sort(compareLastUpdate)
-                : readyTasks.sort(compareTaskId)
+              sortBy === 'id' ? readyTasks.sort(compareTaskId) : readyTasks.sort(compareLastUpdate)
             }
             ItemComponent={TaskItem}
             selected={selected}

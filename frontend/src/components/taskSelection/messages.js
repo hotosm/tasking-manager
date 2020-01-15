@@ -4,33 +4,29 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on header.
  */
 export default defineMessages({
-  anotherProjectLock: {
+  anotherLockedTask: {
     id: 'project.tasks.lock_error.another_project',
-    defaultMessage: 'Locked tasks on another project',
-  },
-  currentProjectLock: {
-    id: 'project.tasks.lock_error.current_project',
-    defaultMessage: 'Previously locked task',
+    defaultMessage: 'We found another task locked by you',
   },
   anotherProjectLockTextSingular: {
     id: 'project.tasks.lock_error.another_project.description.singular',
     defaultMessage:
-      'You selected {n} task to {action} on the Project #{project}. You need to update the status of that task before map or validate this project.',
+      'It is on the Project #{project}. You will need to update the status of that task before moving on to the next one.',
   },
   anotherProjectLockTextPlural: {
     id: 'project.tasks.lock_error.another_project.description.plural',
     defaultMessage:
-      'You selected {n} tasks to {action} on the Project #{project}. You need to update the status of those tasks before map or validate this project.',
+      'It is on the Project #{project}. You will need to update the status of those tasks before moving on to the next one.',
   },
   currentProjectLockTextSingular: {
     id: 'project.tasks.lock_error.current_project.description.singular',
     defaultMessage:
-      'You already have {n} task selected to {action} on this project. Update the status of that task before map or validate another one.',
+      'The task #{taskId} was previously locked by you. You will need to update the status of that task before moving on to the next one.',
   },
   currentProjectLockTextPlural: {
     id: 'project.tasks.lock_error.current_project.description.plural',
     defaultMessage:
-      'You already have {n} tasks selected to {action} on this project. Update the status of those tasks before map or validate another one.',
+      'Some tasks were previously locked by you on this project. You will need to update the status of those tasks before moving on to the next one.',
   },
   goToProject: {
     id: 'project.tasks.lock_error.go_to_project.button',
@@ -144,6 +140,14 @@ export default defineMessages({
     id: 'project.selectTask.footer.button.validateAnotherTask',
     defaultMessage: 'Validate another task',
   },
+  resumeMapping: {
+    id: 'project.selectTask.footer.button.resumeMapping',
+    defaultMessage: 'Resume mapping',
+  },
+  resumeValidation: {
+    id: 'project.selectTask.footer.button.resumeValidation',
+    defaultMessage: 'Resume validation',
+  },
   taskLastUpdate: {
     id: 'project.tasks.list.lastUpdate',
     defaultMessage: 'Last updated by {user}',
@@ -198,11 +202,11 @@ export default defineMessages({
   },
   filterReadyToValidate: {
     id: 'project.tasks.filter.readyToValidate',
-    defaultMessage: 'Ready to validate',
+    defaultMessage: 'Ready for validation',
   },
   filterReadyToMap: {
     id: 'project.tasks.filter.readyToMap',
-    defaultMessage: 'Ready to map',
+    defaultMessage: 'Available for mapping',
   },
   noTasksFound: {
     id: 'project.tasks.filter.noTasksFound',
