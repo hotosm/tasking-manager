@@ -10,9 +10,9 @@ export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Obj
   return (
     <>
       <h3 className="barlow-condensed f3 fw6 mv0">
-        <FormattedMessage {...messages.anotherProjectLock} />
+        <FormattedMessage {...messages.anotherLockedTask} />
       </h3>
-      <div className="mv4">
+      <div className="mv4 lh-title">
         <FormattedMessage
           {...messages[
             lockedTasksLength > 1
@@ -55,24 +55,16 @@ export function LockedTaskModalContent({ project }: Object) {
       {lockedTasks.get('project') === project && (
         <>
           <h3 className="barlow-condensed f3 fw6 mv0">
-            <FormattedMessage {...messages.currentProjectLock} />
+            <FormattedMessage {...messages.anotherLockedTask} />
           </h3>
-          <div className="mv4">
+          <div className="mv4 lh-title">
             <FormattedMessage
               {...messages[
                 lockedTasks.get('tasks').length > 1
                   ? 'currentProjectLockTextPlural'
                   : 'currentProjectLockTextSingular'
               ]}
-              values={{
-                project: <span className="fw6">{lockedTasks.get('project')}</span>,
-                n: <span className="fw6">{lockedTasks.get('tasks').length}</span>,
-                action: (
-                  <span className="ttl">
-                    <FormattedMessage {...messages[action]} />
-                  </span>
-                ),
-              }}
+              values={{ taskId: <span className="fw6">{lockedTasks.get('tasks')}</span> }}
             />
           </div>
           <Button
