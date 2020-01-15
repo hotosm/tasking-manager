@@ -16,10 +16,10 @@ import { MappingTypes } from '../mappingTypes';
 import { LockedTaskModalContent } from './lockedTasks';
 
 const TaskSelectionFooter = props => {
+  const token = useSelector(state => state.auth.get('token'));
   const [editor, setEditor] = useState(props.defaultUserEditor);
   const [editorOptions, setEditorOptions] = useState([]);
   const [lockError, setLockError] = useState(false);
-  const token = useSelector(state => state.auth.get('token'));
   const dispatch = useDispatch();
   const fetchLockedTasks = useFetchLockedTasks();
 
@@ -66,6 +66,12 @@ const TaskSelectionFooter = props => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map');
         })
         .catch(e => lockFailed());
+    }
+    if (props.taskAction === 'resumeMapping') {
+      navigate(`/projects/${props.project.projectId}/map/`);
+    }
+    if (props.taskAction === 'resumeValidation') {
+      navigate(`/projects/${props.project.projectId}/validate/`);
     }
   };
 
