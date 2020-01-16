@@ -44,7 +44,7 @@ pyproj==2.2.1
 python-dateutil==2.8.1
 python-dotenv==0.10.3
 python-editor==1.0.4
-python-slugify==1.2.6
+python-slugify==4.0.0
 pytz==2019.3
 PyYAML==5.2
 requests==2.22.0
