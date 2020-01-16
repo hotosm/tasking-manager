@@ -243,7 +243,7 @@ class ProjectService:
 
         tasks = Task.get_locked_tasks_for_user(user_id)
 
-        if len(tasks) > 0:
+        if len(tasks.locked_tasks) > 0:
             return False, ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
         if project.restrict_validation_role and not UserService.is_user_validator(
