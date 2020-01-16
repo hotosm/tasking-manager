@@ -1,22 +1,29 @@
 import React, { useState, useContext, useLayoutEffect } from 'react';
+import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 
 import { StateContext, styleClasses } from '../../views/projectEdit';
-import { fallbackRasterStyle } from '../projects/projectsMap';
 import { Button } from '../button';
-import { MAPBOX_TOKEN } from '../../config';
+import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 
 const MapboxDraw = require('@mapbox/mapbox-gl-draw');
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
+try {
+  mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
+} catch {
+  console.log('RTLTextPlugin is loaded');
+}
 
 export const PriorityAreasForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
+  const mapRef = React.createRef();
+  const locale = useSelector(state => state.preferences['locale']);
   const [map, setMap] = useState(null);
 
-  const mapRef = React.createRef();
   const modes = MapboxDraw.modes;
   modes.draw_rectangle = DrawRectangle;
 
@@ -41,9 +48,12 @@ export const PriorityAreasForm = () => {
     setMap(
       new mapboxgl.Map({
         container: mapRef.current,
-        style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/bright-v9' : fallbackRasterStyle,
+        style: MAP_STYLE,
         zoom: 0,
-      }),
+        attributionControl: false,
+      })
+        .addControl(new mapboxgl.AttributionControl({ compact: false }))
+        .addControl(new MapboxLanguage({ defaultLanguage: locale || 'en' })),
     );
     return () => {
       map && map.remove();

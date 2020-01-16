@@ -1,25 +1,33 @@
 import React, { useLayoutEffect } from 'react';
+import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
-
-import { fallbackRasterStyle } from '../projects/projectsMap';
-import { MAPBOX_TOKEN } from '../../config';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
+
+import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
+try {
+  mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
+} catch {
+  console.log('RTLTextPlugin is loaded');
+}
 
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => {
   const mapRef = React.createRef();
+  const locale = useSelector(state => state.preferences['locale']);
 
   useLayoutEffect(() => {
     setMapObj({
       ...mapObj,
       map: new mapboxgl.Map({
         container: mapRef.current,
-        // style: 'mapbox://styles/mapbox/bright-v9',
-        style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/streets-v11' : fallbackRasterStyle,
+        style: MAP_STYLE,
         zoom: 0,
         attributionControl: false,
-      }).addControl(new mapboxgl.AttributionControl({ compact: false })),
+      })
+        .addControl(new mapboxgl.AttributionControl({ compact: false }))
+        .addControl(new MapboxLanguage({ defaultLanguage: locale || 'en' })),
     });
 
     return () => {

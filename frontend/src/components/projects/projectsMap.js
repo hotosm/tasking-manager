@@ -1,37 +1,21 @@
 import React, { useLayoutEffect, useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
-import { MAPBOX_TOKEN } from '../../config';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
+
+import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import mapMarker from '../../assets/img/mapMarker.png';
 
 let markerIcon = new Image(17, 20);
 markerIcon.src = mapMarker;
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
-
-export const fallbackRasterStyle = {
-  version: 8,
-  // "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
-  glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
-  sources: {
-    'raster-tiles': {
-      type: 'raster',
-      tiles: ['https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'],
-      tileSize: 128,
-      attribution:
-        '© <a href="https://www.openstreetmap.org/copyright/">OpenStreetMap</a> contributors',
-    },
-  },
-  layers: [
-    {
-      id: 'simple-tiles',
-      type: 'raster',
-      source: 'raster-tiles',
-      minzoom: 0,
-      maxzoom: 22,
-    },
-  ],
-};
+try {
+  mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
+} catch {
+  console.log('RTLTextPlugin is loaded');
+}
 
 export const ProjectsMap = ({
   state,
@@ -41,6 +25,7 @@ export const ProjectsMap = ({
   className,
 }) => {
   const mapRef = React.createRef();
+  const locale = useSelector(state => state.preferences['locale']);
   const [map, setMapObj] = useState(null);
 
   const clickOnProjectID = useCallback(
@@ -67,10 +52,12 @@ export const ProjectsMap = ({
     setMapObj(
       new mapboxgl.Map({
         container: mapRef.current,
-        style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/bright-v9' : fallbackRasterStyle,
+        style: MAP_STYLE,
         zoom: 0,
         attributionControl: false,
-      }).addControl(new mapboxgl.AttributionControl({ compact: false })),
+      })
+        .addControl(new mapboxgl.AttributionControl({ compact: false }))
+        .addControl(new MapboxLanguage({ defaultLanguage: locale || 'en' })),
     );
 
     return () => {
