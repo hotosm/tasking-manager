@@ -1,12 +1,13 @@
 {
-  "name": "frontend",
+  "name": "TaskingManager-frontend",
   "version": "0.1.0",
-  "license": "ISC",
+  "license": "BSD 2",
   "private": false,
   "dependencies": {
     "@lokibai/react-use-copy-clipboard": "^1.0.4",
     "@mapbox/geo-viewport": "^0.4.0",
     "@mapbox/mapbox-gl-draw": "^1.1.2",
+    "@mapbox/mapbox-gl-language": "^0.10.1",
     "@mapbox/togeojson": "^0.16.0",
     "@reach/router": "^1.2.1",
     "@turf/turf": "^5.1.6",
@@ -20,7 +21,7 @@
     "geojson-bounds": "^1.0.2",
     "humanize-duration": "^3.21.0",
     "immutable": "^4.0.0-rc.12",
-    "mapbox-gl": "^1.5.0",
+    "mapbox-gl": "^1.6.1",
     "mapbox-gl-draw-circle": "^1.1.1",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "marked": "^0.8.0",
@@ -77,6 +78,8 @@
     "react-test-renderer": "^16.12.0"
   },
   "jest": {
-    "coverageReporters": ["html"]
+    "coverageReporters": [
+      "html"
+    ]
   }
 }

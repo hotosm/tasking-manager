@@ -1,5 +1,5 @@
 // API ENDPOINTS
-export const API_VERSION = process.env.REACT_APP_API_VERSION || 'v2'
+export const API_VERSION = process.env.REACT_APP_API_VERSION || 'v2';
 export const API_URL = process.env.REACT_APP_BASE_URL
   ? new URL('/api/' + API_VERSION + '/', process.env.REACT_APP_BASE_URL)
   : 'http://127.0.0.1:5000/api/' + API_VERSION + '/';
@@ -37,3 +37,31 @@ export const TASK_COLOURS = {
   BADIMAGERY: '#d8dae4',
   PRIORITY_AREA: '#ffc5c8',
 };
+
+const fallbackRasterStyle = {
+  version: 8,
+  // "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+  glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+  sources: {
+    'raster-tiles': {
+      type: 'raster',
+      tiles: ['https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'],
+      tileSize: 128,
+      attribution:
+        '© <a href="https://www.openstreetmap.org/copyright/">OpenStreetMap</a> contributors',
+    },
+  },
+  layers: [
+    {
+      id: 'simple-tiles',
+      type: 'raster',
+      source: 'raster-tiles',
+      minzoom: 0,
+      maxzoom: 22,
+    },
+  ],
+};
+
+export const MAP_STYLE = MAPBOX_TOKEN ? 'mapbox://styles/mapbox/bright-v9' : fallbackRasterStyle;
+export const MAPBOX_RTL_PLUGIN_URL =
+  'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';

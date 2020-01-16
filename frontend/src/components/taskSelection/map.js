@@ -1,16 +1,22 @@
 import React, { useLayoutEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { extent } from 'geojson-bounds';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
-import { MAPBOX_TOKEN, TASK_COLOURS } from '../../config';
-import { fallbackRasterStyle } from '../projects/projectsMap';
+import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
 
 let lockIcon = new Image(17, 20);
 lockIcon.src = lock;
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
+try {
+  mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
+} catch {
+  console.log('RTLTextPlugin is loaded');
+}
 
 export const TasksMap = ({
   mapResults,
@@ -25,6 +31,7 @@ export const TasksMap = ({
   selected: selectedOnMap,
 }) => {
   const mapRef = React.createRef();
+  const locale = useSelector(state => state.preferences['locale']);
   const [map, setMapObj] = useState(null);
 
   useLayoutEffect(() => {
@@ -34,11 +41,13 @@ export const TasksMap = ({
     setMapObj(
       new mapboxgl.Map({
         container: mapRef.current,
-        style: MAPBOX_TOKEN ? 'mapbox://styles/mapbox/bright-v9' : fallbackRasterStyle,
+        style: MAP_STYLE,
         zoom: 2,
         minZoom: 2,
         attributionControl: false,
-      }).addControl(new mapboxgl.AttributionControl({ compact: false })),
+      })
+        .addControl(new mapboxgl.AttributionControl({ compact: false }))
+        .addControl(new MapboxLanguage({ defaultLanguage: locale || 'en' })),
     );
 
     return () => {

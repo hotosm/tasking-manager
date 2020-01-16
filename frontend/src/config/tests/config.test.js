@@ -46,3 +46,12 @@ it('exports INTERMEDIATE_LEVEL_COUNT', () => {
 it('exports ADVANCED_LEVEL_COUNT', () => {
   expect(typeof config.ADVANCED_LEVEL_COUNT).toBe('number');
 });
+it('exports MAP_STYLE and type is object or string', () => {
+  expect(config.MAP_STYLE).toBeTruthy();
+  expect(['object', 'string'].includes(typeof config.MAP_STYLE)).toBeTruthy();
+});
+it('exports MAPBOX_RTL_PLUGIN_URL', () => {
+  expect(config.MAPBOX_RTL_PLUGIN_URL).toBe(
+    'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js',
+  );
+});
