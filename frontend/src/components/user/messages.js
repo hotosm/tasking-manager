@@ -90,6 +90,15 @@ export default defineMessages({
     defaultMessage:
       'Select the default editor that you want to use when fixing tasks. By selecting this option you will be able to skip the editor selection dialog after selecting a task to map or validate.',
   },
+  language: {
+    id: 'user.settings.language',
+    defaultMessage: 'Language',
+  },
+  languageDescription: {
+    id: 'user.settings.language.description',
+    defaultMessage:
+      'Define your prefered language. It will also affect the language of the maps you see on Tasking Manager.',
+  },
   becomeValidator: {
     id: 'user.settings.become_validator',
     defaultMessage: 'Become a validator',
