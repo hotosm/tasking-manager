@@ -6,6 +6,7 @@ import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
 import { MappingIcon, ClipboardIcon } from '../svgIcons';
+import { UserInterestsForm } from './forms';
 
 export function APIKeyCard({ token }) {
   //eslint-disable-next-line
@@ -114,6 +115,7 @@ export function WelcomeCard() {
       </p>
       <p>
         <FormattedMessage {...messages.interestsLead} />
+        <UserInterestsForm />
       </p>
     </div>
   );

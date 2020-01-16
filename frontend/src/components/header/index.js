@@ -9,6 +9,7 @@ import { ORG_URL, ORG_NAME } from '../../config';
 import logo from '../../assets/img/main-logo.svg';
 import { LinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
+import { LocaleSelector } from '../localeSelect';
 import { Button } from '../button';
 import { BurgerMenu } from './burgerMenu';
 import { TopNavLink } from './NavLink';
@@ -16,10 +17,8 @@ import { SignUp } from './signUp';
 import { UpdateEmail } from './updateEmail';
 import { CurrentUserAvatar } from '../user/avatar';
 import { logout } from '../../store/actions/auth';
-import { setLocale } from '../../store/actions/userPreferences';
 import { createLoginWindow } from '../../utils/login';
 import { NotificationBell } from './notificationBell';
-import { supportedLocales } from '../../utils/internationalization';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
 
 function getMenuItensForUser(userDetails) {
@@ -178,14 +177,6 @@ class Header extends React.Component {
     }
   };
 
-  onLocaleSelect = arr => {
-    if (arr.length === 1) {
-      this.props.setLocale(arr[0].value);
-    } else if (arr.length > 1) {
-      throw new Error('filter select array is big');
-    }
-  };
-
   checkUserEmail() {
     return this.props.userDetails.hasOwnProperty('emailAddress') &&
       !this.props.userDetails.emailAddress ? (
@@ -193,21 +184,6 @@ class Header extends React.Component {
         {close => <UpdateEmail closeModal={close} />}
       </Popup>
     ) : null;
-  }
-
-  getActiveLanguageNames() {
-    const locales = [
-      this.props.userPreferences.locale,
-      navigator.language,
-      navigator.language.substr(0, 2),
-    ];
-    let supportedLocaleNames = [];
-    locales.forEach(locale =>
-      supportedLocales
-        .filter(i => i.value === locale)
-        .forEach(i => supportedLocaleNames.push(i.label)),
-    );
-    return supportedLocaleNames[0] || 'English';
   }
 
   renderAuthenticationButtons() {
@@ -226,15 +202,7 @@ class Header extends React.Component {
       </>
     ) : (
       <div className="dib">
-        <Dropdown
-          onAdd={() => {}}
-          onRemove={() => {}}
-          onChange={this.onLocaleSelect}
-          value={this.getActiveLanguageNames()}
-          options={supportedLocales}
-          display={<FormattedMessage {...messages.language} />}
-          className="blue-dark bg-white mr1 v-mid dn dib-66rem pv2 ph3 bn"
-        />
+        <LocaleSelector className="bn" />
         <AuthButtons
           aStyle="mh1 v-mid dn dib-ns"
           logInStyle="blue-dark bg-white"
@@ -300,14 +268,13 @@ class Header extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  userPreferences: state.preferences,
   userDetails: state.auth.get('userDetails'),
   token: state.auth.get('token'),
 });
 
 Header = connect(
   mapStateToProps,
-  { logout, setLocale },
+  { logout },
 )(Header);
 
 export { Header, getMenuItensForUser, AuthButtons };
