@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
@@ -7,6 +7,7 @@ import { Form, Field } from 'react-final-form';
 import messages from './messages';
 import { FormSubmitButton, Button } from '../button';
 import { Dropdown } from '../dropdown';
+import { LocaleSelector } from '../localeSelect';
 import { SwitchToggle, RadioField } from '../formInputs';
 import { pushUserDetails } from '../../store/actions/auth';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -30,7 +31,26 @@ const mapStateToProps = state => ({
   token: state.auth.get('token'),
 });
 
-function UserInterests({ token, userDetails }) {
+function UserInterestsCard() {
+  return (
+    <div className="cf bg-white shadow-4 pa4 mb3">
+      <h3 className="f3 blue-dark mt0 fw6">
+        <FormattedMessage {...messages.interestsH3} />
+      </h3>
+      <p>
+        <FormattedMessage {...messages.interestsTitle} />
+      </p>
+      <p>
+        <FormattedMessage {...messages.interestsLead} />
+      </p>
+      <UserInterestsForm />
+    </div>
+  );
+}
+
+function UserInterestsForm() {
+  const token = useSelector(state => state.auth.get('token'));
+  const userDetails = useSelector(state => state.auth.get('userDetails'));
   const [interests, setInterests] = useState([]);
   const [enableSaveButton, setEnableSaveButton] = useState(false);
   const [success, setSuccess] = useState(null);
@@ -83,16 +103,7 @@ function UserInterests({ token, userDetails }) {
   };
 
   return (
-    <div className="cf bg-white shadow-4 pa4 mb3">
-      <h3 className="f3 blue-dark mt0 fw6">
-        <FormattedMessage {...messages.interestsH3} />
-      </h3>
-      <p>
-        <FormattedMessage {...messages.interestsTitle} />
-      </p>
-      <p>
-        <FormattedMessage {...messages.interestsLead} />
-      </p>
+    <>
       <ul className="list w-100 pa0 flex flex-wrap">
         {interests.map(i => (
           <li
@@ -124,7 +135,7 @@ function UserInterests({ token, userDetails }) {
       >
         <FormattedMessage {...messages.save} />
       </Button>
-    </div>
+    </>
   );
 }
 
@@ -360,6 +371,9 @@ function _UserSettingsForm(props) {
         <CustomField labelId="defaultEditor" descriptionId="defaultEditorDescription">
           <EditorDropdown />
         </CustomField>
+        <CustomField labelId="language" descriptionId="languageDescription">
+          <LocaleSelector className="ba b--grey-light br1" />
+        </CustomField>
         {props.userDetails.role === 'MAPPER' && (
           <CustomField labelId="becomeValidator" descriptionId="becomeValidatorDescription">
             <Link to="/learn">
@@ -406,6 +420,7 @@ export {
   UserInformationForm,
   UserSettingsForm,
   UserNotificationsForm,
-  UserInterests,
+  UserInterestsForm,
+  UserInterestsCard,
   PROFILE_RELEVANT_FIELDS,
 };

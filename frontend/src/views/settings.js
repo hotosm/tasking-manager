@@ -6,7 +6,7 @@ import { UserTopBar } from '../components/user/settings';
 import { OSMCard, APIKeyCard } from '../components/user/content';
 import {
   UserInformationForm,
-  UserInterests,
+  UserInterestsCard,
   UserSettingsForm,
   UserNotificationsForm,
 } from '../components/user/forms';
@@ -21,7 +21,7 @@ export function Settings() {
         <UserTopBar />
         <div className="cf pa4 bg-tan">
           <div className="fl w-100 w-60-l pb3 pr3-l">
-            <UserInterests token={token} userDetails={userDetails} />
+            <UserInterestsCard />
             <UserSettingsForm />
             <UserNotificationsForm />
             {userDetails.isExpert && <APIKeyCard token={token} />}
