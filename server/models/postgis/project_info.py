@@ -32,9 +32,7 @@ class ProjectInfo(db.Model):
     def create_from_name(cls, name: str):
         """ Creates a new ProjectInfo class from name, used when creating draft projects """
         new_info = cls()
-        new_info.locale = (
-            "en"
-        )  # Draft project default to english, PMs can change this prior to publication
+        new_info.locale = "en"  # Draft project default to english, PMs can change this prior to publication
         new_info.name = name
         return new_info
 

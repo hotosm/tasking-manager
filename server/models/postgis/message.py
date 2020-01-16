@@ -20,8 +20,8 @@ class MessageType(Enum):
     MENTION_NOTIFICATION = 3  # Notification that user was mentioned in a comment/chat
     VALIDATION_NOTIFICATION = 4  # Notification that user's mapped task was validated
     INVALIDATION_NOTIFICATION = (
-        5
-    )  # Notification that user's mapped task was invalidated
+        5  # Notification that user's mapped task was invalidated
+    )
     REQUEST_TEAM_NOTIFICATION = 6
     INVITATION_NOTIFICATION = 7
     TASK_COMMENT_NOTIFICATION = 8

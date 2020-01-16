@@ -285,7 +285,7 @@ class ProjectSearchService:
 
     @staticmethod
     def get_projects_geojson(
-        search_bbox_dto: ProjectSearchBBoxDTO
+        search_bbox_dto: ProjectSearchBBoxDTO,
     ) -> geojson.FeatureCollection:
         """  search for projects meeting criteria provided return as a geojson feature collection"""
 
