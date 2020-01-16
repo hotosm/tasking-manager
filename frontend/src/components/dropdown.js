@@ -48,7 +48,7 @@ class DropdownContent extends React.PureComponent {
   render() {
     return (
       <div
-        className={`di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column${
+        className={`db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column${
           this.props.toTop ? ' bottom-3' : ''
         }`}
       >
@@ -56,7 +56,7 @@ class DropdownContent extends React.PureComponent {
           <span
             key={k}
             onClick={this.handleClick.bind(null, i)}
-            className="pa3 bg-animate bg-white hover-bg-tan"
+            className="pa3 nowrap bg-animate bg-white hover-bg-tan"
           >
             {this.props.multi && (
               <input
@@ -71,11 +71,7 @@ class DropdownContent extends React.PureComponent {
             {i.href ? (
               <a target={'_blank'} href={i.href} onClick={this.props.toggleDropdown}>
                 {i.label}
-                {this.isActive(i) && (
-                  <span className="red pl4">
-                    <CheckIcon />
-                  </span>
-                )}
+                {this.isActive(i) && <CheckIcon className="red pl4" />}
               </a>
             ) : (
               <span onClick={this.props.toggleDropdown}>
@@ -153,7 +149,7 @@ export class _Dropdown extends React.PureComponent {
   }
   render() {
     return (
-      <div className={`dib pointer`}>
+      <div className="dib pointer relative">
         <CustomButton onClick={this.toggleDropdown} className={`${this.props.className || ''}`}>
           {this.getActiveOrDisplay()}{' '}
           <ChevronDownIcon style={{ height: '14px' }} className="pl2 v-mid" />
