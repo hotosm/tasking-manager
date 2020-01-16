@@ -24,13 +24,14 @@ it('dropdown svg icon exists and height is 15px', () => {
 
 it('dropdown-content is not rendered before the user clicks on the button', () => {
   let elementInstance = createTestDropdown([{ label: 'English' }, { label: 'Português' }]);
+  expect(elementInstance.findByType('div').props.className).toBe('dib pointer relative');
   expect(() =>
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
     }),
   ).toThrow(
     new Error(
-      'No instances found with props: {"className":"di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column"}',
+      'No instances found with props: {"className":"db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column"}',
     ),
   );
 });
@@ -44,19 +45,20 @@ it('dropdown-content show/hide with clicks', () => {
   elementInstance.findByType(CustomButton).props.onClick();
   expect(
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
     }).type,
   ).toBe('div');
   expect(elementInstance.findAllByType(CheckIcon).length).toBe(1);
+  expect(elementInstance.findAllByProps({ className: 'red pl4' }).length).toBe(1);
   // dropdown-content should disappear after another button click
   elementInstance.findByType(CustomButton).props.onClick();
   expect(() =>
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
     }),
   ).toThrow(
     new Error(
-      'No instances found with props: {"className":"di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column"}',
+      'No instances found with props: {"className":"db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column"}',
     ),
   );
 });
@@ -65,16 +67,16 @@ it('dropdown-content disappear after click on option', () => {
   const elementInstance = createTestDropdown([{ label: 'English' }, { label: 'Portuguese (pt)' }]);
   elementInstance.findByType(CustomButton).props.onClick();
   elementInstance
-    .findAllByProps({ className: 'pa3 bg-animate bg-white hover-bg-tan' })[0]
+    .findAllByProps({ className: 'pa3 nowrap bg-animate bg-white hover-bg-tan' })[0]
     .children[0].props.onClick();
   // dropdown-content should disappear after selecting an option
   expect(() =>
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
     }),
   ).toThrow(
     new Error(
-      'No instances found with props: {"className":"di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column"}',
+      'No instances found with props: {"className":"db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column"}',
     ),
   );
 });
@@ -89,21 +91,22 @@ it('dropdown behaviour with href props', () => {
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
     }).type,
   ).toBe('div');
   // number of dropdown options should be 3
   expect(
-    elementInstance.findAllByProps({ className: 'pa3 bg-animate bg-white hover-bg-tan' }).length,
+    elementInstance.findAllByProps({ className: 'pa3 nowrap bg-animate bg-white hover-bg-tan' })
+      .length,
   ).toBe(3);
   // dropdown options type should be an <a>
   expect(
-    elementInstance.findAllByProps({ className: 'pa3 bg-animate bg-white hover-bg-tan' })[0]
+    elementInstance.findAllByProps({ className: 'pa3 nowrap bg-animate bg-white hover-bg-tan' })[0]
       .children[0].type,
   ).toBe('a');
   // a elements should have the href property filled
   expect(
-    elementInstance.findAllByProps({ className: 'pa3 bg-animate bg-white hover-bg-tan' })[0]
+    elementInstance.findAllByProps({ className: 'pa3 nowrap bg-animate bg-white hover-bg-tan' })[0]
       .children[0].props.href,
   ).toBe('http://a.co');
 });
@@ -123,16 +126,17 @@ it('dropdown behaviour with multi enabled', () => {
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
     }).type,
   ).toBe('div');
   // number of dropdown options should be 3
   expect(
-    elementInstance.findAllByProps({ className: 'pa3 bg-animate bg-white hover-bg-tan' }).length,
+    elementInstance.findAllByProps({ className: 'pa3 nowrap bg-animate bg-white hover-bg-tan' })
+      .length,
   ).toBe(3);
   // when multi is true element type should be input
   expect(
-    elementInstance.findAllByProps({ className: 'pa3 bg-animate bg-white hover-bg-tan' })[0]
+    elementInstance.findAllByProps({ className: 'pa3 nowrap bg-animate bg-white hover-bg-tan' })[0]
       .children[0].type,
   ).toBe('input');
 });
@@ -153,7 +157,7 @@ it('dropdown with toTop enabled should have bottom-3 class', () => {
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
-      className: 'di tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column bottom-3',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column bottom-3',
     }).type,
   ).toBe('div');
 });
