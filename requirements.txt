@@ -15,7 +15,7 @@ Flask==1.1.1
 Flask-Cors==3.0.8
 Flask-HTTPAuth==3.3.0
 Flask-Migrate==2.5.2
-Flask-OAuthlib==0.9.4
+Flask-OAuthlib==0.9.5
 Flask-RESTful==0.3.7
 Flask-Script==2.0.6
 Flask-SQLAlchemy==2.4.1
