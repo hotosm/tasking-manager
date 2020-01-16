@@ -157,6 +157,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               selectTask={selectTask}
               selected={selected}
               taskBordersOnly={false}
+              animateZoom={false}
             />
             <TasksMapLegend />
           </ReactPlaceholder>
