@@ -108,7 +108,7 @@ class ValidatorService:
 
     @staticmethod
     def unlock_tasks_after_validation(
-        validated_dto: UnlockAfterValidationDTO
+        validated_dto: UnlockAfterValidationDTO,
     ) -> TaskDTOs:
         """
         Unlocks supplied tasks after validation

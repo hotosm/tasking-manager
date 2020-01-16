@@ -155,9 +155,8 @@ class ProjectAdminService:
                 user = UserService.get_user_by_username(username)
                 allowed_users.append(user)
 
-            project_dto.allowed_users = (
-                allowed_users
-            )  # Dynamically attach the user object to the DTO for more efficient persistence
+            # Dynamically attach the user object to the DTO for more efficient persistence
+            project_dto.allowed_users = allowed_users
         except NotFound:
             raise ProjectAdminServiceError(
                 f"allowedUsers contains an unknown username {user}"
