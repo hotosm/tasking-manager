@@ -34,7 +34,9 @@ $ bash -n infra/bootstrap.sh
 3. Run packer from the root directory.
 
 ```
-$ packer build infra/ami.json
+$ pwd
+~/workbench/tasking-manager
+$ packer build -var 'created_by=username' -var 'instance_region=ap-southeast-1' scripts/aws/packer/ami.json
 ...
 Build `amazon-ebs` finished
 ```
@@ -52,7 +54,7 @@ happening on the instance. Find public IP of instance in the build output
 stream.
 
 ```
-$ ssh -i ec2_amazon-ebs.pem ubunut@<PUBLIC_IP>
+$ ssh -i ec2_amazon-ebs.pem ubunutu@<PUBLIC_IP>
 ```
 
 ## References

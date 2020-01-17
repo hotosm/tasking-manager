@@ -111,41 +111,13 @@ const Parameters = {
     Type: 'String',
     Description: 'Mapbox Token'
   },
-  OrgName: {
-    Type: 'String',
-    Description: 'OrgName'
+  TaskingManagerInstanceImageID: {
+      Type: 'String',
+      Description: 'AMI ID for launching TM instances from'
   },
-  OrgCode: {
-    Type: 'String',
-    Description: 'OrgCode'
-  },
-  OrgUrl: {
-    Type: 'String',
-    Description: 'Org Url. Do not add http://'
-  },
-  OrgPrivacyPolicy: {
-    Type: 'String',
-    Description: 'PrivacyPolicy URL. Do not add http://'
-  },
-  OrgTwitter: {
-    Type: 'String',
-    Description: 'Twitter URL'
-  },
-  OrgFacebook: {
-    Type: 'String',
-    Description: 'Facebook URL'
-  },
-  OrgInstagram: {
-    Type: 'String',
-    Description: 'Instagram URL'
-  },
-  OrgYoutube: {
-    Type: 'String',
-    Description: 'Youtube Url'
-  },
-  OrgGitHub: {
-    Type: 'String',
-    Description: 'Github URL'
+  TaskingManagerInstanceKeypairName: {
+      Type: 'String',
+      Description: 'Name of SSH keypair for TM instances'
   }
 };
 
@@ -155,6 +127,10 @@ const Conditions = {
   IsTaskingManagerProduction: cf.equals(cf.ref('AutoscalingPolicy'), 'Production (max 12)'),
   IsTaskingManagerDemo: cf.equals(cf.ref('AutoscalingPolicy'), 'Demo (max 3)')
 };
+
+const Outputs = {
+    MyRegion: cf.ref('AWS::Region')
+}
 
 const Resources = {
   TaskingManagerASG: {
@@ -170,7 +146,8 @@ const Resources = {
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
-      AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f']
+      AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f'],
+      Tags: [{'Key' : 'Name', 'PropagateAtLaunch' : true,  'Value' : 'Tasking Manager'}, {'Key' : 'TM Version', 'PropagateAtLaunch' : true,  'Value' : '4'}]
     },
     UpdatePolicy: {
       AutoScalingRollingUpdate: {
@@ -312,7 +289,7 @@ const Resources = {
     },
     Properties: {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: 'ami-0565af6e282977273',
+      ImageId: cf.ref('TaskingManagerInstanceImageID'),
       InstanceType: 'c5d.large',
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
@@ -326,35 +303,20 @@ const Resources = {
         'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
         'sudo add-apt-repository ppa:deadsnakes/ppa -y',
         'sudo apt-get update',
-        'sudo apt-get -y install python3.6',
-        'sudo apt-get -y install python3.6-dev',
-        'sudo apt-get -y install python3.6-venv',
-        'sudo apt-get -y install curl',
+        'sudo apt-get -y install python3.6 python3.6-dev python3.6-venv',
+        'sudo apt-get -y install awscli curl git ruby wget',
         'curl -o install-node10.sh -sL https://deb.nodesource.com/setup_10.x',
-        'sudo chmod +x install-node10.sh',
-        'sudo ./install-node10.sh',
+        'sudo chmod +x install-node10.sh && sudo ./install-node10.sh',
         'sudo apt-get -y install nodejs',
         'wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -',
-        'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
-        'sudo apt update -y',
-        'sudo apt-get install -y postgresql-11',
-        'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt xenial-pgdg main" >> /etc/apt/sources.list\'',
-        'wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -',
-        'sudo apt update -y',
-        'sudo apt install -y postgresql-11-postgis',
-        'sudo apt install -y postgresql-11-postgis-scripts',
-        'sudo apt install -y postgis',
-        'sudo apt-get -y install libpq-dev',
-        'sudo apt-get -y install libxml2',
-        'sudo apt-get -y install wget libxml2-dev',
-        'sudo apt-get -y install libgeos-3.5.0',
-        'sudo apt-get -y install libgeos-dev',
-        'sudo apt-get -y install libproj9',
-        'sudo apt-get -y install libproj-dev',
+        'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" | sudo tee -a /etc/apt/sources.list.d/PostgreSQL.list',
+        'sudo apt-get -y update',
+        'sudo apt-get -y install postgresql-11 postgis postgresql-11-postgis postgresql-11-postgis-scripts libpq-dev',
+        'sudo apt-get -y install libxml2 libxml2-dev',
+        'sudo apt-get -y install libgeos-3.5.0 libgeos-dev',
+        'sudo apt-get -y install libproj9 libproj-dev',
         'sudo apt-get -y install python-pip libgdal1-dev',
         'sudo apt-get -y install libjson-c-dev',
-        'sudo apt-get -y install git',
-        'sudo apt-get -y install awscli',
         'git clone --recursive https://github.com/hotosm/tasking-manager.git',
         'cd tasking-manager/',
         cf.sub('git reset --hard ${GitSha}'),
@@ -410,7 +372,7 @@ const Resources = {
         cf.sub('sudo cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
         cf.sub('cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
       ]),
-      KeyName: 'mbtiles'
+      KeyName: cf.ref('TaskingManagerInstanceKeypairName')
     }
   },
   TaskingManagerEC2Role: {
