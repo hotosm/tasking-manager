@@ -1,7 +1,7 @@
 {
   "name": "TaskingManager-frontend",
   "version": "0.1.0",
-  "license": "BSD 2",
+  "license": "BSD-2-Clause",
   "private": false,
   "dependencies": {
     "@lokibai/react-use-copy-clipboard": "^1.0.4",
@@ -35,7 +35,7 @@
     "react-meta-elements": "^1.0.0",
     "react-placeholder": "^3.0.2",
     "react-redux": "^7.1.1",
-    "react-scripts": "^3.2.0",
+    "react-scripts": "^3.3.0",
     "react-select": "^3.0.8",
     "reactjs-popup": "^1.5.0",
     "redux": "^4.0.4",
