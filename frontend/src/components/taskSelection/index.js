@@ -69,6 +69,7 @@ export function TaskSelection({ project, type, loading }: Object) {
 
   useEffect(() => {
     // run it only when the component is initialized
+    // it checks if the user has tasks locked on the project and suggests to resume them
     if (!mapInit && initialActivities.activity && user.username) {
       const lockedByCurrentUser = initialActivities.activity
         .filter(i => i.taskStatus.startsWith('LOCKED_FOR_'))
@@ -84,6 +85,9 @@ export function TaskSelection({ project, type, loading }: Object) {
         dispatch({ type: 'SET_LOCKED_TASKS', tasks: tasks });
         dispatch({ type: 'SET_PROJECT', project: project.projectId });
         dispatch({ type: 'SET_TASKS_STATUS', status: lockedByCurrentUser[0].taskStatus });
+      } else {
+        // otherwise we check if the user can map or validate the project
+        setTaskAction(getTaskAction(user, project, null));
       }
       setMapInit(true);
     }

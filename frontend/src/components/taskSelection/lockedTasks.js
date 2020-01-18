@@ -37,14 +37,60 @@ export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Obj
   );
 }
 
-export function LockedTaskModalContent({ project }: Object) {
+export function SameProjectLock({ lockedTasks, action }: Object) {
+  return (
+    <>
+      <h3 className="barlow-condensed f3 fw6 mv0">
+        <FormattedMessage {...messages.anotherLockedTask} />
+      </h3>
+      <div className="mv4 lh-title">
+        <FormattedMessage
+          {...messages[
+            lockedTasks.get('tasks').length > 1
+              ? 'currentProjectLockTextPlural'
+              : 'currentProjectLockTextSingular'
+          ]}
+          values={{ taskId: <span className="fw6">{lockedTasks.get('tasks')}</span> }}
+        />
+      </div>
+      <Button
+        className="bg-red white"
+        onClick={() => navigate(`/projects/${lockedTasks.get('project')}/${action}`)}
+      >
+        <FormattedMessage
+          {...messages[
+            lockedTasks.get('tasks').length > 1 ? 'workOnTasksPlural' : 'workOnTasksSingular'
+          ]}
+          values={{ mapOrValidate: <FormattedMessage {...messages[action]} /> }}
+        />
+      </Button>
+    </>
+  );
+}
+
+export function LockError() {
+  return (
+    <>
+      <h3 className="barlow-condensed f3 fw6 mv0">
+        <FormattedMessage {...messages.lockError} />
+      </h3>
+      <div className="mv4 lh-title">
+        <FormattedMessage {...messages.lockErrorDescription} />
+      </div>
+    </>
+  );
+}
+
+export function LockedTaskModalContent({ project, error }: Object) {
   const lockedTasks = useSelector(state => state.lockedTasks);
   const action = lockedTasks.get('status') === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
 
   return (
-    <div className="blue-dark pv2 pv4-ns ph2 ph4-ns">
+    <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
+      {/* User has not tasks locked, but other error happened */}
+      {!lockedTasks.get('project') && <LockError />}
       {/* User has tasks locked on another project */}
-      {lockedTasks.get('project') !== project && (
+      {lockedTasks.get('project') && lockedTasks.get('project') !== project && (
         <AnotherProjectLock
           projectId={lockedTasks.get('project')}
           action={action}
@@ -53,32 +99,7 @@ export function LockedTaskModalContent({ project }: Object) {
       )}
       {/* User has tasks locked on the current project */}
       {lockedTasks.get('project') === project && (
-        <>
-          <h3 className="barlow-condensed f3 fw6 mv0">
-            <FormattedMessage {...messages.anotherLockedTask} />
-          </h3>
-          <div className="mv4 lh-title">
-            <FormattedMessage
-              {...messages[
-                lockedTasks.get('tasks').length > 1
-                  ? 'currentProjectLockTextPlural'
-                  : 'currentProjectLockTextSingular'
-              ]}
-              values={{ taskId: <span className="fw6">{lockedTasks.get('tasks')}</span> }}
-            />
-          </div>
-          <Button
-            className="bg-red white"
-            onClick={() => navigate(`/projects/${lockedTasks.get('project')}/${action}`)}
-          >
-            <FormattedMessage
-              {...messages[
-                lockedTasks.get('tasks').length > 1 ? 'workOnTasksPlural' : 'workOnTasksSingular'
-              ]}
-              values={{ mapOrValidate: <FormattedMessage {...messages[action]} /> }}
-            />
-          </Button>
-        </>
+        <SameProjectLock action={action} lockedTasks={lockedTasks} />
       )}
     </div>
   );
