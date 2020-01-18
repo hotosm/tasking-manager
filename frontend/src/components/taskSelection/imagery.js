@@ -9,9 +9,7 @@ export function Imagery({ value = '' }: Object) {
   //eslint-disable-next-line
   const [isCopied, setCopied] = useCopyClipboard();
 
-  const handleClick = () => {
-    setCopied(value);
-  };
+  const handleClick = () => setCopied(value);
   let content = <span>{value}</span>;
   let copyButton;
   let messageId;

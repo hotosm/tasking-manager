@@ -65,6 +65,45 @@ describe('test if footer', () => {
     );
   });
 
+  it('returns the correct contribute button message when action is "selectAnotherProject"', () => {
+    const element = createComponentWithReduxAndIntl(
+      <TaskSelectionFooter
+        project={{ projectId: 1, mappingTypes: ['LAND_USE'], mappingEditors: ['ID', 'JOSM'] }}
+        taskAction={'selectAnotherProject'}
+      />,
+    );
+    const testInstance = element.root;
+    expect(testInstance.findByType(Button).findByType(FormattedMessage).props.id).toBe(
+      'project.selectTask.footer.button.selectAnotherProject',
+    );
+  });
+
+  it('returns the correct contribute button message when action is "mappingIsComplete"', () => {
+    const element = createComponentWithReduxAndIntl(
+      <TaskSelectionFooter
+        project={{ projectId: 1, mappingTypes: ['LAND_USE'], mappingEditors: ['ID', 'JOSM'] }}
+        taskAction={'mappingIsComplete'}
+      />,
+    );
+    const testInstance = element.root;
+    expect(testInstance.findByType(Button).findByType(FormattedMessage).props.id).toBe(
+      'project.selectTask.footer.button.selectAnotherProject',
+    );
+  });
+
+  it('returns the correct contribute button message when action is "projectIsComplete"', () => {
+    const element = createComponentWithReduxAndIntl(
+      <TaskSelectionFooter
+        project={{ projectId: 1, mappingTypes: ['LAND_USE'], mappingEditors: ['ID', 'JOSM'] }}
+        taskAction={'projectIsComplete'}
+      />,
+    );
+    const testInstance = element.root;
+    expect(testInstance.findByType(Button).findByType(FormattedMessage).props.id).toBe(
+      'project.selectTask.footer.button.selectAnotherProject',
+    );
+  });
+
   it('returns the correct contribute button message when taskAction is "validateSelectedTask"', () => {
     const element = createComponentWithReduxAndIntl(
       <TaskSelectionFooter

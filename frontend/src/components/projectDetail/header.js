@@ -20,14 +20,17 @@ export function HeaderLine({ author, projectId, priority }: Object) {
     <div className="cf">
       <div className="w-70 dib fl">
         <span className="blue-dark">
-          <FormattedMessage {...messages.createdBy} values={{ user: userLink, id: projectIdLink }} />
+          <FormattedMessage
+            {...messages.createdBy}
+            values={{ user: userLink, id: projectIdLink }}
+          />
         </span>
       </div>
-      {priority &&
+      {priority && (
         <div className="mw4 dib fr">
           <PriorityBox priority={priority} extraClasses={'pv2 ph3'} />
         </div>
-      }
+      )}
     </div>
   );
 }
@@ -38,9 +41,9 @@ export const ProjectStatusBox = ({ status, className }: Object) => {
       <FormattedMessage {...messages[`status_${status}`]} />
     </div>
   );
-}
+};
 
-export const ProjectHeader = ({project}: Object) => {
+export const ProjectHeader = ({ project }: Object) => {
   return (
     <>
       <HeaderLine
@@ -53,26 +56,27 @@ export const ProjectHeader = ({project}: Object) => {
           <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark dib">
             {project.projectInfo && project.projectInfo.name}
           </h3>
-          {(['DRAFT', 'ARCHIVED'].includes(project.status)) &&
-            <ProjectStatusBox status={project.status} className={"pv2 ph3 ml3 mb3 v-mid dib"} />
-          }
+          {['DRAFT', 'ARCHIVED'].includes(project.status) && (
+            <ProjectStatusBox status={project.status} className={'pv2 ph3 ml3 mb3 v-mid dib'} />
+          )}
         </div>
-        < TagLine campaigns={project.campaigns} countries={project.countryTag} />
+        <TagLine campaigns={project.campaigns} countries={project.countryTag} />
       </div>
     </>
   );
-}
+};
 
-function TagLine({campaigns=[], countries=[]}: Object) {
+function TagLine({ campaigns = [], countries = [] }: Object) {
   let tags = [];
   tags = campaigns.map(i => i.name).concat(countries);
   return (
     <span className="blue-light">
-      {tags.map((tag, n) => <>
+      {tags.map((tag, n) => (
+        <>
           <span className={n === 0 ? 'dn' : 'ph2'}>&#183;</span>
           {tag}
         </>
-      )}
+      ))}
     </span>
   );
 }
