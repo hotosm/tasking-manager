@@ -11,7 +11,7 @@ import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
 
 export function PriorityBox({ priority, extraClasses }: Object) {
   let color = 'blue-grey';
-  let borderColor = 'b--grey';
+  let borderColor = 'b--blue-grey';
   if (priority === 'URGENT') {
     color = 'red';
     borderColor = 'b--red';

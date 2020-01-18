@@ -68,6 +68,33 @@ it('READY TASK selected and USER able to map returns mapSelectedTask', () => {
   expect(getTaskAction(user, project, taskStatus)).toBe('mapSelectedTask');
 });
 
+it('READY TASK selected and USER unable to map returns selectAnotherProject', () => {
+  const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
+  const project = {
+    percentMapped: 40,
+    percentBadImagery: 0,
+    percentValidated: 0,
+    mapperLevel: 'INTERMEDIATE',
+    restrictMappingLevelToProject: true,
+    restrictValidationRole: true,
+  };
+  const taskStatus = 'READY';
+  expect(getTaskAction(user, project, taskStatus)).toBe('selectAnotherProject');
+});
+
+it('MAPPED TASK selected and USER able to map returns mapAnotherTask', () => {
+  const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
+  const project = {
+    percentMapped: 40,
+    percentBadImagery: 0,
+    percentValidated: 0,
+    mapperLevel: 'BEGINNER',
+    restrictValidationRole: true,
+  };
+  const taskStatus = 'MAPPED';
+  expect(getTaskAction(user, project, taskStatus)).toBe('mapAnotherTask');
+});
+
 it('MAPPED TASK selected and USER able to validate returns validatedSelectedTask', () => {
   const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
   const project = {
@@ -80,6 +107,19 @@ it('MAPPED TASK selected and USER able to validate returns validatedSelectedTask
   };
   const taskStatus = 'MAPPED';
   expect(getTaskAction(user, project, taskStatus)).toBe('validateSelectedTask');
+});
+
+it('No tasks selected and USER able to validate returns validatedATask', () => {
+  const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
+  const project = {
+    percentMapped: 100,
+    percentValidated: 50,
+    percentBadImagery: 0,
+    mapperLevel: 'BEGINNER',
+    restrictMappingLevelToProject: false,
+    restrictValidationRole: false,
+  };
+  expect(getTaskAction(user, project, null)).toBe('validateATask');
 });
 
 it('completely mapped project returns mappingIsComplete message to a user that can not validate', () => {

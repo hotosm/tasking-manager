@@ -4,6 +4,15 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on header.
  */
 export default defineMessages({
+  lockError: {
+    id: 'project.tasks.lock_error.generic',
+    defaultMessage: "It wasn't possible to lock this task for you...",
+  },
+  lockErrorDescription: {
+    id: 'project.tasks.lock_error.generic.description',
+    defaultMessage:
+      'Some error occurred when trying to lock this task. Check if your user matches the level, role and permissions required by this project.',
+  },
   anotherLockedTask: {
     id: 'project.tasks.lock_error.another_project',
     defaultMessage: 'We found another task locked by you',
@@ -139,6 +148,10 @@ export default defineMessages({
   validateAnotherTask: {
     id: 'project.selectTask.footer.button.validateAnotherTask',
     defaultMessage: 'Validate another task',
+  },
+  selectAnotherProject: {
+    id: 'project.selectTask.footer.button.selectAnotherProject',
+    defaultMessage: 'Select another project',
   },
   resumeMapping: {
     id: 'project.selectTask.footer.button.resumeMapping',

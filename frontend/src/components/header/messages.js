@@ -32,10 +32,6 @@ export default defineMessages({
     id: 'header.nav.statsBadges',
     defaultMessage: 'Stats & Badges',
   },
-  language: {
-    id: 'header.buttons.languageSelector',
-    defaultMessage: 'Language',
-  },
   logIn: {
     id: 'header.buttons.logIn',
     defaultMessage: 'Log in',
