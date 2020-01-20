@@ -9,6 +9,12 @@ import { Form } from 'react-final-form';
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import {
+  getMembersDiff,
+  filterActiveMembers,
+  filterActiveManagers,
+  formatMemberObject,
+} from '../utils/teamMembersDiff';
 import { Members } from '../components/teamsAndOrgs/members';
 import {
   TeamInformation,
@@ -198,45 +204,45 @@ export function EditTeam(props) {
   const [members, setMembers] = useState([]);
   useEffect(() => {
     if (!initManagers && team && team.members) {
-      setManagers(team.members.filter(member => member.active && member.function === 'MANAGER'));
-      setMembers(team.members.filter(member => member.active && member.function === 'MEMBER'));
+      setManagers(filterActiveManagers(team.members));
+      setMembers(filterActiveMembers(team.members));
       setInitManagers(true);
     }
   }, [team, managers, initManagers]);
 
   const addManagers = values => {
-    const newValues = values.filter(
-      newUser => !managers.map(i => i.username).includes(newUser.username),
-    );
+    const newValues = values
+      .filter(newUser => !managers.map(i => i.username).includes(newUser.username))
+      .map(user => formatMemberObject(user, true));
     setManagers(managers.concat(newValues));
   };
   const removeManagers = username => {
     setManagers(managers.filter(i => i.username !== username));
   };
   const addMembers = values => {
-    const newValues = values.filter(
-      newUser => !members.map(i => i.username).includes(newUser.username),
-    );
+    const newValues = values
+      .filter(newUser => !members.map(i => i.username).includes(newUser.username))
+      .map(user => formatMemberObject(user));
     setMembers(members.concat(newValues));
   };
   const removeMembers = username => {
     setMembers(members.filter(i => i.username !== username));
   };
   const updateManagers = () => {
-    managers
-      .filter(user => !team.managers.map(manager => manager.username).includes(user))
-      .forEach(user => joinTeamRequest(team.teamId, user, 'MANAGER', token));
-    team.managers
-      .filter(i => !managers.includes(i.username))
-      .forEach(manager => leaveTeamRequest(team.teamId, manager.username, 'MANAGER', token));
+    const { usersAdded, usersRemoved } = getMembersDiff(team.members, managers, true);
+    usersAdded.forEach(user => joinTeamRequest(team.teamId, user, 'MANAGER', token));
+    usersRemoved.forEach(user => leaveTeamRequest(team.teamId, user, 'MANAGER', token));
+    team.members = team.members
+      .filter(user => user.function === 'MEMBER' || user.active === false)
+      .concat(managers);
   };
   const updateMembers = () => {
-    members
-      .filter(user => !team.members.map(member => member.username).includes(user))
-      .forEach(user => joinTeamRequest(team.teamId, user, 'MEMBER', token));
-    team.members
-      .filter(i => !members.includes(i.username))
-      .forEach(member => leaveTeamRequest(team.teamId, member.username, 'MEMBER', token));
+    const { usersAdded, usersRemoved } = getMembersDiff(team.members, members);
+    usersAdded.forEach(user => joinTeamRequest(team.teamId, user, 'MEMBER', token));
+    usersRemoved.forEach(user => leaveTeamRequest(team.teamId, user, 'MEMBER', token));
+    team.members = team.members
+      .filter(user => user.function === 'MANAGER' || user.active === false)
+      .concat(members);
   };
 
   const updateTeam = payload => {
@@ -299,8 +305,8 @@ export function TeamDetail(props) {
   const [members, setMembers] = useState([]);
   useEffect(() => {
     if (team && team.members) {
-      setManagers(team.members.filter(member => member.active && member.function === 'MANAGER'));
-      setMembers(team.members.filter(member => member.active && member.function === 'MEMBER'));
+      setManagers(filterActiveManagers(team.members));
+      setMembers(filterActiveMembers(team.members));
       if (team.members.map(member => member.username).includes(userDetails.username)) {
         setIsMember(true);
       }
