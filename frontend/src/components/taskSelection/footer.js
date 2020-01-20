@@ -43,7 +43,9 @@ const TaskSelectionFooter = props => {
     dispatch({ type: 'SET_TASKS_STATUS', status: status });
   };
   const lockTasks = () => {
-    if (props.taskAction.startsWith('validate')) {
+    if (
+      ['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(props.taskAction)
+    ) {
       pushToLocalJSONAPI(
         `projects/${props.project.projectId}/tasks/actions/lock-for-validation/`,
         JSON.stringify({ taskIds: props.selectedTasks }),
@@ -54,7 +56,7 @@ const TaskSelectionFooter = props => {
         })
         .catch(e => lockFailed());
     }
-    if (props.taskAction.startsWith('map')) {
+    if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(props.taskAction)) {
       fetchLocalJSONAPI(
         `projects/${props.project.projectId}/tasks/actions/lock-for-mapping/${
           props.selectedTasks[0]
@@ -72,6 +74,12 @@ const TaskSelectionFooter = props => {
     }
     if (props.taskAction === 'resumeValidation') {
       navigate(`/projects/${props.project.projectId}/validate/`);
+    }
+    // if user can not map or validate the project, lead him to the explore projects page
+    if (
+      ['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(props.taskAction)
+    ) {
+      navigate(`/explore/`);
     }
   };
 
@@ -141,7 +149,13 @@ const TaskSelectionFooter = props => {
       <div className="w-30-ns w-60 fl tr">
         <div className="mt3">
           <Button className="white bg-red" onClick={() => lockTasks()}>
-            <FormattedMessage {...messages[props.taskAction]} />
+            {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(
+              props.taskAction,
+            ) ? (
+              <FormattedMessage {...messages.selectAnotherProject} />
+            ) : (
+              <FormattedMessage {...messages[props.taskAction]} />
+            )}
           </Button>
         </div>
       </div>

@@ -62,8 +62,11 @@ export function getMessageOnValidationContext(mappingIsPossible, taskStatus) {
 }
 
 export function getTaskAction(user, project, taskStatus) {
-  const validationIsPossible =
-    userCanValidate(user, project) && project.percentValidated + project.percentBadImagery < 100;
+  // nothing more to do if all tasks are validated or set as BADIMAGERY
+  if (project.percentValidated + project.percentBadImagery === 100) {
+    return 'projectIsComplete';
+  }
+  const validationIsPossible = userCanValidate(user, project);
   const mappingIsPossible =
     userCanMap(user, project) && project.percentMapped + project.percentBadImagery < 100;
 
@@ -73,11 +76,8 @@ export function getTaskAction(user, project, taskStatus) {
   if (mappingIsPossible) {
     return getMessageOnMappingContext(taskStatus);
   }
-
-  if (project.percentValidated + project.percentBadImagery === 100) {
-    return 'projectIsComplete';
-  }
   if (project.percentMapped + project.percentBadImagery === 100) {
     return 'mappingIsComplete';
   }
+  return 'selectAnotherProject';
 }
