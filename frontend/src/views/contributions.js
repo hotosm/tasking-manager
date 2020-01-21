@@ -9,6 +9,7 @@ import {
 } from '../hooks/UseTaskContributionAPI';
 import { MyTasksNav } from '../components/contributions/myTasksNav';
 import { TaskResults } from '../components/contributions/taskResults';
+import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
 
 export const ContributionsPage = props => {
   const initialData = {
@@ -43,9 +44,7 @@ export const ContributionsPage = props => {
         <section className="cf">
           <MyTasksNav />
           <TaskResults retryFn={forceUpdate} state={state} />
-          {/* TODO support pagination on this API
-        <ProjectCardPaginator projectAPIstate={state} setQueryParam={setContributionsQuery} />
-        */}
+          <ProjectCardPaginator projectAPIstate={state} setQueryParam={setContributionsQuery} />
         </section>
       </div>
     </>

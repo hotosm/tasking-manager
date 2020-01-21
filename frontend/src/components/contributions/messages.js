@@ -16,9 +16,21 @@ export default defineMessages({
     id: 'mytasks.filter.all',
     defaultMessage: 'All',
   },
+  mapped: {
+    id: 'mytasks.filter.mapped',
+    defaultMessage: 'Mapped',
+  },
+  validated: {
+    id: 'mytasks.filter.validated',
+    defaultMessage: 'Validated',
+  },
+  invalidated: {
+    id: 'mytasks.filter.invalidated',
+    defaultMessage: 'More mapping needed',
+  },
   archived: {
     id: 'mytasks.filter.archived',
-    defaultMessage: 'Archived',
+    defaultMessage: 'Archived projects',
   },
   projects: {
     id: 'mytasks.filter.projects',
