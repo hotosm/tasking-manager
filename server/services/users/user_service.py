@@ -137,13 +137,13 @@ class UserService:
 
     @staticmethod
     def get_projects_mapped(user_id: int):
-        projects_mapped = (
-            User.query.with_entities(User.projects_mapped)
-            .filter(User.id == user_id)
-            .all()
-        )
-        results = [r[0] for r in projects_mapped]
-        projects_mapped = results[0]
+        user = UserService.get_user_by_id(user_id)
+        projects_mapped = user.projects_mapped
+
+        # Return empty list if the user has no projects_mapped.
+        if projects_mapped is None:
+            return []
+
         return projects_mapped
 
     @staticmethod
