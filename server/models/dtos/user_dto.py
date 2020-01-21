@@ -247,5 +247,5 @@ class UserTaskDTOs(Model):
         super().__init__()
         self.user_tasks = []
 
-    user_tasks = ListType(ModelType(TaskDTO), serialized_name="userTasks")
+    user_tasks = ListType(ModelType(TaskDTO), serialized_name="tasks")
     pagination = ModelType(Pagination)
