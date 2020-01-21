@@ -33,7 +33,7 @@ export const useTaskContributionQueryParams = () => {
   */
 /* TODO support full text search and change text=>project for that */
 const backendToQueryConversion = {
-  status: 'task_status',
+  status: 'status',
   minDate: 'min_action_date',
   text: 'project_id',
   maxDate: 'max_action_date',
@@ -59,7 +59,7 @@ const dataFetchReducer = (state, action) => {
         ...state,
         isLoading: false,
         isError: false,
-        tasks: action.payload.userTasks,
+        tasks: action.payload.tasks,
         pagination: action.payload.pagination,
       };
     case 'FETCH_FAILURE':
