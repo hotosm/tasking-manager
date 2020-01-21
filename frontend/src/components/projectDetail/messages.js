@@ -99,7 +99,7 @@ export default defineMessages({
   noComments: {
     id: 'project.detail.questionsAndComments.none',
     defaultMessage:
-      'There are no questions or comments on this project yet. Be the first to post one!',
+      'There are currently no questions or comments on this project. Be the first to post one!',
   },
   post: {
     id: 'project.detail.questionsAndComments.button',
@@ -119,26 +119,26 @@ export default defineMessages({
   },
   mapThroughOSMCardTitle: {
     id: 'project.detail.cards.mapthroughosm.title',
-    defaultMessage: '2. Map through OpenStreetMap',
+    defaultMessage: '2. Map with OpenStreetMap',
   },
   submitYourWorkCardTitle: {
     id: 'project.detail.cards.submityourwork.title',
-    defaultMessage: '3. Submit your Work',
+    defaultMessage: '3. Submit your work',
   },
   selectATaskCardDescription: {
     id: 'project.detail.cards.selectATask.description',
     defaultMessage:
-      'Projects are subdivided into a set of tasks managable in size and adapted to your skill level.',
+      'Projects are divided in a set of smaller tasks and adapted to your skill level.',
   },
   mapThroughOSMCardDescription: {
     id: 'project.detail.cards.mapthroughosm.description',
     defaultMessage:
-      'If you are new to mapping, we recommend checking the Learn page before you start mapping.',
+      'If you are new to mapping, we recommend checking the Learn page for instructions before you begin.',
   },
   submitYourWorkCardDescription: {
     id: 'project.detail.cards.submityourwork.description',
     defaultMessage:
-      "Submitting your work is cruicial. If you don't do it, it will not be merged into the project.",
+      "Submitting your work is crucial to make sure your data is saved.",
   },
   overview: {
     id: 'project.detail.sections.overview',

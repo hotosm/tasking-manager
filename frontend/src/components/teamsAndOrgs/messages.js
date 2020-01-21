@@ -46,7 +46,7 @@ export default defineMessages({
   },
   editMembersLater: {
     id: 'management.edit_members',
-    defaultMessage: 'You will be able to add more users after save for the first time.',
+    defaultMessage: 'You will be able to add more users after you save for the first time.',
   },
   myOrganisations: {
     id: 'management.myOrganisations',
@@ -142,11 +142,11 @@ export default defineMessages({
   },
   noTeams: {
     id: 'management.teams.no_teams',
-    defaultMessage: 'You are not member of a team yet.',
+    defaultMessage: 'You are not a member of a team yet.',
   },
   noCampaigns: {
     id: 'management.teams.no_campaigns',
-    defaultMessage: 'There is no campaigns yet.',
+    defaultMessage: 'There are no campaigns yet.',
   },
   public: {
     id: 'management.teams.visibility.public',
@@ -162,7 +162,7 @@ export default defineMessages({
   },
   inviteOnlyDescription: {
     id: 'management.teams.invite_only.description',
-    defaultMessage: 'Managers need to approve members requests to join',
+    defaultMessage: "Managers need to approve a member's request to join.",
   },
   noProjectsFound: {
     id: 'management.projects.no_found',
