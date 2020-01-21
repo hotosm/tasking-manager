@@ -3,13 +3,11 @@ import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-
-/*REMOVE ME*/
 import { ProjectSearchBox } from '../projects/projectSearchBox';
 import { useTaskContributionQueryParams, stringify } from '../../hooks/UseTaskContributionAPI';
 
 const isActiveButton = (buttonName, contributionQuery) => {
-  const allBoolean = !contributionQuery.archivedProjects;
+  const allBoolean = !contributionQuery.projectStatus && !contributionQuery.status;
   if (
     JSON.stringify(contributionQuery).indexOf(buttonName) !== -1 ||
     (buttonName === 'All' && allBoolean)
@@ -55,18 +53,33 @@ export const MyTasksNav = props => {
         </div>
       </div>
       <div className="mv2">
-        <Link
-          to=""
-          className={`di di-m mh1 ${isActiveButton('All', contributionsQuery)} ${linkCombo}`}
-        >
+        <Link to="" className={`di mh1 ${isActiveButton('All', contributionsQuery)} ${linkCombo}`}>
           <FormattedMessage {...messages.all} />
         </Link>
         <Link
-          to="?archivedProjects=1"
-          className={`di di-m mh1 ${isActiveButton(
-            'archivedProjects',
+          to="?status=MAPPED"
+          className={`di mh1 ${isActiveButton('MAPPED', contributionsQuery)}  ${linkCombo}`}
+        >
+          <FormattedMessage {...messages.mapped} />
+        </Link>
+        <Link
+          to="?status=VALIDATED"
+          className={`di mh1 ${isActiveButton(
+            'status=VALIDATED',
             contributionsQuery,
           )}  ${linkCombo}`}
+        >
+          <FormattedMessage {...messages.validated} />
+        </Link>
+        <Link
+          to="?status=INVALIDATED"
+          className={`di mh1 ${isActiveButton('INVALIDATED', contributionsQuery)}  ${linkCombo}`}
+        >
+          <FormattedMessage {...messages.invalidated} />
+        </Link>
+        <Link
+          to="?projectStatus=ARCHIVED"
+          className={`di mh1 ${isActiveButton('projectStatus', contributionsQuery)}  ${linkCombo}`}
         >
           <FormattedMessage {...messages.archived} />
         </Link>

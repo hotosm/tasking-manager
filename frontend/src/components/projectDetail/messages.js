@@ -14,11 +14,11 @@ export default defineMessages({
   },
   percentMapped: {
     id: 'project.detail.percentMapped',
-    defaultMessage: ' Mapped',
+    defaultMessage: 'Mapped',
   },
   percentValidated: {
     id: 'project.detail.percentValidated',
-    defaultMessage: ' Validated',
+    defaultMessage: 'Validated',
   },
   projectPriorityURGENT: {
     id: 'project.detail.projectPriorityUrgent',
