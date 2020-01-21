@@ -168,12 +168,12 @@ export default defineMessages({
   howItWorksPart1: {
     id: 'pages.about.howItWorks.description.part_1',
     defaultMessage:
-      'The Tasking Manager allows to divide up a mapping project into smaller tasks that can be completed rapidly with many people working on the same overall area. It shows which areas need to be mapped and which areas need to be reviewed for quality assurance.',
+      'A mapping area in OpenStreetMap is divided up into small, individual tasks for volunteer to complete. A simple legend allows users to see which areas still need to be mapped and which areas map data needs to be reviewed for quality assurance.',
   },
   howItWorksPart2: {
     id: 'pages.about.howItWorks.description.part_2',
     defaultMessage:
-      'This approach allows the distribution of tasks to many individual mappers in the context of emergency or other humanitarian mapping scenario. It also allows monitoring the overall project progress and helps improve the consistency of the mapping (e.g., elements to cover, specific tags to use, etc.).',
+      'With Tasking Manager, volunteers can easily see where other mappers are actively mapping, allowing many individuals to map an area together in a coordinated way. This system helps to improve the consistency and quality of mapping.',
   },
   floss: {
     id: 'pages.about.floss.title',

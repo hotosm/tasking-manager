@@ -15,6 +15,6 @@ export default defineMessages({
   },
   michaelYaniBio: {
     id: 'home.testimonials.michaelYani.bio',
-    defaultMessage: 'a refugee from Sudan who currently resides in Rhino Refugee Settlement',
+    defaultMessage: 'a refugee from South Sudan who currently resides in Rhino Refugee Settlement',
   },
 });

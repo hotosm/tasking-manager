@@ -71,11 +71,11 @@ export default defineMessages({
   trimTasksDescriptionLine2: {
     id: 'management.projects.create.trim_tasks.description.2',
     defaultMessage:
-      'You can keep all the current tasks, or clip them to the area of interest of your project. This can take some time to execute.',
+      'You can keep the current tasks or trim the area for your project. This can take some time to execute.',
   },
   trimToAOI: {
     id: 'management.projects.create.trim_tasks.trim_to_aoi',
-    defaultMessage: 'Clip tasks to the Area of Interest',
+    defaultMessage: 'Trim the tasks to define the exact Area of Interest for mapping.',
   },
   taskSizes: {
     id: 'management.projects.create.task_sizes.description',
