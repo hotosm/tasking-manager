@@ -91,6 +91,28 @@ class UserDTO(Model):
         return value
 
 
+class UserCountryContributed(Model):
+    """ DTO for country a user has contributed """
+
+    name = StringType(required=True)
+    mapped = IntType(required=True)
+    validated = IntType(required=True)
+    total = IntType(required=True)
+
+
+class UserCountriesContributed(Model):
+    """ DTO for countries a user has contributed """
+
+    def __init__(self):
+        super().__init__()
+        self.countries_contributed = []
+
+    countries_contributed = ListType(
+        ModelType(UserCountryContributed), serialized_name="countries"
+    )
+    total = IntType()
+
+
 class UserStatsDTO(Model):
     """ DTO containing statistics about the user """
 
@@ -98,7 +120,9 @@ class UserStatsDTO(Model):
     time_spent_mapping = IntType(serialized_name="timeSpentMapping")
     time_spent_validating = IntType(serialized_name="timeSpentValidating")
     projects_mapped = IntType(serialized_name="projectsMapped")
-    countries_mapped = IntType(serialized_name="countriesMapped")
+    countries_contributed = ModelType(
+        UserCountriesContributed, serialized_name="countriesContributed"
+    )
     tasks_mapped = IntType(serialized_name="tasksMapped")
     tasks_validated = IntType(serialized_name="tasksValidated")
 
