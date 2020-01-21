@@ -69,11 +69,13 @@ const TaskSelectionFooter = props => {
         })
         .catch(e => lockFailed());
     }
-    if (props.taskAction === 'resumeMapping') {
-      navigate(`/projects/${props.project.projectId}/map/`);
-    }
-    if (props.taskAction === 'resumeValidation') {
-      navigate(`/projects/${props.project.projectId}/validate/`);
+    if (['resumeMapping', 'resumeValidation'].includes(props.taskAction)) {
+      openEditor(editor, props.project, props.tasks, props.selectedTasks, [
+        window.innerWidth,
+        window.innerHeight,
+      ]);
+      const endpoint = props.taskAction === 'resumeMapping' ? 'map' : 'validate';
+      navigate(`/projects/${props.project.projectId}/${endpoint}/`);
     }
     // if user can not map or validate the project, lead him to the explore projects page
     if (
