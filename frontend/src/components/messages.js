@@ -11,7 +11,7 @@ export default defineMessages({
   definition: {
     id: 'foooter.definition',
     defaultMessage:
-      'Tasking Manager is a platform where people can help humanitarian causes by mapping in OpenStreetMap.',
+      'Tasking Manager is a platform where individuals can support humanitarian response by mapping in OpenStreetMap.',
   },
   credits: {
     id: 'footer.credits',
