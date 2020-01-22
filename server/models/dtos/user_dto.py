@@ -6,6 +6,7 @@ from schematics.types.compound import ListType, ModelType, BaseType
 from server.models.dtos.stats_dto import Pagination
 from server.models.dtos.mapping_dto import TaskDTO
 from server.models.postgis.statuses import MappingLevel, UserRole
+from server.models.dtos.interests_dto import InterestDTO
 
 
 def is_known_mapping_level(value):
@@ -125,6 +126,9 @@ class UserStatsDTO(Model):
     )
     tasks_mapped = IntType(serialized_name="tasksMapped")
     tasks_validated = IntType(serialized_name="tasksValidated")
+    contributions_interest = ListType(
+        ModelType(InterestDTO), serialized_name="ContributionsByInterest"
+    )
 
 
 class UserOSMDTO(Model):
