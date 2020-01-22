@@ -27,7 +27,7 @@ from server.services.stats_service import StatsService
 from server.services.users.user_service import UserService
 
 
-class ValidatatorServiceError(Exception):
+class ValidatorServiceError(Exception):
     """ Custom exception to notify callers that error has occurred """
 
     def __init__(self, message):
@@ -40,7 +40,7 @@ class ValidatorService:
     def lock_tasks_for_validation(validation_dto: LockForValidationDTO) -> TaskDTOs:
         """
         Lock supplied tasks for validation
-        :raises ValidatatorServiceError
+        :raises ValidatorServiceError
         """
         # Loop supplied tasks to check they can all be locked for validation
         tasks_to_lock = []
@@ -55,14 +55,16 @@ class ValidatorService:
                 TaskStatus.VALIDATED,
                 TaskStatus.BADIMAGERY,
             ]:
-                raise ValidatatorServiceError(
+                raise ValidatorServiceError(
                     f"Task {task_id} is not MAPPED, BADIMAGERY or VALIDATED"
                 )
-
+            user_can_validate = ValidatorService._user_can_validate_task(
+                validation_dto.user_id, task.mapped_by
+            )
             if not ValidatorService._user_can_validate_task(
                 validation_dto.user_id, task.mapped_by
             ):
-                raise ValidatatorServiceError(
+                raise ValidatorServiceError(
                     f"Tasks cannot be validated by the same user who marked task as mapped or badimagery"
                 )
 
@@ -76,7 +78,7 @@ class ValidatorService:
             if error_reason == ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError("User must accept license to map this task")
             else:
-                raise ValidatatorServiceError(
+                raise ValidatorServiceError(
                     f"Validation not allowed because: {error_reason.name}"
                 )
 
@@ -112,7 +114,7 @@ class ValidatorService:
     ) -> TaskDTOs:
         """
         Unlocks supplied tasks after validation
-        :raises ValidatatorServiceError
+        :raises ValidatorServiceError
         """
         validated_tasks = validated_dto.validated_tasks
         project_id = validated_dto.project_id
@@ -184,7 +186,7 @@ class ValidatorService:
     def stop_validating_tasks(stop_validating_dto: StopValidationDTO) -> TaskDTOs:
         """
         Unlocks supplied tasks after validation
-        :raises ValidatatorServiceError
+        :raises ValidatorServiceError
         """
         reset_tasks = stop_validating_dto.reset_tasks
         project_id = stop_validating_dto.project_id
@@ -217,12 +219,12 @@ class ValidatorService:
     def get_tasks_locked_by_user(project_id: int, unlock_tasks, user_id: int):
         """
         Returns tasks specified by project id and unlock_tasks list if found and locked for validation by user,
-        otherwise raises ValidatatorServiceError, NotFound
+        otherwise raises ValidatorServiceError, NotFound
         :param project_id:
         :param unlock_tasks: List of tasks to be unlocked
         :param user_id:
         :return: List of Tasks
-        :raises ValidatatorServiceError
+        :raises ValidatorServiceError
         :raises NotFound
         """
         tasks_to_unlock = []
@@ -235,12 +237,12 @@ class ValidatorService:
 
             current_state = TaskStatus(task.task_status)
             if current_state != TaskStatus.LOCKED_FOR_VALIDATION:
-                raise ValidatatorServiceError(
+                raise ValidatorServiceError(
                     f"Task {unlock_task.task_id} is not LOCKED_FOR_VALIDATION"
                 )
 
             if task.locked_by != user_id:
-                raise ValidatatorServiceError(
+                raise ValidatorServiceError(
                     "Attempting to unlock a task owned by another user"
                 )
 
