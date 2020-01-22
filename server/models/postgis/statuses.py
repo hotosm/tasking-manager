@@ -95,4 +95,4 @@ class Editors(Enum):
     JOSM = 1
     POTLATCH_2 = 2
     FIELD_PAPERS = 3
-    RAPID = 4
+    CUSTOM = 4

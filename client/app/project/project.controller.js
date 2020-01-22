@@ -2358,10 +2358,10 @@
                     "value": "fieldpapers"
                 });
             }
-            if (editors.includes("RAPID")) {
+            if (editors.includes("CUSTOM")) {
                 result.push({
-                    "name": "RapiD",
-                    "value": "rapid"
+                    "name": vm.projectData.customEditor.name,
+                    "value": "custom"
                 });
             }
             return result;
