@@ -88,6 +88,10 @@ export default defineMessages({
     id: 'project.readMoreButton',
     defaultMessage: 'Read more',
   },
+  readLess: {
+    id: 'project.readLessButton',
+    defaultMessage: 'Read less',
+  },
   addToFavorites: {
     id: 'project.detail.addToFavorites',
     defaultMessage: 'Add to Favorites',
@@ -137,8 +141,7 @@ export default defineMessages({
   },
   submitYourWorkCardDescription: {
     id: 'project.detail.cards.submityourwork.description',
-    defaultMessage:
-      "Submitting your work is crucial to make sure your data is saved.",
+    defaultMessage: 'Submitting your work is crucial to make sure your data is saved.',
   },
   overview: {
     id: 'project.detail.sections.overview',
