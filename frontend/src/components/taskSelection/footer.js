@@ -93,11 +93,16 @@ const TaskSelectionFooter = props => {
       props.project.mappingEditors &&
       props.taskAction.startsWith('validate')
     ) {
-      setEditorOptions(getEditors().filter(i => props.project.validationEditors.includes(i.value)));
+      setEditorOptions(getEditors(props.project.validationEditors, props.project.customEditor));
     } else {
-      setEditorOptions(getEditors().filter(i => props.project.mappingEditors.includes(i.value)));
+      setEditorOptions(getEditors(props.project.mappingEditors, props.project.customEditor));
     }
-  }, [props.taskAction, props.project.mappingEditors, props.project.validationEditors]);
+  }, [
+    props.taskAction,
+    props.project.mappingEditors,
+    props.project.validationEditors,
+    props.project.customEditor,
+  ]);
 
   const updateEditor = arr => setEditor(arr[0].value);
   const titleClasses = 'db ttu f6 blue-light mb2';

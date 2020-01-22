@@ -776,6 +776,9 @@ class Project(db.Model):
 
             summary.validation_editors = validation_editors
 
+        if self.custom_editor:
+            summary.custom_editor = self.custom_editor.as_dto()
+
         # If project is private, fetch list of allowed users
         if self.private:
             allowed_users = []

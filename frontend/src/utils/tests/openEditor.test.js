@@ -6,35 +6,59 @@ import {
   getFieldPapersUrl,
   getPotlatch2Url,
   formatJosmUrl,
+  formatCustomUrl,
 } from '../openEditor';
 
-it('test if getIdUrl returns the correct url', () => {
-  const testProject = {
-    changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
-    projectId: 1234,
-    imagery:
-      'tms[1,22]:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{zoom}/{x}/{y}?access_token=pk.123',
-  };
-  expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1])).toBe(
-    'https://www.openstreetmap.org/edit?editor=id&' +
-      '#map=18/-9.663953/120.25684' +
-      '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
-      '&background=custom:https%3A%2F%2Fapi.mapbox.com%2Fstyles%2Fv1%2Ftm4%2Fcode123%2Ftiles%2F256%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D%3Faccess_token%3Dpk.123' +
-      '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
-  );
+describe('test if getIdUrl', () => {
+  it('returns the correct url', () => {
+    const testProject = {
+      changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
+      projectId: 1234,
+      imagery:
+        'tms[1,22]:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{zoom}/{x}/{y}?access_token=pk.123',
+    };
+    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1])).toBe(
+      'https://www.openstreetmap.org/edit?editor=id&' +
+        '#map=18/-9.663953/120.25684' +
+        '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
+        '&background=custom:https%3A%2F%2Fapi.mapbox.com%2Fstyles%2Fv1%2Ftm4%2Fcode123%2Ftiles%2F256%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D%3Faccess_token%3Dpk.123' +
+        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
+    );
+  });
+
+  it('with customUrl returns the correct formatted url', () => {
+    const testProject = {
+      changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
+      projectId: 1234,
+      imagery:
+        'tms[1,22]:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{zoom}/{x}/{y}?access_token=pk.123',
+    };
+    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1], 'https://mapwith.ai/rapid')).toBe(
+      'https://mapwith.ai/rapid?' +
+        '#map=18/-9.663953/120.25684' +
+        '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
+        '&background=custom:https%3A%2F%2Fapi.mapbox.com%2Fstyles%2Fv1%2Ftm4%2Fcode123%2Ftiles%2F256%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D%3Faccess_token%3Dpk.123' +
+        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
+    );
+  });
+
+  it('without imagery and with multiple tasks returns the correct url', () => {
+    const testProject = {
+      changesetComment: '#hotosm-project-5522',
+      projectId: 1234,
+    };
+    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1, 2])).toBe(
+      'https://www.openstreetmap.org/edit?editor=id&' +
+        '#map=18/-9.663953/120.25684' +
+        '&comment=%23hotosm-project-5522' +
+        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2',
+    );
+  });
 });
 
-it('test if getIdUrl without imagery and with multiple tasks returns the correct url', () => {
-  const testProject = {
-    changesetComment: '#hotosm-project-5522',
-    projectId: 1234,
-  };
-  expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1, 2])).toBe(
-    'https://www.openstreetmap.org/edit?editor=id&' +
-      '#map=18/-9.663953/120.25684' +
-      '&comment=%23hotosm-project-5522' +
-      '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2',
-  );
+it('test if formatCustomUrl returns the url with question mark', () => {
+  expect(formatCustomUrl('https://mapwith.ai/rapid')).toBe('https://mapwith.ai/rapid?');
+  expect(formatCustomUrl('https://mapwith.ai/rapid?')).toBe('https://mapwith.ai/rapid?');
 });
 
 it('test if getFieldPapersUrl returns the correct url', () => {
@@ -67,17 +91,19 @@ it('test if getTaskXmlUrl returns the correct url', () => {
   );
 });
 
-it('test if formatJosmUrl returns the correct url', () => {
-  expect(
-    formatJosmUrl('imagery', {
-      title: 'osm',
-      type: 'tms',
-      url: 'http://tile.openstreetmap.org/{zoom}/{x}/{y}.png',
-    }).href,
-  ).toBe(
-    new URL(
-      '?title=osm&type=tms&url=http%3A%2F%2Ftile.openstreetmap.org%2F%7Bzoom%7D%2F%7Bx%7D%2F%7By%7D.png',
-      'http://127.0.0.1:8111/imagery',
-    ).href,
-  );
+describe('test if formatJosmUrl', () => {
+  it('returns the correct url', () => {
+    expect(
+      formatJosmUrl('imagery', {
+        title: 'osm',
+        type: 'tms',
+        url: 'http://tile.openstreetmap.org/{zoom}/{x}/{y}.png',
+      }).href,
+    ).toBe(
+      new URL(
+        '?title=osm&type=tms&url=http%3A%2F%2Ftile.openstreetmap.org%2F%7Bzoom%7D%2F%7Bx%7D%2F%7By%7D.png',
+        'http://127.0.0.1:8111/imagery',
+      ).href,
+    );
+  });
 });

@@ -16,6 +16,11 @@ export function openEditor(editor, project, tasks, selectedTasks, windowSize) {
   if (editor === 'FIELD_PAPERS') {
     window.open(getFieldPapersUrl(center, zoom));
   }
+  if (editor === 'CUSTOM') {
+    const customUrl = project.customEditor.url;
+    const idUrl = getIdUrl(project, center, zoom, selectedTasks, customUrl);
+    window.open(idUrl);
+  }
 }
 
 export function getTaskGpxUrl(projectId, selectedTasks) {
@@ -48,8 +53,10 @@ export function getPotlatch2Url(centroid, zoomLevel) {
   ].join('/')}`;
 }
 
-export function getIdUrl(project, centroid, zoomLevel, selectedTasks) {
-  const base = 'https://www.openstreetmap.org/edit?editor=id&';
+export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl) {
+  const base = customUrl
+    ? formatCustomUrl(customUrl)
+    : 'https://www.openstreetmap.org/edit?editor=id&';
   let url = base + '#map=' + [zoomLevel, centroid[1], centroid[0]].join('/');
   if (project.changesetComment) {
     url += '&comment=' + encodeURIComponent(project.changesetComment);
@@ -136,6 +143,10 @@ function loadOsmDataToTasks(project, bbox, selectedTasks) {
 
 export function formatJosmUrl(endpoint, params) {
   return new URL(formatUrlParams(params), `http://127.0.0.1:8111/${endpoint}`);
+}
+
+export function formatCustomUrl(url) {
+  return url.includes('?') ? url : `${url}?`;
 }
 
 function roundToDecimals(input, decimals) {
