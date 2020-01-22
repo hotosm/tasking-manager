@@ -213,12 +213,12 @@ class ProjectAdminAPI(Resource):
                           type: array
                           items:
                               type: string
-                          default: [ID, RAPID, JOSM, POTLATCH_2, FIELD_PAPERS]
+                          default: [ID, JOSM, POTLATCH_2, FIELD_PAPERS]
                       validationEditors:
                           type: array
                           items:
                               type: string
-                          default: [ID, RAPID, JOSM, POTLATCH_2, FIELD_PAPERS]
+                          default: [ID, JOSM, POTLATCH_2, FIELD_PAPERS]
                       campaignTag:
                           type: string
                           default: malaria
