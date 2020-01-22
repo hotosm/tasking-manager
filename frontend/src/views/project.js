@@ -176,9 +176,9 @@ export const ProjectDetailPage = props => {
     `projects/${props.id}/contributions/queries/day/`,
   );
   const [error, loading, data] = useFetch(`projects/${props.id}/`);
-  const [tasksError, tasksLoading, tasks] = useFetch(`projects/${props.id}/tasks/`);
-  const [totalMappersError, totalMappersLoading, totalMappers] = useFetch(
-    `projects/${props.id}/statistics/`,
+  /* eslint-disable-next-line */
+  const [contributorsError, contributorsLoading, contributors] = useFetch(
+    `projects/${props.id}/contributions/`,
   );
 
   if (error) return <Error error={error} />;
@@ -191,12 +191,9 @@ export const ProjectDetailPage = props => {
       userPreferences={userPreferences}
       percentDoneVisData={visualData}
       percentDoneVisLoading={visualLoading}
-      tasksError={tasksError}
-      tasks={tasks}
-      tasksLoading={tasksLoading}
-      totalMappersError={totalMappersError}
-      totalMappersLoading={totalMappersLoading}
-      totalMappers={totalMappers}
+      tasksError={error}
+      tasks={data.tasks}
+      contributors={contributors.userContributions || []}
       navigate={props.navigate}
       type="detail"
     />
