@@ -6,17 +6,25 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { ProjectInstructions } from './instructions';
-import { HeaderLine } from '../projectDetail/header';
 import { TasksMap } from './map';
+import { HeaderLine } from '../projectDetail/header';
 import { Button } from '../button';
+import { Dropdown } from '../dropdown';
 import { CheckCircle } from '../checkCircle';
 import DueDateBox from '../projectcard/dueDateBox';
 import { CloseIcon } from '../svgIcons';
+import { getEditors } from '../../utils/editorsList';
+import { openEditor } from '../../utils/openEditor';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export function TaskMapAction({ project, tasks, action, editor }) {
   const [activeSection, setActiveSection] = useState('completion');
+  const [activeEditor, setActiveEditor] = useState(editor);
   const tasksIds = tasks && tasks.features ? tasks.features.map(i => i.properties.taskId) : [];
+  const callEditor = arr => {
+    setActiveEditor(arr[0].value);
+    openEditor(arr[0].value, project, tasks, tasksIds, [window.innerWidth, window.innerHeight]);
+  };
 
   return (
     <div className="cf vh-minus-122-ns overflow-y-hidden">
@@ -82,10 +90,27 @@ export function TaskMapAction({ project, tasks, action, editor }) {
           </div>
           <div className="pt3">
             {activeSection === 'completion' && action === 'MAPPING' && (
-              <CompletionTabForMapping project={project} tasks={tasksIds} />
+              <>
+                <CompletionInstructions />
+                <ReopenEditor
+                  project={project}
+                  action={action}
+                  editor={activeEditor}
+                  callEditor={callEditor}
+                />
+                <CompletionTabForMapping project={project} tasksIds={tasksIds} />
+              </>
             )}
             {activeSection === 'completion' && action === 'VALIDATION' && (
-              <CompletionTabForValidation project={project} tasks={tasksIds} />
+              <>
+                <ReopenEditor
+                  project={project}
+                  action={action}
+                  editor={activeEditor}
+                  callEditor={callEditor}
+                />
+                <CompletionTabForValidation project={project} tasksIds={tasksIds} />
+              </>
             )}
             {activeSection === 'instructions' && (
               <ProjectInstructions
@@ -100,7 +125,7 @@ export function TaskMapAction({ project, tasks, action, editor }) {
   );
 }
 
-function CompletionTabForMapping({ project, tasks, action }: Object) {
+function CompletionTabForMapping({ project, tasksIds }: Object) {
   const token = useSelector(state => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
   const [taskComment, setTaskComment] = useState('');
@@ -108,7 +133,7 @@ function CompletionTabForMapping({ project, tasks, action }: Object) {
 
   const splitTask = () => {
     fetchLocalJSONAPI(
-      `projects/${project.projectId}/tasks/actions/split/${tasks[0]}/`,
+      `projects/${project.projectId}/tasks/actions/split/${tasksIds[0]}/`,
       token,
       'POST',
     ).then(r => navigate(`../tasks/`));
@@ -116,7 +141,7 @@ function CompletionTabForMapping({ project, tasks, action }: Object) {
 
   const stopMapping = () => {
     pushToLocalJSONAPI(
-      `projects/${project.projectId}/tasks/actions/stop-mapping/${tasks[0]}/`,
+      `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`,
       '{}',
       token,
     ).then(r => navigate(`/projects/${project.projectId}/tasks/`));
@@ -127,14 +152,14 @@ function CompletionTabForMapping({ project, tasks, action }: Object) {
       let url;
       let payload = { comment: taskComment };
       if (selectedStatus === 'MAPPED') {
-        url = `projects/${project.projectId}/tasks/actions/unlock-after-mapping/${tasks[0]}/`;
+        url = `projects/${project.projectId}/tasks/actions/unlock-after-mapping/${tasksIds[0]}/`;
         payload.status = 'MAPPED';
       }
       if (selectedStatus === 'READY') {
-        url = `projects/${project.projectId}/tasks/actions/stop-mapping/${tasks[0]}/`;
+        url = `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`;
       }
       if (selectedStatus === 'BADIMAGERY') {
-        url = `projects/${project.projectId}/tasks/actions/stop-mapping/${tasks[0]}/`;
+        url = `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`;
       }
       pushToLocalJSONAPI(url, JSON.stringify(payload), token).then(r =>
         navigate(`/projects/${project.projectId}/tasks/`),
@@ -144,44 +169,47 @@ function CompletionTabForMapping({ project, tasks, action }: Object) {
 
   return (
     <div>
-      <CompletionInstructions />
+      <div className="bb b--grey-light w-100"></div>
       <div className="cf">
         <h4 className="ttu blue-grey f5">
           <FormattedMessage {...messages.editStatus} />
         </h4>
         <p>
           <input
+            id="MAPPED"
             type="radio"
             value="MAPPED"
             className={radioInput}
             checked={selectedStatus === 'MAPPED'}
             onClick={() => setSelectedStatus('MAPPED')}
           />
-          <label for="MAPPED">
+          <label htmlFor="MAPPED">
             <FormattedMessage {...messages.completelyMapped} />
           </label>
         </p>
         <p>
           <input
+            id="READY"
             type="radio"
             value="READY"
             className={radioInput}
             checked={selectedStatus === 'READY'}
             onClick={() => setSelectedStatus('READY')}
           />
-          <label for="READY">
+          <label htmlFor="READY">
             <FormattedMessage {...messages.incomplete} />
           </label>
         </p>
         <p>
           <input
+            id="BADIMAGERY"
             type="radio"
             value="BADIMAGERY"
             className={radioInput}
             checked={selectedStatus === 'BADIMAGERY'}
             onClick={() => setSelectedStatus('BADIMAGERY')}
           />
-          <label for="BADIMAGERY">
+          <label htmlFor="BADIMAGERY">
             <FormattedMessage {...messages.badImagery} />
           </label>
         </p>
@@ -215,7 +243,7 @@ function CompletionTabForMapping({ project, tasks, action }: Object) {
   );
 }
 
-function CompletionTabForValidation({ project, tasks }: Object) {
+function CompletionTabForValidation({ project, tasksIds }: Object) {
   const token = useSelector(state => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
   const [taskComment, setTaskComment] = useState('');
@@ -224,7 +252,7 @@ function CompletionTabForValidation({ project, tasks }: Object) {
   const stopValidation = () => {
     pushToLocalJSONAPI(
       `projects/${project.projectId}/tasks/actions/stop-validation/`,
-      JSON.stringify({ resetTasks: [{ taskId: tasks[0], comment: taskComment }] }),
+      JSON.stringify({ resetTasks: [{ taskId: tasksIds[0], comment: taskComment }] }),
       token,
     ).then(r => navigate(`../tasks/`));
   };
@@ -232,7 +260,7 @@ function CompletionTabForValidation({ project, tasks }: Object) {
   const submitTask = () => {
     if (selectedStatus) {
       let url;
-      let payload = { validatedTasks: [{ comment: taskComment, taskId: tasks[0] }] };
+      let payload = { validatedTasks: [{ comment: taskComment, taskId: tasksIds[0] }] };
       if (selectedStatus === 'VALIDATED') {
         url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
         payload.validatedTasks[0].status = 'VALIDATED';
@@ -247,6 +275,7 @@ function CompletionTabForValidation({ project, tasks }: Object) {
 
   return (
     <div>
+      <div className="bb b--grey-light w-100"></div>
       <div className="cf">
         <h4 className="ttu blue-grey f5">
           <FormattedMessage {...messages.editStatus} />
@@ -333,5 +362,33 @@ function CompletionInstructions() {
       </div>
       <div className={active ? 'bb b--grey-light w-100' : 'dn'}></div>
     </>
+  );
+}
+
+function ReopenEditor({ project, action, editor, callEditor }: Object) {
+  const editorOptions = getEditors(
+    action === 'MAPPING' ? project.mappingEditors : project.validationEditors,
+    project.customEditor,
+  );
+
+  return (
+    <div className="relative pv2">
+      <span className="di pr3">
+        <FormattedMessage {...messages.startAnotherEditor} />
+      </span>
+      <Dropdown
+        options={editorOptions}
+        value={
+          editorOptions.map(i => i.value).includes(editor)
+            ? editor
+            : editorOptions.length && editorOptions[0].value
+        }
+        display={<FormattedMessage {...messages.startAnotherEditor} />}
+        className="bg-white b--grey-light ba pa2 di"
+        onChange={callEditor}
+        onAdd={() => {}}
+        onRemove={() => {}}
+      />
+    </div>
   );
 }

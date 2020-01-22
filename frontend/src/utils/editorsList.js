@@ -1,4 +1,4 @@
-export function getEditors() {
+export function getEditors(filterList, customEditor) {
   let editors = [
     {
       label: 'iD Editor',
@@ -21,5 +21,11 @@ export function getEditors() {
       url: 'http://fieldpapers.org/compose',
     },
   ];
+  if (filterList) {
+    editors = editors.filter(i => filterList.includes(i.value));
+  }
+  if (customEditor && filterList.includes('CUSTOM')) {
+    editors.push({ label: customEditor.name, value: 'CUSTOM', url: customEditor.url });
+  }
   return editors;
 }
