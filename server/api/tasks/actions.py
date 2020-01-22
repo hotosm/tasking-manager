@@ -14,7 +14,7 @@ from server.models.dtos.validator_dto import (
 )
 from server.services.validator_service import (
     ValidatorService,
-    ValidatatorServiceError,
+    ValidatorServiceError,
     UserLicenseError,
 )
 from server.models.dtos.mapping_dto import (
@@ -403,7 +403,7 @@ class TasksActionsValidationLockAPI(Resource):
         try:
             tasks = ValidatorService.lock_tasks_for_validation(validator_dto)
             return tasks.to_primitive(), 200
-        except ValidatatorServiceError as e:
+        except ValidatorServiceError as e:
             error_msg = f"Validator Lock API - {str(e)}"
             return {"Error": error_msg}, 403
         except NotFound:
@@ -484,7 +484,7 @@ class TasksActionsValidationStopAPI(Resource):
         try:
             tasks = ValidatorService.stop_validating_tasks(validated_dto)
             return tasks.to_primitive(), 200
-        except ValidatatorServiceError:
+        except ValidatorServiceError:
             return {"Error": "Task unlock failed"}, 403
         except NotFound:
             return {"Error": "Task unlock failed"}, 404
@@ -561,7 +561,7 @@ class TasksActionsValidationUnlockAPI(Resource):
         try:
             tasks = ValidatorService.unlock_tasks_after_validation(validated_dto)
             return tasks.to_primitive(), 200
-        except ValidatatorServiceError:
+        except ValidatorServiceError:
             return {"Error": "Task unlock failed"}, 403
         except NotFound:
             return {"Error": "Task unlock failed"}, 404
