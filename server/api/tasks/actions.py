@@ -403,8 +403,9 @@ class TasksActionsValidationLockAPI(Resource):
         try:
             tasks = ValidatorService.lock_tasks_for_validation(validator_dto)
             return tasks.to_primitive(), 200
-        except ValidatatorServiceError:
-            return {"Error": "Unable to lock task"}, 403
+        except ValidatatorServiceError as e:
+            error_msg = f"Validator Lock API - {str(e)}"
+            return {"Error": error_msg}, 403
         except NotFound:
             return {"Error": "Task not found"}, 404
         except UserLicenseError:

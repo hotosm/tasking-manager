@@ -58,7 +58,9 @@ class ValidatorService:
                 raise ValidatatorServiceError(
                     f"Task {task_id} is not MAPPED, BADIMAGERY or VALIDATED"
                 )
-
+            user_can_validate = ValidatorService._user_can_validate_task(
+                validation_dto.user_id, task.mapped_by
+            )
             if not ValidatorService._user_can_validate_task(
                 validation_dto.user_id, task.mapped_by
             ):
