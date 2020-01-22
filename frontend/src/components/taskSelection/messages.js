@@ -85,6 +85,10 @@ export default defineMessages({
     id: 'project.editor.select',
     defaultMessage: 'Select editor',
   },
+  startAnotherEditor: {
+    id: 'project.editor.start_another_editor',
+    defaultMessage: 'Start another editor',
+  },
   task: {
     id: 'project.task',
     defaultMessage: 'Task',
@@ -263,11 +267,11 @@ export default defineMessages({
   },
   badImagery: {
     id: 'project.tasks.action.options.bad_imagery',
-    defaultMessage: "It was not possible to map due to poor imagery",
+    defaultMessage: 'It was not possible to map due to poor imagery',
   },
   incomplete: {
     id: 'project.tasks.action.options.mapping_incomplete',
-    defaultMessage: "I could not map everything",
+    defaultMessage: 'I could not map everything',
   },
   completelyMapped: {
     id: 'project.tasks.action.options.mapping_complete',
