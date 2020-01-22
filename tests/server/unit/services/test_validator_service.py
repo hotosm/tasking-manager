@@ -10,7 +10,7 @@ from server.services.validator_service import (
     NotFound,
     LockForValidationDTO,
     TaskStatus,
-    ValidatatorServiceError,
+    ValidatorServiceError,
     UnlockAfterValidationDTO,
     ProjectService,
     ValidatingNotAllowed,
@@ -58,7 +58,7 @@ class TestValidatorService(unittest.TestCase):
         lock_dto.task_ids = [1, 2]
 
         # Act / Assert
-        with self.assertRaises(ValidatatorServiceError):
+        with self.assertRaises(ValidatorServiceError):
             ValidatorService.lock_tasks_for_validation(lock_dto)
 
     @patch.object(UserService, "is_user_a_project_manager")
@@ -79,7 +79,7 @@ class TestValidatorService(unittest.TestCase):
         lock_dto.task_ids = [1, 2]
         lock_dto.user_id = 1234
 
-        with self.assertRaises(ValidatatorServiceError):
+        with self.assertRaises(ValidatorServiceError):
             ValidatorService.lock_tasks_for_validation(lock_dto)
 
     @patch.object(UserService, "is_user_a_project_manager")
@@ -142,7 +142,7 @@ class TestValidatorService(unittest.TestCase):
         unlock_dto.validated_tasks = validated_tasks
 
         # Act / Assert
-        with self.assertRaises(ValidatatorServiceError):
+        with self.assertRaises(ValidatorServiceError):
             ValidatorService.unlock_tasks_after_validation(unlock_dto)
 
     @patch.object(Task, "get")
@@ -162,7 +162,7 @@ class TestValidatorService(unittest.TestCase):
         unlock_dto.validated_tasks = validated_tasks
 
         # Act / Assert
-        with self.assertRaises(ValidatatorServiceError):
+        with self.assertRaises(ValidatorServiceError):
             ValidatorService.unlock_tasks_after_validation(unlock_dto)
 
     @patch.object(Task, "get")
@@ -181,7 +181,7 @@ class TestValidatorService(unittest.TestCase):
         unlock_dto.user_id = 12
 
         # Act / Assert
-        with self.assertRaises(ValidatatorServiceError):
+        with self.assertRaises(ValidatorServiceError):
             ValidatorService.unlock_tasks_after_validation(unlock_dto)
 
     @patch.object(UserService, "is_user_a_project_manager")
