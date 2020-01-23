@@ -2328,7 +2328,7 @@
             })
         }
 
-	/*
+	    /**
          * Creates json objects for editors
          * @params editors
          */
@@ -2366,6 +2366,5 @@
             }
             return result;
         };
-    }
 })
 ();
