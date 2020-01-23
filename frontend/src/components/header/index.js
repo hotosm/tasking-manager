@@ -18,6 +18,7 @@ import { UpdateEmail } from './updateEmail';
 import { CurrentUserAvatar } from '../user/avatar';
 import { logout } from '../../store/actions/auth';
 import { createLoginWindow } from '../../utils/login';
+import { isUserAdminOrPM } from '../../utils/userPermissions';
 import { NotificationBell } from './notificationBell';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
 
@@ -32,7 +33,7 @@ function getMenuItensForUser(userDetails) {
   let filteredMenuItems;
   if (userDetails.username) {
     filteredMenuItems = menuItems.filter(item => item.authenticated === true || item.showAlways);
-    if (!['PROJECT_MANAGER', 'ADMIN'].includes(userDetails.role)) {
+    if (!isUserAdminOrPM(userDetails.role)) {
       filteredMenuItems = filteredMenuItems.filter(item => !item.manager);
     }
   } else {

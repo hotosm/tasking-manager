@@ -12,7 +12,7 @@ const isActiveButton = (buttonName, contributionQuery) => {
     JSON.stringify(contributionQuery).indexOf(buttonName) !== -1 ||
     (buttonName === 'All' && allBoolean)
   ) {
-    return 'bg-blue-dark grey-light';
+    return 'bg-blue-grey white fw5';
   } else {
     return 'bg-white blue-grey';
   }
