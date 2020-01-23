@@ -1802,36 +1802,6 @@
                     }
                 }
             }
-        };
-
-        /**
-         * Load a project file into JOSM for validation purposes
-         * @param file
-         */
-        vm.loadProjectFile = function (file) {
-            var emptyTaskLayerParams = {
-                new_layer: true,
-                upload_policy: enumerateUploadPolicy(file.uploadPolicy),
-                layer_name: encodeURIComponent(file.fileName.replace(/\.[^/.]+$/,"")),
-                mime_type: encodeURIComponent('application/x-osm+xml'),
-                data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
-            }
-            editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
-                .catch(function() {
-                    //warn that JSOM couldn't be started
-                    vm.editorStartError = 'josm-error';
-                });
-
-            var projectFileParams = {
-                new_layer: false,
-                url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), file)
-            }
-            editorService.sendJOSMCmd('http://127.0.0.1:8111/import', projectFileParams)
-                .catch(function() {
-                    //warn that JSOM couldn't be started
-                    vm.editorStartError = 'josm-error';
-                });
-        };
 
         /**
          * Get the task bounding box, transforming to SWNE (min lat, min lon, max lat, max lon) array
@@ -2327,44 +2297,6 @@
                vm.project_files = data.projectFiles
             })
         }
-
-	    /**
-         * Creates json objects for editors
-         * @params editors
-         */
-        function createEditorList(editors) {
-            var result = [];
-            if (editors.includes("ID")) {
-                result.push({
-                    "name": "iD Editor",
-                    "value": "ideditor"
-                });
-            }
-            if (editors.includes("JOSM")) {
-                result.push({
-                    "name": "JOSM",
-                    "value": "josm"
-                });
-            }
-            if (editors.includes("POTLATCH_2")) {
-                result.push({
-                    "name": "Potlatch 2",
-                    "value": "potlatch2"
-                });
-            }
-            if (editors.includes("FIELD_PAPERS")) {
-                result.push({
-                    "name": "Field Papers",
-                    "value": "fieldpapers"
-                });
-            }
-            if (editors.includes("CUSTOM")) {
-                result.push({
-                    "name": vm.projectData.customEditor.name,
-                    "value": "custom"
-                });
-            }
-            return result;
-        };
+    }
 })
 ();
