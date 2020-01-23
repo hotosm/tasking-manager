@@ -104,6 +104,7 @@ export const useProjectsQueryAPI = (
 
   /* Get the user bearer token from the Redux store */
   const token = useSelector(state => state.auth.get('token'));
+  const locale = useSelector(state => state.preferences['locale']);
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
@@ -124,7 +125,13 @@ export const useProjectsQueryAPI = (
         type: 'FETCH_INIT',
       });
 
-      const headers = token ? { Authorization: `Token ${token}` } : {};
+      let headers = {
+        'Content-Type': 'application/json',
+        'Accept-Language': locale,
+      };
+      if (token) {
+        headers['Authorization'] = `Token ${token}`;
+      }
       const paramsRemapped = remapParamsToAPI(
         throttledExternalQueryParamsState,
         backendToQueryConversion,
@@ -199,7 +206,7 @@ export const useProjectsQueryAPI = (
       console.log('tried to cancel on effect cleanup ', cancel && cancel.params);
       cancel && cancel.end();
     };
-  }, [throttledExternalQueryParamsState, forceUpdate, token]);
+  }, [throttledExternalQueryParamsState, forceUpdate, token, locale]);
 
   return [state, dispatch];
 };
