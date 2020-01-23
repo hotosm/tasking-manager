@@ -19,6 +19,7 @@
             launchPotlatch2Editor: launchPotlatch2Editor,
             launchIdEditor: launchIdEditor,
             launchCustomIdEditor: launchCustomIdEditor,
+            launchRapidEditor: launchRapidEditor,
             getGPXUrl: getGPXUrl,
             getOSMXMLUrl: getOSMXMLUrl,
             idPresetCategories: idPresetCategories,
