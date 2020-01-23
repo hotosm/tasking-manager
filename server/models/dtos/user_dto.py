@@ -113,6 +113,11 @@ class UserCountriesContributed(Model):
     total = IntType()
 
 
+class UserContributionDTO(Model):
+    date = StringType()
+    count = IntType()
+
+
 class UserStatsDTO(Model):
     """ DTO containing statistics about the user """
 
@@ -122,6 +127,9 @@ class UserStatsDTO(Model):
     projects_mapped = IntType(serialized_name="projectsMapped")
     countries_contributed = ModelType(
         UserCountriesContributed, serialized_name="countriesContributed"
+    )
+    contributions_by_day = ListType(
+        ModelType(UserContributionDTO), serialized_name="contributionsByDay"
     )
     tasks_mapped = IntType(serialized_name="tasksMapped")
     tasks_validated = IntType(serialized_name="tasksValidated")
@@ -193,23 +201,6 @@ class UserSearchQuery(Model):
     def __hash__(self):
         """ Make object hashable so we can cache user searches"""
         return hash((self.username, self.role, self.mapping_level, self.page))
-
-
-class UserContributionDTO(Model):
-    date = StringType()
-    count = IntType()
-
-
-class UserContributionsDTO(Model):
-    """ DTO for projects a user has mapped """
-
-    def __init__(self):
-        super().__init__()
-        self.contributions = []
-
-    contributions = ListType(
-        ModelType(UserContributionDTO), serialized_name="contributions"
-    )
 
 
 class ListedUser(Model):
