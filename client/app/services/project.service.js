@@ -398,12 +398,10 @@
          * @returns {geojson}
          */
         function getMapillarySequences(bbox, startDate, endDate, usernames) {
-	    if (usernames) {
-		var url = configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_time=' + startDate + '&end_time=' + endDate + '&usernames=' + usernames
-	    }
-	    else {
-		var url = configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_time=' + startDate + '&end_time=' + endDate
-	    }
+            var url = configService.tmAPI + '/admin/mapillary-tasks?bbox=' + bbox + '&start_time=' + startDate.toISOString() + '&end_time=' + endDate.toISOString();
+            if (usernames) {
+                url += '&usernames=' + usernames;
+            }
             return $http({
                 method: 'GET',
                 url: url

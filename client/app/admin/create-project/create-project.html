@@ -89,16 +89,6 @@
                                 <dt>Option 3:</dt>
                                 <dd>
                                     <p>Create tasks from Mapillary Sequences.</p>
-                                    <label class="form__label">{{ 'Start Date' | translate }} *</label>
-                                    <textarea
-                                        class="form__control" ng-model="mapillary.startDate" rows="1">
-                                    </textarea>
-                                    <md-calendar></md-calendar>
-                                    <br>
-                                    <label class="form__label">{{ 'End Date' | translate }} *</label>
-                                    <textarea
-                                        class="form__control" ng-model="mapillary.endDate" rows="1">
-                                    </textarea>
                                     <p>Draw Bounding Box. <b>Necessary to create Mapillary Sequences.</b></p>
                                     <button class="button button--achromic" type="button"
                                             ng-click="createProjectCtrl.drawBBOX()"><span>{{ 'Draw' | translate }}</span>
@@ -149,10 +139,10 @@
                                 </li>
                                 <div ng-show="createProjectCtrl.taskType === 'mapillary-sequences'">
                                     <label class="form__option form__option--inline">{{ 'Start Date' | translate }} (YYYY-MM-DD)*</label>
-                                    <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryStartDate" rows="1">
+                                    <input type="date" class="form__control" ng-model="createProjectCtrl.mapillaryStartDate" rows="1">
                                     <br>
                                     <label class="form__option form__option--inline">{{ 'End Date' | translate }} (YYYY-MM-DD)*</label>
-                                    <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryEndDate" rows="1">
+                                    <input type="date" class="form__control" ng-model="createProjectCtrl.mapillaryEndDate" rows="1">
                                     <label class="form__option form__option--inline">{{ 'Usernames (comma separated)' | translate }}</label>
                                     <input type="text" class="form__control" ng-model="createProjectCtrl.mapillaryUsernames" rows="1">
                                     <p></p>
