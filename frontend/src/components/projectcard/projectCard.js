@@ -1,5 +1,5 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { FormattedMessage, FormattedRelative } from 'react-intl';
 import { Link } from '@reach/router';
 
@@ -8,6 +8,7 @@ import ProjectProgressBar from './projectProgressBar';
 import { MappingLevelMessage } from '../mappingLevel';
 import messages from './messages';
 import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
+import { isUserAdminOrPM } from '../../utils/userPermissions';
 
 export function PriorityBox({ priority, extraClasses }: Object) {
   let color = 'blue-grey';
@@ -73,6 +74,7 @@ export function ProjectCard({
   cardWidthClass = 'w-25-l',
   showBottomButtons = false,
 }: Object) {
+  const userDetails = useSelector(state => state.auth.get('userDetails'));
   const [isHovered, setHovered] = useState(false);
   const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
 
@@ -81,12 +83,21 @@ export function ProjectCard({
   const bottomButtonMargin = showBottomButtons ? 'pb0' : 'pb3';
   const bottomButtons = (
     <div className="absolute bottom-0 w-100 pr3">
-      <Link
-        to={`/manage/projects/${projectId}`}
-        className={`fl f6 di w-50 tc bg-grey-light blue-grey bn ${linkCombo}`}
-      >
-        <FormattedMessage {...messages.editProject} />
-      </Link>
+      {userDetails && isUserAdminOrPM(userDetails.role) ? (
+        <Link
+          to={`/manage/projects/${projectId}`}
+          className={`fl f6 di w-50 tc bg-grey-light blue-grey bn ${linkCombo}`}
+        >
+          <FormattedMessage {...messages.editProject} />
+        </Link>
+      ) : (
+        <Link
+          to={`/projects/${projectId}`}
+          className={`fl f6 di w-50 tc bg-grey-light blue-grey bn ${linkCombo}`}
+        >
+          <FormattedMessage {...messages.projectPage} />
+        </Link>
+      )}
       <Link
         to={`/projects/${projectId}/tasks`}
         className={`fr f6 di w-50 tc bg-red white bn ${linkCombo}`}

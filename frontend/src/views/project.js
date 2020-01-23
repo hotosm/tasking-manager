@@ -106,9 +106,9 @@ export const ManageProjectsPage = props => {
     !fullProjectsQuery.createdByMe &&
     !fullProjectsQuery.mappedByMe &&
     !fullProjectsQuery.favoritedByMe &&
-    !fullProjectsQuery.createdByMeArchived
+    !fullProjectsQuery.status
   ) {
-    setProjectQuery({ createdByMe: true });
+    setProjectQuery({ mappedByMe: true });
   }
 
   return (

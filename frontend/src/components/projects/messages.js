@@ -68,9 +68,9 @@ export default defineMessages({
     id: 'project.nav.myprojects',
     defaultMessage: 'My Projects',
   },
-  favorite: {
-    id: 'project.nav.favorite',
-    defaultMessage: 'Favorite',
+  favorited: {
+    id: 'project.nav.favorited',
+    defaultMessage: 'Favorited',
   },
   contributed: {
     id: 'project.nav.contributed',
@@ -83,6 +83,10 @@ export default defineMessages({
   created: {
     id: 'project.nav.created',
     defaultMessage: 'Created',
+  },
+  draft: {
+    id: 'project.nav.draft',
+    defaultMessage: 'Draft',
   },
   archived: {
     id: 'project.nav.archived',
