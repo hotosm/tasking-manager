@@ -71,12 +71,16 @@ class SMTPService:
         msg.attach(part1)
         msg.attach(part2)
 
-        sender = SMTPService._init_smtp_client()
+        try:
+            sender = SMTPService._init_smtp_client()
 
-        current_app.logger.debug(f'Sending email via SMTP {to_address}')
-        sender.sendmail(from_address, to_address, msg.as_string())
-        sender.quit()
-        current_app.logger.debug(f'Email sent {to_address}')
+            current_app.logger.debug(f'Sending email via SMTP {to_address}')
+            sender.sendmail(from_address, to_address, msg.as_string())
+            sender.quit()
+            current_app.logger.debug(f'Email sent {to_address}')
+        except smtplib.SMTPServerDisconnected as e:
+            current_app.logger.debug(msg)
+            current_app.logger.critical(e)
 
     @staticmethod
     def _init_smtp_client():
