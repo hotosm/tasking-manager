@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import Popup from 'reactjs-popup';
-
 import { StateContext, styleClasses } from '../../views/projectEdit';
+import { TeamSelect } from './teamSelect';
 import { API_URL } from '../../config';
 
 export const PermissionsForm = () => {
@@ -112,6 +112,11 @@ export const PermissionsForm = () => {
           to validate tasks in this project.
         </p>
       </div>
+      <div className={styleClasses.divClass.replace('w-70', 'w-90')}>
+        <label className={styleClasses.labelClass}>Teams</label>
+        <TeamSelect />
+      </div>
+
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>Private project</label>
         <label className={styleClasses.pClass}>
