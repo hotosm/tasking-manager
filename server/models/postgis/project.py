@@ -85,6 +85,8 @@ class Project(db.Model):
     mapping_editors = db.Column(ARRAY(db.Integer), default=[
                                                             Editors.ID.value,
                                                             Editors.JOSM.value,
+                                                            Editors.RAPID.value,
+                                                            Editors.JOSMMAPWITHAI.value,
                                                             Editors.POTLATCH_2.value,
                                                             Editors.FIELD_PAPERS.value,
                                                             Editors.CUSTOM.value],
@@ -92,6 +94,8 @@ class Project(db.Model):
     validation_editors = db.Column(ARRAY(db.Integer), default=[
                                                                Editors.ID.value,
                                                                Editors.JOSM.value,
+                                                               Editors.RAPID.value,
+                                                               Editors.JOSMMAPWITHAI.value,
                                                                Editors.POTLATCH_2.value,
                                                                Editors.FIELD_PAPERS.value,
                                                                Editors.CUSTOM.value],

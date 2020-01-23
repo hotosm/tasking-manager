@@ -46,6 +46,8 @@
             josm: false,
             potlatch2: false,
             fieldpapers: false,
+            rapid: false,
+            josmmapwithai: false,
             custom: false
         };
 
@@ -55,6 +57,8 @@
             josm: false,
             potlatch2: false,
             fieldpapers: false,
+            rapid: false,
+            josmmapwithai: false,
             custom: false
         };
         // Setup iD editor presets associated with each mapping type
@@ -1204,6 +1208,8 @@
                 vm.mappingEditors.potlatch2 = vm.project.mappingEditors.indexOf("POTLATCH_2") != -1;
                 vm.mappingEditors.fieldpapers = vm.project.mappingEditors.indexOf("FIELD_PAPERS") != -1;
                 vm.mappingEditors.custom = vm.project.mappingEditors.indexOf("CUSTOM") != -1;
+                vm.mappingEditors.rapid = vm.project.mappingEditors.indexOf("RAPID") != -1;
+                vm.mappingEditors.josmmapwithai = vm.project.mappingEditors.indexOf("JOSMMAPWITHAI") != -1;
             }
         }
 
@@ -1217,6 +1223,12 @@
             }
             if (vm.mappingEditors.josm){
                 mappingEditorsArray.push("JOSM");
+            }
+            if (vm.mappingEditors.rapid){
+                mappingEditorsArray.push("RAPID");
+            }
+            if (vm.mappingEditors.josmmapwithai){
+                mappingEditorsArray.push("JOSMMAPWITHAI");
             }
             if (vm.mappingEditors.potlatch2) {
                 mappingEditorsArray.push("POTLATCH_2");
@@ -1242,6 +1254,8 @@
                 vm.validationEditors.potlatch2 = vm.project.validationEditors.indexOf("POTLATCH_2") != -1;
                 vm.validationEditors.fieldpapers = vm.project.validationEditors.indexOf("FIELD_PAPERS") != -1;
                 vm.validationEditors.custom = vm.project.validationEditors.indexOf("CUSTOM") != -1;
+                vm.validationEditors.rapid = vm.project.validationEditors.indexOf("RAPID") != -1;
+                vm.validationEditors.josmmapwithai = vm.project.validationEditors.indexOf("JOSMMAPWITHAI") != -1;
             }
         }
 
@@ -1255,6 +1269,12 @@
             }
             if (vm.validationEditors.josm){
                 validationEditorsArray.push("JOSM");
+            }
+            if (vm.validationEditors.rapid){
+                validationEditorsArray.push("RAPID");
+            }
+            if (vm.validationEditors.josmmapwithai){
+                validationEditorsArray.push("JOSMMAPWITHAI");
             }
             if (vm.validationEditors.potlatch2) {
                 validationEditorsArray.push("POTLATCH_2");

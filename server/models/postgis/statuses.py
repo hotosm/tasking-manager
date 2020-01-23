@@ -82,6 +82,8 @@ class Editors(Enum):
     POTLATCH_2 = 2
     FIELD_PAPERS = 3
     CUSTOM = 4
+    RAPID = 10005
+    JOSMMAPWITHAI = 10006
 
 class UploadPolicy(Enum):
     """ Describes the upload policies for a project file """

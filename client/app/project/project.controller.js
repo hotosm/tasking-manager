@@ -1654,6 +1654,15 @@
                     changesetComment
                     )
             }
+            else if (editor === 'josmmapwithai') {
+                launchJosm(
+                    taskCount,
+                    imageryUrl,
+                    extentTransformed,
+                    changesetComment,
+                    'http://127.0.0.1:8111/mapwithai'
+                    );
+            }
             else if (editor === 'custom'){
                 var domain = vm.projectData.customEditor.url.replace('http://','').replace('https://','').split(/[/?#]/)[0];
                 var josm_endpoints = ["127.0.0.1:8111", "127.0.0.1:8112", "localhost:8111", "localhost:8112"];
@@ -2282,6 +2291,18 @@
                 result.push({
                     "name": vm.projectData.customEditor.name,
                     "value": "custom"
+                });
+            }
+            if (editors.includes("RAPID")) {
+                result.push({
+                    "name": "RapiD",
+                    "value": "rapid"
+                });
+            }
+            if (editors.includes("JOSMMAPWITHAI")) {
+                result.push({
+                    "name": "JOSM MapWithAI",
+                    "value": "josmmapwithai"
                 });
             }
             return result;
