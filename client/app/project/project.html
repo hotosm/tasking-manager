@@ -393,14 +393,12 @@
                                                     role="alert">
                                                     <p>{{ 'The selected task status could not be undone.' | translate }}</p>
                                                 </div>
-                                                <!--
-                                                <div ng-hide="!projectCtrl.user || projectCtrl.user.emailAddress">
+                                                <div ng-hide="!projectCtrl.user">
                                                     <p>
                                                         {{ 'When you contribute to the Tasking Manager, it is important that notifications about the tasks and projects you contributed to are reaching you.' | translate }} {{ 'Before you begin mapping:' | translate }}
                                                         <a href="/user/{{ projectCtrl.user.username }}">{{ 'Please go to your profile and add your email address' | translate }}</a>.<br /><br />
                                                         <a href="https://hotosm.org/privacy">{{ 'See here' | translate }}</a> {{ 'for more information about how HOT will use and share your data.' | translate }}
                                                     </p>
-                                                -->
                                                 </div>
                                             </div>
 
@@ -416,7 +414,7 @@
                                                         <a href="https://hotosm.org/privacy">{{ 'how we handle your data' | translate }}</a>.
                                                     </p>
                                                 </div>
-                                                <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap && projectCtrl.user.emailAddress"
+                                                <button ng-show="projectCtrl.isSelectedMappable && !projectCtrl.taskLockError && projectCtrl.userCanMap && (projectCtrl.user.emailAddress || true)"
                                                         class="button button--large"
                                                         ng-click="projectCtrl.lockSelectedTaskMapping()">
                                                     {{ 'Start Mapping' | translate }}
@@ -482,12 +480,12 @@
                                         <div>
                                             <p><a href="{{ projectCtrl.getGpxDownloadURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this task as a gpx file to see its boundary.' | translate }}</p>
                                         </div>
+                                        <div>
+                                            <p><a href="{{ projectCtrl.getSequencesAsGpxURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this sequence as a gpx file to see the route.' | translate }}</p>
+                                        </div>
                                         <div ng-show="projectCtrl.selectedMappingEditor === 'custom'">
                                                 <p class="textblock--fulltext"
                                                 markdown-to-html="projectCtrl.projectData.customEditor.description"></p>
-                                        </div>
-                                        <div>
-                                            <p><a href="{{ projectCtrl.getSequencesAsGpxURL() }}" target="_blank">{{ 'Download' | translate }}</a> {{ 'this sequence as a gpx file to see the route.' | translate }}</p>
                                         </div>
                                         <div ng-show="projectCtrl.project_files.length">
                                             <h6>{{ 'This project has accompanying files. To load these files, you must use JOSM to edit' | translate }}</h6>
