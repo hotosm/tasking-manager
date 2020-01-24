@@ -1,8 +1,7 @@
-import React, { useContext, useState, useLayoutEffect } from 'react';
+import React, { useContext } from 'react';
 
 import { StateContext, styleClasses, handleCheckButton } from '../../views/projectEdit';
 import { Button } from '../button';
-import { API_URL } from '../../config';
 
 export const MetadataForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -13,19 +12,6 @@ export const MetadataForm = () => {
     { item: 'LANDUSE', showItem: 'Landuse' },
     { item: 'OTHER', showItem: 'Other' },
   ];
-
-  const [orgs, setOrgs] = useState([{ organisationId: 0, name: '' }]);
-
-  useLayoutEffect(() => {
-    const fetchOrgs = async () => {
-      const res = await fetch(`${API_URL}organisations/`);
-      if (res.status === 200) {
-        const orgs_json = await res.json();
-        setOrgs(o => o.concat(orgs_json.organisations));
-      }
-    };
-    fetchOrgs();
-  }, [setOrgs]);
 
   const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
 
@@ -73,24 +59,6 @@ export const MetadataForm = () => {
             {elm.showItem}
           </label>
         ))}
-      </div>
-      <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>Organisation</label>
-        <p className={styleClasses.pClass}>Only one organisationis allowed.</p>
-        <select
-          name="LicenseId"
-          className="pa2"
-          onChange={e => setProjectInfo({ ...projectInfo, organisation: parseInt(e.target.value) })}
-        >
-          {orgs.map(o => (
-            <option
-              selected={projectInfo.organisation === o.organisationId ? true : false}
-              value={o.organisationId}
-            >
-              {o.name}
-            </option>
-          ))}
-        </select>
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>OSMCha Filter Id</label>

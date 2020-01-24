@@ -47,9 +47,12 @@ export const InstructionsForm = ({ languages }) => {
         />
         <p className={styleClasses.pClass}>
           Default comments added to uploaded changeset comment field. Users should also be
-          encouraged to add text describing what they mapped. Example: #hotosm-project-470
-          #missingmaps Buildings mapping. Hashtags are sometimes used for analysis later, but should
-          be human informative and not overused, #group #event for example.
+          encouraged to add text describing what they mapped. Hashtags are sometimes used for
+          analysis later, but should be human informative and not overused, #group #event for
+          example.
+        </p>
+        <p className={styleClasses.pClass}>
+          Example: #hotosm-project-470 #missingmaps Buildings mapping.
         </p>
       </div>
       <div className={styleClasses.divClass}>
@@ -67,7 +70,10 @@ export const InstructionsForm = ({ languages }) => {
           will be replaced by the corresponding parameters for each task. {'{x}'}, {'{y}'} and{' '}
           {'{z}'}
           parameters can only be be used on tasks generated in the Tasking Manager and not on
-          imported tasks. For example: « This task involves loading extra data. Click
+          imported tasks.
+        </p>
+        <p className={styleClasses.pClass}>
+          For example: « This task involves loading extra data. Click
           [here](http://localhost:8111/import?new_layer=true&amp;url=http://www.domain.com/data/
           {'{x}'}/{'{y}'}/{'{z}'}/routes_2009.osm) to load the data into JOSM ».
         </p>

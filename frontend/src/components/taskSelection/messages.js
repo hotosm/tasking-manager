@@ -1,7 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 /**
- * Internationalized messages for use on header.
+ * Internationalized messages for use on task selection.
  */
 export default defineMessages({
   lockError: {

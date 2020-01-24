@@ -50,7 +50,9 @@ export const ImageryForm = () => {
         <label className={styleClasses.labelClass}>Required license</label>
         <select name="LicenseId" onChange={handleLicense} className="pa2">
           {licenses.map(l => (
-            <option value={l.licenseId}>{l.name}</option>
+            <option key={l.licenseId} value={l.licenseId}>
+              {l.name}
+            </option>
           ))}
         </select>
       </div>
