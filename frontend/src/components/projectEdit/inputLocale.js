@@ -1,4 +1,5 @@
 import React, { useState, useLayoutEffect, useCallback, useContext } from 'react';
+
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 
@@ -65,8 +66,9 @@ export const InputLocale = props => {
       <ul className="list mb4 pa0 w-100 flex flex-wrap ttu">
         {props.languages === null
           ? null
-          : props.languages.map(l => (
+          : props.languages.map((l, n) => (
               <li
+                key={n}
                 onClick={() => setLanguage(l.code)}
                 className={
                   (l.code !== language ? 'bg-white blue-dark' : 'bg-blue-dark white') +

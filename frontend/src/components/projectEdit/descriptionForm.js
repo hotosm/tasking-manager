@@ -41,9 +41,13 @@ export const DescriptionForm = ({ languages }) => {
     <div className="w-100">
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>Status</label>
-        <select name="status" onChange={handleChange} className="pa2">
+        <select name="status" onChange={handleChange} className="pa2 pointer">
           {projectStatusFields.map(f => (
-            <option selected={f.item === projectInfo.status ? true : false} value={f.item}>
+            <option
+              key={f.item}
+              selected={f.item === projectInfo.status ? true : false}
+              value={f.item}
+            >
               {f.showItem}
             </option>
           ))}
@@ -51,9 +55,13 @@ export const DescriptionForm = ({ languages }) => {
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>Priority</label>
-        <select name="projectPriority" onChange={handleChange} className="pa2">
+        <select name="projectPriority" onChange={handleChange} className="pa2 pointer">
           {projectPriorityFields.map(f => (
-            <option selected={f.item === projectInfo.projectPriority ? true : false} value={f.item}>
+            <option
+              key={f.item}
+              selected={f.item === projectInfo.projectPriority ? true : false}
+              value={f.item}
+            >
               {f.showItem}
             </option>
           ))}

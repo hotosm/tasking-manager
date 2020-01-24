@@ -105,18 +105,18 @@ export const TeamSelect = () => {
       <div className="mb4">
         {projectInfo.projectTeams.map(t => {
           return (
-            <div className="w-100 cf pa2 bg-white mb2">
-              <div className="w-50 fl">{t.name}</div>
+            <div className="w-100 cf pa2 bg-white blue-dark mb2">
+              <div className="w-50 fl fw5">{t.name}</div>
               <div className="w-30 fl">{getLabel(t.role)}</div>
               <div className="w-20 fl pl3 tr">
                 <span
                   className="pa2 br-100 pointer bg-grey-light"
                   onClick={() => editTeam(t.teamId)}
                 >
-                  <PencilIcon className="h1 w1" />
+                  <PencilIcon className="h1 w1 blue-dark" />
                 </span>
                 <span
-                  className=" ml1 pa2 br-100 pointer bg-grey-light"
+                  className=" ml1 pa2 br-100 pointer bg-grey-light red"
                   onClick={() => removeTeam(t.teamId)}
                 >
                   <WasteIcon className="h1 w1" />
@@ -143,11 +143,8 @@ export const TeamSelect = () => {
           options={filteredTeams}
           onChange={value => handleSelect(value, 'team')}
           className="w-40 fl pr2"
-          value={
-            teamSelect.team.name !== null
-              ? teamSelect.team
-              : { name: 'Select a team...', teamId: 0 }
-          }
+          value={teamSelect.team.name !== null ? teamSelect.team : null}
+          placeholder={'Select a team...'}
           isDisabled={teamSelect.edit}
         />
         <Select
@@ -157,11 +154,8 @@ export const TeamSelect = () => {
           onChange={value => handleSelect(value, 'role')}
           className="w-40 fl mr2"
           isDisabled={teamSelect.team.name === null ? true : false}
-          value={
-            teamSelect.role.value !== null
-              ? teamSelect.role
-              : { value: 'NONE', label: 'Select a role...' }
-          }
+          value={teamSelect.role.value !== null ? teamSelect.role : null}
+          placeholder={'Select a role...'}
         />
         <Button
           onClick={teamSelect.edit === false ? addTeam : updateTeam}

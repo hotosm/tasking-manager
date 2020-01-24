@@ -1,9 +1,13 @@
 import { defineMessages } from 'react-intl';
 
 /**
- * Internationalized messages for use on header.
+ * Internationalized messages for use on general components.
  */
 export default defineMessages({
+  language: {
+    id: 'localeSelect.language',
+    defaultMessage: 'Language',
+  },
   selectOrganisation: {
     id: 'formInputs.organisation.select',
     defaultMessage: 'Select organisation',
