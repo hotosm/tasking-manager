@@ -166,8 +166,8 @@ export const ProjectDetailLeft = props => {
             </ReactPlaceholder>
             <ProjectProgressBar
               className="pb2"
-              percentMapped={props.project.percentMapped || 50}
-              percentValidated={props.project.percentValidated || 25}
+              percentMapped={props.project.percentMapped}
+              percentValidated={props.project.percentValidated}
             />
             <div className="cf pb1 h2">
               <MappingLevelMessage
