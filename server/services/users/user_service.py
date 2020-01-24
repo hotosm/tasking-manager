@@ -12,7 +12,6 @@ from server.models.dtos.user_dto import (
     UserSearchDTO,
     UserStatsDTO,
     UserContributionDTO,
-    UserContributionsDTO,
     RecommendedProject,
     UserRecommendedProjectsDTO,
     UserRegisterEmailDTO,
@@ -66,22 +65,15 @@ class UserService:
         return user
 
     @staticmethod
-    def get_contributions_by_day(user_id: int) -> UserContributionsDTO:
+    def get_contributions_by_day(user_id: int):
         # Validate that user exists.
-        # user = UserService.get_user_by_id(user_id)
-
         stats = (
             TaskHistory.query.with_entities(
                 func.DATE(TaskHistory.action_date).label("day"),
-                func.count(TaskHistory.action_date).label("cnt"),
+                func.count(TaskHistory.action).label("cnt"),
             )
             .filter(TaskHistory.user_id == user_id)
-            .filter(
-                or_(
-                    TaskHistory.action == TaskAction.LOCKED_FOR_MAPPING.name,
-                    TaskHistory.action == TaskAction.LOCKED_FOR_VALIDATION.name,
-                )
-            )
+            .filter(TaskHistory.action == TaskAction.STATE_CHANGE.name)
             .filter(
                 func.DATE(TaskHistory.action_date)
                 > datetime.date.today() - datetime.timedelta(days=365)
@@ -93,10 +85,8 @@ class UserService:
         contributions = [
             UserContributionDTO(dict(date=str(s[0]), count=s[1])) for s in stats
         ]
-        dto = UserContributionsDTO()
-        dto.contributions = contributions
 
-        return dto
+        return contributions
 
     @staticmethod
     def get_project_managers() -> User:
@@ -287,6 +277,7 @@ class UserService:
         stats_dto.tasks_validated = tasks_validated
         stats_dto.projects_mapped = len(projects_mapped)
         stats_dto.countries_contributed = UserService.get_countries_contributed(user.id)
+        stats_dto.contributions_by_day = UserService.get_contributions_by_day(user.id)
         stats_dto.total_time_spent = 0
         stats_dto.time_spent_mapping = 0
         stats_dto.time_spent_validating = 0
