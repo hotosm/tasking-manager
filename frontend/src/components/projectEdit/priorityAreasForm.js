@@ -118,8 +118,6 @@ export const PriorityAreasForm = () => {
     }
   }, [map, draw, projectInfo, setProjectInfo]);
 
-  const clearButtonClass = styleClasses.buttonClass.concat(' bg-light-silver ttu');
-
   const clearAll = e => {
     draw[0].deleteAll();
     map.removeLayer('priority_areas');
@@ -130,28 +128,28 @@ export const PriorityAreasForm = () => {
   return (
     <div className="w-100">
       <p className={styleClasses.pClass}>
-        If you want mappers to work on the highest priority areas first, draw one of more polygons
+        If you want mappers to work on the highest priority areas first, draw one or more polygons
         within the project area.
       </p>
-      <div className="ttu">
+      <div className="pb2">
         <Button
           className={styleClasses.drawButtonClass}
           onClick={() => draw[0].changeMode('draw_polygon')}
         >
-          draw polygon
+          Draw polygon
         </Button>
         <Button
           className={styleClasses.drawButtonClass}
           onClick={() => draw[0].changeMode('draw_rectangle')}
         >
-          draw rectangle
+          Draw rectangle
         </Button>
-        <Button onClick={clearAll} className={clearButtonClass}>
-          clear all
+        <Button onClick={clearAll} className={styleClasses.deleteButtonClass}>
+          Clear all
         </Button>
       </div>
 
-      <div id="map" ref={mapRef} className="vh-50 w-75"></div>
+      <div id="map" ref={mapRef} className="vh-75 w-100"></div>
     </div>
   );
 };

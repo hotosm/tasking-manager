@@ -19,7 +19,7 @@ export const RadioField = ({ name, value, className }: Object) => (
 );
 
 export const SwitchToggle = ({ label, isChecked, onChange, labelPosition }: Object) => (
-  <div className="flex items-center justify-center bg-grey-dark">
+  <div className="v-mid justify-center bg-grey-dark">
     {label && labelPosition !== 'right' && <span className="di mr2 nowrap f6 dn-m">{label}</span>}
     <div className="relative dib">
       <input
