@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import { navigate } from '@reach/router';
 
 import { Button } from '../button';
+import { DeleteModal } from '../deleteModal';
 import { styleClasses } from '../../views/projectEdit';
-import { API_URL } from '../../config';
+import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 const checkError = (error, modal) => {
   let successMessage = '';
@@ -58,17 +60,14 @@ const checkError = (error, modal) => {
   }
 };
 
-const ResetTasksModal = ({ projectId, close, token }) => {
+const ResetTasksModal = ({ projectId, close }: Object) => {
+  const token = useSelector(state => state.auth.get('token'));
   const [error, setError] = useState(null);
 
-  const fn = async () => {
-    const url = `${API_URL}projects/${projectId}/tasks/actions/reset-all/`;
-    const res = await fetch(url, { method: 'POST', headers: { Authorization: `Token ${token}` } });
-    if (res.status !== 200) {
-      setError(true);
-    } else {
-      setError(false);
-    }
+  const fn = () => {
+    fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/reset-all/`, token, 'POST')
+      .then(res => setError(false))
+      .catch(e => setError(true));
   };
 
   const handlerButton = e => {
@@ -88,67 +87,20 @@ const ResetTasksModal = ({ projectId, close, token }) => {
         Reset all tasks
       </Button>
       <Button className={styleClasses.deleteButtonClass} onClick={close}>
-        Cancel
+        Close
       </Button>
     </div>
   );
 };
 
-const DeleteProjectModal = ({ projectId, close, token }) => {
+const ResetBadImageryModal = ({ projectId, close }: Object) => {
+  const token = useSelector(state => state.auth.get('token'));
   const [error, setError] = useState(null);
 
-  const fn = async () => {
-    const url = `${API_URL}projects/${projectId}/`;
-    const res = await fetch(url, {
-      method: 'DELETE',
-      headers: { Authorization: `Token ${token}` },
-    });
-    if (res.status !== 200) {
-      setError(true);
-    } else {
-      setError(false);
-    }
-  };
-
-  const handlerButton = e => {
-    fn();
-  };
-
-  // Redirect on success.
-  if (error === false) {
-    setTimeout(() => (window.location.href = '/explore'), 3000);
-  }
-
-  return (
-    <div className={styleClasses.modalClass}>
-      <h2 className={styleClasses.modalTitleClass}>Delete Project</h2>
-
-      <p className={styleClasses.pClass + ' pb3'}>
-        Are you sure you want to delete this project? You cannot undo deleting a project.
-      </p>
-
-      {checkError(error, 'DELETE_PROJECT')}
-      <Button className={styleClasses.drawButtonClass + ' mr2'} onClick={handlerButton}>
-        Delete project
-      </Button>
-      <Button className={styleClasses.deleteButtonClass} onClick={close}>
-        Cancel
-      </Button>
-    </div>
-  );
-};
-
-const ResetBadImageryModal = ({ projectId, close, token }) => {
-  const [error, setError] = useState(null);
-
-  const fn = async () => {
-    const url = `${API_URL}projects/${projectId}/tasks/actions/reset-all-badimagery/`;
-    const res = await fetch(url, { method: 'POST', headers: { Authorization: `Token ${token}` } });
-    if (res.status !== 200) {
-      setError(true);
-    } else {
-      setError(false);
-    }
+  const fn = () => {
+    fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/reset-all-badimagery/`, token, 'POST')
+      .then(res => setError(false))
+      .catch(e => setError(true));
   };
 
   const handlerButton = e => {
@@ -173,23 +125,20 @@ const ResetBadImageryModal = ({ projectId, close, token }) => {
         Reset all bad imagery tasks
       </Button>
       <Button className={styleClasses.deleteButtonClass} onClick={close}>
-        Cancel
+        Close
       </Button>
     </div>
   );
 };
 
-const ValidateAllTasksModal = ({ projectId, close, token }) => {
+const ValidateAllTasksModal = ({ projectId, close }: Object) => {
+  const token = useSelector(state => state.auth.get('token'));
   const [error, setError] = useState(null);
 
-  const fn = async () => {
-    const url = `${API_URL}projects/${projectId}/tasks/actions/validate-all/`;
-    const res = await fetch(url, { method: 'POST', headers: { Authorization: `Token ${token}` } });
-    if (res.status !== 200) {
-      setError(true);
-    } else {
-      setError(false);
-    }
+  const fn = () => {
+    fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/validate-all/`, token, 'POST')
+      .then(res => setError(false))
+      .catch(e => setError(true));
   };
 
   const handlerButton = e => {
@@ -213,23 +162,20 @@ const ValidateAllTasksModal = ({ projectId, close, token }) => {
         Validate all tasks
       </Button>
       <Button className={styleClasses.deleteButtonClass} onClick={close}>
-        Cancel
+        Close
       </Button>
     </div>
   );
 };
 
-const InvalidateAllTasksModal = ({ projectId, close, token }) => {
+const InvalidateAllTasksModal = ({ projectId, close }: Object) => {
+  const token = useSelector(state => state.auth.get('token'));
   const [error, setError] = useState(null);
 
-  const fn = async () => {
-    const url = `${API_URL}projects/${projectId}/tasks/actions/invalidate-all/`;
-    const res = await fetch(url, { method: 'POST', headers: { Authorization: `Token ${token}` } });
-    if (res.status !== 200) {
-      setError(true);
-    } else {
-      setError(false);
-    }
+  const fn = () => {
+    fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/invalidate-all/`, token, 'POST')
+      .then(res => setError(false))
+      .catch(e => setError(true));
   };
 
   const handlerButton = e => {
@@ -253,23 +199,20 @@ const InvalidateAllTasksModal = ({ projectId, close, token }) => {
         Invalidate all tasks
       </Button>
       <Button className={styleClasses.deleteButtonClass} onClick={close}>
-        Cancel
+        Close
       </Button>
     </div>
   );
 };
 
-const MapAllTasksModal = ({ projectId, close, token }) => {
+const MapAllTasksModal = ({ projectId, close }: Object) => {
+  const token = useSelector(state => state.auth.get('token'));
   const [error, setError] = useState(null);
 
-  const fn = async () => {
-    const url = `${API_URL}projects/${projectId}/tasks/actions/map-all/`;
-    const res = await fetch(url, { method: 'POST', headers: { Authorization: `Token ${token}` } });
-    if (res.status !== 200) {
-      setError(true);
-    } else {
-      setError(false);
-    }
+  const fn = () => {
+    fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/map-all/`, token, 'POST')
+      .then(res => setError(false))
+      .catch(e => setError(true));
   };
 
   const handlerButton = e => {
@@ -291,31 +234,26 @@ const MapAllTasksModal = ({ projectId, close, token }) => {
         Map all tasks
       </Button>
       <Button className={styleClasses.deleteButtonClass} onClick={close}>
-        Cancel
+        Close
       </Button>
     </div>
   );
 };
 
-const MessageContributorsModal = ({ projectId, close, token }) => {
-  const [error, setError] = useState(null);
+const MessageContributorsModal = ({ projectId, close }: Object) => {
   const [data, setData] = useState({ message: '', subject: '' });
+  const token = useSelector(state => state.auth.get('token'));
+  const [error, setError] = useState(null);
 
-  const fn = async () => {
-    const url = `${API_URL}projects/${projectId}/actions/message-contributors/`;
-    const res = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
-      },
-    });
-    if (res.status !== 200) {
-      setError(true);
-    } else {
-      setError(false);
-    }
+  const fn = () => {
+    pushToLocalJSONAPI(
+      `projects/${projectId}/actions/message-contributors/`,
+      JSON.stringify(data),
+      token,
+      'POST',
+    )
+      .then(res => setError(false))
+      .catch(e => setError(true));
   };
 
   const handleChange = e => {
@@ -361,25 +299,22 @@ const MessageContributorsModal = ({ projectId, close, token }) => {
         Message all contributors
       </Button>
       <Button className={styleClasses.deleteButtonClass} onClick={close}>
-        Cancel
+        Close
       </Button>
     </div>
   );
 };
 
-const TransferProject = ({ projectId, token }) => {
+const TransferProject = ({ projectId }: Object) => {
+  const token = useSelector(state => state.auth.get('token'));
   const [error, setError] = useState(null);
   const [username, setUsername] = useState('');
   const [users, setUsers] = useState([]);
   const handleUsers = e => {
-    const fetchUsers = async user => {
-      const res = await fetch(`${API_URL}users/queries/filter/${user}`);
-      if (res.status === 200) {
-        const res_json = await res.json();
-        setUsers(res_json.usernames);
-      } else {
-        setUsers([]);
-      }
+    const fetchUsers = user => {
+      fetchLocalJSONAPI(`users/queries/filter/${user}/`, token)
+        .then(res => setUsers(res.usernames))
+        .catch(e => setUsers([]));
     };
 
     const user = e.target.value;
@@ -387,22 +322,15 @@ const TransferProject = ({ projectId, token }) => {
     fetchUsers(user);
   };
 
-  const fn = async () => {
-    const url = `${API_URL}projects/${projectId}/actions/transfer-ownership/`;
-
-    const res = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify({ username: username }),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
-      },
-    });
-    if (res.status !== 200) {
-      setError(true);
-    } else {
-      setError(false);
-    }
+  const fn = () => {
+    pushToLocalJSONAPI(
+      `projects/${projectId}/actions/transfer-ownership/`,
+      JSON.stringify({ username: username }),
+      token,
+      'POST',
+    )
+      .then(res => setError(false))
+      .catch(e => setError(true));
   };
 
   const handlerButton = e => {
@@ -433,8 +361,10 @@ const TransferProject = ({ projectId, token }) => {
         open={users.length !== 0 ? true : false}
       >
         <div>
-          {users.map(u => (
+          {users.map((u, n) => (
             <span
+              className="db pa1 pointer"
+              key={n}
               onClick={() => {
                 setUsername(u);
                 setUsers([]);
@@ -453,7 +383,7 @@ const TransferProject = ({ projectId, token }) => {
   );
 };
 
-export const ActionsForm = ({ projectId, token }) => {
+export const ActionsForm = ({ projectId, projectName }: Object) => {
   const modalStyle = {
     width: '100%',
     height: '100%',
@@ -471,7 +401,7 @@ export const ActionsForm = ({ projectId, token }) => {
           modal
           closeOnDocumentClick
         >
-          {close => <MessageContributorsModal projectId={projectId} close={close} token={token} />}
+          {close => <MessageContributorsModal projectId={projectId} close={close} />}
         </Popup>
       </div>
       <div className={styleClasses.divClass}>
@@ -489,7 +419,7 @@ export const ActionsForm = ({ projectId, token }) => {
           modal
           closeOnDocumentClick
         >
-          {close => <MapAllTasksModal projectId={projectId} close={close} token={token} />}
+          {close => <MapAllTasksModal projectId={projectId} close={close} />}
         </Popup>
         <Popup
           trigger={<Button className={styleClasses.actionClass}>Invalidate all tasks</Button>}
@@ -497,7 +427,7 @@ export const ActionsForm = ({ projectId, token }) => {
           modal
           closeOnDocumentClick
         >
-          {close => <InvalidateAllTasksModal projectId={projectId} close={close} token={token} />}
+          {close => <InvalidateAllTasksModal projectId={projectId} close={close} />}
         </Popup>
         <Popup
           trigger={<Button className={styleClasses.actionClass}>Validate all tasks</Button>}
@@ -505,7 +435,7 @@ export const ActionsForm = ({ projectId, token }) => {
           modal
           closeOnDocumentClick
         >
-          {close => <ValidateAllTasksModal projectId={projectId} close={close} token={token} />}
+          {close => <ValidateAllTasksModal projectId={projectId} close={close} />}
         </Popup>
         <Popup
           trigger={
@@ -515,7 +445,7 @@ export const ActionsForm = ({ projectId, token }) => {
           modal
           closeOnDocumentClick
         >
-          {close => <ResetBadImageryModal projectId={projectId} close={close} token={token} />}
+          {close => <ResetBadImageryModal projectId={projectId} close={close} />}
         </Popup>
       </div>
       <div className={styleClasses.divClass}>
@@ -524,21 +454,20 @@ export const ActionsForm = ({ projectId, token }) => {
         <p className={styleClasses.pClass}>
           <b>Warning:</b> This cannot be undone.
         </p>
-        <Popup
-          trigger={<Button className={styleClasses.actionClass}>Delete project</Button>}
-          contentStyle={modalStyle}
-          modal
-          closeOnDocumentClick
-        >
-          {close => <DeleteProjectModal projectId={projectId} close={close} token={token} />}
-        </Popup>
+        <DeleteModal
+          id={projectId}
+          name={projectName}
+          type={'projects'}
+          className="pointer bg-red white"
+        />
       </div>
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>Transfer project</label>
+        <label className={styleClasses.labelClass}>Transfer project ownership</label>
         <p className={styleClasses.pClass}>
-          <b>Warning:</b> This cannot be undone.
+          <b>Warning:</b> This cannot be undone by you. In case of wrong transfer, contact the new
+          owner to revert the change.
         </p>
-        <TransferProject projectId={projectId} token={token} />
+        <TransferProject projectId={projectId} />
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>Reset Tasks</label>
@@ -554,7 +483,7 @@ export const ActionsForm = ({ projectId, token }) => {
           modal
           closeOnDocumentClick
         >
-          {close => <ResetTasksModal projectId={projectId} close={close} token={token} />}
+          {close => <ResetTasksModal projectId={projectId} close={close} />}
         </Popup>
       </div>
       <div className={styleClasses.divClass}>

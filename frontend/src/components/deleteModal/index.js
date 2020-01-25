@@ -10,7 +10,7 @@ import { DeleteButton } from '../teamsAndOrgs/management';
 import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
 
-export function DeleteModal({ id, name, type, className }) {
+export function DeleteModal({ id, name, type, className }: Object) {
   const token = useSelector(state => state.auth.get('token'));
   const [deleteStatus, setDeleteStatus] = useState(null);
   const [error, setErrorMessage] = useState(null);

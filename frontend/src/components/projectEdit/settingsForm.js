@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 
+import { SwitchToggle } from '../formInputs';
 import { getEditors } from '../../utils/editorsList';
 import { StateContext, styleClasses, handleCheckButton } from '../../views/projectEdit';
 
@@ -68,22 +69,18 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
         ))}
       </div>
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>Enforce Random Task Selection</label>
-        <label className={styleClasses.pClass}>
-          <input
-            className="mr2"
-            onChange={() =>
-              setProjectInfo({
-                ...projectInfo,
-                enforceRandomTaskSelection: !projectInfo.enforceRandomTaskSelection,
-              })
-            }
-            type="checkbox"
-            value={projectInfo.enforceRandomTaskSelection}
-            name="enforceRandomTaskSelection"
-          />
-          Enforce random task selection on mapping
-        </label>
+        <label className={styleClasses.labelClass}>Enforce random task selection</label>
+        <SwitchToggle
+          label={'Enforce random task selection on mapping'}
+          labelPosition="right"
+          isChecked={projectInfo.enforceRandomTaskSelection}
+          onChange={() =>
+            setProjectInfo({
+              ...projectInfo,
+              enforceRandomTaskSelection: !projectInfo.enforceRandomTaskSelection,
+            })
+          }
+        />
         <p className={styleClasses.pClass}>
           If checked, users must edit tasks at random for the initial editing stage (project
           managers and admins are exempt).

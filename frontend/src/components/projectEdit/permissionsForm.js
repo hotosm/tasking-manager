@@ -1,13 +1,30 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
+import Select from 'react-select';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
+import { SwitchToggle } from '../formInputs';
 import { StateContext, styleClasses } from '../../views/projectEdit';
+import { TeamSelect } from './teamSelect';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { API_URL } from '../../config';
 
 export const PermissionsForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const [users, setUsers] = useState([]);
   const [searchUser, setsearchUser] = useState('');
+  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  const [organisations, setOrganisations] = useState([]);
+  useEffect(() => {
+    if (userDetails && userDetails.id) {
+      const query = userDetails.role === 'ADMIN' ? '' : `?manager_user_id=${userDetails.id}`;
+      fetchLocalJSONAPI(`organisations/${query}`)
+        .then(result => setOrganisations(result.organisations))
+        .catch(e => console.log(e));
+    }
+  }, [userDetails]);
 
   const handleUsers = e => {
     const fetchUsers = async user => {
@@ -48,22 +65,17 @@ export const PermissionsForm = () => {
     <div className="w-100">
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>Mappers</label>
-        <label className={styleClasses.pClass}>
-          {' '}
-          <input
-            className="mr2"
-            onChange={() =>
-              setProjectInfo({
-                ...projectInfo,
-                enforceRandomTaskSelection: !projectInfo.enforceRandomTaskSelection,
-              })
-            }
-            type="checkbox"
-            value={projectInfo.enforceRandomTaskSelection}
-            name="enforceRandomTaskSelection"
-          />{' '}
-          Only mappers with experience level BEGINNER or higher can map{' '}
-        </label>
+        <SwitchToggle
+          label={'Only mappers with experience level BEGINNER or higher can map'}
+          labelPosition="right"
+          isChecked={projectInfo.restrictMappingLevelToProject}
+          onChange={() =>
+            setProjectInfo({
+              ...projectInfo,
+              restrictMappingLevelToProject: !projectInfo.restrictMappingLevelToProject,
+            })
+          }
+        />
         <p className={styleClasses.pClass}>
           If checked, only users with the listed mapper experience level will be able to contribute
           to this project. If unchecked, anyone can contribute. Go to the Metadata panel to change
@@ -72,58 +84,80 @@ export const PermissionsForm = () => {
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>Validators</label>
-        <label className={styleClasses.pClass}>
-          <input
-            className="mr2"
-            onChange={() =>
-              setProjectInfo({
-                ...projectInfo,
-                restrictValidationRole: !projectInfo.restrictValidationRole,
-              })
-            }
-            type="checkbox"
-            name="restrictValidationRole"
-            value={projectInfo.restrictValidationRole}
-          />
-          Require users to be validators
-        </label>
-        <p className={styleClasses.pClass}>
-          If checked, only users with the Validator role will be able to validate tasks in this
-          project. If unchecked, anyone can validate or invalidate tasks.
+        <SwitchToggle
+          label={'Only users with validator role or higher'}
+          labelPosition="right"
+          isChecked={projectInfo.restrictValidationRole}
+          onChange={() =>
+            setProjectInfo({
+              ...projectInfo,
+              restrictValidationRole: !projectInfo.restrictValidationRole,
+            })
+          }
+        />
+        <p className={`styleClasses.pClass pb2`}>
+          If checked, only users with the Validator or a higher role will be able to validate tasks
+          in this project. If unchecked, anyone can validate or invalidate tasks.
         </p>
 
         <label className={styleClasses.pClass}>
-          <input
-            className="mr2"
+          <SwitchToggle
+            label={'Require experience level INTERMEDIATE or ADVANCED'}
+            labelPosition="right"
+            isChecked={projectInfo.restrictValidationLevelIntermediate}
             onChange={() =>
               setProjectInfo({
                 ...projectInfo,
                 restrictValidationLevelIntermediate: !projectInfo.restrictValidationLevelIntermediate,
               })
             }
-            type="checkbox"
-            name="restrictValidationLevelIntermediate"
-            value={projectInfo.restrictValidationLevelIntermediate}
           />
-          Require experience level INTERMEDIATE or ADVANCED
         </label>
         <p className={styleClasses.pClass}>
           If checked, only users with the experience level of Intermediate and Advanced will be able
           to validate tasks in this project.
         </p>
       </div>
+
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>Private project</label>
-        <label className={styleClasses.pClass}>
-          <input
-            className="mr2"
-            onChange={() => setProjectInfo({ ...projectInfo, private: !projectInfo.private })}
-            type="checkbox"
-            name="Private"
-            value={projectInfo.private}
-          />
-          Private
-        </label>
+        <label className={styleClasses.labelClass}>Organisation</label>
+        <p className={styleClasses.pClass}>
+          Organisation that is coordinating the project, if there is any. The managers of that
+          organisation will have administration rights over the project.
+        </p>
+        <Select
+          isClearable={false}
+          getOptionLabel={option => option.name}
+          getOptionValue={option => option.organisationId}
+          options={organisations}
+          defaultValue={
+            projectInfo.organisation && {
+              name: projectInfo.organisationName,
+              value: projectInfo.organisation,
+            }
+          }
+          placeholder={<FormattedMessage {...messages.selectOrganisation} />}
+          onChange={value =>
+            setProjectInfo({ ...projectInfo, organisation: value.organisationId || '' })
+          }
+          className="z-5"
+        />
+      </div>
+
+      <div className={styleClasses.divClass.replace('w-70', 'w-90')}>
+        <label className={styleClasses.labelClass}>Teams</label>
+        <TeamSelect />
+      </div>
+
+      <div className={styleClasses.divClass}>
+        <label className={styleClasses.labelClass}>Privacy</label>
+        <SwitchToggle
+          label={'Private project'}
+          labelPosition="right"
+          isChecked={projectInfo.private}
+          onChange={() => setProjectInfo({ ...projectInfo, private: !projectInfo.private })}
+        />
+
         <p className={styleClasses.pClass}>
           Private means that only the given list of users below can access this project. Before a
           user name can be added to the Allowed Users list the user must first login to this
