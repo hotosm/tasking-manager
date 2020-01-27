@@ -105,9 +105,9 @@ class TestProjectSearchService(unittest.TestCase):
         # arrange
         expected = (
             32.50198296132938,
-            -12.59912449955007,
+            -12.599124499550062,
             34.68826225820438,
-            -11.578583176891955,
+            -11.57858317689196,
         )
 
         # act
@@ -147,4 +147,4 @@ class TestProjectSearchService(unittest.TestCase):
         expected = ProjectSearchService._get_area_sqm(polygon)
 
         # assert
-        self.assertEqual(expected, 28276407740.2797)
+        self.assertEqual(expected, 28276407740.279778)

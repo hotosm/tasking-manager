@@ -29,10 +29,9 @@ class PriorityArea(db.Model):
         if type(pa_geojson) is not geojson.Polygon:
             raise InvalidGeoJson("Priority Areas must be supplied as Polygons")
 
-        is_valid_geojson = geojson.is_valid(pa_geojson)
-        if is_valid_geojson["valid"] == "no":
+        if not pa_geojson.is_valid:
             raise InvalidGeoJson(
-                f"Priority Area: Invalid Polygon - {is_valid_geojson['message']}"
+                f"Priority Area: Invalid Polygon - {pa_geojson.errors()}"
             )
 
         pa = cls()
