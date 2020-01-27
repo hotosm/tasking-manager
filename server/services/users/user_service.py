@@ -1,7 +1,7 @@
 from cachetools import TTLCache, cached
 from flask import current_app
 import datetime
-from sqlalchemy import text, func, or_, desc, and_
+from sqlalchemy import text, func, or_, desc, and_, distinct
 from server import db
 from server.models.dtos.project_dto import ProjectFavoritesDTO
 from server.models.dtos.user_dto import (
@@ -18,8 +18,8 @@ from server.models.dtos.user_dto import (
     UserCountryContributed,
     UserCountriesContributed,
 )
-from server.models.dtos.interests_dto import InterestsDTO
-from server.models.postgis.interests import Interest
+from server.models.dtos.interests_dto import InterestsDTO, InterestDTO
+from server.models.postgis.interests import Interest, projects_interests
 from server.models.postgis.message import Message
 from server.models.postgis.project import Project, ProjectInfo
 from server.models.postgis.user import User, UserRole, MappingLevel, UserEmail
@@ -187,6 +187,42 @@ class UserService:
         return requested_user.as_dto(requested_user.username)
 
     @staticmethod
+    def get_interests_stats(user_id):
+        # Get all projects that the user has contributed.
+        stmt = (
+            TaskHistory.query.with_entities(TaskHistory.project_id)
+            .distinct()
+            .filter(TaskHistory.user_id == user_id)
+        )
+
+        interests = (
+            Interest.query.with_entities(
+                Interest.id,
+                Interest.name,
+                func.count(distinct(projects_interests.c.project_id)).label(
+                    "count_projects"
+                ),
+            )
+            .outerjoin(
+                projects_interests,
+                and_(
+                    Interest.id == projects_interests.c.interest_id,
+                    projects_interests.c.project_id.in_(stmt),
+                ),
+            )
+            .group_by(Interest.id)
+            .order_by(desc("count_projects"))
+            .all()
+        )
+
+        interests_dto = [
+            InterestDTO(dict(id=i.id, name=i.name, count_projects=i.count_projects,))
+            for i in interests
+        ]
+
+        return interests_dto
+
+    @staticmethod
     def get_tasks_dto(
         user_id: int,
         start_date: datetime.datetime = None,
@@ -301,6 +337,8 @@ class UserService:
             if total_mapping_time:
                 stats_dto.time_spent_mapping = total_mapping_time.total_seconds()
                 stats_dto.total_time_spent += stats_dto.time_spent_mapping
+
+        stats_dto.contributions_interest = UserService.get_interests_stats(user.id)
 
         return stats_dto
 
