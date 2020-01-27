@@ -16,7 +16,8 @@ Flask-RESTful==0.3.6
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.2
 flask-swagger==0.2.14
-GDAL==2.1.0
+# pip install gdal==$(gdal-config --version) # GDAL MUST match the installed GDAL version
+# GDAL==2.1.0
 GeoAlchemy2==0.4.0
 geojson==1.3.4
 gevent==1.4.0

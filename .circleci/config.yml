@@ -16,6 +16,10 @@ jobs:
           sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
           sudo pip3 install awscli --upgrade
     - run:
+        name: Install GDAL
+        command: |
+        apt install -y gdal-bin libgeos-dev libgdal-dev
+    - run:
         name: Set folder permissions
         command: |
           chown -R circleci:circleci $CIRCLE_WORKING_DIRECTORY
@@ -39,6 +43,8 @@ jobs:
           virtualenv env
           $CIRCLE_WORKING_DIRECTORY/env/bin/pip install --upgrade pip
           $CIRCLE_WORKING_DIRECTORY/env/bin/pip install -r requirements.txt
+          # Install python gdal -- it MUST match the version of gdal installed
+          $CIRCLE_WORKING_DIRECTORY/env/bin/pip install gdal==$(gdal-config --version)
     - run:
         name: Run JS Unit tests
         command: |
