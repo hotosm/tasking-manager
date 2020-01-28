@@ -264,7 +264,6 @@
             vm.multiLockedTasks = [];
             vm.lockedTasksForCurrentUser = [];
             vm.resetMappingIssues();
-            vm.project_files = [];
         };
 
         vm.updatePreferedEditor = function () {
