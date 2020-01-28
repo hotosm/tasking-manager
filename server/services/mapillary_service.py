@@ -15,25 +15,25 @@ from flask import current_app
 from server.models.postgis.utils import NotFound
 
 
-# Given 2 mapillary sequences WITHIN a buffer of one, check the properties to determine if the
+# Given 2 mapillary sequences WITHIN a buffer of each other, check the properties to determine if the
 # sequence was uploaded twice to Mapillary
 def duplicateSequences(props1, props2):
-            # If they're the same sequence -- shouldn't happen but just in case
-            if props1['key'] == props2['key']:
-                return True
+    # If they're the same sequence -- shouldn't happen but just in case
+    if props1['key'] == props2['key']:
+        return True
 
-            if props1['coordinateProperties']['cas'] != props2['coordinateProperties']['cas']:
-                return False
+    if props1['coordinateProperties']['cas'] != props2['coordinateProperties']['cas']:
+        return False
 
-            return True
+    return True
 
 
 def fetch(url, session):
-            with closing(session.get(url)) as response:
-                return response
+    with closing(session.get(url)) as response:
+        return response
 
 
-async def run(urls, features, old_urls = None):
+async def run(urls, features, old_urls=None):
     new_urls = []
     if old_urls is None:
         old_urls = []
@@ -57,7 +57,7 @@ async def run(urls, features, old_urls = None):
                     if next_url not in old_urls:
                         new_urls.append(next_url)
                         old_urls.append(next_url)
-                except KeyError as e:
+                except KeyError:
                     pass
                 json_response = response.json()
                 if 'features' in json_response:
@@ -66,7 +66,7 @@ async def run(urls, features, old_urls = None):
                     current_app.logger.critical(f'No features for {response.url}:\r\n{json_response}')
                 pass
     if new_urls:
-        await run(new_urls, features, old_urls = old_urls)
+        await run(new_urls, features, old_urls=old_urls)
 
 
 class MapillaryService:
