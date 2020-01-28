@@ -81,7 +81,7 @@ export const ProjectNav = props => {
     /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
     <header className="bt bb b--tan w-100 ">
       <div className="mt2 mb1 ph2 dib lh-copy w-100 cf">
-        <div className="w-90-ns w-100 fl dib">
+        <div className="w-80-l w-90-m w-100 fl dib">
           <div className="dib">
             <div className="mv2 dib">
               <DifficultyDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
@@ -112,7 +112,7 @@ export const ProjectNav = props => {
             />
           </div>
         </div>
-        <div className="w-10-ns w-100 fr">
+        <div className="w-20-l w-10-m w-100 fr">
           <ShowMapToggle />
         </div>
       </div>

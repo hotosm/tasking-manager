@@ -105,10 +105,10 @@ export function ProjectCard({
       <Link className={`no-underline color-inherit `} to={`/projects/${projectId}`}>
         <article className={``}>
           <div className={`${bottomButtonSpacer} ph3 ba br1 b--grey-light bg-white shadow-hover`}>
-            <div className="mt3 w-33 fr">
-              <PriorityBox priority={priority} extraClasses={'pv1 ph2'} />
+            <div className="mt3 fr">
+              <PriorityBox priority={priority} extraClasses={'pv1 ph2 dib'} />
             </div>
-            <div className="w-50 red dib">
+            <div className="w-50 cf red dib">
               <img
                 className="h2 mw4 pa1"
                 src={organisationLogo}
@@ -116,8 +116,8 @@ export function ProjectCard({
               />
             </div>
             <div className="ma1 w-100">
-              <div className="f7 blue-grey">#{projectId}</div>
-              <h3 title={name} className="pb2 f5 fw6 h3 lh-title overflow-y-hidden">
+              <div className="f7 blue-grey mt2">#{projectId}</div>
+              <h3 title={name} className="pb2 mt2 f5 fw6 h3 lh-title overflow-y-hidden">
                 {name}
               </h3>
               <div className="tc f6">
