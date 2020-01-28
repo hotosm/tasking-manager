@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: circleci/python:3-stretch-browsers
+    - image: circleci/python:3-buster-browsers
     steps:
     - checkout
     - setup_remote_docker
@@ -16,9 +16,13 @@ jobs:
           sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
           sudo pip3 install awscli --upgrade
     - run:
-        name: Install GDAL
+        name: Install GDAL and dependencies for pip gdal
         command: |
-        apt install -y gdal-bin libgeos-dev libgdal-dev
+            echo "deb-src http://deb.debian.org/debian buster main" | sudo tee /etc/apt/sources.list.d/source-repos-tmp.list > /dev/null
+            cat "/etc/apt/sources.list.d/source-repos-tmp.list"
+            sudo apt update
+            sudo apt build-dep -y python3-gdal
+            sudo apt install gdal-bin libgdal-dev
     - run:
         name: Set folder permissions
         command: |
@@ -44,7 +48,7 @@ jobs:
           $CIRCLE_WORKING_DIRECTORY/env/bin/pip install --upgrade pip
           $CIRCLE_WORKING_DIRECTORY/env/bin/pip install -r requirements.txt
           # Install python gdal -- it MUST match the version of gdal installed
-          $CIRCLE_WORKING_DIRECTORY/env/bin/pip install gdal==$(gdal-config --version)
+          $CIRCLE_WORKING_DIRECTORY/env/bin/pip install gdal==$(gdalinfo --version | awk '{print $2}' | awk -F, '{print $1}')
     - run:
         name: Run JS Unit tests
         command: |
