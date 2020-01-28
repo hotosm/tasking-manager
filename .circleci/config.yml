@@ -55,6 +55,7 @@ jobs:
           # JS Unit Tests
           cd $CIRCLE_WORKING_DIRECTORY/tests/client
           mkdir $CIRCLE_WORKING_DIRECTORY/tests/client/junit
+          export OPENSSL_CONF=/etc/ssl/
           $CIRCLE_WORKING_DIRECTORY/client/node_modules/.bin/karma start ./karma.conf.js \
             --single-run --browsers PhantomJS --reporters junit
         environment:
