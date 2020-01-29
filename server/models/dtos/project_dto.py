@@ -292,7 +292,6 @@ class ProjectTaskAnnotationsDTO(Model):
     project_id = IntType(required=True, serialized_name='projectId')
     tasks = ListType(ModelType(TaskAnnotationDTO), required=True, serialized_name='tasks')
 
-
 class ProjectStatsDTO(Model):
     """ DTO for detailed stats on a project """
     project_id = IntType(required=True, serialized_name='projectId')
@@ -314,7 +313,6 @@ class ProjectStatsDTO(Model):
     tasks_bad_imagery = IntType(serialized_name='tasksBadImagery')
     area_percent_mapped = IntType(serialized_name='areaPercentMapped')
     area_percent_validated = IntType(serialized_name='areaPercentValidated')
-
 
 
 class ProjectUserStatsDTO(Model):

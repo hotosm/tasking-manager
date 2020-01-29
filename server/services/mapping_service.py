@@ -280,6 +280,73 @@ class MappingService:
         project.save()
 
     @staticmethod
+    def generate_project_file_osm_xml(project_id: int, file_id: int, task_ids_str: str) -> str:
+        """ Generate xml response suitable for loading into JOSM created from an extract of the specified project file """
+
+        if task_ids_str:
+            task_ids = map(int, task_ids_str.split(','))
+            tasks = Task.get_tasks_as_geojson_feature_collection(project_id, task_ids)
+            if not tasks:
+                raise NotFound()
+        else:
+            tasks = Task.get_tasks_as_geojson_feature_collection(project_id)
+            if not tasks or len(tasks) == 0:
+                raise NotFound()
+
+        dto = ProjectFiles.get_file(project_id, file_id)
+
+        with tempfile.TemporaryDirectory() as tmpdirpath:
+
+            tasks_file = os.path.join(tmpdirpath, "{project_id}_tasks.geojson".format(project_id=str(project_id)))
+
+            with open(tasks_file, 'w') as t:
+                t.write(str(tasks))
+
+            # Convert the geojson features into separate .poly files
+            # to use with osmosis
+            poly_cmd = './server/tools/ogr2poly.py {file} -p {tmpdirpath}/ -f taskId'.format(file=tasks_file, tmpdirpath=tmpdirpath)
+            subprocess.check_output(poly_cmd, shell=True)
+            os.remove(tasks_file)
+
+            osm_files = []
+            for poly in os.listdir(tmpdirpath):
+                """ Extract from osm file into a file for each poly file """
+                task_cmd = './server/tools/osmosis/bin/osmosis  --rx file={xml} enableDateParsing=no --bp completeWays=yes clipIncompleteEntities=true file={task_poly} --wx file={task_xml}'.format(
+                        xml=os.path.join(dto.path, dto.file_name),
+                        task_poly=os.path.join(tmpdirpath, poly),
+                        task_xml=os.path.join(
+                            tmpdirpath,
+                            "task_{task_id}_{file_name}.osm".format(
+                                task_id=os.path.splitext(poly)[0],
+                                file_name=os.path.splitext(dto.file_name)[0]
+                            )
+                        )
+                    )
+                osm_files.append(
+                    os.path.join(
+                        tmpdirpath,
+                        "task_{task_id}_{file_name}.osm".format(
+                            task_id=os.path.splitext(poly)[0],
+                            file_name=os.path.splitext(dto.file_name)[0])
+                        )
+                    )
+                subprocess.check_output(task_cmd, shell=True)
+
+            # Merge the extracted files back together. Used if more than one task is sent in request.
+            merge_cmd = ['./server/tools/osmosis/bin/osmosis']
+
+            for osm in osm_files:
+                merge_cmd.extend(['--rx', 'file={file}'.format(file=osm), '--s'])
+
+            for x in range(0, len(osm_files)-1):
+                merge_cmd.append('--m')
+
+            merge_cmd.extend(['--wx', 'file=-'])
+            merge_string = ' '.join(merge_cmd)
+            xml = subprocess.check_output(merge_string, shell=True)
+
+        return xml
+
     def reset_all_badimagery(project_id: int, user_id: int):
         """ Marks all bad imagery tasks ready for mapping """
         badimagery_tasks = Task.query.filter(Task.task_status == TaskStatus.BADIMAGERY.value).all()

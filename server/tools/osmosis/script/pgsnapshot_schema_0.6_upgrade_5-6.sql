@@ -26,7 +26,6 @@ BEGIN
 				END IF;
 			END IF;
 		END IF;
-
 		IF result IS NULL THEN
 			result := tagRow.k => tagRow.v;
 		ELSE
@@ -70,7 +69,6 @@ BEGIN
 				END IF;
 			END IF;
 		END IF;
-
 		IF result IS NULL THEN
 			result := tagRow.k => tagRow.v;
 		ELSE
@@ -114,7 +112,6 @@ BEGIN
 				END IF;
 			END IF;
 		END IF;
-
 		IF result IS NULL THEN
 			result := tagRow.k => tagRow.v;
 		ELSE
@@ -158,7 +155,6 @@ BEGIN
 				END IF;
 			END IF;
 		END IF;
-
 		IF result IS NULL THEN
 			result = ARRAY[wayNodeRow.node_id];
 		ELSE

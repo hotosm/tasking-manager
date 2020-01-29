@@ -680,7 +680,6 @@
          */
         vm.uploadFile = function (file){
             vm.uploadFileFail = false;
-
             vm.uploadFileInProgress = true;
             if (file) {
                 var resultsPromise = projectService.uploadFile(vm.project.projectId, file, vm.uploadPolicy)

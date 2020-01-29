@@ -36,9 +36,6 @@ venv/
 [._]ss[a-gi-z]
 [._]sw[a-p]
 
-# Project Files Dir
-/server/project_files/
-
 # OS generated files #
 .DS_Store
 .DS_Store?

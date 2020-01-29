@@ -130,7 +130,6 @@ class User(db.Model):
             query = query.filter(User.role.in_([UserRole.ADMIN.value, UserRole.PROJECT_MANAGER.value]))
 
         results = query.paginate(page, 20, True)
-
         if results.total == 0:
             raise NotFound()
 
