@@ -51,3 +51,7 @@ export { PlusIcon } from './plus';
 export { ProfilePictureIcon } from './profilePicture';
 export { HashtagIcon } from './hashtag';
 export { RefreshIcon } from './refresh';
+export { EnvelopeIcon } from './envelope';
+export { LinkedinIcon } from './linkedin';
+export { MarkerIcon } from './marker';
+export { TwitterIconNoBg } from './twitterNoBg';
