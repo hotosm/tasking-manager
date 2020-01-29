@@ -68,12 +68,12 @@ export const DescriptionForm = ({ languages }) => {
         </select>
       </div>
       <div className={styleClasses.divClass}>
-        <InputLocale languages={languages} name="name" type="text" preview={false}>
+        <InputLocale languages={languages} name="name" type="text" preview={false} maxLength={130}>
           <label className={styleClasses.labelClass}>Name of the project*</label>
         </InputLocale>
       </div>
       <div className={styleClasses.divClass}>
-        <InputLocale languages={languages} name="shortDescription">
+        <InputLocale languages={languages} name="shortDescription" maxLength={1500}>
           <label className={styleClasses.labelClass}>Short Description*</label>
         </InputLocale>
       </div>
