@@ -44,6 +44,10 @@ export default defineMessages({
     id: 'project.card.edit_project.button',
     defaultMessage: 'Edit project',
   },
+  projectPage: {
+    id: 'project.card.project_page.button',
+    defaultMessage: 'Project Page',
+  },
   projectTasks: {
     id: 'project.card.project_tasks.button',
     defaultMessage: 'Go to tasks',
