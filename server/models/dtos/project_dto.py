@@ -340,21 +340,3 @@ class ProjectFilesDTO(Model):
         self.project_files = []
 
     project_files = ListType(ModelType(ProjectFileDTO), serialized_name='projectFiles')
-
-class ProjectTaskAnnotationsDTO(Model):
-    """ DTO for task annotations of a project """
-
-    def __init__(self):
-        """ DTO constructor set task arrays to empty """
-        super().__init__()
-        self.tasks = []
-
-    project_id = IntType(required=True, serialized_name='projectId')
-    tasks = ListType(ModelType(TaskAnnotationDTO), required=True, serialized_name='tasks')
-
-
-class ProjectUserStatsDTO(Model):
-    """ DTO for time spent by users on a project """
-    time_spent_mapping = IntType(serialized_name='timeSpentMapping')
-    time_spent_validating = IntType(serialized_name='timeSpentValidating')
-    total_time_spent = IntType(serialized_name='totalTimeSpent')
