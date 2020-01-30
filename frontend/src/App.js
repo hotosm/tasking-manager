@@ -10,7 +10,15 @@ import { ORG_NAME } from './config';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
 import { LearnPage } from './views/learn';
-import { ManageProjectsPage, CreateProject, ProjectsPage, ProjectsPageIndex, MoreFilters, ProjectDetailPage } from './views/project';
+import { UserDetail } from './views/userDetail';
+import {
+  ManageProjectsPage,
+  CreateProject,
+  ProjectsPage,
+  ProjectsPageIndex,
+  MoreFilters,
+  ProjectDetailPage,
+} from './views/project';
 import { Authorized } from './views/authorized';
 import { Login } from './views/login';
 import { Welcome } from './views/welcome';
@@ -26,7 +34,11 @@ import { EmailVerification } from './views/verifyEmail';
 import { ProjectEdit } from './views/projectEdit';
 import { ContactPage } from './views/contact';
 import { ContributionsPage, ContributionsPageIndex } from './views/contributions';
-import { NotificationsPage, NotificationPageIndex, NotificationDetail } from './views/notifications'
+import {
+  NotificationsPage,
+  NotificationPageIndex,
+  NotificationDetail,
+} from './views/notifications';
 
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
  *  create special sub-router for Projects page and wrap it only around that */
@@ -37,19 +49,19 @@ function App() {
   return (
     <div className="App w-100 base-font bg-white">
       <Router>
-        <Header path="/*"/>
+        <Header path="/*" />
       </Router>
       <div className="cf w-100 base-font">
         <QueryParamProvider reachHistory={globalHistory}>
           <Router primary={false}>
-            <Home path="/"/>
+            <Home path="/" />
             <ProjectsPage path="explore">
               <ProjectsPageIndex path="/" />
               <MoreFilters path="/filters/*" />
             </ProjectsPage>
             <LearnPage path="learn" />
-            <ContributionsPage path="user">
-              <ContributionsPageIndex path="/"/>
+            <ContributionsPage path="contributions">
+              <ContributionsPageIndex path="/" />
             </ContributionsPage>
             <AboutPage path="about" />
             <Authorized path="authorized" />
@@ -75,9 +87,10 @@ function App() {
             <ManageProjectsPage path="projects/" />
             <SelectTask path="projects/:id/tasks" />
             <MapTask path="projects/:id/map" />
+            <UserDetail path="users/:username" />
             <ValidateTask path="projects/:id/validate" />
             <NotificationsPage path="inbox">
-              <NotificationPageIndex path="/"/>
+              <NotificationPageIndex path="/" />
               <NotificationDetail path="message/:id" />
             </NotificationsPage>
             <ProjectDetailPage path="projects/:id" />

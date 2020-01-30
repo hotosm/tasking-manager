@@ -162,7 +162,7 @@ function CommentList({ comments }: Object) {
             </div>
             <div className="fl ml3">
               <p className="b ma0">
-                <a href={`/user/${comment.username}`} className="blue-dark b underline">
+                <a href={`/users/${comment.username}`} className="blue-dark b underline">
                   {comment.username}
                 </a>
               </p>

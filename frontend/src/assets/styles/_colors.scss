@@ -32,31 +32,40 @@ Text colors
 /*
 Text colors hover
 */
-.hover-red:hover, .hover-red:focus {
+.hover-red:hover,
+.hover-red:focus {
   color: $red;
 }
-.hover-red-light:hover, .hover-red-light:focus {
+.hover-red-light:hover,
+.hover-red-light:focus {
   color: $red-light;
 }
-.hover-orange:hover, .hover-orange:focus {
+.hover-orange:hover,
+.hover-orange:focus {
   color: $orange;
 }
-.hover-tan:hover, .hover-tan:focus {
+.hover-tan:hover,
+.hover-tan:focus {
   color: $tan;
 }
-.hover-blue-dark:hover, .hover-blue-dark:focus {
+.hover-blue-dark:hover,
+.hover-blue-dark:focus {
   color: $blue-dark;
 }
-.hover-blue-light:hover, .hover-blue-light:focus {
+.hover-blue-light:hover,
+.hover-blue-light:focus {
   color: $blue-light;
 }
-.hover-blue-grey:hover, .hover-blue-grey:focus {
+.hover-blue-grey:hover,
+.hover-blue-grey:focus {
   color: $blue-grey;
 }
-.hover-grey-light:hover, .hover-grey-light:focus {
+.hover-grey-light:hover,
+.hover-grey-light:focus {
   color: $grey-light;
 }
-.hover-white:hover, .hover-white:focus {
+.hover-white:hover,
+.hover-white:focus {
   color: $white;
 }
 
@@ -94,31 +103,40 @@ Background colors
 /*
 Background colors hover
 */
-.hover-bg-red:hover, .hover-bg-red:focus {
+.hover-bg-red:hover,
+.hover-bg-red:focus {
   background-color: $red;
 }
-.hover-bg-red-light:hover, .hover-bg-red-light:focus {
+.hover-bg-red-light:hover,
+.hover-bg-red-light:focus {
   background-color: $red-light;
 }
-.hover-bg-orange:hover, .hover-bg-orange:focus {
+.hover-bg-orange:hover,
+.hover-bg-orange:focus {
   background-color: $orange;
 }
-.hover-bg-tan:hover, .hover-bg-tan:focus {
+.hover-bg-tan:hover,
+.hover-bg-tan:focus {
   background-color: $tan;
 }
-.hover-bg-blue-dark:hover, .hover-bg-blue-dark:focus {
+.hover-bg-blue-dark:hover,
+.hover-bg-blue-dark:focus {
   background-color: $blue-dark;
 }
-.hover-bg-blue-light:hover, .hover-bg-blue-light:focus {
+.hover-bg-blue-light:hover,
+.hover-bg-blue-light:focus {
   background-color: $blue-light;
 }
-.hover-bg-blue-grey:hover, .hover-bg-grey:focus {
+.hover-bg-blue-grey:hover,
+.hover-bg-grey:focus {
   background-color: $blue-grey;
 }
-.hover-bg-grey-light:hover, .hover-bg-grey-light:focus {
+.hover-bg-grey-light:hover,
+.hover-bg-grey-light:focus {
   background-color: $grey-light;
 }
-.hover-bg-white:hover, .hover-bg-white:focus {
+.hover-bg-white:hover,
+.hover-bg-white:focus {
   background-color: $white;
 }
 
@@ -151,4 +169,21 @@ Border colors
 }
 .b--white {
   border-color: $white;
+}
+
+/* svg fill colors */
+.fill-red {
+  fill: $red;
+}
+.fill-tan {
+  fill: $tan;
+}
+.fill-green {
+  fill: #3e9c67;
+}
+.fill-blue {
+  fill: #1757c4;
+}
+.fill-yellow {
+  fill: #f09733;
 }
