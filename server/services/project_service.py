@@ -21,6 +21,7 @@ from server.services.users.user_service import UserService
 from server.services.project_search_service import ProjectSearchService
 from sqlalchemy import func, or_
 from sqlalchemy.sql.expression import true
+from server.services.team_service import TeamService, TeamServiceError, NotFound
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
@@ -175,6 +176,14 @@ class ProjectService:
         if UserService.is_user_blocked(user_id):
             return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
+        teams_dto = TeamService.get_project_teams_as_dto(project_id)
+        for team_dto in teams_dto.teams:
+            team_id = team_dto.team_id
+            team_role = team_dto.role
+
+            if TeamService.is_user_member_of_team(team_id, user_id) and team_role != 0:
+                return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+
         project = ProjectService.get_project_by_id(project_id)
 
         if ProjectStatus(
@@ -260,6 +269,14 @@ class ProjectService:
             try:
                 next(user for user in project.allowed_users if user.id == user_id)
             except StopIteration:
+                return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+
+        teams_dto = TeamService.get_project_teams_as_dto(project_id)
+        for team_dto in teams_dto.teams:
+            team_id = team_dto.team_id
+            team_role = team_dto.role
+
+            if TeamService.is_user_member_of_team(team_id, user_id) and team_role != 1:
                 return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         # Restrict validation by non-beginners users only
