@@ -17,6 +17,7 @@ import { TasksMap } from '../taskSelection/map.js';
 import { ProjectHeader } from './header';
 import { MappingTypes } from '../mappingTypes';
 import { Imagery } from '../taskSelection/imagery';
+import { TeamsBoxList } from '../teamsAndOrgs/teams';
 
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { NewMapperFlow } from './newMapperFlow';
@@ -135,7 +136,25 @@ export const ProjectDetailLeft = props => {
                 <div className="pv2 pr2" dangerouslySetInnerHTML={htmlDescription} />
               </ShowReadMoreButton>
             </div>
-            <img className="h4 pa1 z-1" src={props.project.organisationLogo} alt="" />
+            <div className="cf w-100">
+              {props.project.organisationName && (
+                <>
+                  <p>
+                    <FormattedMessage
+                      {...messages.projectCoordination}
+                      values={{
+                        organisation: <span className="fw6">{props.project.organisationName}</span>,
+                      }}
+                    />
+                  </p>
+                  <img
+                    className="w4 pa1 z-1"
+                    src={props.project.organisationLogo}
+                    alt={props.project.organisationName}
+                  />
+                </>
+              )}
+            </div>
           </section>
         </ReactPlaceholder>
       </div>
@@ -187,12 +206,12 @@ export const ProjectDetailLeft = props => {
 export const ProjectDetail = props => {
   const h2Classes = 'pl4 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark';
   return (
-    <div className={`${props.className || 'bg-white'}`}>
+    <div className={`${props.className || 'bg-white blue-dark'}`}>
       <div className="bb b--grey-light">
         <div className="cf">
           <ProjectDetailLeft
             {...props}
-            className="w-100 w-60-l fl ph4 pv3 bg-white vh-minus-200-ns relative"
+            className="w-100 w-60-l fl ph4 pv3 bg-white blue-dark vh-minus-200-ns relative"
           />
           <div className="w-100 w-40-l vh-minus-200-ns fl">
             <ReactPlaceholder
@@ -224,6 +243,20 @@ export const ProjectDetail = props => {
         <FormattedMessage {...messages.questionsAndComments} />
       </h3>
       <QuestionsAndComments projectId={props.project.projectId} />
+
+      <a href="#teams" style={{ visibility: 'hidden' }} name="teams">
+        <FormattedMessage {...messages.teams} />
+      </a>
+      <h3 className={`${h2Classes}`}>
+        <FormattedMessage {...messages.teams} />
+      </h3>
+      <div className="ph4 mb3 cf db">
+        {props.project.projectTeams && props.project.projectTeams.length ? (
+          <TeamsBoxList teams={props.project.projectTeams} />
+        ) : (
+          <FormattedMessage {...messages.noProjectTeams} />
+        )}
+      </div>
 
       <a href="#contributions" name="contributions" style={{ visibility: 'hidden' }}>
         <FormattedMessage {...messages.contributors} />

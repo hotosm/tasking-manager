@@ -20,6 +20,14 @@ export default defineMessages({
     id: 'management.members',
     defaultMessage: 'Members',
   },
+  mappingTeams: {
+    id: 'management.teams.mapping',
+    defaultMessage: 'Mapping teams',
+  },
+  validationTeams: {
+    id: 'management.teams.validation',
+    defaultMessage: 'Validation teams',
+  },
   teamMembers: {
     id: 'management.teams.members',
     defaultMessage: 'Team members',
