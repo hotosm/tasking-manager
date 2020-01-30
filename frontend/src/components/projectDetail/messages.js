@@ -4,6 +4,14 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on project cards.
  */
 export default defineMessages({
+  projectCoordination: {
+    id: 'project.detail.coordination',
+    defaultMessage: 'This project is coordinated by {organisation}',
+  },
+  noProjectTeams: {
+    id: 'project.detail.teams.empty',
+    defaultMessage: "This project doesn't have any teams associated with.",
+  },
   projectTotalContributors: {
     id: 'project.detail.contributorCount',
     defaultMessage: '{number} total contributors',
@@ -112,6 +120,10 @@ export default defineMessages({
   share: {
     id: 'project.detail.share',
     defaultMessage: 'Share',
+  },
+  teams: {
+    id: 'project.detail.teams',
+    defaultMessage: 'Teams',
   },
   zoomToTasks: {
     id: 'project.detail.zoomToTasks',

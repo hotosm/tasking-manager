@@ -296,3 +296,42 @@ export function TeamSideBar({ team, members, managers }: Object) {
     </ReactPlaceholder>
   );
 }
+
+export function TeamsBoxList({ teams }: Object) {
+  const mappingTeams = teams.filter(team => team.role === 'MAPPER');
+  const validationTeams = teams.filter(team => team.role === 'VALIDATOR');
+  return (
+    <>
+      {mappingTeams.length > 0 && (
+        <>
+          <h4 className="mb2 fw6">
+            <FormattedMessage {...messages.mappingTeams} />
+          </h4>
+          <div>
+            {mappingTeams.map(team => (
+              <TeamBox team={team} className="dib pv2 ph3 mt2" />
+            ))}
+          </div>
+        </>
+      )}
+      {validationTeams.length > 0 && (
+        <>
+          <h4 className="mb2 fw6">
+            <FormattedMessage {...messages.validationTeams} />
+          </h4>
+          <div>
+            {validationTeams.map(team => (
+              <TeamBox team={team} className="dib pv2 ph3 mt2" />
+            ))}
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
+export const TeamBox = ({ team, className }: Object) => (
+  <Link className="link blue-grey mr2" to={`/teams/${team.teamId}/membership/`}>
+    <div className={`tc br1 f6 ba ${className}`}>{team.name}</div>
+  </Link>
+);
