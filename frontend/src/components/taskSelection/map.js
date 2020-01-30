@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { extent } from 'geojson-bounds';
 import mapboxgl from 'mapbox-gl';
@@ -19,6 +19,8 @@ try {
 }
 
 export const TasksMap = ({
+  map,
+  setMapObj,
   mapResults,
   className,
   taskBordersMap,
@@ -32,7 +34,6 @@ export const TasksMap = ({
 }) => {
   const mapRef = React.createRef();
   const locale = useSelector(state => state.preferences['locale']);
-  const [map, setMapObj] = useState(null);
 
   useLayoutEffect(() => {
     /* May be able to refactor this to just take

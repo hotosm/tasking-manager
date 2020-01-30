@@ -52,6 +52,7 @@ const ProjectDetailTypeBar = props => {
 
 const ProjectDetailMap = props => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
+  const [map, setMapObj] = useState(null);
 
   var taskBordersGeoJSON = props.project.areaOfInterest && {
     type: 'FeatureCollection',
@@ -75,6 +76,8 @@ const ProjectDetailMap = props => {
         <a name="top" />
       }
       <TasksMap
+        map={map}
+        setMapObj={setMapObj}
         mapResults={props.tasks}
         taskBordersMap={taskBordersGeoJSON}
         taskCentroidMap={centroidGeoJSON}

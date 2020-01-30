@@ -19,6 +19,7 @@ import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSON
 
 export function TaskMapAction({ project, tasks, action, editor }) {
   const [activeSection, setActiveSection] = useState('completion');
+  const [map, setMapObj] = useState(null);
   const [activeEditor, setActiveEditor] = useState(editor);
   const tasksIds = tasks && tasks.features ? tasks.features.map(i => i.properties.taskId) : [];
   const callEditor = arr => {
@@ -37,6 +38,8 @@ export function TaskMapAction({ project, tasks, action, editor }) {
           ready={tasks !== undefined && tasks.features !== undefined}
         >
           <TasksMap
+            map={map}
+            setMapObj={setMapObj}
             mapResults={tasks}
             className="dib w-100 fl h-100-ns vh-75"
             taskBordersOnly={false}

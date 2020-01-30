@@ -12,6 +12,7 @@ import { updateTasksStatus } from '../../utils/updateTasksStatus';
 import { TasksMap } from './map.js';
 import { TaskList } from './taskList';
 import { TasksMapLegend } from './legend';
+import Contributions from './contributions';
 import { ProjectInstructions } from './instructions';
 import { ProjectHeader } from '../projectDetail/header';
 
@@ -44,6 +45,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [mapInit, setMapInit] = useState(false);
   const [randomTask, setRandomTask] = useState([]);
   const [taskAction, setTaskAction] = useState('mapATask');
+  const [map, setMapObj] = useState(null);
   // these two fetches are needed to initialize the component
   const [tasksError, tasksLoading, initialTasks] = useFetch(
     `projects/${project.projectId}/tasks/`,
@@ -160,6 +162,13 @@ export function TaskSelection({ project, type, loading }: Object) {
                   >
                     <FormattedMessage {...messages.instructions} />
                   </span>
+                  <span
+                    className={`mr4 pb2 pointer ${activeSection === 'contributions' &&
+                      'bb b--blue-dark'}`}
+                    onClick={() => setActiveSection('contributions')}
+                  >
+                    <FormattedMessage {...messages.contributions} />
+                  </span>
                 </div>
                 <div className="pt3">
                   {activeSection === 'tasks' ? (
@@ -169,11 +178,15 @@ export function TaskSelection({ project, type, loading }: Object) {
                       selectTask={selectTask}
                       selected={selected}
                     />
-                  ) : (
+                  ) : null}
+                  {activeSection === 'instructions' ? (
                     <ProjectInstructions
                       instructions={project.projectInfo && project.projectInfo.instructions}
                     />
-                  )}
+                  ) : null}
+                  {activeSection === 'contributions' ? (
+                    <Contributions tasks={tasks} map={map} projectId={project.projectId}/>
+                  ) : null}
                 </div>
               </div>
             </ReactPlaceholder>
@@ -188,6 +201,8 @@ export function TaskSelection({ project, type, loading }: Object) {
             ready={!tasksLoading && mapInit}
           >
             <TasksMap
+              map={map}
+              setMapObj={setMapObj}
               mapResults={tasks}
               projectId={project.projectId}
               error={tasksError}
