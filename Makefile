@@ -30,7 +30,7 @@ refresh-translations:
 tests:test-client test-server
 
 test-client:
-	docker-compose exec app sh -c "cd /usr/src/app/tests/client && ../../client/node_modules/.bin/karma start ./karma.conf.js --single-run --browsers PhantomJS"
+	docker-compose exec app sh -c "cd /usr/src/app/tests/client && ../../client/node_modules/.bin/karma start ./karma.conf.js --single-run --browsers FirefoxHeadless,ChromeHeadless"
 
 test-server:
 	docker-compose exec app sh -c "python -m unittest discover tests/server"
