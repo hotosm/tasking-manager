@@ -21,7 +21,7 @@ from server.services.users.user_service import UserService
 from server.services.project_search_service import ProjectSearchService
 from sqlalchemy import func, or_
 from sqlalchemy.sql.expression import true
-from server.services.team_service import TeamService, TeamServiceError, NotFound
+from server.services.team_service import TeamService
 
 summary_cache = TTLCache(maxsize=1024, ttl=600)
 
