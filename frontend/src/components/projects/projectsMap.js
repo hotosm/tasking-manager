@@ -161,7 +161,7 @@ export const ProjectsMap = ({
     if (mapReadyProjectsReady) {
       mapboxLayerDefn(map, mapResults, clickOnProjectID);
     } else if (projectsReadyMapLoading) {
-      map.on('load', mapboxLayerDefn);
+      map.on('load', () => mapboxLayerDefn(map, mapResults, clickOnProjectID));
     }
 
     /* refill the source on mapResults changes */
