@@ -1,5 +1,5 @@
 import { handleErrors } from '../utils/promise';
-import { API_URL } from '../config';
+import { API_URL, OSM_STATS_URL } from '../config';
 
 export function fetchExternalJSONAPI(url): Promise<*> {
   return fetch(url, {
@@ -13,6 +13,39 @@ export function fetchExternalJSONAPI(url): Promise<*> {
       return res.json();
     });
 }
+
+export function wrapPromise(promise) {
+  let status = 'pending';
+  let result = '';
+  let suspender = promise.then(
+    r => {
+      status = 'success';
+      result = r;
+    },
+    e => {
+      status = 'error';
+      result = e;
+    },
+  );
+
+  return {
+    read() {
+      if (status === 'pending') {
+        throw suspender;
+      } else if (status === 'error') {
+        throw result;
+      }
+
+      return result;
+    },
+  };
+}
+
+export const fetchOSMStatsAPI = path => {
+  const url = new URL(path, OSM_STATS_URL);
+
+  return fetch(url).then(x => x.json());
+};
 
 export function fetchLocalJSONAPI(endpoint, token, method = 'GET', language = 'en'): Promise<*> {
   const url = new URL(endpoint, API_URL);
