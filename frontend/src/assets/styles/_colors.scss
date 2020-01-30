@@ -100,10 +100,6 @@ Background colors
   background-color: $white;
 }
 
-.bg-black {
-  background-color: $black;
-}
-
 /*
 Background colors hover
 */
@@ -179,15 +175,15 @@ Border colors
 .fill-red {
   fill: $red;
 }
-
+.fill-tan {
+  fill: $tan;
+}
 .fill-green {
-  fill: $green;
+  fill: #3e9c67;
 }
-
 .fill-blue {
-  fill: $blue;
+  fill: #1757c4;
 }
-
 .fill-yellow {
-  fill: $yellow;
+  fill: #f09733;
 }

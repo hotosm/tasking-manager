@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+
 import messages from './messages';
 
 const ProgressBar = ({ percent, barWidth }) => {
@@ -26,7 +27,7 @@ export const ListElements = ({ data, valueField, nameField, barWidth }) => {
   }
 
   return (
-    <ol className="pa0">
+    <ol className="pa0 pb1">
       {data.map((p, i) => {
         let barWidth = '100%';
         if (maxValues !== null) {
@@ -88,7 +89,7 @@ export const TopProjects = ({ user }) => {
   });
 
   return (
-    <div>
+    <div className="pb3 ph3 pt2 bg-white shadow-4">
       <h3 className="f4 blue-dark mt0 fw6 pt3">
         <FormattedMessage {...messages.topProjectsMappedTitle} />
       </h3>

@@ -22,23 +22,17 @@ const ContributionTimeline = props => {
   const maxValue = Math.max(...countValues);
 
   const HeatmapLegend = () => {
-    const indexes = Array(5)
-      .fill()
-      .map((x, i) => i);
+    const indexes = [30, 50, 70, 100];
 
-    const size = '1.3em';
     const legendFontStyle = 'ph2 f7 blue-grey ttc';
     return (
-      <div className="nt4 flex items-center w-100 justify-end">
+      <div className="nt4-ns w-100 cf tr fr">
         <span className={legendFontStyle}>
           <FormattedMessage {...messages.heatmapLegendLess} />
         </span>
+        <div className={`dib h1 w1 bg-tan`}></div>
         {indexes.map(i => {
-          return (
-            <svg style={{ width: size, height: size }}>
-              <rect width={size} height={size} className={`heatmap-color-${i}`} />{' '}
-            </svg>
-          );
+          return <div key={i} className={`dib h1 w1 bg-red o-${i}`}></div>;
         })}
         <span className={legendFontStyle}>
           <FormattedMessage {...messages.heatmapLegendMore} />
@@ -51,32 +45,32 @@ const ContributionTimeline = props => {
     const rate = v.count / maxValue;
 
     if (0.0 <= rate && rate < 0.25) {
-      return 'heatmap-color-1';
+      return 'fill-red o-30';
     }
 
     if (0.25 <= rate && rate < 0.5) {
-      return 'heatmap-color-2';
+      return 'fill-red o-50';
     }
 
     if (0.5 <= rate && rate < 0.75) {
-      return 'heatmap-color-3';
+      return 'fill-red o-70';
     }
 
     if (0.75 <= rate && rate <= 1) {
-      return 'heatmap-color-4';
+      return 'fill-red o-100';
     }
   };
 
   return (
-    <div className="w-100 bg-white pv3 pr3 shadow-4">
-      <div className="w-100 center">
+    <div className="w-100 cf bg-white pv3 pr3 shadow-4">
+      <div className="w-100 fl cf center">
         <CalendarHeatmap
           startDate={shiftDate(today, -365)}
           endDate={today}
           values={stats.contributionsByDay}
           classForValue={value => {
             if (!value) {
-              return 'heatmap-color-0';
+              return 'fill-tan';
             }
             return getHeatmapClass(value);
           }}

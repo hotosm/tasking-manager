@@ -1,14 +1,14 @@
 import React from 'react';
-
 import ResponsiveOrdinalFrame from 'semiotic/lib/OrdinalFrame';
 import { FormattedMessage } from 'react-intl';
+
 import messages from './messages';
 
 const Legend = ({ data, oAccessor }) => {
   const size = '1.5em';
 
   return (
-    <ul className="list ma0 pa0 f6 pt4">
+    <ul className="list ma0 pa0 f6 pt3">
       {data.map(d => {
         return (
           <li className="w-100 flex mv3 items-center ttc">
@@ -43,7 +43,7 @@ export const DonutChart = ({ data, oAccessor, dynamicColumnWidth }) => {
     tooltipContent: d => {
       return (
         <div>
-          <div className="br2 bg-black white ph3 pv2 f7 center flex">
+          <div className="br2 bg-blue-dark white ph3 pv2 f7 center flex">
             <div className="orange mr2 b">{`${d.percent}%`}</div>
             <div className="ttc"> {d[oAccessor]}</div>
           </div>
@@ -54,7 +54,7 @@ export const DonutChart = ({ data, oAccessor, dynamicColumnWidth }) => {
 
   return (
     <div>
-      <div className="center w-50 h-50 mt4">
+      <div className="center w-50">
         <ResponsiveOrdinalFrame {...frameProps} />
       </div>
       <Legend data={data} oAccessor={oAccessor} />
@@ -77,8 +77,8 @@ export const EditsByNumbers = ({ user }) => {
   });
 
   return (
-    <div>
-      <h3 className="f4 blue-dark mt0 fw6 pt3 ttc">
+    <div className="pb3 ph3 pt2 bg-white blue-dark shadow-4">
+      <h3 className="f4 mt0 fw6 pt3">
         <FormattedMessage {...messages.editsTitle} />
       </h3>
 

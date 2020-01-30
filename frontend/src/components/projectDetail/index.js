@@ -234,7 +234,7 @@ export const ProjectDetail = props => {
       <div className="cf db mb3 ph4">
         {props.contributors &&
           props.contributors.map((user, n) => (
-            <Link to={`/user/${user.username}`} key={n}>
+            <Link to={`/users/${user.username}`} key={n}>
               <UserAvatar
                 username={user.username}
                 picture={user.pictureUrl}

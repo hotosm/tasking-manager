@@ -1,7 +1,8 @@
 import React from 'react';
-import { DonutChart } from './editsByNumbers';
 import { FormattedMessage } from 'react-intl';
+
 import messages from './messages';
+import { DonutChart } from './editsByNumbers';
 
 export const TopCauses = ({ user }) => {
   const stats = user.stats.read();
@@ -23,8 +24,8 @@ export const TopCauses = ({ user }) => {
   });
 
   return (
-    <div>
-      <h3 className="f4 blue-dark mt0 fw6 pt3 ttc">
+    <div className="pb3 ph3 pt2 bg-white blue-dark shadow-4">
+      <h3 className="f4 mt0 fw6 pt3">
         <FormattedMessage {...messages.topCausesTitle} />
       </h3>
       <DonutChart data={interests} oAccessor="interest" dynamicColumnWidth="count" />

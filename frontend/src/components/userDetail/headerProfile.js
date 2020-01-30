@@ -1,12 +1,13 @@
 import React from 'react';
-import { TwitterIconNoBg, FacebookIcon, EnvelopeIcon, LinkedinIcon } from '../svgIcons';
+import { FormattedMessage } from 'react-intl';
+
+import messages from '../user/messages';
+import { TwitterIconNoBg, FacebookIcon, LinkedinIcon } from '../svgIcons';
 import { MappingLevelMessage } from '../mappingLevel';
 import { NextMappingLevel } from '../user/settings';
-import { FormattedMessage } from 'react-intl';
-import messages from '../user/messages';
 
 const SocialMedia = ({ data }) => {
-  const socialMediaItems = ['emailAddress', 'twitterId', 'facebookId', 'linkedinId'];
+  const socialMediaItems = ['twitterId', 'facebookId', 'linkedinId'];
 
   const getSocialIcon = field => {
     const iconStyle = {
@@ -15,14 +16,12 @@ const SocialMedia = ({ data }) => {
     };
 
     switch (field) {
-      case 'emailAddress':
-        return <EnvelopeIcon style={iconStyle} className="red mr3" />;
       case 'twitterId':
-        return <TwitterIconNoBg style={iconStyle} className="light-blue mr3" />;
+        return <TwitterIconNoBg style={iconStyle} className="light-blue v-mid" />;
       case 'facebookId':
-        return <FacebookIcon style={iconStyle} className="dark-blue mr3" />;
+        return <FacebookIcon style={iconStyle} className="dark-blue v-mid" />;
       case 'linkedinId':
-        return <LinkedinIcon style={iconStyle} className="blue mr3" />;
+        return <LinkedinIcon style={iconStyle} className="blue v-mid" />;
       default:
         return null;
     }
@@ -32,8 +31,6 @@ const SocialMedia = ({ data }) => {
     const aClass = 'blue-grey no-underline';
     let url = null;
     switch (field) {
-      case 'emailAddress':
-        return <span>{value}</span>;
       case 'twitterId':
         url = 'https://www.twitter.com/' + value;
         break;
@@ -62,11 +59,9 @@ const SocialMedia = ({ data }) => {
         }
 
         return (
-          <li key={i} className="dib mr3 cf f7">
-            <div className="mr2 flex items-center">
-              <div className="mr2 h2 flex items-center">
-                {getSocialIcon(i)} {createLink(i, data[i])}
-              </div>
+          <li key={i} className="dib mr4-ns mr2 cf f7">
+            <div className="mr2 h2">
+              {getSocialIcon(i)} {createLink(i, data[i])}
             </div>
           </li>
         );
@@ -81,15 +76,15 @@ export const HeaderProfile = ({ user }) => {
 
   const avatarClass = 'h4 w4 br-100 pa1 ba b--grey-light bw3 red';
   return (
-    <div className="w-100 h-100 flex">
-      <div className="mr4 tc">
+    <div className="w-100 h-100 cf">
+      <div className="fl dib mr3">
         {details.pictureUrl ? (
           <img className={avatarClass} src={details.pictureUrl} alt={'hey'} />
         ) : (
           <div className={avatarClass + ' bg-light-gray ma1'}></div>
         )}
       </div>
-      <div className="bg-white w-80">
+      <div className="pl2 dib">
         <div className="mb4">
           <p className="barlow-condensed f2 ttu b ma0 mb2">{details.name || details.username}</p>
           <p className="f4 ma0 mb2">

@@ -5,75 +5,75 @@ import { defineMessages } from 'react-intl';
  */
 export default defineMessages({
   loading: {
-    id: 'loading',
+    id: 'users.detail.loading',
     defaultMessage: 'loading',
   },
   contributionTimelineTitle: {
-    id: 'contributionTimelineTitle',
+    id: 'users.detail.contributionTimelineTitle',
     defaultMessage: 'Contribution Timeline',
   },
   statsTitle: {
-    id: 'statsTitle',
+    id: 'users.detail.statsTitle',
     defaultMessage: 'stats',
   },
   timeSpentMapping: {
-    id: 'timeSpentMapping',
+    id: 'users.detail.timeSpentMapping',
     defaultMessage: 'Time spent mapping',
   },
   buildingsMapped: {
-    id: 'buildingsMapped',
+    id: 'users.detail.buildingsMapped',
     defaultMessage: 'Buildings mapped',
   },
   roadMapped: {
-    id: 'roadMapped',
+    id: 'users.detail.roadMapped',
     defaultMessage: 'Km road mapped',
   },
   poiMapped: {
-    id: 'poiMapped',
+    id: 'users.detail.poiMapped',
     defaultMessage: 'Points of interests mapped',
   },
   waterwaysMapped: {
-    id: 'waterwaysMapped',
+    id: 'users.detail.waterwaysMapped',
     defaultMessage: 'Waterways mapped',
   },
   topProjectsMappedTitle: {
-    id: 'topProjectsMappedTitle',
+    id: 'users.detail.topProjectsMappedTitle',
     defaultMessage: 'Top 5 projects contributed',
   },
   topCausesTitle: {
-    id: 'topCausesTitle',
+    id: 'users.detail.topCausesTitle',
     defaultMessage: 'Top causes contributed to',
   },
   editsTitle: {
-    id: 'editsTitle',
+    id: 'users.detail.editsTitle',
     defaultMessage: 'Edits by numbers',
   },
   topCountriesTitle: {
-    id: 'topCountriesTitle',
+    id: 'users.detail.topCountriesTitle',
     defaultMessage: 'Top 5 countries most mapped',
   },
   tasks: {
-    id: 'tasks',
+    id: 'users.detail.tasks',
     defaultMessage: 'tasks',
   },
   heatmapNoContribution: {
-    id: 'heatmapNoContribution',
+    id: 'users.detail.heatmapNoContribution',
     defaultMessage: 'No contribution',
   },
   heatmapContribution: {
-    id: 'heatmapContribution',
+    id: 'users.detail.heatmapContribution',
     defaultMessage: 'contribution',
   },
   heatmapContributions: {
-    id: 'heatmapContributions',
+    id: 'users.detail.heatmapContributions',
     defaultMessage: 'contributions',
   },
   heatmapLegendMore: {
-    id: 'heatmapLegendMore',
+    id: 'users.detail.heatmapLegendMore',
     defaultMessage: 'more',
   },
   heatmapLegendLess: {
-    id: 'heatmapLegendLess',
+    id: 'users.detail.heatmapLegendLess',
     defaultMessage: 'less',
   },
 });

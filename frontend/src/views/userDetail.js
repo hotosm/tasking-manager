@@ -1,6 +1,9 @@
 import React, { Suspense } from 'react';
 import { Redirect } from '@reach/router';
 import { useSelector } from 'react-redux';
+import { FormattedMessage } from 'react-intl';
+
+import messages from '../components/userDetail/messages';
 import { HeaderProfile } from '../components/userDetail/headerProfile';
 import { ElementsMapped } from '../components/userDetail/elementsMapped';
 import { CountriesMapped } from '../components/userDetail/countriesMapped';
@@ -10,14 +13,12 @@ import { EditsByNumbers } from '../components/userDetail/editsByNumbers';
 import ContributionTimeline from '../components/userDetail/contributionTimeline';
 import { ClockIcon } from '../components/svgIcons';
 import { fetchLocalJSONAPI, wrapPromise, fetchOSMStatsAPI } from '../network/genericJSONRequest';
-import { FormattedMessage } from 'react-intl';
-import messages from '../components/userDetail/messages';
 
 const Fallback = () => {
   return (
     <div className="vh-75 flex items-start">
-      <div className="pa3 mt4 bg-white shadow-4 w-20 center barlow-condensed f4 flex items-center justify-center ttc">
-        <ClockIcon className="h2 w2 mr2" />
+      <div className="pa3 mt4 bg-white blue-dark shadow-4 w-20 center barlow-condensed f4 flex items-center justify-center ttc">
+        <ClockIcon className="mr2" height="25px" />
         <span>
           <FormattedMessage {...messages.loading} />
         </span>
@@ -32,9 +33,8 @@ export const UserDetail = ({ username }) => {
     return <Redirect to={'login'} noThrow />;
   }
 
-  const blockWidth = 'w-80 center';
-  const blockStyle = { width: '31%' };
-  const blockClass = 'bg-white pa3 shadow-4';
+  const blockWidth = 'ph6-l ph4-m ph2';
+  const blockClass = 'w-33-l w-50-m w-100 fl pa2';
 
   const userDetails = () => {
     return {
@@ -47,15 +47,13 @@ export const UserDetail = ({ username }) => {
   };
 
   const user = userDetails();
-  const titleClass = 'f3 blue-dark mt0 fw6 pt3 ttu barlow-condensed mb3';
+  const titleClass = 'f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mb3';
 
   return (
     <div className="bg-tan w-100">
       <Suspense fallback={<Fallback />}>
-        <div className="bg-white w-100">
-          <div className="w-80 center pt4 pb3">
-            <HeaderProfile user={user} />
-          </div>
+        <div className="bg-white blue-dark w-100 cf ph6-l ph4-m ph2 pv3">
+          <HeaderProfile user={user} />
         </div>
         <div className={blockWidth}>
           <div className="mv4">
@@ -71,14 +69,14 @@ export const UserDetail = ({ username }) => {
             <h3 className={titleClass}>
               <FormattedMessage {...messages.statsTitle} />
             </h3>
-            <div className="w-100 flex justify-between content-stretch">
-              <div style={blockStyle} className={blockClass}>
+            <div className="w-100 cf">
+              <div className="w-33-l w-100 fl pa2">
                 <TopProjects user={user} />
               </div>
-              <div style={blockStyle} className={blockClass}>
+              <div className={blockClass}>
                 <TopCauses user={user} />
               </div>
-              <div style={blockStyle} className={blockClass}>
+              <div className={blockClass}>
                 <EditsByNumbers user={user} />
               </div>
             </div>

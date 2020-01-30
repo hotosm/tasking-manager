@@ -1,11 +1,12 @@
 import React, { useLayoutEffect, useState } from 'react';
+import { navigate } from '@reach/router';
 import mapboxgl from 'mapbox-gl';
+import { FormattedMessage } from 'react-intl';
+
+import messages from './messages';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import { mapboxLayerDefn } from '../projects/projectsMap';
 import { ListElements } from './topProjects';
-import { navigate } from '@reach/router';
-import { FormattedMessage } from 'react-intl';
-import messages from './messages';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -51,9 +52,9 @@ export const CountriesMapped = ({ user }) => {
   const stats = user.stats.read();
 
   return (
-    <div className="bg-white shadow-4 flex items-stretch">
-      <div style={{ height: '25rem' }} className="w-30 mr3 pv3 pl3">
-        <h3 className="f4 blue-dark mt0 fw6 pt3">
+    <div className="bg-white blue-dark shadow-4 flex items-stretch">
+      <div style={{ height: '25rem' }} className="w-30 mr3 pb3 pt2 pl3">
+        <h3 className="f4 mt0 fw6 pt3">
           <FormattedMessage {...messages.topCountriesTitle} />
         </h3>
         <ListElements

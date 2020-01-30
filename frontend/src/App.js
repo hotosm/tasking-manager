@@ -60,7 +60,7 @@ function App() {
               <MoreFilters path="/filters/*" />
             </ProjectsPage>
             <LearnPage path="learn" />
-            <ContributionsPage path="user">
+            <ContributionsPage path="contributions">
               <ContributionsPageIndex path="/" />
             </ContributionsPage>
             <AboutPage path="about" />
@@ -87,8 +87,8 @@ function App() {
             <ManageProjectsPage path="projects/" />
             <SelectTask path="projects/:id/tasks" />
             <MapTask path="projects/:id/map" />
+            <UserDetail path="users/:username" />
             <ValidateTask path="projects/:id/validate" />
-            <UserDetail path="user/:username" />
             <NotificationsPage path="inbox">
               <NotificationPageIndex path="/" />
               <NotificationDetail path="message/:id" />
