@@ -57,7 +57,7 @@ jobs:
           mkdir $CIRCLE_WORKING_DIRECTORY/tests/client/junit
           export OPENSSL_CONF=/etc/ssl/
           $CIRCLE_WORKING_DIRECTORY/client/node_modules/.bin/karma start ./karma.conf.js \
-            --single-run --browsers PhantomJS --reporters junit
+            --single-run --browsers FirefoxHeadless,ChromeHeadless --reporters junit
         environment:
             JUNIT_REPORT_PATH: $CIRCLE_WORKING_DIRECTORY/tests/client/junit/
             JUNIT_REPORT_NAME: test-results.xml
