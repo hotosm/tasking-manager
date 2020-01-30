@@ -37,6 +37,7 @@ const UserCountriesMap = ({ projects }) => {
         }),
       );
     } else {
+      map.resize(); //https://docs.mapbox.com/help/troubleshooting/blank-tiles/
       map.on('load', () => mapboxLayerDefn(map, geojson, id => navigate(`/projects/${id}/`)));
     }
     return () => {
@@ -51,18 +52,21 @@ export const CountriesMapped = ({ user }) => {
   const projects = user.projects.read();
   const stats = user.stats.read();
 
+  const countries = stats.countriesContributed.countries.slice(0, 5);
+  const tasksNo = countries.map(c => c.total);
+  const maxTaskNo = Math.max(...tasksNo);
+
+  const countriesPercent = countries.map(c => {
+    return { ...c, percent: c.total / maxTaskNo };
+  });
+
   return (
     <div className="bg-white blue-dark shadow-4 flex items-stretch">
-      <div style={{ height: '25rem' }} className="w-30 mr3 pb3 pt2 pl3">
+      <div style={{ height: '25rem' }} className="w-33-l pb3 pt2 ph3">
         <h3 className="f4 mt0 fw6 pt3">
           <FormattedMessage {...messages.topCountriesTitle} />
         </h3>
-        <ListElements
-          data={stats.countriesContributed.countries.slice(0, 5)}
-          valueField={'total'}
-          nameField={'name'}
-          barWidth={true}
-        />
+        <ListElements data={countriesPercent} valueField={'total'} nameField={'name'} />
       </div>
       <UserCountriesMap projects={projects} />
     </div>

@@ -3,14 +3,11 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 
-const ProgressBar = ({ percent, barWidth }) => {
+const ProgressBar = ({ percent }) => {
   const barHeight = '0.5em';
 
   return (
-    <div
-      style={{ height: barHeight, width: barWidth }}
-      className="w-90 bg-grey-light br-pill relative mt2"
-    >
+    <div className="w-100 relative mt2">
       <div
         style={{ height: barHeight, width: `${percent * 100}%` }}
         className="bg-red br-pill absolute"
@@ -19,26 +16,15 @@ const ProgressBar = ({ percent, barWidth }) => {
   );
 };
 
-export const ListElements = ({ data, valueField, nameField, barWidth }) => {
-  let maxValues = null;
-  if (barWidth === true) {
-    const values = data.map(d => d[valueField]);
-    maxValues = Math.max(...values);
-  }
-
+export const ListElements = ({ data, valueField, nameField }) => {
   return (
     <ol className="pa0 pb1">
       {data.map((p, i) => {
-        let barWidth = '100%';
-        if (maxValues !== null) {
-          const percent = (p[valueField] / maxValues) * 100;
-          barWidth = `${percent}%`;
-        }
         return (
           <li key={p.id} className="w-100 flex pv3">
             <div className="w-100 mr4">
               <p className="ma0 f7 b">{p[nameField]}</p>
-              <ProgressBar percent={p.percent} barWidth={barWidth} />
+              <ProgressBar percent={p.percent} />
             </div>
             <div className="w-30 tl self-end">
               <p className="ma0 f7">
