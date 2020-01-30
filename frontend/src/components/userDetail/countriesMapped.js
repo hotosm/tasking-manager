@@ -1,6 +1,8 @@
 import React, { useLayoutEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import mapboxgl from 'mapbox-gl';
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -16,6 +18,7 @@ try {
 }
 
 const UserCountriesMap = ({ projects }) => {
+  const locale = useSelector(state => state.preferences['locale']);
   const geojson = {
     type: 'FeatureCollection',
     features: projects.mappedProjects.map(f => {
@@ -34,7 +37,9 @@ const UserCountriesMap = ({ projects }) => {
           container: mapRef.current,
           style: MAP_STYLE,
           zoom: 0,
-        }),
+        })
+          .addControl(new mapboxgl.AttributionControl({ compact: false }))
+          .addControl(new MapboxLanguage({ defaultLanguage: locale || 'en' })),
       );
     } else {
       map.resize(); //https://docs.mapbox.com/help/troubleshooting/blank-tiles/
@@ -43,9 +48,11 @@ const UserCountriesMap = ({ projects }) => {
     return () => {
       map && map.remove();
     };
-  }, [map, mapRef, geojson]);
+  }, [map, mapRef, geojson, locale]);
 
-  return <div id="map" className="w-70" ref={mapRef}></div>;
+  return (
+    <div id="map" className="w-two-thirds-l w-100 fl" style={{ height: '40vh' }} ref={mapRef}></div>
+  );
 };
 
 export const CountriesMapped = ({ user }) => {
@@ -61,12 +68,18 @@ export const CountriesMapped = ({ user }) => {
   });
 
   return (
-    <div className="bg-white blue-dark shadow-4 flex items-stretch">
-      <div style={{ height: '25rem' }} className="w-33-l pb3 pt2 ph3">
+    <div className="bg-white blue-dark shadow-4 w-100 cf">
+      <div className="w-third-l w-100 fl pb3 pt2 ph3">
         <h3 className="f4 mt0 fw6 pt3">
           <FormattedMessage {...messages.topCountriesTitle} />
         </h3>
-        <ListElements data={countriesPercent} valueField={'total'} nameField={'name'} />
+        <ListElements
+          data={countriesPercent}
+          valueField={'total'}
+          nameField={'name'}
+          linkBase={'/explore/?location='}
+          linkField={'name'}
+        />
       </div>
       <UserCountriesMap projects={projects} />
     </div>

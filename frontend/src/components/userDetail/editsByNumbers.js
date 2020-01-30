@@ -9,9 +9,9 @@ const Legend = ({ data, oAccessor }) => {
 
   return (
     <ul className="list ma0 pa0 f6 pt3">
-      {data.map(d => {
+      {data.map((d, n) => {
         return (
-          <li className="w-100 flex mv3 items-center ttc">
+          <li key={n} className="w-100 flex mv3 items-center ttc">
             <svg style={{ width: size, height: size }} className="mr2">
               <rect width={size} height={size} className={d.classColor} />
             </svg>

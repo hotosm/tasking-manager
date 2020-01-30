@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -16,14 +17,22 @@ const ProgressBar = ({ percent }) => {
   );
 };
 
-export const ListElements = ({ data, valueField, nameField }) => {
+export const ListElements = ({ data, valueField, nameField, linkBase, linkField }) => {
   return (
     <ol className="pa0 pb1">
       {data.map((p, i) => {
         return (
-          <li key={p.id} className="w-100 flex pv3">
+          <li key={i} className="w-100 flex pv3">
             <div className="w-100 mr4">
-              <p className="ma0 f7 b">{p[nameField]}</p>
+              <p className="ma0 f7 b">
+                {linkBase ? (
+                  <Link className="link blue-dark" to={`${linkBase}${p[linkField]}`}>
+                    {p[nameField]}
+                  </Link>
+                ) : (
+                  p[nameField]
+                )}
+              </p>
               <ProgressBar percent={p.percent} />
             </div>
             <div className="w-30 tl self-end">
@@ -75,11 +84,17 @@ export const TopProjects = ({ user }) => {
   });
 
   return (
-    <div className="pb3 ph3 pt2 bg-white shadow-4">
-      <h3 className="f4 blue-dark mt0 fw6 pt3">
+    <div className="pb3 ph3 pt2 bg-white blue-dark shadow-4">
+      <h3 className="f4 mt0 fw6 pt3">
         <FormattedMessage {...messages.topProjectsMappedTitle} />
       </h3>
-      <ListElements data={tasksPercent} valueField={'total'} nameField={'name'} />
+      <ListElements
+        data={tasksPercent}
+        valueField={'total'}
+        nameField={'name'}
+        linkBase={'/projects/'}
+        linkField={'id'}
+      />
     </div>
   );
 };
