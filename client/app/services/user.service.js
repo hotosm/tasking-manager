@@ -173,7 +173,6 @@
             if (typeof isProjectManager === undefined){
                 isProjectManager = false;
             }
-            
             var params = '';
             if (typeof projectId === "number" && !isNaN(projectId)) {
               params = '?projectId=' + projectId;

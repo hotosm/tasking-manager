@@ -75,17 +75,18 @@ class UserRole(Enum):
     PROJECT_MANAGER = 2
     VALIDATOR = 4
 
-
-class UploadPolicy(Enum):
-    """ Describes the upload policies for a project file """
-    BLOCK = 0
-    ALLOW = 1
-    DISCOURAGE = 2
-
 class Editors(Enum):
     """ Enum describing the possible editors for projects """
     ID = 0
     JOSM = 1
     POTLATCH_2 = 2
     FIELD_PAPERS = 3
-    RAPID = 4
+    CUSTOM = 4
+    RAPID = 10005
+    JOSMMAPWITHAI = 10006
+
+class UploadPolicy(Enum):
+    """ Describes the upload policies for a project file """
+    BLOCK = 0
+    ALLOW = 1
+    DISCOURAGE = 2

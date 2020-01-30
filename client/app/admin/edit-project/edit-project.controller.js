@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','settingsService', editProjectController]);
+        .controller('editProjectController', ['$scope', '$location', '$routeParams', '$timeout', 'mapService','drawService', 'projectService', 'geospatialService','accountService', 'authService', 'tagService', 'licenseService','userService','messageService','settingsService', 'configService', 'editorService', editProjectController]);
 
-    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, settingsService) {
+    function editProjectController($scope, $location, $routeParams, $timeout, mapService, drawService, projectService, geospatialService, accountService, authService, tagService, licenseService, userService, messageService, settingsService, configService, editorService) {
 
         var vm = this;
         vm.currentSection = '';
@@ -46,7 +46,9 @@
             josm: false,
             potlatch2: false,
             fieldpapers: false,
-            rapid: false
+            rapid: false,
+            josmmapwithai: false,
+            custom: false
         };
 
         // Editors for validation
@@ -55,8 +57,32 @@
             josm: false,
             potlatch2: false,
             fieldpapers: false,
-            rapid: false
+            rapid: false,
+            josmmapwithai: false,
+            custom: false
         };
+        // Setup iD editor presets associated with each mapping type
+        vm.mappingTypePresets = {
+            buildings: editorService.idPresetCategories['category-building'].members,
+            roads: editorService.idPresetCategories['category-road_major'].members.concat(
+                   editorService.idPresetCategories['category-road_minor'].members),
+            waterways: editorService.idPresetCategories['category-waterway'].members,
+            landuse: editorService.idPresetCategories['category-landuse'].members,
+        };
+
+        // Setup "other" mapping type with all other presets
+        var usedPresets = []
+        Object.keys(vm.mappingTypePresets).forEach(function(mappingType) {
+            usedPresets = usedPresets.concat(vm.mappingTypePresets[mappingType]);
+        });
+        vm.mappingTypePresets.other = editorService.allIdPresets().filter(function(preset) {
+            return usedPresets.indexOf(preset) === -1;
+        });
+
+        // Chosen iD editor presets
+        vm.limitPresets = !!configService.idPresetsLimitedByDefault;
+        vm.selectedPresets = {};
+        vm.presetsFilter = "";
 
         // Tags
         vm.organisationTags = [];
@@ -112,6 +138,13 @@
         // Form
         vm.form = {};
 
+        // User info
+        vm.userRole = '';
+        vm.userIsExpert = false;
+
+        // Custom Editor
+        vm.customEditor = null;
+
         // File
         vm.fileName = '';
 
@@ -141,6 +174,8 @@
                 var resultsPromise = accountService.getUser(session.username);
                 resultsPromise.then(function (user) {
                     vm.userRole = user.role;
+                    vm.userIsExpert = user.isExpert;
+
                     // Returned the user successfully. Check the user's role
                     if (user.role !== 'PROJECT_MANAGER' && user.role !== 'ADMIN'){
                         $location.path('/');
@@ -208,9 +243,12 @@
                 vm.project.licenseId = null;
             }
 
+            vm.project.customEditor = vm.customEditor;
+
             // Prepare the data for sending to API by removing any locales with no fields
             if (!requiredFieldsMissing && vm.editForm.$valid){
-                vm.project.mappingTypes = getMappingTypesArray();
+                vm.project.mappingTypes = vm.getMappingTypesArray();
+                vm.project.idPresets = vm.getIdPresets();
                 vm.project.mappingEditors = getMappingEditorsArray();
                 vm.project.validationEditors = getValidationEditorsArray();
                 vm.project.josmPreset = vm.josmPreset;
@@ -785,6 +823,31 @@
         };
 
         /**
+         * Returns array of all iD presets offered based on the currently selected
+         * mapping types and value of the presets filter
+         */
+        vm.offeredPresets = function() {
+          var regex = vm.presetsFilter.length > 0 ? new RegExp(vm.presetsFilter, 'i') : null;
+          var presets = [];
+          Object.keys(vm.mappingTypes).forEach(function(mappingType) {
+              if (!vm.mappingTypes[mappingType]) {
+                  return;
+              }
+
+              var mappingPresets = vm.mappingTypePresets[mappingType];
+              for (var i = 0; i < mappingPresets.length; i++) {
+                if (presets.indexOf(mappingPresets[i]) === -1 &&
+                    (!regex || regex.test(mappingPresets[i]))) {
+                      presets.push(mappingPresets[i]);
+                  }
+              }
+          });
+
+          presets.sort();
+          return presets;
+        }
+
+        /**
          * Check the required fields for the default locale
          * @return boolean if something is missing (description, short description or instructions for the default locale
          */
@@ -796,6 +859,7 @@
             vm.mapperLevelMissing = false;
             vm.organisationTagMissing = false;
             vm.mappingTypeMissing = false;
+            vm.presetsMissing = false;
 
             for (var i = 0; i < vm.project.projectInfoLocales.length; i++) {
                 if (vm.project.projectInfoLocales[i].locale === vm.project.defaultLocale) {
@@ -820,8 +884,9 @@
                     break;
                 }
             }
-            vm.mappingTypeMissing = getMappingTypesArray().length === 0;
-            var somethingMissing = vm.name || vm.descriptionMissing || vm.shortDescriptionMissing || vm.instructionsMissing || vm.organisationTagMissing || vm.mappingTypeMissing;
+            vm.mappingTypeMissing = vm.getMappingTypesArray().length === 0;
+            vm.presetsMissing = vm.limitPresets && vm.getIdPresets().length === 0;
+            var somethingMissing = vm.name || vm.descriptionMissing || vm.shortDescriptionMissing || vm.instructionsMissing || vm.organisationTagMissing || vm.mappingTypeMissing || vm.presetsMissing;
             return somethingMissing;
         }
 
@@ -967,6 +1032,7 @@
                     vm.project.dueDate = new Date(vm.project.dueDate);
                 }
                 populateTypesOfMapping();
+                populateIdPresets();
                 populateEditorsForMapping();
                 populateEditorsForValidation();
                 addAOIToMap();
@@ -976,6 +1042,9 @@
                 }
                 if (vm.project.campaignTag) {
                     vm.projectCampaignTag = [vm.project.campaignTag];
+                }
+                if (vm.project.customEditor) {
+                    vm.customEditor = vm.project.customEditor;
                 }
             }, function(){
                 vm.errorReturningProjectMetadata = true;
@@ -1085,9 +1154,29 @@
         }
 
         /**
+         * Populate the iD preset selections from the project data
+         */
+        function populateIdPresets(){
+            if (vm.project.idPresets && vm.project.idPresets.length > 0) {
+                vm.limitPresets = true;
+                vm.project.idPresets.forEach(function(preset) {
+                    vm.selectedPresets[preset] = true;
+                });
+            }
+            else {
+                // If the project is still in draft status, go with the configured
+                // default as it's assumed the PM will save the project multiple
+                // times during configuration and we don't to give significance to
+                // a lack of presets at this stage
+                vm.limitPresets = vm.project.projectStatus === 'PUBLISHED' ? false :
+                                  !!configService.idPresetsLimitedByDefault;
+            }
+        }
+
+        /**
          * Get mapping types in array
          */
-        function getMappingTypesArray(){
+        vm.getMappingTypesArray = function(){
             var mappingTypesArray = [];
             if (vm.mappingTypes.roads){
                 mappingTypesArray.push("ROADS");
@@ -1117,7 +1206,9 @@
                 vm.mappingEditors.josm = vm.project.mappingEditors.indexOf("JOSM") != -1;
                 vm.mappingEditors.potlatch2 = vm.project.mappingEditors.indexOf("POTLATCH_2") != -1;
                 vm.mappingEditors.fieldpapers = vm.project.mappingEditors.indexOf("FIELD_PAPERS") != -1;
+                vm.mappingEditors.custom = vm.project.mappingEditors.indexOf("CUSTOM") != -1;
                 vm.mappingEditors.rapid = vm.project.mappingEditors.indexOf("RAPID") != -1;
+                vm.mappingEditors.josmmapwithai = vm.project.mappingEditors.indexOf("JOSMMAPWITHAI") != -1;
             }
         }
 
@@ -1132,14 +1223,20 @@
             if (vm.mappingEditors.josm){
                 mappingEditorsArray.push("JOSM");
             }
+            if (vm.mappingEditors.rapid){
+                mappingEditorsArray.push("RAPID");
+            }
+            if (vm.mappingEditors.josmmapwithai){
+                mappingEditorsArray.push("JOSMMAPWITHAI");
+            }
             if (vm.mappingEditors.potlatch2) {
                 mappingEditorsArray.push("POTLATCH_2");
             }
             if (vm.mappingEditors.fieldpapers){
                 mappingEditorsArray.push("FIELD_PAPERS");
             }
-            if (vm.mappingEditors.rapid){
-                mappingEditorsArray.push("RAPID");
+            if (vm.mappingEditors.custom && vm.project.customEditor && vm.project.customEditor.enabled){
+                mappingEditorsArray.push("CUSTOM");
             }
             return mappingEditorsArray;
         }
@@ -1155,7 +1252,9 @@
                 vm.validationEditors.josm = vm.project.validationEditors.indexOf("JOSM") != -1;
                 vm.validationEditors.potlatch2 = vm.project.validationEditors.indexOf("POTLATCH_2") != -1;
                 vm.validationEditors.fieldpapers = vm.project.validationEditors.indexOf("FIELD_PAPERS") != -1;
+                vm.validationEditors.custom = vm.project.validationEditors.indexOf("CUSTOM") != -1;
                 vm.validationEditors.rapid = vm.project.validationEditors.indexOf("RAPID") != -1;
+                vm.validationEditors.josmmapwithai = vm.project.validationEditors.indexOf("JOSMMAPWITHAI") != -1;
             }
         }
 
@@ -1170,16 +1269,46 @@
             if (vm.validationEditors.josm){
                 validationEditorsArray.push("JOSM");
             }
+            if (vm.validationEditors.rapid){
+                validationEditorsArray.push("RAPID");
+            }
+            if (vm.validationEditors.josmmapwithai){
+                validationEditorsArray.push("JOSMMAPWITHAI");
+            }
             if (vm.validationEditors.potlatch2) {
                 validationEditorsArray.push("POTLATCH_2");
             }
             if (vm.validationEditors.fieldpapers){
                 validationEditorsArray.push("FIELD_PAPERS");
             }
-            if (vm.validationEditors.rapid){
-                validationEditorsArray.push("RAPID");
+            if (vm.validationEditors.custom && vm.project.customEditor && vm.project.customEditor.enabled){
+                validationEditorsArray.push("CUSTOM");
             }
             return validationEditorsArray;
+        }
+
+        /**
+         * Get selected iD presets as an array. Only presets for active mapping
+         * types are included, and only if presets are to be limited at all
+         */
+        vm.getIdPresets = function() {
+            var chosenPresets = Object.keys(vm.selectedPresets).filter(function(preset) {
+                return vm.selectedPresets[preset];
+            });
+
+            if (!vm.limitPresets || chosenPresets.length === 0) {
+                return [];
+            }
+
+            var presets = [];
+            Object.keys(vm.mappingTypes).forEach(function(mappingType) {
+                if (vm.mappingTypes[mappingType]) {
+                    presets = presets.concat(intersectingElements(chosenPresets,
+                                                                  vm.mappingTypePresets[mappingType]));
+                }
+            });
+
+            return presets;
         }
 
          /**
@@ -1234,6 +1363,33 @@
             }
             return projectName;
         }
+
+        /**
+         * Return array of unique elements that appear in both arrays a and b
+         */
+        function intersectingElements(a, b){
+            if (!a || !b || a.length === 0 || b.length === 0) {
+              return [];
+            }
+
+            var intersecting = [];
+            for (var i = 0; i < a.length; i++) {
+                if (b.indexOf(a[i]) !== -1 && intersecting.indexOf(a[i]) === -1) {
+                    intersecting.push(a[i]);
+                }
+            }
+
+            return intersecting;
+        }
+
+        /*
+         * Removes the custom editor from the project
+         */
+        vm.deleteCustomEditor = function(){
+            delete vm.customEditor;
+            populateEditorsForMapping();
+            populateEditorsForValidation();
+        };
 
         /**
          * Get all project files for a project

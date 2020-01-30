@@ -27,11 +27,10 @@ STATUS=$?
 
 # Verify that osmosis ran successfully.
 if [ "$STATUS" -ne "0" ]; then
-	
+
 	echo "Osmosis failed, aborting."
 	exit $STATUS
-	
+
 fi
 
 mv $TEMP_OSM_FILE $OSM_FILE
-

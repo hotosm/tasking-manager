@@ -114,7 +114,7 @@ class User(db.Model):
 
 
     @staticmethod
-    def filter_users(user_filter: str, project_id: int, page: int, 
+    def filter_users(user_filter: str, project_id: int, page: int,
                      is_project_manager:bool=False) -> UserFilterDTO:
         """ Finds users that matches first characters, for auto-complete.
 
@@ -130,7 +130,6 @@ class User(db.Model):
             query = query.filter(User.role.in_([UserRole.ADMIN.value, UserRole.PROJECT_MANAGER.value]))
 
         results = query.paginate(page, 20, True)
-            
         if results.total == 0:
             raise NotFound()
 

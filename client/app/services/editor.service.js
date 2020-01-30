@@ -6,22 +6,25 @@
 
     angular
         .module('taskingManager')
-        .service('editorService', ['$window', '$location', '$q', 'mapService', 'configService', editorService]);
+        .service('editorService', ['$window', '$location', '$q', 'mapService', 'configService', 'categories', editorService]);
 
     var JOSM_COMMAND_TIMEOUT = 1000;
     var josmLastCommand = 0;
 
-    function editorService($window, $location, $q, mapService, configService) {
+    function editorService($window, $location, $q, mapService, configService, idPresetCategories) {
 
         var service = {
             sendJOSMCmd: sendJOSMCmd,
             launchFieldPapersEditor: launchFieldPapersEditor,
             launchPotlatch2Editor: launchPotlatch2Editor,
             launchIdEditor: launchIdEditor,
+            launchCustomIdEditor: launchCustomIdEditor,
             launchRapidEditor: launchRapidEditor,
             getGPXUrl: getGPXUrl,
             getOSMXMLUrl: getOSMXMLUrl,
-            getProjectFileOSMXMLUrl: getProjectFileOSMXMLUrl
+            idPresetCategories: idPresetCategories,
+            allIdPresets: allIdPresets,
+            getProjectFileOSMXMLUrl: getProjectFileOSMXMLUrl,
         };
 
         return service;
@@ -56,8 +59,79 @@
          * @param projectId
          * @param taskId
          */
-        function launchIdEditor(centroid, changesetComment, imageryUrl, projectId, taskId){
+        function launchIdEditor(centroid, changesetComment, imageryUrl, projectId, taskId, presets){
             var base = 'http://www.openstreetmap.org/edit?editor=id&';
+            var zoom = mapService.getOSMMap().getView().getZoom();
+            var url = base + '#map=' +
+                        [zoom, centroid[1], centroid[0]].join('/');
+            // Add changeset comment
+            var changeset = ''; // default to empty string
+            if (changesetComment && changesetComment !== ''){
+                changeset = changesetComment;
+            }
+            url += '&comment=' + encodeURIComponent(changeset);
+            // Add imagery
+            if (imageryUrl && imageryUrl !== '') {
+                // url is supposed to look like tms[22]:http://hiu...
+                var urlForImagery = imageryUrl.substring(imageryUrl.indexOf('http'));
+                urlForImagery = urlForImagery.replace('zoom', 'z');
+                url += "&background=custom:" + encodeURIComponent(urlForImagery);
+            }
+            // Add GPX
+            if (projectId && projectId !== '' && taskId && taskId !== '') {
+                url += "&gpx=" + getGPXUrl(projectId, taskId);
+            }
+            // Add preset limits
+            if (presets && presets.length > 0) {
+                url += "&presets=" + encodeURIComponent(presets.join(','));
+            }
+            $window.open(url);
+        }
+
+        /**
+         * Launch custom iD editor
+         * @param centroid
+         * @param changesetComment
+         * @param imageryUrl
+         * @param projectId
+         * @param taskId
+         * @param url
+         */
+        function launchCustomIdEditor(centroid, changesetComment, imageryUrl, projectId, taskId, url){
+            var base = url;
+            var zoom = mapService.getOSMMap().getView().getZoom();
+            var url = base + '#map=' +
+                        [zoom, centroid[1], centroid[0]].join('/');
+            // Add changeset comment
+            var changeset = ''; // default to empty string
+            if (changesetComment && changesetComment !== ''){
+                changeset = changesetComment;
+            }
+            url += '&comment=' + encodeURIComponent(changeset);
+            // Add imagery
+            if (imageryUrl && imageryUrl !== '') {
+                // url is supposed to look like tms[22]:http://hiu...
+                var urlForImagery = imageryUrl.substring(imageryUrl.indexOf('http'));
+                urlForImagery = urlForImagery.replace('zoom', 'z');
+                url += "&background=custom:" + encodeURIComponent(urlForImagery);
+            }
+            // Add GPX
+            if (projectId && projectId !== '' && taskId && taskId !== '') {
+                url += "&gpx=" + getGPXUrl(projectId, taskId);
+            }
+            $window.open(url);
+        }
+
+        /**
+         * Launch the RapiD editor
+         * @param centroid
+         * @param changesetComment
+         * @param imageryUrl
+         * @param projectId
+         * @param taskId
+         */
+        function launchRapidEditor(centroid, changesetComment, imageryUrl, projectId, taskId){
+            var base = 'https://www.mapwith.ai/rapid?';
             var zoom = mapService.getOSMMap().getView().getZoom();
             var url = base + '#map=' +
                         [zoom, centroid[1], centroid[0]].join('/');
@@ -219,6 +293,27 @@
                 osmUrl = $location.protocol() + '://' + $location.host() + osmUrl;
             }
             return encodeURIComponent(osmUrl);
+        }
+
+        /**
+         * Returns a flat (uncategorized) array of all available iD presets in
+         * alphabetical order
+         */
+        function allIdPresets() {
+            var presets = [];
+            Object.keys(idPresetCategories).forEach(function(category) {
+                // Some presets are duplicated between categories, so only add
+                // if unseen
+                var categoryMembers = idPresetCategories[category].members;
+                for (var i = 0; i < categoryMembers.length; i++) {
+                    if (presets.indexOf(categoryMembers[i]) === -1) {
+                        presets.push(categoryMembers[i]);
+                    }
+                }
+            });
+
+            presets.sort();
+            return presets;
         }
 
         /**

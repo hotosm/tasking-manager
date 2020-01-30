@@ -13,4 +13,4 @@ software useful.  However:
 law.
 * Unless required by applicable law, no liability will be accepted by
 the authors and distributors of this software for any damages caused
-as a result of its use. 
+as a result of its use.

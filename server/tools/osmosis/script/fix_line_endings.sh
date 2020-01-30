@@ -11,4 +11,3 @@ find . -iname "*.xml" -exec svn propset svn:eol-style native '{}' \;
 find . -iname "*.txt" -exec svn propset svn:eol-style native '{}' \;
 find . -iname "*.osm" -exec svn propset svn:eol-style native '{}' \;
 find . -iname "*.osc" -exec svn propset svn:eol-style native '{}' \;
-

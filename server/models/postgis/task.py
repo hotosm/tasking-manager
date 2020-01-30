@@ -618,7 +618,6 @@ class Task(db.Model):
         :param project_id: Owning project ID
         :return: geojson.FeatureCollection
         """
-
         if task_ids:
             project_tasks = \
                 db.session.query(Task.id,

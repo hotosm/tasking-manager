@@ -7,7 +7,6 @@ from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
 from server.models.postgis.statuses import ProjectStatus, ProjectPriority, MappingTypes, TaskCreationMode, Editors, UploadPolicy
 
-
 def is_known_project_status(value):
     """ Validates that Project Status is known value """
     if type(value) == list:
@@ -53,7 +52,8 @@ def is_known_editor(value):
     except KeyError:
         raise ValidationError(f'Unknown editor: {value} Valid values are {Editors.ID.name}, '
                               f'{Editors.JOSM.name}, {Editors.POTLATCH_2.name}, '
-                              f'{Editors.FIELD_PAPERS.name}, {Editors.RAPID.name}')
+                              f'{Editors.RAPID.name}, {Editors.JOSMMAPWITHAI.name}, '
+                              f'{Editors.FIELD_PAPERS.name}, {Editors.CUSTOM.name}')
 
 
 def is_known_task_creation_mode(value):
@@ -95,6 +95,14 @@ class ProjectInfoDTO(Model):
     per_task_instructions = StringType(default='', serialized_name='perTaskInstructions')
 
 
+class CustomEditorDTO(Model):
+    """ DTO to define a custom editor """
+    name = StringType(required=True)
+    description = StringType()
+    url = StringType(required=True)
+    enabled = BooleanType(default=False)
+
+
 class ProjectDTO(Model):
     """ Describes JSON model for a tasking manager project """
     project_id = IntType(serialized_name='projectId')
@@ -121,6 +129,7 @@ class ProjectDTO(Model):
     due_date = DateTimeType(serialized_name='dueDate')
     imagery = StringType()
     josm_preset = StringType(serialized_name='josmPreset', serialize_when_none=False)
+    id_presets = ListType(StringType, serialized_name='idPresets', default=[])
     mapping_types = ListType(StringType, serialized_name='mappingTypes', validators=[is_known_mapping_type])
     campaign_tag = StringType(serialized_name='campaignTag')
     organisation_tag = StringType(serialized_name='organisationTag')
@@ -135,6 +144,7 @@ class ProjectDTO(Model):
                                     validators=[is_known_task_creation_mode], serialize_when_none=False)
     mapping_editors = ListType(StringType, min_size=1, required=True, serialized_name='mappingEditors', validators=[is_known_editor])
     validation_editors = ListType(StringType, min_size=1, required=True, serialized_name='validationEditors', validators=[is_known_editor])
+    custom_editor = ModelType(CustomEditorDTO, serialized_name='customEditor', serialize_when_none=False)
 
 
 class ProjectSearchDTO(Model):
@@ -271,24 +281,6 @@ class PMDashboardDTO(Model):
     active_projects = ListType(ModelType(ProjectSummary), serialized_name='activeProjects')
     archived_projects = ListType(ModelType(ProjectSummary), serialized_name='archivedProjects')
 
-class ProjectFileDTO(Model):
-    """ Contains project file info """
-    id = IntType(serialized_name='id')
-    path = StringType(required=True, serialized_name='path')
-    file_name = StringType(required=True, serialized_name="fileName")
-    project_id = IntType(required=True, serialized_name="projectId")
-    upload_policy = StringType(required=True, validators=[is_known_upload_policy], serialized_name='uploadPolicy')
-
-
-class ProjectFilesDTO(Model):
-    """ DTO used to return all files in a project """
-    def __init__(self):
-        """ DTO constructor initialise all arrays to empty """
-        super().__init__()
-        self.project_files = []
-
-    project_files = ListType(ModelType(ProjectFileDTO), serialized_name='projectFiles')
-
 class ProjectTaskAnnotationsDTO(Model):
     """ DTO for task annotations of a project """
 
@@ -328,3 +320,21 @@ class ProjectUserStatsDTO(Model):
     time_spent_mapping = IntType(serialized_name='timeSpentMapping')
     time_spent_validating = IntType(serialized_name='timeSpentValidating')
     total_time_spent = IntType(serialized_name='totalTimeSpent')
+
+class ProjectFileDTO(Model):
+    """ Contains project file info """
+    id = IntType(serialized_name='id')
+    path = StringType(required=True, serialized_name='path')
+    file_name = StringType(required=True, serialized_name="fileName")
+    project_id = IntType(required=True, serialized_name="projectId")
+    upload_policy = StringType(required=True, validators=[is_known_upload_policy], serialized_name='uploadPolicy')
+
+
+class ProjectFilesDTO(Model):
+    """ DTO used to return all files in a project """
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty """
+        super().__init__()
+        self.project_files = []
+
+    project_files = ListType(ModelType(ProjectFileDTO), serialized_name='projectFiles')

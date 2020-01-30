@@ -70,7 +70,7 @@ CREATE INDEX idx_ways_linestring ON ways USING gist (linestring);
 ALTER TABLE ONLY ways CLUSTER ON idx_ways_bbox;
 ALTER TABLE ONLY ways CLUSTER ON idx_ways_linestring;
 
--- Optional: CLUSTER imported tables. CLUSTER takes a significant amount of time to run and a 
+-- Optional: CLUSTER imported tables. CLUSTER takes a significant amount of time to run and a
 -- significant amount of free disk space but speeds up some queries.
 
 --CLUSTER nodes;

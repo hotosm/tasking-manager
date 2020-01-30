@@ -81,5 +81,12 @@
                 return $q.reject("error");
             })
         }
+
+        /**
+           * Returns true if the logged-in user has expert mode enabled
+           */
+          function isExpert() {
+            return accountService.getAccount() && accountService.getAccount().isExpert;
+        }
     }
 })();

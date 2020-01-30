@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: circleci/python:3-stretch-browsers
+    - image: circleci/python:3-buster-browsers
     steps:
     - checkout
     - setup_remote_docker
@@ -15,6 +15,14 @@ jobs:
           sudo apt-get install -y nodejs libgeos-dev # Required for shapely
           sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
           sudo pip3 install awscli --upgrade
+    - run:
+        name: Install GDAL and dependencies for pip gdal
+        command: |
+            echo "deb-src http://deb.debian.org/debian buster main" | sudo tee /etc/apt/sources.list.d/source-repos-tmp.list > /dev/null
+            cat "/etc/apt/sources.list.d/source-repos-tmp.list"
+            sudo apt update
+            sudo apt build-dep -y python3-gdal
+            sudo apt install gdal-bin libgdal-dev
     - run:
         name: Set folder permissions
         command: |
@@ -39,12 +47,15 @@ jobs:
           virtualenv env
           $CIRCLE_WORKING_DIRECTORY/env/bin/pip install --upgrade pip
           $CIRCLE_WORKING_DIRECTORY/env/bin/pip install -r requirements.txt
+          # Install python gdal -- it MUST match the version of gdal installed
+          $CIRCLE_WORKING_DIRECTORY/env/bin/pip install gdal==$(gdalinfo --version | awk '{print $2}' | awk -F, '{print $1}')
     - run:
         name: Run JS Unit tests
         command: |
           # JS Unit Tests
           cd $CIRCLE_WORKING_DIRECTORY/tests/client
           mkdir $CIRCLE_WORKING_DIRECTORY/tests/client/junit
+          export OPENSSL_CONF=/etc/ssl/
           $CIRCLE_WORKING_DIRECTORY/client/node_modules/.bin/karma start ./karma.conf.js \
             --single-run --browsers PhantomJS --reporters junit
         environment:
@@ -248,7 +259,7 @@ workflows:
               - deployment/hot-tasking-manager
         requires:
           - build
-        stack_name: "prod-restored"
+        stack_name: "production"
         environment_name: "production"
         postgres_db: POSTGRES_DB_PRODUCTION
         postgres_password: POSTGRES_PASSWORD_PRODUCTION

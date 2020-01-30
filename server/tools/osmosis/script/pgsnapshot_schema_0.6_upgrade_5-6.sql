@@ -11,10 +11,10 @@ BEGIN
 	SET enable_seqscan = false;
 	SET enable_mergejoin = false;
 	SET enable_hashjoin = false;
-	
+
 	FOR tagRow IN SELECT * FROM node_tags ORDER BY node_id LOOP
 		currentId := tagRow.node_id;
-		
+
 		IF currentId <> previousId THEN
 			IF previousId IS NOT NULL THEN
 				IF result IS NOT NULL THEN
@@ -26,16 +26,15 @@ BEGIN
 				END IF;
 			END IF;
 		END IF;
-		
 		IF result IS NULL THEN
 			result := tagRow.k => tagRow.v;
 		ELSE
 			result := result || (tagRow.k => tagRow.v);
 		END IF;
-		
+
 		previousId := currentId;
 	END LOOP;
-	
+
 	IF previousId IS NOT NULL THEN
 		IF result IS NOT NULL THEN
 			UPDATE nodes SET tags = result WHERE id = previousId;
@@ -55,10 +54,10 @@ BEGIN
 	SET enable_seqscan = false;
 	SET enable_mergejoin = false;
 	SET enable_hashjoin = false;
-	
+
 	FOR tagRow IN SELECT * FROM way_tags ORDER BY way_id LOOP
 		currentId := tagRow.way_id;
-		
+
 		IF currentId <> previousId THEN
 			IF previousId IS NOT NULL THEN
 				IF result IS NOT NULL THEN
@@ -70,16 +69,15 @@ BEGIN
 				END IF;
 			END IF;
 		END IF;
-		
 		IF result IS NULL THEN
 			result := tagRow.k => tagRow.v;
 		ELSE
 			result := result || (tagRow.k => tagRow.v);
 		END IF;
-		
+
 		previousId := currentId;
 	END LOOP;
-	
+
 	IF previousId IS NOT NULL THEN
 		IF result IS NOT NULL THEN
 			UPDATE ways SET tags = result WHERE id = previousId;
@@ -99,10 +97,10 @@ BEGIN
 	SET enable_seqscan = false;
 	SET enable_mergejoin = false;
 	SET enable_hashjoin = false;
-	
+
 	FOR tagRow IN SELECT * FROM relation_tags ORDER BY relation_id LOOP
 		currentId := tagRow.relation_id;
-		
+
 		IF currentId <> previousId THEN
 			IF previousId IS NOT NULL THEN
 				IF result IS NOT NULL THEN
@@ -114,16 +112,15 @@ BEGIN
 				END IF;
 			END IF;
 		END IF;
-		
 		IF result IS NULL THEN
 			result := tagRow.k => tagRow.v;
 		ELSE
 			result := result || (tagRow.k => tagRow.v);
 		END IF;
-		
+
 		previousId := currentId;
 	END LOOP;
-	
+
 	IF previousId IS NOT NULL THEN
 		IF result IS NOT NULL THEN
 			UPDATE relations SET tags = result WHERE id = previousId;
@@ -143,10 +140,10 @@ BEGIN
 	SET enable_seqscan = false;
 	SET enable_mergejoin = false;
 	SET enable_hashjoin = false;
-	
+
 	FOR wayNodeRow IN SELECT * FROM way_nodes ORDER BY way_id, sequence_id LOOP
 		currentId := wayNodeRow.way_id;
-		
+
 		IF currentId <> previousId THEN
 			IF previousId IS NOT NULL THEN
 				IF result IS NOT NULL THEN
@@ -158,16 +155,15 @@ BEGIN
 				END IF;
 			END IF;
 		END IF;
-		
 		IF result IS NULL THEN
 			result = ARRAY[wayNodeRow.node_id];
 		ELSE
 			result = array_append(result, wayNodeRow.node_id);
 		END IF;
-		
+
 		previousId := currentId;
 	END LOOP;
-	
+
 	IF previousId IS NOT NULL THEN
 		IF result IS NOT NULL THEN
 			UPDATE ways SET nodes = result WHERE id = previousId;
@@ -210,7 +206,7 @@ SELECT build_way_nodes();
 -- Remove the way nodes function.
 DROP FUNCTION build_way_nodes();
 
--- Organise data according to geographical location. 
+-- Organise data according to geographical location.
 CLUSTER nodes USING idx_nodes_geom;
 CLUSTER ways USING idx_ways_linestring;
 

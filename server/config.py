@@ -88,3 +88,69 @@ class EnvironmentConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_POOL_SIZE = 10
     SQLALCHEMY_MAX_OVERFLOW = 10
+    SECRET_KEY = os.getenv('TM_SECRET', None)
+    SMTP_SETTINGS = {
+        'host': os.getenv('TM_SMTP_HOST', None),
+        'smtp_user': os.getenv('TM_SMTP_USER', None),
+        'smtp_port': os.getenv('TM_SMTP_PORT', 25),  # GMail SMTP is over port 587 and will fail on the default port
+        'smtp_password': os.getenv('TM_SMTP_PASSWORD', None),
+    }
+    # Note that there must be exactly the same number of Codes as languages, or errors will occur
+    SUPPORTED_LANGUAGES = {
+        'codes': 'ar, cs, da, de, en, es, fr, hu, id, it, ja, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, ta, uk, zh_TW',
+        'languages': 'Arabic, Česky, Dansk, Deutsch, English, Español, Français, Magyar, Indonesia, Italiano, 日本語, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, 中文'
+    }
+    PROJECT_FILES_DIR = './server/project_files'
+    MAPILLARY_API = {
+        "base": "https://a.mapillary.com/v3/",
+        "clientId": "LVZRT2ZMZkl5RFpGZFp3NzZKaGhaQTpmMGVmNDU1NDI0NmI2YjNm"
+    }
+
+
+class ProdConfig(EnvironmentConfig):
+    APP_BASE_URL = 'https://tasks.kaart.com'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   f'url={APP_BASE_URL}/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.ERROR
+
+
+class StageConfig(EnvironmentConfig):
+    APP_BASE_URL = 'https://tasks-stage.kaart.com'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   f'url={APP_BASE_URL}/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-stage-logs'
+    LOG_LEVEL = logging.DEBUG
+
+
+class DemoConfig(EnvironmentConfig):
+    APP_BASE_URL = 'https://tasks-demo.hotosm.org'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   f'url={APP_BASE_URL}/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
+
+class StagingConfig(EnvironmentConfig):
+    # Currently being used by Thinkwhere
+    APP_BASE_URL = 'http://tasking-manager-staging.eu-west-1.elasticbeanstalk.com'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   f'url={APP_BASE_URL}/api/docs'
+    LOG_DIR = '/var/log/tasking-manager-logs'
+    LOG_LEVEL = logging.DEBUG
+
+
+class DevConfig(EnvironmentConfig):
+    APP_BASE_URL = 'http://127.0.0.1:5000'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   f'url={APP_BASE_URL}/api/docs'
+    LOG_DIR = 'logs'
+    LOG_LEVEL = logging.DEBUG
+
+
+class DevIPv6Config(EnvironmentConfig):
+    APP_BASE_URL = 'http://[::1]:5000'
+    API_DOCS_URL = f'{APP_BASE_URL}/api-docs/swagger-ui/index.html?' + \
+                   f'url={APP_BASE_URL}/api/docs'
+    LOG_DIR = 'logs'
+    LOG_LEVEL = logging.DEBUG

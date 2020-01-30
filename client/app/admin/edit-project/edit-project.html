@@ -79,6 +79,13 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a title="{{ 'Add or edit a custom editor' | translate }}" ng-click="editProjectCtrl.currentSection = 'customEditor'"
+                                       class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'customEditor' ? 'aside-menu-item--active' : ''"
+                                       ng-show="editProjectCtrl.userIsExpert">
+                                        {{ 'Custom Editor' | translate }}
+                                    </a>
+                                </li>
+                                <li>
                                     <a title="{{ 'Project Wide JOSM Settings' | translate }}" ng-click="editProjectCtrl.currentSection = 'josmsettings'"
                                        class="aside-menu-item" ng-class="editProjectCtrl.currentSection === 'josmsettings' ? 'aside-menu-item--active' : ''">
                                         {{ 'JOSM Settings' | translate }}
@@ -323,22 +330,57 @@
                                     <p>{{ 'Setting the level will help the mappers find suitable projects to work on. You can enforce the level required for mapping in the permissions section.' | translate }}</p>
                                 </div>
                                 <div class="form__group form__group--section">
-                                    <label class="form__label">{{ 'Type(s) of mapping' | translate }} *</label>
-                                    <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.roads"/>{{ 'Roads' | translate }}
-                                    </label>
-                                    <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.buildings"/>{{ 'Buildings' | translate }}
-                                    </label>
-                                    <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.waterways"/>{{ 'Waterways' | translate }}
-                                    </label>
-                                    <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.landuse"/>{{ 'Landuse' | translate }}
-                                    </label>
-                                    <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.other"/>{{ 'Other' | translate }}
-                                    </label>
+                                    <div class="edit-mapping-types">
+                                        <div>
+                                            <label class="form__label">{{ 'Type(s) of mapping' | translate }}</label>
+                                            <label class="form__option">
+                                                <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.roads"/>{{ 'Roads' | translate }}
+                                            </label>
+                                            <label class="form__option">
+                                                <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.buildings"/>{{ 'Buildings' | translate }}
+                                            </label>
+                                            <label class="form__option">
+                                                <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.waterways"/>{{ 'Waterways' | translate }}
+                                            </label>
+                                            <label class="form__option">
+                                                <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.landuse"/>{{ 'Landuse' | translate }}
+                                            </label>
+                                            <label class="form__option">
+                                                <input type="checkbox" ng-model="editProjectCtrl.mappingTypes.other"/>{{ 'Other' | translate }}
+                                            </label>
+                                        </div>
+                                        <div ng-show="editProjectCtrl.limitPresets || editProjectCtrl.userIsExpert">
+                                            <div class="limit-presets">
+                                                <label class="form__label">{{ 'iD Editor Presets *' | translate }}</label>
+                                                <p>
+                                                    {{ 'Choose 1 or more presets or disable preset limiting' | translate }}
+                                                </p>
+                                                <label class="form__option">
+                                                    <input type="checkbox" ng-model="editProjectCtrl.limitPresets"/>
+                                                    {{ 'Limit iD Editor Presets' | translate }}
+                                                </label>
+                                                <div ng-show="editProjectCtrl.getMappingTypesArray().length > 0">
+                                                      <div ng-show="editProjectCtrl.limitPresets">
+                                                          <label class="form__label">{{ 'Offer Presets:' | translate }}</label>
+                                                          <input type="text"
+                                                                ng-model="editProjectCtrl.presetsFilter"
+                                                                placeholder="{{ 'Type to narrow presets' | translate }}"
+                                                                class="form__control form__control--medium narrow-presets"
+                                                          />
+                                                          <div ng-repeat="preset in editProjectCtrl.offeredPresets()">
+                                                              <label class="form__option">
+                                                                  <input type="checkbox" ng-model="editProjectCtrl.selectedPresets[preset]"/>{{ preset }}
+                                                              </label>
+                                                          </div>
+                                                          
+                                                      </div>
+                                                </div>
+                                                <p ng-hide="!editProjectCtrl.limitPresets || editProjectCtrl.getMappingTypesArray().length > 0">
+                                                  {{ 'Tip: choose Types of Mapping to view preset options' | translate }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form__group form__group--section">
                                     <label class="form__label">{{ 'Organisation Tag' | translate }} *</label>
@@ -515,8 +557,14 @@
                                     <label class="form__option">
                                         <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
                                     </label>
+                                    <label ng-show="editProjectCtrl.customEditor.enabled && editProjectCtrl.userIsExpert" class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.custom"/>{{ editProjectCtrl.customEditor.name }}
+                                    </label>
                                     <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.rapid"/>{{ 'RapiD' | translate }}
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.rapid"/>{{ 'RapiD Editor' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.mappingEditors.josmmapwithai"/>{{ 'JOSM (MapWithAI)' | translate }}
                                     </label>
                                     <p class="error" ng-show="editProjectCtrl.project.mappingEditors.length < 1">
                                         {{ 'You need at least one mapping editor.' | translate }}
@@ -536,8 +584,14 @@
                                     <label class="form__option">
                                         <input type="checkbox" ng-model="editProjectCtrl.validationEditors.fieldpapers"/>{{ 'Field Papers' | translate }}
                                     </label>
+                                    <label ng-show="editProjectCtrl.customEditor.enabled && editProjectCtrl.userIsExpert" class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.custom"/>{{ editProjectCtrl.customEditor.name }}
+                                    </label>
                                     <label class="form__option">
-                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.rapid"/>{{ 'RapiD' | translate }}
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.rapid"/>{{ 'RapiD Editor' | translate }}
+                                    </label>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.validationEditors.josmmapwithai"/>{{ 'JOSM (MapWithAI)' | translate }}
                                     </label>
                                     <p class="error" ng-show="editProjectCtrl.project.validationEditors.length < 1">
                                         {{ 'You need at least one validation editor.' | translate }}
@@ -644,6 +698,52 @@
                             </fieldset>
                         </div>
                             <!--/ actions -->
+
+                            <!-- custom editor -->
+                        <div ng-show="editProjectCtrl.currentSection === 'customEditor'">
+                            <fieldset class="form__fieldset">
+                                <div class="form__group form__group--section">
+                                <label class="form__label">{{ 'Custom Editor' | translate }}</label>
+                                <p class="important-message"><strong>{{ 'Note' | translate }}:</strong> This feature only supports iD urls and JOSM remote control urls without parameters.</p>
+                                <label class="form__label">{{ 'Name' | translate }}:</label>
+                                <input type="text" class="form__control"
+                                        name="name"
+                                        ng-model="editProjectCtrl.customEditor.name"/>
+                                <label class="form__label">{{ 'Description' | translate }}:</label>
+                                <textarea
+                                    class="form__control"
+                                    ng-model="editProjectCtrl.customEditor.description" rows="10">
+                                </textarea>
+                                <p><strong>{{ 'Tip' | translate }}:</strong> {{ 'You can use Markdown. (HTML is not allowed)' | translate }}</p>
+                                <p>{{ 'The description will appear when a user selects the editor from the editor dropdown.' | translate }}</p>
+                                <button class="button button--secondary button--small"
+                                        ng-click="editProjectCtrl.showPreviewShortDescription = !editProjectCtrl.showPreviewShortDescription">
+                                    {{ 'Preview' | translate }}
+                                </button>
+                                <p class="textblock--fulltext" ng-show="editProjectCtrl.showPreviewShortDescription"
+                                    markdown-to-html="editProjectCtrl.customEditor.description"
+                                    ng-model="editProjectCtrl.customEditor.description"></p>
+                                </p>
+                                <label class="form__label">URL:</label>
+                                <input type="text" class="form__control"
+                                        name="url"
+                                        ng-model="editProjectCtrl.customEditor.url"/>
+                                    <label class="form__option">
+                                        <input type="checkbox" ng-model="editProjectCtrl.customEditor.enabled"/>{{ 'Enabled' | translate }}
+                                    </label>
+                                </div>
+                                <div class="form__group form__group--section" ng-show="editProjectCtrl.project.customEditor">
+                                    <label class="form__label">{{ 'Delete Custom Editor' | translate }}</label>
+                                        <p>{{ 'This will remove the custom editor from the project. Are you sure you don\'t want to disable the custom editor by toggling the "Enabled" checkbox above?' | translate }}</p>
+                                    <button class="button button--secondary" type="button"
+                                            ng-click="editProjectCtrl.deleteCustomEditor()">
+                                            {{ 'Remove Custom Editor' | translate }}
+                                    </button>
+                                </div>
+                            </fieldset>
+                        </div>
+                            <!--/ custom editor -->
+
                             <!-- josmsettings -->
                         <div ng-show="editProjectCtrl.currentSection === 'josmsettings'">
                             <fieldset class="form__fieldset">
@@ -722,6 +822,9 @@
                                     </p>
                                     <p class="error" ng-show="editProjectCtrl.instructionsMissing">
                                         {{ 'Instructions for the default locale' | translate }} "{{ editProjectCtrl.project.defaultLocale }}" {{ 'are missing.' | translate }}
+                                    </p>
+                                    <p class="error" ng-show="editProjectCtrl.presetsMissing">
+                                        {{ 'Select at least one iD preset or disable iD preset limiting.' | translate }}
                                     </p>
                                     <p class="error" ng-show="!editProjectCtrl.editForm.campaignTag.$valid">
                                         {{ 'Please make sure you only have one campaign tag.' | translate }}

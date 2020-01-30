@@ -8,7 +8,7 @@ from flask import current_app
 from server.models.dtos.project_dto import DraftProjectDTO, ProjectDTO, ProjectCommentsDTO, ProjectFileDTO
 from server.models.postgis.project import Project, Task, ProjectStatus
 from server.models.postgis.project_files import ProjectFiles
-from server.models.postgis.statuses import TaskCreationMode, UploadPolicy, UserRole
+from server.models.postgis.statuses import TaskCreationMode, UserRole, UploadPolicy
 from server.models.postgis.task import TaskHistory, TaskStatus, TaskAction
 from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
 from server.services.grid.grid_service import GridService
@@ -41,6 +41,10 @@ class ProjectAdminService:
         :raises InvalidGeoJson
         :returns ID of new draft project
         """
+        # First things first, we need to validate that the author_id is a PM. issue #1715
+        if not UserService.is_user_a_project_manager(draft_project_dto.user_id):
+            raise(ProjectAdminServiceError(f'User {UserService.get_user_by_id(draft_project_dto.user_id).username} is not a project manager'))
+
         # If we're cloning we'll copy all the project details from the clone, otherwise create brand new project
         if draft_project_dto.cloneFromProjectId:
             draft_project = Project.clone(draft_project_dto.cloneFromProjectId, draft_project_dto.user_id)
@@ -227,6 +231,30 @@ class ProjectAdminService:
         return Project.get_projects_for_admin(admin_id, preferred_locale)
 
     @staticmethod
+    def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
+        """ Transfers project from old owner (transfering_user_id) to new owner (username) """
+        project = Project.get(project_id)
+
+        transfering_user = UserService.get_user_by_id(transfering_user_id)
+        new_owner = UserService.get_user_by_username(username)
+        is_pm = new_owner.role in (UserRole.PROJECT_MANAGER.value, UserRole.ADMIN.value)
+
+        if not is_pm:
+            raise Exception("User must be a project manager")
+
+        if transfering_user.role == UserRole.PROJECT_MANAGER.value:
+            if project.author_id == transfering_user_id:
+                project.author_id = new_owner.id
+                project.save()
+            else:
+                raise Exception("Invalid owner_id")
+        elif transfering_user.role == UserRole.ADMIN.value:
+            project.author_id = new_owner.id
+            project.save()
+        else:
+            raise Exception("Normal users cannot transfer projects")
+
+    @staticmethod
     def create_project_file(dto: ProjectFileDTO):
         """ Crate a new project file """
         project_file = ProjectFiles.create_from_dto(dto)
@@ -285,4 +313,3 @@ class ProjectAdminService:
             project.save()
         else:
             raise Exception("Normal users cannot transfer projects")
-

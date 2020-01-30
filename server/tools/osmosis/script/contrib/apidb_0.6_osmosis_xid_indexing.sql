@@ -11,9 +11,9 @@ $BODY$
 		IF tl >= 2147483648 THEN
 			tl := tl - 4294967296;
 		END IF;
-		
+
 		ti := tl;
-		
+
                 RETURN ti;
         END;
 $BODY$

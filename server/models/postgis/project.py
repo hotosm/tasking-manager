@@ -19,8 +19,9 @@ import dateutil.parser
 import datetime
 
 from server import db
-from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO, ProjectStatsDTO, ProjectUserStatsDTO
+from server.models.dtos.project_dto import ProjectDTO, DraftProjectDTO, ProjectSummary, PMDashboardDTO, ProjectStatsDTO, ProjectUserStatsDTO, CustomEditorDTO
 from server.models.dtos.tags_dto import TagsDTO
+from server.models.postgis.custom_editors import CustomEditor
 from server.models.postgis.priority_area import PriorityArea, project_priority_areas
 from server.models.postgis.project_info import ProjectInfo
 from server.models.postgis.project_chat import ProjectChat
@@ -73,6 +74,7 @@ class Project(db.Model):
     geometry = db.Column(Geometry('MULTIPOLYGON', srid=4326))
     centroid = db.Column(Geometry('POINT', srid=4326))
     task_creation_mode = db.Column(db.Integer, default=TaskCreationMode.GRID.value, nullable=False)
+    id_presets = db.Column(ARRAY(db.String))
 
     # Tags
     mapping_types = db.Column(ARRAY(db.Integer), index=True)
@@ -82,17 +84,21 @@ class Project(db.Model):
     # Editors
     mapping_editors = db.Column(ARRAY(db.Integer), default=[
                                                             Editors.ID.value,
-                                                            Editors.RAPID.value,
                                                             Editors.JOSM.value,
+                                                            Editors.RAPID.value,
+                                                            Editors.JOSMMAPWITHAI.value,
                                                             Editors.POTLATCH_2.value,
-                                                            Editors.FIELD_PAPERS.value],
+                                                            Editors.FIELD_PAPERS.value,
+                                                            Editors.CUSTOM.value],
                                                             index=True, nullable=False)
     validation_editors = db.Column(ARRAY(db.Integer), default=[
                                                                Editors.ID.value,
-                                                               Editors.RAPID.value,
                                                                Editors.JOSM.value,
+                                                               Editors.RAPID.value,
+                                                               Editors.JOSMMAPWITHAI.value,
                                                                Editors.POTLATCH_2.value,
-                                                               Editors.FIELD_PAPERS.value],
+                                                               Editors.FIELD_PAPERS.value,
+                                                               Editors.CUSTOM.value],
                                                                index=True, nullable=False)
 
     # Stats
@@ -109,6 +115,7 @@ class Project(db.Model):
     allowed_users = db.relationship(User, secondary=project_allowed_users)
     priority_areas = db.relationship(PriorityArea, secondary=project_priority_areas, cascade="all, delete-orphan",
                                      single_parent=True)
+    custom_editor = db.relationship(CustomEditor, uselist=False)
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
         """
@@ -244,6 +251,7 @@ class Project(db.Model):
         self.due_date = project_dto.due_date
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
+        self.id_presets = project_dto.id_presets
         self.last_updated = timestamp()
         self.license_id = project_dto.license_id
 
@@ -305,6 +313,16 @@ class Project(db.Model):
             for priority_area in project_dto.priority_areas:
                 pa = PriorityArea.from_dict(priority_area)
                 self.priority_areas.append(pa)
+
+        if project_dto.custom_editor:
+            if not self.custom_editor:
+                new_editor = CustomEditor.create_from_dto(self.id, project_dto.custom_editor)
+                self.custom_editor = new_editor
+            else:
+                self.custom_editor.update_editor(project_dto.custom_editor)
+        else:
+            if self.custom_editor:
+                self.custom_editor.delete()
 
         db.session.commit()
 
@@ -623,6 +641,7 @@ class Project(db.Model):
         base_dto.due_date = self.due_date
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset
+        base_dto.id_presets = self.id_presets
         base_dto.campaign_tag = self.campaign_tag
         base_dto.organisation_tag = self.organisation_tag
         base_dto.license_id = self.license_id
@@ -631,6 +650,9 @@ class Project(db.Model):
         base_dto.author = User().get_by_id(self.author_id).username
         base_dto.active_mappers = Project.get_active_mappers(self.id)
         base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
+
+        if self.custom_editor:
+            base_dto.custom_editor = self.custom_editor.as_dto()
 
         if self.private:
             # If project is private it should have a list of allowed users

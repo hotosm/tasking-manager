@@ -163,7 +163,7 @@ const Resources = {
         'dpkg-reconfigure --frontend=noninteractive locales',
         'sudo apt-get -y update',
         'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
-        'sudo add-apt-repository ppa:jonathonf/python-3.6 -y',
+        'sudo add-apt-repository ppa:deadsnakes/ppa -y',
         'sudo apt-get update',
         'sudo apt-get -y install python3.6',
         'sudo apt-get -y install python3.6-dev',
@@ -425,7 +425,7 @@ const Resources = {
     Properties: {
         Engine: 'postgres',
         DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresDB')),
-        EngineVersion: '11.2',
+        EngineVersion: '11.5',
         MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresUser')),
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresPassword')),
         AllocatedStorage: cf.ref('DatabaseSize'),
@@ -433,7 +433,7 @@ const Resources = {
         StorageType: 'gp2',
         DBParameterGroupName: 'tm3-logging-postgres11',
         EnableCloudwatchLogsExports: ['postgresql'],
-        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.m5.xlarge', 'db.t2.small'),
+        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.t3.2xlarge', 'db.t2.small'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('Environment'), 'ec2s-security-group', cf.region]))],
     }
