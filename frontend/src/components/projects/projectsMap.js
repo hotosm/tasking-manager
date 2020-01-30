@@ -17,6 +17,81 @@ try {
   console.log('RTLTextPlugin is loaded');
 }
 
+const licensedFonts = MAPBOX_TOKEN
+  ? ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
+  : ['Open Sans Semibold'];
+
+export const mapboxLayerDefn = (map, mapResults, clickOnProjectID) => {
+  map.addImage('mapMarker', markerIcon, { width: 15, height: 15, data: markerIcon });
+  map.addSource('projects', {
+    type: 'geojson',
+    data: mapResults,
+    cluster: true,
+    clusterRadius: 35,
+  });
+
+  map.addLayer({
+    id: 'projectsClusters',
+    filter: ['has', 'point_count'],
+    type: 'circle',
+    source: 'projects',
+    layout: {},
+    paint: {
+      'circle-color': 'rgba(104,112,127,0.5)',
+      'circle-radius': ['step', ['get', 'point_count'], 14, 10, 22, 50, 30, 500, 37],
+    },
+  });
+
+  map.addLayer({
+    id: 'cluster-count',
+    type: 'symbol',
+    source: 'projects',
+    filter: ['has', 'point_count'],
+    layout: {
+      'text-field': '{point_count_abbreviated}',
+      'text-font': licensedFonts,
+      'text-size': 16,
+    },
+    paint: {
+      'text-color': '#FFF',
+      'text-halo-width': 10,
+      'text-halo-blur': 1,
+    },
+  });
+
+  map.addLayer({
+    id: 'projects-unclustered-points',
+    type: 'symbol',
+    source: 'projects',
+    filter: ['!', ['has', 'point_count']],
+    layout: {
+      'icon-image': 'mapMarker',
+      'text-field': '#{projectId}',
+      'text-font': licensedFonts,
+      'text-offset': [0, 0.6],
+      'text-anchor': 'top',
+    },
+    paint: {
+      'text-color': '#2c3038',
+      'text-halo-width': 1,
+      'text-halo-color': '#fff',
+    },
+  });
+  map.on('mouseenter', 'projects-unclustered-points', function(e) {
+    // Change the cursor style as a UI indicator.
+    map.getCanvas().style.cursor = 'pointer';
+  });
+  map.on('mouseleave', 'projects-unclustered-points', function(e) {
+    // Change the cursor style as a UI indicator.
+    map.getCanvas().style.cursor = '';
+  });
+
+  map.on('click', 'projects-unclustered-points', e => {
+    const value = e.features && e.features[0].properties && e.features[0].properties.projectId;
+    clickOnProjectID(value);
+  });
+};
+
 export const ProjectsMap = ({
   state,
   state: { mapResults },
@@ -67,80 +142,7 @@ export const ProjectsMap = ({
   }, []);
 
   useLayoutEffect(() => {
-    const licensedFonts = MAPBOX_TOKEN
-      ? ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
-      : ['Open Sans Semibold'];
     /* docs: https://docs.mapbox.com/mapbox-gl-js/example/cluster/ */
-    const mapboxLayerDefn = () => {
-      map.addImage('mapMarker', markerIcon, { width: 15, height: 15, data: markerIcon });
-      map.addSource('projects', {
-        type: 'geojson',
-        data: mapResults,
-        cluster: true,
-        clusterRadius: 35,
-      });
-
-      map.addLayer({
-        id: 'projectsClusters',
-        filter: ['has', 'point_count'],
-        type: 'circle',
-        source: 'projects',
-        layout: {},
-        paint: {
-          'circle-color': 'rgba(104,112,127,0.5)',
-          'circle-radius': ['step', ['get', 'point_count'], 14, 10, 22, 50, 30, 500, 37],
-        },
-      });
-
-      map.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: 'projects',
-        filter: ['has', 'point_count'],
-        layout: {
-          'text-field': '{point_count_abbreviated}',
-          'text-font': licensedFonts,
-          'text-size': 16,
-        },
-        paint: {
-          'text-color': '#FFF',
-          'text-halo-width': 10,
-          'text-halo-blur': 1,
-        },
-      });
-
-      map.addLayer({
-        id: 'projects-unclustered-points',
-        type: 'symbol',
-        source: 'projects',
-        filter: ['!', ['has', 'point_count']],
-        layout: {
-          'icon-image': 'mapMarker',
-          'text-field': '#{projectId}',
-          'text-font': licensedFonts,
-          'text-offset': [0, 0.6],
-          'text-anchor': 'top',
-        },
-        paint: {
-          'text-color': '#2c3038',
-          'text-halo-width': 1,
-          'text-halo-color': '#fff',
-        },
-      });
-      map.on('mouseenter', 'projects-unclustered-points', function(e) {
-        // Change the cursor style as a UI indicator.
-        map.getCanvas().style.cursor = 'pointer';
-      });
-      map.on('mouseleave', 'projects-unclustered-points', function(e) {
-        // Change the cursor style as a UI indicator.
-        map.getCanvas().style.cursor = '';
-      });
-
-      map.on('click', 'projects-unclustered-points', e => {
-        const value = e.features && e.features[0].properties && e.features[0].properties.projectId;
-        clickOnProjectID(value);
-      });
-    };
 
     const someResultsReady = mapResults && mapResults.features && mapResults.features.length > 0;
 
@@ -157,9 +159,9 @@ export const ProjectsMap = ({
 
     /* set up style/sources for the map, either immediately or on base load */
     if (mapReadyProjectsReady) {
-      mapboxLayerDefn();
+      mapboxLayerDefn(map, mapResults, clickOnProjectID);
     } else if (projectsReadyMapLoading) {
-      map.on('load', mapboxLayerDefn);
+      map.on('load', () => mapboxLayerDefn(map, mapResults, clickOnProjectID));
     }
 
     /* refill the source on mapResults changes */

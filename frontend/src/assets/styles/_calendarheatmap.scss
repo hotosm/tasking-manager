@@ -1,0 +1,17 @@
+.react-calendar-heatmap text {
+  font-size: 0.4em;
+  fill: $blue-light;
+}
+
+.heatmap-react-calendar-heatmap-small-text {
+  font-size: 5px;
+}
+
+.react-calendar-heatmap rect:hover {
+  stroke: $blue-grey;
+  stroke-width: 1px;
+}
+
+.react-calendar-heatmap .react-calendar-heatmap-month-labels {
+  transform: translate(7%, -3%);
+}
