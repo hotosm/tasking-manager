@@ -214,11 +214,14 @@ class StatsService:
             latest.task_id = item.id
             latest.task_status = TaskStatus(item.task_status).name
             latest_activity = (
-                db.session.query(TaskHistory.action_date, User.username)
+                db.session.query(
+                    TaskHistory.action_date, TaskHistory.action, User.username
+                )
                 .join(User)
                 .filter(
                     TaskHistory.task_id == item.id,
                     TaskHistory.project_id == project_id,
+                    TaskHistory.action != "COMMENT",
                     User.id == TaskHistory.user_id,
                 )
                 .order_by(TaskHistory.id.desc())
@@ -226,7 +229,7 @@ class StatsService:
             )
             if latest_activity:
                 latest.action_date = latest_activity[0]
-                latest.action_by = latest_activity[1]
+                latest.action_by = latest_activity[2]
             last_activity_dto.activity.append(latest)
 
         return last_activity_dto
