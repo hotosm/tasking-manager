@@ -8,9 +8,12 @@ class UserContribution(Model):
     """ User contribution for a project """
 
     username = StringType()
+    mapping_level = StringType(serialized_name="mappingLevel")
+    picture_url = StringType(serialized_name="pictureUrl")
     mapped = IntType()
     validated = IntType()
-    picture_url = StringType(serialized_name="pictureUrl")
+    total = IntType()
+    task_ids = ListType(IntType, serialized_name="taskIds")
     name = StringType()
 
 

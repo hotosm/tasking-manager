@@ -1,6 +1,7 @@
 from cachetools import TTLCache, cached
 
 from sqlalchemy import func, text, desc, cast, extract, or_
+from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
 from server import db
 from server.models.dtos.stats_dto import (
@@ -18,7 +19,7 @@ from server.models.dtos.stats_dto import (
 
 from server.models.dtos.project_dto import ProjectSearchResultsDTO
 from server.models.postgis.project import Project
-from server.models.postgis.statuses import TaskStatus
+from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.task import TaskHistory, User, Task, TaskAction
 from server.models.postgis.utils import timestamp, NotFound
 from server.services.project_service import ProjectService
@@ -234,40 +235,68 @@ class StatsService:
     @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
         """ Get all user contributions on a project"""
-        contrib_query = """select m.mapped_by, m.username, m.mapped, v.validated_by,
-                             v.username, v.validated, v.picture_url, v.name
-                             from (select t.mapped_by, u.username, count(t.mapped_by) mapped
-                                     from tasks t,
-                                          users u
-                                    where t.mapped_by = u.id
-                                      and t.project_id = :project_id
-                                      and t.mapped_by is not null
-                                    group by t.mapped_by, u.username) m FULL OUTER JOIN
-                                  (select t.validated_by, u.username, u.picture_url,
-                                   u.name, count(t.validated_by) validated
-                                     from tasks t,
-                                          users u
-                                    where t.validated_by = u.id
-                                      and t.project_id = :project_id
-                                      and t.validated_by is not null
-                                    group by t.validated_by, u.username, u.picture_url, u.name) v
-                                       ON m.mapped_by = v.validated_by
-        """
+        mapped_stmt = (
+            Task.query.with_entities(
+                Task.mapped_by,
+                func.count(Task.mapped_by).label("count"),
+                func.array_agg(Task.id).label("task_ids"),
+            )
+            .filter(Task.project_id == project_id)
+            .group_by(Task.mapped_by)
+            .subquery()
+        )
+        validated_stmt = (
+            Task.query.with_entities(
+                Task.validated_by,
+                func.count(Task.validated_by).label("count"),
+                func.array_agg(Task.id).label("task_ids"),
+            )
+            .filter(Task.project_id == project_id)
+            .group_by(Task.validated_by)
+            .subquery()
+        )
 
-        results = db.engine.execute(text(contrib_query), project_id=project_id)
-        if results.rowcount == 0:
-            raise NotFound()
+        results = (
+            db.session.query(
+                User.id,
+                User.username,
+                User.name,
+                User.mapping_level,
+                User.picture_url,
+                coalesce(mapped_stmt.c.count, 0).label("mapped"),
+                coalesce(validated_stmt.c.count, 0).label("validated"),
+                (
+                    coalesce(mapped_stmt.c.count, 0)
+                    + coalesce(validated_stmt.c.count, 0)
+                ).label("total"),
+                (mapped_stmt.c.task_ids + validated_stmt.c.task_ids).label("task_ids"),
+            )
+            .outerjoin(
+                validated_stmt, mapped_stmt.c.mapped_by == validated_stmt.c.validated_by
+            )
+            .join(User, User.id == mapped_stmt.c.mapped_by)
+            .order_by(desc("total"))
+            .all()
+        )
 
         contrib_dto = ProjectContributionsDTO()
-        for row in results:
-            # user_id = row[0] or row[3]
-            user_contrib = UserContribution()
-            user_contrib.username = row[1] if row[1] else row[4]
-            user_contrib.mapped = row[2] if row[2] else 0
-            user_contrib.validated = row[5] if row[5] else 0
-            user_contrib.picture_url = row[6] if row[6] else None
-            user_contrib.name = row[7] if row[7] else None
-            contrib_dto.user_contributions.append(user_contrib)
+        user_contributions = [
+            UserContribution(
+                dict(
+                    username=r.username,
+                    name=r.name,
+                    mapping_level=MappingLevel(r.mapping_level).name,
+                    picture_url=r.picture_url,
+                    mapped=r.mapped,
+                    validated=r.validated,
+                    total=r.total,
+                    task_ids=r.task_ids,
+                )
+            )
+            for r in results
+        ]
+        contrib_dto.user_contributions = user_contributions
+
         return contrib_dto
 
     @staticmethod
