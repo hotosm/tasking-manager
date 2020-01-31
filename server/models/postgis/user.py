@@ -54,7 +54,7 @@ class User(db.Model):
     picture_url = db.Column(db.String)
     gender = db.Column(db.Integer)
     self_description_gender = db.Column(db.String)
-    default_editor = db.Column(db.String, default="iD", nullable=False)
+    default_editor = db.Column(db.String, default="ID", nullable=False)
     mentions_notifications = db.Column(db.Boolean, default=True, nullable=False)
     comments_notifications = db.Column(db.Boolean, default=False, nullable=False)
     projects_notifications = db.Column(db.Boolean, default=True, nullable=False)
