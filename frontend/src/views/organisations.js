@@ -10,6 +10,7 @@ import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { Members } from '../components/teamsAndOrgs/members';
+import { ManagementMenu } from '../components/teamsAndOrgs/menu';
 import { Teams } from '../components/teamsAndOrgs/teams';
 import { Projects } from '../components/teamsAndOrgs/projects';
 import {
@@ -94,7 +95,8 @@ export function CreateOrganisation() {
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
-            <div className="cf pa4 pb5 bg-tan">
+            <div className="cf ph5-l ph2-m pb5 bg-tan">
+              <ManagementMenu />
               <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
                 <FormattedMessage {...messages.newOrganisation} />
               </h3>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import { centroid } from '@turf/turf';
@@ -234,14 +233,13 @@ export const ProjectDetail = props => {
       <div className="cf db mb3 ph4">
         {props.contributors &&
           props.contributors.map((user, n) => (
-            <Link to={`/users/${user.username}`} key={n}>
-              <UserAvatar
-                username={user.username}
-                picture={user.pictureUrl}
-                size="large"
-                colorClasses="white bg-blue-grey"
-              />
-            </Link>
+            <UserAvatar
+              username={user.username}
+              picture={user.pictureUrl}
+              size="large"
+              colorClasses="white bg-blue-grey"
+              key={n}
+            />
           ))}
       </div>
 

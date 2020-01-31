@@ -2,6 +2,7 @@ import {
   getMembersDiff,
   filterActiveManagers,
   filterActiveMembers,
+  filterInactiveMembersAndManagers,
   formatMemberObject,
 } from '../teamMembersDiff';
 
@@ -56,6 +57,35 @@ it('should return only the active MEMBERS', () => {
   expect(filterActiveMembers(members_1)).toStrictEqual([
     { username: 'test_3', function: 'MEMBER', active: true, pictureUrl: null },
     { username: 'test_4', function: 'MEMBER', active: true, pictureUrl: null },
+  ]);
+});
+
+it('should return only the inactive MEMBERS and MANAGERS', () => {
+  const members_1 = [
+    {
+      username: 'test_0',
+      function: 'MANAGER',
+      active: true,
+      pictureUrl: 'https://www.gravatar.com/avatar.png',
+    },
+    {
+      username: 'test_1',
+      function: 'MANAGER',
+      active: false,
+      pictureUrl: 'https://www.gravatar.com/avatar.png',
+    },
+    { username: 'test_2', function: 'MEMBER', active: false, pictureUrl: null },
+    { username: 'test_3', function: 'MEMBER', active: true, pictureUrl: null },
+    { username: 'test_4', function: 'MEMBER', active: true, pictureUrl: null },
+  ];
+  expect(filterInactiveMembersAndManagers(members_1)).toStrictEqual([
+    {
+      username: 'test_1',
+      function: 'MANAGER',
+      active: false,
+      pictureUrl: 'https://www.gravatar.com/avatar.png',
+    },
+    { username: 'test_2', function: 'MEMBER', active: false, pictureUrl: null },
   ]);
 });
 

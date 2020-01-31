@@ -110,7 +110,6 @@ class TeamVisibility(Enum):
 
     PUBLIC = 0
     PRIVATE = 1
-    SECRET = 2
 
 
 class TeamRoles(Enum):

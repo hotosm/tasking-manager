@@ -12,7 +12,11 @@ import { UserAvatar } from '../user/avatar';
 export function OrgsManagement({ organisations, userDetails }: Object) {
   const isAdmin = userDetails.role === 'ADMIN';
   return (
-    <Management title={<FormattedMessage {...messages.myOrganisations} />} showAddButton={isAdmin}>
+    <Management
+      title={<FormattedMessage {...messages.myOrganisations} />}
+      showAddButton={isAdmin}
+      managementView={true}
+    >
       {isAdmin ? (
         organisations.map((org, n) => <OrganisationCard details={org} key={n} />)
       ) : (

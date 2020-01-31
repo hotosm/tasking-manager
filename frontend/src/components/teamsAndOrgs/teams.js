@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
@@ -6,23 +7,24 @@ import { Form, Field } from 'react-final-form';
 
 import messages from './messages';
 import { UserAvatar } from '../user/avatar';
-import { AddButton, ViewAllLink, Management, VisibilityBox } from './management';
+import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { SwitchToggle, RadioField, OrganisationSelect } from '../formInputs';
 import { EditModeControl } from './editMode';
 import { Button } from '../button';
 
 export function TeamsManagement({ teams, userDetails, managementView }: Object) {
+  const token = useSelector(state => state.auth.get('token'));
   const [isOrgManager, setIsOrgManager] = useState(false);
   useEffect(() => {
-    if (userDetails.role !== 'ADMIN' && userDetails.id) {
-      fetchLocalJSONAPI(`organisations/?manager_user_id=${userDetails.id}`).then(r => {
+    if (userDetails.role !== 'ADMIN' && userDetails.id && token) {
+      fetchLocalJSONAPI(`organisations/?manager_user_id=${userDetails.id}`, token).then(r => {
         if (r.organisations.lenght > 0) {
           setIsOrgManager(true);
         }
       });
     }
-  }, [userDetails.role, userDetails.id]);
+  }, [userDetails.role, userDetails.id, token]);
   return (
     <Management
       title={<FormattedMessage {...messages.myTeams} />}
@@ -40,16 +42,18 @@ export function TeamsManagement({ teams, userDetails, managementView }: Object) 
   );
 }
 
-export function Teams({ teams, viewAllQuery }: Object) {
+export function Teams({ teams, viewAllQuery, showAddButton = false }: Object) {
   return (
     <div className="bg-white b--grey-light ba pa4">
       <div className="cf db">
         <h3 className="f3 blue-dark mv0 fw6 dib v-mid">
           <FormattedMessage {...messages.teams} />
         </h3>
-        <Link to={'/manage/teams/new/'} className="dib ml4">
-          <AddButton />
-        </Link>
+        {showAddButton && (
+          <Link to={'/manage/teams/new/'} className="dib ml4">
+            <AddButton />
+          </Link>
+        )}
         <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />
         <div className="cf pt4">
           <ReactPlaceholder
@@ -115,6 +119,10 @@ export function TeamCard({ team, managementView }: Object) {
                 />
               ))}
           </div>
+          <div className="cf pt3">
+            <VisibilityBox visibility={team.visibility} extraClasses="pv1 ph2 dib" />
+            {team.inviteOnly && <InviteOnlyBox className="pv1 ph2 dib ml2" />}
+          </div>
         </div>
       </article>
     </Link>
@@ -178,12 +186,6 @@ export function TeamInformation(props) {
             <FormattedMessage {...messages.private} />
           </span>
         </div>
-        <div className="pv2">
-          <RadioField name="visibility" value="SECRET" />
-          <span className="fw8 f5">
-            <FormattedMessage {...messages.secret} />
-          </span>
-        </div>
       </div>
     </>
   );
@@ -243,7 +245,7 @@ export function TeamForm(props) {
   );
 }
 
-export function TeamSideBar({ team, members, managers }: Object) {
+export function TeamSideBar({ team, members, managers, requestedToJoin }: Object) {
   return (
     <ReactPlaceholder
       showLoadingAnimation={true}
@@ -251,47 +253,65 @@ export function TeamSideBar({ team, members, managers }: Object) {
       rows={20}
       ready={typeof team.teamId === 'number'}
     >
-      <div className="cf">
-        <div className="w-70 dib fl">
-          <span className="blue-grey">#{team.teamId}</span>
+      <div className="cf pb2">
+        <div className="w-10 pv2 dib fl">
+          <span className="blue-grey v-mid">
+            <FormattedMessage {...messages.team} /> #{team.teamId}
+          </span>
         </div>
-        <div className="mw4 dib fr">
-          <VisibilityBox visibility={team.visibility} extraClasses={'pv2 ph3'} />
+        <div className="w-90 dib fr tr">
+          {team.inviteOnly && <InviteOnlyBox className="pv2 ph3 dib mr2" />}
+          <VisibilityBox visibility={team.visibility} extraClasses="pv2 ph3 dib" />
         </div>
       </div>
       <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">{team.name}</h3>
       <p className="blue-grey">{team.description}</p>
-      <h4>
-        <FormattedMessage {...messages.organisation} />
-      </h4>
-      <p>
-        <img src={team.logo} alt="organisation logo" />
-      </p>
-      <h4>
-        <FormattedMessage {...messages.managers} />
-      </h4>
-      <div className="cf db mt3">
-        {managers.map((user, n) => (
-          <UserAvatar
-            key={n}
-            username={user.username}
-            picture={user.pictureUrl}
-            colorClasses="white bg-blue-grey"
-          />
-        ))}
-      </div>
-      <h4>
-        <FormattedMessage {...messages.members} />
-      </h4>
-      <div className="cf db mt3">
-        {members.map((user, n) => (
-          <UserAvatar
-            key={n}
-            username={user.username}
-            picture={user.pictureUrl}
-            colorClasses="white bg-blue-grey"
-          />
-        ))}
+      <div className="cf">
+        <div className="w-100 w-50-m fl">
+          <h4>
+            <FormattedMessage {...messages.organisation} />
+          </h4>
+          <p>
+            <img src={team.logo} alt="organisation logo" className="mw4" />
+          </p>
+          <p>{team.organisation}</p>
+        </div>
+        <div className="w-100 w-50-m fl">
+          <h4>
+            <FormattedMessage {...messages.managers} />
+          </h4>
+          <div className="cf db mt3">
+            {managers.map((user, n) => (
+              <UserAvatar
+                key={n}
+                username={user.username}
+                picture={user.pictureUrl}
+                size="large"
+                colorClasses="white bg-blue-grey"
+              />
+            ))}
+          </div>
+          <h4>
+            <FormattedMessage {...messages.members} />
+          </h4>
+          <div className="cf db mt3">
+            {members.map((user, n) => (
+              <UserAvatar
+                key={n}
+                username={user.username}
+                picture={user.pictureUrl}
+                colorClasses="white bg-blue-grey"
+              />
+            ))}
+          </div>
+          <div className="cf db mt3">
+            {requestedToJoin && (
+              <span className="red pr5-ns">
+                <FormattedMessage {...messages.waitingApproval} />
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </ReactPlaceholder>
   );

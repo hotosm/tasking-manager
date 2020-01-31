@@ -45,6 +45,7 @@ export const MessageAvatar = ({ messageType, fromUsername, size }: Object) => {
           picture={null}
           colorClasses="white bg-blue-grey"
           size={size}
+          disableLink={true}
         />
       ) : (
         checkIsSystem && (
@@ -53,6 +54,7 @@ export const MessageAvatar = ({ messageType, fromUsername, size }: Object) => {
             picture={systemAvatar}
             size={size}
             colorClasses="white bg-blue-grey"
+            disableLink={true}
           />
         )
       )}
