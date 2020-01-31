@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@reach/router';
 import { useSelector } from 'react-redux';
 
 import { ProfilePictureIcon, CloseIcon } from '../svgIcons';
@@ -19,6 +20,7 @@ export const UserAvatar = ({
   colorClasses,
   removeFn,
   editMode,
+  disableLink = false,
 }: Object) => {
   let sizeClasses = 'h2 w2 f5';
   let textPadding = editMode ? { top: '-0.75rem' } : { paddingTop: '0.375rem' };
@@ -51,7 +53,7 @@ export const UserAvatar = ({
       .join('');
   }
 
-  return (
+  const avatar = (
     <div
       title={username}
       style={sizeStyles}
@@ -79,4 +81,10 @@ export const UserAvatar = ({
       )}
     </div>
   );
+
+  if ((removeFn && editMode) || disableLink) {
+    return avatar;
+  } else {
+    return <Link to={`/users/${username}`}>{avatar}</Link>;
+  }
 };

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { Link } from '@reach/router';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import AsyncSelect from 'react-select/async';
@@ -7,7 +8,7 @@ import messages from './messages';
 import { UserAvatar } from '../user/avatar';
 import { EditModeControl } from './editMode';
 import { Button } from '../button';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export function Members({ addMembers, removeMembers, saveMembersFn, members, type }: Object) {
   const token = useSelector(state => state.auth.get('token'));
@@ -90,5 +91,72 @@ export function Members({ addMembers, removeMembers, saveMembersFn, members, typ
         </div>
       )}
     </>
+  );
+}
+
+export function JoinRequests({ requests, teamId, addMembers, updateRequests }: Object) {
+  const token = useSelector(state => state.auth.get('token'));
+
+  const acceptRejectRequest = useCallback(
+    (user, action) => {
+      const payload = JSON.stringify({
+        username: user.username,
+        role: 'MEMBER',
+        type: 'join-response',
+        action: action,
+      });
+      pushToLocalJSONAPI(`teams/${teamId}/actions/join/`, payload, token, 'PATCH').then(res => {
+        if (action === 'accept') {
+          addMembers([user]);
+        }
+        updateRequests(requests.filter(i => i.username !== user.username));
+      });
+    },
+    [teamId, requests, updateRequests, addMembers, token],
+  );
+
+  return (
+    <div className="bg-white b--grey-light pa4 ba blue-dark">
+      <div className="cf db">
+        <h3 className="f3 blue-dark mt0 fw6 fl">
+          <FormattedMessage {...messages.joinRequests} />
+        </h3>
+      </div>
+      <div className="cf db mt3">
+        {requests.map((user, n) => (
+          <div className="cf db pt2" key={n}>
+            <div className="fl pt1">
+              <UserAvatar
+                username={user.username}
+                picture={user.pictureUrl}
+                colorClasses="white bg-blue-grey"
+              />
+              <Link to={`/users/${user.username}`} className="v-mid link blue-dark">
+                <span>{user.username}</span>
+              </Link>
+            </div>
+            <div className="fr">
+              <Button
+                className="pr2 blue-dark bg-white"
+                onClick={() => acceptRejectRequest(user, 'reject')}
+              >
+                <FormattedMessage {...messages.reject} />
+              </Button>
+              <Button
+                className="pr2 bg-red white"
+                onClick={() => acceptRejectRequest(user, 'accept')}
+              >
+                <FormattedMessage {...messages.accept} />
+              </Button>
+            </div>
+          </div>
+        ))}
+        {requests.length === 0 && (
+          <div className="tc">
+            <FormattedMessage {...messages.noRequests} />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

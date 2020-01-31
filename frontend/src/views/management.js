@@ -15,15 +15,17 @@ export function Management() {
   const [teamsError, teamsLoading, teams] = useFetch(`teams/`);
 
   return (
-    <div className="w-100 ph6-l cf pb4">
+    <div className="w-100 ph5-l ph2-m cf pb4">
       <ManagementMenu />
       <Projects
         projects={!projectsLoading && !projectsError && projects}
         viewAllQuery="?createdByMe=1"
+        showAddButton={true}
       />
       <Teams
         teams={!teamsLoading && !teamsError && teams.teams}
         viewAllQuery={`?manager=${userDetails.id}`}
+        showAddButton={true}
       />
     </div>
   );
