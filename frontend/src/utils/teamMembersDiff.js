@@ -21,6 +21,10 @@ export function filterActiveManagers(members) {
   return members.filter(member => member.function === 'MANAGER').filter(member => member.active);
 }
 
+export function filterInactiveMembersAndManagers(members) {
+  return members.filter(member => !member.active);
+}
+
 export function formatMemberObject(user, manager = false) {
   return {
     username: user.username,

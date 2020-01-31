@@ -6,7 +6,7 @@ import { FormattedMessage, FormattedRelative } from 'react-intl';
 import messages from './messages';
 import { PaginatorLine } from '../paginator';
 import { Button } from '../button';
-import { CurrentUserAvatar } from '../user/avatar';
+import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
@@ -154,11 +154,13 @@ function CommentList({ comments }: Object) {
         <div className="w-90 center cf mb2 pa3 ba b--grey-light bg-white" key={n}>
           <div className="cf db">
             <div className="fl">
-              <div className="h2 w2 bg-grey-light br-100 ma0">
-                {comment.pictureUrl === null ? null : (
-                  <img className="h2 w2 br-100" src={comment.pictureUrl} alt={comment.username} />
-                )}
-              </div>
+              {comment.pictureUrl === null ? null : (
+                <UserAvatar
+                  username={comment.username}
+                  picture={comment.pictureUrl}
+                  colorClasses="white bg-blue-grey"
+                />
+              )}
             </div>
             <div className="fl ml3">
               <p className="b ma0">

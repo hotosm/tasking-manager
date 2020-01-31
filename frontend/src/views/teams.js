@@ -13,9 +13,11 @@ import {
   getMembersDiff,
   filterActiveMembers,
   filterActiveManagers,
+  filterInactiveMembersAndManagers,
   formatMemberObject,
 } from '../utils/teamMembersDiff';
-import { Members } from '../components/teamsAndOrgs/members';
+import { Members, JoinRequests } from '../components/teamsAndOrgs/members';
+import { ManagementMenu } from '../components/teamsAndOrgs/menu';
 import {
   TeamInformation,
   TeamForm,
@@ -138,7 +140,8 @@ export function CreateTeam() {
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
-            <div className="cf pa4 bg-tan vh-100">
+            <div className="cf ph5-l ph2-m bg-tan vh-100">
+              <ManagementMenu />
               <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
                 <FormattedMessage {...messages.newTeam} />
               </h3>
@@ -202,10 +205,12 @@ export function EditTeam(props) {
   const [initManagers, setInitManagers] = useState(false);
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
+  const [requests, setRequests] = useState([]);
   useEffect(() => {
     if (!initManagers && team && team.members) {
       setManagers(filterActiveManagers(team.members));
       setMembers(filterActiveMembers(team.members));
+      setRequests(filterInactiveMembersAndManagers(team.members));
       setInitManagers(true);
     }
   }, [team, managers, initManagers]);
@@ -250,8 +255,9 @@ export function EditTeam(props) {
   };
 
   return (
-    <div className="cf pa4 bg-tan">
-      <div className="cf">
+    <div className="cf ph5-l ph2-m pb4 bg-tan">
+      <ManagementMenu />
+      <div className="cf mt4">
         <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">
           <FormattedMessage {...messages.manageTeam} />
         </h3>
@@ -286,6 +292,13 @@ export function EditTeam(props) {
           members={members}
           type="members"
         />
+        <div className="h1"></div>
+        <JoinRequests
+          requests={requests}
+          teamId={team.teamId}
+          addMembers={addMembers}
+          updateRequests={setRequests}
+        />
       </div>
     </div>
   );
@@ -303,15 +316,19 @@ export function TeamDetail(props) {
   const [isMember, setIsMember] = useState(false);
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
+
   useEffect(() => {
     if (team && team.members) {
       setManagers(filterActiveManagers(team.members));
       setMembers(filterActiveMembers(team.members));
-      if (team.members.map(member => member.username).includes(userDetails.username)) {
-        setIsMember(true);
+      const membersFiltered = team.members.filter(
+        member => member.username === userDetails.username,
+      );
+      if (membersFiltered.length) {
+        setIsMember(membersFiltered.filter(i => i.active === true).length ? true : 'requested');
       }
     }
-  }, [team, managers, userDetails.username]);
+  }, [team, userDetails.username]);
 
   const joinTeam = () => {
     pushToLocalJSONAPI(
@@ -319,7 +336,7 @@ export function TeamDetail(props) {
       JSON.stringify({ role: 'MEMBER', username: userDetails.username }),
       token,
       'POST',
-    ).then(res => setIsMember(true));
+    ).then(res => setIsMember(team.inviteOnly ? 'requested' : true));
   };
 
   const leaveTeam = () => {
@@ -336,9 +353,14 @@ export function TeamDetail(props) {
   } else {
     return (
       <>
-        <div className="cf pa4 bg-tan vh-100">
+        <div className="cf pa4 bg-tan blue-dark vh-100">
           <div className="w-40-l w-100 mt4 fl">
-            <TeamSideBar team={team} members={members} managers={managers} />
+            <TeamSideBar
+              team={team}
+              members={members}
+              managers={managers}
+              requestedToJoin={isMember === 'requested'}
+            />
           </div>
           <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
             <Projects projects={projects} viewAllQuery={`?team=${props.id}`} ownerEntity="team" />
@@ -359,7 +381,9 @@ export function TeamDetail(props) {
                 disabledClassName="bg-red o-50 white w-100 h-100"
                 onClick={() => leaveTeam()}
               >
-                <FormattedMessage {...messages.leaveTeam} />
+                <FormattedMessage
+                  {...messages[isMember === 'requested' ? 'cancelRequest' : 'leaveTeam']}
+                />
               </CustomButton>
             ) : (
               <CustomButton

@@ -113,7 +113,7 @@ class TeamsActionsJoinAPI(Resource):
                         type: string
                         default: member
                         required: false
-                    response:
+                    action:
                         type: string
                         default: accept
                         required: true
@@ -129,9 +129,9 @@ class TeamsActionsJoinAPI(Resource):
         """
         try:
             json_data = request.get_json(force=True)
-            username = int(json_data["username"])
+            username = json_data["username"]
             request_type = json_data.get("type", "join-response")
-            response = json_data["response"]
+            action = json_data["action"]
             role = json_data.get("role", "member")
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
@@ -141,7 +141,7 @@ class TeamsActionsJoinAPI(Resource):
             if request_type == "join-response":
                 if TeamService.user_is_manager(team_id, tm.authenticated_user_id):
                     TeamService.accept_reject_join_request(
-                        team_id, tm.authenticated_user_id, username, role, response
+                        team_id, tm.authenticated_user_id, username, role, action
                     )
                     return {"Success": "True"}, 200
                 else:
@@ -153,7 +153,7 @@ class TeamsActionsJoinAPI(Resource):
                     )
             elif request_type == "invite-response":
                 TeamService.accept_reject_invitation_request(
-                    team_id, tm.authenticated_user_id, username, role, response
+                    team_id, tm.authenticated_user_id, username, role, action
                 )
                 return {"Success": "True"}, 200
         except Exception as e:

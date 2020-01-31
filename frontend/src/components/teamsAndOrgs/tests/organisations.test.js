@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Provider } from 'react-redux';
 
 import { createComponentWithIntl } from '../../../utils/testWithIntl';
-import { Provider } from 'react-redux';
 import { store } from '../../../store';
 import { OrgsManagement, OrganisationCard } from '../organisations';
 
