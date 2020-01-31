@@ -15,7 +15,9 @@ def is_known_mapping_level(value):
         return True
 
     try:
-        MappingLevel[value.upper()]
+        value = value.split(",")
+        for level in value:
+            MappingLevel[level.upper()]
     except KeyError:
         raise ValidationError(
             f"Unknown mappingLevel: {value} Valid values are {MappingLevel.BEGINNER.name}, "
@@ -26,10 +28,12 @@ def is_known_mapping_level(value):
 def is_known_role(value):
     """ Validates that supplied user role is known value """
     try:
-        UserRole[value.upper()]
+        value = value.split(",")
+        for role in value:
+            UserRole[role.upper()]
     except KeyError:
         raise ValidationError(
-            f"Unknown mappingLevel: {value} Valid values are {UserRole.ADMIN.name}, "
+            f"Unknown mappingRole: {value} Valid values are {UserRole.ADMIN.name}, "
             f"{UserRole.PROJECT_MANAGER.name}, {UserRole.MAPPER.name}, {UserRole.VALIDATOR.name}"
         )
 
