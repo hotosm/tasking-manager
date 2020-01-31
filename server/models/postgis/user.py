@@ -142,13 +142,20 @@ class User(db.Model):
 
         # Add filter to query as required
         if query.mapping_level:
-            base = base.filter(
-                User.mapping_level == MappingLevel[query.mapping_level.upper()].value
-            )
+            mapping_levels = query.mapping_level.split(",")
+            mapping_level_array = []
+            for mapping_level in mapping_levels:
+                mapping_level_array.append(MappingLevel[mapping_level].value)
+            base = base.filter(User.mapping_level.in_(mapping_level_array))
         if query.username:
             base = base.filter(User.username.ilike(query.username.lower() + "%"))
+
         if query.role:
-            base = base.filter(User.role == UserRole[query.role.upper()].value)
+            roles = query.role.split(",")
+            role_array = []
+            for role in roles:
+                role_array.append(UserRole[role].value)
+            base = base.filter(User.role.in_(role_array))
 
         results = base.order_by(User.username).paginate(query.page, 20, True)
 
