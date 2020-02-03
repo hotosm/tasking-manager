@@ -14,6 +14,7 @@ import { TaskList } from './taskList';
 import { TasksMapLegend } from './legend';
 import { ProjectInstructions } from './instructions';
 import { ProjectHeader } from '../projectDetail/header';
+import Contributions from './contributions';
 
 const TaskSelectionFooter = React.lazy(() => import('./footer'));
 
@@ -59,6 +60,11 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [activitiesError, activities] = useFetchIntervaled(
     `projects/${project.projectId}/activities/latest/`,
     60000,
+  );
+
+  const contribsData = useFetch(
+    `projects/${project.projectId}/contributions/`,
+    project.projectId !== undefined,
   );
 
   // if the user is a beginner, open the page with the instructions tab activated
@@ -160,6 +166,13 @@ export function TaskSelection({ project, type, loading }: Object) {
                   >
                     <FormattedMessage {...messages.instructions} />
                   </span>
+                  <span
+                    className={`mr4 pb2 pointer ${activeSection === 'contributions' &&
+                      'bb b--blue-dark'}`}
+                    onClick={() => setActiveSection('contributions')}
+                  >
+                    <FormattedMessage {...messages.contributions} />
+                  </span>
                 </div>
                 <div className="pt3">
                   {activeSection === 'tasks' ? (
@@ -169,11 +182,19 @@ export function TaskSelection({ project, type, loading }: Object) {
                       selectTask={selectTask}
                       selected={selected}
                     />
-                  ) : (
+                  ) : null}
+                  {activeSection === 'instructions' ? (
                     <ProjectInstructions
                       instructions={project.projectInfo && project.projectInfo.instructions}
                     />
-                  )}
+                  ) : null}
+                  {activeSection === 'contributions' ? (
+                    <Contributions
+                      setSelectedTasks={setSelectedTasks}
+                      tasks={tasks}
+                      contribsData={contribsData}
+                    />
+                  ) : null}
                 </div>
               </div>
             </ReactPlaceholder>
