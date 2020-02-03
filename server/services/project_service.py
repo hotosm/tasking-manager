@@ -181,14 +181,11 @@ class ProjectService:
             team_id = team_dto.team_id
             team_role = team_dto.role
 
-            if not (
-                (
-                    TeamService.is_user_member_of_team(team_id, user_id)
-                    and team_role in [0, 1]
-                )
-                or UserService.is_user_a_project_manager(user_id)
-            ):
-                return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+            if (
+                TeamService.is_user_member_of_team(team_id, user_id)
+                and team_role in [0, 1]
+            ) or UserService.is_user_a_project_manager(user_id):
+                return True, "User allowed to map"
 
         project = ProjectService.get_project_by_id(project_id)
 
@@ -253,14 +250,11 @@ class ProjectService:
             team_id = team_dto.team_id
             team_role = team_dto.role
 
-            if not (
-                (
-                    TeamService.is_user_member_of_team(team_id, user_id)
-                    and team_role in [1]
-                )
-                or UserService.is_user_a_project_manager(user_id)
-            ):
-                return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+            if (
+                TeamService.is_user_member_of_team(team_id, user_id)
+                and team_role in [1]
+            ) or UserService.is_user_a_project_manager(user_id):
+                return True, "User allowed to validate"
 
         if ProjectStatus(
             project.status
