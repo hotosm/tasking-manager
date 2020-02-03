@@ -88,8 +88,7 @@ class Project(db.Model):
                                                             Editors.RAPID.value,
                                                             Editors.JOSMMAPWITHAI.value,
                                                             Editors.POTLATCH_2.value,
-                                                            Editors.FIELD_PAPERS.value,
-                                                            Editors.CUSTOM.value],
+                                                            Editors.FIELD_PAPERS.value],
                                                             index=True, nullable=False)
     validation_editors = db.Column(ARRAY(db.Integer), default=[
                                                                Editors.ID.value,
@@ -97,8 +96,7 @@ class Project(db.Model):
                                                                Editors.RAPID.value,
                                                                Editors.JOSMMAPWITHAI.value,
                                                                Editors.POTLATCH_2.value,
-                                                               Editors.FIELD_PAPERS.value,
-                                                               Editors.CUSTOM.value],
+                                                               Editors.FIELD_PAPERS.value],
                                                                index=True, nullable=False)
 
     # Stats
