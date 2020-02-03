@@ -105,6 +105,10 @@ export default defineMessages({
     id: 'project.instructions',
     defaultMessage: 'Instructions',
   },
+  contributions: {
+    id: 'project.contributions',
+    defaultMessage: 'contributions',
+  },
   imagery: {
     id: 'project.imagery',
     defaultMessage: 'Imagery',
