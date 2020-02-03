@@ -181,7 +181,13 @@ class ProjectService:
             team_id = team_dto.team_id
             team_role = team_dto.role
 
-            if TeamService.is_user_member_of_team(team_id, user_id) and team_role != 0:
+            if not (
+                (
+                    TeamService.is_user_member_of_team(team_id, user_id)
+                    and team_role in [0, 1]
+                )
+                or UserService.is_user_a_project_manager(user_id)
+            ):
                 return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         project = ProjectService.get_project_by_id(project_id)
@@ -194,7 +200,6 @@ class ProjectService:
             return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
 
         tasks = Task.get_locked_tasks_for_user(user_id)
-        print(tasks)
 
         if len(tasks.locked_tasks) > 0:
             return False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
@@ -243,6 +248,20 @@ class ProjectService:
 
         project = ProjectService.get_project_by_id(project_id)
 
+        teams_dto = TeamService.get_project_teams_as_dto(project_id)
+        for team_dto in teams_dto.teams:
+            team_id = team_dto.team_id
+            team_role = team_dto.role
+
+            if not (
+                (
+                    TeamService.is_user_member_of_team(team_id, user_id)
+                    and team_role in [1]
+                )
+                or UserService.is_user_a_project_manager(user_id)
+            ):
+                return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+
         if ProjectStatus(
             project.status
         ) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(
@@ -269,14 +288,6 @@ class ProjectService:
             try:
                 next(user for user in project.allowed_users if user.id == user_id)
             except StopIteration:
-                return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
-
-        teams_dto = TeamService.get_project_teams_as_dto(project_id)
-        for team_dto in teams_dto.teams:
-            team_id = team_dto.team_id
-            team_role = team_dto.role
-
-            if TeamService.is_user_member_of_team(team_id, user_id) and team_role != 1:
                 return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         # Restrict validation by non-beginners users only
