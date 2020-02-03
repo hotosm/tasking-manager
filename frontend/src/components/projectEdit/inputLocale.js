@@ -98,14 +98,24 @@ export const InputLocale = props => {
           value={value}
           onBlur={updateState}
           onChange={handleChange}
+          maxLength={props.maxLength || null}
         ></textarea>
+      )}
+      {props.maxLength && (
+        <div
+          className={`tr cf fl w-80 f7 ${
+            value.length > 0.9 * props.maxLength ? 'red' : 'blue-light'
+          }`}
+        >
+          {value.length} / {props.maxLength}
+        </div>
       )}
 
       {preview && (
-        <>
-          <h3 className="ttu f6 fw6 blue-grey mb1">Preview:</h3>
-          <div dangerouslySetInnerHTML={preview} className="pa2 bg-grey-light blue-dark" />
-        </>
+        <div className="cf pt1">
+          <h3 className="ttu f6 fw6 blue-grey mb1">Preview</h3>
+          <div dangerouslySetInnerHTML={preview} className="pv1 ph3 bg-grey-light blue-dark" />
+        </div>
       )}
     </div>
   );
