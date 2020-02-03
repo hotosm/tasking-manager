@@ -74,7 +74,7 @@ class SMTPService:
         try:
             sender = SMTPService._init_smtp_client()
 
-            current_app.logger.debug(f'Sending email via SMTP {to_address}')
+            current_app.logger.debug(f'Sending email via SMTP to {to_address}')
             sender.sendmail(from_address, to_address, msg.as_string())
             sender.quit()
             current_app.logger.debug(f'Email sent {to_address}')
