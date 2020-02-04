@@ -14,6 +14,7 @@ import {
   CampaignInformation,
   CampaignForm,
 } from '../components/teamsAndOrgs/campaigns';
+import { ManagementMenu } from '../components/teamsAndOrgs/menu';
 import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
@@ -67,7 +68,8 @@ export function CreateCampaign() {
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
-            <div className="cf pa4 bg-tan vh-100">
+            <div className="cf ph5-l ph2-m bg-tan vh-100">
+              <ManagementMenu />
               <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
                 <FormattedMessage {...messages.newCampaign} />
               </h3>

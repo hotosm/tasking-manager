@@ -7,16 +7,18 @@ import messages from './messages';
 import { ProjectCard } from '../projectcard/projectCard';
 import { AddButton, ViewAllLink } from './management';
 
-export function Projects({ projects, viewAllQuery, ownerEntity }: Object) {
+export function Projects({ projects, viewAllQuery, ownerEntity, showAddButton = false }: Object) {
   return (
     <div className="bg-white b--grey-light ba pa4 mb3">
       <div className="cf db">
         <h3 className="f3 blue-dark mv0 fw6 dib v-mid">
           <FormattedMessage {...messages.projects} />
         </h3>
-        <Link to={'/manage/projects/new/'} className="dib ml4">
-          <AddButton />
-        </Link>
+        {showAddButton && (
+          <Link to={'/manage/projects/new/'} className="dib ml4">
+            <AddButton />
+          </Link>
+        )}
         <ViewAllLink link={`/explore/${viewAllQuery ? viewAllQuery : ''}`} />
         <div className="cf pt4">
           <ReactPlaceholder

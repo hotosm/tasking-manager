@@ -19,6 +19,7 @@ export function CampaignsManagement({ campaigns, userDetails }: Object) {
         />
       }
       showAddButton={userDetails.role === 'ADMIN'}
+      managementView
     >
       {campaigns.length ? (
         campaigns.map((campaign, n) => <CampaignCard campaign={campaign} key={n} />)
