@@ -27,6 +27,21 @@ def upgrade():
     sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
     sa.PrimaryKeyConstraint('project_id')
     )
+
+    op.alter_column(
+        "projects",
+        "mapping_editors",
+        type_=sa.ARRAY(sa.Integer),
+        postgresql_using="array_replace(validation_editors, 4, 10005);"
+    )
+
+    op.alter_column(
+        "projects",
+        "validation_editors",
+        type_=sa.ARRAY(sa.Integer),
+        postgresql_using="array_replace(validation_editors, 4, 10005);"
+    )
+
     # ### end Alembic commands ###
 
 
