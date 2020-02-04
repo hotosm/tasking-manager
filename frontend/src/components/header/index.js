@@ -25,7 +25,11 @@ import { useDebouncedCallback } from '../../hooks/UseThrottle';
 function getMenuItensForUser(userDetails) {
   const menuItems = [
     { label: messages.exploreProjects, link: 'explore', showAlways: true },
-    { label: messages.myContributions, link: 'contributions', authenticated: true },
+    {
+      label: messages.myContributions,
+      link: `/users/${userDetails.username}`,
+      authenticated: true,
+    },
     { label: messages.manage, link: 'manage', authenticated: true, manager: true },
     { label: messages.learn, link: 'learn', showAlways: true },
     { label: messages.about, link: 'about', showAlways: true },

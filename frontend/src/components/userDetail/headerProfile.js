@@ -1,10 +1,12 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
 import messages from '../user/messages';
 import { TwitterIconNoBg, FacebookIcon, LinkedinIcon, ProfilePictureIcon } from '../svgIcons';
 import { MappingLevelMessage } from '../mappingLevel';
 import { NextMappingLevel } from '../user/settings';
+import { SectionMenu } from '../menu';
 
 const SocialMedia = ({ data }) => {
   const socialMediaItems = ['twitterId', 'facebookId', 'linkedinId'];
@@ -70,10 +72,26 @@ const SocialMedia = ({ data }) => {
   );
 };
 
+const MyContributionsNav = ({ username, authUser }) => {
+  const items = [
+    { url: `/users/${username}`, label: <FormattedMessage {...messages.myStats} /> },
+    { url: '/manage/projects', label: <FormattedMessage {...messages.myProjects} /> },
+    { url: '/contributions', label: <FormattedMessage {...messages.myContribs} /> },
+  ];
+
+  return (
+    <div className="fl ph6-l ph4-m ph2">
+      <SectionMenu items={items} />
+    </div>
+  );
+};
+
 export const HeaderProfile = ({ userDetails, changesets }) => {
+  const authDetails = useSelector(state => state.auth.get('userDetails'));
   const avatarClass = 'h4 w4 br-100 pa1 ba b--grey-light bw3 red';
   return (
-    <div className="w-100 h-100 cf">
+    <>
+      <div className="w-100 h-100 cf pv3 ph6-l ph4-m ph2 bg-white blue-dark">
       <div className="fl dib mr3">
         {userDetails.pictureUrl ? (
           <img className={avatarClass} src={userDetails.pictureUrl} alt={'hey'} />
@@ -98,6 +116,10 @@ export const HeaderProfile = ({ userDetails, changesets }) => {
         </div>
         <SocialMedia data={userDetails} />
       </div>
+      {userDetails.username === authDetails.username &&
+        <MyContributionsNav username={userDetails.username} />
+      }
     </div>
+    </>
   );
 };

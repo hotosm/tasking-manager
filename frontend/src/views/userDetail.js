@@ -37,9 +37,6 @@ export const UserDetail = ({ username }) => {
   if (!token) {
     return <Redirect to={'login'} noThrow />;
   }
-  if (errorDetails && errorDetails.statusCode === 404) {
-    return <Redirect to={'login'} noThrow />;
-  }
 
   const blockWidth = 'ph6-l ph4-m ph2';
   const blockClass = 'w-33-l w-50-m w-100 fl pa2';

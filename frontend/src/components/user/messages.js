@@ -252,6 +252,18 @@ export default defineMessages({
     id: 'user.settings.email.confirmation',
     defaultMessage: 'Please check your email account in order to confirm your email address.',
   },
+  myProjects: {
+    id: 'users.detail.MyProjects',
+    defaultMessage: 'My projects',
+  },
+  myContribs: {
+    id: 'users.detail.MyContribs',
+    defaultMessage: 'My contributions',
+  },
+  myStats: {
+    id: 'users.detail.MyStats',
+    defaultMessage: 'My stats',
+  },
 });
 // It will be useful when we enable the placeholders
 // placeholder: {
