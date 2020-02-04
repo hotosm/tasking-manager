@@ -550,11 +550,19 @@
                 vm.selectedMappingEditor = vm.mappingEditors[0].value;
                 vm.validationEditors = createEditorList(vm.projectData.validationEditors);
                 vm.selectedValidationEditor = vm.validationEditors[0].value;
-                vm.userCanMap = vm.user && projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
-                vm.userCanValidate = vm.user && projectService.userCanValidateProject(vm.user.role, vm.user.mappingLevel, vm.projectData.enforceValidatorRole, vm.projectData.allowNonBeginners);
+                // No idea why we had to do it this way but the old way wasn't working
+                // no touchy
+                if (vm.user) {
+                vm.userCanMap = projectService.userCanMapProject(vm.user.mappingLevel, vm.projectData.mapperLevel, vm.projectData.enforceMapperLevel);
+                vm.userCanValidate = projectService.userCanValidateProject(vm.user.role, vm.user.mappingLevel, vm.projectData.enforceValidatorRole, vm.projectData.allowNonBeginners);
                 // If validator role enforced, show validator+ OSMCha buttons; otherwise show experts too
                 vm.showOSMCha = vm.projectData.enforceValidatorRole ? vm.userCanValidate :
-                                (projectService.userCanValidateProject(vm.user.role, true) || vm.user.isExpert);
+                            (projectService.userCanValidateProject(vm.user.role, true) || vm.user.isExpert);
+                }
+                else {
+                    vm.userCanMap, vm.userCanValidate, vm.showOSMCha = false;
+                }
+                
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
