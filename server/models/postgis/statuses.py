@@ -64,6 +64,9 @@ class MappingNotAllowed(Enum):
     USER_NOT_ACCEPTED_LICENSE = 102
     USER_NOT_ON_ALLOWED_LIST = 103
     PROJECT_NOT_PUBLISHED = 104
+    USER_NOT_TEAM_MEMBER = 105
+    PROJECT_HAS_NO_TEAM = 106
+    NOT_A_MAPPING_TEAM = 107
 
 
 class ValidatingNotAllowed(Enum):
@@ -74,6 +77,9 @@ class ValidatingNotAllowed(Enum):
     USER_NOT_ON_ALLOWED_LIST = 102
     PROJECT_NOT_PUBLISHED = 103
     USER_IS_BEGINNER = 104
+    NOT_A_VALIDATION_TEAM = 105
+    USER_NOT_TEAM_MEMBER = 106
+    PROJECT_HAS_NO_TEAM = 107
 
 
 class UserGender(Enum):
@@ -127,3 +133,21 @@ class TeamMemberFunctions(Enum):
     EDITOR = 0
     MANAGER = 1
     MEMBER = 2
+
+
+class MappingPermission(Enum):
+    """ Describes a set of permissions for mapping on a project """
+
+    ANY = 0
+    LEVEL = 1
+    TEAMS = 2
+    TEAMS_LEVEL = 3
+
+
+class ValidationPermission(Enum):
+    """ Describes a set of permissions for validating on a project """
+
+    ANY = 0
+    LEVEL = 1
+    TEAMS = 2
+    TEAMS_LEVEL = 3

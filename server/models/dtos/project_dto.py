@@ -20,6 +20,8 @@ from server.models.postgis.statuses import (
     MappingTypes,
     TaskCreationMode,
     Editors,
+    MappingPermission,
+    ValidationPermission,
 )
 from server.models.dtos.campaign_dto import CampaignDTO
 
@@ -100,6 +102,31 @@ def is_known_task_creation_mode(value):
         )
 
 
+def is_known_mapping_permission(value):
+    """ Validates Mapping Permission String """
+    try:
+        print("value: ", value)
+        MappingPermission[value.upper()]
+    except KeyError:
+        raise ValidationError(
+            f"Unknown mappingPermission: {value} Valid values are {MappingPermission.ANY.name}, "
+            f"{MappingPermission.LEVEL.name}"
+        )
+
+
+def is_known_validation_permission(value):
+    """ Validates Validation Permission String """
+    try:
+        print("value: ", value)
+        ValidationPermission[value.upper()]
+    except KeyError:
+        raise ValidationError(
+            f"Unknown validationPermission: {value} Valid values are {ValidationPermission.ANY.name}, "
+            f"{ValidationPermission.LEVEL.name}, {ValidationPermission.TEAMS.name}, "
+            f"{ValidationPermission.TEAMS_LEVEL.name}"
+        )
+
+
 class DraftProjectDTO(Model):
     """ Describes JSON model used for creating draft project """
 
@@ -167,20 +194,20 @@ class ProjectDTO(Model):
         serialized_name="mapperLevel",
         validators=[is_known_mapping_level],
     )
-    restrict_mapping_level_to_project = BooleanType(
-        required=True, default=False, serialized_name="restrictMappingLevelToProject"
+    mapping_permission = StringType(
+        required=True,
+        serialized_name="mapping_permission",
+        validators=[is_known_mapping_permission],
     )
-    restrict_validation_role = BooleanType(
-        required=True, default=False, serialized_name="restrictValidationRole"
+    validation_permission = StringType(
+        required=True,
+        serialized_name="validation_permission",
+        validators=[is_known_validation_permission],
     )
     enforce_random_task_selection = BooleanType(
         required=False, default=False, serialized_name="enforceRandomTaskSelection"
     )
-    restrict_validation_level_intermediate = BooleanType(
-        required=False,
-        default=False,
-        serialized_name="restrictValidationLevelIntermediate",
-    )
+
     private = BooleanType(required=True)
     entities_to_map = StringType(serialized_name="entitiesToMap")
     changeset_comment = StringType(serialized_name="changesetComment")
@@ -445,15 +472,15 @@ class ProjectSummary(Model):
     percent_bad_imagery = IntType(serialized_name="percentBadImagery")
     aoi_centroid = BaseType(serialized_name="aoiCentroid")
     mapper_level = StringType(serialized_name="mapperLevel")
-    restrict_mapping_level_to_project = BooleanType(
-        serialized_name="restrictMappingLevelToProject"
+    mapping_permission = IntType(
+        serialized_name="mappingPermission", validators=[is_known_mapping_permission]
     )
-    restrict_validation_role = BooleanType(serialized_name="restrictValidationRole")
+    validation_permission = IntType(
+        serialized_name="validationPermission",
+        validators=[is_known_validation_permission],
+    )
     random_task_selection_enforced = BooleanType(
         required=False, default=False, serialized_name="enforceRandomTaskSelection"
-    )
-    restrict_validation_level_intermediate = BooleanType(
-        serialized_name="restrictValidationLevelIntermediate"
     )
     private = BooleanType(serialized_name="private")
     allowed_users = ListType(StringType, serialized_name="allowedUsernames", default=[])
