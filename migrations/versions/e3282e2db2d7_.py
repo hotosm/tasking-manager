@@ -48,7 +48,7 @@ def upgrade():
             "visibility",
             sa.Integer(),
             nullable=False,
-            server_default=str(TeamVisibility.SECRET.value),
+            server_default=str(TeamVisibility.PRIVATE.value),
         ),
         sa.ForeignKeyConstraint(
             ["organisation_id"], ["organisations.id"], name="fk_organisations"
