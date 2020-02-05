@@ -60,6 +60,11 @@ export function TaskSelection({ project, type, loading }: Object) {
     `projects/${project.projectId}/activities/latest/`,
     60000,
   );
+  /* eslint-disable-next-line */
+  const [userTeamsError, userTeamsLoading, userTeams] = useFetch(
+    `teams/?member=${user.id}`,
+    user.id,
+  );
 
   // if the user is a beginner, open the page with the instructions tab activated
   useEffect(() => {
@@ -87,11 +92,20 @@ export function TaskSelection({ project, type, loading }: Object) {
         dispatch({ type: 'SET_TASKS_STATUS', status: lockedByCurrentUser[0].taskStatus });
       } else {
         // otherwise we check if the user can map or validate the project
-        setTaskAction(getTaskAction(user, project, null));
+        setTaskAction(getTaskAction(user, project, null, userTeams.teams));
       }
       setMapInit(true);
     }
-  }, [lockedTasks, dispatch, initialActivities, user.username, mapInit, project, user]);
+  }, [
+    lockedTasks,
+    dispatch,
+    initialActivities,
+    user.username,
+    mapInit,
+    project,
+    user,
+    userTeams.teams,
+  ]);
 
   // refresh the task status on the map each time the activities are updated
   useEffect(() => {
@@ -118,7 +132,7 @@ export function TaskSelection({ project, type, loading }: Object) {
       // unselecting tasks
       if (selected.includes(selection)) {
         setSelectedTasks([]);
-        setTaskAction(getTaskAction(user, project, null));
+        setTaskAction(getTaskAction(user, project, null, userTeams.teams));
       } else {
         setSelectedTasks([selection]);
         if (lockedTasks.get('tasks').includes(selection)) {
@@ -128,7 +142,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               : 'resumeValidation',
           );
         } else {
-          setTaskAction(getTaskAction(user, project, status));
+          setTaskAction(getTaskAction(user, project, status, userTeams.teams));
         }
       }
     }

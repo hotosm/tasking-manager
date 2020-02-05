@@ -50,7 +50,7 @@ export function ProjectEdit({ id }) {
     mappingTypes: [],
     mappingEditors: [],
     validationEditors: [],
-    projectTeams: [],
+    teams: [],
     projectInfoLocales: [
       {
         locale: '',
