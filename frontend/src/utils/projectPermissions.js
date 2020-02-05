@@ -17,21 +17,21 @@ export function userCanMap(user, project, userTeams = []) {
     }
   }
 
-  // if mappingPermission is ANY, all users can map
-  if (project.mappingPermission === 'ANY') return true;
+  // if mappingPermission is any, all users can map
+  if (project.mappingPermission === 'any') return true;
 
   // if mappingPermission is level, only INTERMEDIATE and ADVANCED users can map
-  if (project.mappingPermission === 'LEVEL') {
+  if (project.mappingPermission === 'level') {
     return isUserExperienced;
   }
 
   // if mappingPermission is team, only members of a project team can map
-  if (project.mappingPermission === 'TEAMS') {
+  if (project.mappingPermission === 'teams') {
     return isUserMemberOfATeam;
   }
 
   // if mappingPermission is team, only INTERMEDIATE and ADVANCED members of a project team can map
-  if (project.mappingPermission === 'TEAMS_LEVEL') {
+  if (project.mappingPermission === 'teamsAndLevel') {
     return isUserMemberOfATeam && isUserExperienced;
   }
 }
@@ -55,21 +55,21 @@ export function userCanValidate(user, project, userTeams = []) {
     }
   }
 
-  // if validationPermission is ANY, all users can validate
-  if (project.validationPermission === 'ANY') return true;
+  // if validationPermission is any, all users can validate
+  if (project.validationPermission === 'any') return true;
 
   // if validationPermission is level, only INTERMEDIATE and ADVANCED users can validate
-  if (project.validationPermission === 'LEVEL') {
+  if (project.validationPermission === 'level') {
     return isUserExperienced;
   }
 
   // if validationPermission is team, only members of a project team can validate
-  if (project.validationPermission === 'TEAMS') {
+  if (project.validationPermission === 'teams') {
     return isUserMemberOfATeam;
   }
 
   // if validationPermission is team, only INTERMEDIATE and ADVANCED members of a project team can validate
-  if (project.validationPermission === 'TEAMS_LEVEL') {
+  if (project.validationPermission === 'teamsAndLevel') {
     return isUserMemberOfATeam && isUserExperienced;
   }
 }

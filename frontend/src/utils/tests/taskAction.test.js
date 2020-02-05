@@ -62,8 +62,8 @@ it('READY TASK selected and USER able to map returns mapSelectedTask', () => {
     percentMapped: 40,
     percentBadImagery: 0,
     percentValidated: 0,
-    mappingPermission: 'ANY',
-    validationPermission: 'TEAMS_LEVEL',
+    mappingPermission: 'any',
+    validationPermission: 'teamsAndLevel',
     teams: [],
   };
   const taskStatus = 'READY';
@@ -76,8 +76,8 @@ it('READY TASK selected and USER unable to map returns selectAnotherProject', ()
     percentMapped: 40,
     percentBadImagery: 0,
     percentValidated: 0,
-    mappingPermission: 'TEAMS',
-    validationPermission: 'TEAMS',
+    mappingPermission: 'teams',
+    validationPermission: 'teams',
     teams: [],
   };
   const taskStatus = 'READY';
@@ -90,8 +90,8 @@ it('MAPPED TASK selected and USER able to map, but unable to validate, returns m
     percentMapped: 40,
     percentBadImagery: 0,
     percentValidated: 0,
-    mappingPermission: 'ANY',
-    validationPermission: 'LEVEL',
+    mappingPermission: 'any',
+    validationPermission: 'level',
     teams: [],
   };
   const taskStatus = 'MAPPED';
@@ -104,8 +104,8 @@ it('MAPPED TASK selected and USER able to validate returns validatedSelectedTask
     percentMapped: 100,
     percentValidated: 50,
     percentBadImagery: 0,
-    mappingPermission: 'ANY',
-    validationPermission: 'ANY',
+    mappingPermission: 'any',
+    validationPermission: 'any',
     teams: [],
   };
   const taskStatus = 'MAPPED';
@@ -118,8 +118,8 @@ it('No tasks selected and USER able to validate returns validatedATask', () => {
     percentMapped: 100,
     percentValidated: 50,
     percentBadImagery: 0,
-    mappingPermission: 'LEVEL',
-    validationPermission: 'LEVEL',
+    mappingPermission: 'level',
+    validationPermission: 'level',
     teams: [],
   };
   expect(getTaskAction(user, project, null)).toBe('validateATask');
@@ -131,8 +131,8 @@ it('completely mapped project returns mappingIsComplete message to a user that c
     percentMapped: 100,
     percentValidated: 50,
     percentBadImagery: 0,
-    mappingPermission: 'LEVEL',
-    validationPermission: 'TEAMS',
+    mappingPermission: 'level',
+    validationPermission: 'teams',
     teams: [],
   };
   const taskStatus = 'MAPPED';
@@ -145,8 +145,8 @@ it('completely mapped and validated project returns projectIsComplete to user ab
     percentMapped: 100,
     percentValidated: 100,
     percentBadImagery: 0,
-    mappingPermission: 'ANY',
-    validationPermission: 'ANY',
+    mappingPermission: 'any',
+    validationPermission: 'any',
     teams: [],
   };
   const taskStatus = 'VALIDATED';
@@ -159,8 +159,8 @@ it('completely mapped and validated project returns projectIsComplete to user ab
     percentMapped: 100,
     percentValidated: 100,
     percentBadImagery: 0,
-    mappingPermission: 'ANY',
-    validationPermission: 'ANY',
+    mappingPermission: 'any',
+    validationPermission: 'any',
     teams: [],
   };
   const taskStatus = 'VALIDATED';
