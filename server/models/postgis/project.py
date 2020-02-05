@@ -44,6 +44,8 @@ from server.models.postgis.statuses import (
     TaskCreationMode,
     Editors,
     TeamRoles,
+    MappingPermission,
+    ValidationPermission,
 )
 from server.models.postgis.task import Task, TaskHistory
 from server.models.postgis.team import Team
@@ -131,14 +133,13 @@ class Project(db.Model):
     mapper_level = db.Column(
         db.Integer, default=2, nullable=False, index=True
     )  # Mapper level project is suitable for
-    restrict_mapping_level_to_project = db.Column(db.Boolean, default=False)
-    restrict_validation_role = db.Column(
-        db.Boolean, default=False
+    mapping_permission = db.Column(db.Integer, default=MappingPermission.ANY.value)
+    validation_permission = db.Column(
+        db.Integer, default=ValidationPermission.ANY.value
     )  # Means only users with validator role can validate
     enforce_random_task_selection = db.Column(
         db.Boolean, default=False
     )  # Force users to edit at random to avoid mapping "easy" tasks
-    restrict_validation_level_intermediate = db.Column(db.Boolean, default=False)
     private = db.Column(db.Boolean, default=False)  # Only allowed users can validate
     featured = db.Column(
         db.Boolean, default=False
@@ -340,12 +341,8 @@ class Project(db.Model):
         cloned_project.priority = original_project.priority
         cloned_project.default_locale = original_project.default_locale
         cloned_project.mapper_level = original_project.mapper_level
-        cloned_project.restrict_mapping_level_to_project = (
-            original_project.restrict_mapping_level_to_project
-        )
-        cloned_project.restrict_validation_role = (
-            original_project.restrict_validation_role
-        )
+        cloned_project.mapping_permission = original_project.mapping_permission
+        cloned_project.validation_permission = original_project.validation_permission
         cloned_project.enforce_random_task_selection = (
             original_project.enforce_random_task_selection
         )
@@ -387,14 +384,13 @@ class Project(db.Model):
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
         self.default_locale = project_dto.default_locale
-        self.restrict_mapping_level_to_project = (
-            project_dto.restrict_mapping_level_to_project
-        )
-        self.restrict_validation_role = project_dto.restrict_validation_role
+        self.mapping_permission = MappingPermission[
+            project_dto.mapping_permission.upper()
+        ].value
+        self.validation_permission = ValidationPermission[
+            project_dto.validation_permission.upper()
+        ].value
         self.enforce_random_task_selection = project_dto.enforce_random_task_selection
-        self.restrict_validation_level_intermediate = (
-            project_dto.restrict_validation_level_intermediate
-        )
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
         self.entities_to_map = project_dto.entities_to_map
@@ -730,14 +726,11 @@ class Project(db.Model):
         summary.last_updated = self.last_updated
         summary.due_date = self.due_date
         summary.mapper_level = MappingLevel(self.mapper_level).name
-        summary.restrict_mapping_level_to_project = (
-            self.restrict_mapping_level_to_project
-        )
-        summary.restrict_validation_role = self.restrict_validation_role
+        summary.mapping_permission = MappingPermission(self.mapping_permission).name
+        summary.validation_permission = ValidationPermission(
+            self.validation_permission
+        ).name
         summary.random_task_selection_enforced = self.enforce_random_task_selection
-        summary.restrict_validation_level_intermediate = (
-            self.restrict_validation_level_intermediate
-        )
         summary.private = self.private
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map
@@ -875,14 +868,11 @@ class Project(db.Model):
         base_dto.project_priority = ProjectPriority(self.priority).name
         base_dto.area_of_interest = self.get_aoi_geometry_as_geojson()
         base_dto.aoi_bbox = shape(base_dto.area_of_interest).bounds
-        base_dto.restrict_mapping_level_to_project = (
-            self.restrict_mapping_level_to_project
-        )
-        base_dto.restrict_validation_role = self.restrict_validation_role
+        base_dto.mapping_permission = MappingPermission(self.mapping_permission).name
+        base_dto.validation_permission = ValidationPermission(
+            self.validation_permission
+        ).name
         base_dto.enforce_random_task_selection = self.enforce_random_task_selection
-        base_dto.restrict_validation_level_intermediate = (
-            self.restrict_validation_level_intermediate
-        )
         base_dto.private = self.private
         base_dto.mapper_level = MappingLevel(self.mapper_level).name
         base_dto.entities_to_map = self.entities_to_map
@@ -979,7 +969,6 @@ class Project(db.Model):
     def as_dto_for_mapping(self, locale: str, abbrev: bool) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
         project, project_dto = self._get_project_and_base_dto()
-
         if abbrev is False:
             project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(
                 self.id, None
@@ -991,7 +980,6 @@ class Project(db.Model):
         project_dto.project_info = ProjectInfo.get_dto_for_locale(
             self.id, locale, project.default_locale
         )
-
         if project.organisation_id:
             project_dto.organisation = project.organisation.id
             project_dto.organisation_name = project.organisation.name
