@@ -56,6 +56,7 @@ class EnvironmentConfig:
 
     # Image sources
     MAPILLARY_API = {'base': 'https://a.mapillary.com/v3/', 'clientId': os.getenv('MAPILLARY_API_KEY', None)}
+    MAPILLARY_TIME_CORRELATION = os.getenv('MAPILLARY_TIME_CORRELATION', 60)
 
     # Configuration for sending emails
     SMTP_SETTINGS = {

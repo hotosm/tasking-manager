@@ -74,6 +74,7 @@ class MapillaryService:
     @staticmethod
     def getMapillarySequences(parameters: dict):
         MAPILLARY_API = current_app.config['MAPILLARY_API']
+        MAPILLARY_TIME_CORRELATION = current_app.config['MAPILLARY_TIME_CORRELATION']
         parameters['client_id'] = MAPILLARY_API['clientId']
         if 'bbox' not in parameters:
             raise ValueError("parameters must include a bbox")
@@ -118,7 +119,7 @@ class MapillaryService:
             task = []
             task.append(feature)
 
-            for otherFeature in [f for f in features if (abs((t1 - parser.parse(f['properties']['captured_at'])).total_seconds()) <= 60)]:
+            for otherFeature in [f for f in features if (abs((t1 - parser.parse(f['properties']['captured_at'])).total_seconds()) <= MAPILLARY_TIME_CORRELATION)]:
                 if otherFeature['properties']['key'] in graves:
                     continue
                 new = otherFeature['properties']
