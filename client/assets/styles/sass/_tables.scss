@@ -74,6 +74,18 @@
     padding-right: 1rem;
   }
 
+  // allow for scrollable table
+  tbody {
+    display: block;
+    overflow: auto;
+    height: 200px;
+  }
+
+  thead, tbody tr {
+    display: table;
+    width: 100%;
+  }
+
   thead th {
     text-transform: uppercase;
     font-weight: $base-font-regular;
