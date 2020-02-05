@@ -20,8 +20,7 @@ def validate_team_visibility(value):
         raise ValidationError(
             f"Unknown teamVisibility: {value} Valid values are "
             f"{TeamVisibility.PUBLIC.name}, "
-            f"{TeamVisibility.PRIVATE.name}, "
-            f"{TeamVisibility.SECRET.name}"
+            f"{TeamVisibility.PRIVATE.name}
         )
 
 
