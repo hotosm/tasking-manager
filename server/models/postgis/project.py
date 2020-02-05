@@ -810,6 +810,16 @@ class Project(db.Model):
             self.tasks_validated,
             self.tasks_bad_imagery,
         )
+        summary.project_teams = [
+            ProjectTeamDTO(
+                dict(
+                    team_id=t.team.id,
+                    team_name=t.team.name,
+                    role=TeamRoles(t.role).name,
+                )
+            )
+            for t in self.teams
+        ]
 
         project_info = ProjectInfo.get_dto_for_locale(
             self.id, preferred_locale, self.default_locale

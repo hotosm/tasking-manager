@@ -219,7 +219,7 @@ class ProjectDTO(Model):
         validators=[is_known_task_creation_mode],
         serialize_when_none=False,
     )
-    project_teams = ListType(ModelType(ProjectTeamDTO), serialized_name="projectTeams")
+    project_teams = ListType(ModelType(ProjectTeamDTO), serialized_name="teams")
     mapping_editors = ListType(
         StringType,
         min_size=1,
@@ -457,6 +457,7 @@ class ProjectSummary(Model):
     )
     private = BooleanType(serialized_name="private")
     allowed_users = ListType(StringType, serialized_name="allowedUsernames", default=[])
+    project_teams = ListType(ModelType(ProjectTeamDTO), serialized_name="teams")
     project_info = ModelType(
         ProjectInfoDTO, serialized_name="projectInfo", serialize_when_none=False
     )
