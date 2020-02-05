@@ -34,7 +34,7 @@ export const TeamSelect = () => {
   };
 
   const editTeam = id => {
-    const team = projectInfo.projectTeams.filter(t => t.teamId === id)[0];
+    const team = projectInfo.teams.filter(t => t.teamId === id)[0];
     const role = teamRoles.filter(r => team.role === r.value)[0];
 
     setTeamSelect(t => {
@@ -43,8 +43,8 @@ export const TeamSelect = () => {
   };
 
   const removeTeam = id => {
-    const teams = projectInfo.projectTeams.filter(t => t.teamId !== id);
-    setProjectInfo({ ...projectInfo, projectTeams: teams });
+    const teams = projectInfo.teams.filter(t => t.teamId !== id);
+    setProjectInfo({ ...projectInfo, teams: teams });
   };
 
   const newTeam = () => {
@@ -56,21 +56,21 @@ export const TeamSelect = () => {
   };
 
   const addTeam = () => {
-    const teams = projectInfo.projectTeams;
+    const teams = projectInfo.teams;
     teams.push(newTeam());
-    setProjectInfo({ ...projectInfo, projectTeams: teams });
+    setProjectInfo({ ...projectInfo, teams: teams });
     setTeamSelect(nullState);
   };
 
   const updateTeam = () => {
-    const teams = projectInfo.projectTeams.map(t => {
+    const teams = projectInfo.teams.map(t => {
       let item = t;
       if (t.teamId === teamSelect.team.teamId) {
         item = newTeam();
       }
       return item;
     });
-    setProjectInfo({ ...projectInfo, projectTeams: teams });
+    setProjectInfo({ ...projectInfo, teams: teams });
     setTeamSelect(nullState);
   };
 
@@ -81,7 +81,7 @@ export const TeamSelect = () => {
   };
 
   // Get only ids.
-  const teamsIds = projectInfo.projectTeams.map(t => {
+  const teamsIds = projectInfo.teams.map(t => {
     return t.teamId;
   });
 
@@ -103,7 +103,7 @@ export const TeamSelect = () => {
   return (
     <div className="w-80">
       <div className="mb4">
-        {projectInfo.projectTeams.map(t => {
+        {projectInfo.teams.map(t => {
           return (
             <div className="w-100 cf pa2 bg-white blue-dark mb2">
               <div className="w-50 fl fw5">{t.name}</div>
