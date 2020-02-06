@@ -58,4 +58,4 @@ toml==0.10.0
 Unidecode==1.1.1
 urllib3==1.25.8
 webencodings==0.5.1
-Werkzeug==0.16.1
+Werkzeug==1.0.0
