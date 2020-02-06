@@ -47,7 +47,7 @@ class User(db.Model):
 
     def get_by_id(self, user_id: int):
         """ Return the user for the specified id, or None if not found """
-        return User.query.get(user_id)
+        return User.query.get(user_id) if user_id is not None else None
 
     def get_by_username(self, username: str):
         """ Return the user for the specified username, or None if not found """
