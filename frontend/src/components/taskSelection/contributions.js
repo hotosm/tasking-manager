@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import Select from 'react-select';
-import messages from '../../components/messages.js';
+import ReactPlaceholder from 'react-placeholder';
 import { injectIntl } from 'react-intl';
+
+import messages from './messages.js';
+import { UserAvatar } from '../user/avatar';
+import { CheckCircle } from '../checkCircle';
 
 const Contributions = props => {
   const mappingLevels = [
@@ -12,6 +16,8 @@ const Contributions = props => {
   ];
 
   const [level, setLevel] = useState(mappingLevels[0]);
+  const [activeStatus, setActiveStatus] = useState(null);
+  const [activeUser, setActiveUser] = useState(null);
 
   const MappingLevelSelect = () => {
     return (
@@ -19,69 +25,118 @@ const Contributions = props => {
         isClearable={false}
         options={mappingLevels}
         onChange={value => setLevel(value)}
-        className="w-30 fr mb3"
+        className="w-30 fr mb3 pointer"
         value={level}
       />
     );
   };
 
-  const displayTasks = taskIds => {
-    let ids = props.tasks.features
-      .filter(t => taskIds.includes(t.properties.taskId))
-      .map(f => f.properties.taskId);
+  const checkActiveUserAndStatus = (status, username) =>
+    activeStatus === status && activeUser === username ? 'bg-blue-dark' : 'bg-grey-light';
 
-    props.setSelectedTasks(ids);
+  const displayTasks = (taskIds, status, user) => {
+    if (activeStatus === status && user === activeUser) {
+      props.selectTask([]);
+      setActiveStatus(null);
+      setActiveUser(null);
+    } else {
+      let filteredTasksByStatus = props.tasks.features;
+      if (status === 'MAPPED') {
+        filteredTasksByStatus = filteredTasksByStatus.filter(
+          task => task.properties.taskStatus === 'MAPPED',
+        );
+      }
+      if (status === 'VALIDATED') {
+        filteredTasksByStatus = filteredTasksByStatus.filter(
+          task => task.properties.taskStatus === 'VALIDATED',
+        );
+      }
+      const ids = filteredTasksByStatus
+        .filter(t => taskIds.includes(t.properties.taskId))
+        .map(f => f.properties.taskId);
+      props.selectTask(ids, status);
+      setActiveUser(user);
+      setActiveStatus(status);
+    }
   };
 
-  const avatarClass = 'h2 w2 br-100 pa1 ';
-
-  let contributionsArray = props.contribsData[2].userContributions;
+  let contributionsArray = props.contribsData.userContributions || [];
   if (level.value !== 'ALL') {
     contributionsArray = contributionsArray.filter(u => u.mappingLevel === level.value);
   }
 
   return (
-    <div className="w-100 f6 pr4 cf">
-      <MappingLevelSelect />
-      {contributionsArray.map(u => {
-        return (
-          <div
-            onMouseEnter={() => displayTasks(u.taskIds)}
-            onMouseLeave={() => props.setSelectedTasks([])}
-            className="dim w-100 flex justify-between pa3 ba b--tan mb2 items-center"
-          >
-            {u.pictureUrl !== null ? (
-              <img className={avatarClass} src={u.pictureUrl} alt={u.username} />
-            ) : (
-              <div className="h2 w2 bg-light-gray ma1 br-100"></div>
-            )}
-            <div className="w-25">
-              {' '}
-              <a
-                className="blue-dark mr2"
-                rel="noopener noreferrer"
-                target="_blank"
-                href={`/users/${u.username}`}
+    <div className="w-100 f5 pr4-l pr2 cf blue-dark bg-white">
+      <div className="w-100 fr cf">
+        <MappingLevelSelect />
+      </div>
+      <div className="w-100 fl cf">
+        <ReactPlaceholder
+          showLoadingAnimation={true}
+          rows={6}
+          delay={50}
+          ready={contributionsArray !== undefined}
+        >
+          {contributionsArray.map(user => {
+            return (
+              <div
+                className={`w-100 cf pv3 ph3-ns ph1 ba bw1 mb2 ${
+                  activeUser === user.username ? 'b--blue-dark' : 'b--tan'
+                }`}
               >
-                {u.username}
-              </a>{' '}
-              <div className="b f7">{u.mappingLevel}</div>
-            </div>
-            <div style={{ width: '12%' }} className="flex justify-between">
-              <span className="mr1 b self-start">{u.mapped}</span>
-              <span>mapped</span>
-            </div>
-            <div style={{ width: '12%' }} className="flex justify-between">
-              <span className="mr1 b">{u.validated}</span>
-              <span>validated</span>
-            </div>
-            <div style={{ width: '9%' }} className="flex justify-between">
-              <span className="mr1 b">{u.total}</span>
-              <span>total</span>
-            </div>
-          </div>
-        );
-      })}
+                <div className="w-30 fl dib truncate">
+                  <UserAvatar
+                    picture={user.pictureUrl}
+                    username={user.username}
+                    colorClasses="white bg-blue-grey"
+                  />
+                  <a
+                    className="blue-dark mr2 link"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    href={`/users/${user.username}`}
+                  >
+                    {user.username}
+                  </a>
+                  <span className="blue-grey ttl dib-ns dn">
+                    ({props.intl.formatMessage(messages[`mappingLevel${user.mappingLevel}`])})
+                  </span>
+                </div>
+                <div
+                  className="w-25 fl tr dib pointer pt2 truncate"
+                  onClick={() => displayTasks(user.taskIds, 'MAPPED', user.username)}
+                >
+                  <span className="mr1 b self-start">{user.mapped}</span>
+                  <span className="ttl mr2">{props.intl.formatMessage(messages.mapped)}</span>
+                  <CheckCircle
+                    className={`${checkActiveUserAndStatus('MAPPED', user.username)} white`}
+                  />
+                </div>
+                <div
+                  className="w-25 fl tr dib pointer pt2 truncate"
+                  onClick={() => displayTasks(user.taskIds, 'VALIDATED', user.username)}
+                >
+                  <span className="mr1 b">{user.validated}</span>
+                  <span className="ttl mr2">{props.intl.formatMessage(messages.validated)}</span>
+                  <CheckCircle
+                    className={`${checkActiveUserAndStatus('VALIDATED', user.username)} white`}
+                  />
+                </div>
+                <div
+                  className="w-20 fl tr dib pointer pt2 truncate"
+                  onClick={() => displayTasks(user.taskIds, 'ALL', user.username)}
+                >
+                  <span className="mr1 b">{user.total}</span>
+                  <span className="ttl mr2">{props.intl.formatMessage(messages.total)}</span>
+                  <CheckCircle
+                    className={`${checkActiveUserAndStatus('ALL', user.username)} white`}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </ReactPlaceholder>
+      </div>
     </div>
   );
 };
