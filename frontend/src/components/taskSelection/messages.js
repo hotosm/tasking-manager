@@ -382,15 +382,15 @@ export default defineMessages({
     defaultMessage: 'All levels',
   },
   mappingLevelADVANCED: {
-    id: 'project.level.advanced',
+    id: 'mapping.level.advanced',
     defaultMessage: 'Advanced',
   },
   mappingLevelINTERMEDIATE: {
-    id: 'project.level.intermediate',
+    id: 'mapping.level.intermediate',
     defaultMessage: 'Intermediate',
   },
   mappingLevelBEGINNER: {
-    id: 'project.level.beginner',
+    id: 'mapping.level.beginner',
     defaultMessage: 'Beginner',
   },
 });

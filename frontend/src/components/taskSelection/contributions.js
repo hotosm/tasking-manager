@@ -6,8 +6,6 @@ import { injectIntl } from 'react-intl';
 import messages from './messages.js';
 import { UserAvatar } from '../user/avatar';
 import { CheckCircle } from '../checkCircle';
-import ProjectProgressBar from '../projectcard/projectProgressBar';
-import { computeCompleteness } from '../../utils/projectCompletenessCalc';
 
 const Contributions = props => {
   const mappingLevels = [
@@ -18,7 +16,8 @@ const Contributions = props => {
   ];
 
   const [level, setLevel] = useState(mappingLevels[0]);
-  const { percentMapped, percentValidated } = computeCompleteness(props.tasks);
+  const [activeStatus, setActiveStatus] = useState(null);
+  const [activeUser, setActiveUser] = useState(null);
 
   const MappingLevelSelect = () => {
     return (
@@ -33,13 +32,13 @@ const Contributions = props => {
   };
 
   const checkActiveUserAndStatus = (status, username) =>
-    props.activeStatus === status && props.activeUser === username
-      ? 'bg-blue-dark'
-      : 'bg-grey-light';
+    activeStatus === status && activeUser === username ? 'bg-blue-dark' : 'bg-grey-light';
 
   const displayTasks = (taskIds, status, user) => {
-    if (props.activeStatus === status && user === props.activeUser) {
+    if (activeStatus === status && user === activeUser) {
       props.selectTask([]);
+      setActiveStatus(null);
+      setActiveUser(null);
     } else {
       let filteredTasksByStatus = props.tasks.features;
       if (status === 'MAPPED') {
@@ -55,7 +54,9 @@ const Contributions = props => {
       const ids = filteredTasksByStatus
         .filter(t => taskIds.includes(t.properties.taskId))
         .map(f => f.properties.taskId);
-      props.selectTask(ids, status, user);
+      props.selectTask(ids, status);
+      setActiveUser(user);
+      setActiveStatus(status);
     }
   };
 
@@ -67,11 +68,6 @@ const Contributions = props => {
   return (
     <div className="w-100 f5 pr4-l pr2 cf blue-dark bg-white">
       <div className="w-100 fr cf">
-        <ProjectProgressBar
-          percentMapped={percentMapped}
-          percentValidated={percentValidated}
-          className="pt1 pb3"
-        />
         <MappingLevelSelect />
       </div>
       <div className="w-100 fl cf">
@@ -85,7 +81,7 @@ const Contributions = props => {
             return (
               <div
                 className={`w-100 cf pv3 ph3-ns ph1 ba bw1 mb2 ${
-                  props.activeUser === user.username ? 'b--blue-dark' : 'b--tan'
+                  activeUser === user.username ? 'b--blue-dark' : 'b--tan'
                 }`}
               >
                 <div className="w-30 fl dib truncate">
