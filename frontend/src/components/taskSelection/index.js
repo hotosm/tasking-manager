@@ -62,16 +62,29 @@ export function TaskSelection({ project, type, loading }: Object) {
     60000,
   );
 
-  const contribsData = useFetch(
+  /* eslint-disable-next-line */
+  const [contributionsError, contributionsLoading, contributions] = useFetch(
     `projects/${project.projectId}/contributions/`,
     project.projectId !== undefined,
   );
 
   // if the user is a beginner, open the page with the instructions tab activated
   useEffect(() => {
-    setActiveSection(user.mappingLevel === 'BEGINNER' ? 'instructions' : 'tasks');
     setTasks(initialTasks);
-  }, [user.mappingLevel, initialTasks]);
+  }, [initialTasks]);
+
+  useEffect(() => {
+    if (contributions && contributions.userContributions) {
+      const currentUserContributions = contributions.userContributions.filter(
+        u => u.username === user.username,
+      );
+      if (currentUserContributions.length > 0) {
+        setActiveSection('tasks');
+      } else {
+        setActiveSection('instructions');
+      }
+    }
+  }, [contributions, user.username]);
 
   useEffect(() => {
     // run it only when the component is initialized
@@ -120,6 +133,7 @@ export function TaskSelection({ project, type, loading }: Object) {
     // if selection is an array, just update the state
     if (typeof selection === 'object') {
       setSelectedTasks(selection);
+      setTaskAction(getTaskAction(user, project, status));
     } else {
       // unselecting tasks
       if (selected.includes(selection)) {
@@ -144,7 +158,7 @@ export function TaskSelection({ project, type, loading }: Object) {
     <div>
       <div className="cf vh-minus-200-ns">
         <div className="w-100 w-50-ns fl pt3 overflow-y-scroll-ns vh-minus-200-ns h-100">
-          <div className="pl4-ns pl2 pr2">
+          <div className="pl4-l pl2 pr2">
             <ReactPlaceholder
               showLoadingAnimation={true}
               rows={3}
@@ -190,9 +204,9 @@ export function TaskSelection({ project, type, loading }: Object) {
                   ) : null}
                   {activeSection === 'contributions' ? (
                     <Contributions
-                      setSelectedTasks={setSelectedTasks}
+                      selectTask={selectTask}
                       tasks={tasks}
-                      contribsData={contribsData}
+                      contribsData={contributions}
                     />
                   ) : null}
                 </div>
