@@ -347,15 +347,15 @@ function CompletionInstructions() {
         </span>
         <div className="blue-grey">
           <p>
-            <CheckCircle />
+            <CheckCircle className="bg-red white" />
             <FormattedMessage {...messages.instructionsSelect} />
           </p>
           <p>
-            <CheckCircle />
+            <CheckCircle className="bg-red white" />
             <FormattedMessage {...messages.instructionsComment} />
           </p>
           <p>
-            <CheckCircle />
+            <CheckCircle className="bg-red white" />
             <FormattedMessage {...messages.instructionsSubmit} />
           </p>
         </div>

@@ -353,12 +353,40 @@ export default defineMessages({
     id: 'project.tasks.action.map',
     defaultMessage: 'Map',
   },
+  mapped: {
+    id: 'project.tasks.action.mapped',
+    defaultMessage: 'Mapped',
+  },
   validate: {
     id: 'project.tasks.action.validate',
     defaultMessage: 'Validate',
   },
+  validated: {
+    id: 'project.tasks.action.validated',
+    defaultMessage: 'Validated',
+  },
+  total: {
+    id: 'project.tasks.number.total',
+    defaultMessage: 'Total',
+  },
   lockedBy: {
     id: 'project.tasks.locked_by_user',
     defaultMessage: '{lockStatus} by {user}',
+  },
+  mappingLevelALL: {
+    id: 'project.level.all',
+    defaultMessage: 'All levels',
+  },
+  mappingLevelADVANCED: {
+    id: 'mapping.level.advanced',
+    defaultMessage: 'Advanced',
+  },
+  mappingLevelINTERMEDIATE: {
+    id: 'mapping.level.intermediate',
+    defaultMessage: 'Intermediate',
+  },
+  mappingLevelBEGINNER: {
+    id: 'mapping.level.beginner',
+    defaultMessage: 'Beginner',
   },
 });
