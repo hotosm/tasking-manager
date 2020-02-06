@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from '../user/messages';
-import { TwitterIconNoBg, FacebookIcon, LinkedinIcon } from '../svgIcons';
+import { TwitterIconNoBg, FacebookIcon, LinkedinIcon, ProfilePictureIcon } from '../svgIcons';
 import { MappingLevelMessage } from '../mappingLevel';
 import { NextMappingLevel } from '../user/settings';
 
@@ -70,34 +70,33 @@ const SocialMedia = ({ data }) => {
   );
 };
 
-export const HeaderProfile = ({ user }) => {
-  const details = user.details.read();
-  const osm = user.osmDetails.read();
-
+export const HeaderProfile = ({ userDetails, changesets }) => {
   const avatarClass = 'h4 w4 br-100 pa1 ba b--grey-light bw3 red';
   return (
     <div className="w-100 h-100 cf">
       <div className="fl dib mr3">
-        {details.pictureUrl ? (
-          <img className={avatarClass} src={details.pictureUrl} alt={'hey'} />
+        {userDetails.pictureUrl ? (
+          <img className={avatarClass} src={userDetails.pictureUrl} alt={'hey'} />
         ) : (
-          <div className={avatarClass + ' bg-light-gray ma1'}></div>
+          <ProfilePictureIcon className="red" />
         )}
       </div>
       <div className="pl2 dib">
         <div className="mb4">
-          <p className="barlow-condensed f2 ttu b ma0 mb2">{details.name || details.username}</p>
+          <p className="barlow-condensed f2 ttu b ma0 mb2">
+            {userDetails.name || userDetails.username}
+          </p>
           <p className="f4 ma0 mb2">
             <FormattedMessage
               {...messages.mapper}
               values={{
-                level: <MappingLevelMessage level={details.mappingLevel} />,
+                level: <MappingLevelMessage level={userDetails.mappingLevel} />,
               }}
             />
           </p>
-          <NextMappingLevel changesetsCount={osm.changesetsCount} />
+          <NextMappingLevel changesetsCount={changesets} />
         </div>
-        <SocialMedia data={details} />
+        <SocialMedia data={userDetails} />
       </div>
     </div>
   );

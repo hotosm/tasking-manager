@@ -61,10 +61,7 @@ const Element = ({ field, value }) => {
   );
 };
 
-export const ElementsMapped = ({ user }) => {
-  const stats = user.stats.read();
-  const osmStats = user.osmStats.read();
-
+export const ElementsMapped = ({ userStats, osmStats }) => {
   const shortEnglishHumanizer = humanizeDuration.humanizer({
     language: 'shortEn',
     languages: {
@@ -81,7 +78,7 @@ export const ElementsMapped = ({ user }) => {
     },
   });
 
-  const duration = shortEnglishHumanizer(stats.timeSpentMapping * 1000, {
+  const duration = shortEnglishHumanizer(userStats.timeSpentMapping * 1000, {
     round: true,
     delimiter: ' ',
     units: ['h', 'm'],
@@ -90,10 +87,10 @@ export const ElementsMapped = ({ user }) => {
   return (
     <div className="cf w-100">
       <Element field={'time'} value={duration} />
-      <Element field={'buildings'} value={osmStats.total_building_count_add} />
-      <Element field={'road'} value={osmStats.total_road_km_add} />
-      <Element field={'poi'} value={osmStats.total_poi_count_add} />
-      <Element field={'waterways'} value={osmStats.total_waterway_count_add} />
+      <Element field={'buildings'} value={osmStats.total_building_count_add || 0} />
+      <Element field={'road'} value={osmStats.total_road_km_add || 0} />
+      <Element field={'poi'} value={osmStats.total_poi_count_add || 0} />
+      <Element field={'waterways'} value={osmStats.total_waterway_count_add || 0} />
     </div>
   );
 };

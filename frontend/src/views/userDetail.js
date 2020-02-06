@@ -1,7 +1,8 @@
-import React, { Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect } from '@reach/router';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
+import ReactPlaceholder from 'react-placeholder';
 
 import messages from '../components/userDetail/messages';
 import { HeaderProfile } from '../components/userDetail/headerProfile';
@@ -11,81 +12,110 @@ import { TopCauses } from '../components/userDetail/topCauses';
 import { TopProjects } from '../components/userDetail/topProjects';
 import { EditsByNumbers } from '../components/userDetail/editsByNumbers';
 import ContributionTimeline from '../components/userDetail/contributionTimeline';
-import { ClockIcon } from '../components/svgIcons';
-import { fetchLocalJSONAPI, wrapPromise, fetchOSMStatsAPI } from '../network/genericJSONRequest';
-
-const Fallback = () => {
-  return (
-    <div className="vh-75 flex items-start">
-      <div className="pa3 mt4 bg-white blue-dark shadow-4 w-20 center barlow-condensed f4 flex items-center justify-center ttc">
-        <ClockIcon className="mr2" height="25px" />
-        <span>
-          <FormattedMessage {...messages.loading} />
-        </span>
-      </div>
-    </div>
-  );
-};
+import { fetchOSMStatsAPI } from '../network/genericJSONRequest';
+import { useFetch } from '../hooks/UseFetch';
 
 export const UserDetail = ({ username }) => {
   const token = useSelector(state => state.auth.get('token'));
+  const [osmStats, setOsmStats] = useState({});
+  const [errorDetails, loadingDetails, userDetails] = useFetch(
+    `users/queries/${username}/`,
+    username,
+  );
+  const [errorStats, loadingStats, userStats] = useFetch(`users/${username}/statistics/`, username);
+  const [projectsError, projectsLoading, userProjects] = useFetch(
+    `projects/queries/${username}/touched/`,
+    username,
+  );
+
+  useEffect(() => {
+    if (token && username) {
+      fetchOSMStatsAPI(`users/${username}`, token).then(res => setOsmStats(res));
+    }
+  }, [token, username]);
+
   if (!token) {
+    return <Redirect to={'login'} noThrow />;
+  }
+  if (errorDetails && errorDetails.statusCode === 404) {
     return <Redirect to={'login'} noThrow />;
   }
 
   const blockWidth = 'ph6-l ph4-m ph2';
   const blockClass = 'w-33-l w-50-m w-100 fl pa2';
 
-  const userDetails = () => {
-    return {
-      details: wrapPromise(fetchLocalJSONAPI(`users/queries/${username}/`, token)),
-      stats: wrapPromise(fetchLocalJSONAPI(`users/${username}/statistics/`, token)),
-      projects: wrapPromise(fetchLocalJSONAPI(`projects/queries/${username}/touched/`, token)),
-      osmDetails: wrapPromise(fetchLocalJSONAPI(`users/${username}/openstreetmap/`, token)),
-      osmStats: wrapPromise(fetchOSMStatsAPI(`users/${username}`)),
-    };
-  };
-
-  const user = userDetails();
   const titleClass = 'f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mb3';
 
   return (
     <div className="bg-tan w-100">
-      <Suspense fallback={<Fallback />}>
-        <div className="bg-white blue-dark w-100 cf ph6-l ph4-m ph2 pv3">
-          <HeaderProfile user={user} />
+      <div className="bg-white blue-dark w-100 cf ph6-l ph4-m ph2 pv3">
+        <ReactPlaceholder
+          type="media"
+          showLoadingAnimation={true}
+          rows={5}
+          ready={!errorDetails && !loadingDetails}
+        >
+          <HeaderProfile userDetails={userDetails} changesets={osmStats.changeset_count} />
+        </ReactPlaceholder>
+      </div>
+      <div className={blockWidth}>
+        <div className="mv4">
+          <ElementsMapped userStats={userStats} osmStats={osmStats} />
         </div>
-        <div className={blockWidth}>
-          <div className="mv4">
-            <ElementsMapped user={user} />
-          </div>
-          <div className="mv4">
-            <h3 className={titleClass}>
-              <FormattedMessage {...messages.contributionTimelineTitle} />
-            </h3>
-            <ContributionTimeline user={user} />
-          </div>
-          <div className="mv4">
-            <h3 className={titleClass}>
-              <FormattedMessage {...messages.statsTitle} />
-            </h3>
-            <div className="w-100 cf">
-              <div className="w-33-l w-100 fl pa2">
-                <TopProjects user={user} />
-              </div>
-              <div className={blockClass}>
-                <TopCauses user={user} />
-              </div>
-              <div className={blockClass}>
-                <EditsByNumbers user={user} />
-              </div>
+        <div className="mv4">
+          <h3 className={titleClass}>
+            <FormattedMessage {...messages.contributionTimelineTitle} />
+          </h3>
+          <ReactPlaceholder
+            type="rect"
+            showLoadingAnimation={true}
+            style={{ height: '20em' }}
+            ready={!errorStats && !loadingStats}
+          >
+            <ContributionTimeline userStats={userStats} />
+          </ReactPlaceholder>
+        </div>
+        <div className="mv4">
+          <h3 className={titleClass}>
+            <FormattedMessage {...messages.statsTitle} />
+          </h3>
+          <div className="w-100 cf">
+            <div className="w-33-l w-100 fl pa2">
+              <ReactPlaceholder
+                type="rect"
+                showLoadingAnimation={true}
+                style={{ height: '24em' }}
+                ready={!projectsError && !projectsLoading}
+              >
+                <TopProjects projects={userProjects} />
+              </ReactPlaceholder>
+            </div>
+            <div className={blockClass}>
+              <ReactPlaceholder
+                type="rect"
+                showLoadingAnimation={true}
+                style={{ height: '24em' }}
+                ready={!errorStats && !loadingStats}
+              >
+                <TopCauses userStats={userStats} />
+              </ReactPlaceholder>
+            </div>
+            <div className={blockClass}>
+              <EditsByNumbers osmStats={osmStats} />
             </div>
           </div>
-          <div className="mt3 pb4">
-            <CountriesMapped user={user} />
-          </div>
         </div>
-      </Suspense>
+        <div className="mt3 pb4">
+          <ReactPlaceholder
+            type="rect"
+            showLoadingAnimation={true}
+            style={{ height: '24em' }}
+            ready={!errorStats && !loadingStats && !projectsError && !projectsLoading}
+          >
+            <CountriesMapped projects={userProjects} userStats={userStats} />
+          </ReactPlaceholder>
+        </div>
+      </div>
     </div>
   );
 };

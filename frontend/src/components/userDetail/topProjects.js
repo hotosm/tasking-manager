@@ -50,9 +50,7 @@ export const ListElements = ({ data, valueField, nameField, linkBase, linkField 
   );
 };
 
-export const TopProjects = ({ user }) => {
-  const projects = user.projects.read();
-
+export const TopProjects = ({ projects }) => {
   const compare = (a, b) => {
     if (a.total < b.total) {
       return 1;
