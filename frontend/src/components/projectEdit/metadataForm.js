@@ -1,10 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { StateContext, styleClasses, handleCheckButton } from '../../views/projectEdit';
 import { Button } from '../button';
+import { ProjectInterests } from './projectInterests';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const MetadataForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
+  const [interests, setInterests] = useState([]);
+
   const elements = [
     { item: 'ROADS', showItem: 'Roads' },
     { item: 'BUILDINGS', showItem: 'Buildings' },
@@ -21,6 +25,14 @@ export const MetadataForm = () => {
     types = handleCheckButton(event, types);
     setProjectInfo({ ...projectInfo, mappingTypes: types });
   };
+
+  useEffect(() => {
+    if (interests.length === 0) {
+      fetchLocalJSONAPI('interests/').then(res => {
+        setInterests(res.interests);
+      });
+    }
+  }, [interests.length]);
 
   return (
     <div className="w-100">
@@ -74,6 +86,15 @@ export const MetadataForm = () => {
           095e8b31-b3cb-4b36-a106-02826fb6a109 (for convenience, you can also paste an OSMCha URL
           here that uses a saved filter and the filter id will be extracted for you).
         </p>
+      </div>
+      <div className={styleClasses.divClass.replace('w-70', 'w-80')}>
+        <label className={styleClasses.labelClass}>Interests</label>
+        <ProjectInterests
+          interests={interests}
+          projectInterests={projectInfo.interests}
+          setProjectInfo={setProjectInfo}
+          setInterests={setInterests}
+        />
       </div>
     </div>
   );

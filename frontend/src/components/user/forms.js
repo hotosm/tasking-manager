@@ -48,6 +48,27 @@ function UserInterestsCard() {
   );
 }
 
+export const InterestsList = ({ interests, field, changeSelect }) => {
+  const selectedStyle = 'f7 pa1 br-100 bg-black white absolute right-0 top-0';
+
+  return (
+    <ul className="list w-100 pa0 flex flex-wrap">
+      {interests.map(i => (
+        <li
+          onClick={() => changeSelect(i.id)}
+          className={`${
+            i[field] === true ? 'b--blue-dark bw1' : 'b--grey-light'
+          } bg-white w-30-ns w-100 ba pa3 f6 tc mb2 mr3 relative ttc pointer`}
+          key={i.id}
+        >
+          {i.name}
+          {i[field] === true && <CheckIcon className={selectedStyle} />}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 function UserInterestsForm() {
   const token = useSelector(state => state.auth.get('token'));
   const userDetails = useSelector(state => state.auth.get('userDetails'));
@@ -65,8 +86,6 @@ function UserInterestsForm() {
       getInterests(userDetails.username);
     }
   }, [token, userDetails]);
-
-  const selectedStyle = 'f7 pa1 br-100 bg-black white absolute right-0 top-0';
 
   const changeSelect = id => {
     const index = interests.findIndex(i => i.id === id);
@@ -104,20 +123,7 @@ function UserInterestsForm() {
 
   return (
     <>
-      <ul className="list w-100 pa0 flex flex-wrap">
-        {interests.map(i => (
-          <li
-            onClick={() => changeSelect(i.id)}
-            className={`${
-              i.userSelected === true ? 'b--blue-dark bw1' : 'b--grey-light'
-            } bg-white w-30-ns w-100 ba pa3 f6 tc mb2 mr3 relative ttc pointer`}
-            key={i.id}
-          >
-            {i.name}
-            {i.userSelected === true && <CheckIcon className={selectedStyle} />}
-          </li>
-        ))}
-      </ul>
+      <InterestsList interests={interests} field={'userSelected'} changeSelect={changeSelect} />
       {success === true && (
         <span className="blue-dark bg-grey-light pa2 db">
           <FormattedMessage {...messages.interestsUpdateSuccess} />
