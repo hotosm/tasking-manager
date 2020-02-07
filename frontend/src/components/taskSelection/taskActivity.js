@@ -142,7 +142,7 @@ const TaskHistory = ({ projectId, taskId, commentStat, setStat, commentPayload }
         </div>
         <div className="w-80-ns w-100 fl">
           <p className="ma0 pt2">
-            <a href={'/user/' + t.actionBy} className="blue-dark b underline">
+            <a href={'/users/' + t.actionBy} className="blue-dark b underline">
               {t.actionBy}
             </a>{' '}
             {getTaskActionMessage(t.action, t.actionText)}{' '}

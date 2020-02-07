@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import ReactPlaceholder from 'react-placeholder';
 
 import useForceUpdate from '../hooks/UseForceUpdate';
 // import { useInboxQueryAPI, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
@@ -10,6 +11,8 @@ import {
 import { MyTasksNav } from '../components/contributions/myTasksNav';
 import { TaskResults } from '../components/contributions/taskResults';
 import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
+import { HeaderProfile } from '../components/userDetail/headerProfile';
+import { UserDetail } from './userDetail';
 
 export const ContributionsPage = props => {
   const initialData = {
@@ -34,7 +37,7 @@ export const ContributionsPage = props => {
 
   return (
     <>
-      <div className="pt4-l pb5 ph5-l ph2 pt180 pull-center bg-tan">
+      <div className="pb5 pt180 pull-center bg-tan">
         {
           props.children
           /* This is where the full task body component is rendered
@@ -52,5 +55,26 @@ export const ContributionsPage = props => {
 };
 
 export const ContributionsPageIndex = props => {
-  return null;
+  return (
+    <div className="bg-tan w-100 cf">
+      <div className="w-100 cf pb3">
+        <HeaderProfile selfProfile={true} />
+      </div>
+      <div className="w-100 ph6-l ph4-m ph2 cf pb3">{props.children}</div>
+    </div>
+  );
+};
+
+export const UserStats = props => {
+  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  return (
+    <ReactPlaceholder
+      type="media"
+      showLoadingAnimation={true}
+      rows={5}
+      ready={userDetails !== undefined}
+    >
+      <UserDetail username={userDetails.username} withHeader={false} />
+    </ReactPlaceholder>
+  );
 };

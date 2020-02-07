@@ -3,7 +3,6 @@ import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { ManagementMenu } from './menu';
 import { CustomButton } from '../button';
 import { PlusIcon, WasteIcon } from '../svgIcons';
 
@@ -54,9 +53,8 @@ export function InviteOnlyBox({ className }: Object) {
 
 export function Management(props) {
   return (
-    <div className="pull-center cf pb4 ph5-l bg-tan">
-      {props.managementView && <ManagementMenu />}
-      <div className="cf mt4">
+    <div className="pull-center cf bg-tan">
+      <div className="cf mt1">
         <h3 className="barlow-condensed f2 ma0 pv3 dib v-mid ttu pl2 pl0-l">{props.title}</h3>
         {props.showAddButton && (
           <Link to={'new/'} className="dib ml3">

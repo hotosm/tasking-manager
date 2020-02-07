@@ -27,7 +27,7 @@ function getMenuItensForUser(userDetails) {
     { label: messages.exploreProjects, link: 'explore', showAlways: true },
     {
       label: messages.myContributions,
-      link: `/users/${userDetails.username}`,
+      link: `contributions`,
       authenticated: true,
     },
     { label: messages.manage, link: 'manage', authenticated: true, manager: true },

@@ -15,17 +15,20 @@ import ContributionTimeline from '../components/userDetail/contributionTimeline'
 import { fetchOSMStatsAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 
-export const UserDetail = ({ username }) => {
+export const UserDetail = ({ username, withHeader = true }) => {
   const token = useSelector(state => state.auth.get('token'));
   const [osmStats, setOsmStats] = useState({});
   const [errorDetails, loadingDetails, userDetails] = useFetch(
     `users/queries/${username}/`,
-    username,
+    username !== undefined,
   );
-  const [errorStats, loadingStats, userStats] = useFetch(`users/${username}/statistics/`, username);
+  const [errorStats, loadingStats, userStats] = useFetch(
+    `users/${username}/statistics/`,
+    username !== undefined,
+  );
   const [projectsError, projectsLoading, userProjects] = useFetch(
     `projects/queries/${username}/touched/`,
-    username,
+    username !== undefined,
   );
 
   useEffect(() => {
@@ -38,24 +41,24 @@ export const UserDetail = ({ username }) => {
     return <Redirect to={'login'} noThrow />;
   }
 
-  const blockWidth = 'ph6-l ph4-m ph2';
   const blockClass = 'w-33-l w-50-m w-100 fl pa2';
-
   const titleClass = 'f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mb3';
 
   return (
     <div className="bg-tan w-100">
-      <div className="bg-white blue-dark w-100 cf ph6-l ph4-m ph2 pv3">
-        <ReactPlaceholder
-          type="media"
-          showLoadingAnimation={true}
-          rows={5}
-          ready={!errorDetails && !loadingDetails}
-        >
-          <HeaderProfile userDetails={userDetails} changesets={osmStats.changeset_count} />
-        </ReactPlaceholder>
-      </div>
-      <div className={blockWidth}>
+      {withHeader && (
+        <div className="w-100 cf pb3">
+          <ReactPlaceholder
+            type="media"
+            showLoadingAnimation={true}
+            rows={5}
+            ready={!errorDetails && !loadingDetails}
+          >
+            <HeaderProfile userDetails={userDetails} changesets={osmStats.changeset_count} />
+          </ReactPlaceholder>
+        </div>
+      )}
+      <div className={withHeader && 'w-100 ph6-l ph4-m ph2 cf pb3'}>
         <div className="mv4">
           <ElementsMapped userStats={userStats} osmStats={osmStats} />
         </div>

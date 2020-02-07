@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
@@ -74,9 +74,9 @@ const SocialMedia = ({ data }) => {
 
 const MyContributionsNav = ({ username, authUser }) => {
   const items = [
-    { url: `/users/${username}`, label: <FormattedMessage {...messages.myStats} /> },
-    { url: '/manage/projects', label: <FormattedMessage {...messages.myProjects} /> },
-    { url: '/contributions', label: <FormattedMessage {...messages.myContribs} /> },
+    { url: `/contributions`, label: <FormattedMessage {...messages.myStats} /> },
+    { url: '/contributions/projects', label: <FormattedMessage {...messages.myProjects} /> },
+    { url: '/contributions/tasks', label: <FormattedMessage {...messages.myTasks} /> },
   ];
 
   return (
@@ -86,40 +86,53 @@ const MyContributionsNav = ({ username, authUser }) => {
   );
 };
 
-export const HeaderProfile = ({ userDetails, changesets }) => {
+export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
   const authDetails = useSelector(state => state.auth.get('userDetails'));
-  const avatarClass = 'h4 w4 br-100 pa1 ba b--grey-light bw3 red';
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    if (selfProfile && authDetails) {
+      setUser(authDetails);
+    }
+  }, [selfProfile, authDetails, authDetails.username]);
+
+  useEffect(() => {
+    if (userDetails && userDetails.id) {
+      setUser(userDetails);
+    }
+  }, [userDetails]);
+
   return (
     <>
       <div className="w-100 h-100 cf pv3 ph6-l ph4-m ph2 bg-white blue-dark">
-      <div className="fl dib mr3">
-        {userDetails.pictureUrl ? (
-          <img className={avatarClass} src={userDetails.pictureUrl} alt={'hey'} />
-        ) : (
-          <ProfilePictureIcon className="red" />
-        )}
-      </div>
-      <div className="pl2 dib">
-        <div className="mb4">
-          <p className="barlow-condensed f2 ttu b ma0 mb2">
-            {userDetails.name || userDetails.username}
-          </p>
-          <p className="f4 ma0 mb2">
-            <FormattedMessage
-              {...messages.mapper}
-              values={{
-                level: <MappingLevelMessage level={userDetails.mappingLevel} />,
-              }}
+        <div className="fl dib mr3">
+          {user.pictureUrl ? (
+            <img
+              className="h4 w4 br-100 pa1 ba b--grey-light bw3 red"
+              src={user.pictureUrl}
+              alt={user.username}
             />
-          </p>
-          <NextMappingLevel changesetsCount={changesets} />
+          ) : (
+            <ProfilePictureIcon className="red" />
+          )}
         </div>
-        <SocialMedia data={userDetails} />
+        <div className="pl2 dib">
+          <div className="mb4">
+            <p className="barlow-condensed f2 ttu b ma0 mb2">{user.name || user.username}</p>
+            <p className="f4 ma0 mb2">
+              <FormattedMessage
+                {...messages.mapper}
+                values={{
+                  level: <MappingLevelMessage level={user.mappingLevel} />,
+                }}
+              />
+            </p>
+            <NextMappingLevel changesetsCount={changesets} />
+          </div>
+          <SocialMedia data={user} />
+        </div>
       </div>
-      {userDetails.username === authDetails.username &&
-        <MyContributionsNav username={userDetails.username} />
-      }
-    </div>
+      {user.username === authDetails.username && <MyContributionsNav username={user.username} />}
     </>
   );
 };

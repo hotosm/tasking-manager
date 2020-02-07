@@ -6,7 +6,7 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { Teams } from '../components/teamsAndOrgs/teams';
 import { ManagementMenu } from '../components/teamsAndOrgs/menu';
 
-export function Management() {
+export function ManagementPageIndex() {
   const userDetails = useSelector(state => state.auth.get('userDetails'));
   // when teams and projects endpoints allow to filter by ownner/manager, replace the useFetch functions
   // const [projectsError, projectsLoading, projects] = useFetch(`projects/queries/myself/owner/`);
@@ -15,8 +15,7 @@ export function Management() {
   const [teamsError, teamsLoading, teams] = useFetch(`teams/`);
 
   return (
-    <div className="w-100 ph5-l ph2-m cf pb4">
-      <ManagementMenu />
+    <>
       <Projects
         projects={!projectsLoading && !projectsError && projects}
         viewAllQuery="?createdByMe=1"
@@ -27,6 +26,13 @@ export function Management() {
         viewAllQuery={`?manager=${userDetails.id}`}
         showAddButton={true}
       />
-    </div>
+    </>
   );
 }
+
+export const ManagementSection = props => (
+  <div className="w-100 ph5-l ph2-m cf bg-tan blue-dark">
+    <ManagementMenu />
+    {props.children}
+  </div>
+);

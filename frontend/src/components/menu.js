@@ -9,7 +9,7 @@ export function SectionMenu({ items }: Object) {
       : { className: linkCombo };
   };
   return (
-    <div className="cf mb2 pb3 pt3-ns ph4 bg-grey-light dib">
+    <div className="cf mb2 pb3 pt3-ns ph4 ph2-m bg-grey-light dib">
       {items.map((item, n) => (
         <TopNavLink key={n} to={item.url} isActive={isActive}>
           <span className="db dib-ns">{item.label}</span>

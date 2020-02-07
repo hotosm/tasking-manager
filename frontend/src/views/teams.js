@@ -17,7 +17,6 @@ import {
   formatMemberObject,
 } from '../utils/teamMembersDiff';
 import { Members, JoinRequests } from '../components/teamsAndOrgs/members';
-import { ManagementMenu } from '../components/teamsAndOrgs/menu';
 import {
   TeamInformation,
   TeamForm,
@@ -140,8 +139,7 @@ export function CreateTeam() {
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
-            <div className="cf ph5-l ph2-m bg-tan vh-100">
-              <ManagementMenu />
+            <div className="cf pb5">
               <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
                 <FormattedMessage {...messages.newTeam} />
               </h3>
@@ -173,7 +171,7 @@ export function CreateTeam() {
                 </div>
               </div>
             </div>
-            <div className="fixed bottom-0 cf bg-white h3 w-100">
+            <div className="fixed left-0 right-0 bottom-0 cf bg-white h3">
               <div className="w-80-ns w-60-m w-50 h-100 fl tr">
                 <Link to={'../'}>
                   <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
@@ -255,8 +253,7 @@ export function EditTeam(props) {
   };
 
   return (
-    <div className="cf ph5-l ph2-m pb4 bg-tan">
-      <ManagementMenu />
+    <div className="cf pb4 bg-tan">
       <div className="cf mt4">
         <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">
           <FormattedMessage {...messages.manageTeam} />

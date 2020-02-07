@@ -256,6 +256,10 @@ export default defineMessages({
     id: 'users.detail.MyProjects',
     defaultMessage: 'My projects',
   },
+  myTasks: {
+    id: 'users.detail.MyTasks',
+    defaultMessage: 'My tasks',
+  },
   myContribs: {
     id: 'users.detail.MyContribs',
     defaultMessage: 'My contributions',
