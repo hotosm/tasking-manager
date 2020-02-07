@@ -7,7 +7,7 @@ from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 
 from server.services.messaging.template_service import get_template, get_profile_url
-
+from server.models.dtos.message_dto import MessageDTO
 
 class SMTPService:
 
@@ -33,24 +33,30 @@ class SMTPService:
         return True
 
     @staticmethod
-    def send_email_alert(to_address: str, username: str):
+    def send_email_alert(to_address: str, username: str, message: MessageDTO=None):
         """ Send an email to user to alert them they have a new message"""
         current_app.logger.debug(f'Test if email required {to_address}')
         if not to_address:
             return False  # Many users will not have supplied email address so return
 
-        # TODO these could be localised if needed, in the future
-        html_template = get_template('message_alert_en.html')
-        text_template = get_template('message_alert_en.txt')
-        inbox_url = f"{current_app.config['APP_BASE_URL']}/inbox"
+        if message:
+            subject = message.subject
+            html_template = message.message
+            text_template = message.message # technically still html (FIXME/TODO?)
+        else:
+            # TODO these could be localised if needed, in the future
+            current_app.logger.critical("Message is None: {}".format(message))
+            html_template = get_template('message_alert_en.html')
+            text_template = get_template('message_alert_en.txt')
+            inbox_url = f"{current_app.config['APP_BASE_URL']}/inbox"
 
-        html_template = html_template.replace('[USERNAME]', username)
-        html_template = html_template.replace('[PROFILE_LINK]', inbox_url)
+            html_template = html_template.replace('[USERNAME]', username)
+            html_template = html_template.replace('[PROFILE_LINK]', inbox_url)
 
-        text_template = text_template.replace('[USERNAME]', username)
-        text_template = text_template.replace('[PROFILE_LINK]', inbox_url)
+            text_template = text_template.replace('[USERNAME]', username)
+            text_template = text_template.replace('[PROFILE_LINK]', inbox_url)
 
-        subject = 'You have a new message on the Kaart Tasking Manager'
+            subject = 'You have a new message on the Kaart Tasking Manager'
         SMTPService._send_mesage(to_address, subject, html_template, text_template)
 
         return True
