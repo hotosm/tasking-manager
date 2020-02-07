@@ -2,7 +2,11 @@ Hi [USERNAME],<br />
 <br />
 The task you marked as "Completely Mapped" was just validated! [TASK_LINK].<br />
 <br />
-This is an automated message, the person who validated it hopefully shared some feedback with you.<br />
+<h3>Issues</h3>
+[ISSUES]
+<br />
+<h3>Comments</h3>
+[COMMENTS]
 <br />
 Thank you very much for mapping!<br />
 <br />

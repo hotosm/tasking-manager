@@ -98,28 +98,49 @@ class ValidatorService:
 
             if task_to_unlock['comment']:
                 # Parses comment to see if any users have been @'d
-                MessageService.send_message_after_comment(validated_dto.user_id, task_to_unlock['comment'], task.id,
-                                                          validated_dto.project_id)
-            if task_to_unlock['new_state'] == TaskStatus.VALIDATED or task_to_unlock['new_state'] == TaskStatus.INVALIDATED:
+                MessageService.send_message_after_comment(
+                    validated_dto.user_id,
+                    task_to_unlock["comment"],
+                    task.id,
+                    validated_dto.project_id,
+                )
+            mapped_by = task.mapped_by
+
+            # Update stats if user setting task to a different state from previous state
+            prev_status = TaskHistory.get_last_status(project_id, task.id)
+            if prev_status != task_to_unlock["new_state"]:
+                StatsService.update_stats_after_task_state_change(
+                    validated_dto.project_id,
+                    validated_dto.user_id,
+                    prev_status,
+                    task_to_unlock["new_state"],
+                )
+
+            task_mapping_issues = ValidatorService.get_task_mapping_issues(
+                task_to_unlock
+            )
+            task.unlock_task(
+                validated_dto.user_id,
+                task_to_unlock["new_state"],
+                task_to_unlock["comment"],
+                issues=task_mapping_issues,
+            )
+
+            if (
+                task_to_unlock["new_state"] == TaskStatus.VALIDATED
+                or task_to_unlock["new_state"] == TaskStatus.INVALIDATED
+            ):
                 # All mappers get a notification if their task has been validated or invalidated.
                 # Only once if multiple tasks mapped
                 if task.mapped_by not in message_sent_to:
                     MessageService.send_message_after_validation(task_to_unlock['new_state'], validated_dto.user_id,
-                                                                 task.mapped_by, task.id, validated_dto.project_id)
-                    message_sent_to.append(task.mapped_by)
+                                                                 mapped_by, task.id, validated_dto.project_id)
+                    message_sent_to.append(mapped_by)
 
                 if task_to_unlock['new_state'] == TaskStatus.VALIDATED:
                     # Set last_validation_date for the mapper to current date
                     task.mapper.last_validation_date = timestamp()
-
-            # Update stats if user setting task to a different state from previous state
-            prev_status = TaskHistory.get_last_status(project_id, task.id)
-            if prev_status != task_to_unlock['new_state']:
-                StatsService.update_stats_after_task_state_change(validated_dto.project_id, validated_dto.user_id,
-                                                                  prev_status, task_to_unlock['new_state'])
-            task_mapping_issues = ValidatorService.get_task_mapping_issues(task_to_unlock)
-            task.unlock_task(validated_dto.user_id, task_to_unlock['new_state'], task_to_unlock['comment'],
-                             issues=task_mapping_issues)
+            task.update()  # Required to get messages sent -- task.unlock_task did this previously at this location
             dtos.append(task.as_dto_with_instructions(validated_dto.preferred_locale))
 
         task_dtos = TaskDTOs()
