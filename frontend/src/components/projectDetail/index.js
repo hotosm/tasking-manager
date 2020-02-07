@@ -76,6 +76,7 @@ const ProjectDetailMap = props => {
       }
       <TasksMap
         mapResults={props.tasks}
+        priorityAreas={props.project.priorityAreas}
         taskBordersMap={taskBordersGeoJSON}
         taskCentroidMap={centroidGeoJSON}
         taskBordersOnly={taskBordersOnly}
