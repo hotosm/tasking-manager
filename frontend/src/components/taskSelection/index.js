@@ -67,6 +67,10 @@ export function TaskSelection({ project, type, loading }: Object) {
     `projects/${project.projectId}/contributions/`,
     project.projectId !== undefined,
   );
+  const [priorityAreasError, priorityAreasLoading, priorityAreas] = useFetch(
+    `projects/${project.projectId}/queries/priority-areas/`,
+    project.projectId !== undefined,
+  );
 
   // if the user is a beginner, open the page with the instructions tab activated
   useEffect(() => {
@@ -231,6 +235,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               selectTask={selectTask}
               selected={selected}
               taskBordersOnly={false}
+              priorityAreas={!priorityAreasError && !priorityAreasLoading && priorityAreas}
               animateZoom={false}
             />
             <TasksMapLegend />
