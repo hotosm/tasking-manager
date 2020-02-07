@@ -37,7 +37,7 @@ export const TASK_COLOURS = {
   VALIDATED: '#40ac8c',
   INVALIDATED: '#fceca4',
   BADIMAGERY: '#d8dae4',
-  PRIORITY_AREA: '#ffc5c8',
+  PRIORITY_AREAS: '#efd1d1',
 };
 
 const fallbackRasterStyle = {

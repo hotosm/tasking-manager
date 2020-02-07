@@ -144,6 +144,14 @@ class ProjectService:
         return project.get_aoi_geometry_as_geojson()
 
     @staticmethod
+    def get_project_priority_areas(project_id):
+        project = ProjectService.get_project_by_id(project_id)
+        geojson_areas = []
+        for priority_area in project.priority_areas:
+            geojson_areas.append(priority_area.get_as_geojson())
+        return geojson_areas
+
+    @staticmethod
     def get_task_for_logged_in_user(user_id: int):
         """ if the user is working on a task in the project return it """
         tasks = Task.get_locked_tasks_for_user(user_id)

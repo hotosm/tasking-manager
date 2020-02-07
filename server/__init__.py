@@ -141,6 +141,7 @@ def add_api_endpoints(app):
         ProjectsQueriesNoGeometriesAPI,
         ProjectsQueriesNoTasksAPI,
         ProjectsQueriesAoiAPI,
+        ProjectsQueriesPriorityAreasAPI,
         ProjectsQueriesFeaturedAPI,
     )
     from server.api.projects.activities import (
@@ -318,6 +319,10 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         ProjectsQueriesAoiAPI, format_url("projects/<int:project_id>/queries/aoi/")
+    )
+    api.add_resource(
+        ProjectsQueriesPriorityAreasAPI,
+        format_url("projects/<int:project_id>/queries/priority-areas/"),
     )
     api.add_resource(
         ProjectsQueriesFeaturedAPI, format_url("projects/queries/featured/")

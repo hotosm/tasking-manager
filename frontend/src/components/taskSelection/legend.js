@@ -29,6 +29,9 @@ export function TasksMapLegend() {
           <TaskStatus status="BADIMAGERY" />
         </p>
         <p className={lineClasses}>
+          <TaskStatus status="PRIORITY_AREAS" />
+        </p>
+        <p className={lineClasses}>
           <LockIcon style={{ paddingTop: '1px' }} className="v-mid h1 w1" />
           <span className="pl2 v-mid">
             <FormattedMessage {...messages[`taskStatus_LOCKED`]} />

@@ -19,9 +19,10 @@ try {
 }
 
 export const TasksMap = ({
-  mapResults,
   className,
+  mapResults,
   taskBordersMap,
+  priorityAreas,
   taskBordersOnly,
   taskCentroidMap,
   disableScrollZoom,
@@ -200,6 +201,49 @@ export const TasksMap = ({
         });
       }
 
+      if (map.getSource('priority-area') === undefined && priorityAreas) {
+        const priorityFeatureCollection = {
+          type: 'FeatureCollection',
+          features: priorityAreas.map(poly => ({ type: 'Feature', geometry: poly })),
+        };
+        map.addSource('priority-area', {
+          type: 'geojson',
+          data: priorityFeatureCollection,
+        });
+
+        map.addLayer({
+          id: 'priority-area-border',
+          type: 'line',
+          source: 'priority-area',
+          paint: {
+            'line-color': '#d73f3f',
+            'line-dasharray': [2, 2],
+            'line-width': 2,
+            'line-opacity': 0.7,
+          },
+          layout: {
+            visibility: 'visible',
+          },
+        });
+
+        map.addLayer(
+          {
+            id: 'priority-area',
+            type: 'fill',
+            source: 'priority-area',
+            paint: {
+              'fill-color': '#d73f3f',
+              'fill-outline-color': '#d73f3f',
+              'fill-opacity': 0.4,
+            },
+            layout: {
+              visibility: 'visible',
+            },
+          },
+          'tasks-fill',
+        );
+      }
+
       if (map.getSource('tasks-centroid') === undefined && taskBordersMap && taskCentroidMap) {
         map.addSource('tasks-centroid', {
           type: 'geojson',
@@ -328,6 +372,7 @@ export const TasksMap = ({
   }, [
     map,
     mapResults,
+    priorityAreas,
     selectedOnMap,
     selectTask,
     taskBordersMap,

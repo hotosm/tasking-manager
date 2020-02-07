@@ -173,6 +173,10 @@ export default defineMessages({
     id: 'project.tasks.list.lastUpdate',
     defaultMessage: 'Last updated by {user}',
   },
+  taskStatus_PRIORITY_AREAS: {
+    id: 'project.tasks.priority_areas',
+    defaultMessage: 'Priority areas',
+  },
   taskStatus_READY: {
     id: 'project.tasks.status.ready',
     defaultMessage: 'Available for mapping',
