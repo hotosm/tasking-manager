@@ -29,6 +29,8 @@ from server.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectTeamDTO,
 )
+from server.models.dtos.interests_dto import InterestDTO
+
 from server.models.dtos.tags_dto import TagsDTO
 from server.models.postgis.organisation import Organisation
 from server.models.postgis.custom_editors import CustomEditor
@@ -486,6 +488,9 @@ class Project(db.Model):
         else:
             if self.custom_editor:
                 self.custom_editor.delete()
+
+        # Update Interests.
+        self.interests = [Interest.query.get(i.id) for i in project_dto.interests]
 
         db.session.commit()
 
@@ -963,6 +968,10 @@ class Project(db.Model):
                 geojson_areas.append(priority_area.get_as_geojson())
 
             base_dto.priority_areas = geojson_areas
+
+        base_dto.interests = [
+            InterestDTO(dict(id=i.id, name=i.name)) for i in self.interests
+        ]
 
         return self, base_dto
 

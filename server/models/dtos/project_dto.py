@@ -13,6 +13,7 @@ from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from server.models.dtos.user_dto import is_known_mapping_level
 from server.models.dtos.stats_dto import Pagination
 from server.models.dtos.team_dto import ProjectTeamDTO
+from server.models.dtos.interests_dto import InterestDTO
 from server.models.postgis.statuses import (
     ProjectStatus,
     ProjectPriority,
@@ -237,6 +238,7 @@ class ProjectDTO(Model):
     custom_editor = ModelType(
         CustomEditorDTO, serialized_name="customEditor", serialize_when_none=False
     )
+    interests = ListType(ModelType(InterestDTO))
 
 
 class ProjectFavoriteDTO(Model):
