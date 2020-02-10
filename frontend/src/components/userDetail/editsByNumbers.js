@@ -62,9 +62,7 @@ export const DonutChart = ({ data, oAccessor, dynamicColumnWidth }) => {
   );
 };
 
-export const EditsByNumbers = ({ user }) => {
-  const osmStats = user.osmStats.read();
-
+export const EditsByNumbers = ({ osmStats }) => {
   let data = [
     { feature: 'Building', field: 'total_building_count_add', classColor: 'fill-green' },
     { feature: 'Roads', field: 'total_road_km_add', classColor: 'fill-red' },

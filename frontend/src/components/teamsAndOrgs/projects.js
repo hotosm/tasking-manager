@@ -33,7 +33,9 @@ export function Projects({ projects, viewAllQuery, ownerEntity, showAddButton = 
               projects.results &&
               projects.results
                 .slice(0, 6)
-                .map((card, n) => <ProjectCard cardWidthClass="w-third-l" {...card} key={n} />)}
+                .map((card, n) => (
+                  <ProjectCard cardWidthClass="w-third-l" {...card} key={n} showBottomButtons />
+                ))}
             {projects && projects.results && projects.results.length === 0 && (
               <span className="blue-grey">
                 <FormattedMessage

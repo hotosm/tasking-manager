@@ -4,9 +4,9 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on homepage.
  */
 export default defineMessages({
-  myContributions: {
+  myTasks: {
     id: 'mytasks.mainSection.title',
-    defaultMessage: 'My Contributions',
+    defaultMessage: 'My Tasks',
   },
   contribution: {
     id: 'mytasks.contribution',

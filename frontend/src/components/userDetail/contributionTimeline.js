@@ -8,7 +8,6 @@ const ContributionTimeline = props => {
   const { intl } = props;
 
   const today = new Date();
-  const stats = props.user.stats.read();
 
   const shiftDate = (date, numDays) => {
     const newDate = new Date(date);
@@ -16,7 +15,7 @@ const ContributionTimeline = props => {
     return newDate;
   };
 
-  const countValues = stats.contributionsByDay.map(r => {
+  const countValues = props.userStats.contributionsByDay.map(r => {
     return r.count;
   });
   const maxValue = Math.max(...countValues);
@@ -67,7 +66,7 @@ const ContributionTimeline = props => {
         <CalendarHeatmap
           startDate={shiftDate(today, -365)}
           endDate={today}
-          values={stats.contributionsByDay}
+          values={props.userStats.contributionsByDay}
           classForValue={value => {
             if (!value) {
               return 'fill-tan';

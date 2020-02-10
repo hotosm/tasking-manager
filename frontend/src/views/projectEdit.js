@@ -156,9 +156,9 @@ export function ProjectEdit({ id }) {
   };
 
   return (
-    <div className="cf pv3 ph4 bg-tan blue-dark">
-      <h2 className="ml6 pb2 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">Edit project</h2>
-      <div className="fl vh-75-l w-30 ml6">
+    <div className="cf pv3 blue-dark">
+      <h2 className="pb2 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">Edit project</h2>
+      <div className="fl vh-75-l w-30">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={8}
