@@ -31,35 +31,37 @@ const UserCountriesMap = ({ projects }) => {
   const mapRef = React.createRef();
 
   useLayoutEffect(() => {
-    if (map === null) {
-      setMap(
-        new mapboxgl.Map({
-          container: mapRef.current,
-          style: MAP_STYLE,
-          zoom: 0,
-        })
-          .addControl(new mapboxgl.AttributionControl({ compact: false }))
-          .addControl(new MapboxLanguage({ defaultLanguage: locale || 'en' })),
-      );
-    } else {
-      map.resize(); //https://docs.mapbox.com/help/troubleshooting/blank-tiles/
-      map.on('load', () => mapboxLayerDefn(map, geojson, id => navigate(`/projects/${id}/`)));
-    }
+    setMap(
+      new mapboxgl.Map({
+        container: mapRef.current,
+        style: MAP_STYLE,
+        zoom: 0,
+        attributionControl: false,
+      })
+        .addControl(new mapboxgl.AttributionControl({ compact: false }))
+        .addControl(new MapboxLanguage({ defaultLanguage: locale || 'en' })),
+    );
+
     return () => {
       map && map.remove();
     };
-  }, [map, mapRef, geojson, locale]);
+    // eslint-disable-next-line
+  }, []);
+
+  useLayoutEffect(() => {
+    if (map) {
+      map.resize(); //https://docs.mapbox.com/help/troubleshooting/blank-tiles/
+      map.on('load', () => mapboxLayerDefn(map, geojson, id => navigate(`/projects/${id}/`)));
+    }
+  }, [map, geojson]);
 
   return (
     <div id="map" className="w-two-thirds-l w-100 fl" style={{ height: '40vh' }} ref={mapRef}></div>
   );
 };
 
-export const CountriesMapped = ({ user }) => {
-  const projects = user.projects.read();
-  const stats = user.stats.read();
-
-  const countries = stats.countriesContributed.countries.slice(0, 5);
+export const CountriesMapped = ({ projects, userStats }) => {
+  const countries = userStats.countriesContributed.countries.slice(0, 5);
   const tasksNo = countries.map(c => c.total);
   const maxTaskNo = Math.max(...tasksNo);
 

@@ -4,16 +4,15 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { DonutChart } from './editsByNumbers';
 
-export const TopCauses = ({ user }) => {
-  const stats = user.stats.read();
+export const TopCauses = ({ userStats }) => {
   const sliceVal = 3;
 
   const classColors = ['fill-green', 'fill-yellow', 'fill-red', 'fill-blue'];
 
-  let interests = stats.ContributionsByInterest.slice(0, sliceVal).map((c, i) => {
+  let interests = userStats.ContributionsByInterest.slice(0, sliceVal).map((c, i) => {
     return { interest: c.name, count: c.countProjects, classColor: classColors[i] };
   });
-  const otherInterestCount = stats.ContributionsByInterest.slice(sliceVal)
+  const otherInterestCount = userStats.ContributionsByInterest.slice(sliceVal)
     .map(c => c.countProjects)
     .reduce((a, b) => a + b, 0);
 

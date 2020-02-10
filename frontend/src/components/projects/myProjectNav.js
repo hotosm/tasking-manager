@@ -32,7 +32,7 @@ export const MyProjectNav = props => {
     <header className="bt bb b--tan">
       <div className="cf">
         <div className="w-75-l w-60 fl">
-          <h3 className="barlow-condensed f2 ma0 pv3 v-mid dib ttu pl2 pl0-l">
+          <h3 className="barlow-condensed f2 ma0 pv3 mt1 v-mid dib ttu pl2 pl0-l">
             <FormattedMessage {...messages.myProjects} />
           </h3>
           {userDetails && isUserAdminOrPM(userDetails.role) && (
@@ -70,13 +70,13 @@ export const MyProjectNav = props => {
       </div>
       <div className="mt2 mb3">
         <Link
-          to={`/projects/?mappedByMe=1`}
+          to={`./?mappedByMe=1`}
           className={`di mh1 ${isActiveButton('mappedByMe', fullProjectsQuery)} ${linkCombo}`}
         >
           <FormattedMessage {...messages.contributed} />
         </Link>
         <Link
-          to="/projects/?favoritedByMe=1"
+          to="./?favoritedByMe=1"
           className={`di mh1 ${isActiveButton('favoritedByMe', fullProjectsQuery)} ${linkCombo}`}
         >
           <FormattedMessage {...messages.favorited} />
@@ -84,19 +84,19 @@ export const MyProjectNav = props => {
         {userDetails && isUserAdminOrPM(userDetails.role) && (
           <>
             <Link
-              to={`/projects/?createdByMe=1`}
+              to={`./?createdByMe=1`}
               className={`di mh1 ${isActiveButton('createdByMe', fullProjectsQuery)} ${linkCombo}`}
             >
               <FormattedMessage {...messages.created} />
             </Link>
             <Link
-              to={`/projects/?status=DRAFT`}
+              to={`./?status=DRAFT`}
               className={`di mh1 ${isActiveButton('DRAFT', fullProjectsQuery)} ${linkCombo}`}
             >
               <FormattedMessage {...messages.draft} />
             </Link>
             <Link
-              to={`/projects/?status=ARCHIVED`}
+              to={`./?status=ARCHIVED`}
               className={`di mh1 ${isActiveButton('ARCHIVED', fullProjectsQuery)} ${linkCombo}`}
             >
               <FormattedMessage {...messages.archived} />

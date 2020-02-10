@@ -47,7 +47,7 @@ export function Welcome() {
         {completeness <= 0.5 ? (
           <IncompleteProfile />
         ) : userDetails.tasksMapped ? (
-          <Redirect to={'/projects'} noThrow />
+          <Redirect to={'/contributions/projects'} noThrow />
         ) : (
           <NewContributor />
         )}

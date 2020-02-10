@@ -5,7 +5,6 @@ import { ProjectNav } from '../components/projects/projectNav';
 import { MyProjectNav } from '../components/projects/myProjectNav';
 import { MoreFiltersForm } from '../components/projects/moreFiltersForm';
 import { ProjectDetail } from '../components/projectDetail/index';
-import { ManagementMenu } from '../components/teamsAndOrgs/menu';
 import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
 import { ProjectSearchResults } from '../components/projects/projectSearchResults';
 import { ProjectsMap } from '../components/projects/projectsMap';
@@ -77,7 +76,6 @@ export const ProjectsPage = props => {
 };
 
 export const ManageProjectsPage = props => {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
   const userToken = useSelector(state => state.auth.get('token'));
 
   const initialData = {
@@ -112,8 +110,7 @@ export const ManageProjectsPage = props => {
   }
 
   return (
-    <div className="pull-center ph5-l bg-tan">
-      {userDetails && ['ADMIN', 'PROJECT_MANAGER'].includes(userDetails.role) && <ManagementMenu />}
+    <div className="pull-center bg-tan">
       <MyProjectNav location={props.location} orgAPIState={orgAPIState}>
         {
           props.children
@@ -127,7 +124,7 @@ export const ManageProjectsPage = props => {
           state={state}
           retryFn={forceUpdate}
           className={`${searchResultWidth} fl`}
-          showBottomButtons={true}
+          showBottomButtons={props.location && props.location.pathname.startsWith('/manage/')}
         />
         {isMapShown && (
           <ProjectsMap

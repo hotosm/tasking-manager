@@ -138,7 +138,7 @@ const ProjectCreate = props => {
   };
 
   return (
-    <div className="cf bg-tan vh-minus-122-ns h-100 pl4-l pr0-l ph2">
+    <div className="cf vh-minus-122-ns h-100 pr0-l">
       <div className="fl pt3 w-30-l cf w-100">
         <h2 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
           <FormattedMessage {...messages.createProject} />
