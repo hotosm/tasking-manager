@@ -28,8 +28,8 @@ export const MyTasksNav = props => {
     <header className=" w-100 ">
       <div className="cf">
         <div className="w-75-l w-60 fl">
-          <h3 className="mb2 f2 ttu barlow-condensed fw8">
-            <FormattedMessage {...messages.myContributions} />
+          <h3 className="barlow-condensed f2 ma0 pv3 mt1 v-mid dib ttu pl2 pl0-l">
+            <FormattedMessage {...messages.myTasks} />
           </h3>
         </div>
       </div>

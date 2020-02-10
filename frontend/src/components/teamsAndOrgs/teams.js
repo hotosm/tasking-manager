@@ -329,7 +329,7 @@ export function TeamsBoxList({ teams }: Object) {
           </h4>
           <div>
             {mappingTeams.map(team => (
-              <TeamBox team={team} className="dib pv2 ph3 mt2" />
+              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2" />
             ))}
           </div>
         </>
@@ -341,7 +341,7 @@ export function TeamsBoxList({ teams }: Object) {
           </h4>
           <div>
             {validationTeams.map(team => (
-              <TeamBox team={team} className="dib pv2 ph3 mt2" />
+              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2" />
             ))}
           </div>
         </>
