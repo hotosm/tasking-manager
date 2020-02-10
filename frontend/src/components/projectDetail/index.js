@@ -251,8 +251,8 @@ export const ProjectDetail = props => {
         <FormattedMessage {...messages.teams} />
       </h3>
       <div className="ph4 mb3 cf db">
-        {props.project.projectTeams && props.project.projectTeams.length ? (
-          <TeamsBoxList teams={props.project.projectTeams} />
+        {props.project.teams && props.project.teams.length ? (
+          <TeamsBoxList teams={props.project.teams} />
         ) : (
           <FormattedMessage {...messages.noProjectTeams} />
         )}

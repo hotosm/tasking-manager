@@ -1,40 +1,77 @@
-export function userCanMap(user, project) {
+export function userCanMap(user, project, userTeams = []) {
   if (user.role === 'READ_ONLY') return false;
-  if (project.private && !project.allowedUsernames.includes(user.username)) {
-    return false;
-  }
-  if (project.restrictMappingLevelToProject === false) return true;
+  if (user.role === 'ADMIN') return true;
+  const projectTeamsIds = project.teams
+    .filter(team => ['MAPPER', 'VALIDATOR', 'PROJECT_MANAGER'].includes(team.role))
+    .map(team => team.teamId);
+  const isUserMemberOfATeam =
+    userTeams.filter(team => projectTeamsIds.includes(team.teamId)).length > 0;
+  const isUserExperienced = ['INTERMEDIATE', 'ADVANCED'].includes(user.mappingLevel);
 
-  const levels = { BEGINNER: 1, INTERMEDIATE: 2, ADVANCED: 3 };
-  if (levels[user.mappingLevel] < levels[project.mapperLevel]) {
-    return false;
-  } else {
-    return true;
+  // check for private projects
+  if (project.private) {
+    if (project.allowedUsernames.includes(user.username) || isUserMemberOfATeam) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // if mappingPermission is ANY, all users can map
+  if (project.mappingPermission === 'ANY') return true;
+
+  // if mappingPermission is level, only INTERMEDIATE and ADVANCED users can map
+  if (project.mappingPermission === 'LEVEL') {
+    return isUserExperienced;
+  }
+
+  // if mappingPermission is team, only members of a project team can map
+  if (project.mappingPermission === 'TEAMS') {
+    return isUserMemberOfATeam;
+  }
+
+  // if mappingPermission is team, only INTERMEDIATE and ADVANCED members of a project team can map
+  if (project.mappingPermission === 'TEAMS_LEVEL') {
+    return isUserMemberOfATeam && isUserExperienced;
   }
 }
 
-export function userCanValidate(user, project) {
+export function userCanValidate(user, project, userTeams = []) {
   if (user.role === 'READ_ONLY') return false;
-  if (project.private && !project.allowedUsernames.includes(user.username)) {
-    return false;
-  }
-  let userRolePermission = true;
-  let userLevelPermission = true;
-  if (project.restrictValidationRole) {
-    if (['ADMIN', 'PROJECT_MANAGER', 'VALIDATOR'].includes(user.role)) {
-      userRolePermission = true;
+  if (user.role === 'ADMIN') return true;
+  const projectTeamsIds = project.teams
+    .filter(team => ['VALIDATOR', 'PROJECT_MANAGER'].includes(team.role))
+    .map(team => team.teamId);
+  const isUserMemberOfATeam =
+    userTeams.filter(team => projectTeamsIds.includes(team.teamId)).length > 0;
+  const isUserExperienced = ['INTERMEDIATE', 'ADVANCED'].includes(user.mappingLevel);
+
+  // check for private projects
+  if (project.private) {
+    if (project.allowedUsernames.includes(user.username) || isUserMemberOfATeam) {
+      return true;
     } else {
-      userRolePermission = false;
+      return false;
     }
   }
-  if (project.restrictValidationLevelIntermediate) {
-    if (['INTERMEDIATE', 'ADVANCED'].includes(user.mappingLevel)) {
-      userLevelPermission = true;
-    } else {
-      userLevelPermission = false;
-    }
+
+  // if validationPermission is ANY, all users can validate
+  if (project.validationPermission === 'ANY') return true;
+
+  // if validationPermission is level, only INTERMEDIATE and ADVANCED users can validate
+  if (project.validationPermission === 'LEVEL') {
+    return isUserExperienced;
   }
-  return userRolePermission && userLevelPermission;
+
+  // if validationPermission is team, only members of a project team can validate
+  if (project.validationPermission === 'TEAMS') {
+    return isUserMemberOfATeam;
+  }
+
+  // if validationPermission is team, only INTERMEDIATE and ADVANCED members of a project team can validate
+  if (project.validationPermission === 'TEAMS_LEVEL') {
+    return isUserMemberOfATeam && isUserExperienced;
+  }
 }
 
 export function getMessageOnMappingContext(taskStatus) {
@@ -61,14 +98,14 @@ export function getMessageOnValidationContext(mappingIsPossible, taskStatus) {
   return 'validateATask';
 }
 
-export function getTaskAction(user, project, taskStatus) {
+export function getTaskAction(user, project, taskStatus, userTeams = []) {
   // nothing more to do if all tasks are validated or set as BADIMAGERY
   if (project.percentValidated + project.percentBadImagery === 100) {
     return 'projectIsComplete';
   }
-  const validationIsPossible = userCanValidate(user, project);
+  const validationIsPossible = userCanValidate(user, project, userTeams);
   const mappingIsPossible =
-    userCanMap(user, project) && project.percentMapped + project.percentBadImagery < 100;
+    userCanMap(user, project, userTeams) && project.percentMapped + project.percentBadImagery < 100;
 
   if (validationIsPossible) {
     return getMessageOnValidationContext(mappingIsPossible, taskStatus);

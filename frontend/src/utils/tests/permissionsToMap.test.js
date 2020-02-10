@@ -1,176 +1,313 @@
 import { userCanMap } from '../projectPermissions';
 
-it('READ_ONLY role USER can NOT map', () => {
+it('READ_ONLY role USER can NOT map any project', () => {
+  const userTeams = [
+    {
+      teamId: 7,
+      name: 'My Private team',
+      role: 'MAPPER',
+    },
+  ];
   const user = { mappingLevel: 'ADVANCED', role: 'READ_ONLY' };
-  const project = { mapperLevel: 'BEGINNER' };
-  expect(userCanMap(user, project)).toBe(false);
+  const project1 = { mappingPermission: 'ANY', teams: [{ teamId: 7, role: 'MAPPER' }] };
+  const project2 = { mappingPermission: 'TEAMS', teams: [{ teamId: 7, role: 'MAPPER' }] };
+  const project3 = { mappingPermission: 'LEVEL', teams: [{ teamId: 7, role: 'MAPPER' }] };
+  const project4 = { mappingPermission: 'TEAMS_LEVEL', teams: [{ teamId: 7, role: 'MAPPER' }] };
+  expect(userCanMap(user, project1, userTeams)).toBe(false);
+  expect(userCanMap(user, project2, userTeams)).toBe(false);
+  expect(userCanMap(user, project3, userTeams)).toBe(false);
+  expect(userCanMap(user, project4, userTeams)).toBe(false);
 });
 
-/****  ENFORCED LEVEL PROJECTS  ****/
-it('BEGINNER level USER can map a BEGINNER PROJECT', () => {
-  const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: true, mapperLevel: 'BEGINNER' };
-  expect(userCanMap(user, project)).toBe(true);
+describe('PROJECTS with mappingPermission set to any', () => {
+  it('CAN be mapped by a BEGINNER user that is not on a team', () => {
+    const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'ANY', teams: [] };
+    const project2 = { mappingPermission: 'ANY', teams: [{ teamId: 7, role: 'MAPPER' }] };
+    expect(userCanMap(user, project1)).toBe(true);
+    expect(userCanMap(user, project2)).toBe(true);
+  });
 });
 
-it('INTERMEDIATE level USER can map a BEGINNER PROJECT', () => {
-  const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: true, mapperLevel: 'BEGINNER' };
-  expect(userCanMap(user, project)).toBe(true);
+describe('PROJECTS with mappingPermission set to level', () => {
+  it('can NOT be mapped by a BEGINNER level USER', () => {
+    const userTeams = [
+      {
+        teamId: 1,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'LEVEL', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    expect(userCanMap(user, project1, userTeams)).toBe(false);
+  });
+
+  it('CAN be mapped by an INTERMEDIATE level USER', () => {
+    const userTeams = [
+      {
+        teamId: 1,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'LEVEL', teams: [{ teamId: 7, role: 'MAPPER' }] };
+    expect(userCanMap(user, project1, userTeams)).toBe(true);
+  });
+
+  it('CAN be mapped by an ADVANCED level USER', () => {
+    const user = { mappingLevel: 'ADVANCED', role: 'MAPPER' };
+    const project = { mappingPermission: 'LEVEL', teams: [{ teamId: 7, role: 'MAPPER' }] };
+    expect(userCanMap(user, project)).toBe(true);
+  });
 });
 
-it('ADVANCED level USER can map a BEGINNER PROJECT', () => {
-  const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: true, mapperLevel: 'BEGINNER' };
-  expect(userCanMap(user, project)).toBe(true);
+describe('PROJECTS with mappingPermission set as teams', () => {
+  it('CAN be mapped by a BEGINNER level USER if they are member of the team', () => {
+    const userTeams = [
+      {
+        teamId: 1,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'TEAMS', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    const project2 = { mappingPermission: 'TEAMS', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    const project3 = { mappingPermission: 'TEAMS', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    expect(userCanMap(user, project1, userTeams)).toBe(true);
+    expect(userCanMap(user, project2, userTeams)).toBe(true);
+    expect(userCanMap(user, project3, userTeams)).toBe(true);
+  });
+
+  it('CAN be mapped by an INTERMEDIATE level USER if they are member of the team', () => {
+    const userTeams = [
+      {
+        teamId: 1,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'TEAMS', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    const project2 = { mappingPermission: 'TEAMS', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    const project3 = { mappingPermission: 'TEAMS', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    expect(userCanMap(user, project1, userTeams)).toBe(true);
+    expect(userCanMap(user, project2, userTeams)).toBe(true);
+    expect(userCanMap(user, project3, userTeams)).toBe(true);
+  });
+
+  it('CAN be mapped by an ADVANCED level USER', () => {
+    const userTeams = [
+      {
+        teamId: 1,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'ADVANCED', role: 'MAPPER' };
+    const project = { mappingPermission: 'TEAMS', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    expect(userCanMap(user, project, userTeams)).toBe(true);
+  });
+
+  it('can NOT be mapped by a BEGINNER level USER if they are NOT member of the team', () => {
+    const userTeams = [
+      {
+        teamId: 2,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'TEAMS', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    expect(userCanMap(user, project1, userTeams)).toBe(false);
+  });
+
+  it('can NOT be mapped by an INTERMEDIATE level USER if they are NOT member of the team', () => {
+    const userTeams = [
+      {
+        teamId: 2,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'TEAMS', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    expect(userCanMap(user, project1, userTeams)).toBe(false);
+  });
+
+  it('can NOT be mapped by an ADVANCED level USER if they are NOT member of the team', () => {
+    const userTeams = [
+      {
+        teamId: 2,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'ADVANCED', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'TEAMS', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    expect(userCanMap(user, project1, userTeams)).toBe(false);
+  });
 });
 
-it('BEGINNER level USER can NOT map an INTERMEDIATE PROJECT', () => {
-  const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: true, mapperLevel: 'INTERMEDIATE' };
-  expect(userCanMap(user, project)).toBe(false);
-});
+describe('PROJECTS with mappingPermission set to teamsAndLevel', () => {
+  it('can NOT be mapped by a BEGINNER level USER even if they are member of the team', () => {
+    const userTeams = [
+      {
+        teamId: 1,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+      {
+        teamId: 2,
+        name: 'My Private team',
+        role: 'VALIDATOR',
+      },
+      {
+        teamId: 3,
+        name: 'My Private team',
+        role: 'PROJECT_MANAGER',
+      },
+    ];
+    const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'TEAMS_LEVEL', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    const project2 = {
+      mappingPermission: 'TEAMS_LEVEL',
+      teams: [{ teamId: 2, role: 'VALIDATOR' }],
+    };
+    const project3 = {
+      mappingPermission: 'TEAMS_LEVEL',
+      teams: [{ teamId: 3, role: 'PROJECT_MANAGER' }],
+    };
+    expect(userCanMap(user, project1, userTeams)).toBe(false);
+    expect(userCanMap(user, project2, userTeams)).toBe(false);
+    expect(userCanMap(user, project3, userTeams)).toBe(false);
+  });
 
-it('INTERMEDIATE level USER can map an INTERMEDIATE PROJECT', () => {
-  const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: true, mapperLevel: 'INTERMEDIATE' };
-  expect(userCanMap(user, project)).toBe(true);
-});
+  it('CAN be mapped by an INTERMEDIATE level USER if they are member of the team', () => {
+    const userTeams = [
+      {
+        teamId: 1,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+      {
+        teamId: 2,
+        name: 'My Private team',
+        role: 'VALIDATOR',
+      },
+      {
+        teamId: 3,
+        name: 'My Private team',
+        role: 'PROJECT_MANAGER',
+      },
+    ];
+    const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'TEAMS_LEVEL', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    const project2 = {
+      mappingPermission: 'TEAMS_LEVEL',
+      teams: [{ teamId: 2, role: 'VALIDATOR' }],
+    };
+    const project3 = {
+      mappingPermission: 'TEAMS_LEVEL',
+      teams: [{ teamId: 3, role: 'PROJECT_MANAGER' }],
+    };
+    expect(userCanMap(user, project1, userTeams)).toBe(true);
+    expect(userCanMap(user, project2, userTeams)).toBe(true);
+    expect(userCanMap(user, project3, userTeams)).toBe(true);
+  });
 
-it('ADVANCED level USER can map an INTERMEDIATE PROJECT', () => {
-  const user = { mappingLevel: 'ADVANCED', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: true, mapperLevel: 'INTERMEDIATE' };
-  expect(userCanMap(user, project)).toBe(true);
-});
+  it('can NOT be mapped by an INTERMEDIATE level USER if they are not member of a team', () => {
+    const userTeams = [
+      {
+        teamId: 2,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
+    const project1 = { mappingPermission: 'TEAMS_LEVEL', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    expect(userCanMap(user, project1, userTeams)).toBe(false);
+  });
 
-it('BEGINNER level USER can NOT map an ADVANCED PROJECT', () => {
-  const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: true, mapperLevel: 'ADVANCED' };
-  expect(userCanMap(user, project)).toBe(false);
-});
+  it('CAN be mapped by an ADVANCED level USER if they are member of a team', () => {
+    const userTeams = [
+      {
+        teamId: 1,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'ADVANCED', role: 'MAPPER' };
+    const project = { mappingPermission: 'TEAMS_LEVEL', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    expect(userCanMap(user, project, userTeams)).toBe(true);
+  });
 
-it('INTERMEDIATE level USER can NOT map an ADVANCED PROJECT', () => {
-  const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: true, mapperLevel: 'ADVANCED' };
-  expect(userCanMap(user, project)).toBe(false);
-});
-
-it('ADVANCED level USER can map an ADVANCED PROJECT', () => {
-  const user = { mappingLevel: 'ADVANCED', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: true, mapperLevel: 'ADVANCED' };
-  expect(userCanMap(user, project)).toBe(true);
-});
-
-/* NOT ENFORCED LEVEL PROJECTS */
-it('BEGINNER level USER can map an ADVANCED PROJECT with restrictMappingLevelToProject = false', () => {
-  const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: false, mapperLevel: 'ADVANCED' };
-  expect(userCanMap(user, project)).toBe(true);
-});
-
-it('INTERMEDIATE level USER can map an ADVANCED PROJECT with restrictMappingLevelToProject = false', () => {
-  const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: false, mapperLevel: 'ADVANCED' };
-  expect(userCanMap(user, project)).toBe(true);
-});
-
-it('ADVANCED level USER can map an ADVANCED PROJECT with restrictMappingLevelToProject = false', () => {
-  const user = { mappingLevel: 'ADVANCED', role: 'MAPPER' };
-  const project = { restrictMappingLevelToProject: false, mapperLevel: 'ADVANCED' };
-  expect(userCanMap(user, project)).toBe(true);
+  it('can NOT be mapped by an ADVANCED level USER if they are not member of a team', () => {
+    const userTeams = [
+      {
+        teamId: 2,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { mappingLevel: 'ADVANCED', role: 'MAPPER' };
+    const project = { mappingPermission: 'TEAMS_LEVEL', teams: [{ teamId: 1, role: 'MAPPER' }] };
+    expect(userCanMap(user, project, userTeams)).toBe(false);
+  });
 });
 
 /******  PRIVATE PROJECTS  ******/
-it('READ_ONLY role USER can NOT map a PRIVATE project', () => {
-  const user = { username: 'user1', mappingLevel: 'ADVANCED', role: 'READ_ONLY' };
-  const project = { private: true, allowedUsernames: ['user1'], mapperLevel: 'BEGINNER' };
-  expect(userCanMap(user, project)).toBe(false);
-});
+describe('PRIVATE projects', () => {
+  it('can NOT be mapped by a READ_ONLY role USER even if the user is on the list', () => {
+    const user = { username: 'user1', mappingLevel: 'ADVANCED', role: 'READ_ONLY' };
+    const project = {
+      private: true,
+      mappingPermission: 'TEAMS',
+      allowedUsernames: ['user1'],
+      teams: [],
+    };
+    expect(userCanMap(user, project)).toBe(false);
+  });
 
-it('ADVANCED user can NOT map a PRIVATE BEGINNER project if his username is NOT ALLOWED', () => {
-  const user = { username: 'user3000', mappingLevel: 'ADVANCED', role: 'MAPPER' };
-  const project = {
-    restrictMappingLevelToProject: true,
-    private: true,
-    allowedUsernames: ['user1'],
-    mapperLevel: 'BEGINNER',
-  };
-  expect(userCanMap(user, project)).toBe(false);
-});
+  it('can NOT be mapped by an ADVANCED user if their username is NOT ALLOWED', () => {
+    const user = { username: 'user3000', mappingLevel: 'ADVANCED', role: 'MAPPER' };
+    const project = {
+      mappingPermission: 'TEAMS',
+      private: true,
+      allowedUsernames: ['user1'],
+      teams: [],
+    };
+    expect(userCanMap(user, project)).toBe(false);
+  });
 
-it('INTERMEDIATE USER can map a PRIVATE INTERMEDIATE project if his username is ALLOWED', () => {
-  const user = { username: 'user1', mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
-  const project = {
-    restrictMappingLevelToProject: true,
-    private: true,
-    allowedUsernames: ['user1'],
-    mapperLevel: 'INTERMEDIATE',
-  };
-  expect(userCanMap(user, project)).toBe(true);
-});
+  it('CAN be mapped by a BEGINNER USER if their username is ALLOWED', () => {
+    const user = { username: 'user1', mappingLevel: 'BEGINNER', role: 'MAPPER' };
+    const project = {
+      mappingPermission: 'TEAMS',
+      private: true,
+      allowedUsernames: ['user1'],
+      teams: [],
+    };
+    expect(userCanMap(user, project)).toBe(true);
+  });
 
-it('INTERMEDIATE USER can NOT map a PRIVATE ADVANCED project if his username is ALLOWED', () => {
-  const user = { username: 'user1', mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
-  const project = {
-    restrictMappingLevelToProject: true,
-    private: true,
-    allowedUsernames: ['user1'],
-    mapperLevel: 'ADVANCED',
-  };
-  expect(userCanMap(user, project)).toBe(false);
-});
-
-it('ADVANCED USER can map a PRIVATE ADVANCED project if his username is ALLOWED', () => {
-  const user = { username: 'user1', mappingLevel: 'ADVANCED', role: 'MAPPER' };
-  const project = {
-    restrictMappingLevelToProject: true,
-    private: true,
-    allowedUsernames: ['user1'],
-    mapperLevel: 'ADVANCED',
-  };
-  expect(userCanMap(user, project)).toBe(true);
-});
-
-it('ADVANCED level USER can NOT map a BEGINNER PROJECT with restrictMappingLevelToProject = false if his username is NOT ALLOWED', () => {
-  const user = { username: 'user3000', mappingLevel: 'ADVANCED', role: 'MAPPER' };
-  const project = {
-    restrictMappingLevelToProject: false,
-    private: true,
-    allowedUsernames: ['user1'],
-    mapperLevel: 'BEGINNER',
-  };
-  expect(userCanMap(user, project)).toBe(false);
-});
-
-it('ADVANCED ADMIN USER can NOT map a BEGINNER PROJECT with restrictMappingLevelToProject = false if his username is NOT ALLOWED', () => {
-  const user = { username: 'user3000', mappingLevel: 'ADVANCED', role: 'ADMIN' };
-  const project = {
-    restrictMappingLevelToProject: false,
-    private: true,
-    allowedUsernames: ['user1'],
-    mapperLevel: 'BEGINNER',
-  };
-  expect(userCanMap(user, project)).toBe(false);
-});
-
-it('ADVANCED PROJECT_MANAGER USER can NOT map a BEGINNER PROJECT with restrictMappingLevelToProject = false if his username is NOT ALLOWED', () => {
-  const user = { username: 'user3000', mappingLevel: 'ADVANCED', role: 'PROJECT_MANAGER' };
-  const project = {
-    restrictMappingLevelToProject: false,
-    private: true,
-    allowedUsernames: ['user1'],
-    mapperLevel: 'BEGINNER',
-  };
-  expect(userCanMap(user, project)).toBe(false);
-});
-
-it('ADVANCED VALIDATOR USER can NOT map a BEGINNER PROJECT with restrictMappingLevelToProject = false if his username is NOT ALLOWED', () => {
-  const user = { username: 'user3000', mappingLevel: 'ADVANCED', role: 'VALIDATOR' };
-  const project = {
-    restrictMappingLevelToProject: false,
-    private: true,
-    allowedUsernames: ['user1'],
-    mapperLevel: 'BEGINNER',
-  };
-  expect(userCanMap(user, project)).toBe(false);
+  it('CAN be mapped by a BEGINNER USER if they are part of a team', () => {
+    const userTeams = [
+      {
+        teamId: 1,
+        name: 'My Private team',
+        role: 'MAPPER',
+      },
+    ];
+    const user = { username: 'user1', mappingLevel: 'BEGINNER', role: 'MAPPER' };
+    const project = {
+      mappingPermission: 'TEAMS',
+      private: true,
+      allowedUsernames: [],
+      teams: [{ teamId: 1, role: 'MAPPER' }],
+    };
+    expect(userCanMap(user, project, userTeams)).toBe(true);
+  });
 });
