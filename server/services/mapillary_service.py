@@ -150,7 +150,7 @@ class MapillaryService:
             # if props:
             #     tasks.append(geojson.Feature(geometry=feature['geometry'], properties={'mapillary': props}))
 
-            geom = linemerge([shape(t['geometry']) for t in task])
+            geom = linemerge([shape(t['geometry']) for t in task]).simplify(0.00005) # Simplify uses degrees
             tasks.append(geojson.Feature(geometry=mapping(geom), properties={'mapillary': [t['properties']['key'] for t in task]}))
             features.remove(feature)
 
