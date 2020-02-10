@@ -326,7 +326,9 @@ class TeamService:
     @staticmethod
     def get_project_teams_as_dto(project_id: int) -> TeamsListDTO:
         """ Gets all the campaigns for a specified project """
-        project_teams = ProjectTeams.query.filter(project_id == project_id).all()
+        project_teams = ProjectTeams.query.filter(
+            ProjectTeams.project_id == project_id
+        ).all()
         teams_list_dto = TeamsListDTO()
 
         for project_team in project_teams:

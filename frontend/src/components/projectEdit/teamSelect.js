@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Button } from '../../components/button';
 import Select from 'react-select';
 import { StateContext } from '../../views/projectEdit';
-import { PencilIcon, WasteIcon } from '../svgIcons';
+import { PencilIcon, WasteIcon, LinkIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const TeamSelect = () => {
@@ -106,7 +106,17 @@ export const TeamSelect = () => {
         {projectInfo.teams.map(t => {
           return (
             <div className="w-100 cf pa2 bg-white blue-dark mb2">
-              <div className="w-50 fl fw5">{t.name}</div>
+              <div className="w-50 fl fw5">
+                <span className="pr1">{t.name}</span>
+                <a
+                  className="link blue-light"
+                  href={`/teams/${t.teamId}/membership/`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <LinkIcon />
+                </a>
+              </div>
               <div className="w-30 fl">{getLabel(t.role)}</div>
               <div className="w-20 fl pl3 tr">
                 <span

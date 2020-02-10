@@ -27,11 +27,7 @@ class TestProjectService(unittest.TestCase):
         mock_level.return_value = MappingLevel.BEGINNER
 
         # Act / Assert
-        self.assertFalse(
-            ProjectService._is_user_mapping_level_at_or_above_level_requests(
-                MappingLevel.INTERMEDIATE, 1
-            )
-        )
+        self.assertFalse(ProjectService._is_user_intermediate_or_advanced(1))
 
     @patch.object(UserService, "get_mapping_level")
     def test_user_is_allowed_to_map_if_level_enforced(self, mock_level):
@@ -39,11 +35,7 @@ class TestProjectService(unittest.TestCase):
         mock_level.return_value = MappingLevel.ADVANCED
 
         # Act / Assert
-        self.assertTrue(
-            ProjectService._is_user_mapping_level_at_or_above_level_requests(
-                MappingLevel.ADVANCED, 1
-            )
-        )
+        self.assertTrue(ProjectService._is_user_intermediate_or_advanced(1))
 
     @patch.object(Task, "get_locked_tasks_for_user")
     @patch.object(Project, "get")

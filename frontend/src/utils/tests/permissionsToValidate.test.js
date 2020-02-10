@@ -9,11 +9,11 @@ it('READ_ONLY role USER can NOT validate any project', () => {
     },
   ];
   const user = { mappingLevel: 'ADVANCED', role: 'READ_ONLY' };
-  const project1 = { validationPermission: 'any', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
-  const project2 = { validationPermission: 'teams', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
-  const project3 = { validationPermission: 'level', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
+  const project1 = { validationPermission: 'ANY', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
+  const project2 = { validationPermission: 'TEAMS', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
+  const project3 = { validationPermission: 'LEVEL', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
   const project4 = {
-    validationPermission: 'teamsAndLevel',
+    validationPermission: 'TEAMS_LEVEL',
     teams: [{ teamId: 7, role: 'VALIDATOR' }],
   };
   expect(userCanValidate(user, project1, userTeams)).toBe(false);
@@ -25,8 +25,8 @@ it('READ_ONLY role USER can NOT validate any project', () => {
 describe('PROJECTS with validationPermission set to any', () => {
   it('CAN be validated by a BEGINNER user that is not on a team', () => {
     const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
-    const project1 = { validationPermission: 'any', teams: [] };
-    const project2 = { validationPermission: 'any', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
+    const project1 = { validationPermission: 'ANY', teams: [] };
+    const project2 = { validationPermission: 'ANY', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
     expect(userCanValidate(user, project1)).toBe(true);
     expect(userCanValidate(user, project2)).toBe(true);
   });
@@ -42,7 +42,7 @@ describe('PROJECTS with validationPermission set to level', () => {
       },
     ];
     const user = { mappingLevel: 'BEGINNER', role: 'VALIDATOR' };
-    const project1 = { validationPermission: 'level', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
+    const project1 = { validationPermission: 'LEVEL', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
     expect(userCanValidate(user, project1, userTeams)).toBe(false);
   });
 
@@ -55,13 +55,13 @@ describe('PROJECTS with validationPermission set to level', () => {
       },
     ];
     const user = { mappingLevel: 'INTERMEDIATE', role: 'VALIDATOR' };
-    const project1 = { validationPermission: 'level', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
+    const project1 = { validationPermission: 'LEVEL', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
     expect(userCanValidate(user, project1, userTeams)).toBe(true);
   });
 
   it('CAN be validated by an ADVANCED level USER', () => {
     const user = { mappingLevel: 'ADVANCED', role: 'VALIDATOR' };
-    const project = { validationPermission: 'level', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
+    const project = { validationPermission: 'LEVEL', teams: [{ teamId: 7, role: 'VALIDATOR' }] };
     expect(userCanValidate(user, project)).toBe(true);
   });
 });
@@ -81,9 +81,9 @@ describe('PROJECTS with validationPermission set as teams', () => {
       },
     ];
     const user = { mappingLevel: 'BEGINNER', role: 'VALIDATOR' };
-    const project1 = { validationPermission: 'teams', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
+    const project1 = { validationPermission: 'TEAMS', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
     const project2 = {
-      validationPermission: 'teams',
+      validationPermission: 'TEAMS',
       teams: [{ teamId: 2, role: 'PROJECT_MANAGER' }],
     };
     expect(userCanValidate(user, project1, userTeams)).toBe(true);
@@ -104,9 +104,9 @@ describe('PROJECTS with validationPermission set as teams', () => {
       },
     ];
     const user = { mappingLevel: 'INTERMEDIATE', role: 'VALIDATOR' };
-    const project1 = { validationPermission: 'teams', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
+    const project1 = { validationPermission: 'TEAMS', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
     const project2 = {
-      validationPermission: 'teams',
+      validationPermission: 'TEAMS',
       teams: [{ teamId: 2, role: 'PROJECT_MANAGER' }],
     };
     expect(userCanValidate(user, project1, userTeams)).toBe(true);
@@ -122,7 +122,7 @@ describe('PROJECTS with validationPermission set as teams', () => {
       },
     ];
     const user = { mappingLevel: 'ADVANCED', role: 'VALIDATOR' };
-    const project = { validationPermission: 'teams', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
+    const project = { validationPermission: 'TEAMS', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
     expect(userCanValidate(user, project, userTeams)).toBe(true);
   });
 
@@ -135,7 +135,7 @@ describe('PROJECTS with validationPermission set as teams', () => {
       },
     ];
     const user = { mappingLevel: 'BEGINNER', role: 'VALIDATOR' };
-    const project1 = { validationPermission: 'teams', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
+    const project1 = { validationPermission: 'TEAMS', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
     expect(userCanValidate(user, project1, userTeams)).toBe(false);
   });
 
@@ -148,7 +148,7 @@ describe('PROJECTS with validationPermission set as teams', () => {
       },
     ];
     const user = { mappingLevel: 'INTERMEDIATE', role: 'VALIDATOR' };
-    const project1 = { validationPermission: 'teams', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
+    const project1 = { validationPermission: 'TEAMS', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
     expect(userCanValidate(user, project1, userTeams)).toBe(false);
   });
 
@@ -161,7 +161,7 @@ describe('PROJECTS with validationPermission set as teams', () => {
       },
     ];
     const user = { mappingLevel: 'ADVANCED', role: 'VALIDATOR' };
-    const project1 = { validationPermission: 'teams', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
+    const project1 = { validationPermission: 'TEAMS', teams: [{ teamId: 1, role: 'VALIDATOR' }] };
     expect(userCanValidate(user, project1, userTeams)).toBe(false);
   });
 });
@@ -177,7 +177,7 @@ describe('PROJECTS with validationPermission set to teamsAndLevel', () => {
     ];
     const user = { mappingLevel: 'BEGINNER', role: 'VALIDATOR' };
     const project1 = {
-      validationPermission: 'teamsAndLevel',
+      validationPermission: 'TEAMS_LEVEL',
       teams: [{ teamId: 1, role: 'VALIDATOR' }],
     };
     expect(userCanValidate(user, project1, userTeams)).toBe(false);
@@ -193,7 +193,7 @@ describe('PROJECTS with validationPermission set to teamsAndLevel', () => {
     ];
     const user = { mappingLevel: 'INTERMEDIATE', role: 'VALIDATOR' };
     const project1 = {
-      validationPermission: 'teamsAndLevel',
+      validationPermission: 'TEAMS_LEVEL',
       teams: [{ teamId: 1, role: 'VALIDATOR' }],
     };
     expect(userCanValidate(user, project1, userTeams)).toBe(true);
@@ -209,7 +209,7 @@ describe('PROJECTS with validationPermission set to teamsAndLevel', () => {
     ];
     const user = { mappingLevel: 'INTERMEDIATE', role: 'VALIDATOR' };
     const project1 = {
-      validationPermission: 'teamsAndLevel',
+      validationPermission: 'TEAMS_LEVEL',
       teams: [{ teamId: 1, role: 'VALIDATOR' }],
     };
     expect(userCanValidate(user, project1, userTeams)).toBe(false);
@@ -225,7 +225,7 @@ describe('PROJECTS with validationPermission set to teamsAndLevel', () => {
     ];
     const user = { mappingLevel: 'ADVANCED', role: 'VALIDATOR' };
     const project = {
-      validationPermission: 'teamsAndLevel',
+      validationPermission: 'TEAMS_LEVEL',
       teams: [{ teamId: 1, role: 'VALIDATOR' }],
     };
     expect(userCanValidate(user, project, userTeams)).toBe(true);
@@ -241,7 +241,7 @@ describe('PROJECTS with validationPermission set to teamsAndLevel', () => {
     ];
     const user = { mappingLevel: 'ADVANCED', role: 'VALIDATOR' };
     const project = {
-      validationPermission: 'teamsAndLevel',
+      validationPermission: 'TEAMS_LEVEL',
       teams: [{ teamId: 1, role: 'VALIDATOR' }],
     };
     expect(userCanValidate(user, project, userTeams)).toBe(false);
@@ -254,7 +254,7 @@ describe('PRIVATE projects', () => {
     const user = { username: 'user1', mappingLevel: 'ADVANCED', role: 'READ_ONLY' };
     const project = {
       private: true,
-      validationPermission: 'teams',
+      validationPermission: 'TEAMS',
       allowedUsernames: ['user1'],
       teams: [],
     };
@@ -264,7 +264,7 @@ describe('PRIVATE projects', () => {
   it('can NOT be validated by an ADVANCED user if their username is NOT ALLOWED', () => {
     const user = { username: 'user3000', mappingLevel: 'ADVANCED', role: 'VALIDATOR' };
     const project = {
-      validationPermission: 'teams',
+      validationPermission: 'TEAMS',
       private: true,
       allowedUsernames: ['user1'],
       teams: [],
@@ -275,7 +275,7 @@ describe('PRIVATE projects', () => {
   it('CAN be validated by a BEGINNER USER if their username is ALLOWED', () => {
     const user = { username: 'user1', mappingLevel: 'BEGINNER', role: 'VALIDATOR' };
     const project = {
-      validationPermission: 'teams',
+      validationPermission: 'TEAMS',
       private: true,
       allowedUsernames: ['user1'],
       teams: [],
@@ -293,7 +293,7 @@ describe('PRIVATE projects', () => {
     ];
     const user = { username: 'user1', mappingLevel: 'BEGINNER', role: 'VALIDATOR' };
     const project = {
-      validationPermission: 'teams',
+      validationPermission: 'TEAMS',
       private: true,
       allowedUsernames: [],
       teams: [{ teamId: 1, role: 'VALIDATOR' }],
