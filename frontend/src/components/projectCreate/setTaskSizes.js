@@ -274,7 +274,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
           </div>
         </div>
         <p>
-          <FormattedMessage {...messages.taskNumberMessage} values={{ n: metadata.taskNo || 0 }} />
+          <FormattedMessage {...messages.taskNumberMessage} values={{ n: metadata.tasksNo || 0 }} />
         </p>
         <p>
           <FormattedMessage
