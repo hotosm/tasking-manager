@@ -31,8 +31,9 @@ function getMenuItensForUser(userDetails) {
       authenticated: true,
     },
     { label: messages.manage, link: 'manage', authenticated: true, manager: true },
-    { label: messages.learn, link: 'learn', showAlways: true },
-    { label: messages.about, link: 'about', showAlways: true },
+    // disable learn and about while the content is rewritten
+    // { label: messages.learn, link: 'learn', showAlways: true },
+    // { label: messages.about, link: 'about', showAlways: true },
   ];
   let filteredMenuItems;
   if (userDetails.username) {
