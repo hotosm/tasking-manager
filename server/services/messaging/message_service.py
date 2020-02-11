@@ -4,6 +4,7 @@ import time
 from cachetools import TTLCache, cached
 from typing import List
 from flask import current_app
+import datetime
 
 from server import create_app, db
 from server.models.dtos.message_dto import MessageDTO, MessagesDTO
@@ -15,6 +16,8 @@ from server.services.messaging.smtp_service import SMTPService
 from server.services.messaging.template_service import get_template, get_profile_url
 from server.services.project_service import ProjectService
 from server.services.users.user_service import UserService, User
+from server.models.postgis.task import Task
+from server.models.postgis.utils import NotFound
 
 
 message_cache = TTLCache(maxsize=512, ttl=30)
@@ -54,15 +57,60 @@ class MessageService:
 
         user = UserService.get_user_by_id(mapped_by)
         if user.validation_message == False:
-            return # No need to send validation message
+            return  # No need to send validation message
 
-        text_template = get_template('invalidation_message_en.txt' if status == TaskStatus.INVALIDATED \
-                                                                   else 'validation_message_en.txt')
-        status_text = 'marked invalid' if status == TaskStatus.INVALIDATED else 'validated'
+        text_template = get_template(
+            "invalidation_message_en.txt"
+            if status == TaskStatus.INVALIDATED
+            else "validation_message_en.txt"
+        )
+        status_text = (
+            "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
+        )
+        task = Task.get(task_id, project_id)
+        latest = None
+        for i in task.as_dto_with_instructions().task_history:
+            if latest == None or i.history_id > latest.history_id:
+                latest = i
+        all_relevant_history = [
+            h
+            for h in task.as_dto_with_instructions().task_history
+            if abs((latest.action_date - h.action_date).total_seconds()) < 10
+        ]
+
         task_link = MessageService.get_task_link(project_id, task_id)
 
-        text_template = text_template.replace('[USERNAME]', user.username)
-        text_template = text_template.replace('[TASK_LINK]', task_link)
+        comments = [
+            i.action_text for i in all_relevant_history if i.action == "COMMENT"
+        ]
+        issues = []
+        comments = []
+        for i in all_relevant_history:
+            if i.issues:
+                for issue in i.issues:
+                    issues.append(issue)
+        for i in all_relevant_history:
+            if i.action == "COMMENT":
+                comments.append(i.action_text)
+        text_template = text_template.replace("[USERNAME]", user.username)
+        text_template = text_template.replace("[TASK_LINK]", task_link)
+
+        def issues_to_string(issues):
+            if issues:
+                table = "<table><tr><th>Issue</th><th>Count</th></tr>"
+                for issue in issues:
+                    table += "<tr><td>{ISSUE}</td><td>{COUNT}</td></tr>".format(
+                        ISSUE=issue.name, COUNT=issue.count
+                    )
+                table += "</table>"
+                return table
+            return "You had no issues."
+
+        text_template = text_template.replace("[ISSUES]", issues_to_string(issues))
+        text_template = text_template.replace(
+            "[COMMENTS]",
+            "<br />".join(comments) if comments else "There were no comments.",
+        )
 
         validation_message = Message()
         validation_message.message_type = MessageType.INVALIDATION_NOTIFICATION.value if status == TaskStatus.INVALIDATED else MessageType.VALIDATION_NOTIFICATION.value
@@ -74,7 +122,7 @@ class MessageService:
         validation_message.message = text_template
         validation_message.add_message()
 
-        SMTPService.send_email_alert(user.email_address, user.username)
+        SMTPService.send_email_alert(user.email_address, user.username, message=validation_message)
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
