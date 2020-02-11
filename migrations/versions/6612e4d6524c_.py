@@ -19,7 +19,7 @@ depends_on = None
 def upgrade():
     op.add_column(
         "users",
-        sa.Column("default_editor", sa.String(), server_default="iD", nullable=False),
+        sa.Column("default_editor", sa.String(), server_default="ID", nullable=False),
     )
     op.add_column(
         "users",
