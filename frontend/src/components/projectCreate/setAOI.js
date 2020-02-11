@@ -6,6 +6,7 @@ import messages from './messages';
 import { paintOptions } from './index';
 import { Button } from '../button';
 import { makeGrid } from './setTaskSizes';
+import { MAX_FILESIZE } from '../../config';
 
 var tj = require('@mapbox/togeojson');
 var osmtogeojson = require('osmtogeojson');
@@ -52,7 +53,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
       setDataGeom(event.features[0].geometry);
     } catch (e) {
       deleteHandler();
-      setErr({ error: true, message: 'Invalid file' });
+      setErr({ error: true, message: <FormattedMessage {...messages.invalidFile} /> });
     }
   };
 
@@ -61,6 +62,13 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     let files = event.target.files;
     let file = files[0];
     if (!file) {
+      return null;
+    }
+    if (file.size >= MAX_FILESIZE) {
+      setErr({
+        error: true,
+        message: <FormattedMessage {...messages.fileSize} values={{ fileSize: MAX_FILESIZE }} />,
+      });
       return null;
     }
 

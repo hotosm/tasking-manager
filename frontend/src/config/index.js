@@ -29,6 +29,8 @@ export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.co
 export const OSM_STATS_URL =
   process.env.REACT_APP_OSM_STATS_URL || 'https://osm-stats-prod-api.azurewebsites.net/';
 
+export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 5000000; // bytes
+
 export const TASK_COLOURS = {
   READY: '#fff',
   LOCKED_FOR_MAPPING: '#fff',
