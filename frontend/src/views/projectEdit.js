@@ -67,6 +67,11 @@ export function ProjectEdit({ id }) {
   });
 
   useLayoutEffect(() => {
+    setSuccess(false);
+    setError(null);
+  }, [projectInfo, option]);
+
+  useLayoutEffect(() => {
     async function getSupportedLanguages() {
       const res = await fetchLocalJSONAPI(`system/languages/`);
       setLanguages(res.supportedLanguages);
@@ -199,7 +204,16 @@ export function ProjectEdit({ id }) {
         delay={200}
         ready={projectInfo && projectInfo.projectInfo}
       >
-        <StateContext.Provider value={{ projectInfo: projectInfo, setProjectInfo: setProjectInfo }}>
+        <StateContext.Provider
+          value={{
+            projectInfo: projectInfo,
+            setProjectInfo: setProjectInfo,
+            success: success,
+            setSuccess: setSuccess,
+            error: error,
+            setError: setError,
+          }}
+        >
           <div className="fl w-60">{renderForm(option)}</div>
         </StateContext.Provider>
       </ReactPlaceholder>

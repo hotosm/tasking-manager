@@ -6,7 +6,9 @@ import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 
 export const InputLocale = props => {
-  const { projectInfo, setProjectInfo } = useContext(StateContext);
+  const { projectInfo, setProjectInfo, success, setSuccess, error, setError } = useContext(
+    StateContext,
+  );
   const [language, setLanguage] = useState(null);
   const [value, setValue] = useState('');
   const [preview, setPreview] = useState(null);
@@ -34,12 +36,20 @@ export const InputLocale = props => {
       const html = htmlFromMarkdown(e.target.value);
       setPreview(html);
     }
+    if (success !== false) {
+      setSuccess(false);
+    }
+    if (error !== null) {
+      setError(null);
+    }
   };
 
   // Resets preview when language changes.
   useLayoutEffect(() => {
     setPreview(null);
-  }, [language]);
+    setSuccess(false);
+    setError(null);
+  }, [language, setSuccess, setError]);
 
   const getValue = useCallback(() => {
     const data = locales.filter(l => l.locale === language);
