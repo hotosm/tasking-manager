@@ -4,7 +4,9 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { Button } from '../button';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
@@ -23,6 +25,7 @@ export const PriorityAreasForm = () => {
   const mapRef = React.createRef();
   const locale = useSelector(state => state.preferences['locale']);
   const [map, setMap] = useState(null);
+  const [activeMode, setActiveMode] = useState('draw_polygon');
 
   const modes = MapboxDraw.modes;
   modes.draw_rectangle = DrawRectangle;
@@ -53,8 +56,10 @@ export const PriorityAreasForm = () => {
         attributionControl: false,
       })
         .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale || 'en' })),
+        .addControl(new MapboxLanguage({ defaultLanguage: locale || 'en' }))
+        .addControl(new mapboxgl.NavigationControl()),
     );
+
     return () => {
       map && map.remove();
     };
@@ -63,6 +68,7 @@ export const PriorityAreasForm = () => {
 
   useLayoutEffect(() => {
     if (map !== null) {
+      map.getCanvas().style.cursor = 'crosshair';
       map.on('load', () => {
         let priorityAreas = projectInfo.priorityAreas;
         if (priorityAreas === null) {
@@ -77,6 +83,7 @@ export const PriorityAreasForm = () => {
         }));
 
         map.addControl(draw[0]);
+        draw[0].changeMode('draw_polygon');
         map.addSource('aoi', {
           type: 'geojson',
           data: projectInfo.areaOfInterest,
@@ -128,24 +135,26 @@ export const PriorityAreasForm = () => {
   return (
     <div className="w-100">
       <p className={styleClasses.pClass}>
-        If you want mappers to work on the highest priority areas first, draw one or more polygons
-        within the project area.
+        <FormattedMessage {...messages.priorityAreasDescription} />
       </p>
       <div className="pb2">
-        <Button
-          className={styleClasses.drawButtonClass}
-          onClick={() => draw[0].changeMode('draw_polygon')}
-        >
-          Draw polygon
-        </Button>
-        <Button
-          className={styleClasses.drawButtonClass}
-          onClick={() => draw[0].changeMode('draw_rectangle')}
-        >
-          Draw rectangle
-        </Button>
-        <Button onClick={clearAll} className={styleClasses.deleteButtonClass}>
-          Clear all
+        {['draw_polygon', 'draw_rectangle'].map(option => (
+          <label className="di pr3" key={option}>
+            <input
+              value={option}
+              checked={activeMode === option}
+              onChange={() => {
+                draw[0].changeMode(option);
+                setActiveMode(option);
+              }}
+              type="radio"
+              className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
+            />
+            <FormattedMessage {...messages[`priorityAreas_${option}`]} />
+          </label>
+        ))}
+        <Button onClick={clearAll} className={`ml2 ${styleClasses.redButtonClass}`}>
+          <FormattedMessage {...messages.clearAll} />
         </Button>
       </div>
 

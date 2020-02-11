@@ -30,7 +30,7 @@ export default defineMessages({
     defaultMessage: 'Learn more about OpenStreetMap.',
   },
   mappingLevelALL: {
-    id: 'project.level.all',
+    id: 'mapping.level.all',
     defaultMessage: 'All levels',
   },
   mappingLevelADVANCED: {

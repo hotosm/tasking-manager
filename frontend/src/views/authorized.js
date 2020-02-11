@@ -27,7 +27,7 @@ class Authorized extends React.Component {
     const redirectUrl =
       this.params.get('redirect_to') && this.params.get('redirect_to') !== '/'
         ? this.params.get('redirect_to')
-        : 'welcome';
+        : '/welcome';
     return this.state.isReadyToRedirect ? (
       <Redirect to={redirectUrl} noThrow />
     ) : (
