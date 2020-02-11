@@ -1,5 +1,7 @@
 import React, { useState, useLayoutEffect, useCallback, useContext } from 'react';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 
@@ -113,7 +115,9 @@ export const InputLocale = props => {
 
       {preview && (
         <div className="cf pt1">
-          <h3 className="ttu f6 fw6 blue-grey mb1">Preview</h3>
+          <h3 className="ttu f6 fw6 blue-grey mb1">
+            <FormattedMessage {...messages.preview} />
+          </h3>
           <div dangerouslySetInnerHTML={preview} className="pv1 ph3 bg-grey-light blue-dark" />
         </div>
       )}

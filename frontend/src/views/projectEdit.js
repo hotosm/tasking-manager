@@ -2,7 +2,9 @@ import React, { useState, useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect, navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import { DescriptionForm } from '../components/projectEdit/descriptionForm';
 import { InstructionsForm } from '../components/projectEdit/instructionsForm';
 import { MetadataForm } from '../components/projectEdit/metadataForm';
@@ -23,10 +25,11 @@ export const styleClasses = {
   inputClass: 'w-80 pa2 db mb2',
   numRows: '4',
   buttonClass: 'bg-blue-dark dib white',
-  modalTitleClass: 'f3 barlow-condensed pb3 bb',
+  modalTitleClass: 'f3 pb3 mv0 bb',
   drawButtonClass: 'bg-blue-dark white mr2',
-  deleteButtonClass: 'bg-red white',
-  modalClass: 'w-40 vh-50 center pv5',
+  redButtonClass: 'bg-red white',
+  whiteButtonClass: 'bg-white blue-dark mr2',
+  modalClass: 'pa4',
   actionClass: 'bg-blue-dark white dib mr2 mt2 pointer',
 };
 
@@ -95,22 +98,23 @@ export function ProjectEdit({ id }) {
     };
 
     const elements = [
-      { item: 'description', showItem: 'Description *' },
-      { item: 'instructions', showItem: 'Instructions *' },
-      { item: 'metadata', showItem: 'Metadata *' },
-      { item: 'priority_areas', showItem: 'Priority areas' },
-      { item: 'imagery', showItem: 'Imagery' },
-      { item: 'permissions', showItem: 'Permissions' },
-      { item: 'settings', showItem: 'Settings' },
-      { item: 'actions', showItem: 'Actions' },
+      { value: 'description', required: true },
+      { value: 'instructions', required: true },
+      { value: 'metadata', required: true },
+      { value: 'priority_areas' },
+      { value: 'imagery' },
+      { value: 'permissions' },
+      { value: 'settings' },
+      { value: 'actions' },
     ];
 
     return (
       <div>
         <ul className="list pl0 mt0 ttu">
           {elements.map((elm, n) => (
-            <li key={n} className={checkSelected(elm.item)} onClick={() => setOption(elm.item)}>
-              {elm.showItem}
+            <li key={n} className={checkSelected(elm.value)} onClick={() => setOption(elm.value)}>
+              <FormattedMessage {...messages[`projectEditSection_${elm.value}`]} />
+              {elm.required && ' *'}
             </li>
           ))}
         </ul>
@@ -157,7 +161,9 @@ export function ProjectEdit({ id }) {
 
   return (
     <div className="cf pv3 blue-dark">
-      <h2 className="pb2 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">Edit project</h2>
+      <h2 className="pb2 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
+        <FormattedMessage {...messages.editProject} />
+      </h2>
       <div className="fl vh-75-l w-30">
         <ReactPlaceholder
           showLoadingAnimation={true}
@@ -167,16 +173,22 @@ export function ProjectEdit({ id }) {
         >
           {renderList()}
           <Button onClick={saveChanges} className="bg-red white">
-            Save
+            <FormattedMessage {...messages.save} />
           </Button>
           <Button onClick={() => navigate(`/projects/${id}`)} className="bg-white blue-dark ml2">
-            Go to project page
+            <FormattedMessage {...messages.goToProjectPage} />
           </Button>
           <p className="pt2">
             {success && (
-              <span className="blue-dark bg-grey-light pa2">Project updated successfully</span>
+              <span className="blue-dark bg-grey-light pa2">
+                <FormattedMessage {...messages.updateSuccess} />
+              </span>
             )}
-            {error && <span className="bg-red white pa2">Project update failed: {error}</span>}
+            {error && (
+              <span className="bg-red white pa2">
+                <FormattedMessage {...messages.updateError} values={{ error: error }} />
+              </span>
+            )}
           </p>
         </ReactPlaceholder>
       </div>

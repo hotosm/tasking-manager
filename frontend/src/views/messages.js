@@ -196,4 +196,56 @@ export default defineMessages({
     id: 'pages.about.floss.application_code',
     defaultMessage: 'application code',
   },
+  editProject: {
+    id: 'pages.edit_project.title',
+    defaultMessage: 'Edit project',
+  },
+  save: {
+    id: 'pages.edit_project.buttons.save',
+    defaultMessage: 'Save',
+  },
+  goToProjectPage: {
+    id: 'pages.edit_project.buttons.go_to_project',
+    defaultMessage: 'Go to project page',
+  },
+  updateSuccess: {
+    id: 'pages.edit_project.actions.update.success',
+    defaultMessage: 'Project updated successfully.',
+  },
+  updateError: {
+    id: 'pages.edit_project.actions.update.error',
+    defaultMessage: 'Project update failed: {error}',
+  },
+  projectEditSection_description: {
+    id: 'pages.edit_project.sections.description',
+    defaultMessage: 'Descrition',
+  },
+  projectEditSection_instructions: {
+    id: 'pages.edit_project.sections.instructions',
+    defaultMessage: 'Instructions',
+  },
+  projectEditSection_metadata: {
+    id: 'pages.edit_project.sections.metadata',
+    defaultMessage: 'Metadata',
+  },
+  projectEditSection_priority_areas: {
+    id: 'pages.edit_project.sections.priority_areas',
+    defaultMessage: 'Priority areas',
+  },
+  projectEditSection_imagery: {
+    id: 'pages.edit_project.sections.imagery',
+    defaultMessage: 'Imagery',
+  },
+  projectEditSection_permissions: {
+    id: 'pages.edit_project.sections.permissions',
+    defaultMessage: 'Permissions',
+  },
+  projectEditSection_settings: {
+    id: 'pages.edit_project.sections.settings',
+    defaultMessage: 'Settings',
+  },
+  projectEditSection_actions: {
+    id: 'pages.edit_project.sections.actions',
+    defaultMessage: 'Actions',
+  },
 });

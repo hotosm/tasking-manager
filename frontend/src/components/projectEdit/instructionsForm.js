@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { InputLocale } from './inputLocale';
 
@@ -26,7 +28,12 @@ export const InstructionsForm = ({ languages }) => {
   return (
     <div className="w-100">
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>Entities to map</label>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.entitiesToMap} />
+        </label>
+        <p>
+          <FormattedMessage {...messages.entitiesDescription} />
+        </p>
         <input
           className={styleClasses.inputClass}
           type="text"
@@ -34,10 +41,11 @@ export const InstructionsForm = ({ languages }) => {
           name="entitiesToMap"
           onChange={handleChange}
         />
-        <p>The list of entities to map</p>
       </div>
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>Changeset comment</label>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.changesetComment} />
+        </label>
         <input
           className={styleClasses.inputClass}
           type="text"
@@ -46,36 +54,30 @@ export const InstructionsForm = ({ languages }) => {
           onChange={handleChange}
         />
         <p className={styleClasses.pClass}>
-          Default comments added to uploaded changeset comment field. Users should also be
-          encouraged to add text describing what they mapped. Hashtags are sometimes used for
-          analysis later, but should be human informative and not overused, #group #event for
-          example.
+          <FormattedMessage {...messages.changesetCommentDescription} />
         </p>
         <p className={styleClasses.pClass}>
-          Example: #hotosm-project-470 #missingmaps Buildings mapping.
+          <FormattedMessage {...messages.changesetCommentExample} />
         </p>
       </div>
       <div className={styleClasses.divClass}>
         <InputLocale languages={languages} name="instructions">
-          <label className={styleClasses.labelClass}>Detailed Instructions *</label>
+          <label className={styleClasses.labelClass}>
+            <FormattedMessage {...messages.instructions} />*
+          </label>
         </InputLocale>
       </div>
       <div className={styleClasses.divClass}>
         <InputLocale languages={languages} name="perTaskInstructions">
-          <label className={styleClasses.labelClass}>Per task instructions</label>
+          <label className={styleClasses.labelClass}>
+            <FormattedMessage {...messages.perTaskInstructions} />
+          </label>
         </InputLocale>
         <p className={styleClasses.pClass}>
-          Put here anything that can be useful to users while taking a task. {'{x}'}, {'{y}'} and{' '}
-          {'{z}'}
-          will be replaced by the corresponding parameters for each task. {'{x}'}, {'{y}'} and{' '}
-          {'{z}'}
-          parameters can only be be used on tasks generated in the Tasking Manager and not on
-          imported tasks.
+          <FormattedMessage {...messages.perTaskInstructionsDescription} />
         </p>
         <p className={styleClasses.pClass}>
-          For example: « This task involves loading extra data. Click
-          [here](http://localhost:8111/import?new_layer=true&amp;url=http://www.domain.com/data/
-          {'{x}'}/{'{y}'}/{'{z}'}/routes_2009.osm) to load the data into JOSM ».
+          <FormattedMessage {...messages.perTaskInstructionsExample} />
         </p>
       </div>
     </div>
