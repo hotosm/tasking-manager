@@ -1,85 +1,91 @@
 import React, { useContext } from 'react';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { InputLocale } from './inputLocale';
 
 export const DescriptionForm = ({ languages }) => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
 
-  const handleChange = event => {
-    const localesFields = ['name', 'description', 'shortDescription'];
-    if (localesFields.includes(event.target.name)) {
-      let localeData = projectInfo.projectInfoLocales.filter(
-        f => f.locale === projectInfo.defaultLocale,
-      )[0];
-      localeData[event.target.name] = event.target.value;
-      // create element with new locale.
-      let newLocales = projectInfo.projectInfoLocales.filter(
-        f => f.locale !== projectInfo.defaultLocale,
-      );
-      newLocales.push(localeData);
-      setProjectInfo({ ...projectInfo, projectInfoLocales: newLocales });
-    } else {
-      setProjectInfo({ ...projectInfo, [event.target.name]: event.target.value });
-    }
-  };
-
-  const projectStatusFields = [
-    { item: 'PUBLISHED', showItem: 'Published' },
-    { item: 'ARCHIVED', showItem: 'Archived' },
-    { item: 'DRAFT', showItem: 'Draft' },
+  const projectStatusOptions = [
+    { value: 'PUBLISHED', label: 'PUBLISHED' },
+    { value: 'ARCHIVED', label: 'ARCHIVED' },
+    { value: 'DRAFT', label: 'DRAFT' },
   ];
 
-  const projectPriorityFields = [
-    { item: 'URGENT', showItem: 'Urgent' },
-    { item: 'HIGH', showItem: 'High' },
-    { item: 'MEDIUM', showItem: 'Medium' },
-    { item: 'LOW', showItem: 'Low' },
+  const projectPriorityOptions = [
+    { value: 'URGENT', label: 'URGENT' },
+    { value: 'HIGH', label: 'HIGH' },
+    { value: 'MEDIUM', label: 'MEDIUM' },
+    { value: 'LOW', label: 'LOW' },
   ];
 
   return (
     <div className="w-100">
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>Status</label>
-        <select name="status" onChange={handleChange} className="pa2 pointer">
-          {projectStatusFields.map(f => (
-            <option
-              key={f.item}
-              selected={f.item === projectInfo.status ? true : false}
-              value={f.item}
-            >
-              {f.showItem}
-            </option>
-          ))}
-        </select>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.status} />
+        </label>
+        {projectStatusOptions.map(option => (
+          <label className="db pv2" key={option.value}>
+            <input
+              value={option.value}
+              checked={projectInfo.status === option.value}
+              onChange={() =>
+                setProjectInfo({
+                  ...projectInfo,
+                  status: option.value,
+                })
+              }
+              type="radio"
+              className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
+            />
+            <FormattedMessage {...messages[`status${option.label}`]} />
+          </label>
+        ))}
       </div>
       <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>Priority</label>
-        <select name="projectPriority" onChange={handleChange} className="pa2 pointer">
-          {projectPriorityFields.map(f => (
-            <option
-              key={f.item}
-              selected={f.item === projectInfo.projectPriority ? true : false}
-              value={f.item}
-            >
-              {f.showItem}
-            </option>
-          ))}
-        </select>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.priority} />
+        </label>
+        {projectPriorityOptions.map(option => (
+          <label className="db pv2" key={option.value}>
+            <input
+              value={option.value}
+              checked={projectInfo.projectPriority === option.value}
+              onChange={() =>
+                setProjectInfo({
+                  ...projectInfo,
+                  projectPriority: option.value,
+                })
+              }
+              type="radio"
+              className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
+            />
+            <FormattedMessage {...messages[`projectPriority${option.label}`]} />
+          </label>
+        ))}
       </div>
       <div className={styleClasses.divClass}>
         <InputLocale languages={languages} name="name" type="text" preview={false} maxLength={130}>
-          <label className={styleClasses.labelClass}>Name of the project*</label>
+          <label className={styleClasses.labelClass}>
+            <FormattedMessage {...messages.name} />*
+          </label>
         </InputLocale>
       </div>
       <div className={styleClasses.divClass}>
         <InputLocale languages={languages} name="shortDescription" maxLength={1500}>
-          <label className={styleClasses.labelClass}>Short Description*</label>
+          <label className={styleClasses.labelClass}>
+            <FormattedMessage {...messages.shortDescription} />*
+          </label>
         </InputLocale>
       </div>
       <div className={styleClasses.divClass}>
         <InputLocale languages={languages} name="description">
-          <label className={styleClasses.labelClass}>Description*</label>
+          <label className={styleClasses.labelClass}>
+            <FormattedMessage {...messages.description} />*
+          </label>
         </InputLocale>
       </div>
     </div>

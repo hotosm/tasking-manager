@@ -1,6 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button } from '../../components/button';
 import Select from 'react-select';
+import { FormattedMessage } from 'react-intl';
+
+import messages from './messages';
+import { Button } from '../../components/button';
 import { StateContext } from '../../views/projectEdit';
 import { PencilIcon, WasteIcon, LinkIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -140,7 +143,7 @@ export const TeamSelect = () => {
         isClearable={true}
         getOptionLabel={option => option.name}
         getOptionValue={option => option.organisationId}
-        placeholder="Filter teams by organisations"
+        placeholder={<FormattedMessage {...messages.filterByOrg} />}
         options={orgs}
         value={org}
         onChange={value => setOrg(value)}
@@ -154,7 +157,7 @@ export const TeamSelect = () => {
           onChange={value => handleSelect(value, 'team')}
           className="w-40 fl pr2"
           value={teamSelect.team.name !== null ? teamSelect.team : null}
-          placeholder={'Select a team...'}
+          placeholder={<FormattedMessage {...messages.selectTeam} />}
           isDisabled={teamSelect.edit}
         />
         <Select
@@ -165,21 +168,25 @@ export const TeamSelect = () => {
           className="w-40 fl mr2"
           isDisabled={teamSelect.team.name === null ? true : false}
           value={teamSelect.role.value !== null ? teamSelect.role : null}
-          placeholder={'Select a role...'}
+          placeholder={<FormattedMessage {...messages.selectRole} />}
         />
         <Button
           onClick={teamSelect.edit === false ? addTeam : updateTeam}
-          className="bg-blue-dark white fl mr2 f7"
+          className="bg-blue-dark white fl mr2 f6"
           disabled={teamSelect.team.name === null || teamSelect.role.value === null}
         >
-          {teamSelect.edit === false ? 'Add' : 'Update'}
+          {teamSelect.edit === false ? (
+            <FormattedMessage {...messages.add} />
+          ) : (
+            <FormattedMessage {...messages.update} />
+          )}
         </Button>
         <Button
           onClick={() => setTeamSelect(nullState)}
-          className="bg-red white fl mr2 f7"
+          className="bg-red white fl mr2 f6"
           disabled={!teamSelect.edit}
         >
-          Cancel
+          <FormattedMessage {...messages.cancel} />
         </Button>
       </div>
     </div>
