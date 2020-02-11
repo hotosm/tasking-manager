@@ -114,7 +114,7 @@ class User(db.Model):
 
 
     @staticmethod
-    def filter_users(user_filter: str, project_id: int, page: int, 
+    def filter_users(user_filter: str, project_id: int, page: int,
                      is_project_manager:bool=False) -> UserFilterDTO:
         """ Finds users that matches first characters, for auto-complete.
 
@@ -130,7 +130,7 @@ class User(db.Model):
             query = query.filter(User.role.in_([UserRole.ADMIN.value, UserRole.PROJECT_MANAGER.value]))
 
         results = query.paginate(page, 20, True)
-            
+
         if results.total == 0:
             raise NotFound()
 
@@ -272,7 +272,7 @@ class User(db.Model):
         user_dto.time_spent_validating = 0
 
         sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE action='LOCKED_FOR_VALIDATION'
+                WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
                 and user_id = :user_id;"""
         total_validation_time = db.engine.execute(text(sql), user_id=self.id)
         for row in total_validation_time:
@@ -283,7 +283,7 @@ class User(db.Model):
                 user_dto.total_time_spent += user_dto.time_spent_validating
 
         sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE action='LOCKED_FOR_MAPPING'
+                WHERE (action='LOCKED_FOR_MAPPING' or action='AUTO_UNLOCKED_FOR_MAPPING')
                 and user_id = :user_id;"""
         total_mapping_time = db.engine.execute(text(sql), user_id=self.id)
         for row in total_mapping_time:
