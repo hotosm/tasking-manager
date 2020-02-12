@@ -16,8 +16,6 @@ const Contributions = props => {
   ];
 
   const [level, setLevel] = useState(mappingLevels[0]);
-  const [activeStatus, setActiveStatus] = useState(null);
-  const [activeUser, setActiveUser] = useState(null);
 
   const MappingLevelSelect = () => {
     return (
@@ -32,13 +30,13 @@ const Contributions = props => {
   };
 
   const checkActiveUserAndStatus = (status, username) =>
-    activeStatus === status && activeUser === username ? 'bg-blue-dark' : 'bg-grey-light';
+    props.activeStatus === status && props.activeUser === username
+      ? 'bg-blue-dark'
+      : 'bg-grey-light';
 
   const displayTasks = (taskIds, status, user) => {
-    if (activeStatus === status && user === activeUser) {
+    if (props.activeStatus === status && user === props.activeUser) {
       props.selectTask([]);
-      setActiveStatus(null);
-      setActiveUser(null);
     } else {
       let filteredTasksByStatus = props.tasks.features;
       if (status === 'MAPPED') {
@@ -54,9 +52,7 @@ const Contributions = props => {
       const ids = filteredTasksByStatus
         .filter(t => taskIds.includes(t.properties.taskId))
         .map(f => f.properties.taskId);
-      props.selectTask(ids, status);
-      setActiveUser(user);
-      setActiveStatus(status);
+      props.selectTask(ids, status, user);
     }
   };
 
@@ -81,7 +77,7 @@ const Contributions = props => {
             return (
               <div
                 className={`w-100 cf pv3 ph3-ns ph1 ba bw1 mb2 ${
-                  activeUser === user.username ? 'b--blue-dark' : 'b--tan'
+                  props.activeUser === user.username ? 'b--blue-dark' : 'b--tan'
                 }`}
               >
                 <div className="w-30 fl dib truncate">
