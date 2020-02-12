@@ -19,7 +19,7 @@ import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONReq
 export const StateContext = React.createContext();
 
 export const styleClasses = {
-  divClass: 'w-70 pb5 mb4 bb b--grey-light',
+  divClass: 'w-70-l w-100 pb5 mb4 bb b--grey-light',
   labelClass: 'f4 fw6 db mb3',
   pClass: 'db mb3 f5',
   inputClass: 'w-80 pa2 db mb2',
@@ -169,7 +169,7 @@ export function ProjectEdit({ id }) {
       <h2 className="pb2 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
         <FormattedMessage {...messages.editProject} />
       </h2>
-      <div className="fl vh-75-l w-30">
+      <div className="fl vh-75-l w-30-l w-100 ph0-ns ph4-m ph2">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={8}
@@ -214,7 +214,9 @@ export function ProjectEdit({ id }) {
             setError: setError,
           }}
         >
-          <div className="fl w-60">{renderForm(option)}</div>
+          <div className="fl w-70-l w-100 ph0-l ph4-m ph2">
+            {renderForm(option)}
+          </div>
         </StateContext.Provider>
       </ReactPlaceholder>
     </div>
