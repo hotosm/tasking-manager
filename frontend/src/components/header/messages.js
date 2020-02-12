@@ -24,10 +24,6 @@ export default defineMessages({
     id: 'header.nav.manage',
     defaultMessage: 'Manage',
   },
-  myTasks: {
-    id: 'header.nav.myTasks',
-    defaultMessage: 'My tasks',
-  },
   statsBadges: {
     id: 'header.nav.statsBadges',
     defaultMessage: 'Stats & Badges',
@@ -110,6 +106,7 @@ export default defineMessages({
   },
   privacyPolicy: {
     id: 'emailUpdate.modal.privacy_policy',
-    defaultMessage: "Read our Privacy Policy for more information on how we protect users' personal data.",
+    defaultMessage:
+      "Read our Privacy Policy for more information on how we protect users' personal data.",
   },
 });

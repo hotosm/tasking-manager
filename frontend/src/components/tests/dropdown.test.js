@@ -161,3 +161,39 @@ it('dropdown with toTop enabled should have bottom-3 class', () => {
     }).type,
   ).toBe('div');
 });
+
+it('dropdown with more than 9 options has "h5 overflow-y-scroll" classes', () => {
+  const twelveOptions = [
+    { label: 'A' },
+    { label: 'B' },
+    { label: 'C' },
+    { label: 'D' },
+    { label: 'E' },
+    { label: 'F' },
+    { label: 'G' },
+    { label: 'H' },
+    { label: 'I' },
+    { label: 'K' },
+    { label: 'K' },
+    { label: 'L' },
+  ];
+  const testElement = TestRenderer.create(
+    <Dropdown
+      value={'A'}
+      options={twelveOptions}
+      display={'Options'}
+      multi={true}
+      className="blue-dark bg-white"
+      toTop={true}
+    />,
+  );
+  const elementInstance = testElement.root;
+  elementInstance.findByType(CustomButton).props.onClick();
+  // dropdown-content must be rendered after the click
+  expect(
+    elementInstance.findByProps({
+      className:
+        'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column bottom-3 h5 overflow-y-scroll',
+    }).type,
+  ).toBe('div');
+});

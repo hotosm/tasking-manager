@@ -50,7 +50,7 @@ class DropdownContent extends React.PureComponent {
       <div
         className={`db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column${
           this.props.toTop ? ' bottom-3' : ''
-        }`}
+        }${this.props.options.length > 9 ? ' h5 overflow-y-scroll' : ''}`}
       >
         {this.props.options.map((i, k) => (
           <span

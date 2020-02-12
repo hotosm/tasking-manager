@@ -74,11 +74,11 @@ class EnvironmentConfig:
     SUPPORTED_LANGUAGES = {
         "codes": os.getenv(
             "TM_SUPPORTED_LANGUAGES_CODES",
-            "ar, cs, da, de, en, es, fa_IR, fi, fr, hu, gl, id, it, ja, ko, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, ta, uk, vi, zh_TW",  # noqa
+            "ar, cs, da, de, en, es, fa_IR, fi, fr, hu, gl, id, it, ja, ko, lt, mg, nb, nl_NL, pl, pt, pt_BR, ru, si, sl, sw, ta, tl, tr, uk, vi, zh_TW",  # noqa
         ),
         "languages": os.getenv(
             "TM_SUPPORTED_LANGUAGES",
-            "Arabic, Česky, Dansk, Deutsch, English, Español, Persian (Iran), Suomi, Français, Magyar, Galician, Indonesia, Italiano, 日本語, 한국어, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, தமிழ், Українська, tiếng Việt, 中文",  # noqa
+            "Arabic, Česky, Dansk, Deutsch, English, Español, Persian (Iran), Suomi, Français, Magyar, Galician, Indonesia, Italiano, 日本語, 한국어, Lietuvos, Malagasy, Bokmål, Nederlands, Polish, Português, Português (Brasil), Русский, සිංහල, Slovenščina, Kiswahili, தமிழ், Filipino, Türkçe, Українська, tiếng Việt, 中文",  # noqa
         ),
     }
 
