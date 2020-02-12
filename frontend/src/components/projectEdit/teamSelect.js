@@ -147,7 +147,7 @@ export const TeamSelect = () => {
         options={orgs}
         value={org}
         onChange={value => setOrg(value)}
-        className="mb2"
+        className="mb2 z-5"
       />
       <div className="cf pb3 flex justify-between">
         <Select
@@ -155,7 +155,7 @@ export const TeamSelect = () => {
           getOptionValue={option => option.teamId}
           options={filteredTeams}
           onChange={value => handleSelect(value, 'team')}
-          className="w-40 fl pr2"
+          className="w-40 fl pr2 z-5"
           value={teamSelect.team.name !== null ? teamSelect.team : null}
           placeholder={<FormattedMessage {...messages.selectTeam} />}
           isDisabled={teamSelect.edit}
@@ -165,7 +165,7 @@ export const TeamSelect = () => {
           getOptionValue={option => option.value}
           options={teamRoles}
           onChange={value => handleSelect(value, 'role')}
-          className="w-40 fl mr2"
+          className="w-40 fl mr2 z-5"
           isDisabled={teamSelect.team.name === null ? true : false}
           value={teamSelect.role.value !== null ? teamSelect.role : null}
           placeholder={<FormattedMessage {...messages.selectRole} />}

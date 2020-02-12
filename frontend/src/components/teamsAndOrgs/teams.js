@@ -254,12 +254,12 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
       ready={typeof team.teamId === 'number'}
     >
       <div className="cf pb2">
-        <div className="w-10 pv2 dib fl">
+        <div className="w-20 pv2 dib fl">
           <span className="blue-grey v-mid">
             <FormattedMessage {...messages.team} /> #{team.teamId}
           </span>
         </div>
-        <div className="w-90 dib fr tr">
+        <div className="w-80 dib fr tr">
           {team.inviteOnly && <InviteOnlyBox className="pv2 ph3 dib mr2" />}
           <VisibilityBox visibility={team.visibility} extraClasses="pv2 ph3 dib" />
         </div>
