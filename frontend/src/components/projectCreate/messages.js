@@ -89,6 +89,14 @@ export default defineMessages({
     id: 'management.projects.create.task_sizes.larger',
     defaultMessage: 'Larger',
   },
+  invalidFile: {
+    id: 'management.projects.create.errors.invalid',
+    defaultMessage: 'Invalid file',
+  },
+  fileSize: {
+    id: 'management.projects.create.errors.fileSize',
+    defaultMessage: 'File size is higher than {fileSize} bytes',
+  },
   splitTaskDescription: {
     id: 'management.projects.create.split_task.description',
     defaultMessage:
