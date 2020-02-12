@@ -56,7 +56,7 @@ export const PriorityAreasForm = () => {
         attributionControl: false,
       })
         .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale || 'en' }))
+        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
         .addControl(new mapboxgl.NavigationControl()),
     );
 

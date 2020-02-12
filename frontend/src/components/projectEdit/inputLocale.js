@@ -76,6 +76,7 @@ export const InputLocale = props => {
                   (l.code !== language ? 'bg-white blue-dark' : 'bg-blue-dark white') +
                   ' ph2 mb2 pv1 f7 mr2 pointer'
                 }
+                title={l.language}
               >
                 {l.code}
               </li>
