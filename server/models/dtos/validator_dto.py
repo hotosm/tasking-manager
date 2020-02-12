@@ -1,8 +1,9 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, DateTimeType, BooleanType
+from schematics.types import StringType, IntType, BooleanType, DateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.postgis.statuses import TaskStatus
+from server.models.postgis.utils import utc_format
 from server.models.dtos.stats_dto import Pagination
 
 
@@ -91,10 +92,16 @@ class MappedTasksByUser(Model):
     username = StringType(required=True)
     mapped_task_count = IntType(required=True, serialized_name="mappedTaskCount")
     tasks_mapped = ListType(IntType, required=True, serialized_name="tasksMapped")
-    last_seen = DateTimeType(required=True, serialized_name="lastSeen")
+    last_seen = DateTimeType(
+        required=True, serialized_name="lastSeen", serialized_format=utc_format()
+    )
     mapping_level = StringType(required=True, serialized_name="mappingLevel")
-    date_registered = DateTimeType(serialized_name="dateRegistered")
-    last_validation_date = DateTimeType(serialized_name="lastValidationDate")
+    date_registered = DateTimeType(
+        serialized_name="dateRegistered", serialized_format=utc_format()
+    )
+    last_validation_date = DateTimeType(
+        serialized_name="lastValidationDate", serialized_format=utc_format()
+    )
 
 
 class InvalidatedTask(Model):
@@ -105,7 +112,9 @@ class InvalidatedTask(Model):
     project_name = StringType(serialized_name="projectName")
     history_id = IntType(serialized_name="historyId")
     closed = BooleanType()
-    updated_date = DateTimeType(serialized_name="updatedDate")
+    updated_date = DateTimeType(
+        serialized_name="updatedDate", serialized_format=utc_format()
+    )
 
 
 class InvalidatedTasks(Model):

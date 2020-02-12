@@ -1,12 +1,19 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, EmailType, LongType, BooleanType
-
+from schematics.types import (
+    StringType,
+    IntType,
+    EmailType,
+    LongType,
+    BooleanType,
+    DateTimeType,
+)
 from schematics.types.compound import ListType, ModelType, BaseType
 from server.models.dtos.stats_dto import Pagination
 from server.models.dtos.mapping_dto import TaskDTO
-from server.models.postgis.statuses import MappingLevel, UserRole
 from server.models.dtos.interests_dto import InterestDTO
+from server.models.postgis.statuses import MappingLevel, UserRole
+from server.models.postgis.utils import utc_format
 
 
 def is_known_mapping_level(value):
@@ -48,7 +55,9 @@ class UserDTO(Model):
     mapping_level = StringType(
         serialized_name="mappingLevel", validators=[is_known_mapping_level]
     )
-    date_registered = StringType(serialized_name="dateRegistered")
+    date_registered = DateTimeType(
+        serialized_name="dateRegistered", serialized_format=utc_format()
+    )
     total_time_spent = IntType(serialized_name="totalTimeSpent")
     time_spent_mapping = IntType(serialized_name="timeSpentMapping")
     time_spent_validating = IntType(serialized_name="timeSpentValidating")
