@@ -995,6 +995,8 @@ class Project(db.Model):
             project_dto.organisation_name = project.organisation.name
             project_dto.organisation_logo = project.organisation.logo
 
+        project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(self.id)
+
         return project_dto
 
     def tasks_as_geojson(

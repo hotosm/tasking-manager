@@ -82,8 +82,7 @@ export function ProjectEdit({ id }) {
   useLayoutEffect(() => {
     async function fetchData() {
       const res = await fetchLocalJSONAPI(`projects/${id}/`);
-      const array = [res.projectInfo];
-      setProjectInfo({ ...res, projectInfoLocales: array });
+      setProjectInfo(res);
     }
 
     fetchData();
