@@ -330,7 +330,7 @@ class User(db.Model):
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
         user_dto.is_expert = self.is_expert or False
-        user_dto.date_registered = str(self.date_registered)
+        user_dto.date_registered = self.date_registered
         try:
             user_dto.projects_mapped = len(self.projects_mapped)
         # Handle users that haven't touched a project yet.
