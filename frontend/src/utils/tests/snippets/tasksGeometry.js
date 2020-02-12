@@ -243,7 +243,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 10,
         taskIsSquare: true,
-        taskStatus: 'READY',
+        taskStatus: 'MAPPED',
         taskX: 39210,
         taskY: 22237,
         taskZoom: 16,
@@ -268,7 +268,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 11,
         taskIsSquare: true,
-        taskStatus: 'READY',
+        taskStatus: 'MAPPED',
         taskX: 39210,
         taskY: 22238,
         taskZoom: 16,
@@ -293,7 +293,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 12,
         taskIsSquare: true,
-        taskStatus: 'READY',
+        taskStatus: 'BADIMAGERY',
         taskX: 39210,
         taskY: 22239,
         taskZoom: 16,
@@ -318,7 +318,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 13,
         taskIsSquare: true,
-        taskStatus: 'READY',
+        taskStatus: 'VALIDATED',
         taskX: 39211,
         taskY: 22236,
         taskZoom: 16,
@@ -368,7 +368,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 15,
         taskIsSquare: true,
-        taskStatus: 'READY',
+        taskStatus: 'VALIDATED',
         taskX: 39211,
         taskY: 22238,
         taskZoom: 16,
@@ -393,7 +393,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 16,
         taskIsSquare: true,
-        taskStatus: 'READY',
+        taskStatus: 'BADIMAGERY',
         taskX: 39211,
         taskY: 22239,
         taskZoom: 16,
