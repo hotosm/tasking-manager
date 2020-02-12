@@ -32,6 +32,14 @@ export function ManageTeams() {
   return <ListTeams managementView={true} />;
 }
 
+export function MyTeams() {
+  return (
+    <div className="w-100 ph5-l ph2-m cf bg-tan blue-dark">
+      <ListTeams />
+    </div>
+  );
+}
+
 export function ListTeams({ managementView = false }: Object) {
   const userDetails = useSelector(state => state.auth.get('userDetails'));
   // TO DO: filter teams of current user
@@ -350,8 +358,8 @@ export function TeamDetail(props) {
   } else {
     return (
       <>
-        <div className="cf pa4 bg-tan blue-dark vh-100">
-          <div className="w-40-l w-100 mt4 fl">
+        <div className="cf pa4-ns pa2 bg-tan blue-dark overflow-y-scroll-ns vh-minus-185-ns h-100">
+          <div className="w-40-l w-100 mt2 fl">
             <TeamSideBar
               team={team}
               members={members}
@@ -359,7 +367,7 @@ export function TeamDetail(props) {
               requestedToJoin={isMember === 'requested'}
             />
           </div>
-          <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
+          <div className="w-60-l w-100 mt2 pl5-l pl0 fl">
             <Projects projects={projects} viewAllQuery={`?team=${props.id}`} ownerEntity="team" />
           </div>
         </div>
