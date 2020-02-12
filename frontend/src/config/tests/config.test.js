@@ -46,6 +46,9 @@ it('exports INTERMEDIATE_LEVEL_COUNT', () => {
 it('exports ADVANCED_LEVEL_COUNT', () => {
   expect(typeof config.ADVANCED_LEVEL_COUNT).toBe('number');
 });
+it('exports MAX_FILESIZE', () => {
+  expect(typeof config.MAX_FILESIZE).toBe('number');
+});
 it('exports MAP_STYLE and type is object or string', () => {
   expect(config.MAP_STYLE).toBeTruthy();
   expect(['object', 'string'].includes(typeof config.MAP_STYLE)).toBeTruthy();
