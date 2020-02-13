@@ -6,6 +6,8 @@ import { injectIntl } from 'react-intl';
 import messages from './messages.js';
 import { UserAvatar } from '../user/avatar';
 import { CheckCircle } from '../checkCircle';
+import ProjectProgressBar from '../projectcard/projectProgressBar';
+import { computeCompleteness } from '../../utils/projectCompletenessCalc';
 
 const Contributions = props => {
   const mappingLevels = [
@@ -16,6 +18,7 @@ const Contributions = props => {
   ];
 
   const [level, setLevel] = useState(mappingLevels[0]);
+  const { percentMapped, percentValidated } = computeCompleteness(props.tasks);
 
   const MappingLevelSelect = () => {
     return (
@@ -64,6 +67,11 @@ const Contributions = props => {
   return (
     <div className="w-100 f5 pr4-l pr2 cf blue-dark bg-white">
       <div className="w-100 fr cf">
+        <ProjectProgressBar
+          percentMapped={percentMapped}
+          percentValidated={percentValidated}
+          className="pt1 pb3"
+        />
         <MappingLevelSelect />
       </div>
       <div className="w-100 fl cf">
