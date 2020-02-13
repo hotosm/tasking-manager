@@ -121,9 +121,25 @@ export default defineMessages({
     id: 'project.detail.share',
     defaultMessage: 'Share',
   },
-  teams: {
-    id: 'project.detail.teams',
-    defaultMessage: 'Teams',
+  team: {
+    id: 'project.detail.team',
+    defaultMessage: 'Team',
+  },
+  validationTeam: {
+    id: 'project.detail.validation_team',
+    defaultMessage: 'Validation team',
+  },
+  teamsAndPermissions: {
+    id: 'project.detail.teams_permissions',
+    defaultMessage: 'Teams & Permissions',
+  },
+  whoCanMap: {
+    id: 'project.detail.mapping_permissions',
+    defaultMessage: 'Who can map?',
+  },
+  whoCanValidate: {
+    id: 'project.detail.validation_permissions',
+    defaultMessage: 'Who can validate?',
   },
   zoomToTasks: {
     id: 'project.detail.zoomToTasks',
@@ -210,5 +226,21 @@ export default defineMessages({
   status_PUBLISHED: {
     id: 'project.status.published',
     defaultMessage: 'Published',
+  },
+  permissions_ANY: {
+    id: 'project.permissions.any',
+    defaultMessage: 'All users',
+  },
+  permissions_LEVEL: {
+    id: 'project.permissions.level',
+    defaultMessage: 'Users with intermediate or advanced level',
+  },
+  permissions_TEAMS: {
+    id: 'project.permissions.teams',
+    defaultMessage: '{team} members',
+  },
+  permissions_TEAMS_LEVEL: {
+    id: 'project.permissions.teamsAndLevel',
+    defaultMessage: 'Intermediate and advanced {team} members',
   },
 });
