@@ -284,10 +284,7 @@ class ProjectService:
 
     @staticmethod
     def evaluate_validation_permission(
-        project_id: int,
-        user_id: int,
-        validation_permission: int,
-        user_mapper_level: int,
+        project_id: int, user_id: int, validation_permission: int
     ):
         allowed_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
         # validation_permission = 1(level),2(teams),3(teamsAndLevel)
