@@ -24,6 +24,7 @@ import { ShowReadMoreButton } from './showReadMoreButton';
 import { ProjectDetailFooter } from './projectDetailFooter';
 import { BigProjectTeaser } from './bigProjectTeaser';
 import { QuestionsAndComments } from './questionsAndComments';
+import { PermissionBox } from './permissionBox';
 
 /* lazy imports must be last import */
 const TaskLineGraphViz = React.lazy(() => import('./taskLineGraphViz'));
@@ -245,17 +246,32 @@ export const ProjectDetail = props => {
       <QuestionsAndComments projectId={props.project.projectId} />
 
       <a href="#teams" style={{ visibility: 'hidden' }} name="teams">
-        <FormattedMessage {...messages.teams} />
+        <FormattedMessage {...messages.teamsAndPermissions} />
       </a>
       <h3 className={`${h2Classes}`}>
-        <FormattedMessage {...messages.teams} />
+        <FormattedMessage {...messages.teamsAndPermissions} />
       </h3>
       <div className="ph4 mb3 cf db">
-        {props.project.teams && props.project.teams.length ? (
-          <TeamsBoxList teams={props.project.teams} />
-        ) : (
-          <FormattedMessage {...messages.noProjectTeams} />
-        )}
+        <div className="w-100 w-30-l fl pr3">
+          <h4 className="mb2 fw6">
+            <FormattedMessage {...messages.whoCanMap} />
+          </h4>
+          <PermissionBox
+            permission={props.project.mapping_permission}
+            className="dib pv2 ph3 mt2 red"
+          />
+          <h4 className="mb2 fw6">
+            <FormattedMessage {...messages.whoCanValidate} />
+          </h4>
+          <PermissionBox
+            permission={props.project.validation_permission}
+            validation
+            className="dib pv2 ph3 mt2 red"
+          />
+        </div>
+        <div className="w-100 w-70-l fl">
+          {props.project.teams && <TeamsBoxList teams={props.project.teams} />}
+        </div>
       </div>
 
       <a href="#contributions" name="contributions" style={{ visibility: 'hidden' }}>
