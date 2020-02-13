@@ -116,11 +116,6 @@ def timestamp():
     return datetime.datetime.utcnow()
 
 
-def utc_format():
-    """Returns serialized format for DateTimeType"""
-    return "%Y-%m-%dT%H:%M:%S" + "Z"
-
-
 # Based on https://stackoverflow.com/a/51916936
 duration_regex = re.compile(
     r"^((?P<days>[\.\d]+?)d)?((?P<hours>[\.\d]+?)h)?((?P<minutes>[\.\d]+?)m)?((?P<seconds>[\.\d]+?)s)?$"
