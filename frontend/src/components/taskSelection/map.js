@@ -43,8 +43,8 @@ export const TasksMap = ({
       new mapboxgl.Map({
         container: mapRef.current,
         style: MAP_STYLE,
-        zoom: 2,
-        minZoom: 2,
+        center: [0, 0],
+        zoom: 1,
         attributionControl: false,
       })
         .addControl(new mapboxgl.AttributionControl({ compact: false }))
