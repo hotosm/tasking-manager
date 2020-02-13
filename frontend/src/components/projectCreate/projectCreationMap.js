@@ -23,7 +23,8 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => 
       map: new mapboxgl.Map({
         container: mapRef.current,
         style: MAP_STYLE,
-        zoom: 0,
+        center: [0, 0],
+        zoom: 1,
         attributionControl: false,
       })
         .addControl(new mapboxgl.AttributionControl({ compact: false }))
