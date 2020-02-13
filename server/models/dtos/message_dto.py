@@ -1,8 +1,7 @@
 from schematics import Model
-from schematics.types import StringType, IntType, BooleanType, DateTimeType
+from schematics.types import StringType, IntType, BooleanType, UTCDateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.stats_dto import Pagination
-from server.models.postgis.utils import utc_format
 
 
 class MessageDTO(Model):
@@ -17,7 +16,7 @@ class MessageDTO(Model):
     project_title = StringType(serialized_name="projectTitle")
     task_id = IntType(serialized_name="taskId")
     message_type = StringType(serialized_name="messageType")
-    sent_date = DateTimeType(serialized_name="sentDate", serialized_format=utc_format())
+    sent_date = UTCDateTimeType(serialized_name="sentDate")
     read = BooleanType()
 
 
@@ -40,7 +39,7 @@ class ChatMessageDTO(Model):
     user_id = IntType(required=True, serialize_when_none=False)
     project_id = IntType(required=True, serialize_when_none=False)
     picture_url = StringType(default=None, serialized_name="pictureUrl")
-    timestamp = DateTimeType(serialized_format=utc_format())
+    timestamp = UTCDateTimeType()
     username = StringType()
 
 
