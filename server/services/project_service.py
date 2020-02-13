@@ -98,7 +98,7 @@ class ProjectService:
         for date in dates:
             dto = ProjectContribDTO(
                 {
-                    "date": str(date),
+                    "date": date,
                     "mapped": 0,
                     "validated": 0,
                     "total_tasks": project.total_tasks,
