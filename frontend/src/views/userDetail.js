@@ -58,7 +58,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
           </ReactPlaceholder>
         </div>
       )}
-      <div className={withHeader && 'w-100 ph6-l ph4-m ph2 cf pb3'}>
+      <div className={withHeader ? 'w-100 ph6-l ph4-m ph2 cf pb3' : ''}>
         <div className="mv4">
           <ElementsMapped userStats={userStats} osmStats={osmStats} />
         </div>
