@@ -45,6 +45,8 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [mapInit, setMapInit] = useState(false);
   const [randomTask, setRandomTask] = useState([]);
   const [taskAction, setTaskAction] = useState('mapATask');
+  const [activeStatus, setActiveStatus] = useState(null);
+  const [activeUser, setActiveUser] = useState(null);
   // these two fetches are needed to initialize the component
   const [tasksError, tasksLoading, initialTasks] = useFetch(
     `projects/${project.projectId}/tasks/`,
@@ -147,7 +149,7 @@ export function TaskSelection({ project, type, loading }: Object) {
     }
   }, [activities, initialActivities, taskAction]);
 
-  function selectTask(selection, status = null) {
+  function selectTask(selection, status = null, selectedUser = null) {
     // if selection is an array, just update the state
     if (typeof selection === 'object') {
       setSelectedTasks(selection);
@@ -169,6 +171,18 @@ export function TaskSelection({ project, type, loading }: Object) {
           setTaskAction(getTaskAction(user, project, status, userTeams.teams));
         }
       }
+    }
+    if (selectedUser === null) {
+      // when a task is selected directly on the map or in the task list,
+      // reset the activeUser and activeStatus in order to disable the user highlight
+      // on contributions tab
+      setActiveUser(null);
+      setActiveStatus(null);
+    } else {
+      // when a user is selected in the contributions tab, update the activeUser,
+      // so we can highlight it there
+      setActiveUser(selectedUser);
+      setActiveStatus(status);
     }
   }
 
@@ -225,6 +239,8 @@ export function TaskSelection({ project, type, loading }: Object) {
                       selectTask={selectTask}
                       tasks={tasks}
                       contribsData={contributions}
+                      activeUser={activeUser}
+                      activeStatus={activeStatus}
                     />
                   ) : null}
                 </div>
