@@ -66,9 +66,9 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
   };
 
   return (
-    <div className="w-90 pv4 h4 bg-white center">
-      <div className="fl w-10 tc pt2">
-        <CurrentUserAvatar className="h3 w3 br-100" />
+    <div className="w-90-ns w-100 pv4 h4 bg-white center">
+      <div className="fl w-10 ph1 tc pt2">
+        <CurrentUserAvatar className="w-70-l w4 w3-m br-100" />
       </div>
       <div className="fl w-70 h-100">
         <ReactTextareaAutocomplete

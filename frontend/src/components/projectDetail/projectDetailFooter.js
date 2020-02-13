@@ -28,7 +28,7 @@ export const ProjectDetailFooter = props => {
         </a>
         <span className="ph2">&#183;</span>
         <a className="link blue-dark" href="#teams">
-          <FormattedMessage {...messages.teams} />
+          <FormattedMessage {...messages.teamsAndPermissions} />
         </a>
         <span className="ph2">&#183;</span>
         <a className="link blue-dark" href="#contributions">
