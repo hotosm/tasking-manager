@@ -190,25 +190,21 @@ class ProjectSearchService:
         query = query.join(ProjectInfo).filter(
             ProjectInfo.locale.in_([search_dto.preferred_locale, "en"])
         )
-
-        project_status_array = [ProjectStatus.PUBLISHED.value]
-
+        project_status_array = []
         if search_dto.project_statuses:
             for project_status in search_dto.project_statuses:
                 project_status_array.append(ProjectStatus[project_status].value)
-
+        else:
+            project_status_array = [ProjectStatus.PUBLISHED.value]
         if not search_dto.is_project_manager:
             project_status_array = list(
                 filter(lambda x: x != ProjectStatus.DRAFT.value, project_status_array)
             )
-
         if search_dto.interests:
             query = query.join(
                 projects_interests, projects_interests.c.project_id == Project.id
             ).filter(projects_interests.c.interest_id.in_(search_dto.interests))
-
         query = query.filter(Project.status.in_(project_status_array))
-
         if search_dto.created_by:
             query = query.filter(Project.author_id == search_dto.created_by)
 
