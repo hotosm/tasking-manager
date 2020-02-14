@@ -6,7 +6,7 @@ import ReactPlaceholder from 'react-placeholder';
 import { Form, Field } from 'react-final-form';
 
 import messages from './messages';
-import { UserAvatar } from '../user/avatar';
+import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { SwitchToggle, RadioField, OrganisationSelect } from '../formInputs';
@@ -92,32 +92,23 @@ export function TeamCard({ team, managementView }: Object) {
             <FormattedMessage {...messages.managers} />
           </h4>
           <div className="db h2">
-            {team.members
-              .filter(user => user.function === 'MANAGER')
-              .filter(user => user.function === 'MANAGER')
-              .map((user, n) => (
-                <UserAvatar
-                  key={n}
-                  username={user.username}
-                  picture={user.pictureUrl}
-                  colorClasses="white bg-blue-grey"
-                />
-              ))}
+            <UserAvatarList
+              size="small"
+              textColor="white"
+              users={team.members.filter(user => user.function === 'MANAGER')}
+              maxLength={8}
+            />
           </div>
           <h4 className="f6 fw5 mb3 ttu blue-light">
             <FormattedMessage {...messages.teamMembers} />
           </h4>
           <div className="db h2">
-            {team.members
-              .filter(user => user.function !== 'MANAGER')
-              .map((user, n) => (
-                <UserAvatar
-                  key={n}
-                  username={user.username}
-                  picture={user.pictureUrl}
-                  colorClasses="white bg-blue-grey"
-                />
-              ))}
+            <UserAvatarList
+              size="small"
+              textColor="white"
+              users={team.members.filter(user => user.function !== 'MANAGER')}
+              maxLength={8}
+            />
           </div>
           <div className="cf pt3">
             <VisibilityBox visibility={team.visibility} extraClasses="pv1 ph2 dib" />
