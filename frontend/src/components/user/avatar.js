@@ -3,6 +3,7 @@ import { Link } from '@reach/router';
 import { useSelector } from 'react-redux';
 
 import { ProfilePictureIcon, CloseIcon } from '../svgIcons';
+import { getRandomArrayItem } from '../../utils/random';
 
 export const CurrentUserAvatar = props => {
   const userPicture = useSelector(state => state.auth.getIn(['userDetails', 'pictureUrl']));
@@ -87,4 +88,47 @@ export const UserAvatar = ({
   } else {
     return <Link to={`/users/${username}`}>{avatar}</Link>;
   }
+};
+
+export const UserAvatarList = ({
+  users,
+  maxLength,
+  textColor = 'white',
+  bgColor,
+  size,
+}: Object) => {
+  const getColor = () =>
+    bgColor ? bgColor : getRandomArrayItem(['bg-orange', 'bg-red', 'bg-blue-dark', 'bg-blue-grey']);
+  let marginLeft = '-1.25rem';
+  if (size === 'large') {
+    marginLeft = '-1.5rem';
+  }
+  if (size === 'small') {
+    marginLeft = '-0.875rem';
+  }
+
+  return (
+    <>
+      {users.slice(0, maxLength ? maxLength : users.length).map((user, n) => (
+        <div style={{ marginLeft: n === 0 ? '' : marginLeft }} className="dib" key={n}>
+          <UserAvatar
+            username={user.username}
+            picture={user.pictureUrl}
+            size={size}
+            colorClasses={`${textColor} ${getColor()}`}
+          />
+        </div>
+      ))}
+      {maxLength && users.length - maxLength > 0 && (
+        <div style={{ marginLeft: '-1.5rem' }} className="dib">
+          <UserAvatar
+            name={`+ ${users.length - maxLength}`}
+            size={size}
+            colorClasses={`blue-dark bg-grey-light`}
+            disableLink={true}
+          />
+        </div>
+      )}
+    </>
+  );
 };
