@@ -160,6 +160,8 @@
   "management.projects.create.task_sizes.description": "General task size",
   "management.projects.create.task_sizes.smaller": "Smaller",
   "management.projects.create.task_sizes.larger": "Larger",
+  "management.projects.create.errors.invalid": "Invalid file",
+  "management.projects.create.errors.fileSize": "File size is higher than {fileSize} bytes",
   "management.projects.create.split_task.description": "Make tasks smaller by clicking on specific tasks or drawing an area on the map.",
   "management.projects.create.reset.button": "Reset",
   "management.projects.create.split.tasks.number": "A new project will be created with {n} tasks.",

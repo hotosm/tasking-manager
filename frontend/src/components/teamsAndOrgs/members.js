@@ -13,7 +13,7 @@ import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSON
 export function Members({ addMembers, removeMembers, saveMembersFn, members, type }: Object) {
   const token = useSelector(state => state.auth.get('token'));
   const [editMode, setEditMode] = useState(false);
-  let roleQueryParam = 'role=PROJECT_MANAGER';
+  let roleQueryParam = 'role=ADMIN,PROJECT_MANAGER';
   let selectPlaceHolder = <FormattedMessage {...messages.searchManagers} />;
   let title = <FormattedMessage {...messages.managers} />;
   if (type === 'members') {
