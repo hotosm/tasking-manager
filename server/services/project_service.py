@@ -300,7 +300,8 @@ class ProjectService:
                 for team_dto in teams_allowed
                 if TeamService.is_user_member_of_team(team_dto.team_id, user_id)
             ]
-            if len(user_membership) == 0:
+            # Check for validator role for initial roll out
+            if not (len(user_membership) or UserService.is_user_validator(user_id)):
                 return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
 
         elif validation_permission == ValidationPermission.LEVEL.value:
@@ -322,7 +323,8 @@ class ProjectService:
                 for team_dto in teams_allowed
                 if TeamService.is_user_member_of_team(team_dto.team_id, user_id)
             ]
-            if len(user_membership) == 0:
+            # Check for validator role for initial roll out
+            if not (len(user_membership) or UserService.is_user_validator(user_id)):
                 return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
 
     @staticmethod
