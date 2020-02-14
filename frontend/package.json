@@ -75,7 +75,7 @@
     ]
   },
   "devDependencies": {
-    "combine-react-intl-messages": "^3.0.4",
+    "combine-react-intl-messages": "^4.0.0",
     "prettier": "^1.18.2",
     "react-test-renderer": "^16.12.0"
   },
