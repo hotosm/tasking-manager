@@ -99,6 +99,48 @@ class InterestsAllAPI(Resource):
 class InterestsRestAPI(Resource):
     @tm.pm_only()
     @token_auth.login_required
+    def get(self, interest_id):
+        """
+        Get an existing interest
+        ---
+        tags:
+            - interests
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: interest_id
+              in: path
+              description: Interest ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Interest
+            400:
+                description: Invalid Request
+            401:
+                description: Unauthorized - Invalid credentials
+            500:
+                description: Internal Server Error
+        """
+
+        try:
+            interest = InterestService.get(interest_id)
+            return interest.to_primitive(), 200
+        except Exception as e:
+            error_msg = f"Interest GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+    @tm.pm_only()
+    @token_auth.login_required
     def patch(self, interest_id):
         """
         Update an existing interest

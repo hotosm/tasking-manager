@@ -433,7 +433,7 @@ def add_api_endpoints(app):
     api.add_resource(
         InterestsRestAPI,
         format_url("interests/<int:interest_id>/"),
-        methods=["PATCH", "DELETE"],
+        methods=["GET", "PATCH", "DELETE"],
     )
 
     # Tasks REST endpoint
