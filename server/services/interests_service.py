@@ -25,6 +25,11 @@ class InterestService:
         return interest
 
     @staticmethod
+    def get(interest_id):
+        interest = InterestService.get_by_id(interest_id)
+        return interest.as_dto()
+
+    @staticmethod
     def create(interest_name):
         interest_model = Interest(name=interest_name)
         interest_model.create()

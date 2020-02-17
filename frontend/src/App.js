@@ -27,6 +27,7 @@ import { ManagementPageIndex, ManagementSection } from './views/management';
 import { ListOrganisations, CreateOrganisation, EditOrganisation } from './views/organisations';
 import { MyTeams, ManageTeams, CreateTeam, EditTeam, TeamDetail } from './views/teams';
 import { ListCampaigns, CreateCampaign, EditCampaign } from './views/campaigns';
+import { ListInterests, CreateInterest, EditInterest } from './views/interests';
 import { NotFound } from './views/notFound';
 import { SelectTask } from './views/taskSelection';
 import { MapTask, ValidateTask } from './views/taskAction';
@@ -85,6 +86,9 @@ function App() {
               <CreateProject path="projects/new" />
               <ProjectEdit path="projects/:id" />
               <ManageProjectsPage path="projects/*" />
+              <ListInterests path="interests/" />
+              <EditInterest path="interests/:id" />
+              <CreateInterest path="interests/new" />
             </ManagementSection>
             <MyTeams path="teams" />
             <TeamDetail path="teams/:id/membership" />
