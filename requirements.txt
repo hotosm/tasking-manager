@@ -27,7 +27,7 @@ glob2==0.7
 greenlet==0.4.15
 gunicorn==20.0.4
 html5lib==1.0.1
-idna==2.8
+idna==2.9
 itsdangerous==1.1.0
 Jinja2==2.11.1
 Mako==1.1.1
