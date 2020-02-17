@@ -10,11 +10,11 @@ export default defineMessages({
   },
   mappingDifficulty: {
     id: 'project.nav.mappingDifficulty',
-    defaultMessage: 'Mapping difficulty',
+    defaultMessage: 'Difficulty level',
   },
   moreFilters: {
     id: 'project.nav.moreFilters',
-    defaultMessage: 'More Filters',
+    defaultMessage: 'More filters',
   },
   campaign: {
     id: 'project.nav.campaign',
@@ -26,11 +26,11 @@ export default defineMessages({
   },
   typesOfMapping: {
     id: 'project.navFilters.typesOfMapping',
-    defaultMessage: 'Types of Mapping',
+    defaultMessage: 'Types of mapping',
   },
   campaigns: {
     id: 'project.navFilters.campaigns',
-    defaultMessage: 'All Campaigns',
+    defaultMessage: 'All campaigns',
   },
   showAllXTags: {
     id: 'project.navFilters.showAllXTags',
@@ -38,11 +38,11 @@ export default defineMessages({
   },
   organisation: {
     id: 'project.navFilters.organisation',
-    defaultMessage: 'Organisation',
+    defaultMessage: 'Organization',
   },
   organisations: {
     id: 'project.navFilters.organisations',
-    defaultMessage: 'All Organisations',
+    defaultMessage: 'All Organizations',
   },
   location: {
     id: 'project.navFilters.location',
@@ -106,27 +106,27 @@ export default defineMessages({
   },
   sortByIdDesc: {
     id: 'project.sortby.id.descending',
-    defaultMessage: 'New projects first',
+    defaultMessage: 'New projects',
   },
   sortByIdAsc: {
     id: 'project.sortby.id.ascending',
-    defaultMessage: 'Old projects first',
+    defaultMessage: 'Old projects',
   },
   sortByPriority: {
     id: 'project.sortby.priority',
-    defaultMessage: 'Urgent projects first',
+    defaultMessage: 'Urgent projects',
   },
   sortByBeginner: {
     id: 'project.sortby.difficulty.begginer',
-    defaultMessage: 'Beginner projects first',
+    defaultMessage: 'Beginner projects',
   },
   sortByAdvanced: {
     id: 'project.sortby.difficulty.advanced',
-    defaultMessage: 'Advanced projects first',
+    defaultMessage: 'Advanced projects',
   },
   sortByMoreActive: {
     id: 'project.sortby.more_active',
-    defaultMessage: 'More active projects first',
+    defaultMessage: 'Active projects',
   },
   apply: {
     id: 'project.nav.apply',

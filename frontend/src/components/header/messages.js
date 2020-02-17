@@ -59,12 +59,12 @@ export default defineMessages({
   signUpTextPart1: {
     id: 'signup.modal.text1',
     defaultMessage:
-      'Tasking Manager works with OpenStreetMap (OSM), a collaborative, open-source map of the world.',
+      'Tasking Manager works with OpenStreetMap, a collaborative, open-source map of the world.',
   },
   signUpTextPart2: {
     id: 'signup.modal.text2',
     defaultMessage:
-      'Data mapped using the Tasking Manager is available on OpenStreetMap. To get started using the Tasking Manager, first register for an account in OpenStreetMap.',
+      'To start using the Tasking Manager, first register for an account in OpenStreetMap.',
   },
   email: {
     id: 'signup.modal.email',
@@ -72,7 +72,7 @@ export default defineMessages({
   },
   submitProceed: {
     id: 'signup.button.submit',
-    defaultMessage: 'Submit & Proceed',
+    defaultMessage: 'Sign up',
   },
   signUpQuestion: {
     id: 'signup.modal.question',
@@ -81,7 +81,7 @@ export default defineMessages({
   signUpRedirect: {
     id: 'signup.modal.redirect',
     defaultMessage:
-      'You will be redirect to the OpenStreetMap website after clicking on the button below.',
+      'Clicking this button will redirect you to the OpenStreetMap website.',
   },
   emailUpdateButton: {
     id: 'emailUpdate.modal.button',
@@ -98,11 +98,11 @@ export default defineMessages({
   emailUpdateTextPart1: {
     id: 'emailUpdate.modal.text1',
     defaultMessage:
-      'Providing your email address ensures that notifications about your mapping projects will reach you.',
+      'Before you begin mapping, please add your email address.',
   },
   emailUpdateTextPart2: {
     id: 'emailUpdate.modal.text2',
-    defaultMessage: 'Before you begin mapping, please add your email address.',
+    defaultMessage: 'Providing your email address ensures that notifications about your mapping projects will reach you.',
   },
   privacyPolicy: {
     id: 'emailUpdate.modal.privacy_policy',

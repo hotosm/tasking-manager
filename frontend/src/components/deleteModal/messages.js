@@ -10,7 +10,7 @@ export default defineMessages({
   },
   organisations: {
     id: 'deleteModal.type.organisation',
-    defaultMessage: 'organisation',
+    defaultMessage: 'organization',
   },
   interests: {
     id: 'deleteModal.type.interest',

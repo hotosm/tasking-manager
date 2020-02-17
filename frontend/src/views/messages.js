@@ -22,7 +22,7 @@ export default defineMessages({
   },
   newOrganisation: {
     id: 'teamsAndOrgs.management.organisation.creation',
-    defaultMessage: 'Create new organisation',
+    defaultMessage: 'Create new organization',
   },
   newTeam: {
     id: 'teamsAndOrgs.management.team.creation',
@@ -34,7 +34,7 @@ export default defineMessages({
   },
   createOrganisation: {
     id: 'teamsAndOrgs.management.organisation.button.create',
-    defaultMessage: 'Create organisation',
+    defaultMessage: 'Create organization',
   },
   createTeam: {
     id: 'teamsAndOrgs.management.team.button.create',
@@ -66,7 +66,7 @@ export default defineMessages({
   },
   manageOrganisation: {
     id: 'teamsAndOrgs.management.organisation.manage',
-    defaultMessage: 'Manage organisation',
+    defaultMessage: 'Manage organization',
   },
   manageTeam: {
     id: 'teamsAndOrgs.management.team.manage',
@@ -95,7 +95,7 @@ export default defineMessages({
   },
   profileSettings: {
     id: 'EmailVerification.link.profileSettings',
-    defaultMessage: 'your profile settings',
+    defaultMessage: 'Your profile settings',
   },
   emailVerified: {
     id: 'EmailVerification.status.verified',
@@ -112,7 +112,7 @@ export default defineMessages({
   },
   emailVerifiedExplanation: {
     id: 'EmailVerification.status.verified.explanation',
-    defaultMessage: 'Thanks for informing us your email address.',
+    defaultMessage: 'Thanks for providing your email address.',
   },
   successExtraLine: {
     id: 'EmailVerification.status.verified.explanation.extraLine',
@@ -158,7 +158,7 @@ export default defineMessages({
   tmDescription: {
     id: 'pages.about.description',
     defaultMessage:
-      'Tasking Manager is a mapping tool designed and built for the coordination of volunteers and the organization of groups for collaborative mapping in OpenStreetMap.',
+      'The Tasking Manager is a mapping tool designed and built for the coordination of volunteers and the organization of groups for collaborative mapping in OpenStreetMap.',
   },
   osmDescription: {
     id: 'pages.about.OpenStreetMap.description',
@@ -172,12 +172,7 @@ export default defineMessages({
   howItWorksPart1: {
     id: 'pages.about.howItWorks.description.part_1',
     defaultMessage:
-      'A mapping area in OpenStreetMap is divided up into small, individual tasks for volunteer to complete. A simple legend allows users to see which areas still need to be mapped and which areas map data needs to be reviewed for quality assurance.',
-  },
-  howItWorksPart2: {
-    id: 'pages.about.howItWorks.description.part_2',
-    defaultMessage:
-      'With Tasking Manager, volunteers can easily see where other mappers are actively mapping, allowing many individuals to map an area together in a coordinated way. This system helps to improve the consistency and quality of mapping.',
+      'The Tasking Manager allows you to divide up a mapping project into smaller tasks that can be completed rapidly with many people working on the same overall area. It shows which areas need to be mapped and which areas need to be reviewed for quality assurance.',
   },
   floss: {
     id: 'pages.about.floss.title',
@@ -186,7 +181,7 @@ export default defineMessages({
   flossDescription: {
     id: 'pages.about.floss.description',
     defaultMessage:
-      'The Tasking Manager is Free and Open Source software. Please feel free to report issues and contribute.',
+      'The Tasking Manager has been built by the {hotLink} and it is  Free and Open Source software. Please feel free to report issues and contribute.',
   },
   repositoryLink: {
     id: 'pages.about.floss.repository_link',
@@ -218,7 +213,7 @@ export default defineMessages({
   },
   projectEditSection_description: {
     id: 'pages.edit_project.sections.description',
-    defaultMessage: 'Descrition',
+    defaultMessage: 'Description',
   },
   projectEditSection_instructions: {
     id: 'pages.edit_project.sections.instructions',
