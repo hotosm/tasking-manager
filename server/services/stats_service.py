@@ -21,7 +21,7 @@ from server.models.dtos.project_dto import ProjectSearchResultsDTO
 from server.models.postgis.project import Project
 from server.models.postgis.statuses import TaskStatus, MappingLevel
 from server.models.postgis.task import TaskHistory, User, Task, TaskAction
-from server.models.postgis.utils import timestamp, NotFound
+from server.models.postgis.utils import timestamp, NotFound  # noqa: F401
 from server.services.project_service import ProjectService
 from server.services.project_search_service import ProjectSearchService
 from server.services.users.user_service import UserService
@@ -131,9 +131,6 @@ class StatsService:
             .paginate(page, 10, True)
         )
 
-        if results.total == 0:
-            raise NotFound()
-
         activity_dto = ProjectActivityDTO()
         for item in results.items:
             history = TaskHistoryDTO()
@@ -207,7 +204,6 @@ class StatsService:
             .filter(Task.project_id == project_id)
             .order_by(Task.id.asc())
         )
-
         last_activity_dto = ProjectLastActivityDTO()
 
         for item in results:
