@@ -38,9 +38,6 @@ function UserInterestsCard() {
         <FormattedMessage {...messages.interestsH3} />
       </h3>
       <p>
-        <FormattedMessage {...messages.interestsTitle} />
-      </p>
-      <p>
         <FormattedMessage {...messages.interestsLead} />
       </p>
       <UserInterestsForm />

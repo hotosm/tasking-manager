@@ -6,7 +6,7 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   notAllowed: {
     id: 'management.messages.notAllowed',
-    defaultMessage: 'You are not allowed to manage organisations.',
+    defaultMessage: 'You are not allowed to manage organizations.',
   },
   managers: {
     id: 'management.fields.managers',
@@ -14,7 +14,7 @@ export default defineMessages({
   },
   manage: {
     id: 'management.link.manage',
-    defaultMessage: 'Manage {entity}',
+    defaultMessage: '{entity}',
   },
   members: {
     id: 'management.members',
@@ -66,7 +66,7 @@ export default defineMessages({
   },
   myOrganisations: {
     id: 'management.myOrganisations',
-    defaultMessage: 'My Organisations',
+    defaultMessage: 'My Organizations',
   },
   myTeams: {
     id: 'management.myTeams',
@@ -94,15 +94,15 @@ export default defineMessages({
   },
   organisation: {
     id: 'management.organisation',
-    defaultMessage: 'Organisation',
+    defaultMessage: 'Organization',
   },
   organisations: {
     id: 'management.organisations',
-    defaultMessage: 'Organisations',
+    defaultMessage: 'Organizations',
   },
   orgInfo: {
     id: 'management.titles.organisation_information',
-    defaultMessage: 'Organisation information',
+    defaultMessage: 'Organization information',
   },
   teamInfo: {
     id: 'management.titles.team_information',
@@ -194,6 +194,6 @@ export default defineMessages({
   },
   noTeamsFound: {
     id: 'management.organisation.teams.no_found',
-    defaultMessage: "This organisation doesn't have teams yet.",
+    defaultMessage: "This organization doesn't have teams yet.",
   },
 });

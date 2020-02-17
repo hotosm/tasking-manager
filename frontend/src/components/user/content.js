@@ -111,9 +111,6 @@ export function WelcomeCard() {
         <FormattedMessage {...messages.welcomeTitle} />
       </h3>
       <p>
-        <FormattedMessage {...messages.interestsTitle} />
-      </p>
-      <p>
         <FormattedMessage {...messages.interestsLead} />
         <UserInterestsForm />
       </p>

@@ -144,7 +144,7 @@ export default defineMessages({
   selectATaskCardDescription: {
     id: 'project.detail.cards.selectATask.description',
     defaultMessage:
-      'Projects are divided in a set of smaller tasks and adapted to your skill level.',
+      'Projects are divided into sets of smaller tasks and adapted to fit your skill level.',
   },
   mapThroughOSMCardDescription: {
     id: 'project.detail.cards.mapthroughosm.description',
@@ -165,7 +165,7 @@ export default defineMessages({
   },
   questionsAndComments: {
     id: 'project.detail.sections.questionsAndComments',
-    defaultMessage: 'Questions & Comments',
+    defaultMessage: 'Questions and comments',
   },
   contributions: {
     id: 'project.detail.sections.contributions',

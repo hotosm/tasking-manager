@@ -19,16 +19,16 @@ export default defineMessages({
   },
   organisation: {
     id: 'projects.formInputs.organisation.title',
-    defaultMessage: 'Organisation',
+    defaultMessage: 'Organization',
   },
   organisationDescription: {
     id: 'projects.formInputs.organisation.description',
     defaultMessage:
-      'Organisation that is coordinating the project, if there is any. The managers of that organisation will have administration rights over the project.',
+      'Organization that is coordinating the project, if there is any. The managers of that organization will have administration rights over the project.',
   },
   selectOrganisation: {
     id: 'projects.formInputs.organisation.select',
-    defaultMessage: 'Select organisation',
+    defaultMessage: 'Select organization',
   },
   permissions_ANY: {
     id: 'projects.formInputs.permissions.any',
@@ -454,7 +454,7 @@ export default defineMessages({
   },
   filterByOrg: {
     id: 'project.formInputs.teams.actions.filter.organisations',
-    defaultMessage: 'Filter teams by organisations',
+    defaultMessage: 'Filter teams by organizations',
   },
   selectTeam: {
     id: 'project.formInputs.teams.actions.select',

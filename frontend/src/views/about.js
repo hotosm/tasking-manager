@@ -35,9 +35,6 @@ export function AboutPage() {
         <p>
           <FormattedMessage {...messages.howItWorksPart1} />
         </p>
-        <p>
-          <FormattedMessage {...messages.howItWorksPart2} />
-        </p>
       </div>
       <div className="ph6-l ph4 pt2">
         <div className="w-100 w-50-l fl">
@@ -53,7 +50,16 @@ export function AboutPage() {
           />
           <div className="w-75 fl v-mid pl3 f5">
             <p>
-              <FormattedMessage {...messages.flossDescription} />
+              <FormattedMessage
+                {...messages.flossDescription}
+                values={{
+                  hotLink: (
+                    <a className="link red fw5" href="https://hotosm.org">
+                      Humanitarian OpenStreetMap Team
+                    </a>
+                  ),
+                }}
+              />
             </p>
             <p>
               <FormattedMessage
