@@ -14,7 +14,7 @@ export default defineMessages({
   },
   manage: {
     id: 'management.link.manage',
-    defaultMessage: '{entity}',
+    defaultMessage: 'Manage {entity}',
   },
   members: {
     id: 'management.members',

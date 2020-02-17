@@ -475,7 +475,7 @@
   "project.level.beginner": "Beginner",
   "management.messages.notAllowed": "You are not allowed to manage organizations.",
   "management.fields.managers": "Managers",
-  "management.link.manage": "{entity}",
+  "management.link.manage": "Manage {entity}",
   "management.members": "Members",
   "management.teams.mapping": "Mapping teams",
   "management.teams.validation": "Validation teams",
