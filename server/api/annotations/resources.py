@@ -35,6 +35,8 @@ class AnnotationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        if not ProjectService.exists(project_id):
+            return {"Error": "Project not found"}, 404
         try:
             ProjectService.get_project_by_id(project_id)
         except NotFound as e:

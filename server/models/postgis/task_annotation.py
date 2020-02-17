@@ -1,4 +1,4 @@
-from server.models.postgis.utils import timestamp, NotFound
+from server.models.postgis.utils import timestamp
 from server import db
 from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from server.models.dtos.project_dto import ProjectTaskAnnotationsDTO
@@ -81,6 +81,8 @@ class TaskAnnotation(db.Model):
             project_id=project_id, annotation_type=annotation_type
         ).all()
 
+        project_task_annotations_dto = ProjectTaskAnnotationsDTO()
+        project_task_annotations_dto.project_id = project_id
         if project_task_annotations:
             project_task_annotations_dto = ProjectTaskAnnotationsDTO()
             project_task_annotations_dto.project_id = project_id
@@ -93,9 +95,7 @@ class TaskAnnotation(db.Model):
                 task_annotation_dto.annotation_markdown = row.annotation_markdown
                 project_task_annotations_dto.tasks.append(task_annotation_dto)
 
-            return project_task_annotations_dto
-        else:
-            raise NotFound
+        return project_task_annotations_dto
 
     @staticmethod
     def get_task_annotations_by_project_id(project_id):
@@ -104,9 +104,9 @@ class TaskAnnotation(db.Model):
             project_id=project_id
         ).all()
 
+        project_task_annotations_dto = ProjectTaskAnnotationsDTO()
+        project_task_annotations_dto.project_id = project_id
         if project_task_annotations:
-            project_task_annotations_dto = ProjectTaskAnnotationsDTO()
-            project_task_annotations_dto.project_id = project_id
             for row in project_task_annotations:
                 task_annotation_dto = TaskAnnotationDTO()
                 task_annotation_dto.task_id = row.task_id
@@ -115,6 +115,4 @@ class TaskAnnotation(db.Model):
                 task_annotation_dto.annotation_source = row.annotation_source
                 project_task_annotations_dto.tasks.append(task_annotation_dto)
 
-            return project_task_annotations_dto
-        else:
-            raise NotFound
+        return project_task_annotations_dto
