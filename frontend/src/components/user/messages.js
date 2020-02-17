@@ -14,7 +14,7 @@ export default defineMessages({
   },
   personalInfo: {
     id: 'user.personalInfo',
-    defaultMessage: 'Personal Information',
+    defaultMessage: 'Personal information',
   },
   name: {
     id: 'user.name',
@@ -88,7 +88,7 @@ export default defineMessages({
   defaultEditorDescription: {
     id: 'user.settings.default_editor.description',
     defaultMessage:
-      'Select the default editor that you want to use when fixing tasks. By selecting this option you will be able to skip the editor selection dialog after selecting a task to map or validate.',
+      'Select the default editor you want to use when mapping tasks. By selecting a default option, you will not need to select an editor each time you map.',
   },
   language: {
     id: 'user.settings.language',
@@ -106,7 +106,7 @@ export default defineMessages({
   becomeValidatorDescription: {
     id: 'user.settings.become_validator.description',
     defaultMessage:
-      "If you feel sure of your skills as a mapper and you are looking for a new challenge, apply for the validator role. If your application is successful you can then start to validate other mapper's tasks.",
+      "Validators check the quality of map edits completed and provide feedback for mappers on how to improve. If you are an experienced mapper, apply to become a validator.",
   },
   mentions: {
     id: 'user.notifications.mentions',
@@ -122,7 +122,7 @@ export default defineMessages({
   },
   projectUpdatesDescription: {
     id: 'user.notifications.projects.description',
-    defaultMessage: "You get a notification if any project you've contributed made progress.",
+    defaultMessage: "You get a notification when a project you have contributed to makes progress.",
   },
   comments: {
     id: 'user.notifications.comments',
@@ -153,14 +153,10 @@ export default defineMessages({
     id: 'user.interests.h3',
     defaultMessage: 'Interests',
   },
-  interestsTitle: {
-    id: 'user.interests.title',
-    defaultMessage: "Tell us about you and the kind of projects you're interested in.",
-  },
   interestsLead: {
     id: 'user.interests.lead',
     defaultMessage:
-      "We'll ask you to select causes of your interest because this will help us recommend the right projects for you.",
+      "Select causes of interest to help us recommend the right projects for you.",
   },
   completenessTitle: {
     id: 'user.completeness.title',
@@ -168,7 +164,7 @@ export default defineMessages({
   },
   completenessLead0: {
     id: 'user.completeness.lead.start',
-    defaultMessage: 'Start filling your information!',
+    defaultMessage: 'Please provide your information',
   },
   completenessLead1: {
     id: 'user.completeness.lead.high',
@@ -204,7 +200,7 @@ export default defineMessages({
   },
   firstProjectText1: {
     id: 'user.welcome.firstProject.text1',
-    defaultMessage: "Looks like you haven't mapped any task yet.",
+    defaultMessage: "Looks like you haven't mapped any tasks yet.",
   },
   firstProjectText2: {
     id: 'user.welcome.firstProject.text2',
@@ -213,15 +209,15 @@ export default defineMessages({
   firstProjectText3: {
     id: 'user.welcome.firstProject.text3',
     defaultMessage:
-      'You can start mapping by selecting one of the project below, recommended for you.',
+      'You can start mapping by choosing one of the projects below, recommended just for you!',
   },
   osmCardTitle: {
     id: 'user.osm.title',
-    defaultMessage: 'OSM Details',
+    defaultMessage: 'OpenStreetMap details',
   },
   joinedOSM: {
     id: 'user.osm.joined',
-    defaultMessage: 'Joined OSM',
+    defaultMessage: 'Joined OpenStreetMap',
   },
   totalChangesets: {
     id: 'user.osm.changesets',
@@ -233,7 +229,7 @@ export default defineMessages({
   },
   editOSMProfile: {
     id: 'user.osm.profile.edit.link',
-    defaultMessage: 'Edit OSM profile',
+    defaultMessage: 'Edit OpenStreetMap profile',
   },
   apiKey: {
     id: 'user.settings.apiKey.title',

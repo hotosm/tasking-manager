@@ -11,7 +11,7 @@ export default defineMessages({
   jumbotronHeadLine: {
     id: 'home.mainSection.lead',
     defaultMessage:
-      "Join a global community putting the world's most vulnerable people and places on the map in order to support humanitarian aid and sustainable development.",
+      "Join a global community putting the world's most vulnerable people and places on the map to support humanitarian aid and sustainable development.",
   },
   secJumbotronTitle: {
     id: 'home.callToAction.title',
@@ -56,7 +56,7 @@ export default defineMessages({
   },
   communityStats: {
     id: 'home.stats.community',
-    defaultMessage: 'Community Mappers',
+    defaultMessage: 'Total Mappers',
   },
   mappersStats: {
     id: 'home.stats.mappers',
@@ -65,12 +65,12 @@ export default defineMessages({
   mappingFlowTitle: {
     id: 'home.mappingFlow.title',
     defaultMessage:
-      "Each year, disasters around the world kill nearly {number} and affect or displace 200 million people. HOT is on a mission to change this.",
+      "Each year, disasters around the world kill nearly {number} and affect or displace 200 million people. Mapping can help change this.",
   },
   mappingFlowHeadline: {
     id: 'home.mappingFlow.headLine',
     defaultMessage:
-      'Organizations use the Tasking Manager to create mapping projects for areas around the world where data is urgently needed.',
+      'Organizations use Tasking Manager to create mapping projects for areas around the world where they urgently need data to save or improve lives.',
   },
   mappingCardTitle: {
     id: 'home.mappingFlow.cards.mapping.title',
@@ -91,16 +91,16 @@ export default defineMessages({
   validationCardDescription: {
     id: 'home.mappingFlow.cards.validation.description',
     defaultMessage:
-      'Experience volunteers check the map data to ensure it is high quality.',
+      'Experienced volunteers check the map data to ensure it is high quality.',
   },
   usingDataCardDescription: {
     id: 'home.mappingFlow.cards.usingData.description',
     defaultMessage:
-      'Humanitarian organizations use map data to plan for disaster response activities and deliver critical services to those who need it.',
+      'Humanitarian organizations use the map data to plan for disaster response and other life saving activities.',
   },
   whoIsMappingTitle: {
     id: 'home.whoIsMapping.title',
-    defaultMessage: "Who is mapping",
+    defaultMessage: "Who uses the maps?",
   },
   whoIsMappingHeadline: {
     id: 'home.whoIsMapping.headline',
@@ -110,10 +110,6 @@ export default defineMessages({
   organizationContactTitle: {
     id: 'home.whoIsMapping.contact.title',
     defaultMessage: 'Does your organization want to work with us?',
-  },
-  organizationContactHeadline: {
-    id: 'home.whoIsMapping.contact.headline',
-    defaultMessage: 'Contact us to find out how we can work together.',
   },
   organizationContactButton: {
     id: 'home.whoIsMapping.contact.button',

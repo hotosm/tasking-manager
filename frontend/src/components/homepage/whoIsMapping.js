@@ -12,9 +12,6 @@ function contactCard() {
         <FormattedMessage {...messages.organizationContactTitle} />
       </h3>
       <div className="tc cf mb2">
-        <p className="w-100 w-60-m fl tl pr2 f5 lh-title mb4">
-          <FormattedMessage {...messages.organizationContactHeadline} />
-        </p>
         <p>
           <Link to={'/contact'}>
             <Button className="w-100 w-40-m fl tc bg-red white">
