@@ -46,8 +46,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-Authorized = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Authorized);
+Authorized = connect(mapStateToProps, mapDispatchToProps)(Authorized);
 export { Authorized };

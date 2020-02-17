@@ -48,9 +48,6 @@ const mapStateToProps = state => ({
   token: state.auth.get('token'),
 });
 
-const LocaleSelector = connect(
-  mapStateToProps,
-  { setLocale },
-)(LocaleSelect);
+const LocaleSelector = connect(mapStateToProps, { setLocale })(LocaleSelect);
 
 export { LocaleSelector };

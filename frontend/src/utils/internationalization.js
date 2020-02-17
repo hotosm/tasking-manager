@@ -145,9 +145,6 @@ const mapStateToProps = state => ({
   locale: state.preferences.locale || navigator.language,
 });
 
-ConnectedIntl = connect(
-  mapStateToProps,
-  { setLocale },
-)(ConnectedIntl);
+ConnectedIntl = connect(mapStateToProps, { setLocale })(ConnectedIntl);
 
 export { ConnectedIntl, supportedLocales, getSupportedLocale, getTranslatedMessages };

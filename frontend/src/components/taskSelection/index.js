@@ -239,6 +239,8 @@ export function TaskSelection({ project, type, loading }: Object) {
                       selectTask={selectTask}
                       tasks={tasks}
                       contribsData={contributions}
+                      activeUser={activeUser}
+                      activeStatus={activeStatus}
                     />
                   ) : null}
                 </div>

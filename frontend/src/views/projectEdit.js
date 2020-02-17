@@ -213,9 +213,7 @@ export function ProjectEdit({ id }) {
             setError: setError,
           }}
         >
-          <div className="fl w-70-l w-100 ph0-l ph4-m ph2">
-            {renderForm(option)}
-          </div>
+          <div className="fl w-70-l w-100 ph0-l ph4-m ph2">{renderForm(option)}</div>
         </StateContext.Provider>
       </ReactPlaceholder>
     </div>
