@@ -10,7 +10,7 @@ export default defineMessages({
   },
   selectOrganisation: {
     id: 'formInputs.organisation.select',
-    defaultMessage: 'Select organisation',
+    defaultMessage: 'Select organization',
   },
   definition: {
     id: 'foooter.definition',
