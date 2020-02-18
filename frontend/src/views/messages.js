@@ -84,6 +84,22 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.titles.campaign_information',
     defaultMessage: 'Campaign information',
   },
+  manageInterest: {
+    id: 'management.interest.manage',
+    defaultMessage: 'Manage interest',
+  },
+  interestInfo: {
+    id: 'management.interest.title',
+    defaultMessage: 'Interest information',
+  },
+  newInterest: {
+    id: 'management.interest.creation',
+    defaultMessage: 'Create new interest',
+  },
+  createInterest: {
+    id: 'management.interest.button.create',
+    defaultMessage: 'Create interest',
+  },
   noLockedTasksMessage: {
     id: 'taskAction.messages.error.no_locked_tasks.text',
     defaultMessage:

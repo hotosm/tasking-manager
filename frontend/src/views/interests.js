@@ -3,15 +3,15 @@ import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
 import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
 import ReactPlaceholder from 'react-placeholder';
-import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { Link, redirectTo } from '@reach/router';
 import { Form } from 'react-final-form';
-import messages from '../components/teamsAndOrgs/messages';
 import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import { InterestsManagement, InterestForm, InterestInformation } from '../components/interests';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
+import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 
 export const CreateInterest = () => {
   const token = useSelector(state => state.auth.get('token'));
@@ -114,7 +114,7 @@ export const EditInterest = props => {
     <div className="cf pv4 bg-tan">
       <div className="cf">
         <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">
-          <FormattedMessage {...messages.interest} />
+          <FormattedMessage {...messages.manageInterest} />
         </h3>
         <DeleteModal id={interest.id} name={interest.name} type="interests" />
       </div>
