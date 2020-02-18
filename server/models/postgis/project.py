@@ -66,7 +66,6 @@ from server.models.postgis.utils import (
 from server.services.grid.grid_service import GridService
 from server.models.postgis.interests import Interest, projects_interests
 
-
 # Secondary table defining many-to-many join for projects that were favorited by users.
 project_favorites = db.Table(
     "project_favorites",
@@ -727,9 +726,9 @@ class Project(db.Model):
         summary.area = area
         summary.country_tag = self.country
         summary.changeset_comment = self.changeset_comment
+        summary.due_date = self.due_date
         summary.created = self.created
         summary.last_updated = self.last_updated
-        summary.due_date = self.due_date
         summary.mapper_level = MappingLevel(self.mapper_level).name
         summary.mapping_permission = MappingPermission(self.mapping_permission).name
         summary.validation_permission = ValidationPermission(

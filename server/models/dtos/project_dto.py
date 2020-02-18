@@ -5,8 +5,9 @@ from schematics.types import (
     BaseType,
     IntType,
     BooleanType,
-    DateTimeType,
     FloatType,
+    UTCDateTimeType,
+    DateType,
 )
 from schematics.types.compound import ListType, ModelType
 from server.models.dtos.task_annotation_dto import TaskAnnotationDTO
@@ -213,7 +214,7 @@ class ProjectDTO(Model):
     entities_to_map = StringType(serialized_name="entitiesToMap")
     changeset_comment = StringType(serialized_name="changesetComment")
     osmcha_filter_id = StringType(serialized_name="osmchaFilterId")
-    due_date = DateTimeType(serialized_name="dueDate")
+    due_date = UTCDateTimeType(serialized_name="dueDate")
     imagery = StringType()
     josm_preset = StringType(serialized_name="josmPreset", serialize_when_none=False)
     id_presets = ListType(StringType, serialized_name="idPresets", default=[])
@@ -234,8 +235,8 @@ class ProjectDTO(Model):
         StringType(), serialized_name="allowedUsernames", default=[]
     )
     priority_areas = BaseType(serialized_name="priorityAreas")
-    created = DateTimeType()
-    last_updated = DateTimeType(serialized_name="lastUpdated")
+    created = UTCDateTimeType()
+    last_updated = UTCDateTimeType(serialized_name="lastUpdated")
     author = StringType()
     active_mappers = IntType(serialized_name="activeMappers")
     percent_mapped = IntType(serialized_name="percentMapped")
@@ -379,8 +380,8 @@ class ListSearchResultDTO(Model):
     percent_validated = IntType(serialized_name="percentValidated")
     status = StringType(serialized_name="status")
     active_mappers = IntType(serialized_name="activeMappers")
-    last_updated = DateTimeType(serialized_name="lastUpdated")
-    due_date = DateTimeType(serialized_name="dueDate")
+    last_updated = UTCDateTimeType(serialized_name="lastUpdated")
+    due_date = UTCDateTimeType(serialized_name="dueDate")
     total_contributors = IntType(serialized_name="totalContributors")
     country = StringType(serialize_when_none=False)
 
@@ -411,7 +412,7 @@ class ProjectComment(Model):
     """ Describes an individual user comment on a project task """
 
     comment = StringType()
-    comment_date = DateTimeType(serialized_name="commentDate")
+    comment_date = UTCDateTimeType(serialized_name="commentDate")
     user_name = StringType(serialized_name="userName")
     task_id = IntType(serialized_name="taskId")
 
@@ -428,7 +429,7 @@ class ProjectCommentsDTO(Model):
 
 
 class ProjectContribDTO(Model):
-    date = StringType(required=True)
+    date = DateType(required=True)
     mapped = IntType(required=True)
     validated = IntType(required=True)
     cumulative_mapped = IntType(required=False)
@@ -454,9 +455,9 @@ class ProjectSummary(Model):
     project_id = IntType(required=True, serialized_name="projectId")
     area = FloatType(serialized_name="projectArea(in sq.km)")
     author = StringType()
-    created = DateTimeType()
-    due_date = DateTimeType(serialized_name="dueDate")
-    last_updated = DateTimeType(serialized_name="lastUpdated")
+    created = UTCDateTimeType()
+    due_date = UTCDateTimeType(serialized_name="dueDate")
+    last_updated = UTCDateTimeType(serialized_name="lastUpdated")
     priority = StringType(serialized_name="projectPriority")
     campaigns = ListType(ModelType(CampaignDTO), default=[])
     organisation_name = StringType(serialized_name="organisationName")

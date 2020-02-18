@@ -8,8 +8,7 @@ from server.models.dtos.message_dto import MessageDTO, MessagesDTO
 from server.models.postgis.user import User
 from server.models.postgis.task import Task
 from server.models.postgis.project import Project
-from server.models.postgis.utils import timestamp
-from server.models.postgis.utils import NotFound
+from server.models.postgis.utils import timestamp, NotFound
 
 
 class MessageType(Enum):

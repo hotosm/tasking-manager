@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, DateTimeType, BooleanType
+from schematics.types import StringType, IntType, BooleanType, UTCDateTimeType
 from schematics.types.compound import ListType, ModelType
 from server.models.postgis.statuses import TaskStatus
 from server.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
@@ -57,7 +57,7 @@ class TaskHistoryDTO(Model):
     task_id = StringType(serialized_name="taskId")
     action = StringType()
     action_text = StringType(serialized_name="actionText")
-    action_date = DateTimeType(serialized_name="actionDate")
+    action_date = UTCDateTimeType(serialized_name="actionDate")
     action_by = StringType(serialized_name="actionBy")
     picture_url = StringType(serialized_name="pictureUrl")
     issues = ListType(ModelType(TaskMappingIssueDTO))
@@ -68,7 +68,7 @@ class TaskStatusDTO(Model):
 
     task_id = IntType(serialized_name="taskId")
     task_status = StringType(serialized_name="taskStatus")
-    action_date = DateTimeType(serialized_name="actionDate")
+    action_date = UTCDateTimeType(serialized_name="actionDate")
     action_by = StringType(serialized_name="actionBy", serialize_when_none=False)
 
 
@@ -88,8 +88,8 @@ class TaskDTO(Model):
     )
     is_undoable = BooleanType(serialized_name="isUndoable", default=False)
     auto_unlock_seconds = IntType(serialized_name="autoUnlockSeconds")
-    last_updated = DateTimeType(
-        serialized_name="lastUpdated", serialize_when_none=False
+    last_updated = UTCDateTimeType(
+        serialized_name="lastUpdated", serialize_when_none=False,
     )
 
 
