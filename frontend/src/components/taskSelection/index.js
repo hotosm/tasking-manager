@@ -227,6 +227,7 @@ export function TaskSelection({ project, type, loading }: Object) {
                       tasks={activities || initialActivities}
                       selectTask={selectTask}
                       selected={selected}
+                      userContributions={contributions.userContributions}
                     />
                   ) : null}
                   {activeSection === 'instructions' ? (

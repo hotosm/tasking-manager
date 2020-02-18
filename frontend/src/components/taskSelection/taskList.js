@@ -140,7 +140,14 @@ export function TaskFilter({ project, statusFilter, setStatusFn }: Object) {
   return <></>;
 }
 
-export function TaskList({ project, tasks, activeFilter, selectTask, selected }: Object) {
+export function TaskList({
+  project,
+  tasks,
+  activeFilter,
+  selectTask,
+  selected,
+  userContributions,
+}: Object) {
   const user = useSelector(state => state.auth.get('userDetails'));
   const [readyTasks, setTasks] = useState([]);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
@@ -157,15 +164,23 @@ export function TaskList({ project, tasks, activeFilter, selectTask, selected }:
         newTasks = newTasks.filter(task => ['MAPPED', 'BADIMAGERY'].includes(task.taskStatus));
       }
       if (textSearch) {
-        newTasks = newTasks.filter(
-          task =>
-            task.taskId === Number(textSearch) ||
-            (task.actionBy && task.actionBy.includes(textSearch)),
-        );
+        if (Number(textSearch)) {
+          newTasks = newTasks.filter(
+            task =>
+              task.taskId === Number(textSearch) ||
+              (task.actionBy && task.actionBy.includes(textSearch)),
+          );
+        } else {
+          const usersTaskIds = userContributions
+            .filter(user => user.username.includes(textSearch))
+            .map(user => user.taskIds)
+            .flat();
+          newTasks = newTasks.filter(task => usersTaskIds.includes(task.taskId));
+        }
       }
       setTasks(newTasks);
     }
-  }, [textSearch, statusFilter, tasks]);
+  }, [textSearch, statusFilter, tasks, userContributions]);
 
   function updateSortingOption(data: Object) {
     if (data) {
