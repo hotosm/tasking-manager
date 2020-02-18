@@ -1,0 +1,79 @@
+#optout-form { 
+  position: fixed; 
+  bottom: 0%; 
+  left: 0%; 
+  max-width: 100%; 
+  padding: 0 15%; 
+  background-color: #2C3038; 
+  z-index: 1001; 
+  display: none; 
+} 
+
+#optout-contents { 
+  padding-top: 14px; 
+} 
+
+#optout-form p {
+  color: #E1E0E0; 
+  margin: 0.5em; 
+  max-width: 100%; 
+  text-align: center; 
+} 
+ 
+#optout-form a { 
+  color: #d73f3f; 
+  font-weight: 700; 
+  text-decoration: underline; 
+} 
+ 
+#optout-form a:hover { 
+  color: #68c7dd; 
+}  
+
+#optout-buttons { 
+  grid-column: 2; 
+  text-align: center; 
+  padding: 7px 0px 14px 0px;
+  cursor: pointer;
+  z-index: 1002;
+}
+
+.optout-button, .optout-button:visited {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background-color: #d73f3f;
+  padding: .5em .5em;
+  color: #E1E0E0;
+  text-transform: uppercase;
+  display: inline-block;
+  font-weight: 600;
+  border: 2px solid #d73f3f;
+  width: 140px;
+  font-size: 0.8em;
+}
+
+.optout-button:hover, .optout-button:visited:hover {
+  transition: all 0.3s ease 0s;
+  -webkit-transition: all 0.3s;
+  -moz-transition: all 0.3s;
+  color: #d73f3f;
+  background-color: inherit;
+  border: 2px solid #d73f3f;
+}
+@media (max-width: 1022px) {
+  #optout-form {
+    padding: 7px 14px 0;
+  }
+  #optout-form p {
+    font-size: 0.8em;
+    margin: 0.1em;
+  }
+  #optout-contents {
+    padding-top: 4px;
+  }
+  .optout-button, optout-button:visited {
+    width: 100px;
+    font-size: 0.6em;
+  }
+}

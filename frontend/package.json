@@ -36,7 +36,6 @@
     "marked": "^0.8.0",
     "node-sass": "^4.13.0",
     "osmtogeojson": "^3.0.0-beta.3",
-    "react": "^16.13.1",
     "react-calendar-heatmap": "^1.8.1",
     "react-click-outside": "^3.0.1",
     "react-dom": "^16.13.1",
