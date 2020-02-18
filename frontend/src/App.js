@@ -28,6 +28,7 @@ import { ListOrganisations, CreateOrganisation, EditOrganisation } from './views
 import { MyTeams, ManageTeams, CreateTeam, EditTeam, TeamDetail } from './views/teams';
 import { ListCampaigns, CreateCampaign, EditCampaign } from './views/campaigns';
 import { ListInterests, CreateInterest, EditInterest } from './views/interests';
+import { UsersList } from './views/users';
 import { NotFound } from './views/notFound';
 import { SelectTask } from './views/taskSelection';
 import { MapTask, ValidateTask } from './views/taskAction';
@@ -78,6 +79,7 @@ function App() {
               <CreateOrganisation path="organisations/new/" />
               <EditOrganisation path="organisations/:id/" />
               <ManageTeams path="teams/" />
+              <UsersList path="users/" />
               <CreateTeam path="teams/new" />
               <EditTeam path="teams/:id" />
               <ListCampaigns path="campaigns/" />
