@@ -1,25 +1,34 @@
 import { API_URL } from '../config';
 import { getCentroidAndZoomFromSelectedTasks, getSelectedTasksBBox } from './tasksGeometry';
 
-export function openEditor(editor, project, tasks, selectedTasks, windowSize) {
+export function openEditor(
+  editor,
+  project,
+  tasks,
+  selectedTasks,
+  windowSize,
+  windowObjectReference,
+) {
   if (editor === 'JOSM') {
     sendJosmCommands(project, tasks, selectedTasks, windowSize);
+    return;
+  }
+  if (windowObjectReference == null || windowObjectReference.closed) {
+    windowObjectReference = window.open('', `iD-${project}-${selectedTasks}`);
   }
   const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
   if (editor === 'ID') {
-    const idUrl = getIdUrl(project, center, zoom, selectedTasks);
-    window.open(idUrl);
+    windowObjectReference.location.href = getIdUrl(project, center, zoom, selectedTasks);
   }
   if (editor === 'POTLATCH_2') {
-    window.open(getPotlatch2Url(center, zoom));
+    windowObjectReference.location.href = getPotlatch2Url(center, zoom);
   }
   if (editor === 'FIELD_PAPERS') {
-    window.open(getFieldPapersUrl(center, zoom));
+    windowObjectReference.location.href = getFieldPapersUrl(center, zoom);
   }
   if (editor === 'CUSTOM') {
     const customUrl = project.customEditor.url;
-    const idUrl = getIdUrl(project, center, zoom, selectedTasks, customUrl);
-    window.open(idUrl);
+    windowObjectReference.location.href = getIdUrl(project, center, zoom, selectedTasks, customUrl);
   }
 }
 
