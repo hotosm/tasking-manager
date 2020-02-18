@@ -436,24 +436,22 @@ class Project(db.Model):
             validation_editors_array.append(Editors[validation_editor].value)
         self.validation_editors = validation_editors_array
         self.country = project_dto.country_tag
-
         # Add list of allowed users, meaning the project can only be mapped by users in this list
         if hasattr(project_dto, "allowed_users"):
             self.allowed_users = []  # Clear existing relationships then re-insert
             for user in project_dto.allowed_users:
                 self.allowed_users.append(user)
-
         # Update teams and projects relationship.
         self.teams = []
-        for team_dto in project_dto.project_teams:
-            team = Team.get(team_dto.team_id)
+        if hasattr(project_dto, "project_teams") and project_dto.project_teams:
+            for team_dto in project_dto.project_teams:
+                team = Team.get(team_dto.team_id)
 
-            if team is None:
-                raise NotFound(f"Team not found")
+                if team is None:
+                    raise NotFound(f"Team not found")
 
-            role = TeamRoles[team_dto.role].value
-            ProjectTeams(project=self, team=team, role=role)
-
+                role = TeamRoles[team_dto.role].value
+                ProjectTeams(project=self, team=team, role=role)
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
 
@@ -486,7 +484,9 @@ class Project(db.Model):
                 self.custom_editor.delete()
 
         # Update Interests.
-        self.interests = [Interest.query.get(i.id) for i in project_dto.interests]
+        self.interests = []
+        if project_dto.interests:
+            self.interests = [Interest.query.get(i.id) for i in project_dto.interests]
 
         db.session.commit()
 
