@@ -369,6 +369,10 @@ export default defineMessages({
     id: 'projects.formInputs.mapping_types',
     defaultMessage: 'Types of mapping',
   },
+  userRole: {
+    id: 'projects.formInputs.user_role',
+    defaultMessage: 'User role',
+  },
   mapperLevel: {
     id: 'projects.formInputs.mapper_level',
     defaultMessage: 'Mapper level',
@@ -439,6 +443,30 @@ export default defineMessages({
   statusPUBLISHED: {
     id: 'project.formInputs.status.options.published',
     defaultMessage: 'Published',
+  },
+  userRoleALL: {
+    id: 'project.formInputs.user_role.options.all',
+    defaultMessage: 'All',
+  },
+  userRoleMAPPER: {
+    id: 'project.formInputs.user_role.options.mapper',
+    defaultMessage: 'Mapper',
+  },
+  userRoleVALIDATOR: {
+    id: 'project.formInputs.user_role.options.validator',
+    defaultMessage: 'Validator',
+  },
+  userRolePROJECT_MANAGER: {
+    id: 'project.formInputs.user_role.options.project_manager',
+    defaultMessage: 'Project Manager',
+  },
+  userRoleADMIN: {
+    id: 'project.formInputs.user_role.options.admin',
+    defaultMessage: 'Admin',
+  },
+  mapperLevelALL: {
+    id: 'project.formInputs.mapper_level.options.all',
+    defaultMessage: 'All',
   },
   mapperLevelADVANCED: {
     id: 'project.formInputs.mapper_level.options.advanced',
