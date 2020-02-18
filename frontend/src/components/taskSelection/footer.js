@@ -23,16 +23,21 @@ const TaskSelectionFooter = props => {
   const dispatch = useDispatch();
   const fetchLockedTasks = useFetchLockedTasks();
 
-  const lockSuccess = (status, endpoint) => {
+  const lockSuccess = (status, endpoint, windowObjectReference) => {
+    openEditor(
+      editor,
+      props.project,
+      props.tasks,
+      props.selectedTasks,
+      [window.innerWidth, window.innerHeight],
+      windowObjectReference,
+    );
     updateReduxState(props.selectedTasks, props.project.projectId, status);
-    openEditor(editor, props.project, props.tasks, props.selectedTasks, [
-      window.innerWidth,
-      window.innerHeight,
-    ]);
     navigate(`/projects/${props.project.projectId}/${endpoint}/`);
   };
 
-  const lockFailed = () => {
+  const lockFailed = windowObjectReference => {
+    windowObjectReference.close();
     fetchLockedTasks();
     setLockError(true);
   };
@@ -43,6 +48,10 @@ const TaskSelectionFooter = props => {
     dispatch({ type: 'SET_TASKS_STATUS', status: status });
   };
   const lockTasks = () => {
+    const windowObjectReference = window.open(
+      '',
+      `iD-${props.project.projectId}-${props.selectedTasks}`,
+    );
     if (
       ['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(props.taskAction)
     ) {
@@ -52,9 +61,9 @@ const TaskSelectionFooter = props => {
         token,
       )
         .then(res => {
-          lockSuccess('LOCKED_FOR_VALIDATION', 'validate');
+          lockSuccess('LOCKED_FOR_VALIDATION', 'validate', windowObjectReference);
         })
-        .catch(e => lockFailed());
+        .catch(e => lockFailed(windowObjectReference));
     }
     if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(props.taskAction)) {
       fetchLocalJSONAPI(
@@ -65,9 +74,9 @@ const TaskSelectionFooter = props => {
         'POST',
       )
         .then(res => {
-          lockSuccess('LOCKED_FOR_MAPPING', 'map');
+          lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
         })
-        .catch(e => lockFailed());
+        .catch(e => lockFailed(windowObjectReference));
     }
     if (['resumeMapping', 'resumeValidation'].includes(props.taskAction)) {
       openEditor(editor, props.project, props.tasks, props.selectedTasks, [
