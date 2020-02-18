@@ -7,6 +7,7 @@ import { TwitterIconNoBg, FacebookIcon, LinkedinIcon, ProfilePictureIcon } from 
 import { MappingLevelMessage } from '../mappingLevel';
 import { NextMappingLevel } from '../user/settings';
 import { SectionMenu } from '../menu';
+import OsmLogo from '../../assets/img/osm_logo.png';
 
 const SocialMedia = ({ data }) => {
   const socialMediaItems = ['twitterId', 'facebookId', 'linkedinId'];
@@ -42,6 +43,9 @@ const SocialMedia = ({ data }) => {
       case 'linkedinId':
         url = 'https://www.linkedin.com/' + value;
         break;
+      case 'osm':
+        url = 'https://openstreetmap.org/user/' + value;
+        break;
       default:
         return null;
     }
@@ -55,6 +59,12 @@ const SocialMedia = ({ data }) => {
 
   return (
     <ul className="list pa0">
+      <li className="dib mr4-ns mr2 cf f7">
+        <div className="mr2 h2">
+          <img className="h1 v-mid" src={OsmLogo} alt="OpenStreetMap" />{' '}
+          {createLink('osm', data.username)}
+        </div>
+      </li>
       {socialMediaItems.map(i => {
         if (data[i] === null) {
           return null;
