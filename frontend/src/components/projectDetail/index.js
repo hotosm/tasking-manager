@@ -160,7 +160,10 @@ export const ProjectDetailLeft = props => {
       </div>
 
       {!isShowing && (
-        <div className="cf ph4 pb3 w-100 h-25 z-2 absolute bottom-0 left-0 bg-white">
+        <div
+          className="cf ph4 pb3 w-100 h-25 z-2 absolute bottom-0 left-0 bg-white"
+          style={{ minHeight: '10rem' }}
+        >
           <ReactPlaceholder
             showLoadingAnimation={true}
             rows={3}
@@ -184,11 +187,11 @@ export const ProjectDetailLeft = props => {
               />
             </ReactPlaceholder>
             <ProjectProgressBar
-              className="pb2"
+              className="pb2 bg-white"
               percentMapped={props.project.percentMapped}
               percentValidated={props.project.percentValidated}
             />
-            <div className="cf pb1 h2">
+            <div className="cf pb1 h2 bg-white">
               <MappingLevelMessage
                 level={props.project.mapperLevel}
                 className="tl f5 mt1 ttc fw5 blue-dark"

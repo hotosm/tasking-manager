@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import messages from '../components/teamsAndOrgs/messages';
-import { Management } from '../components/teamsAndOrgs/management';
-import { FormattedMessage } from 'react-intl';
-import { HashtagIcon } from '../components/svgIcons';
 import { Link } from '@reach/router';
 import { Form, Field } from 'react-final-form';
-import { Button } from './button';
-import { EditModeControl } from './teamsAndOrgs/editMode';
+import { FormattedMessage } from 'react-intl';
+
+import messages from '../teamsAndOrgs/messages';
+import { Management } from '../teamsAndOrgs/management';
+import { EditModeControl } from '../teamsAndOrgs/editMode';
+import { HashtagIcon } from '../svgIcons';
+import { Button } from '../button';
 
 export const InterestCard = ({ interest }) => {
   return (
@@ -76,10 +77,10 @@ export const InterestForm = props => {
           <div className="blue-grey mb3">
             <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
               <h3 className="f3 fw6 dib blue-dark mv0">
-                <FormattedMessage {...messages.campaignInfo} />
+                <FormattedMessage {...messages.interestInfo} />
               </h3>
               <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
-              <form id="campaign-form" onSubmit={handleSubmit}>
+              <form id="interest-form" onSubmit={handleSubmit}>
                 <fieldset
                   className="bn pa0"
                   disabled={submitting || props.disabledForm || !editMode}
@@ -99,7 +100,7 @@ export const InterestForm = props => {
                   <Button
                     onClick={() => {
                       document
-                        .getElementById('campaign-form')
+                        .getElementById('interest-form')
                         .dispatchEvent(new Event('submit', { cancelable: true }));
                       setEditMode(false);
                     }}

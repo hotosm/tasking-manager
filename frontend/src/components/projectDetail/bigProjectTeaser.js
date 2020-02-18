@@ -13,7 +13,7 @@ export function BigProjectTeaser({
   const outerDivStyles = 'f6 tl blue-grey truncate mb2';
 
   return (
-    <div className="cf">
+    <div className="cf bg-white blue-dark">
       <div className={`fl ${outerDivStyles} ${className}`}>
         <span className={`${littleFont} blue-light`}>
           <FormattedMessage
