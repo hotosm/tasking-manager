@@ -10,7 +10,7 @@ import ProjectProgressBar from '../projectcard/projectProgressBar';
 import DueDateBox from '../projectcard/dueDateBox';
 
 import { MappingLevelMessage } from '../mappingLevel';
-import { UserAvatar } from '../user/avatar';
+import { UserAvatarList } from '../user/avatar';
 
 import { TasksMap } from '../taskSelection/map.js';
 import { ProjectHeader } from './header';
@@ -284,16 +284,14 @@ export const ProjectDetail = props => {
         <FormattedMessage {...messages.contributors} />
       </h3>
       <div className="cf db mb3 ph4">
-        {props.contributors &&
-          props.contributors.map((user, n) => (
-            <UserAvatar
-              username={user.username}
-              picture={user.pictureUrl}
-              size="large"
-              colorClasses="white bg-blue-grey"
-              key={n}
-            />
-          ))}
+        {props.contributors && (
+          <UserAvatarList
+            size="large"
+            textColor="white"
+            users={props.contributors}
+            maxLength={15}
+          />
+        )}
       </div>
 
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">

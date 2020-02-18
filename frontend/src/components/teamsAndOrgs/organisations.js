@@ -7,7 +7,7 @@ import messages from './messages';
 import { EditModeControl } from './editMode';
 import { Management } from './management';
 import { Button } from '../button';
-import { UserAvatar } from '../user/avatar';
+import { UserAvatarList } from '../user/avatar';
 
 export function OrgsManagement({ organisations, userDetails }: Object) {
   const isAdmin = userDetails.role === 'ADMIN';
@@ -30,7 +30,7 @@ export function OrgsManagement({ organisations, userDetails }: Object) {
 
 export function OrganisationCard({ details }: Object) {
   return (
-    <Link to={`${details.organisationId}/`} className="w-50 fl ph1">
+    <Link to={`${details.organisationId}/`} className="w-50-l w-100 fl ph1">
       <div className="bg-white blue-dark mv2 pb4 dib w-100 ba br1 b--grey-light shadow-hover">
         <div className="w-20 fl">
           {details.logo && (
@@ -58,14 +58,12 @@ export function OrganisationCard({ details }: Object) {
               <FormattedMessage {...messages.administrators} />
             </h4>
             <div className="dib">
-              {details.managers.map((user, n) => (
-                <UserAvatar
-                  key={n}
-                  username={user.username}
-                  picture={user.pictureUrl}
-                  colorClasses="white bg-blue-grey"
-                />
-              ))}
+              <UserAvatarList
+                size="small"
+                textColor="white"
+                users={details.managers}
+                maxLength={12}
+              />
             </div>
           </div>
         </div>
