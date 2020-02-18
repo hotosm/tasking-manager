@@ -68,17 +68,9 @@ export default defineMessages({
     id: 'management.interest',
     defaultMessage: 'Interest',
   },
-  newInterest: {
-    id: 'management.interest.creation',
-    defaultMessage: 'Create new interest',
-  },
   interestInfo: {
     id: 'management.titles.interest_information',
     defaultMessage: 'Interest information',
-  },
-  createInterest: {
-    id: 'management.interest.button.create',
-    defaultMessage: 'Create interest',
   },
   editMembersLater: {
     id: 'management.edit_members',
@@ -193,7 +185,7 @@ export default defineMessages({
     defaultMessage: 'There are no campaigns yet.',
   },
   noInterests: {
-    id: 'management.teams.no_interests',
+    id: 'management.no_interests',
     defaultMessage: 'There are no interests yet.',
   },
   public: {
