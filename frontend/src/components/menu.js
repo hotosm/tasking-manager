@@ -3,7 +3,7 @@ import { TopNavLink } from './header/NavLink';
 
 export function SectionMenu({ items }: Object) {
   const isActive = ({ isCurrent }) => {
-    const linkCombo = 'link mh2 blue-dark';
+    const linkCombo = 'link mh2 blue-dark ttc';
     return isCurrent
       ? { className: `${linkCombo} bb b--blue-dark bw1 pb1` }
       : { className: linkCombo };
