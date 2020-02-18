@@ -24,10 +24,6 @@ export default defineMessages({
     id: 'header.nav.manage',
     defaultMessage: 'Manage',
   },
-  statsBadges: {
-    id: 'header.nav.statsBadges',
-    defaultMessage: 'Stats & Badges',
-  },
   logIn: {
     id: 'header.buttons.logIn',
     defaultMessage: 'Log in',
@@ -80,8 +76,7 @@ export default defineMessages({
   },
   signUpRedirect: {
     id: 'signup.modal.redirect',
-    defaultMessage:
-      'Clicking this button will redirect you to the OpenStreetMap website.',
+    defaultMessage: 'Clicking this button will redirect you to the OpenStreetMap website.',
   },
   emailUpdateButton: {
     id: 'emailUpdate.modal.button',
@@ -97,12 +92,12 @@ export default defineMessages({
   },
   emailUpdateTextPart1: {
     id: 'emailUpdate.modal.text1',
-    defaultMessage:
-      'Before you begin mapping, please add your email address.',
+    defaultMessage: 'Before you begin mapping, please add your email address.',
   },
   emailUpdateTextPart2: {
     id: 'emailUpdate.modal.text2',
-    defaultMessage: 'Providing your email address ensures that notifications about your mapping projects will reach you.',
+    defaultMessage:
+      'Providing your email address ensures that notifications about your mapping projects will reach you.',
   },
   privacyPolicy: {
     id: 'emailUpdate.modal.privacy_policy',
