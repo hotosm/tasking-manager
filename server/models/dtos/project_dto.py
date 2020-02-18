@@ -106,7 +106,6 @@ def is_known_task_creation_mode(value):
 def is_known_mapping_permission(value):
     """ Validates Mapping Permission String """
     try:
-        print("value: ", value)
         MappingPermission[value.upper()]
     except KeyError:
         raise ValidationError(
@@ -118,7 +117,6 @@ def is_known_mapping_permission(value):
 def is_known_validation_permission(value):
     """ Validates Validation Permission String """
     try:
-        print("value: ", value)
         ValidationPermission[value.upper()]
     except KeyError:
         raise ValidationError(
@@ -197,12 +195,12 @@ class ProjectDTO(Model):
     )
     mapping_permission = StringType(
         required=True,
-        serialized_name="mapping_permission",
+        serialized_name="mappingPermission",
         validators=[is_known_mapping_permission],
     )
     validation_permission = StringType(
         required=True,
-        serialized_name="validation_permission",
+        serialized_name="validationPermission",
         validators=[is_known_validation_permission],
     )
     enforce_random_task_selection = BooleanType(

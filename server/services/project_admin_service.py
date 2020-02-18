@@ -10,13 +10,15 @@ from server.models.dtos.project_dto import (
     ProjectSearchDTO,
 )
 from server.models.postgis.project import Project, Task, ProjectStatus
-from server.models.postgis.statuses import TaskCreationMode, UserRole
+from server.models.postgis.statuses import TaskCreationMode, UserRole, TeamRoles
 from server.models.postgis.task import TaskHistory, TaskStatus, TaskAction
 from server.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
 from server.services.grid.grid_service import GridService
 from server.services.license_service import LicenseService
 from server.services.users.user_service import UserService
 from server.services.project_search_service import ProjectSearchService
+from server.services.organisation_service import OrganisationService
+from server.services.team_service import TeamService
 
 
 class ProjectAdminServiceError(Exception):
@@ -44,19 +46,25 @@ class ProjectAdminService:
         :raises InvalidGeoJson
         :returns ID of new draft project
         """
+        user_id = draft_project_dto.user_id
+        is_pm = UserService.is_user_a_project_manager(user_id)
+        user_orgs = OrganisationService.get_organisations_managed_by_user_as_dto(
+            user_id
+        )
+        is_org_manager = len(user_orgs.organisations) > 0
+
         # First things first, we need to validate that the author_id is a PM. issue #1715
-        if not UserService.is_user_a_project_manager(draft_project_dto.user_id):
+        if not (is_pm or is_org_manager):
+            user = UserService.get_user_by_id(user_id)
             raise (
                 ProjectAdminServiceError(
-                    f"User {UserService.get_user_by_id(draft_project_dto.user_id).username} is not a project manager"
+                    f"User {user.username} is not a project manager"
                 )
             )
 
         # If we're cloning we'll copy all the project details from the clone, otherwise create brand new project
         if draft_project_dto.cloneFromProjectId:
-            draft_project = Project.clone(
-                draft_project_dto.cloneFromProjectId, draft_project_dto.user_id
-            )
+            draft_project = Project.clone(draft_project_dto.cloneFromProjectId, user_id)
         else:
             draft_project = Project()
             draft_project.create_draft_project(draft_project_dto)
@@ -106,9 +114,39 @@ class ProjectAdminService:
 
     @staticmethod
     def update_project(project_dto: ProjectDTO, authenticated_user_id: int):
-        project = ProjectAdminService._get_project_by_id(project_dto.project_id)
+        project_id = project_dto.project_id
+        author_id = project_dto.author
+        org_id = project_dto.organisation
+        allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
+
         is_admin = UserService.is_user_an_admin(authenticated_user_id)
-        is_pm = UserService.is_user_a_project_manager(authenticated_user_id)
+        is_author = UserService.is_user_the_project_author(
+            authenticated_user_id, author_id
+        )
+        is_org_manager = None
+        if org_id:
+            is_org_manager = OrganisationService.is_user_an_org_manager(
+                org_id, authenticated_user_id
+            )
+        # Verify team role
+        is_team_member = None
+        if hasattr(project_dto, "project_teams") and project_dto.project_teams:
+            teams_dto = TeamService.get_project_teams_as_dto(project_id)
+            if teams_dto.teams:
+                teams_allowed = [
+                    team_dto
+                    for team_dto in teams_dto.teams
+                    if team_dto.role in allowed_roles
+                ]
+                user_membership = [
+                    team_dto.team_id
+                    for team_dto in teams_allowed
+                    if TeamService.is_user_member_of_team(
+                        team_dto.team_id, authenticated_user_id
+                    )
+                ]
+                if user_membership:
+                    is_team_member = True
 
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
             ProjectAdminService._validate_default_locale(
@@ -121,15 +159,13 @@ class ProjectAdminService:
         if project_dto.private:
             ProjectAdminService._validate_allowed_users(project_dto)
 
-        if not is_admin:
-            if is_pm and project.author_id == authenticated_user_id:
-                project.update(project_dto)
-            else:
-                raise ProjectAdminServiceError(
-                    "Project can only be updated by admins or by the owner"
-                )
-        else:
+        if is_admin or is_author or is_org_manager or is_team_member:
+            project = ProjectAdminService._get_project_by_id(project_id)
             project.update(project_dto)
+        else:
+            raise ProjectAdminServiceError(
+                "Project can only be updated by admins or by the owner"
+            )
 
         return project
 
