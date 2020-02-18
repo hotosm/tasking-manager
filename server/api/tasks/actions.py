@@ -2,7 +2,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from server.models.dtos.grid_dto import SplitTaskDTO
-from server.models.postgis.utils import NotFound
+from server.models.postgis.utils import NotFound, InvalidGeoJson
 from server.services.grid.split_service import SplitService, SplitServiceError
 from server.services.users.user_service import UserService
 from server.services.project_admin_service import ProjectAdminService
@@ -842,8 +842,10 @@ class TasksActionsSplitAPI(Resource):
             return tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
-        except SplitServiceError:
-            return {"Error": "Unable to split task"}, 403
+        except SplitServiceError as e:
+            return {"Error": str(e)}, 403
+        except InvalidGeoJson as e:
+            return {"Error": str(e)}, 200
         except Exception as e:
             error_msg = f"Task Split API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
