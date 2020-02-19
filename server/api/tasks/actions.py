@@ -845,7 +845,7 @@ class TasksActionsSplitAPI(Resource):
         except SplitServiceError as e:
             return {"Error": str(e)}, 403
         except InvalidGeoJson as e:
-            return {"Error": str(e)}, 200
+            return {"Error": str(e)}, 500
         except Exception as e:
             error_msg = f"Task Split API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
