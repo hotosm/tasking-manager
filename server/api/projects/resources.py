@@ -482,6 +482,9 @@ class ProjectSearchBase(Resource):
         project_statuses_str = request.args.get("projectStatuses")
         if project_statuses_str:
             search_dto.project_statuses = map(str, project_statuses_str.split(","))
+        interests_str = request.args.get("interests")
+        if interests_str:
+            search_dto.interests = map(int, interests_str.split(","))
         search_dto.validate()
 
         return search_dto
@@ -586,55 +589,6 @@ class ProjectsAllAPI(ProjectSearchBase):
             500:
                 description: Internal Server Error
         """
-        try:
-            search_dto = ProjectSearchDTO()
-            search_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            search_dto.mapper_level = request.args.get("mapperLevel")
-            search_dto.organisation_name = request.args.get("organisationName")
-            search_dto.organisation_id = request.args.get("organisationId")
-            search_dto.team_id = request.args.get("teamId")
-            search_dto.campaign = request.args.get("campaign")
-            search_dto.order_by = request.args.get("orderBy", "priority")
-            search_dto.country = request.args.get("country")
-            search_dto.order_by_type = request.args.get("orderByType", "ASC")
-
-            interests = request.args.get("interests")
-            if interests:
-                try:
-                    search_dto.interests = map(
-                        int, interests.split(",")
-                    )  # Extract list from string
-                except (ValueError, TypeError):
-                    pass
-
-            search_dto.page = (
-                int(request.args.get("page")) if request.args.get("page") else 1
-            )
-            search_dto.text_search = request.args.get("textSearch")
-
-            # See https://github.com/hotosm/tasking-manager/pull/922 for more info
-            try:
-                verify_token(
-                    request.environ.get("HTTP_AUTHORIZATION").split(None, 1)[1]
-                )
-                if UserService.is_user_a_project_manager(tm.authenticated_user_id):
-                    search_dto.is_project_manager = True
-            except Exception:
-                pass
-
-            mapping_types_str = request.args.get("mappingTypes")
-            if mapping_types_str:
-                search_dto.mapping_types = map(
-                    str, mapping_types_str.split(",")
-                )  # Extract list from string
-            project_statuses_str = request.args.get("projectStatuses")
-            if project_statuses_str:
-                search_dto.project_statuses = map(str, project_statuses_str.split(","))
-            search_dto.validate()
-        except DataError as e:
-            current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to fetch projects"}, 400
-
         try:
             search_dto = self.setup_search_dto()
             results_dto = ProjectSearchService.search_projects(search_dto)

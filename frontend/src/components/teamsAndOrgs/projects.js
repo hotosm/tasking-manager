@@ -19,7 +19,7 @@ export function Projects({ projects, viewAllQuery, ownerEntity, showAddButton = 
             <AddButton />
           </Link>
         )}
-        <ViewAllLink link={`/explore/${viewAllQuery ? viewAllQuery : ''}`} />
+        <ViewAllLink link={`/manage/projects/${viewAllQuery ? viewAllQuery : ''}`} />
         <div className="cf pt4">
           <ReactPlaceholder
             showLoadingAnimation={true}
