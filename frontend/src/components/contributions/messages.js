@@ -8,6 +8,10 @@ export default defineMessages({
     id: 'mytasks.mainSection.title',
     defaultMessage: 'My Tasks',
   },
+  myContributions: {
+    id: 'mytasks.filter.my_contributions',
+    defaultMessage: 'My contributions',
+  },
   contribution: {
     id: 'mytasks.contribution',
     defaultMessage: 'Contribution',

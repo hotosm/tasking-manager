@@ -1,6 +1,7 @@
 {
   "mytasks.mainSection.title": "My Tasks",
   "mytasks.contribution": "Contribution",
+  "mytasks.filter.my_contributions": "My contributions",
   "mytasks.filter.all": "All",
   "mytasks.filter.mapped": "Mapped",
   "mytasks.filter.validated": "Validated",
