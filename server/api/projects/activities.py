@@ -1,6 +1,5 @@
 from flask_restful import Resource, current_app, request
 from server.services.stats_service import StatsService, NotFound
-from server.services.project_service import ProjectService
 
 
 class ProjectsActivitiesAPI(Resource):
@@ -31,8 +30,6 @@ class ProjectsActivitiesAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not ProjectService.exists(project_id):
-            return {"Error": "Project not found"}, 404
         try:
             page = int(request.args.get("page")) if request.args.get("page") else 1
             activity = StatsService.get_latest_activity(project_id, page)
@@ -68,8 +65,6 @@ class ProjectsLastActivitiesAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not ProjectService.exists(project_id):
-            return {"Error": "Project not found"}, 404
         try:
             activity = StatsService.get_last_activity(project_id)
             return activity.to_primitive(), 200
