@@ -47,7 +47,7 @@ python-editor==1.0.4
 python-slugify==4.0.0
 pytz==2019.3
 PyYAML==5.3
-requests==2.22.0
+requests==2.23.0
 requests-oauthlib==1.0.0
 schematics==2.1.0
 Shapely==1.7.0
