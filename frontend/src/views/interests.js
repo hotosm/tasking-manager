@@ -10,6 +10,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { InterestsManagement, InterestForm, InterestInformation } from '../components/interests';
 import { FormSubmitButton, CustomButton } from '../components/button';
+import { Projects } from '../components/teamsAndOrgs/projects';
 import { DeleteModal } from '../components/deleteModal';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 
@@ -106,6 +107,11 @@ export const EditInterest = props => {
   const token = useSelector(state => state.auth.get('token'));
   const [error, loading, interest] = useFetch(`interests/${props.id}/`);
 
+  const [projectsError, projectsLoading, projects] = useFetch(
+    `projects/?interests=${props.id}`,
+    props.id,
+  );
+
   const updateInterest = payload => {
     pushToLocalJSONAPI(`interests/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
   };
@@ -124,6 +130,13 @@ export const EditInterest = props => {
           interest={{ name: interest.name }}
           updateInterest={updateInterest}
           disabledForm={error || loading}
+        />
+      </div>
+      <div className="w-60-l w-100 mt4 pl5-l pl0 fr">
+        <Projects
+          projects={!projectsLoading && !projectsError && projects}
+          viewAllQuery={`?interests=${props.id}`}
+          ownerEntity="interests"
         />
       </div>
     </div>
