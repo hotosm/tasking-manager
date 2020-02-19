@@ -2,7 +2,7 @@ import bleach
 from flask import current_app
 from server import db
 from server.models.postgis.user import User
-from server.models.postgis.utils import timestamp, NotFound
+from server.models.postgis.utils import timestamp
 from server.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO, Pagination
 
 
@@ -40,12 +40,6 @@ class ProjectChat(db.Model):
     @staticmethod
     def get_messages(project_id: int, page: int, per_page: int = 20) -> ProjectChatDTO:
         """ Get all messages on the project """
-
-        from server.services.project_service import ProjectService
-
-        # just to find if it exists
-        if not ProjectService.exists(project_id):
-            raise NotFound()
 
         project_messages = (
             ProjectChat.query.filter_by(project_id=project_id)
