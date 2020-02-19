@@ -28,6 +28,8 @@ class ProjectsContributionsAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        if not ProjectService.exists(project_id):
+            return {"Error": "Project not found"}, 404
         try:
             contributions = StatsService.get_user_contributions(project_id)
             return contributions.to_primitive(), 200
