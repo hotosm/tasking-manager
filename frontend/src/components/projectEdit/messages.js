@@ -446,7 +446,7 @@ export default defineMessages({
   },
   userRoleALL: {
     id: 'project.formInputs.user_role.options.all',
-    defaultMessage: 'All',
+    defaultMessage: 'All roles',
   },
   userRoleMAPPER: {
     id: 'project.formInputs.user_role.options.mapper',
@@ -466,7 +466,7 @@ export default defineMessages({
   },
   mapperLevelALL: {
     id: 'project.formInputs.mapper_level.options.all',
-    defaultMessage: 'All',
+    defaultMessage: 'All levels',
   },
   mapperLevelADVANCED: {
     id: 'project.formInputs.mapper_level.options.advanced',

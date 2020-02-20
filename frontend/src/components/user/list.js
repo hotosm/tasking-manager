@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
-import messages from '../views/messages';
 import { FormattedMessage } from 'react-intl';
-import editMessages from './projectEdit/messages';
-import { UserAvatar } from './user/avatar';
-import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
-import { PaginatorLine } from './paginator';
-import { SearchIcon, CloseIcon } from './svgIcons';
-import { Dropdown } from './dropdown';
+
+import messages from '../../views/messages';
+import editMessages from '../projectEdit/messages';
+import { UserAvatar } from './avatar';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { PaginatorLine } from '../paginator';
+import { SearchIcon, CloseIcon } from '../svgIcons';
+import { Dropdown } from '../dropdown';
 
 const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
   const inputRef = useRef(null);
@@ -44,8 +45,8 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
                     return { ...p, username: '' };
                   });
                 }}
-                className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 ' + ${
-                  filters.username === '' ? 'dn' : ''
+                className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${
+                  filters.username ? '' : 'dn'
                 }`}
               />
             </form>
@@ -65,9 +66,6 @@ const RoleFilter = ({ filters, setFilters, updateFilters }) => {
 
   return (
     <div>
-      <p className="b f7 ma0">
-        <FormattedMessage {...editMessages.userRole} />
-      </p>
       <Dropdown
         onAdd={() => {}}
         onRemove={() => {}}
@@ -77,7 +75,7 @@ const RoleFilter = ({ filters, setFilters, updateFilters }) => {
         }}
         options={options}
         value={filters.role}
-        className={'ba b--grey-light bg-white mr1 f6 v-mid pv2 fl mt1 mt2-ns br1 f5 pointer'}
+        className={'ba b--grey-light bg-white mr1 f6 v-mid pv2 fl mt1 br1 f5 pointer'}
       />
     </div>
   );
@@ -92,9 +90,6 @@ const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
 
   return (
     <div>
-      <p className="b f7 ma0">
-        <FormattedMessage {...editMessages.mapperLevel} />
-      </p>
       <Dropdown
         onAdd={() => {}}
         onRemove={() => {}}
@@ -104,7 +99,7 @@ const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
         }}
         options={options}
         value={filters.level}
-        className={'ba b--grey-light bg-white mr1 f6 v-mid pv2 fl mt1 mt2-ns br1 f5 pointer'}
+        className={'ba b--grey-light bg-white mr1 f6 v-mid pv2 fl mt1 br1 f5 pointer'}
       />
     </div>
   );
@@ -119,7 +114,7 @@ export const SearchNav = ({ filters, setFilters }) => {
 
   return (
     <div className="w-100 mb3 flex items-center">
-      <div className="fl w-20 mr2 mt3">
+      <div className="fl w-20 mr2">
         <UserFilter filters={filters} setFilters={setFilters} updateFilters={updateFilters} />
       </div>
       <div className="mr3 tr">
@@ -184,37 +179,9 @@ export const UsersTable = ({ filters, setFilters }) => {
       </p>
       <div className="w-100 f5">
         <ul className="list pa0 ma0">
-          {response.users.map(user => {
-            return (
-              <li className=" bg-white cf flex items-center pa3 ba bw1 mb2 b--tan blue-dark">
-                <div className="w-40 fl">
-                  <UserAvatar
-                    picture={user.pictureUrl}
-                    username={user.username}
-                    colorClasses="white bg-blue-grey"
-                  />
-                  <a
-                    className="blue-grey mr2 ml3 link"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    href={`/users/${user.username}`}
-                  >
-                    {user.username}
-                  </a>
-                </div>
-                <div className="w-30 fl">
-                  <span className="dib-ns dn">
-                    <FormattedMessage {...editMessages[`mapperLevel${user.mappingLevel}`]} />
-                  </span>
-                </div>
-                <div className="w-30 fl">
-                  <span className="dib-ns dn">
-                    <FormattedMessage {...editMessages[`userRole${user.role}`]} />
-                  </span>
-                </div>
-              </li>
-            );
-          })}
+          {response.users.map(user => (
+            <UserListCard user={user} key={user.id} />
+          ))}
         </ul>
         {response === null || response.pagination.total === 0 ? null : (
           <PaginatorLine
@@ -232,3 +199,38 @@ export const UsersTable = ({ filters, setFilters }) => {
     </div>
   );
 };
+
+export function UserListCard({ user }: Object) {
+  const [isHovered, setHovered] = useState(false);
+  return (
+    <li
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={`bg-white cf flex items-center pa3 ba mb1 b--grey-light blue-dark ${
+        isHovered ? 'shadow-4' : ''
+      }`}
+    >
+      <div className="w-50-ns w-100 fl">
+        <UserAvatar
+          picture={user.pictureUrl}
+          username={user.username}
+          colorClasses="white bg-blue-grey"
+        />
+        <a
+          className="blue-grey mr2 ml3 link"
+          rel="noopener noreferrer"
+          target="_blank"
+          href={`/users/${user.username}`}
+        >
+          {user.username}
+        </a>
+      </div>
+      <div className="w-25 fl dib-ns dn">
+        <FormattedMessage {...editMessages[`mapperLevel${user.mappingLevel}`]} />
+      </div>
+      <div className="w-25 fl dib-ns dn">
+        <FormattedMessage {...editMessages[`userRole${user.role}`]} />
+      </div>
+    </li>
+  );
+}
