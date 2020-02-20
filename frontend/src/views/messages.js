@@ -20,9 +20,9 @@ export default defineMessages({
     id: 'loginPage.title',
     defaultMessage: 'Login or register an account',
   },
-  userList: {
+  manageUsers: {
     id: 'management.users.title',
-    defaultMessage: 'User list',
+    defaultMessage: 'Manage users',
   },
   enterUsername: {
     id: 'management.users.username_enter',
