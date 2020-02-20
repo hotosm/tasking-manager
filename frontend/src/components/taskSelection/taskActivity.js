@@ -4,7 +4,7 @@ import { FormattedMessage, FormattedRelative } from 'react-intl';
 
 import messages from './messages';
 import { CloseIcon } from '../svgIcons';
-import { CurrentUserAvatar } from '../user/avatar';
+import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Button } from '../button';
 
@@ -134,11 +134,11 @@ const TaskHistory = ({ projectId, taskId, commentStat, setStat, commentPayload }
     return response.taskHistory.map((t, n) => (
       <div className="w-90 mh3 pv3 bb b--grey-light f6 cf" key={n}>
         <div className="fl w-10-ns w-100 ph2">
-          <div className="h2 w2 bg-grey-light br-100 ma0">
-            {t.pictureUrl === null ? null : (
-              <img className="h2 w2 br-100" src={t.pictureUrl} alt={t.actionBy} />
-            )}
-          </div>
+          <UserAvatar
+            username={t.actionBy}
+            picture={t.pictureUrl}
+            colorClasses="white bg-blue-grey"
+          />
         </div>
         <div className="w-80-ns w-100 fl">
           <p className="ma0 pt2">
