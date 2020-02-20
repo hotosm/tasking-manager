@@ -9,7 +9,7 @@
   "mytasks.filter.projects": "Projects",
   "mytasks.filter.tasks": "Tasks",
   "mytasks.filter.clear": "Clear filters",
-  "mytasks.navFilters.error": "Error loading the {xWord} for {yWord}",
+  "mytasks.navFilters.error": "Error while loading the tasks",
   "mytasks.nav.showing": "Showing {numProjects} contributions{numRange} of {numTotalProjects}",
   "mytasks.nav.xNew": "{xNew} New",
   "mytasks.nav.lastUpdatedBy": "You worked on this task {time}",
