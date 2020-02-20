@@ -6,6 +6,7 @@ from server.models.dtos.mapping_dto import TaskCommentDTO
 from server.models.postgis.utils import NotFound
 from server.services.messaging.chat_service import ChatService
 from server.services.users.user_service import UserService
+from server.services.project_service import ProjectService
 from server.services.mapping_service import MappingService, MappingServiceError
 from server.services.users.authentication_service import token_auth, tm
 
@@ -105,6 +106,12 @@ class CommentsProjectsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        try:
+            ProjectService.get_project_by_id(project_id)
+        except NotFound as e:
+            current_app.logger.error(f"Error validating project: {str(e)}")
+            return {"Error": "Project not found"}, 404
+
         try:
             page = int(request.args.get("page")) if request.args.get("page") else 1
             per_page = int(request.args.get("perPage", 20))
