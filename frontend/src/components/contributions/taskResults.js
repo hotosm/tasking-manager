@@ -33,22 +33,16 @@ export const TaskResults = props => {
           </p>
         )
       )}
-      {state.isError ? (
+      {state.isError && (
         <div className="bg-tan pa4 mt3">
-          <FormattedMessage
-            {...messages.errorLoadingTheXForY}
-            values={{
-              xWord: <FormattedMessage {...messages.tasks} />,
-              yWord: <FormattedMessage {...messages.myContributions} />,
-            }}
-          />
+          <FormattedMessage {...messages.errorLoadingTasks} />
           <div className="pa2">
             <button className="pa1" onClick={() => props.retryFn()}>
               Retry
             </button>
           </div>
         </div>
-      ) : null}
+      )}
       <div className={`cf db`}>
         <ReactPlaceholder ready={!state.isLoading} type="media" rows={10}>
           <TaskCards pageOfCards={state.tasks} />

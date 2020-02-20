@@ -44,9 +44,9 @@ export default defineMessages({
     id: 'mytasks.filter.clear',
     defaultMessage: 'Clear filters',
   },
-  errorLoadingTheXForY: {
+  errorLoadingTasks: {
     id: 'mytasks.navFilters.error',
-    defaultMessage: 'Error loading the {xWord} for {yWord}',
+    defaultMessage: 'Error while loading the tasks',
   },
   showingXProjectsOfTotal: {
     id: 'mytasks.nav.showing',
