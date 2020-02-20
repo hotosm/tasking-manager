@@ -92,7 +92,7 @@ const PopupItems = props => {
           .filter(item => item.authenticated === true)
           .map((item, n) => (
             <p key={n}>
-              <Link to={item.link} className={props.linkCombo}>
+              <Link to={item.link} className={props.linkCombo} onClick={props.close}>
                 <FormattedMessage {...item.label} />
               </Link>
             </p>
@@ -100,12 +100,12 @@ const PopupItems = props => {
       {props.userDetails.username && (
         <>
           <p>
-            <Link to={'/settings'} className={props.linkCombo}>
+            <Link to={'/settings'} className={props.linkCombo} onClick={props.close}>
               <FormattedMessage {...messages.settings} />
             </Link>
           </p>
           <p>
-            <Link to={'/teams'} className={props.linkCombo}>
+            <Link to={'/teams'} className={props.linkCombo} onClick={props.close}>
               <FormattedMessage {...messages.myTeams} />
             </Link>
           </p>
@@ -116,7 +116,7 @@ const PopupItems = props => {
         .filter(item => item.authenticated === false || item.showAlways)
         .map((item, n) => (
           <p key={n}>
-            <Link to={item.link} className={props.linkCombo}>
+            <Link to={item.link} className={props.linkCombo} onClick={props.close}>
               <FormattedMessage {...item.label} />
             </Link>
           </p>
@@ -255,15 +255,18 @@ class Header extends React.Component {
             {this.renderAuthenticationButtons()}
             <div className="dib v-mid dn-l">
               <Popup trigger={open => <BurgerMenu open={open} />} modal closeOnDocumentClick>
-                <div>
-                  <PopupItems
-                    userDetails={this.props.userDetails}
-                    menuItems={getMenuItensForUser(this.props.userDetails)}
-                    linkCombo={this.linkCombo}
-                    logout={this.props.logout}
-                    location={this.props.location}
-                  />
-                </div>
+                {close => (
+                  <div>
+                    <PopupItems
+                      userDetails={this.props.userDetails}
+                      menuItems={getMenuItensForUser(this.props.userDetails)}
+                      linkCombo={this.linkCombo}
+                      logout={this.props.logout}
+                      location={this.props.location}
+                      close={close}
+                    />
+                  </div>
+                )}
               </Popup>
             </div>
           </div>
@@ -278,9 +281,6 @@ const mapStateToProps = state => ({
   token: state.auth.get('token'),
 });
 
-Header = connect(
-  mapStateToProps,
-  { logout },
-)(Header);
+Header = connect(mapStateToProps, { logout })(Header);
 
 export { Header, getMenuItensForUser, AuthButtons };
