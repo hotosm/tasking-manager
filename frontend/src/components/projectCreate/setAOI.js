@@ -123,7 +123,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     if (mapObj.map.getSource(layer_name)) {
       mapObj.map.removeSource(layer_name);
     }
-    updateMetadata({ ...metadata, area: 0 });
+    updateMetadata({ ...metadata, area: 0, geom: null });
   };
 
   const drawHandler = () => {
