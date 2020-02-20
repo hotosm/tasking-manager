@@ -53,6 +53,10 @@ it('exports MAP_STYLE and type is object or string', () => {
   expect(config.MAP_STYLE).toBeTruthy();
   expect(['object', 'string'].includes(typeof config.MAP_STYLE)).toBeTruthy();
 });
+it('exports BASEMAP_OPTIONS and type is object or string', () => {
+  expect(config.BASEMAP_OPTIONS).toBeTruthy();
+  expect(typeof config.BASEMAP_OPTIONS).toBe('object');
+});
 it('exports MAPBOX_RTL_PLUGIN_URL', () => {
   expect(config.MAPBOX_RTL_PLUGIN_URL).toBe(
     'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js',
