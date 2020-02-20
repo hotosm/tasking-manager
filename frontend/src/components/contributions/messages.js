@@ -8,10 +8,6 @@ export default defineMessages({
     id: 'mytasks.mainSection.title',
     defaultMessage: 'My Tasks',
   },
-  myContributions: {
-    id: 'mytasks.filter.my_contributions',
-    defaultMessage: 'My contributions',
-  },
   contribution: {
     id: 'mytasks.contribution',
     defaultMessage: 'Contribution',
@@ -48,9 +44,9 @@ export default defineMessages({
     id: 'mytasks.filter.clear',
     defaultMessage: 'Clear filters',
   },
-  errorLoadingTheXForY: {
+  errorLoadingTasks: {
     id: 'mytasks.navFilters.error',
-    defaultMessage: 'Error loading the {xWord} for {yWord}',
+    defaultMessage: 'Error while loading the tasks',
   },
   showingXProjectsOfTotal: {
     id: 'mytasks.nav.showing',
