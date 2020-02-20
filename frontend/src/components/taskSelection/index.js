@@ -89,13 +89,13 @@ export function TaskSelection({ project, type, loading }: Object) {
       const currentUserContributions = contributions.userContributions.filter(
         u => u.username === user.username,
       );
-      if (currentUserContributions.length > 0) {
+      if (user.isExpert && currentUserContributions.length > 0) {
         setActiveSection('tasks');
       } else {
         setActiveSection('instructions');
       }
     }
-  }, [contributions, user.username]);
+  }, [contributions, user.username, user]);
 
   useEffect(() => {
     // run it only when the component is initialized
