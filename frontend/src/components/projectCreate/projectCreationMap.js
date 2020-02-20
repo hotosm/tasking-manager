@@ -1,10 +1,10 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-
-import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
+import { paintOptions } from './index';
+import { MAPBOX_TOKEN, MAP_STYLES, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -12,6 +12,43 @@ try {
 } catch {
   console.log('RTLTextPlugin is loaded');
 }
+
+const BasemapMenu = ({ map, metadata }) => {
+  // Remove elements that require mapbox token;
+  let styles = MAP_STYLES;
+  if (!MAPBOX_TOKEN) {
+    styles = MAP_STYLES.filter(s => typeof s.value === 'object');
+  }
+
+  const [basemap, setBasemap] = useState(styles[0].label);
+
+  const handleClick = style => {
+    let styleValue = style.value;
+
+    if (typeof style.value === 'string') {
+      styleValue = 'mapbox://styles/mapbox/' + style.value;
+    }
+    map.setStyle(styleValue);
+    setBasemap(style.label);
+  };
+
+  return (
+    <div className="bg-white flex mt2 ml2 f7 br1 shadow-1">
+      {styles.map(style => {
+        return (
+          <div
+            onClick={() => handleClick(style)}
+            className={`ttc pv2 ph3 pointer link + ${
+              basemap === style.label ? 'bg-grey-light' : ''
+            }`}
+          >
+            {style.label}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => {
   const mapRef = React.createRef();
@@ -48,10 +85,37 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => 
       mapObj.map.on('draw.delete', event => {
         updateMetadata({ ...metadata, geom: null, area: 0 });
       });
+
+      mapObj.map.on('style.load', event => {
+        const layer_name = 'aoi';
+        if (mapObj.map.getLayer(layer_name)) {
+          mapObj.map.removeLayer(layer_name);
+        }
+        if (mapObj.map.getSource(layer_name)) {
+          mapObj.map.removeSource(layer_name);
+        }
+
+        mapObj.map.addLayer({
+          id: layer_name,
+          type: 'fill',
+          source: {
+            type: 'geojson',
+            data: metadata.geom,
+          },
+          paint: paintOptions,
+        });
+      });
     }
   }, [mapObj, metadata, updateMetadata]);
 
-  return <div id="map" className="vh-50 h-100-l w-100" ref={mapRef}></div>;
+  return (
+    <div className="w-100 h-100-l relative">
+      <div className="absolute top-0 left-0 z-5">
+        <BasemapMenu map={mapObj.map} metadata={metadata} />
+      </div>
+      <div id="map" className="vh-50 h-100-l w-100" ref={mapRef}></div>
+    </div>
+  );
 };
 
 export { ProjectCreationMap };
