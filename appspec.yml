@@ -1,0 +1,99 @@
+# This is an appspec.yml template file for use with an EC2/On-Premises deployment in CodeDeploy.
+# The lines starting with the hashtag symbol are comments
+# AppSpec File Reference  https://docs.aws.amazon.com/codedeploy/latest/userguide/app-spec-ref.html
+#
+# DO NOT CHANGE
+version: 0.0
+#
+os: linux 
+#
+# During the Install deployment lifecycle event (which occurs between the 
+#   BeforeInstall and AfterInstall events), copy the specified files 
+#   in "source" starting from the root of the revision's file bundle 
+#   to "destination" on the Amazon EC2 instance.
+# Specify multiple "source" and "destination" pairs if you want to copy 
+#   from multiple sources or to multiple destinations.
+# If you are not copying any files to the Amazon EC2 instance, then remove the
+#   "files" section altogether. A blank or incomplete "files" section
+#   may cause associated deployments to fail.
+files:
+  - source: /
+    destination: /tasking-manager
+  - source: /tasking-manager.service
+    destination: /etc/systemd/system
+# For deployments to Amazon Linux, Ubuntu Server, or RHEL instances,
+#   you can specify a "permissions" 
+#   section here that describes special permissions to apply to the files 
+#   in the "files" section as they are being copied over to 
+#   the Amazon EC2 instance.
+#   For more information, see the documentation.
+permissions:
+  - object: /tasking-manager
+    pattern: "*"
+    owner: root
+    group: root
+    mode: 644
+    type:
+      - directory
+# If you are not running any commands on the Amazon EC2 instance, then remove 
+#   the "hooks" section altogether. A blank or incomplete "hooks" section
+#   may cause associated deployments to fail.
+hooks:
+# For each deployment lifecycle event, specify multiple "location" entries 
+#   if you want to run multiple scripts during that event.
+# You can specify "timeout" as the number of seconds to wait until failing the deployment 
+#   if the specified scripts do not run within the specified time limit for the 
+#   specified event. For example, 900 seconds is 15 minutes. If not specified, 
+#   the default is 1800 seconds (30 minutes).
+#   Note that the maximum amount of time that all scripts must finish executing 
+#   for each individual deployment lifecycle event is 3600 seconds (1 hour). 
+#   Otherwise, the deployment will stop and CodeDeploy will consider the deployment
+#   to have failed to the Amazon EC2 instance. Make sure that the total number of seconds 
+#   that are specified in "timeout" for all scripts in each individual deployment 
+#   lifecycle event does not exceed a combined 3600 seconds (1 hour).
+# For deployments to Amazon Linux, Ubuntu Server, or RHEL instances,
+#   you can specify "runas" in an event to
+#   run as the specified user.
+# If you do not want to run any commands during a particular deployment
+#   lifecycle event, remove that event declaration altogether. Blank or 
+#   incomplete event declarations may cause associated deployments to fail.
+# During the ApplicationStop deployment lifecycle event, run the commands 
+#   in the script specified in "location" starting from the root of the 
+#   revision's file bundle.
+  ApplicationStop:
+    - location: /scripts/aws/cloudformation/service-stop.sh
+      timeout: 200
+      runas: root
+# During the BeforeInstall deployment lifecycle event, run the commands 
+#   in the script specified in "location".
+#  BeforeInstall:
+#    - location: 
+#      timeout:
+#      runas: 
+#    - location: 
+#      timeout:
+#      runas:
+# During the AfterInstall deployment lifecycle event, run the commands 
+#   in the script specified in "location".
+#  AfterInstall:
+#    - location:     
+#      timeout: 
+#      runas:
+#    - location: 
+#      timeout:
+#      runas:
+# During the ApplicationStart deployment lifecycle event, run the commands 
+#   in the script specified in "location".
+  ApplicationStart:
+    - location: /scripts/aws/cloudformation/service-start.sh
+      timeout: 200
+      runas: root
+# During the ValidateService deployment lifecycle event, run the commands 
+#   in the script specified in "location".
+#  ValidateService:
+#    - location:     
+#      timeout: 
+#      runas:
+#    - location: 
+#      timeout:
+#      runas:
