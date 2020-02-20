@@ -1,0 +1,33 @@
+[Unit]
+Description=gunicorn daemon for tasking manager
+After=network.target
+
+[Service]
+Type=notify
+
+; Should run as root (initially)
+User=root
+Group=root
+
+;PIDFile=/run/tm/tm.pid
+
+; another option for an even more restricted service is
+; DynamicUser=yes
+; see http://0pointer.net/blog/dynamic-users-with-systemd.html
+
+RuntimeDirectory=gunicorn
+WorkingDirectory=/tasking-manager
+
+;ExecStartPre=/bin/chown -R root:root /tasking-manager
+ExecStart=/tasking-manager/venv/bin/gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 3 --timeout 179 manage:application
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+Restart=on-failure
+TimeoutSec=200
+
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
