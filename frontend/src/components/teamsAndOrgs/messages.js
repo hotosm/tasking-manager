@@ -64,6 +64,10 @@ export default defineMessages({
     id: 'management.interests',
     defaultMessage: 'Interests',
   },
+  users: {
+    id: 'management.users',
+    defaultMessage: 'Users',
+  },
   interest: {
     id: 'management.interest',
     defaultMessage: 'Interest',
