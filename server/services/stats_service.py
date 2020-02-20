@@ -114,6 +114,9 @@ class StatsService:
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
         """ Gets all the activity on a project """
 
+        if not ProjectService.exists(project_id):
+            raise NotFound
+
         results = (
             db.session.query(
                 TaskHistory.id,
@@ -234,6 +237,7 @@ class StatsService:
     @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
         """ Get all user contributions on a project"""
+
         mapped_stmt = (
             Task.query.with_entities(
                 Task.mapped_by,

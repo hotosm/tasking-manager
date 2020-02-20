@@ -28,13 +28,15 @@ class ProjectsContributionsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not ProjectService.exists(project_id):
+        try:
+            ProjectService.get_project_by_id(project_id)
+        except NotFound as e:
+            current_app.logger.error(f"Error validating project: {str(e)}")
             return {"Error": "Project not found"}, 404
+
         try:
             contributions = StatsService.get_user_contributions(project_id)
             return contributions.to_primitive(), 200
-        except NotFound:
-            return {"Error": "No contributions on project"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
