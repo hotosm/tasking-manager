@@ -66,7 +66,7 @@ const fallbackRasterStyle = {
   ],
 };
 
-const wmsStyle = {
+const wmsDensityStyle = {
   version: 8,
   glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
   sources: {
@@ -76,6 +76,8 @@ const wmsStyle = {
         'https://sedac.ciesin.columbia.edu/geoserver/wms?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=gpw-v3:gpw-v3-population-density-future-estimates_2005',
       ],
       tileSize: 256,
+      attribution:
+        '© <a href="https://sedac.ciesin.columbia.edu">Socioeconomic Data and Applications Center (SEDAC)</a>',
     },
   },
   layers: [
@@ -103,6 +105,8 @@ const bingStyle = {
         'https://ecn.t2.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
         'https://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=587&mkt=en-gb&n=z',
       ],
+      attribution:
+        '© <a href="https://blog.openstreetmap.org/2010/11/30/microsoft-imagery-details">Microsoft Corporation</a>',
     },
   },
   layers: [
@@ -116,16 +120,16 @@ const bingStyle = {
   ],
 };
 
-export const MAP_STYLES = [
-  { label: 'bright', value: 'bright-v9' },
-  { label: 'OSM', value: fallbackRasterStyle },
-  { label: 'density', value: wmsStyle },
+export const BASEMAP_OPTIONS = [
+  { label: 'default', value: 'bright-v9' },
+  { label: 'humanitarian', value: fallbackRasterStyle },
+  { label: 'density', value: wmsDensityStyle },
   { label: 'bing', value: bingStyle },
-  { label: 'satellite', value: 'satellite-v9' },
+  { label: 'mapbox satellite', value: 'satellite-v9' },
 ];
 
 export const MAP_STYLE = MAPBOX_TOKEN
-  ? 'mapbox://styles/mapbox/' + MAP_STYLES[0].value
-  : MAP_STYLES[1].value;
+  ? `mapbox://styles/mapbox/${BASEMAP_OPTIONS[0].value}`
+  : BASEMAP_OPTIONS[1].value;
 export const MAPBOX_RTL_PLUGIN_URL =
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';

@@ -4,7 +4,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { paintOptions } from './index';
-import { MAPBOX_TOKEN, MAP_STYLES, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
+import { MAPBOX_TOKEN, BASEMAP_OPTIONS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -13,11 +13,11 @@ try {
   console.log('RTLTextPlugin is loaded');
 }
 
-const BasemapMenu = ({ map, metadata }) => {
+const BasemapMenu = ({ map }) => {
   // Remove elements that require mapbox token;
-  let styles = MAP_STYLES;
+  let styles = BASEMAP_OPTIONS;
   if (!MAPBOX_TOKEN) {
-    styles = MAP_STYLES.filter(s => typeof s.value === 'object');
+    styles = BASEMAP_OPTIONS.filter(s => typeof s.value === 'object');
   }
 
   const [basemap, setBasemap] = useState(styles[0].label);
@@ -33,13 +33,13 @@ const BasemapMenu = ({ map, metadata }) => {
   };
 
   return (
-    <div className="bg-white flex mt2 ml2 f7 br1 shadow-1">
+    <div className="bg-white blue-dark flex mt2 ml2 f7 br1 shadow-1">
       {styles.map(style => {
         return (
           <div
             onClick={() => handleClick(style)}
             className={`ttc pv2 ph3 pointer link + ${
-              basemap === style.label ? 'bg-grey-light' : ''
+              basemap === style.label ? 'bg-grey-light fw6' : ''
             }`}
           >
             {style.label}
@@ -111,7 +111,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => 
   return (
     <div className="w-100 h-100-l relative">
       <div className="absolute top-0 left-0 z-5">
-        <BasemapMenu map={mapObj.map} metadata={metadata} />
+        <BasemapMenu map={mapObj.map} />
       </div>
       <div id="map" className="vh-50 h-100-l w-100" ref={mapRef}></div>
     </div>
