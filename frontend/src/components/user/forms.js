@@ -169,13 +169,25 @@ function _UserInformationForm(props) {
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.name} />
                 </label>
-                <Field name="name" component="input" type="text" className={fieldClasses} />
+                <Field
+                  name="name"
+                  component="input"
+                  type="text"
+                  className={fieldClasses}
+                  autocomplete="name"
+                />
               </div>
               <div className="cf">
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.email} />
                 </label>
-                <Field name="emailAddress" type="email" component="input" required>
+                <Field
+                  name="emailAddress"
+                  type="email"
+                  component="input"
+                  required
+                  autocomplete="email"
+                >
                   {({ input, meta }) => (
                     <div>
                       <input {...input} type="email" className={fieldClasses} />
@@ -196,13 +208,25 @@ function _UserInformationForm(props) {
                   <label className={labelClasses}>
                     <FormattedMessage {...messages.city} />
                   </label>
-                  <Field name="city" component="input" type="text" className={fieldClasses} />
+                  <Field
+                    name="city"
+                    component="input"
+                    type="text"
+                    className={fieldClasses}
+                    autocomplete="address-level2"
+                  />
                 </div>
                 <div className="w-100 w-50-ns fl pl3-ns">
                   <label className={labelClasses}>
                     <FormattedMessage {...messages.country} />
                   </label>
-                  <Field name="country" component="input" type="text" className={fieldClasses} />
+                  <Field
+                    name="country"
+                    component="input"
+                    type="text"
+                    className={fieldClasses}
+                    autocomplete="country-name"
+                  />
                 </div>
               </div>
               <div className="cf pt3">
