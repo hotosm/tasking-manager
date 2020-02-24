@@ -22,7 +22,7 @@ import { isUserAdminOrPM } from '../../utils/userPermissions';
 import { NotificationBell } from './notificationBell';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
 
-function getMenuItensForUser(userDetails) {
+function getMenuItensForUser(userDetails, isOrgManager) {
   const menuItems = [
     { label: messages.exploreProjects, link: 'explore', showAlways: true },
     {
@@ -38,7 +38,7 @@ function getMenuItensForUser(userDetails) {
   let filteredMenuItems;
   if (userDetails.username) {
     filteredMenuItems = menuItems.filter(item => item.authenticated === true || item.showAlways);
-    if (!isUserAdminOrPM(userDetails.role)) {
+    if (!isUserAdminOrPM(userDetails.role) && !isOrgManager) {
       filteredMenuItems = filteredMenuItems.filter(item => !item.manager);
     }
   } else {
@@ -147,17 +147,15 @@ class Header extends React.Component {
   };
 
   getUserLinks = role => {
-    let userLinks = [
+    return [
       { label: <FormattedMessage {...messages.settings} />, url: '/settings' },
       { label: <FormattedMessage {...messages.myTeams} />, url: '/teams' },
       { label: <FormattedMessage {...messages.logout} />, url: '/logout' },
     ];
-
-    return userLinks;
   };
 
   renderMenuItems() {
-    let filteredMenuItems = getMenuItensForUser(this.props.userDetails);
+    let filteredMenuItems = getMenuItensForUser(this.props.userDetails, this.props.isOrgManager);
 
     return (
       <div className="v-mid">
@@ -278,9 +276,13 @@ class Header extends React.Component {
 
 const mapStateToProps = state => ({
   userDetails: state.auth.get('userDetails'),
+  isOrgManager: state.auth.get('isOrgManager'),
   token: state.auth.get('token'),
 });
 
-Header = connect(mapStateToProps, { logout })(Header);
+Header = connect(
+  mapStateToProps,
+  { logout },
+)(Header);
 
 export { Header, getMenuItensForUser, AuthButtons };

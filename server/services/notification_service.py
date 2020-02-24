@@ -13,5 +13,4 @@ class NotificationService:
 
     @staticmethod
     def get_unread_message_count(user_id: int):
-        print("get_unread_message_count: ", user_id)
         return Notification.get_unread_message_count(user_id)
