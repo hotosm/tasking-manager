@@ -44,6 +44,7 @@ export const createLoginWindow = redirectTo => {
           username: res.username,
           session_token: res.session_token,
           picture: res.picture,
+          redirect_to: redirectTo,
         }).toString();
         let redirectUrl = `/authorized/?${params}`;
         window.location.href = redirectUrl;
