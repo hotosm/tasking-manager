@@ -402,6 +402,11 @@ class UserService:
         return False
 
     @staticmethod
+    def is_user_the_project_author(user_id: int, author_id: int) -> bool:
+        """ Is user the author of the project """
+        return user_id == author_id
+
+    @staticmethod
     def get_mapping_level(user_id: int):
         """ Gets mapping level user is at"""
         user = UserService.get_user_by_id(user_id)

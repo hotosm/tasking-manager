@@ -260,14 +260,14 @@ export const ProjectDetail = props => {
             <FormattedMessage {...messages.whoCanMap} />
           </h4>
           <PermissionBox
-            permission={props.project.mapping_permission}
+            permission={props.project.mappingPermission}
             className="dib pv2 ph3 mt2 red"
           />
           <h4 className="mb2 fw6">
             <FormattedMessage {...messages.whoCanValidate} />
           </h4>
           <PermissionBox
-            permission={props.project.validation_permission}
+            permission={props.project.validationPermission}
             validation
             className="dib pv2 ph3 mt2 red"
           />

@@ -16,6 +16,10 @@ export default defineMessages({
     id: 'notFound.lead',
     defaultMessage: 'Check the URL or report this error.',
   },
+  sectionNotAllowed: {
+    id: 'management.forbiddenAccess.title',
+    defaultMessage: 'You are not allowed to access the management area.',
+  },
   loginRequired: {
     id: 'loginPage.title',
     defaultMessage: 'Login or register an account',

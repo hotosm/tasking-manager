@@ -24,6 +24,7 @@ class SignUp extends Component {
 
   onSubmit = e => {
     e.preventDefault();
+    const osmWindow = window.open('', '_blank');
     const formdata = {
       email: this.state.email,
     };
@@ -32,8 +33,8 @@ class SignUp extends Component {
       this.setState({ ...this.state, success: res.success, details: res.details });
 
       if (res.success === true) {
-        setTimeout(() => (window.location.href = 'https://www.openstreetmap.org/user/new'), 1500);
-        safeStorage.setItem('email_address', formdata.email)
+        osmWindow.location.href = 'https://www.openstreetmap.org/user/new';
+        safeStorage.setItem('email_address', formdata.email);
       }
     });
   };
@@ -67,6 +68,7 @@ class SignUp extends Component {
               type="email"
               name="email"
               placeholder="Your best email"
+              autocomplete="email"
               onChange={this.onChange}
               value={this.state.email}
             />

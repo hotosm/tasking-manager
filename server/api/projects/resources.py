@@ -113,7 +113,6 @@ class ProjectsRestAPI(Resource):
             except Exception as e:
                 current_app.logger.critical(str(e))
 
-    @tm.pm_only()
     @token_auth.login_required
     def post(self):
         """
@@ -191,6 +190,8 @@ class ProjectsRestAPI(Resource):
                 draft_project_dto
             )
             return {"projectId": draft_project_id}, 201
+        except ProjectAdminServiceError as e:
+            return {"Error": str(e)}, 403
         except (InvalidGeoJson, InvalidData):
             return {"Error": "Invalid GeoJson"}, 400
         except Exception as e:
@@ -241,7 +242,6 @@ class ProjectsRestAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch project"}, 500
 
-    @tm.pm_only()
     @token_auth.login_required
     def patch(self, project_id):
         """
@@ -267,7 +267,7 @@ class ProjectsRestAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for creating draft project
+              description: JSON object for updating an existing project
               schema:
                 properties:
                     projectStatus:
@@ -282,15 +282,12 @@ class ProjectsRestAPI(Resource):
                     mapperLevel:
                         type: string
                         default: BEGINNER
-                    enforceMapperLevel:
-                        type: boolean
-                        default: false
-                    enforceValidatorRole:
-                        type: boolean
-                        default: false
-                    allowNonBeginners:
-                        type: boolean
-                        default: false
+                    validation_permission:
+                        type: string
+                        default: ANY
+                    mapping_permission:
+                        type: string
+                        default: ANY
                     private:
                         type: boolean
                         default: false
@@ -324,7 +321,7 @@ class ProjectsRestAPI(Resource):
                         items:
                             type: string
                         default: [ID, JOSM, POTLATCH_2, FIELD_PAPERS]
-                    campaignTag:
+                    campaign:
                         type: string
                         default: malaria
                     organisation:
@@ -385,7 +382,7 @@ class ProjectsRestAPI(Resource):
         except NotFound as e:
             return {"Error": str(e) or "Project Not Found"}, 404
         except ProjectAdminServiceError:
-            return {"Error": "Unable to update project"}, 400
+            return {"Error": "Unable to update project"}, 403
         except Exception as e:
             error_msg = f"Project PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
