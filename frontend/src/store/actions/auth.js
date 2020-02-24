@@ -5,6 +5,7 @@ export const types = {
   REGISTER_USER: 'REGISTER_USER',
   SET_USER_DETAILS: 'SET_USER_DETAILS',
   SET_OSM: 'SET_OSM',
+  SET_ORG_MANAGER: 'SET_ORG_MANAGER',
   UPDATE_OSM_INFO: 'UPDATE_OSM_INFO',
   GET_USER_DETAILS: 'GET_USER_DETAILS',
   SET_TOKEN: 'SET_TOKEN',
@@ -53,6 +54,12 @@ export function updateOSMInfo(osm) {
     osm: osm,
   };
 }
+export function updateOrgsInfo(isOrgManager) {
+  return {
+    type: types.SET_ORG_MANAGER,
+    isOrgManager: isOrgManager,
+  };
+}
 
 export function updateToken(token) {
   return {
@@ -69,14 +76,20 @@ export const setAuthDetails = (username, token) => dispatch => {
   dispatch(setUserDetails(username, encoded_token));
 };
 
-export const setUserDetails = (username, encoded_token) => dispatch => {
+export const setUserDetails = (username, encodedToken) => dispatch => {
   // UPDATES OSM INFORMATION OF THE USER
-  fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encoded_token)
+  fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encodedToken)
     .then(osmInfo => dispatch(updateOSMInfo(osmInfo)))
     .catch(error => console.log(error));
   // GET USER DETAILS
-  fetchLocalJSONAPI(`users/queries/${username}/`, encoded_token)
-    .then(userDetails => dispatch(updateUserDetails(userDetails)))
+  fetchLocalJSONAPI(`users/queries/${username}/`, encodedToken)
+    .then(userDetails => {
+      dispatch(updateUserDetails(userDetails));
+      // GET USER ORGS INFO
+      fetchLocalJSONAPI(`organisations/?manager_user_id=${userDetails.id}`, encodedToken)
+        .then(orgs => dispatch(updateOrgsInfo(orgs.organisations.length > 0)))
+        .catch(error => dispatch(updateOrgsInfo(false)));
+    })
     .catch(error => dispatch(logout()));
 };
 

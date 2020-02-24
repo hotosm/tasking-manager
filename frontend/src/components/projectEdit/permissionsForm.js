@@ -42,11 +42,11 @@ export const PermissionsForm = () => {
           <label className="db pv2" key={permission}>
             <input
               value={permission.value}
-              checked={projectInfo.mapping_permission === permission.value}
+              checked={projectInfo.mappingPermission === permission.value}
               onChange={() =>
                 setProjectInfo({
                   ...projectInfo,
-                  mapping_permission: permission.value,
+                  mappingPermission: permission.value,
                 })
               }
               type="radio"
@@ -67,11 +67,11 @@ export const PermissionsForm = () => {
           <label className="db pv2" key={permission}>
             <input
               value={permission.value}
-              checked={projectInfo.validation_permission === permission.value}
+              checked={projectInfo.validationPermission === permission.value}
               onChange={() =>
                 setProjectInfo({
                   ...projectInfo,
-                  validation_permission: permission.value,
+                  validationPermission: permission.value,
                 })
               }
               type="radio"

@@ -42,7 +42,7 @@ export function TeamsManagement({ teams, userDetails, managementView }: Object) 
   );
 }
 
-export function Teams({ teams, viewAllQuery, showAddButton = false }: Object) {
+export function Teams({ teams, viewAllQuery, showAddButton = false, isReady }: Object) {
   return (
     <div className="bg-white b--grey-light ba pa4">
       <div className="cf db">
@@ -62,7 +62,7 @@ export function Teams({ teams, viewAllQuery, showAddButton = false }: Object) {
             color="#f0efef"
             style={{ width: 250, height: 300 }}
             delay={10}
-            ready={teams}
+            ready={isReady}
           >
             {teams && teams.slice(0, 6).map((team, n) => <TeamCard team={team} key={n} />)}
             {teams && teams.length === 0 && (
