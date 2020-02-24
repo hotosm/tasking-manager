@@ -100,7 +100,7 @@ class TestProjectService(unittest.TestCase):
 
     @patch.object(Task, "get_locked_tasks_for_user")  # noqa
     @patch.object(Project, "get")
-    def test_user_not_permitted_to_map_if_already_locked_tasks(
+    def test_user_not_permitted_to_map_if_tasks_is_already_locked(
         self, mock_project, mock_user_tasks
     ):
         # Arrange
