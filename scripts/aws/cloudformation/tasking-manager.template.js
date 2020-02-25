@@ -170,7 +170,11 @@ const Resources = {
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
-      AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f']
+      AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f'],
+      Tags: [
+        { 'Key': 'backup-frequency', 'Value': 'daily', 'PropagateAtLaunch': true },
+        { 'Key': 'Name', 'Value': ${AWS::StackName}, 'PropagateAtLaunch': true }
+      ]
     },
     UpdatePolicy: {
       AutoScalingRollingUpdate: {
