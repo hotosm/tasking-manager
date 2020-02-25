@@ -19,7 +19,7 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 ## Developers
 
-* Easy [install the TM with Docker](./docs/setup-development.md)
+* Easy [install the TM with Docker](./docs/setup-docker.md)
 * See how you can [customize your instance of the TM](./docs/customize.md)
 * Learn how to [setup the TM for development](./docs/setup-development.md)
 * Help us and submit [pull requests](https://github.com/hotosm/tasking-manager/pulls)
