@@ -1001,7 +1001,7 @@ class Task(db.Model):
     def as_dto_with_instructions(self, preferred_locale: str = "en") -> TaskDTO:
         """Get dto with any task instructions"""
         task_history = []
-        for action in self.task_history:
+        for action in reversed(self.task_history):
             history = TaskHistoryDTO()
             history.history_id = action.id
             history.action = action.action
