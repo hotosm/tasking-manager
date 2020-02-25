@@ -432,6 +432,11 @@ const Resources = {
           Action: [ "sts:AssumeRole" ]
         }]
       },
+      ManagedPolicyArns: [
+          'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy',
+          'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy',
+          'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
+      ],
       Policies: [{
         PolicyName: "RDSPolicy",
         PolicyDocument: {
@@ -455,30 +460,8 @@ const Resources = {
             Resource: ['arn:aws:cloudformation:*']
           }]
         }
-      }, {
-        PolicyName: "CloudwatchAgentPermissions",
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement: [{
-            Effect: "Allow",
-            Action: [
-              "logs:CreateLogGroup",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents",
-              "logs:DescribeLogStreams"
-            ],
-            Resource: ["arn:aws:logs:*:*:*"]
-          }, {
-            Effect: "Allow",
-            Action: [
-              "s3:GetObject"
-            ],
-            Resource: [
-              "arn:aws:s3:::tasking-manager/*"
-            ]
-          }]
-        }
-      }],
+      }
+      ],
       RoleName: cf.join('-', [cf.stackName, 'ec2', 'role'])
     }
   },
