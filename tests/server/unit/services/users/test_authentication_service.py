@@ -32,8 +32,7 @@ class TestAuthenticationService(unittest.TestCase):
             AuthenticationService().login_user(osm_response, None, "wont-find")
 
     @patch.object(UserService, "get_user_by_id")
-    @patch.object(MessageService, "send_favorite_project_activities")
-    def test_if_user_get_called_with_osm_id(self, mock_user_get, mock_message_act):
+    def test_if_user_get_called_with_osm_id(self, mock_user_get):
         # Arrange
         osm_response = get_canned_osm_user_details()
 
@@ -62,8 +61,7 @@ class TestAuthenticationService(unittest.TestCase):
         )
 
     @patch.object(UserService, "get_user_by_id")
-    @patch.object(MessageService, "send_favorite_project_activities")
-    def test_valid_auth_request_gets_token(self, mock_user_get, mock_message_act):
+    def test_valid_auth_request_gets_token(self, mock_user_get):
         # Arrange
         osm_response = get_canned_osm_user_details()
 

@@ -331,11 +331,6 @@ class User(db.Model):
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
         user_dto.is_expert = self.is_expert or False
         user_dto.date_registered = self.date_registered
-        try:
-            user_dto.projects_mapped = len(self.projects_mapped)
-        # Handle users that haven't touched a project yet.
-        except Exception:
-            user_dto.projects_mapped = 0
         user_dto.tasks_mapped = self.tasks_mapped
         user_dto.tasks_validated = self.tasks_validated
         user_dto.tasks_invalidated = self.tasks_invalidated
@@ -356,36 +351,11 @@ class User(db.Model):
         user_dto.projects_notifications = self.projects_notifications
         user_dto.comments_notifications = self.comments_notifications
         user_dto.validation_message = self.validation_message
-        user_dto.total_time_spent = 0
-        user_dto.time_spent_mapping = 0
-        user_dto.time_spent_validating = 0
         gender = None
         if self.gender is not None:
             gender = UserGender(self.gender).name
         user_dto.gender = gender
         user_dto.self_description_gender = self.self_description_gender
-
-        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
-                and user_id = :user_id;"""
-        total_validation_time = db.engine.execute(text(sql), user_id=self.id)
-        for row in total_validation_time:
-            total_validation_time = row[0]
-            if total_validation_time:
-                total_validation_seconds = total_validation_time.total_seconds()
-                user_dto.time_spent_validating = total_validation_seconds
-                user_dto.total_time_spent += user_dto.time_spent_validating
-
-        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE (action='LOCKED_FOR_MAPPING' or action='AUTO_UNLOCKED_FOR_MAPPING')
-                and user_id = :user_id;"""
-        total_mapping_time = db.engine.execute(text(sql), user_id=self.id)
-        for row in total_mapping_time:
-            total_mapping_time = row[0]
-            if total_mapping_time:
-                total_mapping_seconds = total_mapping_time.total_seconds()
-                user_dto.time_spent_mapping = total_mapping_seconds
-                user_dto.total_time_spent += user_dto.time_spent_mapping
 
         if self.username == logged_in_username:
             # Only return email address when logged in user is looking at their own profile
