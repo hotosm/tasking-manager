@@ -16,6 +16,7 @@ import { CloseIcon } from '../svgIcons';
 import { getEditors } from '../../utils/editorsList';
 import { openEditor } from '../../utils/openEditor';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { TaskHistory } from './taskActivity';
 
 export function TaskMapAction({ project, tasks, action, editor }) {
   const [activeSection, setActiveSection] = useState('completion');
@@ -117,7 +118,9 @@ export function TaskMapAction({ project, tasks, action, editor }) {
                 instructions={project.projectInfo && project.projectInfo.instructions}
               />
             )}
-            {activeSection === 'history' && <div></div>}
+            {activeSection === 'history' && (
+              <TaskHistory projectId={project.projectId} taskId={tasksIds[0]} />
+            )}
           </div>
         </ReactPlaceholder>
       </div>
