@@ -191,6 +191,10 @@ export default defineMessages({
     id: 'project.detail.sections.contributionsTimeline',
     defaultMessage: 'Contributions timeline',
   },
+  viewInOsmcha: {
+    id: 'project.detail.sections.contributions.osmcha',
+    defaultMessage: 'Changesets in OSMCha',
+  },
   contributors: {
     id: 'project.detail.sections.contributors',
     defaultMessage: 'Contributors',
