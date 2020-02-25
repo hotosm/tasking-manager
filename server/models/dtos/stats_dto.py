@@ -114,7 +114,7 @@ class HomePageStatsDTO(Model):
     # total_area = FloatType(serialized_name='totalArea')
     total_mapped_area = FloatType(serialized_name="totalMappedArea")
     total_validated_area = FloatType(serialized_name="totalValidatedArea")
-    total_organisations = IntType(serialized_name="totalOrganizations")
+    total_organisations = IntType(serialized_name="totalOrganisations")
     total_campaigns = IntType(serialized_name="totalCampaigns")
     # avg_completion_time = IntType(serialized_name='averageCompletionTime')
     organisations = ListType(ModelType(OrganizationStatsDTO))

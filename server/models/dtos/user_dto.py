@@ -55,10 +55,6 @@ class UserDTO(Model):
         serialized_name="mappingLevel", validators=[is_known_mapping_level]
     )
     date_registered = UTCDateTimeType(serialized_name="dateRegistered")
-    total_time_spent = IntType(serialized_name="totalTimeSpent")
-    time_spent_mapping = IntType(serialized_name="timeSpentMapping")
-    time_spent_validating = IntType(serialized_name="timeSpentValidating")
-    projects_mapped = IntType(serialized_name="projectsMapped")
     tasks_mapped = IntType(serialized_name="tasksMapped")
     tasks_validated = IntType(serialized_name="tasksValidated")
     tasks_invalidated = IntType(serialized_name="tasksInvalidated")

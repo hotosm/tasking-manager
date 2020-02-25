@@ -5,7 +5,7 @@ import json
 from enum import Enum
 from flask import current_app
 from sqlalchemy.types import Float, Text
-from sqlalchemy import text, desc, cast, func
+from sqlalchemy import text, desc, cast
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
@@ -815,16 +815,16 @@ class Task(db.Model):
         :status: task status id to filter by
         :return: geojson.FeatureCollection
         """
-        subquery = (
-            db.session.query(func.max(TaskHistory.action_date))
-            .filter(
-                Task.id == TaskHistory.task_id,
-                Task.project_id == TaskHistory.project_id,
-            )
-            .correlate(Task)
-            .group_by(Task.id)
-            .label("update_date")
-        )
+        # subquery = (
+        #     db.session.query(func.max(TaskHistory.action_date))
+        #     .filter(
+        #         Task.id == TaskHistory.task_id,
+        #         Task.project_id == TaskHistory.project_id,
+        #     )
+        #     .correlate(Task)
+        #     .group_by(Task.id)
+        #     .label("update_date")
+        # )
         query = db.session.query(
             Task.id,
             Task.x,
@@ -833,7 +833,7 @@ class Task(db.Model):
             Task.is_square,
             Task.task_status,
             Task.geometry.ST_AsGeoJSON().label("geojson"),
-            subquery,
+            # subquery,
         )
 
         filters = [Task.project_id == project_id]
@@ -874,11 +874,11 @@ class Task(db.Model):
                         Float,
                     )
                 )
-        elif order_by == "last_updated":
-            if order_by_type == "DESC":
-                query = query.filter(*filters).order_by(desc("update_date"))
-            else:
-                query = query.filter(*filters).order_by("update_date")
+        # elif order_by == "last_updated":
+        #     if order_by_type == "DESC":
+        #         query = query.filter(*filters).order_by(desc("update_date"))
+        #     else:
+        #         query = query.filter(*filters).order_by("update_date")
         else:
             query = query.filter(*filters)
 
