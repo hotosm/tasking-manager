@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { bbox } from '@turf/turf';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, FormattedRelative } from 'react-intl';
 
 import messages from './messages';
 import { CloseIcon } from '../svgIcons';
+import { useFetch } from '../../hooks/UseFetch';
+import { formatOSMChaLink } from '../../utils/osmchaLink';
+import { compareLastUpdate } from '../../utils/sorting';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Button } from '../button';
+import { Dropdown } from '../dropdown';
 
 const PostComment = ({ projectId, taskId, setStat, setCommentPayload }) => {
   const token = useSelector(state => state.auth.get('token'));
@@ -59,28 +64,29 @@ const PostComment = ({ projectId, taskId, setStat, setCommentPayload }) => {
 
 export const TaskHistory = ({ projectId, taskId, commentStat, setStat, commentPayload }) => {
   const token = useSelector(state => state.auth.get('token'));
-  const [response, setResponse] = useState(null);
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    if (commentPayload) {
+      setHistory(commentPayload.taskHistory);
+    }
+  }, [commentPayload]);
 
   useEffect(() => {
     const getTaskInfo = async () => {
-      const url = `projects/${projectId}/tasks/${taskId}/`;
-      const res = await fetchLocalJSONAPI(url, token);
-      setResponse(res);
+      const res = await fetchLocalJSONAPI(`projects/${projectId}/tasks/${taskId}/`, token);
+      setHistory(res.taskHistory);
     };
-
-    if (commentStat === true) {
-      getTaskInfo();
-      setStat(false);
-    }
 
     if (commentStat === undefined) {
       getTaskInfo();
     }
 
-    if (commentPayload) {
-      setResponse(commentPayload);
+    if (commentStat === true) {
+      getTaskInfo();
+      setStat(false);
     }
-  }, [projectId, taskId, token, commentStat, setStat, commentPayload]);
+  }, [projectId, taskId, token, commentStat, setStat]);
 
   const getTaskActionMessage = (action, actionText) => {
     let message = '';
@@ -133,10 +139,10 @@ export const TaskHistory = ({ projectId, taskId, commentStat, setStat, commentPa
     }
   };
 
-  if (response === null) {
+  if (!history) {
     return null;
   } else {
-    return response.taskHistory.map((t, n) => (
+    return history.map((t, n) => (
       <div className="w-90 mh3 pv3 bb b--grey-light f6 cf" key={n}>
         <div className="fl w-10-ns w-100 mr2 tr">
           <UserAvatar
@@ -160,36 +166,107 @@ export const TaskHistory = ({ projectId, taskId, commentStat, setStat, commentPa
   }
 };
 
-export const TaskActivity = props => {
-  const [commentStat, setStat] = useState(true);
+export const TaskActivity = ({
+  taskId,
+  projectId,
+  projectName,
+  changesetComment,
+  bbox,
+  close,
+}: Object) => {
+  const [commentStat, setStat] = useState(false);
   const [commentPayload, setCommentPayload] = useState(null);
+  const [historyError, historyLoading, history] = useFetch(
+    `projects/${projectId}/tasks/${taskId}/`,
+    projectId !== undefined && taskId !== undefined,
+  );
+  const [lastActivityDate, setLastActivityDate] = useState(null);
+  const [contributors, setContributors] = useState([]);
+  const [osmchaLink, setOsmchaLink] = useState('');
+
+  useEffect(() => {
+    const users = [];
+    if (commentPayload) {
+      commentPayload.taskHistory.forEach(item => {
+        if (!users.includes(item.actionBy)) {
+          users.push(item.actionBy);
+        }
+      });
+      setLastActivityDate(
+        commentPayload.taskHistory.sort(compareLastUpdate)[commentPayload.taskHistory.length - 1],
+      );
+    } else {
+      if (history && history.taskHistory) {
+        history.taskHistory.forEach(item => {
+          if (!users.includes(item.actionBy)) {
+            users.push(item.actionBy);
+          }
+        });
+        setLastActivityDate(
+          history.taskHistory.sort(compareLastUpdate)[history.taskHistory.length - 1],
+        );
+      }
+    }
+    setContributors(users);
+  }, [commentPayload, history]);
+
+  useEffect(() => {
+    setOsmchaLink(
+      formatOSMChaLink({
+        aoiBBOX: bbox,
+        created: lastActivityDate,
+        usernames: contributors,
+        changesetComment: changesetComment,
+      }),
+    );
+  }, [changesetComment, contributors, lastActivityDate, bbox]);
 
   return (
     <div className="h-100 bg-white">
       <div className="w-100 pv3 ph4 blue-dark bg-tan relative">
-        <CloseIcon className="h1 w1 fr pointer" onClick={() => props.close()} />
+        <CloseIcon className="h1 w1 fr pointer" onClick={() => close()} />
         <p className="ttu f3 pa0 ma0 barlow-condensed b mb2">
           <FormattedMessage {...messages.taskActivity} />
         </p>
-        <p className="f5 pa0 ma0">
-          <b>#{props.taskId}:</b> {props.projectName}
-        </p>
+        <div className="f5 pa0 ma0 cf">
+          <div className="w-80-l w-100 fl pt2">
+            <b>#{taskId}:</b> {projectName}
+          </div>
+          <div className="w-20-l w-100 fl tr">
+            <Dropdown
+              onAdd={() => {}}
+              onRemove={() => {}}
+              onChange={() => {}}
+              value={null}
+              options={[
+                {
+                  label: <FormattedMessage {...messages.taskOnOverpass} />,
+                  href: 'https://overpass.de',
+                },
+                { label: <FormattedMessage {...messages.taskOnOSMCha} />, href: osmchaLink },
+              ]}
+              display={'Task data'}
+              className="blue-dark bg-white mr1 v-mid pv2 ph2 ba b--grey-light link"
+            />
+          </div>
+        </div>
       </div>
       <div className="blue-dark h5 overflow-scroll">
         <TaskHistory
-          projectId={props.projectId}
-          taskId={props.taskId}
+          projectId={projectId}
+          taskId={taskId}
           commentStat={commentStat}
           setStat={setStat}
-          commentPayload={commentPayload}
+          commentPayload={commentPayload !== null ? commentPayload : history}
         />
       </div>
       <PostComment
-        projectId={props.projectId}
-        taskId={props.taskId}
+        projectId={projectId}
+        taskId={taskId}
         setStat={setStat}
         setCommentPayload={setCommentPayload}
       />
+      <div className="w-100 pv3 ph4 blue-grey bg-tan relative"></div>
     </div>
   );
 };
