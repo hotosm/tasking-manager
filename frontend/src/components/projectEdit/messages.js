@@ -109,7 +109,7 @@ export default defineMessages({
   mapAllDescription: {
     id: 'projects.actions.map_all_tasks.description',
     defaultMessage:
-      "This will mark all tasks (except 'mapping not possible' ones) as mapped. Please use this only if you are sure of what you are doing.",
+      "This will mark all tasks (except 'unavailable' ones) as mapped. Please use this only if you are sure of what you are doing.",
   },
   mapAllSuccess: {
     id: 'projects.actions.map_all_tasks.success',
@@ -131,11 +131,11 @@ export default defineMessages({
   invalidateAllDescription: {
     id: 'projects.actions.invalidate_all_tasks.description',
     defaultMessage:
-      "This will mark all tasks (except 'needs more mapping' and 'mapping not possible' ones) as invalid. Please use this only if you are sure of what you are doing.",
+      "This will mark all tasks (except 'unavailable' ones) as 'more mapping needed'. Please use this only if you are sure of what you are doing.",
   },
   invalidateAllSuccess: {
     id: 'projects.actions.invalidate_all_tasks.success',
-    defaultMessage: 'The tasks were invalidated successfully.',
+    defaultMessage: "The tasks were set as 'more mapping needed' successfully.",
   },
   invalidateAllError: {
     id: 'projects.actions.invalidate_all_tasks.error',
@@ -152,7 +152,7 @@ export default defineMessages({
   validateAllTasksDescription: {
     id: 'projects.actions.validate_all_tasks.description',
     defaultMessage:
-      "This will change the status of all tasks (except 'mapping not possible' ones) to 'validated'. Please use this only if you are sure of what you are doing.",
+      "This will change the status of all tasks (except 'unavailable' ones) to 'finished'. Please use this only if you are sure of what you are doing.",
   },
   validateAllSuccess: {
     id: 'projects.actions.validate_all_tasks.success',
@@ -164,25 +164,25 @@ export default defineMessages({
   },
   resetBadImagery: {
     id: 'projects.actions.reset_bad_imagery_tasks.title',
-    defaultMessage: 'Reset tasks marked as mapping not possible',
+    defaultMessage: 'Reset tasks marked as unavailable',
   },
   resetBadImageryConfirmation: {
     id: 'projects.actions.reset_bad_imagery_tasks.confirmation',
     defaultMessage:
-      'Are you sure you want to reset all tasks marked as mapping not possible in this project? You cannot undo this.',
+      'Are you sure you want to reset all tasks marked as unavailable in this project? You cannot undo this.',
   },
   resetBadImageryDescription: {
     id: 'projects.actions.reset_bad_imagery_tasks.description',
     defaultMessage:
-      "This will change the status of those tasks to 'ready'. Please use this only if you are sure of what you are doing.",
+      "This will change the status of those tasks to 'ready for mapping'. Please use this only if you are sure of what you are doing.",
   },
   resetBadImageryButton: {
     id: 'projects.actions.reset_bad_imagery_tasks.button',
-    defaultMessage: 'Reset all mapping not possible tasks',
+    defaultMessage: 'Reset all unavailable tasks',
   },
   resetBadImagerySuccess: {
     id: 'projects.actions.reset_bad_imagery_tasks.success',
-    defaultMessage: 'The tasks marked as mapping not possible were reset successfully.',
+    defaultMessage: 'The tasks marked as unavailable were reset successfully.',
   },
   resetBadImageryError: {
     id: 'projects.actions.reset_bad_imagery_tasks.error',

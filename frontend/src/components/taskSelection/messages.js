@@ -331,7 +331,7 @@ export default defineMessages({
   },
   taskHistoryBadImagery: {
     id: 'project.tasks.history.badimagery',
-    defaultMessage: 'marked as bad imagery',
+    defaultMessage: 'marked as unavailable',
   },
   taskHistoryMapped: {
     id: 'project.tasks.history.mapped',
@@ -343,7 +343,7 @@ export default defineMessages({
   },
   taskHistoryInvalidated: {
     id: 'project.tasks.history.invalidated',
-    defaultMessage: 'marked as invalidated',
+    defaultMessage: 'marked as more mapping needed',
   },
   taskHistorySplit: {
     id: 'project.tasks.history.split',
@@ -351,7 +351,7 @@ export default defineMessages({
   },
   taskHistoryReady: {
     id: 'project.tasks.history.ready',
-    defaultMessage: 'marked as ready',
+    defaultMessage: 'marked as ready for mapping',
   },
   map: {
     id: 'project.tasks.action.map',
