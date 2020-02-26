@@ -60,21 +60,25 @@ export default defineMessages({
     id: 'management.campaign',
     defaultMessage: 'Campaign',
   },
-  interests: {
-    id: 'management.interests',
-    defaultMessage: 'Interests',
+  categories: {
+    id: 'management.categories',
+    defaultMessage: 'Categories',
   },
   users: {
     id: 'management.users',
     defaultMessage: 'Users',
   },
-  interest: {
-    id: 'management.interest',
-    defaultMessage: 'Interest',
+  user: {
+    id: 'management.user',
+    defaultMessage: 'User',
   },
-  interestInfo: {
-    id: 'management.titles.interest_information',
-    defaultMessage: 'Interest information',
+  category: {
+    id: 'management.category',
+    defaultMessage: 'Category',
+  },
+  categoryInfo: {
+    id: 'management.titles.category_information',
+    defaultMessage: 'Category information',
   },
   editMembersLater: {
     id: 'management.edit_members',
@@ -188,9 +192,9 @@ export default defineMessages({
     id: 'management.teams.no_campaigns',
     defaultMessage: 'There are no campaigns yet.',
   },
-  noInterests: {
-    id: 'management.no_interests',
-    defaultMessage: 'There are no interests yet.',
+  noCategories: {
+    id: 'management.no_categories',
+    defaultMessage: 'There are no categories yet.',
   },
   public: {
     id: 'management.teams.visibility.public',
@@ -214,6 +218,6 @@ export default defineMessages({
   },
   noTeamsFound: {
     id: 'management.organisation.teams.no_found',
-    defaultMessage: "This organization doesn't have teams yet.",
+    defaultMessage: 'No teams found.',
   },
 });

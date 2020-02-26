@@ -88,9 +88,9 @@ function App() {
               <CreateProject path="projects/new" />
               <ProjectEdit path="projects/:id" />
               <ManageProjectsPage path="projects/*" />
-              <ListInterests path="interests/" />
-              <EditInterest path="interests/:id" />
-              <CreateInterest path="interests/new" />
+              <ListInterests path="categories/" />
+              <EditInterest path="categories/:id" />
+              <CreateInterest path="categories/new" />
             </ManagementSection>
             <MyTeams path="teams" />
             <TeamDetail path="teams/:id/membership" />
