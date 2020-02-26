@@ -131,7 +131,7 @@ export default defineMessages({
   invalidateAllDescription: {
     id: 'projects.actions.invalidate_all_tasks.description',
     defaultMessage:
-      "This will mark all tasks (except 'needs more mapping' and 'unavailable' ones) as invalid. Please use this only if you are sure of what you are doing.",
+      "This will mark all tasks (except 'unavailable' ones) as 'more mapping needed'. Please use this only if you are sure of what you are doing.",
   },
   invalidateAllSuccess: {
     id: 'projects.actions.invalidate_all_tasks.success',
@@ -152,7 +152,7 @@ export default defineMessages({
   validateAllTasksDescription: {
     id: 'projects.actions.validate_all_tasks.description',
     defaultMessage:
-      "This will change the status of all tasks (except 'unavailable' ones) to 'validated'. Please use this only if you are sure of what you are doing.",
+      "This will change the status of all tasks (except 'unavailable' ones) to 'finished'. Please use this only if you are sure of what you are doing.",
   },
   validateAllSuccess: {
     id: 'projects.actions.validate_all_tasks.success',
