@@ -48,9 +48,9 @@ export default defineMessages({
     id: 'mytasks.navFilters.error',
     defaultMessage: 'Error while loading the tasks',
   },
-  showingXProjectsOfTotal: {
-    id: 'mytasks.nav.showing',
-    defaultMessage: 'Showing {numProjects} contributions{numRange} of {numTotalProjects}',
+  paginationCount: {
+    id: 'mytasks.pagination.count',
+    defaultMessage: 'Showing {number} of {total}',
   },
   xNew: {
     id: 'mytasks.nav.xNew',

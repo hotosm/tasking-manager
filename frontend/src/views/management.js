@@ -25,6 +25,7 @@ export function ManagementPageIndex() {
         projects={!projectsLoading && !projectsError && projects}
         viewAllQuery="?createdByMe=1"
         showAddButton={true}
+        ownerEntity="user"
       />
       <Teams
         isReady={!teamsLoading && !teamsError}

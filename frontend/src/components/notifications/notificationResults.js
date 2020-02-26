@@ -30,15 +30,10 @@ export const NotificationResults = props => {
         (!props.useMiniCard && (
           <p className="blue-grey ml3 pt2 f7">
             <FormattedMessage
-              {...messages.showingXProjectsOfTotal}
+              {...messages.paginationCount}
               values={{
-                numProjects: stateNotifications && stateNotifications.length,
-                numRange:
-                  state.pagination &&
-                  state.pagination.page > 1 &&
-                  state.pagination.page * state.pagination.perPage <= state.pagination.total &&
-                  [': ', state.pagination.page * state.pagination.perPage, ' '].join(''),
-                numTotalProjects: (
+                number: stateNotifications && stateNotifications.length,
+                total: (
                   <FormattedNumber
                     value={
                       state.pagination && !isNaN(state.pagination.total) && state.pagination.total

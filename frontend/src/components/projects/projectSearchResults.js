@@ -19,17 +19,10 @@ export const ProjectSearchResults = props => {
         ) : (
           !state.isError && (
             <FormattedMessage
-              {...messages.showingXProjectsOfTotal}
+              {...messages.paginationCount}
               values={{
-                numProjects: state.projects && state.projects.length,
-                numRange:
-                  state.pagination &&
-                  state.pagination.page > 1 &&
-                  state.pagination.page * state.pagination.perPage <= state.pagination.total &&
-                  [': ', state.pagination.page * state.pagination.perPage, ' '].join(''),
-                numTotalProjects: (
-                  <FormattedNumber value={state.pagination ? state.pagination.total : 0} />
-                ),
+                number: state.projects && state.projects.length,
+                total: <FormattedNumber value={state.pagination ? state.pagination.total : 0} />,
               }}
             />
           )

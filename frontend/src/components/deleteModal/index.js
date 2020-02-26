@@ -32,8 +32,6 @@ export function DeleteModal({ id, name, type, className }: Object) {
       });
   };
 
-  const typeFormattedMsg = <FormattedMessage {...messages[type]} />;
-
   return (
     <Popup
       trigger={<DeleteButton className={`${className || ''} dib ml3`} />}
@@ -55,10 +53,7 @@ export function DeleteModal({ id, name, type, className }: Object) {
             {!deleteStatus && (
               <>
                 <h3 className="barlow-condensed f3">
-                  <FormattedMessage
-                    {...messages.confirmDeleteTitle}
-                    values={{ name: name, type: typeFormattedMsg }}
-                  />
+                  <FormattedMessage {...messages[`confirmDeleteTitle_${type}`]} />
                 </h3>
                 <div className="pt3">
                   <Button
@@ -79,7 +74,7 @@ export function DeleteModal({ id, name, type, className }: Object) {
             {deleteStatus === 'failure' && (
               <>
                 <h3 className="barlow-condensed f3">
-                  <FormattedMessage {...messages.failure} values={{ type: typeFormattedMsg }} />
+                  <FormattedMessage {...messages[`failure_${type}`]} />
                 </h3>
                 <p>{error}</p>
               </>

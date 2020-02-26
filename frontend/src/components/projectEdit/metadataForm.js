@@ -81,7 +81,9 @@ export const MetadataForm = () => {
         ))}
       </div>
       <div className={styleClasses.divClass.replace('w-70', 'w-80')}>
-        <label className={styleClasses.labelClass}>Interests</label>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.categories} />
+        </label>
         <ProjectInterests
           interests={interests}
           projectInterests={projectInfo.interests}

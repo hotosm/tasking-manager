@@ -32,7 +32,7 @@ export const InterestsManagement = ({ interests, userDetails }) => {
       title={
         <FormattedMessage
           {...messages.manage}
-          values={{ entity: <FormattedMessage {...messages.interests} /> }}
+          values={{ entity: <FormattedMessage {...messages.categories} /> }}
         />
       }
       showAddButton={true}
@@ -42,7 +42,7 @@ export const InterestsManagement = ({ interests, userDetails }) => {
         interests.map((i, n) => <InterestCard interest={i} />)
       ) : (
         <div>
-          <FormattedMessage {...messages.noInterests} />
+          <FormattedMessage {...messages.noCategories} />
         </div>
       )}
     </Management>
@@ -77,7 +77,7 @@ export const InterestForm = props => {
           <div className="blue-grey mb3">
             <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
               <h3 className="f3 fw6 dib blue-dark mv0">
-                <FormattedMessage {...messages.interestInfo} />
+                <FormattedMessage {...messages.categoryInfo} />
               </h3>
               <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
               <form id="interest-form" onSubmit={handleSubmit}>

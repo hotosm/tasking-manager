@@ -40,9 +40,9 @@ export default defineMessages({
     id: 'notifications.navFilters.error.simple',
     defaultMessage: 'Error loading the {xWord}',
   },
-  showingXProjectsOfTotal: {
-    id: 'notifications.nav.showing',
-    defaultMessage: 'Showing {numProjects} notifications{numRange} of {numTotalProjects}',
+  paginationCount: {
+    id: 'notifications.pagination.count',
+    defaultMessage: 'Showing {number} of {total}',
   },
   xNew: {
     id: 'notifications.nav.xNew',
