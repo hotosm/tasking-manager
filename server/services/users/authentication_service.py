@@ -80,7 +80,6 @@ class AuthenticationService:
         try:
             UserService.get_user_by_id(osm_id)
             UserService.update_user(osm_id, username, user_picture)
-            MessageService.send_favorite_project_activities(osm_id)
         except NotFound:
             # User not found, so must be new user
             changesets = osm_user.find("changesets")

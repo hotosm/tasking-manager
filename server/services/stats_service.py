@@ -304,7 +304,7 @@ class StatsService:
 
     @staticmethod
     @cached(homepage_stats_cache)
-    def get_homepage_stats() -> HomePageStatsDTO:
+    def get_homepage_stats(abbrev=True) -> HomePageStatsDTO:
         """ Get overall TM stats to give community a feel for progress that's being made """
         dto = HomePageStatsDTO()
 
@@ -315,88 +315,107 @@ class StatsService:
             .count()
         )
         dto.total_mappers = User.query.count()
-        dto.total_validators = (
-            Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value)
-            .distinct(Task.validated_by)
-            .count()
-        )
         dto.tasks_mapped = Task.query.filter(
             Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))
         ).count()
-        dto.tasks_validated = Task.query.filter(
-            Task.task_status == TaskStatus.VALIDATED.value
-        ).count()
 
-        total_area_sql = """select coalesce(sum(ST_Area(geometry,true)/1000000),0) as sum
-                              from public.projects as area"""
-        total_area_result = db.engine.execute(total_area_sql)
+        if not abbrev:
+            dto.total_validators = (
+                Task.query.filter(Task.task_status == TaskStatus.VALIDATED.value)
+                .distinct(Task.validated_by)
+                .count()
+            )
+            dto.tasks_validated = Task.query.filter(
+                Task.task_status == TaskStatus.VALIDATED.value
+            ).count()
+            total_area_sql = """select coalesce(sum(ST_Area(geometry,true)/1000000),0) as sum
+                                  from public.projects as area"""
+            total_area_result = db.engine.execute(total_area_sql)
 
-        dto.total_area = total_area_result.fetchone()["sum"]
+            dto.total_area = total_area_result.fetchone()["sum"]
 
-        tasks_mapped_sql = """select coalesce(sum(ST_Area(geometry, true)/1000000), 0) as sum from public.tasks
-                             where task_status = :task_status"""
-        tasks_mapped_result = db.engine.execute(
-            text(tasks_mapped_sql), task_status=TaskStatus.MAPPED.value
-        )
-
-        dto.total_mapped_area = tasks_mapped_result.fetchone()["sum"]
-
-        tasks_validated_sql = """select coalesce(sum(ST_Area(geometry, true)/1000000), 0) as sum from public.tasks
+            tasks_mapped_sql = """select coalesce(sum(ST_Area(geometry, true)/1000000), 0) as sum from public.tasks
                                  where task_status = :task_status"""
-        tasks_validated_result = db.engine.execute(
-            text(tasks_validated_sql), task_status=TaskStatus.VALIDATED.value
-        )
+            tasks_mapped_result = db.engine.execute(
+                text(tasks_mapped_sql), task_status=TaskStatus.MAPPED.value
+            )
 
-        dto.total_validated_area = tasks_validated_result.fetchone()["sum"]
+            dto.total_mapped_area = tasks_mapped_result.fetchone()["sum"]
 
-        unique_campaigns_sql = "select count(name) as sum from campaigns"
+            tasks_validated_sql = """select coalesce(sum(ST_Area(geometry, true)/1000000), 0) as sum from public.tasks
+                                     where task_status = :task_status"""
+            tasks_validated_result = db.engine.execute(
+                text(tasks_validated_sql), task_status=TaskStatus.VALIDATED.value
+            )
 
-        unique_campaigns = db.engine.execute(unique_campaigns_sql).fetchone()["sum"]
+            dto.total_validated_area = tasks_validated_result.fetchone()["sum"]
 
-        linked_campaigns_sql = "select campaigns.name, count(campaign_projects.campaign_id) from campaigns INNER JOIN campaign_projects\
-            ON campaigns.id=campaign_projects.campaign_id group by campaigns.id"
+            unique_campaigns_sql = "select count(name) as sum from campaigns"
 
-        linked_campaigns_count = db.engine.execute(linked_campaigns_sql).fetchall()
+            unique_campaigns = db.engine.execute(unique_campaigns_sql).fetchone()["sum"]
 
-        no_campaign_count_sql = "select count(*) as project_count from projects where id not in \
-            (select distinct project_id from campaign_projects order by project_id)"
-        no_campaign_count = db.engine.execute(no_campaign_count_sql).fetchone()[
-            "project_count"
-        ]
+            linked_campaigns_sql = "select campaigns.name, count(campaign_projects.campaign_id) from campaigns INNER JOIN campaign_projects\
+                ON campaigns.id=campaign_projects.campaign_id group by campaigns.id"
 
-        for tup in linked_campaigns_count:
-            campaign_stats = CampaignStatsDTO(tup)
-            dto.campaigns.append(campaign_stats)
+            linked_campaigns_count = db.engine.execute(linked_campaigns_sql).fetchall()
 
-        if no_campaign_count:
-            no_campaign_proj = CampaignStatsDTO(("Unassociated", no_campaign_count))
-            dto.campaigns.append(no_campaign_proj)
+            no_campaign_count_sql = "select count(*) as project_count from projects where id not in \
+                (select distinct project_id from campaign_projects order by project_id)"
+            no_campaign_count = db.engine.execute(no_campaign_count_sql).fetchone()[
+                "project_count"
+            ]
 
-        dto.total_campaigns = unique_campaigns
+            for tup in linked_campaigns_count:
+                campaign_stats = CampaignStatsDTO(tup)
+                dto.campaigns.append(campaign_stats)
 
-        unique_orgs_sql = "select count(name) as sum from organisations"
-        unique_orgs = db.engine.execute(unique_orgs_sql).fetchone()["sum"]
+            if no_campaign_count:
+                no_campaign_proj = CampaignStatsDTO(("Unassociated", no_campaign_count))
+                dto.campaigns.append(no_campaign_proj)
 
-        linked_orgs_sql = "select organisations.name, count(projects.organisation_id) from projects INNER JOIN organisations\
-            ON organisations.id=projects.organisation_id group by organisations.id"
-        linked_orgs_count = db.engine.execute(linked_orgs_sql).fetchall()
+            dto.total_campaigns = unique_campaigns
 
-        no_org_project_count = 0
-        no_org_project_count_sql = "select count(*) as project_count from organisations where id not in \
-            (select distinct organisation_id from projects order by organisation_id)"
-        no_org_project_count = db.engine.execute(no_org_project_count_sql).fetchone()[
-            "project_count"
-        ]
+            unique_orgs_sql = "select count(name) as sum from organisations"
+            unique_orgs = db.engine.execute(unique_orgs_sql).fetchone()["sum"]
 
-        for tup in linked_orgs_count:
-            org_stats = OrganizationStatsDTO(tup)
-            dto.organizations.append(org_stats)
+            linked_orgs_sql = "select organisations.name, count(projects.organisation_id) from projects INNER JOIN organisations\
+                ON organisations.id=projects.organisation_id group by organisations.id"
+            linked_orgs_count = db.engine.execute(linked_orgs_sql).fetchall()
 
-        if no_org_project_count:
-            no_org_proj = OrganizationStatsDTO(("Unassociated", no_org_project_count))
-            dto.organizations.append(no_org_proj)
+            no_org_project_count = 0
+            no_org_project_count_sql = "select count(*) as project_count from organisations where id not in \
+                (select distinct organisation_id from projects order by organisation_id)"
+            no_org_project_count = db.engine.execute(
+                no_org_project_count_sql
+            ).fetchone()["project_count"]
 
-        dto.total_organizations = unique_orgs
+            for tup in linked_orgs_count:
+                org_stats = OrganizationStatsDTO(tup)
+                dto.organizations.append(org_stats)
+
+            if no_org_project_count:
+                no_org_proj = OrganizationStatsDTO(
+                    ("Unassociated", no_org_project_count)
+                )
+                dto.organisations.append(no_org_proj)
+
+            dto.total_organisations = unique_orgs
+        else:
+            # Clear null attributes for abbreviated call
+            clear_attrs = [
+                "total_validators",
+                "tasks_validated",
+                "total_area",
+                "total_mapped_area",
+                "total_validated_area",
+                "campaigns",
+                "total_campaigns",
+                "organisations",
+                "total_organisations",
+            ]
+
+            for attr in clear_attrs:
+                delattr(dto, attr)
 
         return dto
 
