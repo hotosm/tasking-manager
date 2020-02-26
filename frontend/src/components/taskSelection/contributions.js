@@ -8,6 +8,7 @@ import { UserAvatar } from '../user/avatar';
 import { CheckCircle } from '../checkCircle';
 import ProjectProgressBar from '../projectcard/projectProgressBar';
 import { computeCompleteness } from '../../utils/projectCompletenessCalc';
+import { OSMChaButton } from '../projectDetail/osmchaButton';
 
 const Contributions = props => {
   const mappingLevels = [
@@ -72,6 +73,7 @@ const Contributions = props => {
           percentValidated={percentValidated}
           className="pt1 pb3"
         />
+        <OSMChaButton project={props.project} className="bg-white blue-light bn mv2" />
         <MappingLevelSelect />
       </div>
       <div className="w-100 fl cf">

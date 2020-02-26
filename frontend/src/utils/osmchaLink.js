@@ -10,10 +10,14 @@ export function formatOSMChaLink(infoObj) {
     filterParams['in_bbox'] = buildFilter(
       typeof infoObj.aoiBBOX === 'string' ? infoObj.aoiBBOX : infoObj.aoiBBOX.join(','),
     );
-    filterParams['area_lt'] = buildFilter(2);
+    // add the area_lt only if we are filtering changesets of the entire project
+    // on that case, we don't have usernames information
+    if (!infoObj.usernames) {
+      filterParams['area_lt'] = buildFilter(2);
+    }
   }
 
-  if (infoObj.created) {
+  if (typeof infoObj.created === 'string') {
     filterParams['date__gte'] = buildFilter(infoObj.created.split('T')[0]);
   }
 

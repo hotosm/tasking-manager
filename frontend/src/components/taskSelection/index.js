@@ -40,6 +40,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   const lockedTasks = useSelector(state => state.lockedTasks);
   const dispatch = useDispatch();
   const [tasks, setTasks] = useState([]);
+  const [zoomedTaskId, setZoomedTaskId] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
   const [selected, setSelectedTasks] = useState([]);
   const [mapInit, setMapInit] = useState(false);
@@ -47,11 +48,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [taskAction, setTaskAction] = useState('mapATask');
   const [activeStatus, setActiveStatus] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
-  // these two fetches are needed to initialize the component
-  const [tasksError, tasksLoading, initialTasks] = useFetch(
-    `projects/${project.projectId}/tasks/`,
-    project.projectId !== undefined,
-  );
+
   /* eslint-disable-next-line */
   const [tasksActivitiesError, tasksActivitiesLoading, initialActivities] = useFetch(
     `projects/${project.projectId}/activities/latest/`,
@@ -66,7 +63,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   /* eslint-disable-next-line */
   const [userTeamsError, userTeamsLoading, userTeams] = useFetch(
     `teams/?member=${user.id}`,
-    user.id,
+    user.id !== undefined,
   );
 
   /* eslint-disable-next-line */
@@ -81,8 +78,8 @@ export function TaskSelection({ project, type, loading }: Object) {
 
   // if the user is a beginner, open the page with the instructions tab activated
   useEffect(() => {
-    setTasks(initialTasks);
-  }, [initialTasks]);
+    setTasks(project.tasks);
+  }, [project]);
 
   useEffect(() => {
     if (contributions && contributions.userContributions) {
@@ -134,10 +131,10 @@ export function TaskSelection({ project, type, loading }: Object) {
 
   // refresh the task status on the map each time the activities are updated
   useEffect(() => {
-    if (initialTasks && activities) {
-      setTasks(updateTasksStatus(initialTasks, activities));
+    if (project && project.tasks && activities) {
+      setTasks(updateTasksStatus(project.tasks, activities));
     }
-  }, [initialTasks, activities]);
+  }, [project, activities]);
 
   // chooses a random task to the user
   useEffect(() => {
@@ -227,6 +224,7 @@ export function TaskSelection({ project, type, loading }: Object) {
                       tasks={activities || initialActivities}
                       selectTask={selectTask}
                       selected={selected}
+                      setZoomedTaskId={setZoomedTaskId}
                       userContributions={contributions.userContributions}
                     />
                   ) : null}
@@ -237,6 +235,7 @@ export function TaskSelection({ project, type, loading }: Object) {
                   ) : null}
                   {activeSection === 'contributions' ? (
                     <Contributions
+                      project={project}
                       selectTask={selectTask}
                       tasks={tasks}
                       contribsData={contributions}
@@ -255,14 +254,15 @@ export function TaskSelection({ project, type, loading }: Object) {
             type={'media'}
             rows={26}
             delay={200}
-            ready={!tasksLoading && mapInit}
+            ready={typeof project === 'object' && mapInit}
           >
             <TasksMap
               mapResults={tasks}
               projectId={project.projectId}
-              error={tasksError}
-              loading={tasksLoading}
+              error={typeof project !== 'object'}
+              loading={typeof project !== 'object'}
               className="dib w-100 fl h-100-ns vh-75"
+              zoomedTaskId={zoomedTaskId}
               selectTask={selectTask}
               selected={selected}
               taskBordersOnly={false}
