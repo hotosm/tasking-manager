@@ -5,7 +5,7 @@ import messages from './messages';
 import { SectionMenu } from '../menu';
 
 export function ManagementMenu({ isAdmin }: Object) {
-  let links = ['projects', 'organisations', 'teams', 'campaigns', 'interests', 'users'];
+  let links = ['projects', 'organisations', 'teams', 'campaigns', 'categories', 'users'];
   // non admin users can only see the three first itens
   if (!isAdmin) {
     links = links.slice(0, 3);

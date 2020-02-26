@@ -20,7 +20,7 @@ export const CreateInterest = () => {
 
   useEffect(() => {
     if (newInterestId) {
-      redirectTo(`/manage/interests/${newInterestId}`);
+      redirectTo(`/manage/categories/${newInterestId}`);
     }
   }, [newInterestId]);
 
@@ -38,12 +38,12 @@ export const CreateInterest = () => {
           <form onSubmit={handleSubmit} className="blue-grey">
             <div className="cf vh-100">
               <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
-                <FormattedMessage {...messages.newInterest} />
+                <FormattedMessage {...messages.newCategory} />
               </h3>
               <div className="w-40-l w-100 fl">
                 <div className="bg-white b--grey-light ba pa4 mb3">
                   <h3 className="f3 blue-dark mv0 fw6">
-                    <FormattedMessage {...messages.interestInfo} />
+                    <FormattedMessage {...messages.categoryInfo} />
                   </h3>
                   <InterestInformation />
                 </div>
@@ -64,7 +64,7 @@ export const CreateInterest = () => {
                   className="w-100 h-100 bg-red white"
                   disabledClassName="bg-red o-50 white w-100 h-100"
                 >
-                  <FormattedMessage {...messages.createInterest} />
+                  <FormattedMessage {...messages.createCategory} />
                 </FormSubmitButton>
               </div>
             </div>
@@ -120,7 +120,7 @@ export const EditInterest = props => {
     <div className="cf pv4 bg-tan">
       <div className="cf">
         <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">
-          <FormattedMessage {...messages.manageInterest} />
+          <FormattedMessage {...messages.manageCategory} />
         </h3>
         <DeleteModal id={interest.id} name={interest.name} type="interests" />
       </div>
@@ -136,7 +136,7 @@ export const EditInterest = props => {
         <Projects
           projects={!projectsLoading && !projectsError && projects}
           viewAllQuery={`?interests=${props.id}`}
-          ownerEntity="interests"
+          ownerEntity="category"
         />
       </div>
     </div>
