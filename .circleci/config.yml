@@ -429,7 +429,7 @@ workflows:
           - build
         stack_name: "tm4"
         environment_name: "production"
-        autoscaling_policy: "demo"
+        autoscaling_policy: "production"
         postgres_db: POSTGRES_DB_TM4
         postgres_password: POSTGRES_PASSWORD_TM4
         postgres_user: POSTGRES_USER_TM4
