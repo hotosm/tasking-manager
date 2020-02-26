@@ -92,9 +92,9 @@ export default defineMessages({
     id: 'project.nav.archived',
     defaultMessage: 'Archived',
   },
-  showingXProjectsOfTotal: {
-    id: 'project.nav.showing',
-    defaultMessage: 'Showing {numProjects} projects{numRange} of {numTotalProjects}',
+  paginationCount: {
+    id: 'project.pagination.count',
+    defaultMessage: 'Showing {number} of {total}',
   },
   clearFilters: {
     id: 'project.nav.clearFilters',

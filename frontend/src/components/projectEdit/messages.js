@@ -21,6 +21,10 @@ export default defineMessages({
     id: 'projects.formInputs.organisation.title',
     defaultMessage: 'Organization',
   },
+  categories: {
+    id: 'projects.formInputs.categories.title',
+    defaultMessage: 'Categories',
+  },
   organisationDescription: {
     id: 'projects.formInputs.organisation.description',
     defaultMessage:
