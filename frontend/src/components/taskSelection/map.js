@@ -27,6 +27,7 @@ export const TasksMap = ({
   taskCentroidMap,
   disableScrollZoom,
   selectTask,
+  zoomedTaskId,
   navigate,
   animateZoom = true,
   selected: selectedOnMap,
@@ -56,6 +57,15 @@ export const TasksMap = ({
     };
     // eslint-disable-next-line
   }, []);
+
+  useLayoutEffect(() => {
+    if (zoomedTaskId) {
+      const taskGeom = mapResults.features.filter(
+        task => task.properties.taskId === zoomedTaskId,
+      )[0].geometry;
+      map.fitBounds(extent(taskGeom), { padding: 40, maxZoom: 22, animate: true });
+    }
+  }, [zoomedTaskId, map, mapResults]);
 
   useLayoutEffect(() => {
     const onSelectTaskClick = e => {

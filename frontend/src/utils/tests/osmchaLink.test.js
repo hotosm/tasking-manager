@@ -1,6 +1,7 @@
+import { bbox } from '@turf/turf';
 import { formatOSMChaLink } from '../osmchaLink';
 
-describe('calculate the correct OSMCha link to project', () => {
+describe('test OSMCha link to project', () => {
   it('with osmchaFilterId', () => {
     const project = { osmchaFilterId: 'abcd-1234-xwyz-7890', aoiBBOX: '0.5,0,1,1.5' };
     expect(formatOSMChaLink(project)).toBe('https://osmcha.org/?aoi=abcd-1234-xwyz-7890');
@@ -33,17 +34,23 @@ describe('calculate the correct OSMCha link to project', () => {
       )}`,
     );
   });
+});
 
-  it('with aoiBBOX as a list', () => {
-    const project = {
-      osmchaFilterId: null,
-      aoiBBOX: [0, 0, 1, 1],
+describe('test OSMCha link to task', () => {
+  it('without user information', () => {
+    const taskGeom = {
+      coordinates: [[[[120.1, -9.1], [120.0, -9.1], [120.0, -9.0], [120.1, -9.0], [120.1, -9.1]]]],
+      type: 'MultiPolygon',
+    };
+    const taskInfo = {
+      aoiBBOX: bbox(taskGeom),
       changesetComment: '#TM4-TEST',
       created: '2019-08-27T12:20:42.460024Z',
+      usernames: ['user_1', 'user_2'],
     };
-    expect(formatOSMChaLink(project)).toBe(
+    expect(formatOSMChaLink(taskInfo)).toBe(
       `https://osmcha.org/?filters=${encodeURIComponent(
-        '{"in_bbox":[{"label":"0,0,1,1","value":"0,0,1,1"}],"area_lt":[{"label":2,"value":2}],"date__gte":[{"label":"2019-08-27","value":"2019-08-27"}],"comment":[{"label":"#TM4-TEST","value":"#TM4-TEST"}]}',
+        '{"in_bbox":[{"label":"120,-9.1,120,-9","value":"120,-9.1,120.1,-9"}],"date__gte":[{"label":"2019-08-27","value":"2019-08-27"}],"comment":[{"label":"#TM4-TEST","value":"#TM4-TEST"}],"usernames":[{"label":"user_1","value":"user_1"},{"label":"user_2","value":"user_2"}]}',
       )}`,
     );
   });

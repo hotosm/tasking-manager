@@ -4,13 +4,14 @@ import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import ReactPlaceholder from 'react-placeholder';
+import { bbox } from '@turf/turf';
 
 import messages from './messages';
 import { TaskActivity } from './taskActivity';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
 import { userCanValidate } from '../../utils/projectPermissions';
 import { TASK_COLOURS } from '../../config';
-import { LockIcon, ListIcon, EyeIcon, CloseIcon } from '../svgIcons';
+import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
@@ -48,7 +49,16 @@ export function TaskStatus({ status, lockHolder }: Object) {
   );
 }
 
-function TaskItem({ data, projectId, selectTask, selected = [], projectName }: Object) {
+function TaskItem({
+  data,
+  projectId,
+  setZoomedTaskId,
+  selectTask,
+  selected = [],
+  geometry,
+  projectName,
+  changesetComment,
+}: Object) {
   return (
     <div
       className={`cf db ba br1 mt2 ${
@@ -92,13 +102,20 @@ function TaskItem({ data, projectId, selectTask, selected = [], projectName }: O
                 taskId={data.taskId}
                 projectName={projectName}
                 projectId={projectId}
+                changesetComment={changesetComment}
+                bbox={bbox(geometry)}
                 close={close}
               />
             )}
           </Popup>
         </div>
         <div className="pl2 dib v-mid">
-          <EyeIcon width="18px" height="18px" className="pointer hover-blue-grey" />
+          <ZoomPlusIcon
+            width="18px"
+            height="18px"
+            className="pointer hover-blue-grey"
+            onClick={() => setZoomedTaskId(data.taskId)}
+          />
         </div>
       </div>
     </div>
@@ -145,6 +162,7 @@ export function TaskList({
   tasks,
   activeFilter,
   selectTask,
+  setZoomedTaskId,
   selected,
   userContributions,
 }: Object) {
@@ -243,10 +261,13 @@ export function TaskList({
               sortBy === 'id' ? readyTasks.sort(compareTaskId) : readyTasks.sort(compareLastUpdate)
             }
             ItemComponent={TaskItem}
+            setZoomedTaskId={setZoomedTaskId}
             selected={selected}
             selectTask={selectTask}
             projectId={project.projectId}
+            tasksGeoJSON={project.tasks}
             projectName={project.projectInfo.name}
+            changesetComment={project.changesetComment}
           />
         )}
       </ReactPlaceholder>
@@ -259,9 +280,12 @@ function PaginatedList({
   ItemComponent,
   pageSize,
   projectId,
+  setZoomedTaskId,
   selectTask,
+  tasksGeoJSON,
   selected,
   projectName,
+  changesetComment,
 }: Object) {
   const [page, setPage] = useQueryParam('page', NumberParam);
   const lastPage = howManyPages(items.length, pageSize);
@@ -284,6 +308,12 @@ function PaginatedList({
             projectId={projectId}
             selectTask={selectTask}
             selected={selected}
+            geometry={
+              tasksGeoJSON.features.filter(task => task.properties.taskId === item.taskId)[0]
+                .geometry
+            }
+            changesetComment={changesetComment}
+            setZoomedTaskId={setZoomedTaskId}
             projectName={projectName}
           />
         ))}

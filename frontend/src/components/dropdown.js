@@ -74,6 +74,7 @@ class DropdownContent extends React.PureComponent {
                 href={i.href}
                 onClick={this.props.toggleDropdown}
                 rel="noopener noreferrer"
+                className="link blue-grey"
               >
                 {i.label}
                 {this.isActive(i) && <CheckIcon className="red pl4" />}
