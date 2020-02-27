@@ -36,6 +36,10 @@ export default defineMessages({
     id: 'project.navFilters.showAllXTags',
     defaultMessage: 'Show {typeOfTag}',
   },
+  searchPlaceholder: {
+    id: 'project.inputs.placeholders.search',
+    defaultMessage: 'Search project',
+  },
   organisation: {
     id: 'project.navFilters.organisation',
     defaultMessage: 'Organization',
