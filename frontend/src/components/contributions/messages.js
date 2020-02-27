@@ -34,9 +34,8 @@ export default defineMessages({
   },
   searchProject: {
     id: 'mytasks.placeholder.search_project',
-    defaultMessage: 'Search by Project id',
+    defaultMessage: 'Search by project id',
   },
-
   projects: {
     id: 'mytasks.filter.projects',
     defaultMessage: 'Projects',
