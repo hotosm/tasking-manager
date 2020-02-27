@@ -25,6 +25,7 @@ import { ProjectDetailFooter } from './projectDetailFooter';
 import { BigProjectTeaser } from './bigProjectTeaser';
 import { QuestionsAndComments } from './questionsAndComments';
 import { PermissionBox } from './permissionBox';
+import { OSMChaButton } from './osmchaButton';
 
 /* lazy imports must be last import */
 const TaskLineGraphViz = React.lazy(() => import('./taskLineGraphViz'));
@@ -300,7 +301,7 @@ export const ProjectDetail = props => {
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.contributionsTimeline} />
       </h3>
-      <div>
+      <div className="mb5 ph4">
         <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
           <ReactPlaceholder
             showLoadingAnimation={true}
@@ -311,6 +312,18 @@ export const ProjectDetail = props => {
             <TaskLineGraphViz percentDoneVisData={props.percentDoneVisData} />
           </ReactPlaceholder>
         </React.Suspense>
+        <ReactPlaceholder
+          delay={100}
+          showLoadingAnimation={true}
+          type="rect"
+          style={{ width: 150, height: 30 }}
+          ready={typeof props.project === 'object'}
+        >
+          <OSMChaButton
+            project={props.project}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+        </ReactPlaceholder>
       </div>
     </div>
   );

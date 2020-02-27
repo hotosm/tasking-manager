@@ -309,6 +309,22 @@ export default defineMessages({
     id: 'project.tasks.history.title',
     defaultMessage: 'Task activity',
   },
+  taskData: {
+    id: 'project.tasks.activity.data.links',
+    defaultMessage: 'Task data',
+  },
+  overpassDownload: {
+    id: 'project.tasks.activity.overpass.download',
+    defaultMessage: 'Download from Overpass',
+  },
+  overpassVisualization: {
+    id: 'project.tasks.activity.overpass.visualization',
+    defaultMessage: 'Visualize with Overpass',
+  },
+  taskOnOSMCha: {
+    id: 'project.tasks.activity.osmcha',
+    defaultMessage: 'View changesets in OSMCha',
+  },
   taskHistoryComment: {
     id: 'project.tasks.history.comment',
     defaultMessage: 'commented',

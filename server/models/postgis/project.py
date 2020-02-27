@@ -729,6 +729,7 @@ class Project(db.Model):
         summary.due_date = self.due_date
         summary.created = self.created
         summary.last_updated = self.last_updated
+        summary.osmcha_filter_id = self.osmcha_filter_id
         summary.mapper_level = MappingLevel(self.mapper_level).name
         summary.mapping_permission = MappingPermission(self.mapping_permission).name
         summary.validation_permission = ValidationPermission(
