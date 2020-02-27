@@ -3,6 +3,7 @@ import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import contributionsMessages from '../contributions/messages';
 import { useInboxQueryParams, stringify } from '../../hooks/UseInboxQueryAPI';
 
 import { ProjectSearchBox } from '../projects/projectSearchBox';
@@ -86,12 +87,18 @@ export const InboxNav = props => {
           <div className="dib">
             <div className="mv2 dib"></div>
 
-            <ProjectSearchBox
-              className="dib fl mh1"
-              setQuery={setInboxQuery}
-              fullProjectsQuery={inboxQuery}
-              placeholder="Search by Project ID"
-            />
+            <FormattedMessage {...contributionsMessages.searchProject}>
+              {msg => {
+                return (
+                  <ProjectSearchBox
+                    className="dib fl mh1"
+                    setQuery={setInboxQuery}
+                    fullProjectsQuery={inboxQuery}
+                    placeholder={msg}
+                  />
+                );
+              }}
+            </FormattedMessage>
             <NotificationOrderBySelector
               className={`mt1 mt2-ns`}
               setQuery={setInboxQuery}

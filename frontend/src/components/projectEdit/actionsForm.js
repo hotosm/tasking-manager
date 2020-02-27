@@ -288,24 +288,35 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
       <p className={styleClasses.pClass + ' pb3'}>
         <FormattedMessage {...messages.messageContributorsDescription} />
       </p>
-      <input
-        value={data.subject}
-        onChange={handleChange}
-        name="subject"
-        className="db center pa2 w-100 fl mb3"
-        type="text"
-        placeholder="Subject *"
-      />
-      <textarea
-        value={data.message}
-        onChange={handleChange}
-        name="message"
-        className="dib w-100 fl pa2 mb2"
-        type="text"
-        placeholder="Message *"
-        rows={4}
-      />
-
+      <FormattedMessage {...messages.subjectPlaceholder}>
+        {msg => {
+          return (
+            <input
+              value={data.subject}
+              onChange={handleChange}
+              name="subject"
+              className="db center pa2 w-100 fl mb3"
+              type="text"
+              placeholder={msg}
+            />
+          );
+        }}
+      </FormattedMessage>
+      <FormattedMessage {...messages.messagePlaceholder}>
+        {msg => {
+          return (
+            <textarea
+              value={data.message}
+              onChange={handleChange}
+              name="message"
+              className="dib w-100 fl pa2 mb2"
+              type="text"
+              placeholder={msg}
+              rows={4}
+            />
+          );
+        }}
+      </FormattedMessage>
       <p className={styleClasses.pClass}>
         <FormattedMessage {...messages.messageContributorsTranslationAlert} />
       </p>
