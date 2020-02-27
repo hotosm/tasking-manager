@@ -50,7 +50,7 @@ describe('test OSMCha link to task', () => {
     };
     expect(formatOSMChaLink(taskInfo)).toBe(
       `https://osmcha.org/?filters=${encodeURIComponent(
-        '{"in_bbox":[{"label":"120,-9.1,120,-9","value":"120,-9.1,120.1,-9"}],"date__gte":[{"label":"2019-08-27","value":"2019-08-27"}],"comment":[{"label":"#TM4-TEST","value":"#TM4-TEST"}],"usernames":[{"label":"user_1","value":"user_1"},{"label":"user_2","value":"user_2"}]}',
+        '{"in_bbox":[{"label":"120,-9.1,120.1,-9","value":"120,-9.1,120.1,-9"}],"date__gte":[{"label":"2019-08-27","value":"2019-08-27"}],"comment":[{"label":"#TM4-TEST","value":"#TM4-TEST"}],"users":[{"label":"user_1","value":"user_1"},{"label":"user_2","value":"user_2"}]}',
       )}`,
     );
   });
