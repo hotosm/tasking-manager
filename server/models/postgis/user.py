@@ -271,9 +271,6 @@ class User(db.Model):
 
         results = db.engine.execute(text(sql), user_id=user_id)
 
-        if results.rowcount == 0:
-            raise NotFound()
-
         mapped_projects_dto = UserMappedProjectsDTO()
         for row in results:
             mapped_project = MappedProject()
