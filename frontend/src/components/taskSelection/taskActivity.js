@@ -57,7 +57,7 @@ const PostComment = ({ projectId, taskId, setStat, setCommentPayload }) => {
   );
 };
 
-const TaskHistory = ({ projectId, taskId, commentStat, setStat, commentPayload }) => {
+export const TaskHistory = ({ projectId, taskId, commentStat, setStat, commentPayload }) => {
   const token = useSelector(state => state.auth.get('token'));
   const [response, setResponse] = useState(null);
 
@@ -72,6 +72,11 @@ const TaskHistory = ({ projectId, taskId, commentStat, setStat, commentPayload }
       getTaskInfo();
       setStat(false);
     }
+
+    if (commentStat === undefined) {
+      getTaskInfo();
+    }
+
     if (commentPayload) {
       setResponse(commentPayload);
     }
@@ -133,7 +138,7 @@ const TaskHistory = ({ projectId, taskId, commentStat, setStat, commentPayload }
   } else {
     return response.taskHistory.map((t, n) => (
       <div className="w-90 mh3 pv3 bb b--grey-light f6 cf" key={n}>
-        <div className="fl w-10-ns w-100 ph2">
+        <div className="fl w-10-ns w-100 mr2 tr">
           <UserAvatar
             username={t.actionBy}
             picture={t.pictureUrl}
