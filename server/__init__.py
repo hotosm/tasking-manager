@@ -10,7 +10,6 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
 from server.config import EnvironmentConfig
-import flask_profiler
 
 
 def format_url(endpoint):
