@@ -3,7 +3,8 @@ export const API_VERSION = process.env.REACT_APP_API_VERSION || 'v2';
 export const API_URL = process.env.REACT_APP_BASE_URL
   ? new URL('/api/' + API_VERSION + '/', process.env.REACT_APP_BASE_URL)
   : 'http://127.0.0.1:5000/api/' + API_VERSION + '/';
-export const EDITS_API_URL = process.env.REACT_APP_EDITS_API_URL || '';
+export const EDITS_API_URL =
+  process.env.REACT_APP_EDITS_API_URL || 'https://osm-stats-production-api.azurewebsites.net/';
 
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
