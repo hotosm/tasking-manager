@@ -63,15 +63,21 @@ class SignUp extends Component {
         </p>
         <form onSubmit={this.onSubmit}>
           <div>
-            <input
-              className="pa2 w-60-l w-100"
-              type="email"
-              name="email"
-              placeholder="Your best email"
-              autoComplete="email"
-              onChange={this.onChange}
-              value={this.state.email}
-            />
+            <FormattedMessage {...messages.emailPlaceholder}>
+              {msg => {
+                return (
+                  <input
+                    className="pa2 w-60-l w-100"
+                    type="email"
+                    name="email"
+                    placeholder={msg}
+                    autoComplete="email"
+                    onChange={this.onChange}
+                    value={this.state.email}
+                  />
+                );
+              }}
+            </FormattedMessage>
           </div>
           <p className="blue-grey lh-copy">
             <FormattedMessage {...messages.signUpRedirect} />

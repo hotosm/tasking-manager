@@ -37,13 +37,18 @@ export const MyTasksNav = props => {
         <div className="w-100 fl dib">
           <div className="dib">
             <div className="mv2 dib"></div>
-            <ProjectSearchBox
-              className="dib fl mh1"
-              setQuery={setContributionsQuery}
-              fullProjectsQuery={contributionsQuery}
-              placeholder="Search by Project ID"
-            />
-
+            <FormattedMessage {...messages.searchProject}>
+              {msg => {
+                return (
+                  <ProjectSearchBox
+                    className="dib fl mh1"
+                    setQuery={setContributionsQuery}
+                    fullProjectsQuery={contributionsQuery}
+                    placeholder={msg}
+                  />
+                );
+              }}
+            </FormattedMessage>
             {!notAnyFilter && (
               <Link to="./" className="red link ph3 f6 v-mid dib pv2 mh1 mt1 mt2-ns fr">
                 <FormattedMessage {...messages.clearFilters} />

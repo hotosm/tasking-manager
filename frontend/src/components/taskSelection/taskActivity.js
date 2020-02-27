@@ -41,15 +41,21 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
           <CurrentUserAvatar className="h2 w2 br-100" />
         </div>
         <div className="fl w-90 h-100 pr3">
-          <textarea
-            value={comment}
-            onChange={e => setComment(e.target.value)}
-            name="comment"
-            type="textarea"
-            placeholder="Write a comment"
-            className="w-100 h-75 pa2 f6"
-            rows="4"
-          />
+          <FormattedMessage {...messages.writeComment}>
+            {msg => {
+              return (
+                <textarea
+                  value={comment}
+                  onChange={e => setComment(e.target.value)}
+                  name="comment"
+                  type="textarea"
+                  placeholder={msg}
+                  className="w-100 h-75 pa2 f6"
+                  rows="4"
+                />
+              );
+            }}
+          </FormattedMessage>
         </div>
       </div>
       <div className="w-100 pb3 tr pr3">

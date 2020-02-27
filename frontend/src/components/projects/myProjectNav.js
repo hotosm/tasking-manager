@@ -45,12 +45,18 @@ export const MyProjectNav = props => {
       <div className="dib lh-copy w-100 cf">
         <div className="w-90-ns w-100 fl dib">
           <div className="cf w-100">
-            <ProjectSearchBox
-              className="dib fl mh1 w-40"
-              setQuery={setQuery}
-              fullProjectsQuery={fullProjectsQuery}
-              placeholder="Search project"
-            />
+            <FormattedMessage {...messages.searchPlaceholder}>
+              {msg => {
+                return (
+                  <ProjectSearchBox
+                    className="dib fl mh1 w-40"
+                    setQuery={setQuery}
+                    fullProjectsQuery={fullProjectsQuery}
+                    placeholder={msg}
+                  />
+                );
+              }}
+            </FormattedMessage>
             <OrderBySelector
               className={`fl mt1 mt2-ns`}
               setQuery={setQuery}

@@ -217,13 +217,19 @@ export function TaskList({
         {user.isExpert && (
           <div>
             <div className="w-50-l w-100 dib v-mid pr2 pv1 relative">
-              <input
-                type="text"
-                placeholder="Filter tasks by id or username"
-                className="pa2 w-100"
-                value={textSearch || ''}
-                onChange={e => setTextSearch(e.target.value)}
-              />
+              <FormattedMessage {...messages.filterPlaceholder}>
+                {msg => {
+                  return (
+                    <input
+                      type="text"
+                      placeholder={msg}
+                      className="pa2 w-100"
+                      value={textSearch || ''}
+                      onChange={e => setTextSearch(e.target.value)}
+                    />
+                  );
+                }}
+              </FormattedMessage>
               <CloseIcon
                 onClick={() => {
                   setTextSearch('');
