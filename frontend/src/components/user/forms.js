@@ -174,7 +174,7 @@ function _UserInformationForm(props) {
                   component="input"
                   type="text"
                   className={fieldClasses}
-                  autocomplete="name"
+                  autoComplete="name"
                 />
               </div>
               <div className="cf">
@@ -186,7 +186,7 @@ function _UserInformationForm(props) {
                   type="email"
                   component="input"
                   required
-                  autocomplete="email"
+                  autoComplete="email"
                 >
                   {({ input, meta }) => (
                     <div>
@@ -213,7 +213,7 @@ function _UserInformationForm(props) {
                     component="input"
                     type="text"
                     className={fieldClasses}
-                    autocomplete="address-level2"
+                    autoComplete="address-level2"
                   />
                 </div>
                 <div className="w-100 w-50-ns fl pl3-ns">
@@ -225,7 +225,7 @@ function _UserInformationForm(props) {
                     component="input"
                     type="text"
                     className={fieldClasses}
-                    autocomplete="country-name"
+                    autoComplete="country-name"
                   />
                 </div>
               </div>
