@@ -33,7 +33,7 @@ function IncompleteProfile() {
 
 const RecommendedProjectsCards = ({ projects }) => {
   return projects.slice(0, 5).map((card, n) => {
-    return <ProjectCard {...card} key={n} showBottomButtons />;
+    return <ProjectCard {...card} key={n} />;
   });
 };
 
@@ -42,11 +42,10 @@ const RecommendedProjects = ({ username, userIsloggedIn }) => {
     `users/${username}/recommended-projects/`,
     username !== undefined,
   );
-
   const cardWidthClass = 'w-third-l';
 
   return (
-    <div className="ml2 pv2 w-100">
+    <div className="pv4 w-100">
       <ReactPlaceholder
         customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
         ready={!error && !loading}

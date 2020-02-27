@@ -68,7 +68,7 @@ class SignUp extends Component {
               type="email"
               name="email"
               placeholder="Your best email"
-              autocomplete="email"
+              autoComplete="email"
               onChange={this.onChange}
               value={this.state.email}
             />
