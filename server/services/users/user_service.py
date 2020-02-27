@@ -3,7 +3,7 @@ from flask import current_app
 import datetime
 from sqlalchemy import text, func, or_, desc, and_, distinct
 from server import db
-from server.models.dtos.project_dto import ProjectFavoritesDTO
+from server.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
 from server.models.dtos.user_dto import (
     UserDTO,
     UserOSMDTO,
@@ -12,8 +12,6 @@ from server.models.dtos.user_dto import (
     UserSearchDTO,
     UserStatsDTO,
     UserContributionDTO,
-    RecommendedProject,
-    UserRecommendedProjectsDTO,
     UserRegisterEmailDTO,
     UserCountryContributed,
     UserCountriesContributed,
@@ -21,7 +19,7 @@ from server.models.dtos.user_dto import (
 from server.models.dtos.interests_dto import InterestsDTO, InterestDTO
 from server.models.postgis.interests import Interest, projects_interests
 from server.models.postgis.message import Message
-from server.models.postgis.project import Project, ProjectInfo
+from server.models.postgis.project import Project
 from server.models.postgis.user import User, UserRole, MappingLevel, UserEmail
 from server.models.postgis.task import TaskHistory, TaskAction, Task
 from server.models.dtos.user_dto import UserTaskDTOs
@@ -508,6 +506,8 @@ class UserService:
     @staticmethod
     def get_recommended_projects(user_name: str, preferred_locale: str):
         """ Gets all projects a user has mapped or validated on """
+        from server.services.project_search_service import ProjectSearchService
+
         limit = 20
         user = (
             User.query.with_entities(User.id, User.mapping_level)
@@ -531,21 +531,7 @@ class UserService:
             .subquery()
         )
         # Get projects with given campaign tags but without user contributions.
-        query = (
-            Project.query.with_entities(
-                Project.id,
-                ProjectInfo.name,
-                Project.centroid.ST_AsGeoJSON().label("centroid"),
-                Project.tasks_mapped,
-                Project.tasks_validated,
-                Project.status,
-                Project.total_tasks,
-            )
-            .join(ProjectInfo)
-            .filter(Project.private is not True)
-            .filter(Project.id != sq.c.project_id)
-            .filter(Project.mapper_level <= user.mapping_level)
-        )
+        query = ProjectSearchService.create_search_query()
         projs = (
             query.filter(Project.campaign.any(campaign_tags.c.tag)).limit(limit).all()
         )
@@ -553,25 +539,25 @@ class UserService:
         # Get only user mapping level projects.
         len_projs = len(projs)
         if len_projs < limit:
-            remaining_projs = query.limit(limit - len_projs).all()
+            remaining_projs = (
+                query.filter(Project.mapper_level == user.mapping_level)
+                .limit(limit - len_projs)
+                .all()
+            )
             projs.extend(remaining_projs)
 
-        proj_dto = UserRecommendedProjectsDTO()
-        proj_dto.recommended_projects = [
-            RecommendedProject(
-                dict(
-                    project_id=r.id,
-                    name=r.name,
-                    tasks_mapped=r.tasks_mapped,
-                    tasks_validated=r.tasks_validated,
-                    status=r.status,
-                    centroid=r.centroid,
-                )
-            )
-            for r in projs
+        dto = ProjectSearchResultsDTO()
+
+        # Get all total contributions for each paginated project.
+        contrib_counts = ProjectSearchService.get_total_contributions(projs)
+
+        zip_items = zip(projs, contrib_counts)
+
+        dto.results = [
+            ProjectSearchService.create_result_dto(p, "en", t) for p, t in zip_items
         ]
 
-        return proj_dto
+        return dto
 
     @staticmethod
     def add_role_to_user(admin_user_id: int, username: str, role: str):
