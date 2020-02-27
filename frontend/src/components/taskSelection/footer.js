@@ -100,11 +100,21 @@ const TaskSelectionFooter = props => {
     if (
       props.taskAction &&
       props.project.mappingEditors &&
-      props.taskAction.startsWith('validate')
+      (props.taskAction.startsWith('validate') || props.taskAction === 'resumeValidation')
     ) {
-      setEditorOptions(getEditors(props.project.validationEditors, props.project.customEditor));
+      const validationEditorOptions = getEditors(
+        props.project.validationEditors,
+        props.project.customEditor,
+      );
+      setEditorOptions(validationEditorOptions);
+      updateEditor(validationEditorOptions);
     } else {
-      setEditorOptions(getEditors(props.project.mappingEditors, props.project.customEditor));
+      const mappingEditorOptions = getEditors(
+        props.project.mappingEditors,
+        props.project.customEditor,
+      );
+      setEditorOptions(mappingEditorOptions);
+      updateEditor(mappingEditorOptions);
     }
   }, [
     props.taskAction,
