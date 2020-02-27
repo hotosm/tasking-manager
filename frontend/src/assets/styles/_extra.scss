@@ -19,6 +19,9 @@
   .popup-content {
     width: 44% !important;
   }
+  .user-popup-content {
+    width: 13% !important;
+  }
 }
 
 @media screen and (min-width: 66rem) {
@@ -69,7 +72,7 @@
 }
 
 .bg-sec-jumbotron {
-  background: rgba(0, 0, 0, .5) url('../img/children.jpg') left;
+  background: rgba(0, 0, 0, 0.5) url('../img/children.jpg') left;
   background-blend-mode: darken;
 }
 
@@ -86,15 +89,20 @@
    adjust for the lighter shadow from design
 */
 .shadow-hover::after {
-  box-shadow: 0 7px 20px 0 rgba(0,0,0,0.08);
+  box-shadow: 0 7px 20px 0 rgba(0, 0, 0, 0.08);
   z-index: 0;
 }
 
-button:focus, button:active, a:focus, a:active {
+button:focus,
+button:active,
+a:focus,
+a:active {
   outline: 0;
 }
 /* TOGGLE for Show Map*/
-.t-cb { transition: all .3s cubic-bezier(.33, 1, .66, 1); } // Custom class
+.t-cb {
+  transition: all 0.3s cubic-bezier(0.33, 1, 0.66, 1);
+} // Custom class
 
 .checkbox:checked + .checkbox-wrapper {
   background-color: $red; // @extend .bg-green;
@@ -107,7 +115,7 @@ button:focus, button:active, a:focus, a:active {
 }
 .checkbox-toggle:hover {
   border: dashed red !important;
- }
+}
 
 .radio-input {
   background-color: $white;
@@ -147,7 +155,8 @@ https://codepen.io/nielsenramon/pen/mLMeLY
   bottom: 3rem;
 }
 
-input:disabled, textarea:disabled {
+input:disabled,
+textarea:disabled {
   background-color: $tan;
 }
 
@@ -162,26 +171,27 @@ input:disabled, textarea:disabled {
   height: 0.6rem;
 }
 
-div.messageSubjectLinks, strong.messageSubjectLinks {
-  &>a {
+div.messageSubjectLinks,
+strong.messageSubjectLinks {
+  & > a {
     color: $blue-dark;
     font-weight: 600;
     text-decoration: none;
   }
   &:hover {
-    &>a {
+    & > a {
       color: $red;
     }
     color: $red;
   }
   color: $blue-grey;
-  &.bodycard>a {
+  &.bodycard > a {
     text-decoration: underline;
   }
 }
 
 div.messageBodyLinks {
-  &>a {
+  & > a {
     color: $blue-dark;
     text-decoration: underline;
     font-weight: 600;

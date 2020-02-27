@@ -476,6 +476,10 @@ export default defineMessages({
     id: 'project.formInputs.user_role.options.admin',
     defaultMessage: 'Admin',
   },
+  userRoleREAD_ONLY: {
+    id: 'project.formInputs.user_role.options.admin',
+    defaultMessage: 'Blocked',
+  },
   mapperLevelALL: {
     id: 'project.formInputs.mapper_level.options.all',
     defaultMessage: 'All levels',

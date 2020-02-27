@@ -10,6 +10,8 @@ import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { PaginatorLine } from '../paginator';
 import { SearchIcon, CloseIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
+import { SettingsIcon, CheckIcon } from '../svgIcons';
+import Popup from 'reactjs-popup';
 
 const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
   const inputRef = useRef(null);
@@ -134,6 +136,8 @@ export const SearchNav = ({ filters, setFilters }) => {
 export const UsersTable = ({ filters, setFilters }) => {
   const token = useSelector(state => state.auth.get('token'));
   const [response, setResponse] = useState(null);
+  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  const [status, setStatus] = useState({ status: null, message: '' });
 
   useEffect(() => {
     const fetchUsers = async filters => {
@@ -162,7 +166,7 @@ export const UsersTable = ({ filters, setFilters }) => {
       .join('&');
 
     fetchUsers(urlFilters);
-  }, [filters, token]);
+  }, [filters, token, status]);
 
   if (!token) {
     return <Redirect to={'login'} noThrow />;
@@ -180,7 +184,13 @@ export const UsersTable = ({ filters, setFilters }) => {
       <div className="w-100 f5">
         <ul className="list pa0 ma0">
           {response.users.map(user => (
-            <UserListCard user={user} key={user.id} />
+            <UserListCard
+              user={user}
+              key={user.id}
+              token={token}
+              username={userDetails.username}
+              setStatus={setStatus}
+            />
           ))}
         </ul>
         {response === null || response.pagination.total === 0 ? null : (
@@ -200,10 +210,66 @@ export const UsersTable = ({ filters, setFilters }) => {
   );
 };
 
-export function UserListCard({ user }: Object) {
+const UserEditMenu = ({ user, token, close, setStatus }) => {
+  const roles = ['MAPPER', 'VALIDATOR', 'PROJECT_MANAGER', 'ADMIN', 'READ_ONLY'];
+  const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
+  const iconClass = 'h1 w1';
+
+  const updateRole = (username, role, token, close) => {
+    fetchLocalJSONAPI(`users/${username}/actions/set-role/${role}/`, token, 'PATCH').then(() => {
+      close();
+      setStatus({ success: true });
+    });
+  };
+
+  const updateMapperLevel = (username, level, token, close) => {
+    fetchLocalJSONAPI(`users/${username}/actions/set-level/${level}/`, token, 'PATCH').then(() => {
+      close();
+      setStatus({ success: true });
+    });
+  };
+
+  return (
+    <div className="w-100 f6 tl ph1">
+      <div className="w-100 bb b--tan">
+        <p className="b mv3">Set Role</p>
+        {roles.map(r => {
+          return (
+            <div key={r} className="mv2 dim pointer w-100 flex items-center justify-between">
+              <p onClick={() => updateRole(user.username, r, token, close)} className="ma0 pa0">
+                <FormattedMessage {...editMessages[`userRole${r}`]} />
+              </p>
+              {r === user.role ? <CheckIcon className={iconClass} /> : null}
+            </div>
+          );
+        })}
+      </div>
+      <div className="w-100">
+        <p className="b mv3">Set mapper level</p>
+        {mapperLevels.map(m => {
+          return (
+            <div key={m} className="mv2 dim pointer w-100 flex items-center justify-between">
+              <p
+                onClick={() => updateMapperLevel(user.username, m, token, close)}
+                className="ma0 pa0"
+              >
+                <FormattedMessage {...editMessages[`mapperLevel${m}`]} />
+              </p>
+              {m === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export function UserListCard({ user, token, username, setStatus }: Object) {
   const [isHovered, setHovered] = useState(false);
+
   return (
     <li
+      key={user.username}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={`bg-white cf flex items-center pa3 ba mb1 b--grey-light blue-dark ${
@@ -225,12 +291,31 @@ export function UserListCard({ user }: Object) {
           {user.username}
         </a>
       </div>
-      <div className="w-25 fl dib-ns dn">
+      <div className="w-20 fl dib-ns dn tc">
         <FormattedMessage {...editMessages[`mapperLevel${user.mappingLevel}`]} />
       </div>
-      <div className="w-25 fl dib-ns dn">
+      <div className="w-20 fl dib-ns dn tc">
         <FormattedMessage {...editMessages[`userRole${user.role}`]} />
       </div>
+
+      {username === user.username ? null : (
+        <div className="w-10 fl tr">
+          <Popup
+            trigger={
+              <span>
+                <SettingsIcon width="18px" height="18px" className="pointer hover-blue-grey" />
+              </span>
+            }
+            position="right center"
+            closeOnDocumentClick
+            className="user-popup"
+          >
+            {close => (
+              <UserEditMenu user={user} token={token} close={close} setStatus={setStatus} />
+            )}
+          </Popup>
+        </div>
+      )}
     </li>
   );
 }
