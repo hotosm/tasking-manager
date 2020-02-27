@@ -144,7 +144,7 @@ export function FirstProjectBanner() {
     <div className="bg-white shadow-4 tc">
       <div className="pa4">
         <MappingIcon className="red" />
-        <h3 className="f2 fw8">
+        <h3 className="f2 fw8 mt2 mb4">
           <FormattedMessage {...messages.firstProjectTitle} />
         </h3>
         <div className="lh-solid blue-grey f4">
@@ -154,7 +154,7 @@ export function FirstProjectBanner() {
           <p className="mv3">
             <FormattedMessage {...messages.firstProjectText2} />
           </p>
-          <p className="mv3 mw6" style={{ 'margin-left': 'auto', 'margin-right': 'auto' }}>
+          <p className="mv3 mw6" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
             <FormattedMessage {...messages.firstProjectText3} />
           </p>
         </div>
