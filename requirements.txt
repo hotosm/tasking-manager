@@ -59,3 +59,4 @@ Unidecode==1.1.1
 urllib3==1.25.8
 webencodings==0.5.1
 Werkzeug==0.16.1
+flask_profiler==1.8.1

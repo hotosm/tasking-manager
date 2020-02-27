@@ -3,6 +3,7 @@ import subprocess
 import warnings
 import base64
 import json
+import flask_profiler
 from flask_migrate import MigrateCommand
 from flask_script import Manager
 from dotenv import load_dotenv
@@ -31,6 +32,7 @@ for key in [
 
 # Initialise the flask app object
 application = create_app()
+flask_profiler.init_app(application)
 
 # Initialize homepage counters
 try:

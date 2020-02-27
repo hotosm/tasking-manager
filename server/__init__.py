@@ -10,6 +10,7 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
 from server.config import EnvironmentConfig
+import flask_profiler
 
 
 def format_url(endpoint):
@@ -41,6 +42,13 @@ def create_app(env=None):
 
     # Load configuration options from environment
     app.config.from_object(f"server.config.EnvironmentConfig")
+    app.config["DEBUG"] = True
+
+    app.config["flask_profiler"] = {
+        "enabled": app.config["DEBUG"],
+        "storage": {"engine": "sqlite"},
+        "ignore": ["^/static/.*"],
+    }
 
     # Enable logging to files
     initialise_logger(app)
@@ -48,6 +56,7 @@ def create_app(env=None):
 
     # Connect to database
     app.logger.debug(f"Connecting to the databse")
+
     db.init_app(app)
     migrate.init_app(app, db)
 
