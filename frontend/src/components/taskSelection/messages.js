@@ -85,6 +85,10 @@ export default defineMessages({
     id: 'project.editor.select',
     defaultMessage: 'Select editor',
   },
+  filterPlaceholder: {
+    id: 'project.input.placeholders.filter',
+    defaultMessage: 'Filter tasks by id or username',
+  },
   startAnotherEditor: {
     id: 'project.editor.start_another_editor',
     defaultMessage: 'Start another editor',
@@ -252,6 +256,10 @@ export default defineMessages({
   instructionsSelect: {
     id: 'project.tasks.action.instructions.select_task',
     defaultMessage: 'Select one of the options below that matches your edit status',
+  },
+  writeComment: {
+    id: 'project.input.placeholder.write_comment',
+    defaultMessage: 'Write a comment',
   },
   instructionsComment: {
     id: 'project.tasks.action.instructions.leave_comment',

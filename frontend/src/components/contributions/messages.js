@@ -32,6 +32,10 @@ export default defineMessages({
     id: 'mytasks.filter.archived',
     defaultMessage: 'Archived projects',
   },
+  searchProject: {
+    id: 'mytasks.placeholder.search_project',
+    defaultMessage: 'Search by project id',
+  },
   projects: {
     id: 'mytasks.filter.projects',
     defaultMessage: 'Projects',

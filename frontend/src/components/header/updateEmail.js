@@ -47,14 +47,20 @@ class UpdateEmail extends Component {
         </p>
         <form onSubmit={this.onSubmit}>
           <p>
-            <input
-              className="pa2 w-60-l w-100"
-              type="email"
-              name="email"
-              placeholder="Enter your email address"
-              onChange={this.onChange}
-              value={this.state.email}
-            />
+            <FormattedMessage {...messages.emailPlaceholder}>
+              {msg => {
+                return (
+                  <input
+                    className="pa2 w-60-l w-100"
+                    type="email"
+                    name="email"
+                    placeholder={msg}
+                    onChange={this.onChange}
+                    value={this.state.email}
+                  />
+                );
+              }}
+            </FormattedMessage>
           </p>
           <Button className="bg-red white" type="submit">
             <FormattedMessage {...messages.emailUpdateButton} />

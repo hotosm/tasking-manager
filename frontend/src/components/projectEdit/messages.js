@@ -464,6 +464,14 @@ export default defineMessages({
     id: 'project.formInputs.user_role.options.project_manager',
     defaultMessage: 'Project Manager',
   },
+  subjectPlaceholder: {
+    id: 'project.formInputs.placeholders.subject',
+    defaultMessage: 'Subject *',
+  },
+  messagePlaceholder: {
+    id: 'project.formInputs.placeholders.message',
+    defaultMessage: 'Message *',
+  },
   userRoleADMIN: {
     id: 'project.formInputs.user_role.options.admin',
     defaultMessage: 'Admin',

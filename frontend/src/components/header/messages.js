@@ -36,6 +36,10 @@ export default defineMessages({
     id: 'signUp.modal.title',
     defaultMessage: 'Sign up on OpenStreetMap',
   },
+  emailPlaceholder: {
+    id: 'input.placeholder.email_address',
+    defaultMessage: 'Your email address',
+  },
   slogan: {
     id: 'header.topBar.slogan',
     defaultMessage: 'Mapping our world together',
