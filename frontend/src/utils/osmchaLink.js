@@ -21,16 +21,16 @@ export function formatOSMChaLink(infoObj) {
     filterParams['date__gte'] = buildFilter(infoObj.created.split('T')[0]);
   }
 
-  if (infoObj.usernames) {
-    filterParams['users'] = buildFilter(infoObj.usernames);
-  }
-
   if (infoObj.mappingTeams) {
     filterParams['mapping_teams'] = buildFilter(infoObj.mappingTeams);
   }
 
   if (infoObj.changesetComment) {
     filterParams['comment'] = buildFilter(infoObj.changesetComment);
+  }
+
+  if (typeof infoObj.usernames === 'object') {
+    filterParams['users'] = buildFilter(infoObj.usernames);
   }
 
   return `${baseURL}?filters=${encodeURIComponent(JSON.stringify(filterParams))}`;
