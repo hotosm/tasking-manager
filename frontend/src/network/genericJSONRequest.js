@@ -1,5 +1,5 @@
 import { handleErrors } from '../utils/promise';
-import { API_URL, OSM_STATS_URL } from '../config';
+import { API_URL, EDITS_API_URL } from '../config';
 
 export function fetchExternalJSONAPI(url): Promise<*> {
   return fetch(url, {
@@ -42,7 +42,7 @@ export function wrapPromise(promise) {
 }
 
 export const fetchOSMStatsAPI = path => {
-  const url = new URL(path, OSM_STATS_URL);
+  const url = new URL(path, new URL(EDITS_API_URL).origin);
 
   return fetch(url).then(x => x.json());
 };
