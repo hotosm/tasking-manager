@@ -42,7 +42,7 @@ pyflakes==2.1.1
 pyparsing==2.4.6
 pyproj==2.4.2.post1
 python-dateutil==2.8.1
-python-dotenv==0.11.0
+python-dotenv==0.12.0
 python-editor==1.0.4
 python-slugify==4.0.0
 pytz==2019.3
