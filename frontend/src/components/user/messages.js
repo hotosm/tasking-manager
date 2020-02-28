@@ -106,7 +106,7 @@ export default defineMessages({
   becomeValidatorDescription: {
     id: 'user.settings.become_validator.description',
     defaultMessage:
-      "Validators check the quality of map edits completed and provide feedback for mappers on how to improve. If you are an experienced mapper, apply to become a validator.",
+      'Validators check the quality of map edits completed and provide feedback for mappers on how to improve. If you are an experienced mapper, apply to become a validator.',
   },
   mentions: {
     id: 'user.notifications.mentions',
@@ -122,7 +122,7 @@ export default defineMessages({
   },
   projectUpdatesDescription: {
     id: 'user.notifications.projects.description',
-    defaultMessage: "You get a notification when a project you have contributed to makes progress.",
+    defaultMessage: 'You get a notification when a project you have contributed to makes progress.',
   },
   comments: {
     id: 'user.notifications.comments',
@@ -155,8 +155,7 @@ export default defineMessages({
   },
   interestsLead: {
     id: 'user.interests.lead',
-    defaultMessage:
-      "Select causes of interest to help us recommend the right projects for you.",
+    defaultMessage: 'Select causes of interest to help us recommend the right projects for you.',
   },
   completenessTitle: {
     id: 'user.completeness.title',
@@ -264,25 +263,60 @@ export default defineMessages({
     id: 'users.detail.MyStats',
     defaultMessage: 'My stats',
   },
+  enterUsername: {
+    id: 'users.list.search.username',
+    defaultMessage: 'Search by username',
+  },
+  totalUsers: {
+    id: 'users.list.total',
+    defaultMessage: 'Total number of users: {total}',
+  },
+  setRole: {
+    id: 'users.list.actions.setRole',
+    defaultMessage: 'Set role',
+  },
+  setLevel: {
+    id: 'users.list.actions.setLevel',
+    defaultMessage: 'Set mapper level',
+  },
+  mapperLevelALL: {
+    id: 'user.mapper_level.options.all',
+    defaultMessage: 'All levels',
+  },
+  mapperLevelADVANCED: {
+    id: 'user.mapper_level.options.advanced',
+    defaultMessage: 'Advanced',
+  },
+  mapperLevelINTERMEDIATE: {
+    id: 'user.mapper_level.options.intermediate',
+    defaultMessage: 'Intermediate',
+  },
+  mapperLevelBEGINNER: {
+    id: 'user.mapper_level.options.beginner',
+    defaultMessage: 'Beginner',
+  },
+  userRoleALL: {
+    id: 'user.user_role.options.all',
+    defaultMessage: 'All roles',
+  },
+  userRoleADMIN: {
+    id: 'user.user_role.options.admin',
+    defaultMessage: 'Admin',
+  },
+  userRoleREAD_ONLY: {
+    id: 'user.user_role.options.read_only',
+    defaultMessage: 'Blocked',
+  },
+  userRoleMAPPER: {
+    id: 'user.user_role.options.mapper',
+    defaultMessage: 'Mapper',
+  },
+  userRoleVALIDATOR: {
+    id: 'user.user_role.options.validator',
+    defaultMessage: 'Validator',
+  },
+  userRolePROJECT_MANAGER: {
+    id: 'user.user_role.options.project_manager',
+    defaultMessage: 'Project Manager',
+  },
 });
-// It will be useful when we enable the placeholders
-// placeholder: {
-//   id: 'user.form.placeholder',
-//   defaultMessage: 'Enter your {field}'
-// },
-// selectPlaceholder: {
-//   id: 'user.form.select.placeholder',
-//   defaultMessage: 'Select your {field}'
-// },
-// twitter: {
-//   id: 'user.form.twitter',
-//   defaultMessage: 'Twitter handle'
-// },
-// facebook: {
-//   id: 'user.form.facebook',
-//   defaultMessage: 'Facebook ID'
-// },
-// linkedin: {
-//   id: 'user.form.linkedin',
-//   defaultMessage: 'Linkedin ID'
-// },

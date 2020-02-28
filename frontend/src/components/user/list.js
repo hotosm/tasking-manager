@@ -3,8 +3,7 @@ import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
-import messages from '../../views/messages';
-import editMessages from '../projectEdit/messages';
+import messages from './messages';
 import { UserAvatar } from './avatar';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { PaginatorLine } from '../paginator';
@@ -63,7 +62,7 @@ const RoleFilter = ({ filters, setFilters, updateFilters }) => {
   const roles = ['ALL', 'MAPPER', 'VALIDATOR', 'PROJECT_MANAGER', 'ADMIN'];
 
   const options = roles.map(role => {
-    return { value: role, label: <FormattedMessage {...editMessages[`userRole${role}`]} /> };
+    return { value: role, label: <FormattedMessage {...messages[`userRole${role}`]} /> };
   });
 
   return (
@@ -87,7 +86,7 @@ const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
   const mapperLevels = ['ALL', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
 
   const options = mapperLevels.map(l => {
-    return { value: l, label: <FormattedMessage {...editMessages[`mapperLevel${l}`]} /> };
+    return { value: l, label: <FormattedMessage {...messages[`mapperLevel${l}`]} /> };
   });
 
   return (
@@ -213,7 +212,7 @@ export const UsersTable = ({ filters, setFilters }) => {
 const UserEditMenu = ({ user, token, close, setStatus }) => {
   const roles = ['MAPPER', 'VALIDATOR', 'PROJECT_MANAGER', 'ADMIN', 'READ_ONLY'];
   const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
-  const iconClass = 'h1 w1';
+  const iconClass = 'h1 w1 red';
 
   const updateRole = (username, role, token, close) => {
     fetchLocalJSONAPI(`users/${username}/actions/set-role/${role}/`, token, 'PATCH').then(() => {
@@ -232,30 +231,34 @@ const UserEditMenu = ({ user, token, close, setStatus }) => {
   return (
     <div className="w-100 f6 tl ph1">
       <div className="w-100 bb b--tan">
-        <p className="b mv3">Set Role</p>
-        {roles.map(r => {
+        <p className="b mv3">
+          <FormattedMessage {...messages.setRole} />
+        </p>
+        {roles.map(role => {
           return (
-            <div key={r} className="mv2 dim pointer w-100 flex items-center justify-between">
-              <p onClick={() => updateRole(user.username, r, token, close)} className="ma0 pa0">
-                <FormattedMessage {...editMessages[`userRole${r}`]} />
+            <div key={role} className="mv2 dim pointer w-100 flex items-center justify-between">
+              <p onClick={() => updateRole(user.username, role, token, close)} className="ma0 pb1">
+                <FormattedMessage {...messages[`userRole${role}`]} />
               </p>
-              {r === user.role ? <CheckIcon className={iconClass} /> : null}
+              {role === user.role ? <CheckIcon className={iconClass} /> : null}
             </div>
           );
         })}
       </div>
       <div className="w-100">
-        <p className="b mv3">Set mapper level</p>
-        {mapperLevels.map(m => {
+        <p className="b mv3">
+          <FormattedMessage {...messages.setLevel} />
+        </p>
+        {mapperLevels.map(level => {
           return (
-            <div key={m} className="mv2 dim pointer w-100 flex items-center justify-between">
+            <div key={level} className="mv2 dim pointer w-100 flex items-center justify-between">
               <p
-                onClick={() => updateMapperLevel(user.username, m, token, close)}
-                className="ma0 pa0"
+                onClick={() => updateMapperLevel(user.username, level, token, close)}
+                className="ma0 pb1"
               >
-                <FormattedMessage {...editMessages[`mapperLevel${m}`]} />
+                <FormattedMessage {...messages[`mapperLevel${level}`]} />
               </p>
-              {m === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
+              {level === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
             </div>
           );
         })}
@@ -292,10 +295,10 @@ export function UserListCard({ user, token, username, setStatus }: Object) {
         </a>
       </div>
       <div className="w-20 fl dib-ns dn tc">
-        <FormattedMessage {...editMessages[`mapperLevel${user.mappingLevel}`]} />
+        <FormattedMessage {...messages[`mapperLevel${user.mappingLevel}`]} />
       </div>
       <div className="w-20 fl dib-ns dn tc">
-        <FormattedMessage {...editMessages[`userRole${user.role}`]} />
+        <FormattedMessage {...messages[`userRole${user.role}`]} />
       </div>
 
       {username === user.username ? null : (
