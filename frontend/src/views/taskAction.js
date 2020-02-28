@@ -85,7 +85,9 @@ export function TaskAction({ project, action }: Object) {
       return <TaskActionPossible project={project} tasks={tasks} action={action} editor={editor} />;
     }
   } else {
-    return <Login redirect_to={`projects/${project}/${action}/`} />;
+    return (
+      <Login redirectTo={`projects/${project}/${action === 'VALIDATION' ? 'validate' : 'map'}/`} />
+    );
   }
 }
 
