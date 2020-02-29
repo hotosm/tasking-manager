@@ -164,13 +164,11 @@ class ProjectDTO(Model):
 
     project_id = IntType(serialized_name="projectId")
     project_status = StringType(
-        required=True,
         serialized_name="status",
         validators=[is_known_project_status],
         serialize_when_none=False,
     )
     project_priority = StringType(
-        required=True,
         serialized_name="projectPriority",
         validators=[is_known_project_priority],
         serialize_when_none=False,
@@ -179,7 +177,7 @@ class ProjectDTO(Model):
     aoi_bbox = ListType(FloatType, serialized_name="aoiBBOX")
     tasks = BaseType(serialize_when_none=False)
     default_locale = StringType(
-        required=True, serialized_name="defaultLocale", serialize_when_none=False
+        serialized_name="defaultLocale", serialize_when_none=False
     )
     project_info = ModelType(
         ProjectInfoDTO, serialized_name="projectInfo", serialize_when_none=False
@@ -190,17 +188,12 @@ class ProjectDTO(Model):
         serialize_when_none=False,
     )
     mapper_level = StringType(
-        required=True,
-        serialized_name="mapperLevel",
-        validators=[is_known_mapping_level],
+        serialized_name="mapperLevel", validators=[is_known_mapping_level],
     )
     mapping_permission = StringType(
-        required=True,
-        serialized_name="mappingPermission",
-        validators=[is_known_mapping_permission],
+        serialized_name="mappingPermission", validators=[is_known_mapping_permission],
     )
     validation_permission = StringType(
-        required=True,
         serialized_name="validationPermission",
         validators=[is_known_validation_permission],
     )
@@ -208,7 +201,7 @@ class ProjectDTO(Model):
         required=False, default=False, serialized_name="enforceRandomTaskSelection"
     )
 
-    private = BooleanType(required=True)
+    private = BooleanType()
     entities_to_map = StringType(serialized_name="entitiesToMap")
     changeset_comment = StringType(serialized_name="changesetComment")
     osmcha_filter_id = StringType(serialized_name="osmchaFilterId")
@@ -241,7 +234,6 @@ class ProjectDTO(Model):
     percent_validated = IntType(serialized_name="percentValidated")
     percent_bad_imagery = IntType(serialized_name="percentBadImagery")
     task_creation_mode = StringType(
-        required=True,
         serialized_name="taskCreationMode",
         validators=[is_known_task_creation_mode],
         serialize_when_none=False,
@@ -250,14 +242,12 @@ class ProjectDTO(Model):
     mapping_editors = ListType(
         StringType,
         min_size=1,
-        required=True,
         serialized_name="mappingEditors",
         validators=[is_known_editor],
     )
     validation_editors = ListType(
         StringType,
         min_size=1,
-        required=True,
         serialized_name="validationEditors",
         validators=[is_known_editor],
     )

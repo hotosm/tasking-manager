@@ -382,26 +382,55 @@ class Project(db.Model):
 
     def update(self, project_dto: ProjectDTO):
         """ Updates project from DTO """
-        self.status = ProjectStatus[project_dto.project_status].value
-        self.priority = ProjectPriority[project_dto.project_priority].value
-        self.default_locale = project_dto.default_locale
-        self.mapping_permission = MappingPermission[
-            project_dto.mapping_permission.upper()
-        ].value
-        self.validation_permission = ValidationPermission[
-            project_dto.validation_permission.upper()
-        ].value
-        self.enforce_random_task_selection = project_dto.enforce_random_task_selection
+        project_dto_data = self._get_project_and_base_dto()[1]
+        updated_fields = [
+            key
+            for key, value in project_dto.items()
+            if value is not None and project_dto_data[key] != value
+        ]
+        [
+            setattr(project_dto, key, value)
+            for key, value in project_dto_data.items()
+            if key not in updated_fields
+        ]
+
+        if project_dto.project_status:
+            self.status = ProjectStatus[project_dto.project_status].value
+        if project_dto.project_priority:
+            self.priority = ProjectPriority[project_dto.project_priority].value
+        if project_dto.default_locale:
+            self.default_locale = project_dto.default_locale
+        if project_dto.mapping_permission:
+            self.mapping_permission = MappingPermission[
+                project_dto.mapping_permission.upper()
+            ].value
+        if project_dto.validation_permission:
+            self.validation_permission = ValidationPermission[
+                project_dto.validation_permission.upper()
+            ].value
+        if project_dto.enforce_random_task_selection:
+            self.enforce_random_task_selection = (
+                project_dto.enforce_random_task_selection
+            )
+        # Doesn't check if exists because the boolean False when modified affects comparisons
         self.private = project_dto.private
-        self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
-        self.entities_to_map = project_dto.entities_to_map
+        if project_dto.mapper_level:
+            self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
+        if project_dto.entities_to_map:
+            self.entities_to_map = project_dto.entities_to_map
+        # Doesn't check if exists because empty strings when modified affects comparisons
         self.changeset_comment = project_dto.changeset_comment
-        self.due_date = project_dto.due_date
-        self.imagery = project_dto.imagery
-        self.josm_preset = project_dto.josm_preset
-        self.id_presets = project_dto.id_presets
+        if project_dto.due_date:
+            self.due_date = project_dto.due_date
+        if project_dto.imagery:
+            self.imagery = project_dto.imagery
+        if project_dto.josm_preset:
+            self.josm_preset = project_dto.josm_preset
+        if project_dto.id_presets:
+            self.id_presets = project_dto.id_presets
         self.last_updated = timestamp()
-        self.license_id = project_dto.license_id
+        if project_dto.license_id:
+            self.license_id = project_dto.license_id
 
         if project_dto.osmcha_filter_id:
             # Support simple extraction of OSMCha filter id from OSMCha URL
@@ -420,19 +449,22 @@ class Project(db.Model):
 
         # Cast MappingType strings to int array
         type_array = []
-        for mapping_type in project_dto.mapping_types:
-            type_array.append(MappingTypes[mapping_type].value)
+        if project_dto.mapping_types:
+            for mapping_type in project_dto.mapping_types:
+                type_array.append(MappingTypes[mapping_type].value)
         self.mapping_types = type_array
 
         # Cast Editor strings to int array
         mapping_editors_array = []
-        for mapping_editor in project_dto.mapping_editors:
-            mapping_editors_array.append(Editors[mapping_editor].value)
+        if project_dto.mapping_editors:
+            for mapping_editor in project_dto.mapping_editors:
+                mapping_editors_array.append(Editors[mapping_editor].value)
         self.mapping_editors = mapping_editors_array
 
         validation_editors_array = []
-        for validation_editor in project_dto.validation_editors:
-            validation_editors_array.append(Editors[validation_editor].value)
+        if project_dto.validation_editors:
+            for validation_editor in project_dto.validation_editors:
+                validation_editors_array.append(Editors[validation_editor].value)
         self.validation_editors = validation_editors_array
         self.country = project_dto.country_tag
         # Add list of allowed users, meaning the project can only be mapped by users in this list
@@ -451,18 +483,24 @@ class Project(db.Model):
 
                 role = TeamRoles[team_dto.role].value
                 ProjectTeams(project=self, team=team, role=role)
+
+                role = TeamRoles[team_dto.role].value
+                ProjectTeams(project=self, team=team, role=role)
         # Set Project Info for all returned locales
-        for dto in project_dto.project_info_locales:
+        if project_dto.project_info_locales:
+            for dto in project_dto.project_info_locales:
 
-            project_info = self.project_info.filter_by(locale=dto.locale).one_or_none()
+                project_info = self.project_info.filter_by(
+                    locale=dto.locale
+                ).one_or_none()
 
-            if project_info is None:
-                new_info = ProjectInfo.create_from_dto(
-                    dto
-                )  # Can't find info so must be new locale
-                self.project_info.append(new_info)
-            else:
-                project_info.update_from_dto(dto)
+                if project_info is None:
+                    new_info = ProjectInfo.create_from_dto(
+                        dto
+                    )  # Can't find info so must be new locale
+                    self.project_info.append(new_info)
+                else:
+                    project_info.update_from_dto(dto)
 
         self.priority_areas = []  # Always clear Priority Area prior to updating
         if project_dto.priority_areas:
@@ -485,7 +523,9 @@ class Project(db.Model):
         # Update Interests.
         self.interests = []
         if project_dto.interests:
-            self.interests = [Interest.query.get(i.id) for i in project_dto.interests]
+            self.interests = [
+                Interest.query.get(i.id) for i in project_dto.interests if i
+            ]
 
         db.session.commit()
 
