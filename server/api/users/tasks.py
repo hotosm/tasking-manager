@@ -74,6 +74,8 @@ class UsersTasksAPI(Resource):
         responses:
             200:
                 description: Mapped projects found
+            204:
+                description: No projects found
             404:
                 description: No mapped projects found
             500:
@@ -108,6 +110,8 @@ class UsersTasksAPI(Resource):
                 sort_by=sort_by,
             )
             return tasks.to_primitive(), 200
+        except ValueError:
+            return {}, 204
         except NotFound:
             return {"Error": "User or tasks not found"}, 404
         except Exception as e:
