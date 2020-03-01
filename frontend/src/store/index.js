@@ -13,7 +13,7 @@ const persistedState = {
     token: safeStorage.getItem('token'),
   }),
   preferences: {
-    locale: safeStorage.getItem('locale') || 'en',
+    locale: safeStorage.getItem('locale'),
     mapShown: 'true' === safeStorage.getItem('mapShown'),
   },
 };
