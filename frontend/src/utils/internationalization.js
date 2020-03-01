@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 
@@ -35,9 +35,9 @@ const translatedMessages = {
   ja: ja,
   mg: mg,
   ml: ml,
-  nl_NL: nl_NL,
+  nl: nl_NL,
   pt: pt,
-  pt_BR: pt_BR,
+  'pt-BR': pt_BR,
   sw: sw,
   tl: tl,
   tr: tr,
@@ -57,9 +57,9 @@ const supportedLocales = [
   // { value: 'ja', label: '日本語' },
   // { value: 'mg', label: 'Malagasy' },
   // { value: 'ml', label: 'Malayalam' },
-  { value: 'nl_NL', label: 'Nederlands' },
+  { value: 'nl', label: 'Nederlands' },
   { value: 'pt', label: 'Português' },
-  { value: 'pt_BR', label: 'Português (Brasil)' },
+  { value: 'pt-BR', label: 'Português (Brasil)' },
   // { value: 'sw', label: 'Kiswahili' },
   // { value: 'tl', label: 'Filipino (Tagalog)' },
   // { value: 'tr', label: 'Türkçe' },
@@ -78,7 +78,7 @@ function getSupportedLocale(locale) {
       return filtered[0];
     }
   }
-  return {};
+  return { value: 'en', label: 'English' };
 }
 
 function getTranslatedMessages(locale) {
@@ -86,23 +86,30 @@ function getTranslatedMessages(locale) {
   if (localeCode.hasOwnProperty('value')) {
     return translatedMessages[localeCode.value];
   }
-  return translatedMessages[locale] || translatedMessages[config.DEFAULT_LOCALE];
+  return translatedMessages[locale];
 }
 
 /* textComponent is for orderBy <select>, see codesandbox at https://github.com/facebook/react/issues/15513 */
-let ConnectedIntl = props => (
-  <IntlProvider
-    key={props.locale}
-    locale={props.locale.substr(0, 2)}
-    textComponent={React.Fragment}
-    messages={getTranslatedMessages(props.locale)}
-  >
-    {props.children}
-  </IntlProvider>
-);
+let ConnectedIntl = props => {
+  useEffect(() => {
+    if (props.locale === null) {
+      props.setLocale(getSupportedLocale(navigator.language).value);
+    }
+  }, [props]);
+  return (
+    <IntlProvider
+      key={props.locale || config.DEFAULT_LOCALE}
+      locale={props.locale ? props.locale.substr(0, 2) : config.DEFAULT_LOCALE}
+      textComponent={React.Fragment}
+      messages={getTranslatedMessages(props.locale)}
+    >
+      {props.children}
+    </IntlProvider>
+  );
+};
 
 const mapStateToProps = state => ({
-  locale: state.preferences.locale || navigator.language,
+  locale: state.preferences.locale,
 });
 
 ConnectedIntl = connect(

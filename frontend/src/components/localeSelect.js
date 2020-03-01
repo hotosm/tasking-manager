@@ -9,11 +9,7 @@ import { setLocale } from '../store/actions/userPreferences';
 
 function LocaleSelect(props) {
   const onLocaleSelect = arr => {
-    if (arr.length === 1) {
-      props.setLocale(arr[0].value);
-    } else if (arr.length > 1) {
-      throw new Error('filter select array is big');
-    }
+    props.setLocale(arr[0].value);
   };
   const getActiveLanguageNames = () => {
     const locales = [
@@ -23,11 +19,9 @@ function LocaleSelect(props) {
     ];
     let supportedLocaleNames = [];
     locales.forEach(locale =>
-      supportedLocales
-        .filter(i => i.value === locale)
-        .forEach(i => supportedLocaleNames.push(i.label)),
+      supportedLocales.filter(i => i.value === locale).forEach(i => supportedLocaleNames.push(i)),
     );
-    return supportedLocaleNames[0] || 'English';
+    return supportedLocaleNames.length ? supportedLocaleNames[0].value : 'en';
   };
   return (
     <Dropdown
@@ -37,15 +31,13 @@ function LocaleSelect(props) {
       value={getActiveLanguageNames()}
       options={supportedLocales}
       display={<FormattedMessage {...messages.language} />}
-      className={`blue-dark bg-white mr1 v-mid dn dib-66rem pv2 ph3 ${props.className}`}
+      className={`blue-dark bg-white mr1 v-mid pv2 ph3 ${props.className}`}
     />
   );
 }
 
 const mapStateToProps = state => ({
   userPreferences: state.preferences,
-  userDetails: state.auth.get('userDetails'),
-  token: state.auth.get('token'),
 });
 
 const LocaleSelector = connect(

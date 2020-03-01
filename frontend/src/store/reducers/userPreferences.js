@@ -1,7 +1,7 @@
 import { types } from '../actions/userPreferences';
 
 const initialState = {
-  locale: 'en',
+  locale: null,
   mapShown: false,
 };
 
