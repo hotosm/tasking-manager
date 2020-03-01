@@ -1,4 +1,4 @@
-alembic==1.4.0
+alembic==1.4.1
 aniso8601==8.0.0
 appdirs==1.4.3
 attrs==19.3.0
