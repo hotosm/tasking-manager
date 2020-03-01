@@ -30,7 +30,7 @@ html5lib==1.0.1
 idna==2.9
 itsdangerous==1.1.0
 Jinja2==2.11.1
-Mako==1.1.1
+Mako==1.1.2
 MarkupSafe==1.1.1
 mccabe==0.6.1
 newrelic==4.20.1.121
