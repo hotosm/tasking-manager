@@ -110,7 +110,10 @@ class UsersTasksAPI(Resource):
             return tasks.to_primitive(), 200
         except NotFound:
             return {"Error": "User or tasks not found"}, 404
+        except ValueError:
+            return [], 204
         except Exception as e:
+            print(str(e))
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
