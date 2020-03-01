@@ -141,7 +141,14 @@ export const useTaskContributionAPI = (
         });
 
         if (!didCancel) {
-          if (result && result.headers && result.headers['content-type'].indexOf('json') !== -1) {
+          if (result.status === 204) {
+            const zeroPayload = Object.assign(defaultInitialData, { pagination: { total: 0 } });
+            dispatch({ type: 'FETCH_SUCCESS', payload: zeroPayload });
+          } else if (
+            result &&
+            result.headers &&
+            result.headers['content-type'].indexOf('json') !== -1
+          ) {
             dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
           } else {
             console.error('Invalid return type for contribution search');
