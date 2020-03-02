@@ -299,6 +299,15 @@ function PaginatedList({
   if (items && page > lastPage) {
     setPage(1);
   }
+
+  useEffect(() => {
+    // switch the taskList page to always show the selected task.
+    // Only do it if there is only one task selected
+    if (selected.length === 1) {
+      setPage(Math.ceil((items.findIndex(task => task.taskId === selected[0]) + 1) / pageSize));
+    }
+  }, [selected, items, pageSize, setPage]);
+
   return (
     <>
       <div>
