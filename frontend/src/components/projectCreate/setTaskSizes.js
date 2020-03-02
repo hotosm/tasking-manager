@@ -279,7 +279,10 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         <p>
           <FormattedMessage
             {...messages.taskAreaMessage}
-            values={{ area: metadata.area / metadata.taskNo || 0, sq: <sup>2</sup> }}
+            values={{
+              area: (turf.area(metadata.taskGrid.features[0]) / 1e6).toFixed(2) || 0,
+              sq: <sup>2</sup>,
+            }}
           />
         </p>
       </div>
