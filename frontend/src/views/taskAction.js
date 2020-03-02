@@ -86,7 +86,7 @@ export function TaskAction({ project, action }: Object) {
     }
   } else {
     return (
-      <Login redirectTo={`projects/${project}/${action === 'VALIDATION' ? 'validate' : 'map'}/`} />
+      <Login redirectTo={`/projects/${project}/${action === 'VALIDATION' ? 'validate' : 'map'}/`} />
     );
   }
 }
