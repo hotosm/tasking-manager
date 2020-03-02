@@ -8,7 +8,10 @@ import { Button } from '../button';
 
 const clipProject = (clip, metadata, map, updateMetadata) => {
   const taskGrid = metadata.tempTaskGrid;
-  const geom = metadata.geom.features[0].geometry;
+  let geom = metadata.geom.features[0].geometry;
+  if (geom.type === 'MultiPolygon') {
+    geom = turf.polygon(geom.coordinates[0]);
+  }
   let intersect_array = [];
 
   taskGrid.features.forEach(f => {
