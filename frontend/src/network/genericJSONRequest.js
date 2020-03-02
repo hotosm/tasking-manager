@@ -51,7 +51,7 @@ export function fetchLocalJSONAPI(endpoint, token, method = 'GET', language = 'e
   const url = new URL(endpoint, API_URL);
   let headers = {
     'Content-Type': 'application/json',
-    'Accept-Language': language,
+    'Accept-Language': language.replace('-', '_'),
   };
   if (token) {
     headers['Authorization'] = `Token ${token}`;
@@ -78,7 +78,7 @@ export function pushToLocalJSONAPI(
     method: method,
     headers: {
       'Content-Type': 'application/json',
-      'Accept-Language': language,
+      'Accept-Language': language.replace('-', '_'),
       Authorization: `Token ${token}`,
     },
     body: payload,

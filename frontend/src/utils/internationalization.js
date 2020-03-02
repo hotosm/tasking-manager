@@ -54,15 +54,15 @@ const supportedLocales = [
   { value: 'fr', label: 'Français' },
   { value: 'id', label: 'Indonesia' },
   { value: 'it', label: 'Italiano' },
-  // { value: 'ja', label: '日本語' },
+  { value: 'ja', label: '日本語' },
   // { value: 'mg', label: 'Malagasy' },
   // { value: 'ml', label: 'Malayalam' },
   { value: 'nl', label: 'Nederlands' },
   { value: 'pt', label: 'Português' },
   { value: 'pt-BR', label: 'Português (Brasil)' },
-  // { value: 'sw', label: 'Kiswahili' },
+  { value: 'sw', label: 'Kiswahili' },
   // { value: 'tl', label: 'Filipino (Tagalog)' },
-  // { value: 'tr', label: 'Türkçe' },
+  { value: 'tr', label: 'Türkçe' },
   { value: 'uk', label: 'Українська' },
 ];
 
