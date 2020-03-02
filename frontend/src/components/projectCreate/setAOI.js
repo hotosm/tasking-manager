@@ -50,7 +50,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
 
   const verifyAndSetData = event => {
     try {
-      setDataGeom(event.features[0].geometry);
+      setDataGeom(event);
     } catch (e) {
       deleteHandler();
       setErr({ error: true, message: <FormattedMessage {...messages.invalidFile} /> });
@@ -79,8 +79,6 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
       let geom = null;
       switch (format) {
         case 'json':
-          geom = JSON.parse(e.target.result);
-          break;
         case 'geojson':
           geom = JSON.parse(e.target.result);
           break;
