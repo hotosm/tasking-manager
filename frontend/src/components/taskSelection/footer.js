@@ -37,7 +37,9 @@ const TaskSelectionFooter = props => {
   };
 
   const lockFailed = windowObjectReference => {
-    windowObjectReference.close();
+    if (editor !== 'JOSM') {
+      windowObjectReference.close();
+    }
     fetchLockedTasks();
     setLockError(true);
   };
@@ -48,10 +50,13 @@ const TaskSelectionFooter = props => {
     dispatch({ type: 'SET_TASKS_STATUS', status: status });
   };
   const lockTasks = () => {
-    const windowObjectReference = window.open(
-      '',
-      `iD-${props.project.projectId}-${props.selectedTasks}`,
-    );
+    let windowObjectReference;
+    if (editor !== 'JOSM') {
+      windowObjectReference = window.open(
+        '',
+        `TM-${props.project.projectId}-${props.selectedTasks}`,
+      );
+    }
     if (
       ['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(props.taskAction)
     ) {
@@ -107,20 +112,31 @@ const TaskSelectionFooter = props => {
         props.project.customEditor,
       );
       setEditorOptions(validationEditorOptions);
-      updateEditor(validationEditorOptions);
+      // activate defaultUserEditor if it's allowed. If not, use the first allowed editor for validation
+      if (props.project.validationEditors.includes(props.defaultUserEditor)) {
+        setEditor(props.defaultUserEditor);
+      } else {
+        updateEditor(validationEditorOptions);
+      }
     } else {
       const mappingEditorOptions = getEditors(
         props.project.mappingEditors,
         props.project.customEditor,
       );
       setEditorOptions(mappingEditorOptions);
-      updateEditor(mappingEditorOptions);
+      // activate defaultUserEditor if it's allowed. If not, use the first allowed editor
+      if (props.project.mappingEditors.includes(props.defaultUserEditor)) {
+        setEditor(props.defaultUserEditor);
+      } else {
+        updateEditor(mappingEditorOptions);
+      }
     }
   }, [
     props.taskAction,
     props.project.mappingEditors,
     props.project.validationEditors,
     props.project.customEditor,
+    props.defaultUserEditor,
   ]);
 
   const updateEditor = arr => setEditor(arr[0].value);
@@ -159,11 +175,7 @@ const TaskSelectionFooter = props => {
         </h3>
         <Dropdown
           options={editorOptions}
-          value={
-            editorOptions.map(i => i.value).includes(editor)
-              ? editor
-              : editorOptions.length && editorOptions[0].value
-          }
+          value={editor}
           display={<FormattedMessage {...messages.selectEditor} />}
           className="bg-white bn"
           toTop={true}
