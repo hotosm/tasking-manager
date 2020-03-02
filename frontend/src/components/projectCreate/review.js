@@ -40,7 +40,7 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
   return (
     <>
       <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark">
-        <FormattedMessage {...messages.step3} />
+        <FormattedMessage {...messages.step4} />
       </h3>
       <p className="pt2">
         <FormattedMessage {...messages.reviewTaskNumberMessage} values={{ n: metadata.tasksNo }} />
