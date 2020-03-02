@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import { AuthButtons } from '../components/header';
 import messages from './messages';
 
-export function Login({ redirect_to }: Object) {
+export function Login({ redirectTo }: Object) {
   const userIsloggedIn = useSelector(state => state.auth.get('token'));
   if (!userIsloggedIn) {
     return (
@@ -19,11 +19,12 @@ export function Login({ redirect_to }: Object) {
             aStyle="mh1 v-mid dn dib-ns"
             logInStyle="blue-dark bg-white"
             signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
+            redirectTo={redirectTo}
           />
         </div>
       </div>
     );
   } else {
-    return <Redirect to={redirect_to || 'user'} noThrow />;
+    return <Redirect to={redirectTo || 'user'} noThrow />;
   }
 }
