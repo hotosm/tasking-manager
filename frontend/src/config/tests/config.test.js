@@ -39,6 +39,8 @@ it('exports OSM_CONSUMER_KEY', () => {
 });
 it('exports OSM_CONSUMER_SECRET', () => {
   expect(typeof config.OSM_CONSUMER_SECRET).toBe('string');
+it('exports MATOMO_ID', () => {
+  expect(typeof config.MATOMO_ID).toBe('string');
 });
 it('exports DEFAULT locale to be english', () => {
   expect(config.DEFAULT_LOCALE).toBe('en');
