@@ -152,7 +152,7 @@ export function NotificationCardMini({
           ></div>
           <div className={`pl2 blue-grey f7`}>
             {/* <FormattedRelativeTime value={value} unit={unit}/> */}
-            <FormattedRelative value={new Date(sentDate + '+00:00')} />
+            <FormattedRelative value={new Date(sentDate)} />
           </div>
         </div>
       </article>
