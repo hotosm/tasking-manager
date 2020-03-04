@@ -1,5 +1,9 @@
 import React, { useLayoutEffect, useCallback } from 'react';
-import * as turf from '@turf/turf';
+import bbox from '@turf/bbox';
+import intersect from '@turf/intersect';
+import transformScale from '@turf/transform-scale';
+import bboxPolygon from '@turf/bbox-polygon';
+import { polygon, multiPolygon, featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -42,10 +46,10 @@ const createTaskFeature_ = (step, x, y, zoomLevel) => {
     zoom: zoomLevel,
     isSquare: true,
   };
-  const bbox = [minlnglat[0], minlnglat[1], maxlnglat[0], maxlnglat[1]];
-  const poly = turf.bboxPolygon(bbox);
+  const stepBbox = [minlnglat[0], minlnglat[1], maxlnglat[0], maxlnglat[1]];
+  const poly = bboxPolygon(stepBbox);
 
-  return turf.multiPolygon([poly.geometry.coordinates], properties);
+  return multiPolygon([poly.geometry.coordinates], properties);
 };
 
 const createTaskGrid = (areaOfInterestExtent, zoomLevel) => {
@@ -72,18 +76,18 @@ const createTaskGrid = (areaOfInterestExtent, zoomLevel) => {
     }
   }
 
-  return turf.featureCollection(taskFeatures);
+  return featureCollection(taskFeatures);
 };
 
 export const makeGrid = (geom, zoom, mask) => {
-  let bbox = turf.bbox(geom);
+  let geomBbox = bbox(geom);
 
-  const minxy = degrees2meters(bbox[0], bbox[1]);
-  const maxxy = degrees2meters(bbox[2], bbox[3]);
+  const minxy = degrees2meters(geomBbox[0], geomBbox[1]);
+  const maxxy = degrees2meters(geomBbox[2], geomBbox[3]);
 
-  bbox = [minxy[0], minxy[1], maxxy[0], maxxy[1]];
+  geomBbox = [minxy[0], minxy[1], maxxy[0], maxxy[1]];
 
-  const grid = createTaskGrid(bbox, zoom);
+  const grid = createTaskGrid(geomBbox, zoom);
 
   return grid;
 };
@@ -113,8 +117,8 @@ export const layerJson = grid => {
 const splitTaskGrid = (taskGrid, geom) => {
   let newTaskGrid = [];
   taskGrid.features.forEach(f => {
-    let poly = turf.polygon(f.geometry.coordinates[0]);
-    let contains = turf.intersect(geom, poly);
+    let poly = polygon(f.geometry.coordinates[0]);
+    let contains = intersect(geom, poly);
     if (contains === null) {
       newTaskGrid.push(f);
     } else {
@@ -139,14 +143,13 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         updateMetadata({ ...metadata, tempTaskGrid: taskGrid });
       }
       // Make the geom smaller to avoid borders.
-      const geom = turf.transformScale(event.features[0].geometry, 0.5);
+      const geom = transformScale(event.features[0].geometry, 0.5);
       const newTaskGrid = splitTaskGrid(taskGrid, geom);
-      const featureCollection = turf.featureCollection(newTaskGrid);
 
       updateMetadata({
         ...metadata,
-        taskGrid: featureCollection,
-        tasksNo: featureCollection.features.length,
+        taskGrid: featureCollection(newTaskGrid),
+        tasksNo: featureCollection(newTaskGrid).features.length,
       });
     },
     [updateMetadata, metadata, mapObj.map],
@@ -180,12 +183,11 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
 
       const geom = event.features[0].geometry;
       const newTaskGrid = splitTaskGrid(taskGrid, geom, metadata.zoomLevel);
-      const featureCollection = turf.featureCollection(newTaskGrid);
 
       updateMetadata({
         ...metadata,
-        taskGrid: featureCollection,
-        tasksNo: featureCollection.features.length,
+        taskGrid: featureCollection(newTaskGrid),
+        tasksNo: featureCollection(newTaskGrid).features.length,
       });
     });
 

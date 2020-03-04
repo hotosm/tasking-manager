@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { extent } from 'geojson-bounds';
+import bbox from '@turf/bbox';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
@@ -63,7 +63,7 @@ export const TasksMap = ({
       const taskGeom = mapResults.features.filter(
         task => task.properties.taskId === zoomedTaskId,
       )[0].geometry;
-      map.fitBounds(extent(taskGeom), { padding: 40, maxZoom: 22, animate: true });
+      map.fitBounds(bbox(taskGeom), { padding: 40, maxZoom: 22, animate: true });
     }
   }, [zoomedTaskId, map, mapResults]);
 
@@ -88,9 +88,9 @@ export const TasksMap = ({
 
     const updateTMZoom = () => {
       if (!taskBordersOnly) {
-        map.fitBounds(extent(mapResults), { padding: 40, animate: animateZoom });
+        map.fitBounds(bbox(mapResults), { padding: 40, animate: animateZoom });
       } else {
-        map.fitBounds(extent(mapResults), { padding: 220, maxZoom: 6.5, animate: animateZoom });
+        map.fitBounds(bbox(mapResults), { padding: 220, maxZoom: 6.5, animate: animateZoom });
       }
     };
 
@@ -202,7 +202,11 @@ export const TasksMap = ({
             'line-color': '#68707f',
             'line-width': {
               base: 0.3,
-              stops: [[1, 4], [10, 1], [12, 0.3]],
+              stops: [
+                [1, 4],
+                [10, 1],
+                [12, 0.3],
+              ],
             },
           },
           layout: {
@@ -267,7 +271,10 @@ export const TasksMap = ({
           paint: {
             'circle-radius': {
               base: 3,
-              stops: [[12, 4], [22, 180]],
+              stops: [
+                [12, 4],
+                [22, 180],
+              ],
             },
             'circle-color': '#FFF',
           },
@@ -284,7 +291,10 @@ export const TasksMap = ({
             paint: {
               'circle-radius': {
                 base: 5,
-                stops: [[12, 10], [22, 180]],
+                stops: [
+                  [12, 10],
+                  [22, 180],
+                ],
               },
               'circle-color': '#d73f3f',
             },
