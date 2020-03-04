@@ -9,6 +9,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
+import { addLayer } from './index';
 
 // Maximum resolution of OSM
 const MAXRESOLUTION = 156543.0339;
@@ -91,28 +92,6 @@ export const makeGrid = (geom, zoom, mask) => {
   const grid = createTaskGrid(geomBbox, zoom);
 
   return grid;
-};
-
-export const layerJson = grid => {
-  const source = {
-    type: 'geojson',
-    data: grid,
-  };
-  const paintOptions = {
-    'fill-color': '#fff',
-    'fill-outline-color': '#00f',
-    'fill-opacity': 0.5,
-  };
-
-  const jsonData = {
-    id: 'grid',
-    type: 'fill',
-    source: source,
-    layout: {},
-    paint: paintOptions,
-  };
-
-  return jsonData;
 };
 
 const splitTaskGrid = (taskGrid, geom) => {
@@ -226,14 +205,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   }, [metadata, updateMetadata, geom]);
 
   useLayoutEffect(() => {
-    if (mapObj.map.getLayer('grid')) {
-      mapObj.map.removeLayer('grid');
-    }
-    if (mapObj.map.getSource('grid')) {
-      mapObj.map.removeSource('grid');
-    }
-    mapObj.map.addLayer(layerJson(metadata.taskGrid));
-
+    addLayer('grid', metadata.taskGrid, mapObj.map);
     return () => {
       mapObj.map.off('click', 'grid', splitHandler);
     };
