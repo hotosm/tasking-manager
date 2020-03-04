@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
-import { centroid } from '@turf/turf';
+import centroid from '@turf/centroid';
 import { useMeta, useTitle } from 'react-meta-elements';
 
 import messages from './messages';
