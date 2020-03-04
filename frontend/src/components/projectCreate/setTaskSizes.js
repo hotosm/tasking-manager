@@ -1,4 +1,5 @@
 import React, { useLayoutEffect, useCallback } from 'react';
+import area from '@turf/area';
 import bbox from '@turf/bbox';
 import intersect from '@turf/intersect';
 import transformScale from '@turf/transform-scale';
@@ -282,7 +283,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
           <FormattedMessage
             {...messages.taskAreaMessage}
             values={{
-              area: (turf.area(metadata.taskGrid.features[0]) / 1e6).toFixed(2) || 0,
+              area: (area(metadata.taskGrid.features[0]) / 1e6).toFixed(2) || 0,
               sq: <sup>2</sup>,
             }}
           />
