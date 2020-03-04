@@ -140,17 +140,17 @@ export function NotificationCardMini({
   // const {value, unit} = selectUnit(new Date(sentDate));
 
   return (
-    <Link to={`/inbox/message/${messageId}`} className={`no-underline hover-red`}>
-      <article className={`db base-font w-100 mb3 hover-red blue-dark`}>
+    <Link to={`/inbox/message/${messageId}`} className="no-underline hover-red">
+      <article className="db base-font w-100 mb3 hover-red blue-dark">
         <div className="h2 pr3">
-          <div style={{ width: '1.5rem' }} className={`fl dib h2 ml2 mr3 v-top`}>
+          <div style={{ width: '1.5rem' }} className="fl w-25 dib h2 ml2 mr3 v-top">
             <MessageAvatar messageType={messageType} fromUsername={fromUsername} size={'small'} />
           </div>
           <div
-            className="dib f7 w-75 messageSubjectLinks"
+            className="dib f7 w-75 fl messageSubjectLinks"
             dangerouslySetInnerHTML={rawHtmlNotification(subject)}
           ></div>
-          <div className={`pl2 blue-grey f7`}>
+          <div className="blue-grey f7 cf dib">
             {/* <FormattedRelativeTime value={value} unit={unit}/> */}
             <FormattedRelative value={new Date(sentDate)} />
           </div>
