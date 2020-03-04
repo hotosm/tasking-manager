@@ -5,7 +5,7 @@ import { featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { paintOptions } from './index';
+import { addLayer } from './index';
 import { Button } from '../button';
 import { makeGrid } from './setTaskSizes';
 import { MAX_FILESIZE } from '../../config';
@@ -32,22 +32,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
       tempTaskGrid: grid,
     });
 
-    if (mapObj.map.getLayer(layer_name)) {
-      mapObj.map.removeLayer(layer_name);
-    }
-    if (mapObj.map.getSource(layer_name)) {
-      mapObj.map.removeSource(layer_name);
-    }
-
-    mapObj.map.addLayer({
-      id: layer_name,
-      type: 'fill',
-      source: {
-        type: 'geojson',
-        data: geom,
-      },
-      paint: paintOptions,
-    });
+    addLayer('aoi', geom, mapObj.map);
   };
 
   const verifyAndSetData = event => {

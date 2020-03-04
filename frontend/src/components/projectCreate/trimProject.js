@@ -4,7 +4,7 @@ import { polygon, multiPolygon, featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { layerJson } from './setTaskSizes';
+import { addLayer } from './index';
 import { Button } from '../button';
 
 const clipProject = (clip, metadata, map, updateMetadata) => {
@@ -35,13 +35,7 @@ const clipProject = (clip, metadata, map, updateMetadata) => {
 
 export default function TrimProject({ metadata, mapObj, updateMetadata }) {
   useEffect(() => {
-    if (mapObj.map.getLayer('grid')) {
-      mapObj.map.removeLayer('grid');
-    }
-    if (mapObj.map.getSource('grid')) {
-      mapObj.map.removeSource('grid');
-    }
-    mapObj.map.addLayer(layerJson(metadata.taskGrid));
+    addLayer('grid', metadata.taskGrid, mapObj.map);
   }, [metadata, mapObj]);
 
   const [clipStatus, setClipStatus] = useState(false);
