@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 
 import { useInboxQueryAPI, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
 
@@ -15,16 +15,10 @@ import { NotificationBodyModal } from '../components/notifications/notificationB
 import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
 
 import { useFetch } from '../hooks/UseFetch';
-import { useOnClickOutside } from '../hooks/UseOnClickOutside';
 
 export const NotificationPopout = props => {
-  const miniNotificationRef = useRef(null);
-
-  useOnClickOutside(miniNotificationRef, () => props.setPopoutFocus(false));
-
   return (
     <div
-      ref={miniNotificationRef}
       style={{ minWidth: '390px', width: '390px', zIndex: '100', right: '4rem' }}
       className={`fr ${props.isPopoutFocus ? '' : 'dn'} mt2 br2 absolute shadow-2 ph4 pb3 bg-white`}
     >

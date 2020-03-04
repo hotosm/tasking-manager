@@ -5,6 +5,7 @@ import { TopNavLink } from './NavLink';
 import { BellIcon } from '../svgIcons';
 import { NotificationPopout } from '../../views/notifications';
 import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
+import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 import useForceUpdate from '../../hooks/UseForceUpdate';
 import { useInboxQueryAPI } from '../../hooks/UseInboxQueryAPI';
 
@@ -13,9 +14,13 @@ export const NotificationBell = props => {
   const [forceUpdated, forceUpdate] = useForceUpdate();
 
   /* these below make the references stable so hooks doesn't re-request forever */
-  const nothing = useRef(null);
+  const notificationBellRef = useRef(null);
   const sortByRead = useRef({ sortBy: 'read' });
-  const [notificationState] = useInboxQueryAPI(nothing.current, sortByRead.current, forceUpdated);
+  const [notificationState] = useInboxQueryAPI(
+    notificationBellRef.current,
+    sortByRead.current,
+    forceUpdated,
+  );
 
   const [isPopoutFocus, setPopoutFocus] = useState(false);
   /*TODO Replace this backend with websockets, eventsource or RESTSockets
@@ -29,6 +34,8 @@ export const NotificationBell = props => {
     30000,
     trigger,
   );
+
+  useOnClickOutside(notificationBellRef, () => setPopoutFocus(false));
 
   const isNotificationBellActive = ({ isCurrent }) => {
     return isCurrent
@@ -50,13 +57,13 @@ export const NotificationBell = props => {
       unreadNotifsStart.unread);
 
   return (
-    <>
+    <span ref={notificationBellRef}>
       <TopNavLink
         to={'inbox/'}
         onClick={e => {
           e.preventDefault();
           e.stopPropagation();
-          setPopoutFocus(true);
+          setPopoutFocus(!isPopoutFocus);
         }}
         isActive={isNotificationBellActive}
       >
@@ -72,6 +79,6 @@ export const NotificationBell = props => {
         setPopoutFocus={setPopoutFocus}
         liveUnreadCount={liveUnreadCount}
       />
-    </>
+    </span>
   );
 };
