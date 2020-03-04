@@ -1,4 +1,5 @@
-import { featureCollection, bbox } from '@turf/turf';
+import { featureCollection } from '@turf/helpers';
+import bbox from '@turf/bbox';
 import { viewport } from '@mapbox/geo-viewport';
 
 export function getCentroidAndZoomFromSelectedTasks(tasks, selectedTaskIds, windowSize) {

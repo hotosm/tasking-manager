@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FormattedMessage, FormattedRelative } from 'react-intl';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import ReactPlaceholder from 'react-placeholder';
-import { bbox } from '@turf/turf';
+import bbox from '@turf/bbox';
+import { FormattedMessage, FormattedRelative } from 'react-intl';
 
 import messages from './messages';
 import { TaskActivity } from './taskActivity';

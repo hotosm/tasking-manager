@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import * as turf from '@turf/turf';
+import intersect from '@turf/intersect';
+import { polygon, multiPolygon, featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -10,25 +11,25 @@ const clipProject = (clip, metadata, map, updateMetadata) => {
   const taskGrid = metadata.tempTaskGrid;
   let geom = metadata.geom.features[0].geometry;
   if (geom.type === 'MultiPolygon') {
-    geom = turf.polygon(geom.coordinates[0]);
+    geom = polygon(geom.coordinates[0]);
   }
   let intersect_array = [];
 
   taskGrid.features.forEach(f => {
-    let poly = turf.polygon(f.geometry.coordinates[0]);
-    let contains = turf.intersect(geom, poly);
+    let poly = polygon(f.geometry.coordinates[0]);
+    let contains = intersect(geom, poly);
     if (contains === null) {
       return;
     }
 
     let feature = f;
     if (clip === true) {
-      feature = turf.multiPolygon([contains.geometry.coordinates], f.properties);
+      feature = multiPolygon([contains.geometry.coordinates], f.properties);
     }
     intersect_array.push(feature);
   });
 
-  const grid = turf.featureCollection(intersect_array);
+  const grid = featureCollection(intersect_array);
   updateMetadata({ ...metadata, tasksNo: grid.features.length, taskGrid: grid });
 };
 
