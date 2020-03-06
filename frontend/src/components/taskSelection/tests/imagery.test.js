@@ -1,12 +1,8 @@
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
-import { IntlProvider, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
+import { createComponentWithIntl } from '../../../utils/testWithIntl';
 import { Imagery } from '../imagery';
-
-const createComponentWithIntl = (children, props = { locale: 'en' }) => {
-  return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
-};
 
 it('test if Imagery returns the correct FormattedMessage to TMS', () => {
   const element = createComponentWithIntl(
