@@ -11,17 +11,16 @@ import { HeaderLine } from '../projectDetail/header';
 import { Button } from '../button';
 import { Dropdown } from '../dropdown';
 import { CheckCircle } from '../checkCircle';
-import DueDateBox from '../projectcard/dueDateBox';
 import { CloseIcon } from '../svgIcons';
 import { getEditors } from '../../utils/editorsList';
 import { openEditor } from '../../utils/openEditor';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { TaskHistory } from './taskActivity';
 
-export function TaskMapAction({ project, tasks, action, editor }) {
+export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
-  const tasksIds = tasks && tasks.features ? tasks.features.map(i => i.properties.taskId) : [];
+  const tasksIds = activeTasks ? activeTasks.map(task => task.taskId) : [];
   const callEditor = arr => {
     setActiveEditor(arr[0].value);
     openEditor(arr[0].value, project, tasks, tasksIds, [window.innerWidth, window.innerHeight]);
@@ -42,6 +41,7 @@ export function TaskMapAction({ project, tasks, action, editor }) {
             className="dib w-100 fl h-100-ns vh-75"
             taskBordersOnly={false}
             animateZoom={false}
+            selected={tasksIds}
           />
         </ReactPlaceholder>
       </div>
@@ -60,9 +60,6 @@ export function TaskMapAction({ project, tasks, action, editor }) {
                 <span key={n} className="red ph2">{`#${task}`}</span>
               ))}
             </h3>
-            <div>
-              <DueDateBox dueDate={project.dueDate} align="left" />
-            </div>
           </div>
           <div className="cf">
             <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
@@ -255,7 +252,9 @@ function CompletionTabForValidation({ project, tasksIds }: Object) {
   const stopValidation = () => {
     pushToLocalJSONAPI(
       `projects/${project.projectId}/tasks/actions/stop-validation/`,
-      JSON.stringify({ resetTasks: [{ taskId: tasksIds[0], comment: taskComment }] }),
+      JSON.stringify({
+        resetTasks: tasksIds.map(taskId => ({ taskId: taskId, comment: taskComment })),
+      }),
       token,
     ).then(r => navigate(`../tasks/`));
   };
@@ -263,14 +262,18 @@ function CompletionTabForValidation({ project, tasksIds }: Object) {
   const submitTask = () => {
     if (selectedStatus) {
       let url;
-      let payload = { validatedTasks: [{ comment: taskComment, taskId: tasksIds[0] }] };
+      let payload = {
+        validatedTasks: tasksIds.map(taskId => ({
+          taskId: taskId,
+          comment: taskComment,
+          status: selectedStatus,
+        })),
+      };
       if (selectedStatus === 'VALIDATED') {
         url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
-        payload.validatedTasks[0].status = 'VALIDATED';
       }
       if (selectedStatus === 'INVALIDATED') {
         url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
-        payload.validatedTasks[0].status = 'INVALIDATED';
       }
       pushToLocalJSONAPI(url, JSON.stringify(payload), token).then(r => navigate(`../tasks/`));
     }
@@ -327,7 +330,7 @@ function CompletionTabForValidation({ project, tasksIds }: Object) {
           onClick={() => submitTask()}
           disabled={!selectedStatus}
         >
-          <FormattedMessage {...messages.submitTask} />
+          <FormattedMessage {...messages[tasksIds.length > 0 ? 'submitTasks' : 'submitTask']} />
         </Button>
       </div>
     </div>

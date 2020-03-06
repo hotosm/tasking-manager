@@ -478,6 +478,7 @@
   "project.tasks.action.split_task": "Split task",
   "project.tasks.action.select_another_task": "Select another task",
   "project.tasks.action.submit_task": "Submit task",
+  "project.tasks.action.submit_tasks": "Submit tasks",
   "project.tasks.history.title": "Task activity",
   "project.tasks.activity.data.links": "Task data",
   "project.tasks.activity.overpass.download": "Download from Overpass",
