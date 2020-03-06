@@ -18,9 +18,39 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 const MapboxDraw = require('@mapbox/mapbox-gl-draw');
 
-export const paintOptions = {
+const aoiPaintOptions = {
   'fill-color': '#00004d',
   'fill-opacity': 0.3,
+};
+
+const taskGridPaintOptions = {
+  'fill-color': '#fff',
+  'fill-outline-color': '#00f',
+  'fill-opacity': 0.5,
+};
+
+export const addLayer = (layerName, data, map) => {
+  if (map.getLayer(layerName)) {
+    map.removeLayer(layerName);
+  }
+  if (map.getSource(layerName)) {
+    map.removeSource(layerName);
+  }
+
+  let options = aoiPaintOptions;
+  if (layerName === 'grid') {
+    options = taskGridPaintOptions;
+  }
+
+  map.addLayer({
+    id: layerName,
+    type: 'fill',
+    source: {
+      type: 'geojson',
+      data: data,
+    },
+    paint: options,
+  });
 };
 
 const AlertMessage = ({ err }) => {
@@ -95,7 +125,7 @@ const ProjectCreate = props => {
       {
         id: 'gl-draw-polygon-fill-inactive',
         type: 'fill',
-        paint: paintOptions,
+        paint: aoiPaintOptions,
       },
     ],
   };
@@ -170,6 +200,7 @@ const ProjectCreate = props => {
           updateMetadata={updateMetadata}
           mapObj={mapObj}
           setMapObj={setMapObj}
+          step={step}
         />
         <div className="cf left-1 bottom-2 absolute">
           <p

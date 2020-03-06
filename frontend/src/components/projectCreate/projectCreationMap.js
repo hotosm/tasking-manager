@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-import { paintOptions } from './index';
+import { addLayer } from './index';
 import { MAPBOX_TOKEN, BASEMAP_OPTIONS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -50,7 +50,7 @@ const BasemapMenu = ({ map }) => {
   );
 };
 
-const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => {
+const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step }) => {
   const mapRef = React.createRef();
   const locale = useSelector(state => state.preferences['locale']);
 
@@ -87,26 +87,14 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata }) => 
       });
 
       mapObj.map.on('style.load', event => {
-        const layer_name = 'aoi';
-        if (mapObj.map.getLayer(layer_name)) {
-          mapObj.map.removeLayer(layer_name);
-        }
-        if (mapObj.map.getSource(layer_name)) {
-          mapObj.map.removeSource(layer_name);
-        }
+        addLayer('aoi', metadata.geom, mapObj.map);
 
-        mapObj.map.addLayer({
-          id: layer_name,
-          type: 'fill',
-          source: {
-            type: 'geojson',
-            data: metadata.geom,
-          },
-          paint: paintOptions,
-        });
+        if (metadata.taskGrid && step === 2) {
+          addLayer('grid', metadata.taskGrid, mapObj.map);
+        }
       });
     }
-  }, [mapObj, metadata, updateMetadata]);
+  }, [mapObj, metadata, updateMetadata, step]);
 
   return (
     <div className="w-100 h-100-l relative">
