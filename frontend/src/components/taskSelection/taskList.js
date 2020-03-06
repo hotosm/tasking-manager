@@ -190,10 +190,14 @@ export function TaskList({
           );
         } else {
           const usersTaskIds = userContributions
-            .filter(user => user.username.includes(textSearch))
+            .filter(user => user.username.toLowerCase().includes(textSearch.toLowerCase()))
             .map(user => user.taskIds)
             .flat();
-          newTasks = newTasks.filter(task => usersTaskIds.includes(task.taskId));
+          newTasks = newTasks.filter(
+            task =>
+              usersTaskIds.includes(task.taskId) ||
+              (task.actionBy && task.actionBy.toLowerCase().includes(textSearch.toLowerCase())),
+          );
         }
       }
       setTasks(newTasks);
