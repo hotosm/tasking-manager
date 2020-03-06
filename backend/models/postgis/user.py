@@ -174,7 +174,7 @@ class User(db.Model):
         return dto
 
     @staticmethod
-    def get_all_users_not_pagainated():
+    def get_all_users_not_paginated():
         """ Get all users in DB"""
         return db.session.query(User.id).all()
 
