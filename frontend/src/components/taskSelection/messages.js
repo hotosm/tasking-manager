@@ -313,6 +313,10 @@ export default defineMessages({
     id: 'project.tasks.action.submit_task',
     defaultMessage: 'Submit task',
   },
+  submitTasks: {
+    id: 'project.tasks.action.submit_tasks',
+    defaultMessage: 'Submit tasks',
+  },
   taskActivity: {
     id: 'project.tasks.history.title',
     defaultMessage: 'Task activity',

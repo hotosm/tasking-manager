@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
@@ -300,13 +300,22 @@ function PaginatedList({
     setPage(1);
   }
 
+  const latestItems = useRef(items);
+  useEffect(() => {
+    latestItems.current = items;
+  });
+  // the useEffect above avoids the next one to run everytime the items change
   useEffect(() => {
     // switch the taskList page to always show the selected task.
     // Only do it if there is only one task selected
     if (selected.length === 1) {
-      setPage(Math.ceil((items.findIndex(task => task.taskId === selected[0]) + 1) / pageSize));
+      setPage(
+        Math.ceil(
+          (latestItems.current.findIndex(task => task.taskId === selected[0]) + 1) / pageSize,
+        ),
+      );
     }
-  }, [selected, items, pageSize, setPage]);
+  }, [selected, latestItems, setPage, pageSize]);
 
   return (
     <>
