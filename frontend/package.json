@@ -36,7 +36,7 @@
     "react-click-outside": "^3.0.1",
     "react-dom": "^16.13.0",
     "react-final-form": "^6.3.0",
-    "react-intl": "^2.9.0",
+    "react-intl": "^4.1.1",
     "react-meta-elements": "^1.0.0",
     "react-placeholder": "^4.0.0",
     "react-redux": "^7.2.0",
