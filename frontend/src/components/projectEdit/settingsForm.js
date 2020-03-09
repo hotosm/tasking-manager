@@ -67,7 +67,7 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
               type="checkbox"
               value={'CUSTOM'}
             />
-            <FormattedMessage {...messages.customEditor} />
+            {projectInfo.customEditor.name}
           </label>
         )}
       </div>
@@ -98,7 +98,7 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
               type="checkbox"
               value={'CUSTOM'}
             />
-            <FormattedMessage {...messages.customEditor} />
+            {projectInfo.customEditor.name}
           </label>
         )}
       </div>
