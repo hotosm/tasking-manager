@@ -275,4 +275,8 @@ export default defineMessages({
     id: 'pages.edit_project.sections.actions',
     defaultMessage: 'Actions',
   },
+  projectEditSection_custom_editor: {
+    id: 'pages.edit_project.sections.custom_editor',
+    defaultMessage: 'Custom Editor',
+  },
 });
