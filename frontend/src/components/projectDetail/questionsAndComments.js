@@ -1,9 +1,10 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ReactTextareaAutocomplete from '@webscopeio/react-textarea-autocomplete';
-import { FormattedMessage, FormattedRelative } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { PaginatorLine } from '../paginator';
 import { Button } from '../button';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
@@ -22,7 +23,7 @@ const formatUserNamesToLink = text => {
       username = username.substring(0, username.length - 1);
       text = text.replace(
         usernames[i],
-        '<a class="pointer blue-grey b underline" href="/user/' +
+        '<a class="pointer blue-grey b underline" href="/users/' +
           username +
           '">' +
           username +
@@ -169,7 +170,7 @@ function CommentList({ comments }: Object) {
                 </a>
               </p>
               <span className="blue-grey f6">
-                {<FormattedRelative value={comment.timestamp} />}{' '}
+                <RelativeTimeWithUnit date={comment.timestamp} />
               </span>
             </div>
           </div>

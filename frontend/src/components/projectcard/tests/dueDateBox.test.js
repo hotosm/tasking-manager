@@ -17,7 +17,7 @@ it('test relative date formatting in English', () => {
   // console.log(testInstance.findAllByType('span')[1].children);
 
   expect(
-    //find the span inside the span
-    testInstance.findAllByType('span')[2].children,
+    //find the FormattedMessage rendered component
+    testInstance.findByProps({ className: 'indent' }).children,
   ).toContain('6 days left');
 });
