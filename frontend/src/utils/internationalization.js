@@ -44,6 +44,20 @@ const translatedMessages = {
   uk: uk,
 };
 
+/* Safari 12- and IE */
+if (!Intl.PluralRules) {
+  require('@formatjs/intl-pluralrules/polyfill');
+  require('@formatjs/intl-pluralrules/dist/locale-data/pt'); // Add locale data for de
+  require('@formatjs/intl-pluralrules/dist/locale-data/en');
+}
+
+/* Safari 13- and IE */
+if (!Intl.RelativeTimeFormat) {
+  require('@formatjs/intl-relativetimeformat/polyfill');
+  require('@formatjs/intl-relativetimeformat/dist/locale-data/pt'); // Add locale data for de
+  require('@formatjs/intl-relativetimeformat/dist/locale-data/en');
+}
+
 // commented out the languages that we are not supporting on the first production release of TM4
 const supportedLocales = [
   // { value: 'ar', label: 'Arabic' },
@@ -112,9 +126,6 @@ const mapStateToProps = state => ({
   locale: state.preferences.locale,
 });
 
-ConnectedIntl = connect(
-  mapStateToProps,
-  { setLocale },
-)(ConnectedIntl);
+ConnectedIntl = connect(mapStateToProps, { setLocale })(ConnectedIntl);
 
 export { ConnectedIntl, supportedLocales, getSupportedLocale, getTranslatedMessages };

@@ -19,5 +19,5 @@ it('test number formatting smaller than 1000', () => {
   const testNumber = createComponentWithIntl(<StatsNumber value={744} />);
   const testInstance = testNumber.root;
   expect(testInstance.findByType(FormattedNumber).props.value).toBe(744);
-  expect(testInstance.findByType('span').children).not.toContain('K');
+  expect(testInstance.children).not.toContain('K');
 });

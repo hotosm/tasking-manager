@@ -2,7 +2,10 @@ import React from 'react';
 import { Link } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
+import { selectUnit } from '@formatjs/intl-utils';
+import { FormattedRelativeTime, FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import {
   MessageAvatar,
   typesThatUseSystemAvatar,
@@ -10,8 +13,6 @@ import {
   stripHtmlToText,
 } from './notificationCard';
 import { CloseIcon } from '../../components/svgIcons';
-import { FormattedRelative, FormattedMessage } from 'react-intl';
-import messages from './messages';
 import { DeleteModal } from '../deleteModal';
 
 export const NotificationBodyModal = props => {
@@ -71,8 +72,10 @@ export function NotificationBodyCard({
   loading,
   card: { messageId, name, messageType, fromUsername, subject, message, sentDate },
 }: Object) {
+  const { value, unit } = selectUnit(new Date((sentDate && new Date(sentDate)) || new Date()));
   const showASendingUser =
     fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && 'System');
+
   return (
     <ReactPlaceholder ready={!loading} type="media" rows={6}>
       <article className={`db  base-font mb3 mh2 blue-dark mw8`}>
@@ -83,7 +86,7 @@ export function NotificationBodyCard({
 
           {showASendingUser && <div className={`pl5 f6 blue-dark fw5`}>{showASendingUser}</div>}
           <div className={`pl5 f6 blue-grey`}>
-            <FormattedRelative value={(sentDate && new Date(sentDate + '+00:00')) || new Date()} />
+            <FormattedRelativeTime value={value} unit={unit} />
           </div>
         </div>
         <div className="pv3 pr3 pl5">
