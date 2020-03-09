@@ -72,9 +72,7 @@ const TaskSelectionFooter = props => {
     }
     if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(props.taskAction)) {
       fetchLocalJSONAPI(
-        `projects/${props.project.projectId}/tasks/actions/lock-for-mapping/${
-          props.selectedTasks[0]
-        }/`,
+        `projects/${props.project.projectId}/tasks/actions/lock-for-mapping/${props.selectedTasks[0]}/`,
         token,
         'POST',
       )
@@ -84,10 +82,14 @@ const TaskSelectionFooter = props => {
         .catch(e => lockFailed(windowObjectReference));
     }
     if (['resumeMapping', 'resumeValidation'].includes(props.taskAction)) {
-      openEditor(editor, props.project, props.tasks, props.selectedTasks, [
-        window.innerWidth,
-        window.innerHeight,
-      ]);
+      openEditor(
+        editor,
+        props.project,
+        props.tasks,
+        props.selectedTasks,
+        [window.innerWidth, window.innerHeight],
+        windowObjectReference,
+      );
       const endpoint = props.taskAction === 'resumeMapping' ? 'map' : 'validate';
       navigate(`/projects/${props.project.projectId}/${endpoint}/`);
     }
