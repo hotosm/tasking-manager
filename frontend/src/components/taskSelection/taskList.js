@@ -4,9 +4,10 @@ import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import ReactPlaceholder from 'react-placeholder';
 import bbox from '@turf/bbox';
-import { FormattedMessage, FormattedRelative } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { TaskActivity } from './taskActivity';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
 import { userCanValidate } from '../../utils/projectPermissions';
@@ -74,14 +75,14 @@ function TaskItem({
             <FormattedMessage {...messages.taskId} values={{ id: data.taskId }} />
           </span>
           {data.actionDate && (
-            <div className="dn di-l">
+            <div title={data.actionDate} className="dn di-l">
               <span className="ph2 blue-grey">&#183;</span>
               <span className="blue-grey">
                 <FormattedMessage
                   {...messages.taskLastUpdate}
                   values={{ user: <span className="b blue-grey">{data.actionBy}</span> }}
                 />{' '}
-                <FormattedRelative value={data.actionDate} />
+                <RelativeTimeWithUnit date={data.actionDate} />
               </span>
             </div>
           )}

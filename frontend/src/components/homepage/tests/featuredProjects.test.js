@@ -11,5 +11,5 @@ it('featuredProjects area begins rendering with correct English title in first s
   const testFeaturedProjects = createComponentWithIntl(<FeaturedProjects />);
   const testInstance = testFeaturedProjects.root;
 
-  expect(testInstance.findAllByType('span')[0].children).toContain('Featured Projects');
+  expect(testInstance.findByProps({ className: 'f2 ttu barlow-condensed fw8' }).type).toBe('h3');
 });

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from '@reach/router';
 import Popup from 'reactjs-popup';
-import { FormattedRelative, FormattedMessage } from 'react-intl';
-// import { FormattedRelativeTime } from 'react-intl';
-// import {selectUnit} from '@formatjs/intl-utils';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { ListIcon, PlayIcon, ClockIcon } from '../svgIcons';
 import { TaskStatus } from '../taskSelection/taskList';
 import { TaskActivity } from '../taskSelection/taskActivity';
@@ -23,7 +22,6 @@ export function TaskCard({
   lastUpdated,
   lastUpdatedBy,
 }: Object) {
-  // const {value, unit} = selectUnit(new Date(sentDate));
   const [isHovered, setHovered] = useState(false);
   if (!title) {
     title = 'My Project';
@@ -36,7 +34,7 @@ export function TaskCard({
     lastUpdated &&
     autoUnlockSeconds &&
     lockHolder &&
-    new Date(+new Date(lastUpdated + '+00:00') + autoUnlockSeconds * 1000);
+    new Date(+new Date(lastUpdated) + autoUnlockSeconds * 1000);
 
   return (
     <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
@@ -59,11 +57,10 @@ export function TaskCard({
               </h4>
             </Link>
             <div className={`pt2 blue-grey f6`} title={lastUpdated}>
-              {/* <FormattedRelativeTime value={value} unit={unit}/> */}
               <span>
                 <FormattedMessage
                   {...messages.lastUpdatedByUser}
-                  values={{ time: <FormattedRelative value={new Date(lastUpdated + '+00:00')} /> }}
+                  values={{ time: <RelativeTimeWithUnit date={lastUpdated} /> }}
                 />
               </span>
             </div>
@@ -82,7 +79,7 @@ export function TaskCard({
                   <span className="v-mid">
                     <FormattedMessage
                       {...messages.unlock}
-                      values={{ time: <FormattedRelative value={timeToAutoUnlock} /> }}
+                      values={{ time: <RelativeTimeWithUnit date={timeToAutoUnlock} /> }}
                     />
                   </span>
                 </div>

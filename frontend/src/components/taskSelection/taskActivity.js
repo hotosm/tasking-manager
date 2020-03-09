@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage, FormattedRelative } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { CloseIcon } from '../svgIcons';
 import { useFetch } from '../../hooks/UseFetch';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
@@ -157,7 +158,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
               {t.actionBy}
             </a>{' '}
             {getTaskActionMessage(t.action, t.actionText)}{' '}
-            {<FormattedRelative value={t.actionDate} />}
+            <RelativeTimeWithUnit date={t.actionDate} />
           </p>
           {t.action === 'COMMENT' ? <p className="i ma0 mt2 blue-grey">{t.actionText}</p> : null}
         </div>

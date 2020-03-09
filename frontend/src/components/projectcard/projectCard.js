@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage, FormattedRelative } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Link } from '@reach/router';
 
+import messages from './messages';
+import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import DueDateBox from './dueDateBox';
 import ProjectProgressBar from './projectProgressBar';
 import { MappingLevelMessage } from '../mappingLevel';
-import messages from './messages';
 import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
 import { isUserAdminOrPM } from '../../utils/userPermissions';
 
@@ -34,16 +35,16 @@ export function ProjectTeaser({
 
   if (totalContributors < PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD) {
     return (
-      <div className={`${outerDivStyles} ${className}`}>
+      <div title={lastUpdated} className={`${outerDivStyles} ${className || ''}`}>
         <span className={littleFont}>
           <FormattedMessage {...messages['projectLastContribution']} />{' '}
-          <FormattedRelative value={lastUpdated} />
+          <RelativeTimeWithUnit date={lastUpdated} />
         </span>
       </div>
     );
   } else {
     return (
-      <div className={`${outerDivStyles} ${className}`}>
+      <div title={lastUpdated} className={`${outerDivStyles} ${className || ''}`}>
         <span className={`${littleFont} blue-light`}>
           <FormattedMessage
             {...messages['projectTotalContributors']}
