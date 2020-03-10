@@ -226,7 +226,7 @@
   "project.detail.cards.mapthroughosm.description": "If you are new to mapping, we recommend checking the Learn page for instructions before you begin.",
   "project.detail.cards.submityourwork.description": "Submitting your work is crucial to make sure your data is saved.",
   "project.detail.sections.overview": "Overview",
-  "project.detail.sections.howToContribute": "How to contribute",
+  "project.detail.sections.description": "Description",
   "project.detail.sections.questionsAndComments": "Questions and comments",
   "project.detail.sections.contributions": "Contributions",
   "project.detail.sections.contributionsTimeline": "Contributions timeline",
@@ -366,6 +366,13 @@
   "project.formInputs.teams.actions.add": "Add",
   "project.formInputs.teams.actions.update": "Update",
   "project.messages.preview": "Preview",
+  "projects.formInputs.custom_editor.name": "Name",
+  "projects.formInputs.custom_editor.description": "Description",
+  "projects.formInputs.custom_editor.url": "URL",
+  "projects.formInputs.custom_editor.enabled": "Enabled",
+  "projects.formInputs.custom_editor.delete": "Delete Custom Editor",
+  "projects.formInputs.custom_editor.remove": "Remove Custom Editor",
+  "projects.formInputs.custom_editor.delete.confirm": "This will remove the custom editor from the project. Are you sure you don't want to disable the custom editor by toggling the \"Enabled\" checkbox above?",
   "project.mainSection.title": "Generic project",
   "project.nav.mappingDifficulty": "Difficulty level",
   "project.nav.moreFilters": "More filters",
@@ -721,5 +728,6 @@
   "pages.edit_project.sections.imagery": "Imagery",
   "pages.edit_project.sections.permissions": "Permissions",
   "pages.edit_project.sections.settings": "Settings",
-  "pages.edit_project.sections.actions": "Actions"
+  "pages.edit_project.sections.actions": "Actions",
+  "pages.edit_project.sections.custom_editor": "Custom Editor"
 }
