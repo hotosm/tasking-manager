@@ -175,9 +175,9 @@ export default defineMessages({
     id: 'project.detail.sections.overview',
     defaultMessage: 'Overview',
   },
-  howToContribute: {
-    id: 'project.detail.sections.howToContribute',
-    defaultMessage: 'How to contribute',
+  description: {
+    id: 'project.detail.sections.description',
+    defaultMessage: 'Description',
   },
   questionsAndComments: {
     id: 'project.detail.sections.questionsAndComments',
