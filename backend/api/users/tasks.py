@@ -108,6 +108,8 @@ class UsersTasksAPI(Resource):
                 sort_by=sort_by,
             )
             return tasks.to_primitive(), 200
+        except ValueError:
+            return {"tasks": [], "pagination": {"total": 0}}, 200
         except NotFound:
             return {"Error": "User or tasks not found"}, 404
         except Exception as e:
