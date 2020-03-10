@@ -57,7 +57,7 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
             {elm.label}
           </label>
         ))}
-        {projectInfo.hasOwnProperty('customEditor') && (
+        {projectInfo.hasOwnProperty('customEditor') && projectInfo.customEditor && (
           <label className="db pv2">
             <input
               className="mr2"
@@ -68,6 +68,7 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
               value={'CUSTOM'}
             />
             <FormattedMessage {...messages.customEditor} />
+            <span className="">: {projectInfo.customEditor.name}</span>
           </label>
         )}
       </div>
@@ -88,7 +89,7 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
             {elm.label}
           </label>
         ))}
-        {projectInfo.hasOwnProperty('customEditor') && (
+        {projectInfo.hasOwnProperty('customEditor') && projectInfo.customEditor && (
           <label className="db pv2">
             <input
               className="mr2"
@@ -99,6 +100,7 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
               value={'CUSTOM'}
             />
             <FormattedMessage {...messages.customEditor} />
+            <span className="">: {projectInfo.customEditor.name}</span>
           </label>
         )}
       </div>
