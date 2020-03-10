@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormattedMessage, FormattedRelative, injectIntl, intlShape } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import humanizeDuration from 'humanize-duration';
 
 import { ClockIcon } from '../svgIcons';
@@ -28,7 +28,6 @@ function DueDateBox({ intl, dueDate, align = 'right' }: Object) {
           className="indent"
           {...messages['dueDateRelativeRemainingDays']}
           values={{
-            daysLeft: <FormattedRelative value={dueDate} />,
             daysLeftHumanize: humanizeDuration(milliDifference, {
               language: langCodeOnly,
               fallbacks: ['en'],
@@ -43,9 +42,5 @@ function DueDateBox({ intl, dueDate, align = 'right' }: Object) {
   }
 }
 
-DueDateBox.propTypes = {
-  intl: intlShape.isRequired,
-};
-
 //decorator pattern to provide the intl object from IntlProvider into function props.
-export default injectIntl(DueDateBox);
+export default injectIntl(DueDateBox, { forwardRef: true });

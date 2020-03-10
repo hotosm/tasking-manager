@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage, FormattedNumber, FormattedRelative } from 'react-intl';
+import { FormattedMessage, FormattedNumber, FormattedRelativeTime } from 'react-intl';
+import { selectUnit } from '@formatjs/intl-utils';
 import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import ReactPlaceholder from 'react-placeholder';
 
@@ -40,7 +41,9 @@ export function APIKeyCard({ token }) {
 
 export function OSMCard({ username }: Object) {
   const osmUserInfo = useSelector(state => state.auth.get('osm'));
-
+  const { value, unit } = selectUnit(
+    osmUserInfo ? new Date(osmUserInfo.accountCreated) : new Date(),
+  );
   return (
     <div className="cf bg-white shadow-4 pa4 mb3">
       <h3 className="f3 blue-dark mt0 fw6">
@@ -51,14 +54,14 @@ export function OSMCard({ username }: Object) {
           <h4 className="ttu blue-grey f5 fw4 mt1 mb0">
             <FormattedMessage {...messages.joinedOSM} />
           </h4>
-          <div className="f4 blue-dark fw8 mv3">
+          <div title={osmUserInfo && osmUserInfo.accountCreated} className="f4 blue-dark fw8 mv3">
             <ReactPlaceholder
               showLoadingAnimation={true}
               rows={1}
               delay={100}
               ready={typeof osmUserInfo !== undefined}
             >
-              <FormattedRelative value={osmUserInfo ? osmUserInfo.accountCreated : new Date()} />
+              <FormattedRelativeTime value={value} unit={unit} />
             </ReactPlaceholder>
           </div>
         </div>
