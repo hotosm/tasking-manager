@@ -169,15 +169,19 @@ class ProjectSearchService:
         dto.map_results = feature_collection
 
         # Get all total contributions for each paginated project.
-        contrib_counts = ProjectSearchService.get_total_contributions(
-            paginated_results.items
-        )
+        # contrib_counts = ProjectSearchService.get_total_contributions(
+        #     paginated_results.items
+        # )
 
-        zip_items = zip(paginated_results.items, contrib_counts)
+        # zip_items = zip(paginated_results.items, contrib_counts)
 
         dto.results = [
-            ProjectSearchService.create_result_dto(p, search_dto.preferred_locale, t)
-            for p, t in zip_items
+            ProjectSearchService.create_result_dto(
+                p,
+                search_dto.preferred_locale,
+                Project.get_project_total_contributions(p[0]),
+            )
+            for p in paginated_results.items
         ]
         dto.pagination = Pagination(paginated_results)
 
