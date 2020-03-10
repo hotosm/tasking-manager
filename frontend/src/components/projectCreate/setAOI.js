@@ -19,10 +19,10 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
   const layer_name = 'aoi';
 
   const setDataGeom = geom => {
-    const geomArea = area(geom) / 1e6;
-    const zoomLevel = mapObj.map.getZoom() + 4;
-    const grid = makeGrid(geom, zoomLevel, {});
     mapObj.map.fitBounds(bbox(geom), { padding: 20 });
+    const geomArea = area(geom) / 1e6;
+    const zoomLevel = parseInt(mapObj.map.getZoom()) + 4;
+    const grid = makeGrid(geom, zoomLevel, {});
     updateMetadata({
       ...metadata,
       geom: geom,
