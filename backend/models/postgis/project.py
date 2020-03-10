@@ -826,6 +826,20 @@ class Project(db.Model):
         )
         return project_info.name
 
+    @staticmethod
+    def get_project_total_contributions(project_id: int) -> int:
+
+        project_contributors_count = (
+            TaskHistory.query.with_entities(TaskHistory.user_id)
+            .filter(
+                TaskHistory.project_id == project_id, TaskHistory.action != "COMMENT"
+            )
+            .distinct(TaskHistory.user_id)
+            .count()
+        )
+
+        return project_contributors_count
+
     def get_aoi_geometry_as_geojson(self):
         """ Helper which returns the AOI geometry as a geojson object """
         aoi_geojson = db.engine.execute(self.geometry.ST_AsGeoJSON()).scalar()
