@@ -13,7 +13,7 @@ There are many ways to contribute to a project, below are some examples:
 
 ## Code of Conduct
 
-All of HOT's projects fall under the general [HOT Community Code of Conduct](https://www.hotosm.org/hot_code_of_conduct), which is in part based on the well known [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct.md).
+All of HOT's projects fall under the general [HOT Community Code of Conduct](https://www.hotosm.org/hot_code_of_conduct), which is in part based on the well known [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/0/code_of_conduct/).
 
 The short version is:
 

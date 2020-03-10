@@ -22,7 +22,7 @@ All of the Tasking Manager development is going to happen in the [projects repos
   - `hotfix/ISSUENUMBER-SHORT-TITLE-SEPARATED-BY-HYPHENS` for important bug fixes that need to go into the main releases as soon as possible
 (e.g. for a normal feature feature/893-restrict-available-editors).
 * Make sure your PR is always up to date and rebased with the latest develop branch.
-* Let’s build a nice and understandable commit history of the project. Please use [meaningful commit messages](https://code.likeagirl.io/useful-tips-for-writing-better-git-commit-messages-808770609503?gi=d287cc406699) and try to unite/squash related work into one commit. Eventually we will squash commits before merging a new feature or hotfix into the main branches (develop and master).
+* Let’s build a nice and understandable commit history of the project. Please use [meaningful commit messages](https://medium.com/@nawarpianist/git-commit-best-practices-dab8d722de99) and try to unite/squash related work into one commit. Eventually we will squash commits before merging a new feature or hotfix into the main branches (develop and master).
 * Give meaningful and understandable testing instructions in your PR. Highlight important preconditions and try to make life easy for the reviewer.
 
 ### Comments
