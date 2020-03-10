@@ -12,7 +12,7 @@ Ensure everything is met to start the migration: For this lunch the new Tasking 
 
 With the empty database for new Tasking Manager created, we can now migrate all the data from the TM2 installation. A [database migration script is included](../scripts/database/migration-from-tm2-postgres.sql) to assist in this process. The beginning of this file contains important information regarding the assumptions of your prior database name and permissions, so please read it. That text will walk you through backing up your old TM2 database and creating a new temporary database for your TM2 data--though not required, it is recommended.
 
-The database migration script is available at https://github.com/hotosm/tasking-manager/blob/master/scripts/database/migration-from-tm2-postgres.sql
+The database migration script is available at https://github.com/hotosm/tasking-manager/blob/develop/scripts/database/migration-from-tm2-postgres.sql.
 
 ## After Migration
 

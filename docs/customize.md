@@ -4,11 +4,11 @@ This guide intends to walk you through the process of customizing the Tasking Ma
 
 ## CSS
 
-The frontend site CSS is built from the files at https://github.com/hotosm/tasking-manager/tree/develop/client/assets/styles/sass.
+The frontend site CSS is built from the files at https://github.com/hotosm/tasking-manager/tree/develop/frontend/src/assets/styles.
 
 ## Images
 
-Logos are stored at https://github.com/hotosm/tasking-manager/tree/develop/client/assets/img for the site frontend and at https://github.com/hotosm/tasking-manager/tree/develop/server/web/static/swagger-ui/images for the API site.
+Logos are stored at https://github.com/hotosm/tasking-manager/tree/develop/frontend/src/assets/img for the site frontend.
 
 ## Configuration (site URL, hashtags, contact)
 
