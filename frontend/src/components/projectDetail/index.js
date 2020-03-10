@@ -19,8 +19,6 @@ import { Imagery } from '../taskSelection/imagery';
 import { TeamsBoxList } from '../teamsAndOrgs/teams';
 
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
-import { NewMapperFlow } from './newMapperFlow';
-import { ShowReadMoreButton } from './showReadMoreButton';
 import { ProjectDetailFooter } from './projectDetailFooter';
 import { BigProjectTeaser } from './bigProjectTeaser';
 import { QuestionsAndComments } from './questionsAndComments';
@@ -103,10 +101,6 @@ const ProjectDetailMap = props => {
 };
 
 export const ProjectDetailLeft = props => {
-  const [isShowing, setShowing] = useState(false);
-
-  const htmlDescription =
-    props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
   const htmlShortDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.shortDescription);
   useTitle(
@@ -134,9 +128,11 @@ export const ProjectDetailLeft = props => {
           <section className={`lh-copy h-100 overflow-x-scroll`}>
             <div className="pr2" dangerouslySetInnerHTML={htmlShortDescription} />
             <div className="pv2">
-              <ShowReadMoreButton isShowing={isShowing} setShowing={setShowing}>
-                <div className="pv2 pr2" dangerouslySetInnerHTML={htmlDescription} />
-              </ShowReadMoreButton>
+              <a href="#description" className="link base-font bg-white f6 bn pn red pointer">
+                <span className="pr2 ttu f6 fw6">
+                  <FormattedMessage {...messages.readMore} />
+                </span>
+              </a>
             </div>
             <div className="cf w-100">
               {props.project.organisationName && (
@@ -161,54 +157,54 @@ export const ProjectDetailLeft = props => {
         </ReactPlaceholder>
       </div>
 
-      {!isShowing && (
-        <div
-          className="cf ph4 pb3 w-100 h-25 z-2 absolute bottom-0 left-0 bg-white"
-          style={{ minHeight: '10rem' }}
+      <div
+        className="cf ph4 pb3 w-100 h-25 z-2 absolute bottom-0 left-0 bg-white"
+        style={{ minHeight: '10rem' }}
+      >
+        <ReactPlaceholder
+          showLoadingAnimation={true}
+          rows={3}
+          delay={500}
+          ready={typeof props.project.projectId === 'number'}
         >
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            rows={3}
-            delay={500}
-            ready={typeof props.project.projectId === 'number'}
-          >
-            <ProjectDetailTypeBar
-              type={props.type}
-              mappingTypes={props.project.mappingTypes || []}
-              imagery={props.project.imagery}
-              editors={props.project.mappingEditors}
-              defaultUserEditor={props.userPreferences.default_editor}
+          <ProjectDetailTypeBar
+            type={props.type}
+            mappingTypes={props.project.mappingTypes || []}
+            imagery={props.project.imagery}
+            editors={props.project.mappingEditors}
+            defaultUserEditor={props.userPreferences.default_editor}
+          />
+          <ReactPlaceholder rows={1} ready={typeof props.contributors.length === 'number'}>
+            <BigProjectTeaser
+              className="pt3"
+              totalContributors={props.contributors.length}
+              lastUpdated={props.project.lastUpdated}
+              littleFont="f5"
+              bigFont="f4"
             />
-            <ReactPlaceholder rows={1} ready={typeof props.contributors.length === 'number'}>
-              <BigProjectTeaser
-                className="pt3"
-                totalContributors={props.contributors.length}
-                lastUpdated={props.project.lastUpdated}
-                littleFont="f5"
-                bigFont="f4"
-              />
-            </ReactPlaceholder>
-            <ProjectProgressBar
-              className="pb2 bg-white"
-              percentMapped={props.project.percentMapped}
-              percentValidated={props.project.percentValidated}
-            />
-            <div className="cf pb1 h2 bg-white">
-              <MappingLevelMessage
-                level={props.project.mapperLevel}
-                className="tl f5 mt1 ttc fw5 blue-dark"
-              />
-              <DueDateBox dueDate={props.project.dueDate} />
-            </div>
-            <DueDateBox />
           </ReactPlaceholder>
-        </div>
-      )}
+          <ProjectProgressBar
+            className="pb2 bg-white"
+            percentMapped={props.project.percentMapped}
+            percentValidated={props.project.percentValidated}
+          />
+          <div className="cf pb1 h2 bg-white">
+            <MappingLevelMessage
+              level={props.project.mapperLevel}
+              className="tl f5 mt1 ttc fw5 blue-dark"
+            />
+            <DueDateBox dueDate={props.project.dueDate} />
+          </div>
+          <DueDateBox />
+        </ReactPlaceholder>
+      </div>
     </div>
   );
 };
 
 export const ProjectDetail = props => {
+  const htmlDescription =
+    props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
   const h2Classes = 'pl4 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark';
   return (
     <div className={`${props.className || 'bg-white blue-dark'}`}>
@@ -233,21 +229,16 @@ export const ProjectDetail = props => {
         <ProjectDetailFooter projectId={props.project.projectId} />
       </div>
 
-      <a href="#howToContribute" style={{ visibility: 'hidden' }} name="howToContribute">
-        <FormattedMessage {...messages.howToContribute} />
+      <a href="#description" style={{ visibility: 'hidden' }} name="description">
+        <FormattedMessage {...messages.description} />
       </a>
       <h3 className={`${h2Classes}`}>
-        <FormattedMessage {...messages.howToContribute} />
+        <FormattedMessage {...messages.description} />
       </h3>
-      <NewMapperFlow />
-
-      <a href="#questionsAndComments" style={{ visibility: 'hidden' }} name="questionsAndComments">
-        <FormattedMessage {...messages.questionsAndComments} />
-      </a>
-      <h3 className={`${h2Classes} mv0 pv4 bg-tan`}>
-        <FormattedMessage {...messages.questionsAndComments} />
-      </h3>
-      <QuestionsAndComments projectId={props.project.projectId} />
+      <div
+        className="pv2 ph4 w-60-l w-80-m w-100 lh-title"
+        dangerouslySetInnerHTML={htmlDescription}
+      />
 
       <a href="#teams" style={{ visibility: 'hidden' }} name="teams">
         <FormattedMessage {...messages.teamsAndPermissions} />
@@ -277,6 +268,14 @@ export const ProjectDetail = props => {
           {props.project.teams && <TeamsBoxList teams={props.project.teams} />}
         </div>
       </div>
+
+      <a href="#questionsAndComments" style={{ visibility: 'hidden' }} name="questionsAndComments">
+        <FormattedMessage {...messages.questionsAndComments} />
+      </a>
+      <h3 className={`${h2Classes} mv0 pv4 bg-tan`}>
+        <FormattedMessage {...messages.questionsAndComments} />
+      </h3>
+      <QuestionsAndComments projectId={props.project.projectId} />
 
       <a href="#contributions" name="contributions" style={{ visibility: 'hidden' }}>
         <FormattedMessage {...messages.contributors} />
