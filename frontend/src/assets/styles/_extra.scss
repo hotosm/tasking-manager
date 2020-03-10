@@ -4,6 +4,16 @@
     max-height: 100vh;
     overflow-y: scroll;
   }
+
+  .user-popup-content {
+    width: 70% !important;
+    left: 15% !important;
+  }
+
+  .user-popup-overlay {
+    background-color: $blue-dark;
+    opacity: 0.8;
+  }
 }
 
 @media screen and (min-width: 30em) {
