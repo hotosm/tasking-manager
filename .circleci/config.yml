@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: circleci/python:3-stretch-browsers
+    - image: circleci/python:3.7-stretch-browsers
     steps:
     - checkout
     - setup_remote_docker
@@ -36,8 +36,9 @@ jobs:
           cd $CIRCLE_WORKING_DIRECTORY
           # Install Python dependencies
           pip install virtualenv
-          virtualenv env
+          virtualenv --no-setuptools -p python3.7 $CIRCLE_WORKING_DIRECTORY/env
           $CIRCLE_WORKING_DIRECTORY/env/bin/pip install --upgrade pip
+          $CIRCLE_WORKING_DIRECTORY/env/bin/pip install setuptools==45.2.0
           $CIRCLE_WORKING_DIRECTORY/env/bin/pip install -r requirements.txt
     - run:
         name: Run JS Unit tests
@@ -122,7 +123,7 @@ jobs:
         type: env_var_name
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: circleci/python:3-stretch
+    - image: circleci/python:3.7-stretch
     steps:
     - checkout
     - setup_remote_docker
