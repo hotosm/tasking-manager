@@ -158,7 +158,7 @@ class TestProjectAdminService(unittest.TestCase):
 
         mock_user.return_value = stub_user
 
-        with self.assertRaises(ProjectAdminServiceError) as e:
+        with self.assertRaises(ValueError) as e:
             ProjectAdminService.update_project(dto, mock_user.id)
         the_exception = e.exception
         self.assertTrue(isinstance(the_exception, ValueError))
@@ -167,12 +167,12 @@ class TestProjectAdminService(unittest.TestCase):
         stub_user.role = UserRole.PROJECT_MANAGER.value
         mock_user.return_value = stub_user
 
-        with self.assertRaises(ProjectAdminServiceError) as e:
+        with self.assertRaises(ValueError) as e:
             ProjectAdminService.update_project(dto, mock_user.id)
         the_exception = e.exception
-        self.assertTrue(isinstance(the_exception, ProjectAdminServiceError))
+        self.assertTrue(isinstance(the_exception, ValueError))
 
-        stub_project.author_id = mock_user.id
+        # stub_project.author_id = mock_user.id
 
         stub_user.username = "admin"
         stub_user.role = UserRole.ADMIN.value
@@ -187,10 +187,10 @@ class TestProjectAdminService(unittest.TestCase):
         stub_user.role = UserRole.VALIDATOR.value
         mock_user.return_value = stub_user
 
-        with self.assertRaises(ProjectAdminServiceError) as e:
+        with self.assertRaises(ValueError) as e:
             ProjectAdminService.update_project(dto, mock_user.id)
         the_exception = e.exception
-        self.assertTrue(isinstance(the_exception, ProjectAdminServiceError))
+        self.assertTrue(isinstance(the_exception, ValueError))
 
     def test_no_project_info_for_default_locale_raises_error(self):
         # Arrange
