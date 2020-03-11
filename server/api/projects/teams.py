@@ -36,7 +36,6 @@ class ProjectsTeamsAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, team_id, project_id):
         """ Assign a team to a project
@@ -108,7 +107,6 @@ class ProjectsTeamsAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    @tm.pm_only(False)
     @token_auth.login_required
     def patch(self, team_id, project_id):
         """ Update role of a team on a project
@@ -176,7 +174,6 @@ class ProjectsTeamsAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    @tm.pm_only(False)
     @token_auth.login_required
     def delete(self, team_id, project_id):
         """
