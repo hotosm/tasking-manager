@@ -407,10 +407,6 @@ const Resources = {
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',
-        'cd frontend/',
-        'npm install',
-        'npm run build',
-        'cd ../',
         'echo "------------------------------------------------------------"',
         'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 3 --timeout 179 manage:application &',
         cf.sub('sudo cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
@@ -688,7 +684,12 @@ const Resources = {
             QueryString: false
           },
           TargetOriginId: cf.join('-', [cf.stackName, 'react-app']),
-          ViewerProtocolPolicy: "allow-all"
+          ViewerProtocolPolicy: "redirect-to-https"
+        },
+        ViewerCertificate: {
+          AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
+          MinimumProtocolVersion: 'TLSv1.2_2018',
+          SslSupportMethod: 'sni-only'
         }
       }
     }
