@@ -32,7 +32,6 @@ from server.services.messaging.template_service import get_template
 
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
-user_all_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class UserServiceError(Exception):
@@ -368,7 +367,6 @@ class UserService:
         return dict(verificationEmailSent=verification_email_sent)
 
     @staticmethod
-    @cached(user_all_cache)
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
         """ Gets paginated list of users """
         return User.get_all_users(query)

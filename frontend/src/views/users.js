@@ -8,7 +8,7 @@ export const UsersList = () => {
   const [filters, setFilters] = useState({ level: 'ALL', role: 'ALL', username: '', page: 1 });
 
   return (
-    <div className="ph1">
+    <div className="ph1 blue-dark">
       <h3 className="barlow-condensed f2 ma0 pv3 mt1 v-mid dib ttu pl2 pl0-l">
         <FormattedMessage {...messages.manageUsers} />
       </h3>
