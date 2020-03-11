@@ -224,7 +224,7 @@ jobs:
     - run:
         name: Deploy Frontend to S3
         command: |
-          cd $CIRCLECI_WORKING_DIRECTORY/frontend/
+          cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
           npm install
           npm run build
           aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-react-app --delete
