@@ -118,7 +118,7 @@ python3 manage.py db upgrade
 
 #### Migrating your data from TM2
 
-You can use [this script](../scripts/tm2-pg-migration/migrationscripts.sql) to migrate your data from the prior tasking manager version (v2) to the current one. Please see [this documentation page](./migration-tm2-to-tm3.md) for important information about this process.
+You can use [this script](../scripts/database/migration-from-tm2-postgres.sql) to migrate your data from the prior tasking manager version (v2) to the current one. Please see [this documentation page](../scripts/database/README.md) for important information about this process.
 
 #### Set permissions to create a task
 
@@ -134,7 +134,7 @@ If you plan to only work on the API you only have to build the server architectu
 python3 manage.py runserver -d -r
 `
 
-You can access the API documentation on [http://localhost:5000/api-docs](http://localhost:5000/api-docs), it also allows you to execute requests on your local TM instance. The API docs is also available on our [production](https://tasks.hotosm.org/api-docs/) and [staging](https://tasks-stage.hotosm.org) instances.
+You can access the API documentation on [http://localhost:5000/api-docs](http://localhost:5000/api-docs), it also allows you to execute requests on your local TM instance. The API docs is also available on our [production](https://tasks.hotosm.org/api-docs) and [staging](https://tasks-stage.hotosm.org/api-docs/) instances.
 
 #### API Authentication
 
