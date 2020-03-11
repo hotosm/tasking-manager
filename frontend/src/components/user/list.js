@@ -236,8 +236,12 @@ const UserEditMenu = ({ user, token, close, setStatus }) => {
         </p>
         {roles.map(role => {
           return (
-            <div key={role} className="mv2 dim pointer w-100 flex items-center justify-between">
-              <p onClick={() => updateRole(user.username, role, token, close)} className="ma0 pb1">
+            <div
+              key={role}
+              onClick={() => updateRole(user.username, role, token, close)}
+              className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
+            >
+              <p className="ma0">
                 <FormattedMessage {...messages[`userRole${role}`]} />
               </p>
               {role === user.role ? <CheckIcon className={iconClass} /> : null}
@@ -251,11 +255,12 @@ const UserEditMenu = ({ user, token, close, setStatus }) => {
         </p>
         {mapperLevels.map(level => {
           return (
-            <div key={level} className="mv2 dim pointer w-100 flex items-center justify-between">
-              <p
-                onClick={() => updateMapperLevel(user.username, level, token, close)}
-                className="ma0 pb1"
-              >
+            <div
+              key={level}
+              onClick={() => updateMapperLevel(user.username, level, token, close)}
+              className="mv1 pv1 dim pointer w-100 flex items-center justify-between"
+            >
+              <p className="ma0">
                 <FormattedMessage {...messages[`mapperLevel${level}`]} />
               </p>
               {level === user.mappingLevel ? <CheckIcon className={iconClass} /> : null}
