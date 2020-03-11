@@ -472,7 +472,7 @@ workflows:
         filters:
           branches:
             only:
-              - fix/create-react-app
+              - fix/create-react-app-deployment
         requires:
           - build
         stack_name: "react-app"
