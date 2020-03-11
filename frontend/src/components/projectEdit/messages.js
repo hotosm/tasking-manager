@@ -472,10 +472,6 @@ export default defineMessages({
     id: 'project.formInputs.placeholders.message',
     defaultMessage: 'Message *',
   },
-  userRoleADMIN: {
-    id: 'project.formInputs.user_role.options.admin',
-    defaultMessage: 'Admin',
-  },
   mapperLevelALL: {
     id: 'project.formInputs.mapper_level.options.all',
     defaultMessage: 'All levels',
