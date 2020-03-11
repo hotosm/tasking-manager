@@ -161,7 +161,7 @@ class TestProjectAdminService(unittest.TestCase):
         with self.assertRaises(ProjectAdminServiceError) as e:
             ProjectAdminService.update_project(dto, mock_user.id)
         the_exception = e.exception
-        self.assertTrue(isinstance(the_exception,ValueError))
+        self.assertTrue(isinstance(the_exception, ValueError))
 
         stub_user.username = "pm"
         stub_user.role = UserRole.PROJECT_MANAGER.value
