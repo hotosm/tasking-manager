@@ -28,14 +28,6 @@ export default defineMessages({
     id: 'management.users.title',
     defaultMessage: 'Manage users',
   },
-  enterUsername: {
-    id: 'management.users.username_enter',
-    defaultMessage: 'Search by username',
-  },
-  totalUsers: {
-    id: 'management.users.total_users',
-    defaultMessage: 'Total number of users: {total}',
-  },
   newOrganisation: {
     id: 'teamsAndOrgs.management.organisation.creation',
     defaultMessage: 'Create new organization',
