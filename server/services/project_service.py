@@ -26,6 +26,7 @@ from server.models.postgis.task import Task, TaskHistory, TaskAction
 from server.models.postgis.utils import NotFound
 from server.services.users.user_service import UserService
 from server.services.project_search_service import ProjectSearchService
+from server.services.project_admin_service import ProjectAdminService
 from server.services.team_service import TeamService
 from sqlalchemy import func, or_
 from sqlalchemy.sql.expression import true
@@ -298,6 +299,7 @@ class ProjectService:
         # validation_permission = 1(level),2(teams),3(teamsAndLevel)
         if validation_permission == ValidationPermission.TEAMS.value:
             teams_dto = TeamService.get_project_teams_as_dto(project_id)
+            print(len(teams_dto.teams))
             teams_allowed = [
                 team_dto
                 for team_dto in teams_dto.teams
@@ -309,7 +311,7 @@ class ProjectService:
                 if TeamService.is_user_member_of_team(team_dto.team_id, user_id)
             ]
             if len(user_membership) == 0:
-                return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
+                return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
         elif validation_permission == ValidationPermission.LEVEL.value:
             if not ProjectService._is_user_intermediate_or_advanced(user_id):
@@ -331,7 +333,7 @@ class ProjectService:
                 if TeamService.is_user_member_of_team(team_dto.team_id, user_id)
             ]
             if len(user_membership) == 0:
-                return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
+                return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
     @staticmethod
     def is_user_permitted_to_validate(project_id, user_id):
@@ -341,6 +343,9 @@ class ProjectService:
 
         project = ProjectService.get_project_by_id(project_id)
         validation_permission = project.validation_permission
+
+        if ProjectAdminService.is_user_action_permitted_on_project(user_id, project_id):
+            return True, "User allowed to validate"
 
         if ProjectStatus(
             project.status
@@ -371,6 +376,8 @@ class ProjectService:
             is_restriction = ProjectService.evaluate_validation_permission(
                 project_id, user_id, validation_permission
             )
+            print(project_id, user_id, validation_permission)
+            print(is_restriction)
             if is_restriction:
                 return is_restriction
 

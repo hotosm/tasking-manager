@@ -45,7 +45,7 @@ class ProjectsCampaignsAPI(Resource):
             401:
                 description: Unauthorized - Invalid credentials
             403:
-                description: Unauthorized: Forbidden
+                description: Unauthorized - Forbidden
             500:
                 description: Internal Server Error
         """

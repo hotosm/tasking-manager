@@ -572,7 +572,6 @@ class TasksActionsValidationUnlockAPI(Resource):
 
 
 class TasksActionsMapAllAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -600,9 +599,19 @@ class TasksActionsMapAllAPI(Resource):
                 description: All tasks mapped
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
+        try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"TasksActionsMapAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             MappingService.map_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks mapped"}, 200
@@ -613,7 +622,6 @@ class TasksActionsMapAllAPI(Resource):
 
 
 class TasksActionsValidateAllAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -641,9 +649,19 @@ class TasksActionsValidateAllAPI(Resource):
                 description: All mapped tasks validated
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
+        try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"TasksActionsValidateAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks validated"}, 200
@@ -654,7 +672,6 @@ class TasksActionsValidateAllAPI(Resource):
 
 
 class TasksActionsInvalidateAllAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -682,9 +699,19 @@ class TasksActionsInvalidateAllAPI(Resource):
                 description: All mapped tasks invalidated
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
+        try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"TasksActionsInvalidateAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             ValidatorService.invalidate_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks invalidated"}, 200
@@ -695,7 +722,6 @@ class TasksActionsInvalidateAllAPI(Resource):
 
 
 class TasksActionsResetBadImageryAllAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -723,9 +749,19 @@ class TasksActionsResetBadImageryAllAPI(Resource):
                 description: All bad imagery tasks marked ready for mapping
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
+        try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"TasksActionsResetBadImageryAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             MappingService.reset_all_badimagery(project_id, tm.authenticated_user_id)
             return {"Success": "All bad imagery tasks marked ready for mapping"}, 200
@@ -736,7 +772,6 @@ class TasksActionsResetBadImageryAllAPI(Resource):
 
 
 class TasksActionsResetAllAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -764,9 +799,19 @@ class TasksActionsResetAllAPI(Resource):
                 description: All tasks reset
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
+        try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"TasksActionsResetAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             ProjectAdminService.reset_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks reset"}, 200

@@ -92,7 +92,6 @@ class OrganisationsRestAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    @tm.pm_only()
     @token_auth.login_required
     def delete(self, organisation_id):
         """
@@ -189,7 +188,6 @@ class OrganisationsRestAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    @tm.pm_only()
     @token_auth.login_required
     def patch(self, organisation_id):
         """

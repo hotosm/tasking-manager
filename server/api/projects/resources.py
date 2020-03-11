@@ -21,6 +21,7 @@ from server.services.project_service import (
     NotFound,
 )
 from server.services.users.user_service import UserService
+from server.services.organisation_service import OrganisationService
 from server.services.users.authentication_service import token_auth, tm, verify_token
 from server.services.project_admin_service import (
     ProjectAdminService,
@@ -747,18 +748,22 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
                 description: All mapped tasks validated
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             404:
                 description: Admin has no projects
             500:
                 description: Internal Server Error
         """
-        # try:
-        #     ProjectAdminService.is_user_action_permitted_on_project(
-        #         tm.authenticated_user_id, project_id
-        #     )
-        # except ValueError as e:
-        #     error_msg = f"ProjectsQueriesOwnerAPI GET: {str(e)}"
-        #     return {"Error": error_msg}, 403
+        try:
+            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+                tm.authenticated_user_id
+            )
+            if len(orgs_dto.organisation) < 1:
+                raise ValueError("User not a project manager")
+        except ValueError as e:
+            error_msg = f"ProjectsQueriesOwnerAPI GET: {str(e)}"
+            return {"Error": error_msg}, 403
 
         try:
             search_dto = self.setup_search_dto()
@@ -938,7 +943,6 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
 
 
 class ProjectsQueriesNoTasksAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def get(self, project_id):
         """
@@ -971,6 +975,14 @@ class ProjectsQueriesNoTasksAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"ProjectsQueriesNoTasksAPI GET: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
             return project_dto.to_primitive(), 200

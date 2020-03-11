@@ -279,7 +279,6 @@ class TasksQueriesGpxAPI(Resource):
 
 
 class TasksQueriesAoiAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def put(self):
         """
@@ -335,6 +334,7 @@ class TasksQueriesAoiAPI(Resource):
             500:
                 description: Internal Server Error
         """
+
         try:
             grid_dto = GridDTO(request.get_json())
             grid_dto.validate()

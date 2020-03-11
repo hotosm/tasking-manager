@@ -274,9 +274,12 @@ class MessageService:
         query = (
             """ select user_id from project_favorites where project_id = :project_id"""
         )
+        print(query)
         result = db.engine.execute(text(query), project_id=project_id)
         result = result[0]
+        print(result)
         favorited_users = [r[0] for r in result]
+        print(favorited_users)
 
         if len(favorited_users) != 0:
             project_link = MessageService.get_project_link(project_id)
