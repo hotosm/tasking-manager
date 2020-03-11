@@ -276,8 +276,6 @@ class MessageService:
         )
         print(query)
         result = db.engine.execute(text(query), project_id=project_id)
-        result = result[0]
-        print(result)
         favorited_users = [r[0] for r in result]
         print(favorited_users)
 

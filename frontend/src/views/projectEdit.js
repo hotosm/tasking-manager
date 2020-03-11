@@ -13,6 +13,7 @@ import { ImageryForm } from '../components/projectEdit/imageryForm';
 import { PermissionsForm } from '../components/projectEdit/permissionsForm';
 import { SettingsForm } from '../components/projectEdit/settingsForm';
 import { ActionsForm } from '../components/projectEdit/actionsForm';
+import { CustomEditorForm } from '../components/projectEdit/customEditorForm';
 import { Button } from '../components/button';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 
@@ -45,6 +46,7 @@ export const handleCheckButton = (event, arrayElement) => {
 
 export function ProjectEdit({ id }) {
   const token = useSelector(state => state.auth.get('token'));
+  const user = useSelector(state => state.auth.get('userDetails'));
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [languages, setLanguages] = useState(null);
@@ -110,12 +112,13 @@ export function ProjectEdit({ id }) {
       { value: 'permissions' },
       { value: 'settings' },
       { value: 'actions' },
+      { value: 'custom_editor', expert_required: true },
     ];
 
     return (
       <div>
         <ul className="list pl0 mt0 ttu">
-          {elements.map((elm, n) => (
+          {elements.filter(elm => !elm.expert_required || user.isExpert).map((elm, n) => (
             <li key={n} className={checkSelected(elm.value)} onClick={() => setOption(elm.value)}>
               <FormattedMessage {...messages[`projectEditSection_${elm.value}`]} />
               {elm.required && ' *'}
@@ -149,6 +152,8 @@ export function ProjectEdit({ id }) {
             projectName={projectInfo.projectInfo.name}
           />
         );
+      case 'custom_editor':
+        return <CustomEditorForm languages={languages} defaultLocale={projectInfo.defaultLocale} />;
       default:
         return null;
     }

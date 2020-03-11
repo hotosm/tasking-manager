@@ -15,7 +15,8 @@ export const useFetch = (url, trigger = true) => {
       if (trigger) {
         setLoading(true);
         try {
-          const response = await fetchLocalJSONAPI(url, token, 'GET', locale);
+          // replace in locale is needed because the backend uses underscore instead of dash
+          const response = await fetchLocalJSONAPI(url, token, 'GET', locale.replace('-', '_'));
           setData(response);
         } catch (e) {
           setError(e);
@@ -36,7 +37,8 @@ export function useFetchIntervaled(url, delay, trigger = true) {
     (async () => {
       if (trigger) {
         try {
-          const response = await fetchLocalJSONAPI(url, token, 'GET', locale);
+          // replace in locale is needed because the backend uses underscores instead of dashes
+          const response = await fetchLocalJSONAPI(url, token, 'GET', locale.replace('-', '_'));
           setData(response);
         } catch (e) {
           setError(e);

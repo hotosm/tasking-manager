@@ -313,6 +313,10 @@ export default defineMessages({
     id: 'project.tasks.action.submit_task',
     defaultMessage: 'Submit task',
   },
+  submitTasks: {
+    id: 'project.tasks.action.submit_tasks',
+    defaultMessage: 'Submit tasks',
+  },
   taskActivity: {
     id: 'project.tasks.history.title',
     defaultMessage: 'Task activity',
@@ -416,5 +420,29 @@ export default defineMessages({
   mappingLevelBEGINNER: {
     id: 'project.level.beginner',
     defaultMessage: 'Beginner',
+  },
+  permissionErrorTitle: {
+    id: 'project.permissions.error.title',
+    defaultMessage: 'You are not ready to work on this project...',
+  },
+  permissionError_userLevelToValidate: {
+    id: 'project.permissions.error.userLevelToValidate',
+    defaultMessage:
+      'Only users with intermediate or advanced experience level can validate this project.',
+  },
+  permissionError_userLevelToMap: {
+    id: 'project.permissions.error.userLevelToMap',
+    defaultMessage:
+      'Only users with intermediate or advanced experience level can map this project.',
+  },
+  permissionError_userIsNotValidationTeamMember: {
+    id: 'project.permissions.error.userIsNotValidationTeamMember',
+    defaultMessage:
+      'You need to be member of one of the validation teams to be able to validate this project.',
+  },
+  permissionError_userIsNotMappingTeamMember: {
+    id: 'project.permissions.error.userIsNotMappingTeamMember',
+    defaultMessage:
+      'You need to be member of one of the mapping teams to be able to map this project.',
   },
 });

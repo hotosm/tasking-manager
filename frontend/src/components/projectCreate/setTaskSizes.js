@@ -1,9 +1,15 @@
 import React, { useLayoutEffect, useCallback } from 'react';
-import * as turf from '@turf/turf';
+import area from '@turf/area';
+import bbox from '@turf/bbox';
+import intersect from '@turf/intersect';
+import transformScale from '@turf/transform-scale';
+import bboxPolygon from '@turf/bbox-polygon';
+import { polygon, multiPolygon, featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
+import { addLayer } from './index';
 
 // Maximum resolution of OSM
 const MAXRESOLUTION = 156543.0339;
@@ -42,10 +48,10 @@ const createTaskFeature_ = (step, x, y, zoomLevel) => {
     zoom: zoomLevel,
     isSquare: true,
   };
-  const bbox = [minlnglat[0], minlnglat[1], maxlnglat[0], maxlnglat[1]];
-  const poly = turf.bboxPolygon(bbox);
+  const stepBbox = [minlnglat[0], minlnglat[1], maxlnglat[0], maxlnglat[1]];
+  const poly = bboxPolygon(stepBbox);
 
-  return turf.multiPolygon([poly.geometry.coordinates], properties);
+  return multiPolygon([poly.geometry.coordinates], properties);
 };
 
 const createTaskGrid = (areaOfInterestExtent, zoomLevel) => {
@@ -72,49 +78,27 @@ const createTaskGrid = (areaOfInterestExtent, zoomLevel) => {
     }
   }
 
-  return turf.featureCollection(taskFeatures);
+  return featureCollection(taskFeatures);
 };
 
 export const makeGrid = (geom, zoom, mask) => {
-  let bbox = turf.bbox(geom);
+  let geomBbox = bbox(geom);
 
-  const minxy = degrees2meters(bbox[0], bbox[1]);
-  const maxxy = degrees2meters(bbox[2], bbox[3]);
+  const minxy = degrees2meters(geomBbox[0], geomBbox[1]);
+  const maxxy = degrees2meters(geomBbox[2], geomBbox[3]);
 
-  bbox = [minxy[0], minxy[1], maxxy[0], maxxy[1]];
+  geomBbox = [minxy[0], minxy[1], maxxy[0], maxxy[1]];
 
-  const grid = createTaskGrid(bbox, zoom);
+  const grid = createTaskGrid(geomBbox, zoom);
 
   return grid;
-};
-
-export const layerJson = grid => {
-  const source = {
-    type: 'geojson',
-    data: grid,
-  };
-  const paintOptions = {
-    'fill-color': '#fff',
-    'fill-outline-color': '#00f',
-    'fill-opacity': 0.5,
-  };
-
-  const jsonData = {
-    id: 'grid',
-    type: 'fill',
-    source: source,
-    layout: {},
-    paint: paintOptions,
-  };
-
-  return jsonData;
 };
 
 const splitTaskGrid = (taskGrid, geom) => {
   let newTaskGrid = [];
   taskGrid.features.forEach(f => {
-    let poly = turf.polygon(f.geometry.coordinates[0]);
-    let contains = turf.intersect(geom, poly);
+    let poly = polygon(f.geometry.coordinates[0]);
+    let contains = intersect(geom, poly);
     if (contains === null) {
       newTaskGrid.push(f);
     } else {
@@ -139,14 +123,13 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         updateMetadata({ ...metadata, tempTaskGrid: taskGrid });
       }
       // Make the geom smaller to avoid borders.
-      const geom = turf.transformScale(event.features[0].geometry, 0.5);
+      const geom = transformScale(event.features[0].geometry, 0.5);
       const newTaskGrid = splitTaskGrid(taskGrid, geom);
-      const featureCollection = turf.featureCollection(newTaskGrid);
 
       updateMetadata({
         ...metadata,
-        taskGrid: featureCollection,
-        tasksNo: featureCollection.features.length,
+        taskGrid: featureCollection(newTaskGrid),
+        tasksNo: featureCollection(newTaskGrid).features.length,
       });
     },
     [updateMetadata, metadata, mapObj.map],
@@ -180,12 +163,11 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
 
       const geom = event.features[0].geometry;
       const newTaskGrid = splitTaskGrid(taskGrid, geom, metadata.zoomLevel);
-      const featureCollection = turf.featureCollection(newTaskGrid);
 
       updateMetadata({
         ...metadata,
-        taskGrid: featureCollection,
-        tasksNo: featureCollection.features.length,
+        taskGrid: featureCollection(newTaskGrid),
+        tasksNo: featureCollection(newTaskGrid).features.length,
       });
     });
 
@@ -223,14 +205,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   }, [metadata, updateMetadata, geom]);
 
   useLayoutEffect(() => {
-    if (mapObj.map.getLayer('grid')) {
-      mapObj.map.removeLayer('grid');
-    }
-    if (mapObj.map.getSource('grid')) {
-      mapObj.map.removeSource('grid');
-    }
-    mapObj.map.addLayer(layerJson(metadata.taskGrid));
-
+    addLayer('grid', metadata.taskGrid, mapObj.map);
     return () => {
       mapObj.map.off('click', 'grid', splitHandler);
     };
@@ -279,7 +254,10 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         <p>
           <FormattedMessage
             {...messages.taskAreaMessage}
-            values={{ area: metadata.area / metadata.taskNo || 0, sq: <sup>2</sup> }}
+            values={{
+              area: (area(metadata.taskGrid.features[0]) / 1e6).toFixed(2) || 0,
+              sq: <sup>2</sup>,
+            }}
           />
         </p>
       </div>

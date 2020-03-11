@@ -118,3 +118,34 @@ export function getTaskAction(user, project, taskStatus, userTeams = []) {
   }
   return 'selectAnotherProject';
 }
+
+export function getPermissionErrorMessage(project, userLevel) {
+  if (project.percentMapped + project.percentBadImagery < 100) {
+    if (
+      project.mappingPermission === 'LEVEL' ||
+      (project.mappingPermission === 'TEAMS_LEVEL' && userLevel === 'BEGINNER')
+    ) {
+      return 'userLevelToMap';
+    }
+    if (
+      project.mappingPermission === 'TEAMS' ||
+      (project.mappingPermission === 'TEAMS_LEVEL' && userLevel !== 'BEGINNER')
+    ) {
+      return 'userIsNotMappingTeamMember';
+    }
+  }
+  if (project.percentValidated + project.percentBadImagery < 100) {
+    if (
+      project.validationPermission === 'LEVEL' ||
+      (project.validationPermission === 'TEAMS_LEVEL' && userLevel === 'BEGINNER')
+    ) {
+      return 'userLevelToValidate';
+    }
+    if (
+      project.validationPermission === 'TEAMS' ||
+      (project.validationPermission === 'TEAMS_LEVEL' && userLevel !== 'BEGINNER')
+    ) {
+      return 'userIsNotValidationTeamMember';
+    }
+  }
+}

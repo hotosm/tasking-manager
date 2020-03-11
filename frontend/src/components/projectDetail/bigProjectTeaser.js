@@ -1,6 +1,8 @@
 import React from 'react';
-import { FormattedMessage, FormattedRelative } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
+
 import messages from './messages';
+import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 
 export function BigProjectTeaser({
   lastUpdated,
@@ -11,7 +13,6 @@ export function BigProjectTeaser({
 }: Object) {
   /* outerDivStyles must have f6 even if sub-divs have f7 to fix grid issues*/
   const outerDivStyles = 'f6 tl blue-grey truncate mb2';
-
   return (
     <div className="cf bg-white blue-dark">
       <div className={`fl ${outerDivStyles} ${className}`}>
@@ -24,10 +25,10 @@ export function BigProjectTeaser({
           />
         </span>
       </div>
-      <div className={`fr ${outerDivStyles} ${className}`}>
+      <div title={lastUpdated} className={`fr ${outerDivStyles} ${className || ''}`}>
         <span className={littleFont} title={lastUpdated}>
           <FormattedMessage {...messages['projectLastContribution']} />{' '}
-          <FormattedRelative value={lastUpdated} />
+          <RelativeTimeWithUnit date={lastUpdated} />
         </span>
       </div>
     </div>

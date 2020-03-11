@@ -27,7 +27,7 @@ export const NotificationResults = props => {
         <span>&nbsp;</span>
       ) : (
         !state.isError &&
-        (!props.useMiniCard && (
+        !props.useMiniCard && (
           <p className="blue-grey ml3 pt2 f7">
             <FormattedMessage
               {...messages.paginationCount}
@@ -43,7 +43,7 @@ export const NotificationResults = props => {
               }}
             />
           </p>
-        ))
+        )
       )}
 
       {state.isError ? (
@@ -68,8 +68,8 @@ export const NotificationResults = props => {
         </ReactPlaceholder>
       </div>
       {showRefreshButton && (
-        <div className="pa2 tc dib mb2">
-          <button className="pa1 pointer" onClick={() => props.retryFn()}>
+        <div className="ph2 pt1 pb2 tc db mb2">
+          <button className="pa2 pointer ba b--grey-light bg-tan" onClick={() => props.retryFn()}>
             <RefreshIcon height="15px" className="pt1" />
           </button>
         </div>

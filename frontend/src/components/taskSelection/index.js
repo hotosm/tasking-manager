@@ -1,8 +1,8 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
-import { FormattedMessage } from 'react-intl';
+import Popup from 'reactjs-popup';
 import ReactPlaceholder from 'react-placeholder';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
@@ -15,6 +15,7 @@ import { TasksMapLegend } from './legend';
 import { ProjectInstructions } from './instructions';
 import { ProjectHeader } from '../projectDetail/header';
 import Contributions from './contributions';
+import { UserPermissionErrorContent } from './permissionErrorModal';
 
 const TaskSelectionFooter = React.lazy(() => import('./footer'));
 
@@ -76,7 +77,6 @@ export function TaskSelection({ project, type, loading }: Object) {
     project.projectId !== undefined,
   );
 
-  // if the user is a beginner, open the page with the instructions tab activated
   useEffect(() => {
     setTasks(project.tasks);
   }, [project]);
@@ -186,6 +186,17 @@ export function TaskSelection({ project, type, loading }: Object) {
   return (
     <div>
       <div className="cf vh-minus-200-ns">
+        {['mappingIsComplete', 'selectAnotherProject'].includes(taskAction) && (
+          <Popup modal open closeOnEscape={true} closeOnDocumentClick={true}>
+            {close => (
+              <UserPermissionErrorContent
+                project={project}
+                userLevel={user.mappingLevel}
+                close={close}
+              />
+            )}
+          </Popup>
+        )}
         <div className="w-100 w-50-ns fl pt3 overflow-y-scroll-ns vh-minus-200-ns h-100">
           <div className="pl4-l pl2 pr2">
             <ReactPlaceholder

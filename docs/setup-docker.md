@@ -15,7 +15,7 @@ The Tasking Manager uses OpenStreetMap accounts for users to login.
 
 In order to configure this connection you have to go to `https://www.openstreetmap.org/user/<Your_OSM_UserName>/oauth_clients/new` and fill in the form:
 
-<img width="300" alt="Required OSM OAuth settings" src="docs/assets/osm-oauth-settings.jpg">
+<img width="300" alt="Required OSM OAuth settings" src="./assets/osm-oauth-settings.jpg">
 
 Afterwards copy the consumer key and secret from OpenStreetMap into your configuration file `tasking-manager.env`, and set the two variables: `TM_CONSUMER_KEY` and `TM_CONSUMER_SECRET`.
 
@@ -29,7 +29,7 @@ The **easiest way** to run the Tasking Manager requires [Docker](https://docs.do
 For stopping this command do the job: `docker-compose stop`
 And you can check the logs with `docker-compose logs -f`
 
-**Alternatively** you can review how to install a [development setup](./docs/setup-development.md).
+**Alternatively** you can review how to install a [development setup](./setup-development.md).
 
 ### Working with the setup
 

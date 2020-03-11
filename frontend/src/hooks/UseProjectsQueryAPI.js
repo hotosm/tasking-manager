@@ -129,7 +129,7 @@ export const useProjectsQueryAPI = (
 
       let headers = {
         'Content-Type': 'application/json',
-        'Accept-Language': locale,
+        'Accept-Language': locale.replace('-', '_'),
       };
       if (token) {
         headers['Authorization'] = `Token ${token}`;
