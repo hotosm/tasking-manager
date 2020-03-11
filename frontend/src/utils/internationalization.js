@@ -7,7 +7,10 @@ import cs from '../locales/cs.json';
 import de from '../locales/de.json';
 import en from '../locales/en.json';
 import es from '../locales/es.json';
+import fa_IR from '../locales/fa_IR.json';
 import fr from '../locales/fr.json';
+import he from '../locales/he.json';
+import hu from '../locales/hu.json';
 import id from '../locales/id.json';
 import it from '../locales/it.json';
 import ja from '../locales/ja.json';
@@ -20,6 +23,8 @@ import sw from '../locales/sw.json';
 import tl from '../locales/tl.json';
 import tr from '../locales/tr.json';
 import uk from '../locales/uk.json';
+import zh_TW from '../locales/zh_TW.json';
+
 import { setLocale } from '../store/actions/userPreferences';
 import * as config from '../config';
 
@@ -29,7 +34,10 @@ const translatedMessages = {
   de: de,
   en: en,
   es: es,
+  'fa_IR': fa_IR,
   fr: fr,
+  he: he,
+  hu: hu,
   id: id,
   it: it,
   ja: ja,
@@ -42,6 +50,7 @@ const translatedMessages = {
   tl: tl,
   tr: tr,
   uk: uk,
+  'zh_TW': zh_TW,
 };
 
 /* Safari 12- and IE */
@@ -60,12 +69,15 @@ if (!Intl.RelativeTimeFormat) {
 
 // commented out the languages that we are not supporting on the first production release of TM4
 const supportedLocales = [
-  // { value: 'ar', label: 'Arabic' },
+  // { value: 'ar', label: 'عربى' },
   { value: 'cs', label: 'Česky' },
   { value: 'de', label: 'Deutsch' },
   { value: 'en', label: 'English' },
   { value: 'es', label: 'Español' },
+  // { value: 'fa-IR', label: 'فارسی' },
   { value: 'fr', label: 'Français' },
+  // { value: 'he', label: 'עברית' },
+  { value: 'hu', label: 'Magyar' },
   { value: 'id', label: 'Indonesia' },
   { value: 'it', label: 'Italiano' },
   { value: 'ja', label: '日本語' },
@@ -78,6 +90,7 @@ const supportedLocales = [
   // { value: 'tl', label: 'Filipino (Tagalog)' },
   { value: 'tr', label: 'Türkçe' },
   { value: 'uk', label: 'Українська' },
+  // { value: 'zh-_TW', label: '中国台湾' },
 ];
 
 function getSupportedLocale(locale) {
