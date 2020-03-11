@@ -1,14 +1,12 @@
 import React from 'react';
 import { Link } from '@reach/router';
 import DOMPurify from 'dompurify';
-import { FormattedRelative } from 'react-intl';
-// import { FormattedRelativeTime } from 'react-intl';
-// import {selectUnit} from '@formatjs/intl-utils';
 
 import { EyeIcon, ListIcon } from '../svgIcons';
 import { UserAvatar } from '../user/avatar';
 import systemAvatar from '../../assets/img/hot-system-avatar-square-opaque.png';
 import { DeleteModal } from '../deleteModal';
+import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 
 export const rawHtmlNotification = notificationHtml => ({
   __html: DOMPurify.sanitize(notificationHtml),
@@ -78,7 +76,6 @@ export function NotificationCard({
     );
 
   const readStyle = read ? '' : 'bl bw2 br2 b2 b--red ';
-  // const {value, unit} = selectUnit(new Date(sentDate));
 
   return (
     <Link to={`/inbox/message/${messageId}`} className={`no-underline `}>
@@ -121,8 +118,7 @@ export function NotificationCard({
             <div className="dn dib-ns fr ma1 ttu b--red ba red f7 pa1">1 mention</div>
           )}
           <div className={`pl5 pt2 blue-grey f6`}>
-            {/* <FormattedRelativeTime value={value} unit={unit}/> */}
-            <FormattedRelative value={new Date(sentDate)} />
+            <RelativeTimeWithUnit date={sentDate} />
           </div>
         </div>
       </article>
@@ -137,22 +133,19 @@ export function NotificationCardMini({
   subject,
   sentDate,
 }: Object) {
-  // const {value, unit} = selectUnit(new Date(sentDate));
-
   return (
-    <Link to={`/inbox/message/${messageId}`} className={`no-underline hover-red`}>
-      <article className={`db base-font w-100 mb3 hover-red blue-dark`}>
+    <Link to={`/inbox/message/${messageId}`} className="no-underline hover-red">
+      <article className="db base-font w-100 mb3 hover-red blue-dark">
         <div className="h2 pr3">
-          <div style={{ width: '1.5rem' }} className={`fl dib h2 ml2 mr3 v-top`}>
+          <div style={{ width: '1.5rem' }} className="fl w-25 dib h2 ml2 mr3 v-top">
             <MessageAvatar messageType={messageType} fromUsername={fromUsername} size={'small'} />
           </div>
           <div
-            className="dib f7 w-75 messageSubjectLinks"
+            className="dib f7 w-75 fl messageSubjectLinks"
             dangerouslySetInnerHTML={rawHtmlNotification(subject)}
           ></div>
-          <div className={`pl2 blue-grey f7`}>
-            {/* <FormattedRelativeTime value={value} unit={unit}/> */}
-            <FormattedRelative value={new Date(sentDate + '+00:00')} />
+          <div className="blue-grey f7 cf dib">
+            <RelativeTimeWithUnit date={sentDate} />
           </div>
         </div>
       </article>

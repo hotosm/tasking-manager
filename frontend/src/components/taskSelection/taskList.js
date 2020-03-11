@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { FormattedMessage, FormattedRelative } from 'react-intl';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import ReactPlaceholder from 'react-placeholder';
-import { bbox } from '@turf/turf';
+import bbox from '@turf/bbox';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { TaskActivity } from './taskActivity';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
 import { userCanValidate } from '../../utils/projectPermissions';
@@ -74,14 +75,14 @@ function TaskItem({
             <FormattedMessage {...messages.taskId} values={{ id: data.taskId }} />
           </span>
           {data.actionDate && (
-            <div className="dn di-l">
+            <div title={data.actionDate} className="dn di-l">
               <span className="ph2 blue-grey">&#183;</span>
               <span className="blue-grey">
                 <FormattedMessage
                   {...messages.taskLastUpdate}
                   values={{ user: <span className="b blue-grey">{data.actionBy}</span> }}
                 />{' '}
-                <FormattedRelative value={data.actionDate} />
+                <RelativeTimeWithUnit date={data.actionDate} />
               </span>
             </div>
           )}
@@ -190,10 +191,14 @@ export function TaskList({
           );
         } else {
           const usersTaskIds = userContributions
-            .filter(user => user.username.includes(textSearch))
+            .filter(user => user.username.toLowerCase().includes(textSearch.toLowerCase()))
             .map(user => user.taskIds)
             .flat();
-          newTasks = newTasks.filter(task => usersTaskIds.includes(task.taskId));
+          newTasks = newTasks.filter(
+            task =>
+              usersTaskIds.includes(task.taskId) ||
+              (task.actionBy && task.actionBy.toLowerCase().includes(textSearch.toLowerCase())),
+          );
         }
       }
       setTasks(newTasks);
@@ -299,6 +304,24 @@ function PaginatedList({
   if (items && page > lastPage) {
     setPage(1);
   }
+
+  const latestItems = useRef(items);
+  useEffect(() => {
+    latestItems.current = items;
+  });
+  // the useEffect above avoids the next one to run everytime the items change
+  useEffect(() => {
+    // switch the taskList page to always show the selected task.
+    // Only do it if there is only one task selected
+    if (selected.length === 1) {
+      setPage(
+        Math.ceil(
+          (latestItems.current.findIndex(task => task.taskId === selected[0]) + 1) / pageSize,
+        ),
+      );
+    }
+  }, [selected, latestItems, setPage, pageSize]);
+
   return (
     <>
       <div>

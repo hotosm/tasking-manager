@@ -75,7 +75,8 @@ export const InputLocale = props => {
 
   return (
     <div>
-      <ul className="list mb4 pa0 w-100 flex flex-wrap ttu">
+      {props.children}
+      <ul className="list mb2 mt3 pa0 w-100 flex flex-wrap ttu">
         {props.languages === null
           ? null
           : props.languages.map((l, n) => (
@@ -92,7 +93,6 @@ export const InputLocale = props => {
               </li>
             ))}
       </ul>
-      {props.children}
       {props.type === 'text' ? (
         <input
           type="text"
@@ -117,10 +117,10 @@ export const InputLocale = props => {
       {props.maxLength && (
         <div
           className={`tr cf fl w-80 f7 ${
-            value.length > 0.9 * props.maxLength ? 'red' : 'blue-light'
+            value && value.length > 0.9 * props.maxLength ? 'red' : 'blue-light'
           }`}
         >
-          {value.length} / {props.maxLength}
+          {value ? value.length : 0} / {props.maxLength}
         </div>
       )}
 

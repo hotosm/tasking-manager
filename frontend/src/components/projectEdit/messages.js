@@ -472,10 +472,6 @@ export default defineMessages({
     id: 'project.formInputs.placeholders.message',
     defaultMessage: 'Message *',
   },
-  userRoleADMIN: {
-    id: 'project.formInputs.user_role.options.admin',
-    defaultMessage: 'Admin',
-  },
   mapperLevelALL: {
     id: 'project.formInputs.mapper_level.options.all',
     defaultMessage: 'All levels',
@@ -516,4 +512,32 @@ export default defineMessages({
     id: 'project.messages.preview',
     defaultMessage: 'Preview',
   },
+  customEditorName: {
+    id: 'projects.formInputs.custom_editor.name',
+    defaultMessage: 'Name',
+  },
+  customEditorDescription: {
+    id: 'projects.formInputs.custom_editor.description',
+    defaultMessage: 'Description',
+  },
+  customEditorUrl: {
+    id: 'projects.formInputs.custom_editor.url',
+    defaultMessage: 'URL',
+  },
+  customEditorEnabled: {
+    id: 'projects.formInputs.custom_editor.enabled', 
+    defaultMessage: 'Enabled'
+  },
+  deleteCustomEditor: {
+    id: 'projects.formInputs.custom_editor.delete', 
+    defaultMessage: 'Delete Custom Editor'
+  },
+  removeCustomEditor: {
+    id: 'projects.formInputs.custom_editor.remove', 
+    defaultMessage: 'Remove Custom Editor'
+  },
+  confirmDeleteCustomEditor: {
+    id: 'projects.formInputs.custom_editor.delete.confirm',
+    defaultMessage: 'This will remove the custom editor from the project. Are you sure you don\'t want to disable the custom editor by toggling the "Enabled" checkbox above?'
+  }
 });

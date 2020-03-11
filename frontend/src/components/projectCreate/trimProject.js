@@ -1,43 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import * as turf from '@turf/turf';
+import intersect from '@turf/intersect';
+import { polygon, multiPolygon, featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { layerJson } from './setTaskSizes';
+import { addLayer } from './index';
 import { Button } from '../button';
 
 const clipProject = (clip, metadata, map, updateMetadata) => {
   const taskGrid = metadata.tempTaskGrid;
-  const geom = metadata.geom.features[0].geometry;
+  let geom = metadata.geom.features[0].geometry;
+  if (geom.type === 'MultiPolygon') {
+    geom = polygon(geom.coordinates[0]);
+  }
   let intersect_array = [];
 
   taskGrid.features.forEach(f => {
-    let poly = turf.polygon(f.geometry.coordinates[0]);
-    let contains = turf.intersect(geom, poly);
+    let poly = polygon(f.geometry.coordinates[0]);
+    let contains = intersect(geom, poly);
     if (contains === null) {
       return;
     }
 
     let feature = f;
     if (clip === true) {
-      feature = turf.multiPolygon([contains.geometry.coordinates], f.properties);
+      feature = multiPolygon([contains.geometry.coordinates], f.properties);
     }
     intersect_array.push(feature);
   });
 
-  const grid = turf.featureCollection(intersect_array);
+  const grid = featureCollection(intersect_array);
   updateMetadata({ ...metadata, tasksNo: grid.features.length, taskGrid: grid });
 };
 
 export default function TrimProject({ metadata, mapObj, updateMetadata }) {
   useEffect(() => {
-    if (mapObj.map.getLayer('grid')) {
-      mapObj.map.removeLayer('grid');
-    }
-    if (mapObj.map.getSource('grid')) {
-      mapObj.map.removeSource('grid');
-    }
-    mapObj.map.addLayer(layerJson(metadata.taskGrid));
+    addLayer('grid', metadata.taskGrid, mapObj.map);
   }, [metadata, mapObj]);
 
   const [clipStatus, setClipStatus] = useState(false);

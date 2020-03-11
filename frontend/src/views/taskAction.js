@@ -85,7 +85,9 @@ export function TaskAction({ project, action }: Object) {
       return <TaskActionPossible project={project} tasks={tasks} action={action} editor={editor} />;
     }
   } else {
-    return <Login redirect_to={`projects/${project}/${action}/`} />;
+    return (
+      <Login redirectTo={`/projects/${project}/${action === 'VALIDATION' ? 'validate' : 'map'}/`} />
+    );
   }
 }
 
@@ -98,14 +100,18 @@ export function TaskActionPossible({ project, tasks, action, editor }) {
   );
   useEffect(() => {
     if (project && tasks) {
-      fetchLocalJSONAPI(
-        `projects/${project}/tasks/?tasks=${tasks.map(i => i.taskId).join(',')}`,
-      ).then(res => setTasksGeojson(res));
+      fetchLocalJSONAPI(`projects/${project}/tasks/`).then(res => setTasksGeojson(res));
     }
   }, [project, tasks]);
   return (
     <div className="cf">
-      <TaskMapAction project={projectData} tasks={tasksGeojson} action={action} editor={editor} />
+      <TaskMapAction
+        project={projectData}
+        tasks={tasksGeojson}
+        activeTasks={tasks}
+        action={action}
+        editor={editor}
+      />
     </div>
   );
 }

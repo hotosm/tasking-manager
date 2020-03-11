@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import * as turf from '@turf/turf';
+import area from '@turf/area';
+import bbox from '@turf/bbox';
+import { featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { paintOptions } from './index';
+import { addLayer } from './index';
 import { Button } from '../button';
 import { makeGrid } from './setTaskSizes';
 import { MAX_FILESIZE } from '../../config';
@@ -17,40 +19,25 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
   const layer_name = 'aoi';
 
   const setDataGeom = geom => {
-    const area = turf.area(geom) / 1e6;
-    const zoomLevel = mapObj.map.getZoom() + 4;
+    mapObj.map.fitBounds(bbox(geom), { padding: 20 });
+    const geomArea = area(geom) / 1e6;
+    const zoomLevel = parseInt(mapObj.map.getZoom()) + 4;
     const grid = makeGrid(geom, zoomLevel, {});
-    mapObj.map.fitBounds(turf.bbox(geom), { padding: 20 });
     updateMetadata({
       ...metadata,
       geom: geom,
-      area: area.toFixed(2),
+      area: geomArea.toFixed(2),
       zoomLevel: zoomLevel,
       taskGrid: grid,
       tempTaskGrid: grid,
     });
 
-    if (mapObj.map.getLayer(layer_name)) {
-      mapObj.map.removeLayer(layer_name);
-    }
-    if (mapObj.map.getSource(layer_name)) {
-      mapObj.map.removeSource(layer_name);
-    }
-
-    mapObj.map.addLayer({
-      id: layer_name,
-      type: 'fill',
-      source: {
-        type: 'geojson',
-        data: geom,
-      },
-      paint: paintOptions,
-    });
+    addLayer('aoi', geom, mapObj.map);
   };
 
   const verifyAndSetData = event => {
     try {
-      setDataGeom(event.features[0].geometry);
+      setDataGeom(event);
     } catch (e) {
       deleteHandler();
       setErr({ error: true, message: <FormattedMessage {...messages.invalidFile} /> });
@@ -79,8 +66,6 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
       let geom = null;
       switch (format) {
         case 'json':
-          geom = JSON.parse(e.target.result);
-          break;
         case 'geojson':
           geom = JSON.parse(e.target.result);
           break;
@@ -130,7 +115,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     const updateArea = event => {
       // Validate area first.
       const id = event.features[0].id;
-      const geom = turf.featureCollection(event.features);
+      const geom = featureCollection(event.features);
       mapObj.draw.delete(id);
       setArbitrary(false);
       setDataGeom(geom);

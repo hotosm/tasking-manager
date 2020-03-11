@@ -24,6 +24,6 @@ export function SelectTask({ id }: Object) {
       </div>
     );
   } else {
-    return <Login redirect_to={`projects/${id}/tasks`} />;
+    return <Login redirectTo={`/projects/${id}/tasks`} />;
   }
 }

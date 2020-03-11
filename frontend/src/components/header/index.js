@@ -206,7 +206,7 @@ class Header extends React.Component {
       </>
     ) : (
       <div className="dib">
-        <LocaleSelector className="bn" />
+        <LocaleSelector className="bn dn dib-66rem" />
         <AuthButtons
           aStyle="mh1 v-mid dn dib-ns"
           logInStyle="blue-dark bg-white"

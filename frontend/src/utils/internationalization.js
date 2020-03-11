@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 
@@ -35,14 +35,28 @@ const translatedMessages = {
   ja: ja,
   mg: mg,
   ml: ml,
-  nl_NL: nl_NL,
+  nl: nl_NL,
   pt: pt,
-  pt_BR: pt_BR,
+  'pt-BR': pt_BR,
   sw: sw,
   tl: tl,
   tr: tr,
   uk: uk,
 };
+
+/* Safari 12- and IE */
+if (!Intl.PluralRules) {
+  require('@formatjs/intl-pluralrules/polyfill');
+  require('@formatjs/intl-pluralrules/dist/locale-data/pt'); // Add locale data for de
+  require('@formatjs/intl-pluralrules/dist/locale-data/en');
+}
+
+/* Safari 13- and IE */
+if (!Intl.RelativeTimeFormat) {
+  require('@formatjs/intl-relativetimeformat/polyfill');
+  require('@formatjs/intl-relativetimeformat/dist/locale-data/pt'); // Add locale data for de
+  require('@formatjs/intl-relativetimeformat/dist/locale-data/en');
+}
 
 // commented out the languages that we are not supporting on the first production release of TM4
 const supportedLocales = [
@@ -54,15 +68,15 @@ const supportedLocales = [
   { value: 'fr', label: 'Français' },
   { value: 'id', label: 'Indonesia' },
   { value: 'it', label: 'Italiano' },
-  // { value: 'ja', label: '日本語' },
+  { value: 'ja', label: '日本語' },
   // { value: 'mg', label: 'Malagasy' },
   // { value: 'ml', label: 'Malayalam' },
-  { value: 'nl_NL', label: 'Nederlands' },
+  { value: 'nl', label: 'Nederlands' },
   { value: 'pt', label: 'Português' },
-  { value: 'pt_BR', label: 'Português (Brasil)' },
-  // { value: 'sw', label: 'Kiswahili' },
+  { value: 'pt-BR', label: 'Português (Brasil)' },
+  { value: 'sw', label: 'Kiswahili' },
   // { value: 'tl', label: 'Filipino (Tagalog)' },
-  // { value: 'tr', label: 'Türkçe' },
+  { value: 'tr', label: 'Türkçe' },
   { value: 'uk', label: 'Українська' },
 ];
 
@@ -78,7 +92,7 @@ function getSupportedLocale(locale) {
       return filtered[0];
     }
   }
-  return {};
+  return { value: 'en', label: 'English' };
 }
 
 function getTranslatedMessages(locale) {
@@ -86,28 +100,32 @@ function getTranslatedMessages(locale) {
   if (localeCode.hasOwnProperty('value')) {
     return translatedMessages[localeCode.value];
   }
-  return translatedMessages[locale] || translatedMessages[config.DEFAULT_LOCALE];
+  return translatedMessages[locale];
 }
 
 /* textComponent is for orderBy <select>, see codesandbox at https://github.com/facebook/react/issues/15513 */
-let ConnectedIntl = props => (
-  <IntlProvider
-    key={props.locale}
-    locale={props.locale.substr(0, 2)}
-    textComponent={React.Fragment}
-    messages={getTranslatedMessages(props.locale)}
-  >
-    {props.children}
-  </IntlProvider>
-);
+let ConnectedIntl = props => {
+  useEffect(() => {
+    if (props.locale === null) {
+      props.setLocale(getSupportedLocale(navigator.language).value);
+    }
+  }, [props]);
+  return (
+    <IntlProvider
+      key={props.locale || config.DEFAULT_LOCALE}
+      locale={props.locale ? props.locale.substr(0, 2) : config.DEFAULT_LOCALE}
+      textComponent={React.Fragment}
+      messages={getTranslatedMessages(props.locale)}
+    >
+      {props.children}
+    </IntlProvider>
+  );
+};
 
 const mapStateToProps = state => ({
-  locale: state.preferences.locale || navigator.language,
+  locale: state.preferences.locale,
 });
 
-ConnectedIntl = connect(
-  mapStateToProps,
-  { setLocale },
-)(ConnectedIntl);
+ConnectedIntl = connect(mapStateToProps, { setLocale })(ConnectedIntl);
 
 export { ConnectedIntl, supportedLocales, getSupportedLocale, getTranslatedMessages };

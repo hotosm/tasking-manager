@@ -1,4 +1,4 @@
-import { bbox } from '@turf/turf';
+import bbox from '@turf/bbox';
 import { formatOSMChaLink } from '../osmchaLink';
 
 describe('test OSMCha link to project', () => {
@@ -39,7 +39,17 @@ describe('test OSMCha link to project', () => {
 describe('test OSMCha link to task', () => {
   it('without user information', () => {
     const taskGeom = {
-      coordinates: [[[[120.1, -9.1], [120.0, -9.1], [120.0, -9.0], [120.1, -9.0], [120.1, -9.1]]]],
+      coordinates: [
+        [
+          [
+            [120.1, -9.1],
+            [120.0, -9.1],
+            [120.0, -9.0],
+            [120.1, -9.0],
+            [120.1, -9.1],
+          ],
+        ],
+      ],
       type: 'MultiPolygon',
     };
     const taskInfo = {
