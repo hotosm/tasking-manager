@@ -624,7 +624,75 @@ const Resources = {
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
     }
-  }
+  },
+  TaskingManagerReactBucket: {
+    Type: 'AWS::S3::Bucket',
+    Properties: {
+      BucketName: cf.join('-', [cf.stackName, 'react-app']),
+      AccessControl: "PublicRead",
+      PublicAccessBlockConfiguration: {
+        BlockPublicAcls: false,
+        BlockPublicPolicy: false,
+        IgnorePublicAcls: false,
+        RestrictPublicBuckets: false
+      },
+      WebsiteConfiguration: {
+        ErrorDocument: 'index.html',
+        IndexDocument: 'index.html'
+      }
+    }
+  },
+  TaskingManagerReactBucketPolicy: {
+    Type: 'AWS::S3::BucketPolicy',
+    Properties: {
+      Bucket : cf.ref('TaskingManagerReactBucket'),
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement:[{
+          Action: [ 's3:GetObject'],
+          Effect: 'Allow',
+          Principal: '*',
+          Resource: [ cf.join('',
+            [
+              cf.getAtt('TaskingManagerReactBucket', 'Arn'), 
+              '/*'
+            ]
+          )],
+          Sid: 'AddPerm'
+        }]
+      }
+    }
+  },
+  TaskingManagerReactCloudfront: {
+    Type: "AWS::CloudFront::Distribution",
+    Properties: {
+      DistributionConfig: {
+        DefaultRootObject: 'index.html',
+        Enabled: true,
+        Origins: [{
+          Id: cf.join('-', [cf.stackName, 'react-app']),
+          DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
+          S3OriginConfig: {
+            OriginAccessIdentity: ''
+          }
+        }],
+        CustomErrorResponses: [{
+          ErrorCachingMinTTL : 0,
+          ErrorCode: 403,
+          ResponseCode: 200,
+          ResponsePagePath: '/index.html'
+        }],
+        DefaultCacheBehavior: {
+          AllowedMethods: ['GET', 'HEAD'],
+          ForwardedValues: {
+            QueryString: false
+          },
+          TargetOriginId: cf.join('-', [cf.stackName, 'react-app']),
+          ViewerProtocolPolicy: "allow-all"
+        }
+      }
+    }
+}
 };
 
 module.exports = { Parameters, Resources, Conditions }
