@@ -572,7 +572,6 @@ class TasksActionsValidationUnlockAPI(Resource):
 
 
 class TasksActionsMapAllAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -600,20 +599,29 @@ class TasksActionsMapAllAPI(Resource):
                 description: All tasks mapped
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
         try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"TasksActionsMapAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
+        try:
             MappingService.map_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks mapped"}, 200
         except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
+            error_msg = f"TasksActionsMapAllAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to mapall tasks"}, 500
 
 
 class TasksActionsValidateAllAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -641,20 +649,29 @@ class TasksActionsValidateAllAPI(Resource):
                 description: All mapped tasks validated
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
         try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"TasksActionsValidateAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
+        try:
             ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks validated"}, 200
         except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
+            error_msg = f"TasksActionsValidateAllAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to validate all tasks"}, 500
 
 
 class TasksActionsInvalidateAllAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -682,20 +699,29 @@ class TasksActionsInvalidateAllAPI(Resource):
                 description: All mapped tasks invalidated
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
         try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"TasksActionsInvalidateAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
+        try:
             ValidatorService.invalidate_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks invalidated"}, 200
         except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
+            error_msg = f"TasksActionsInvalidateAllAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to invalidate all tasks"}, 500
 
 
 class TasksActionsResetBadImageryAllAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -723,20 +749,31 @@ class TasksActionsResetBadImageryAllAPI(Resource):
                 description: All bad imagery tasks marked ready for mapping
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
         try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"TasksActionsResetBadImageryAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
+        try:
             MappingService.reset_all_badimagery(project_id, tm.authenticated_user_id)
             return {"Success": "All bad imagery tasks marked ready for mapping"}, 200
         except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
+            error_msg = (
+                f"TasksActionsResetBadImageryAllAPI POST - unhandled error: {str(e)}"
+            )
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to reset tasks"}, 500
 
 
 class TasksActionsResetAllAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -764,14 +801,24 @@ class TasksActionsResetAllAPI(Resource):
                 description: All tasks reset
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
         try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                tm.authenticated_user_id, project_id
+            )
+        except ValueError as e:
+            error_msg = f"TasksActionsResetAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
+        try:
             ProjectAdminService.reset_all_tasks(project_id, tm.authenticated_user_id)
             return {"Success": "All tasks reset"}, 200
         except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
+            error_msg = f"TasksActionsResetAllAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to reset tasks"}, 500
 
@@ -847,6 +894,6 @@ class TasksActionsSplitAPI(Resource):
         except InvalidGeoJson as e:
             return {"Error": str(e)}, 500
         except Exception as e:
-            error_msg = f"Task Split API - unhandled error: {str(e)}"
+            error_msg = f"TasksActionsSplitAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to split task"}, 500

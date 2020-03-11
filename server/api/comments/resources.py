@@ -66,8 +66,13 @@ class CommentsProjectsRestAPI(Resource):
             return {"Error": "Unable to add chat message"}, 400
 
         try:
-            project_messages = ChatService.post_message(chat_dto)
+            project_messages = ChatService.post_message(
+                chat_dto, project_id, tm.authenticated_user_id
+            )
             return project_messages.to_primitive(), 201
+        except ValueError as e:
+            error_msg = f"CommentsProjectsRestAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
         except Exception as e:
             error_msg = f"Chat POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
