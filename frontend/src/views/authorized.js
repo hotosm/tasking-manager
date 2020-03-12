@@ -1,41 +1,47 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Redirect } from '@reach/router';
 import { connect } from 'react-redux';
 import { setAuthDetails } from '../store/actions/auth';
 
-class Authorized extends React.Component {
-  state = {
-    isReadyToRedirect: false,
-  };
-  params = new URLSearchParams(this.props.location.search);
+const useComponentWillMount = fn => {
+  const willMount = useRef(true);
+  if (willMount.current) {
+    fn();
+  }
+  willMount.current = false;
+};
 
-  componentDidMount() {
-    let verifier = this.params.get('oauth_verifier');
+function AuthorizedView(props) {
+  const [isReadyToRedirect, setIsReadyToRedirect] = useState(false);
+  const params = new URLSearchParams(props.location.search);
+
+  useComponentWillMount(() => {
+    let verifier = params.get('oauth_verifier');
     if (verifier !== null) {
       window.opener.authComplete(verifier);
       window.close();
       return;
     }
-    const username = this.params.get('username');
-    const sessionToken = this.params.get('session_token');
-    const osm_oauth_token = this.params.get('osm_oauth_token');
-    const osm_oauth_token_secret = this.params.get('osm_oauth_token_secret');
-    this.props.authenticateUser(username, sessionToken, osm_oauth_token, osm_oauth_token_secret);
-    this.setState({
-      isReadyToRedirect: true,
-    });
-  }
-  render() {
-    const redirectUrl =
-      this.params.get('redirect_to') && this.params.get('redirect_to') !== '/'
-        ? this.params.get('redirect_to')
-        : '/welcome';
-    return this.state.isReadyToRedirect ? (
-      <Redirect to={redirectUrl} noThrow />
-    ) : (
-      <div>redirecting</div>
-    );
-  }
+    const username = params.get('username');
+    const sessionToken = params.get('session_token');
+    const osm_oauth_token = params.get('osm_oauth_token');
+    const osm_oauth_token_secret = params.get('osm_oauth_token_secret');
+    props.authenticateUser(username, sessionToken, osm_oauth_token, osm_oauth_token_secret);
+    setIsReadyToRedirect(true);
+  });
+  const redirectUrl = params.get('redirect_to') && params.get('redirect_to') !== '/'
+    ? params.get('redirect_to')
+    : '/welcome';
+
+  return (
+    <>
+      {isReadyToRedirect ? (
+        <Redirect to={redirectUrl} noThrow />
+      ) : (
+        <div>redirecting</div>
+      )}
+    </>
+  );
 }
 
 let mapStateToProps = (state, props) => ({
@@ -49,5 +55,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-Authorized = connect(mapStateToProps, mapDispatchToProps)(Authorized);
+const Authorized = connect(mapStateToProps, mapDispatchToProps)(AuthorizedView);
 export { Authorized };
