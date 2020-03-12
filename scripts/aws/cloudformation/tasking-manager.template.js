@@ -404,6 +404,7 @@ const Resources = {
         cf.sub('export TM_ORG_INSTAGRAM="${OrgInstagram}"'),
         cf.sub('export TM_ORG_YOUTUBE="${OrgYoutube}"'),
         cf.sub('export TM_ORG_GITHUB="${OrgGitHub}"'),
+        cf.join('', ['export TM_APP_API_URL=',cf.getAtt('TaskingManagerLoadBalancer', 'DNSName')]),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',

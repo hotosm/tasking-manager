@@ -481,7 +481,7 @@ workflows:
         postgres_db: POSTGRES_DB_TM4
         postgres_password: POSTGRES_PASSWORD_TM4
         postgres_user: POSTGRES_USER_TM4
-        base_url: TM_APP_BASE_URL_TM4
+        base_url: TM_APP_BASE_URL_REACT
         api_version: TM_APP_API_VERSION_TM4
         consumer_key: TM_CONSUMER_KEY_TM4
         consumer_secret: TM_CONSUMER_SECRET_TM4
