@@ -38,54 +38,6 @@ const Parameters = {
     Type: 'String',
     Description: 'POSTGRES_USER'
   },
-  TaskingManagerAppBaseUrl: {
-    Type: 'String',
-    Description: 'TM_APP_BASE_URL'
-  },
-  TaskingManagerApiVersion: {
-    Type: 'String',
-    Description: 'TM_APP_API_VERSION'
-  },
-  TaskingManagerConsumerKey: {
-    Description: 'TM_CONSUMER_KEY',
-    Type: 'String'
-  },
-  TaskingManagerConsumerSecret: {
-      Description: 'TM_CONSUMER_SECRET',
-      Type: 'String'
-  },
-  TaskingManagerSecret: {
-    Description: 'TM_SECRET',
-    Type: 'String'
-  },
-  TaskingManagerEmailFromAddress: {
-    Description: 'TM_EMAIL_FROM_ADDRESS',
-    Type: 'String'
-  },
-  TaskingManagerSMTPHost: {
-    Description: 'TM_SMTP_HOST environment variable',
-    Type: 'String'
-  },
-  TaskingManagerSMTPPassword: {
-    Description: 'TM_SMTP_PASSWORD environment variable',
-    Type: 'String'
-  },
-  TaskingManagerSMTPUser: {
-    Description: 'TM_SMTP_USER environment variable',
-    Type: 'String'
-  },
-  TaskingManagerSMTPPort: {
-    Description: 'TM_SMTP_PORT environment variable',
-    Type: 'String'
-  },
-  TaskingManagerDefaultChangesetComment: {
-    Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
-    Type: 'String'
-  },
-  TaskingManagerLogDirectory: {
-    Description: 'TM_LOG_DIR environment variable',
-    Type: 'String'
-  },
   DatabaseSize: {
     Description: 'Database size in GB',
     Type: 'String',
@@ -99,53 +51,21 @@ const Parameters = {
     Type: 'String',
     Description: 'SSL certificate for HTTPS protocol'
   },
-  MatomoSiteID: {
-    Type: 'String',
-    Description: 'site id from matomo app'
+  TaskingManagerLogDirectory: {
+    Description: 'TM_LOG_DIR environment variable',
+    Type: 'String'
   },
-  MatomoEndpoint: {
-    Type: 'String',
-    Description: 'Endpoint URL for matomo tracking'
+  TaskingManagerConsumerKey: {
+    Description: 'TM_CONSUMER_KEY',
+    Type: 'String'
   },
-  MapboxToken: {
-    Type: 'String',
-    Description: 'Mapbox Token'
+  TaskingManagerConsumerSecret: {
+      Description: 'TM_CONSUMER_SECRET',
+      Type: 'String'
   },
-  OrgName: {
-    Type: 'String',
-    Description: 'OrgName'
-  },
-  OrgCode: {
-    Type: 'String',
-    Description: 'OrgCode'
-  },
-  OrgUrl: {
-    Type: 'String',
-    Description: 'Org Url. Do not add http://'
-  },
-  OrgPrivacyPolicy: {
-    Type: 'String',
-    Description: 'PrivacyPolicy URL. Do not add http://'
-  },
-  OrgTwitter: {
-    Type: 'String',
-    Description: 'Twitter URL'
-  },
-  OrgFacebook: {
-    Type: 'String',
-    Description: 'Facebook URL'
-  },
-  OrgInstagram: {
-    Type: 'String',
-    Description: 'Instagram URL'
-  },
-  OrgYoutube: {
-    Type: 'String',
-    Description: 'Youtube Url'
-  },
-  OrgGitHub: {
-    Type: 'String',
-    Description: 'Github URL'
+  TaskingManagerSecret: {
+    Description: 'TM_SECRET',
+    Type: 'String'
   }
 };
 
@@ -380,31 +300,9 @@ const Resources = {
         cf.sub('export POSTGRES_DB=${PostgresDB}'),
         cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
         cf.sub('export POSTGRES_USER="${PostgresUser}"'),
-        cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
-        cf.sub('export TM_APP_API_VERSION="${TaskingManagerApiVersion}"'),
         cf.sub('export TM_CONSUMER_KEY="${TaskingManagerConsumerKey}"'),
         cf.sub('export TM_CONSUMER_SECRET="${TaskingManagerConsumerSecret}"'),
-        cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
-        cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
         cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
-        cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
-        cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
-        cf.sub('export TM_SMTP_PORT="${TaskingManagerSMTPPort}"'),
-        cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
-        cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
-        cf.sub('export TM_MATOMO_ID="${MatomoSiteID}"'),
-        cf.sub('export TM_MATOMO_ENDPOINT="${MatomoEndpoint}"'),
-        cf.sub('export TM_MAPBOX_TOKEN="${MapboxToken}"'),
-        cf.sub('export TM_ORG_NAME="${OrgName}"'),
-        cf.sub('export TM_ORG_CODE="${OrgCode}"'),
-        cf.sub('export TM_ORG_URL="${OrgUrl}"'),
-        cf.sub('export TM_ORG_PRIVACY_POLICY="${OrgPrivacyPolicy}"'),
-        cf.sub('export TM_ORG_TWITTER="${OrgTwitter}"'),
-        cf.sub('export TM_ORG_FB="${OrgFacebook}"'),
-        cf.sub('export TM_ORG_INSTAGRAM="${OrgInstagram}"'),
-        cf.sub('export TM_ORG_YOUTUBE="${OrgYoutube}"'),
-        cf.sub('export TM_ORG_GITHUB="${OrgGitHub}"'),
-        cf.join('', ['export TM_APP_API_URL=',cf.getAtt('TaskingManagerLoadBalancer', 'DNSName')]),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',
@@ -694,7 +592,16 @@ const Resources = {
         }
       }
     }
-}
+  }
 };
 
-module.exports = { Parameters, Resources, Conditions }
+const Outputs = {
+  LoadBalancerURL: {
+    Value: cf.getAtt('TaskingManagerLoadBalancer', 'DNSName'),
+    Export: {
+      Name: cf.join('-', [cf.stackName, 'loadbalancer-url',cf.region])
+    }
+  }
+}
+
+module.exports = { Parameters, Resources, Conditions, Outputs }
