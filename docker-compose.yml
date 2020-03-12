@@ -40,6 +40,8 @@ services:
     env_file: tasking-manager.env
     # logging:
     #   driver: none
+    ports:
+      - "5433:5432"
     expose:
       - "5432"
 

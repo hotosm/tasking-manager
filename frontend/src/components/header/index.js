@@ -280,9 +280,6 @@ const mapStateToProps = state => ({
   token: state.auth.get('token'),
 });
 
-Header = connect(
-  mapStateToProps,
-  { logout },
-)(Header);
+Header = connect(mapStateToProps, { logout })(Header);
 
 export { Header, getMenuItensForUser, AuthButtons };
