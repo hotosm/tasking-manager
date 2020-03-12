@@ -6,6 +6,7 @@ import { notificationsReducer } from './notifications';
 import { tasksReducer } from './tasks';
 import { userReducer } from './user';
 import { projectReducer } from './project';
+import { loaderReducer } from './loader';
 
 export default combineReducers({
   preferences: preferencesReducer,
@@ -14,4 +15,5 @@ export default combineReducers({
   lockedTasks: tasksReducer,
   user: userReducer,
   project: projectReducer,
+  loader: loaderReducer,
 });

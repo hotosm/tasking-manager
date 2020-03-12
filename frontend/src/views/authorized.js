@@ -9,7 +9,7 @@ class Authorized extends React.Component {
   };
   params = new URLSearchParams(this.props.location.search);
 
-  componentDidMount() {
+  componentWillMount() {
     let verifier = this.params.get('oauth_verifier');
     if (verifier !== null) {
       window.opener.authComplete(verifier);

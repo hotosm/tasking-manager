@@ -1,5 +1,6 @@
 import * as safeStorage from '../../utils/safe_storage';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { setLoader } from './loader';
 
 export const types = {
   REGISTER_USER: 'REGISTER_USER',
@@ -78,9 +79,13 @@ export const setAuthDetails = (username, token) => dispatch => {
 
 export const setUserDetails = (username, encodedToken) => dispatch => {
   // UPDATES OSM INFORMATION OF THE USER
+dispatch(setLoader(true));
   fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encodedToken)
     .then(osmInfo => dispatch(updateOSMInfo(osmInfo)))
-    .catch(error => console.log(error));
+    .catch(error => {
+      console.log(error);
+      dispatch(setLoader(false));
+    });
   // GET USER DETAILS
   fetchLocalJSONAPI(`users/queries/${username}/`, encodedToken)
     .then(userDetails => {
@@ -89,8 +94,11 @@ export const setUserDetails = (username, encodedToken) => dispatch => {
       fetchLocalJSONAPI(`organisations/?manager_user_id=${userDetails.id}`, encodedToken)
         .then(orgs => dispatch(updateOrgsInfo(orgs.organisations.length > 0)))
         .catch(error => dispatch(updateOrgsInfo(false)));
+      dispatch(setLoader(false));
     })
-    .catch(error => dispatch(logout()));
+    .catch(error => {dispatch(logout());
+      dispatch(setLoader(false));});
+
 };
 
 export const getUserDetails = state => dispatch => {
