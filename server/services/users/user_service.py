@@ -708,11 +708,19 @@ class UserService:
         return users_updated
 
     @staticmethod
-    def register_user_with_email(user: UserRegisterEmailDTO):
-        new_user = UserEmail(email=user.email)
-        new_user.create()
+    def register_user_with_email(user_dto: UserRegisterEmailDTO):
+        # Validate that user is not within the general users table.
+        user = User.query.filter(User.email_address == user_dto.email).one_or_none()
+        if user is not None:
+            details_msg = f"Email address {user_dto.email} already exists"
+            raise ValueError(details_msg)
 
-        return new_user
+        user = UserEmail.query.filter(UserEmail.email == user_dto.email).one_or_none()
+        if user is None:
+            user = UserEmail(email=user_dto.email)
+            user.create()
+
+        return user
 
     @staticmethod
     def get_interests(user: User) -> InterestsDTO:
