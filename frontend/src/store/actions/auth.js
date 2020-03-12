@@ -1,5 +1,6 @@
 import * as safeStorage from '../../utils/safe_storage';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { setLoader } from './loader';
 
 export const types = {
   REGISTER_USER: 'REGISTER_USER',
@@ -107,9 +108,13 @@ export const setAuthDetails = (username, token, osm_oauth_token, osm_oauth_token
 
 export const setUserDetails = (username, encodedToken) => (dispatch) => {
   // UPDATES OSM INFORMATION OF THE USER
+dispatch(setLoader(true));
   fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encodedToken)
-    .then((osmInfo) => dispatch(updateOSMInfo(osmInfo)))
-    .catch((error) => console.log(error));
+    .then(osmInfo => dispatch(updateOSMInfo(osmInfo)))
+    .catch(error => {
+      console.log(error);
+      dispatch(setLoader(false));
+    });
   // GET USER DETAILS
   fetchLocalJSONAPI(`users/queries/${username}/`, encodedToken)
     .then((userDetails) => {
@@ -123,8 +128,12 @@ export const setUserDetails = (username, encodedToken) => (dispatch) => {
       fetchLocalJSONAPI(`teams/?team_role=PROJECT_MANAGER&member=${userDetails.id}`, encodedToken)
         .then((teams) => dispatch(updatePMsTeams(teams.teams.map((team) => team.teamId))))
         .catch((error) => dispatch(updatePMsTeams([])));
+      dispatch(setLoader(false));
     })
-    .catch((error) => dispatch(logout()));
+    .catch((error) => {
+      dispatch(logout());
+      dispatch(setLoader(false));
+    });
 };
 
 export const getUserDetails = (state) => (dispatch) => {
