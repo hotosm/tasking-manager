@@ -361,13 +361,11 @@ class MessageService:
     def _parse_message_for_username(message: str) -> List[str]:
         """ Extracts all usernames from a comment looks for format @[user name] """
 
-        parser = re.compile(r"((?<=@)\w+|\[.+?\])")
+        parser = re.compile(r"(\B\@\w+)")
 
         usernames = []
         for username in parser.findall(message):
-            username = username.replace("[", "", 1)
-            index = username.rfind("]")
-            username = username.replace("]", "", index)
+            username = username[1:]
             usernames.append(username)
 
         return usernames
