@@ -72,8 +72,11 @@ export default defineMessages({
   },
   proceedOSMPart2: {
     id: 'signup.proceed_osm.text2',
-    defaultMessage:
-      "First, you'll need an account on OpenStreetMap.org in order to get started.",
+    defaultMessage: "First, you'll need an account on OpenStreetMap.org in order to get started.",
+  },
+  proceedOSMLogin: {
+    id: 'signup.proceed_osm.login',
+    defaultMessage: 'I already have an OpenStreetMap account',
   },
   emailPlaceholder: {
     id: 'input.placeholder.email_address',

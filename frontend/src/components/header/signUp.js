@@ -10,12 +10,7 @@ import { createLoginWindow } from '../../utils/login';
 import { ORG_PRIVACY_POLICY_URL, OSM_REGISTER_URL } from '../../config';
 import * as safeStorage from '../../utils/safe_storage';
 
-const LoginModal = ({ step, closeModal }) => {
-  const login = () => {
-    closeModal();
-    createLoginWindow('/welcome');
-  };
-
+const LoginModal = ({ step, login }) => {
   return (
     <div>
       <h1 className="pb2 ma0 barlow-condensed blue-dark">
@@ -26,7 +21,12 @@ const LoginModal = ({ step, closeModal }) => {
         <p className="blue-dark lh-copy">
           <FormattedMessage {...messages.AuthorizeMessage} />
         </p>
-        <p className="mb0 f6">
+      </div>
+      <div className="mt4 tr">
+        <Button className="bg-red white" onClick={() => login()}>
+          <FormattedMessage {...messages.authorize} />
+        </Button>
+        <p className="mb0 f6 tr">
           <a
             className="link pointer red fw5"
             target="_blank"
@@ -37,22 +37,22 @@ const LoginModal = ({ step, closeModal }) => {
           </a>
         </p>
       </div>
-
-      <div className="mt4 tr">
-        <Button className="bg-red white" onClick={() => login()}>
-          <FormattedMessage {...messages.authorize} />
-        </Button>
-      </div>
     </div>
   );
 };
 
-const ProceedOSM = ({ step, setStep }) => {
+const ProceedOSM = ({ data, step, setStep, login }) => {
   const NextStep = setStep => {
     window.open(OSM_REGISTER_URL, '_blank');
     setStep(s => {
       return { ...s, number: 3 };
     });
+  };
+
+  const handleLogin = () => {
+    login();
+    safeStorage.setItem('email_address', data.email);
+    safeStorage.setItem('name', data.name);
   };
 
   return (
@@ -69,10 +69,13 @@ const ProceedOSM = ({ step, setStep }) => {
           <FormattedMessage {...messages.proceedOSMPart2} />
         </p>
       </div>
-      <div className="mt6 tr">
+      <div className="mt5 tr">
         <Button className="bg-red white" onClick={() => NextStep(setStep)}>
           <FormattedMessage {...messages.submitProceedOSM} />
         </Button>
+        <p className="tr f6 link pointer red fw5" onClick={() => handleLogin()}>
+          <FormattedMessage {...messages.proceedOSMLogin} />
+        </p>
       </div>
     </div>
   );
@@ -193,14 +196,19 @@ export const SignUp = ({ closeModal }) => {
   const [data, setData] = useState({ name: '', email: '' });
   const [step, setStep] = useState({ number: 1, errMessage: null });
 
+  const login = () => {
+    closeModal();
+    createLoginWindow('/welcome');
+  };
+
   const GetStep = step => {
     switch (step.number) {
       case 1:
         return <SignupForm data={data} setData={setData} step={step} setStep={setStep} />;
       case 2:
-        return <ProceedOSM step={step} setStep={setStep} />;
+        return <ProceedOSM data={data} step={step} setStep={setStep} login={login} />;
       case 3:
-        return <LoginModal step={step} closeModal={closeModal} />;
+        return <LoginModal step={step} login={login} />;
       default:
         return null;
     }
