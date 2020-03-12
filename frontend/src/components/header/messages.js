@@ -34,7 +34,7 @@ export default defineMessages({
   },
   authorize: {
     id: 'header.buttons.authorize',
-    defaultMessage: 'Authorize',
+    defaultMessage: 'Log in',
   },
   AuthorizeTitle: {
     id: 'signUp.modal.authorize',
@@ -43,11 +43,11 @@ export default defineMessages({
   AuthorizeMessage: {
     id: 'signUp.authorize.message',
     defaultMessage:
-      'To start mapping, you need to authorize Tasking Manager to access your OpenStreetMap account',
+      'Start mapping now! Just login to the Tasking Manager with your new OpenStreetMap account.',
   },
   osmRegisterCheck: {
     id: 'signUp.authorize.check',
-    defaultMessage: 'Still need an openstreetmap account?',
+    defaultMessage: 'Do you still need an OpenStreetMap account?',
   },
   signUpTitle: {
     id: 'signUp.modal.title',
@@ -68,12 +68,12 @@ export default defineMessages({
   proceedOSMPart1: {
     id: 'signup.proceed_osm.text1',
     defaultMessage:
-      'Tasking Manager works with OpenStreetMap, a collaborative, open-source map of the world.',
+      'The Tasking Manager works with OpenStreetMap, a collaborative, open-source map of the world. Everything you map on the Tasking Manager is going to be available on OpenStreetMap.',
   },
   proceedOSMPart2: {
     id: 'signup.proceed_osm.text2',
     defaultMessage:
-      'All the data mapped in Tasking Manager projects are available on OSM. So you need an OpenstreetMap account in order to collaborate in one of our projects',
+      "First, you'll need an account on OpenStreetMap.org in order to get started.",
   },
   emailPlaceholder: {
     id: 'input.placeholder.email_address',
@@ -117,11 +117,11 @@ export default defineMessages({
   },
   submitProceedOSM: {
     id: 'signup.button.submit_osm',
-    defaultMessage: 'Proceed to OSM',
+    defaultMessage: 'Create OpenStreetMap account',
   },
   signUpQuestion: {
     id: 'signup.modal.question',
-    defaultMessage: 'Please share your name and email address, so we can keep in touch',
+    defaultMessage: 'Please provide your name and email address:',
   },
   emailUpdateButton: {
     id: 'emailUpdate.modal.button',
