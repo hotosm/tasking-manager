@@ -46,7 +46,7 @@
   "header.buttons.signUp": "Sign up",
   "header.buttons.authorize": "Log in",
   "signUp.modal.authorize": "Have you finished the registration on OpenStreetMap?",
-  "signUp.authorize.message": "Start mapping now. Just login to the Tasking Manager with your new OpenStreetMap account.",
+  "signUp.authorize.message": "Start mapping now! Just login to the Tasking Manager with your new OpenStreetMap account.",
   "signUp.authorize.check": "Do you still need an OpenStreetMap account?",
   "signUp.modal.title": "Sign up",
   "signUp.modal.form_email": "Email",
