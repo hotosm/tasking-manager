@@ -32,13 +32,67 @@ export default defineMessages({
     id: 'header.buttons.signUp',
     defaultMessage: 'Sign up',
   },
-  signUpOSM: {
+  authorize: {
+    id: 'header.buttons.authorize',
+    defaultMessage: 'Log in',
+  },
+  AuthorizeTitle: {
+    id: 'signUp.modal.authorize',
+    defaultMessage: 'Have you finished the registration on OpenStreetMap?',
+  },
+  AuthorizeMessage: {
+    id: 'signUp.authorize.message',
+    defaultMessage:
+      'Start mapping now! Just login to the Tasking Manager with your new OpenStreetMap account.',
+  },
+  osmRegisterCheck: {
+    id: 'signUp.authorize.check',
+    defaultMessage: 'Do you still need an OpenStreetMap account?',
+  },
+  signUpTitle: {
     id: 'signUp.modal.title',
-    defaultMessage: 'Sign up on OpenStreetMap',
+    defaultMessage: 'Sign up',
+  },
+  signupLabelEmail: {
+    id: 'signUp.modal.form_email',
+    defaultMessage: 'Email',
+  },
+  signupLabelName: {
+    id: 'signUp.modal.form_name',
+    defaultMessage: 'Name',
+  },
+  proceedOSMTitle: {
+    id: 'signUp.proceed_osm.osm_title',
+    defaultMessage: 'Do you have OpenStreetMap account?',
+  },
+  proceedOSMPart1: {
+    id: 'signup.proceed_osm.text1',
+    defaultMessage:
+      'The Tasking Manager works with OpenStreetMap, a collaborative, open-source map of the world. Everything you map on the Tasking Manager is going to be available on OpenStreetMap.',
+  },
+  proceedOSMPart2: {
+    id: 'signup.proceed_osm.text2',
+    defaultMessage: "First, you'll need an account on OpenStreetMap.org in order to get started.",
+  },
+  proceedOSMLogin: {
+    id: 'signup.proceed_osm.login',
+    defaultMessage: 'I already have an OpenStreetMap account',
   },
   emailPlaceholder: {
     id: 'input.placeholder.email_address',
     defaultMessage: 'Your email address',
+  },
+  invalidEmail: {
+    id: 'input.errors.email_address',
+    defaultMessage: 'Invalid email address',
+  },
+  invalidName: {
+    id: 'input.errors.name',
+    defaultMessage: 'Invalid name',
+  },
+  namePlaceHolder: {
+    id: 'input.placeholder.Name',
+    defaultMessage: 'Your Name',
   },
   slogan: {
     id: 'header.topBar.slogan',
@@ -56,31 +110,21 @@ export default defineMessages({
     id: 'header.nav.logout',
     defaultMessage: 'Logout',
   },
-  signUpTextPart1: {
-    id: 'signup.modal.text1',
-    defaultMessage:
-      'Tasking Manager works with OpenStreetMap, a collaborative, open-source map of the world.',
-  },
-  signUpTextPart2: {
-    id: 'signup.modal.text2',
-    defaultMessage:
-      'To start using the Tasking Manager, first register for an account in OpenStreetMap.',
-  },
   email: {
     id: 'signup.modal.email',
     defaultMessage: 'Email',
   },
   submitProceed: {
     id: 'signup.button.submit',
-    defaultMessage: 'Sign up',
+    defaultMessage: 'Next',
+  },
+  submitProceedOSM: {
+    id: 'signup.button.submit_osm',
+    defaultMessage: 'Create OpenStreetMap account',
   },
   signUpQuestion: {
     id: 'signup.modal.question',
-    defaultMessage: 'Please enter your email address:',
-  },
-  signUpRedirect: {
-    id: 'signup.modal.redirect',
-    defaultMessage: 'Clicking this button will redirect you to the OpenStreetMap website.',
+    defaultMessage: 'Please provide your name and email address:',
   },
   emailUpdateButton: {
     id: 'emailUpdate.modal.button',

@@ -7,8 +7,6 @@ from server.services.users.authentication_service import token_auth, tm
 from server.services.users.user_service import UserService, UserServiceError, NotFound
 from server.services.interests_service import InterestService
 
-from sqlalchemy.exc import IntegrityError
-
 
 class UsersActionsSetUsersAPI(Resource):
     @tm.pm_only(False)
@@ -336,11 +334,8 @@ class UsersActionsRegisterEmailAPI(Resource):
                 )
             )
             return user_dto.to_primitive(), 200
-        except IntegrityError:
-            details_msg = f"Email address {user_dto.email} already exists"
-            user_dto = UserRegisterEmailDTO(
-                dict(email=user_dto.email, details=details_msg)
-            )
+        except ValueError as e:
+            user_dto = UserRegisterEmailDTO(dict(email=user_dto.email, details=str(e)))
             return user_dto.to_primitive(), 400
         except Exception as e:
             details_msg = f"User POST - unhandled error: Unknown error"
