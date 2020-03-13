@@ -145,7 +145,7 @@ export default defineMessages({
   emailUpdateTextPart2: {
     id: 'emailUpdate.modal.text2',
     defaultMessage:
-      'Providing your email address ensures that notifications about your mapping projects will reach you.',
+      'We are mapping together! Providing your email address is necessary for mapping feedback and direct messages to reach you.',
   },
   privacyPolicy: {
     id: 'emailUpdate.modal.privacy_policy',
