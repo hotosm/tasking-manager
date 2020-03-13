@@ -33,12 +33,12 @@ And you can check the logs with `docker-compose logs -f`
 
 ### Working with the setup
 
-The Tasking Manager Docker setup comes with pre-built client modules and server requirements. To start all required services to run tasking manager locally, run
+The Tasking Manager Docker setup comes with pre-built client modules and backend requirements. To start all required services to run tasking manager locally, run
 ```
 make up
 ```
 
-Also, you can edit and execute client tests with `make test-client`. For server tests you need to run `make test-server`. For both, the command is `make tests`.
+Also, you can edit and execute client tests with `make test-client`. For backend tests you need to run `make test-backend`. For both, the command is `make tests`.
 
 
 With this approach users and developers have the possibility to review and setup their own instance of tasking manager without the need of installation or configuration of the resources. Hence, it becomes possible to examine Pull requests, executing
@@ -55,7 +55,7 @@ make down
 *Notes.*
 
 1. It is important to set the hotosm/tasking-manager remote as origin.
-2. When a new client module or server requirement is included within their respective files, remember to rebuild dockerfile image, executing the following command
+2. When a new frontend module or backend requirement is included within their respective files, remember to rebuild dockerfile image, executing the following command
 ```
 make build
 ```

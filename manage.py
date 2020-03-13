@@ -6,10 +6,10 @@ import json
 from flask_migrate import MigrateCommand
 from flask_script import Manager
 from dotenv import load_dotenv
-from server import create_app, initialise_counters
-from server.services.users.authentication_service import AuthenticationService
-from server.services.users.user_service import UserService
-from server.services.stats_service import StatsService
+from backend import create_app, initialise_counters
+from backend.services.users.authentication_service import AuthenticationService
+from backend.services.users.user_service import UserService
+from backend.services.stats_service import StatsService
 
 
 # Load configuration from file into environment

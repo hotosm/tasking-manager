@@ -6,7 +6,7 @@ Create Date: 2019-06-12 12:50:15.809839
 
 """
 from alembic import op
-from server.models.postgis.statuses import TaskStatus
+from backend.models.postgis.statuses import TaskStatus
 
 
 # revision identifiers, used by Alembic.

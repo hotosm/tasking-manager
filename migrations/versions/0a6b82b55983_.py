@@ -8,7 +8,7 @@ Create Date: 2018-09-04 19:09:45.866336
 from alembic import op
 import sqlalchemy as sa
 import re
-from server.models.postgis.message import MessageType
+from backend.models.postgis.message import MessageType
 
 
 # revision identifiers, used by Alembic.
