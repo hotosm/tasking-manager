@@ -66,7 +66,35 @@ const Parameters = {
   TaskingManagerSecret: {
     Description: 'TM_SECRET',
     Type: 'String'
-  }
+  },
+  TaskingManagerAppBaseUrl: {
+    Type: 'String',
+    Description: 'TM_APP_BASE_URL'
+  },
+  TaskingManagerEmailFromAddress: {
+    Description: 'TM_EMAIL_FROM_ADDRESS',
+    Type: 'String'
+  },
+  TaskingManagerSMTPHost: {
+    Description: 'TM_SMTP_HOST environment variable',
+    Type: 'String'
+  },
+  TaskingManagerSMTPPassword: {
+    Description: 'TM_SMTP_PASSWORD environment variable',
+    Type: 'String'
+  },
+  TaskingManagerSMTPUser: {
+    Description: 'TM_SMTP_USER environment variable',
+    Type: 'String'
+  },
+  TaskingManagerSMTPPort: {
+    Description: 'TM_SMTP_PORT environment variable',
+    Type: 'String'
+  },
+  TaskingManagerDefaultChangesetComment: {
+    Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
+    Type: 'String'
+  },
 };
 
 const Conditions = {
@@ -300,9 +328,17 @@ const Resources = {
         cf.sub('export POSTGRES_DB=${PostgresDB}'),
         cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
         cf.sub('export POSTGRES_USER="${PostgresUser}"'),
+        cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
         cf.sub('export TM_CONSUMER_KEY="${TaskingManagerConsumerKey}"'),
         cf.sub('export TM_CONSUMER_SECRET="${TaskingManagerConsumerSecret}"'),
         cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
+        cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
+        cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
+        cf.sub('export TM_SMTP_PORT="${TaskingManagerSMTPPort}"'),
+        cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
+        cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
+        cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
+        cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',
@@ -567,8 +603,8 @@ const Resources = {
         Origins: [{
           Id: cf.join('-', [cf.stackName, 'react-app']),
           DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
-          S3OriginConfig: {
-            OriginAccessIdentity: ''
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only'
           }
         }],
         CustomErrorResponses: [{
@@ -576,11 +612,21 @@ const Resources = {
           ErrorCode: 403,
           ResponseCode: 200,
           ResponsePagePath: '/index.html'
+        },{
+          ErrorCachingMinTTL : 0,
+          ErrorCode: 404,
+          ResponseCode: 200,
+          ResponsePagePath: '/index.html'
         }],
         DefaultCacheBehavior: {
-          AllowedMethods: ['GET', 'HEAD'],
+          AllowedMethods: ['GET', 'HEAD', 'OPTIONS'],
+          CachedMethods: ['GET', 'HEAD', 'OPTIONS'],
           ForwardedValues: {
-            QueryString: false
+            QueryString: true,
+            Cookies: {
+              Forward: 'all'
+            },
+            Headers: ['Accept', 'Authorization', 'Referer']
           },
           TargetOriginId: cf.join('-', [cf.stackName, 'react-app']),
           ViewerProtocolPolicy: "redirect-to-https"
