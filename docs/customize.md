@@ -12,4 +12,4 @@ Logos are stored at https://github.com/hotosm/tasking-manager/tree/develop/front
 
 ## Configuration (site URL, hashtags, contact)
 
-Most of the site configuration, such as the URL of the site, default changeset hashtags, and contact email addresses, are found in https://github.com/hotosm/tasking-manager/blob/develop/server/config.py.
+Most of the site configuration, such as the URL of the site, default changeset hashtags, and contact email addresses, are found in https://github.com/hotosm/tasking-manager/blob/develop/backend/config.py.

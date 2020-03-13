@@ -7,7 +7,7 @@ Create Date: 2019-06-17 18:34:11.058440
 """
 from alembic import op
 import sqlalchemy as sa
-from server.models.postgis.statuses import TeamVisibility
+from backend.models.postgis.statuses import TeamVisibility
 
 
 # revision identifiers, used by Alembic.

@@ -10,7 +10,7 @@ Everybody is welcome to support translations through the Transifex website.
 
 For developers Transifex offers a [CLI client](https://docs.transifex.com/client/introduction/) and the Tasking
 Manager is offering commands to interact with it. The client is already included in the requirements.txt so you should
-have the Transifex commands installed, once you have set up your server side code.
+have the Transifex commands installed, once you have set up your backend side code.
 
 The Tasking Manager is using Angular Translate to display the translated strings. It works with key/value pairs
 in .json format and this is also the format that is used to store the translations in Transifex.
@@ -39,7 +39,7 @@ In this example we are adding support for German.
 
 * Add a new .json file with the appropriate language code as the name of the file, so in this case de.json.
 * Configure local mapping by using Transifex's set command: ```tx set -r tasking-manager.master -l de frontend/src/locales/de.json```
-* Add the new language and language code to the config file so it shows up in dropdowns etc. in server/config.py
+* Add the new language and language code to the config file so it shows up in dropdowns etc. in backend/config.py
 
 ### Pushing translations
 

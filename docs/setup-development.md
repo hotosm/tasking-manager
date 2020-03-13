@@ -5,8 +5,8 @@
 
 The Tasking Manager is composed of two parts:
 
-* **Client**: A front-end user interface built using React.
-* **Server**: A back-end database and API built using Python.
+* **Frontend**: A user interface built using React.
+* **Backend**: A database and API built using Python.
 
 The two parts can be developed independently of each other.
 
@@ -53,9 +53,9 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Server
+### Backend
 
-The backend server is made up of a postgres database and an associated API that calls various end points to create tasks, manage task state, and produce analytics.
+The backend is made up of a postgres database and an associated API that calls various end points to create tasks, manage task state, and produce analytics.
 
 #### Dependencies
 
@@ -96,7 +96,7 @@ You can check the [Dockerfile](../scripts/docker/tasking-manager/Dockerfile) to 
 The project includes a suite of Unit and Integration tests that you should run after any changes
 
 ```
-python3 -m unittest discover tests/server
+python3 -m unittest discover tests/backend
 ```
 
 #### Export translatable strings to en.json source file
@@ -128,7 +128,7 @@ To be able to create a task and have full permissions as an admin inside TM, log
 
 ### API
 
-If you plan to only work on the API you only have to build the server architecture. Install the server dependencies, and run the server:
+If you plan to only work on the API you only have to build the backend architecture. Install the backend dependencies, and run the server:
 
 `
 python3 manage.py runserver -d -r
@@ -214,7 +214,7 @@ export TM_DB=postgresql://hottm:hottm@localhost/tasking-manager
 
 ## Creating the PostGIS database
 
-It may be the case you would like to set up the database without using Docker for one reason or another. This provides you with a set of commands to create the database and export the database address to allow you to dive into server development.
+It may be the case you would like to set up the database without using Docker for one reason or another. This provides you with a set of commands to create the database and export the database address to allow you to dive into backend development.
 
 ### Dependencies
 

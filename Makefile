@@ -30,13 +30,13 @@ refresh-translatables:
 refresh-translations:
 	docker-compose exec app sh -c "tx pull -af"
 
-tests:test-client test-server
+tests:test-frontend test-backend
 
-test-client:
+test-frontend:
 	docker-compose exec app sh -c "cd /usr/src/app/frontend && CI=true npm test"
 
-test-server:
-	docker-compose exec app sh -c "python -m unittest discover tests/server"
+test-backend:
+	docker-compose exec app sh -c "python -m unittest discover tests/backend"
 
 fetch:
 ifndef PRNUMBER
