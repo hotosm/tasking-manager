@@ -17,7 +17,6 @@ from server.services.users.authentication_service import token_auth, tm, verify_
 
 
 class OrganisationsRestAPI(Resource):
-    @tm.pm_only()
     @token_auth.login_required
     def post(self):
         """
@@ -64,6 +63,8 @@ class OrganisationsRestAPI(Resource):
                 description: Client Error - Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             402:
                 description: Duplicate Name - Organisation name already exists
             500:
@@ -71,7 +72,7 @@ class OrganisationsRestAPI(Resource):
         """
         request_user = User().get_by_id(tm.authenticated_user_id)
         if request_user.role != 1:
-            return {"Error": "Only admin users can create organisations."}, 401
+            return {"Error": "Only admin users can create organisations."}, 403
 
         try:
             organisation_dto = NewOrganisationDTO(request.get_json())
@@ -92,7 +93,6 @@ class OrganisationsRestAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    @tm.pm_only()
     @token_auth.login_required
     def delete(self, organisation_id):
         """
@@ -121,7 +121,7 @@ class OrganisationsRestAPI(Resource):
             401:
                 description: Unauthorized - Invalid credentials
             403:
-                description: Forbidden - Organisation has associated projects
+                description: Forbidden
             404:
                 description: Organisation not found
             500:
@@ -130,7 +130,7 @@ class OrganisationsRestAPI(Resource):
         if not OrganisationService.can_user_manage_organisation(
             organisation_id, tm.authenticated_user_id
         ):
-            return {"Error": "User is not an admin for the org"}, 401
+            return {"Error": "User is not an admin for the org"}, 403
         try:
             OrganisationService.delete_organisation(organisation_id)
             return {"Success": "Organisation deleted"}, 200
@@ -189,7 +189,6 @@ class OrganisationsRestAPI(Resource):
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
-    @tm.pm_only()
     @token_auth.login_required
     def patch(self, organisation_id):
         """
@@ -242,13 +241,15 @@ class OrganisationsRestAPI(Resource):
                 description: Client Error - Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
         if not OrganisationService.can_user_manage_organisation(
             organisation_id, tm.authenticated_user_id
         ):
-            return {"Error": "User is not an admin for the org"}, 401
+            return {"Error": "User is not an admin for the org"}, 403
         try:
             organisation_dto = UpdateOrganisationDTO(request.get_json())
             organisation_dto.organisation_id = organisation_id

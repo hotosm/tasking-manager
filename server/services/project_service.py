@@ -26,6 +26,7 @@ from server.models.postgis.task import Task, TaskHistory, TaskAction
 from server.models.postgis.utils import NotFound
 from server.services.users.user_service import UserService
 from server.services.project_search_service import ProjectSearchService
+from server.services.project_admin_service import ProjectAdminService
 from server.services.team_service import TeamService
 from sqlalchemy import func, or_
 from sqlalchemy.sql.expression import true
@@ -128,7 +129,9 @@ class ProjectService:
         return contribs_dto
 
     @staticmethod
-    def get_project_dto_for_mapper(project_id, locale="en", abbrev=False) -> ProjectDTO:
+    def get_project_dto_for_mapper(
+        project_id, current_user_id, locale="en", abbrev=False
+    ) -> ProjectDTO:
         """
         Get the project DTO for mappers
         :param project_id: ID of the Project mapper has requested
@@ -136,7 +139,7 @@ class ProjectService:
         :raises ProjectServiceError, NotFound
         """
         project = ProjectService.get_project_by_id(project_id)
-        return project.as_dto_for_mapping(locale, abbrev)
+        return project.as_dto_for_mapping(current_user_id, locale, abbrev)
 
     @staticmethod
     def get_project_tasks(
@@ -307,7 +310,7 @@ class ProjectService:
                 if TeamService.is_user_member_of_team(team_dto.team_id, user_id)
             ]
             if len(user_membership) == 0:
-                return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
+                return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
         elif validation_permission == ValidationPermission.LEVEL.value:
             if not ProjectService._is_user_intermediate_or_advanced(user_id):
@@ -329,13 +332,16 @@ class ProjectService:
                 if TeamService.is_user_member_of_team(team_dto.team_id, user_id)
             ]
             if len(user_membership) == 0:
-                return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
+                return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
     @staticmethod
     def is_user_permitted_to_validate(project_id, user_id):
         """ Check if the user is allowed to validate on the project in scope """
         if UserService.is_user_blocked(user_id):
             return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
+
+        if ProjectAdminService.is_user_action_permitted_on_project(user_id, project_id):
+            return True, "User allowed to validate"
 
         project = ProjectService.get_project_by_id(project_id)
         validation_permission = project.validation_permission

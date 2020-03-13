@@ -3,6 +3,7 @@ from schematics.exceptions import DataError
 
 from server.models.dtos.campaign_dto import CampaignDTO, NewCampaignDTO
 from server.services.campaign_service import CampaignService
+from server.services.organisation_service import OrganisationService
 from server.models.postgis.utils import NotFound
 from server.services.users.authentication_service import token_auth, tm
 
@@ -110,9 +111,23 @@ class CampaignsRestAPI(Resource):
         responses:
             200:
                 description: Campaign updated successfully
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
+        try:
+            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+                tm.authenticated_user_id
+            )
+            if len(orgs_dto.organisation) < 1:
+                raise ValueError("User not a Org Manager")
+        except ValueError as e:
+            error_msg = f"CampaignsRestAPI PATCH: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             campaign_dto = CampaignDTO(request.get_json())
             campaign_dto.validate()
@@ -161,9 +176,23 @@ class CampaignsRestAPI(Resource):
         responses:
             200:
                 description: Campaign deleted successfully
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
+        try:
+            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+                tm.authenticated_user_id
+            )
+            if len(orgs_dto.organisation) < 1:
+                raise ValueError("User not a Org Manager")
+        except ValueError as e:
+            error_msg = f"CampaignsRestAPI DELETE: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             campaign = CampaignService.get_campaign(campaign_id)
             CampaignService.delete_campaign(campaign.id)
@@ -246,9 +275,23 @@ class CampaignsAllAPI(Resource):
         responses:
             200:
                 description: New campaign created successfully
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
             500:
                 description: Internal Server Error
         """
+        try:
+            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+                tm.authenticated_user_id
+            )
+            if len(orgs_dto.organisation) < 1:
+                raise ValueError("User not a Org Manager")
+        except ValueError as e:
+            error_msg = f"CampaignsAllAPI POST: {str(e)}"
+            return {"Error": error_msg}, 403
+
         try:
             campaign_dto = NewCampaignDTO(request.get_json())
             campaign_dto.validate()
