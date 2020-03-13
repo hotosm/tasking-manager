@@ -12,8 +12,8 @@ frontend/.env
 frontend/coverage/
 
 # Ignore dist folder as this contains the minimized build for deploy
-server/web/static/dist
-server/web/static/dist/
+backend/web/static/dist
+backend/web/static/dist/
 
 # Ignore local logs
 logs/

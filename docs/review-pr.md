@@ -125,7 +125,7 @@ If you get an error, you may have an upgraded database from a prior PR. Try down
 
 I have found it better to run tests on a separate database from the live version, but the choice is up to you. Again, it is probably wise to back up your database first if you choose to run it on your main database.
 
-`venv/bin/  ./tests --with-xunit --xunit-file unitresults.xml --with-coverage --cover-erase --cover-package=./server`
+`venv/bin/  ./tests --with-xunit --xunit-file unitresults.xml --with-coverage --cover-erase --cover-package=./backend`
 
 ### Check changes
 
