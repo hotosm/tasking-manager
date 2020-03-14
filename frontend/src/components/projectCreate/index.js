@@ -121,13 +121,6 @@ const ProjectCreate = props => {
 
   const drawOptions = {
     displayControlsDefault: false,
-    styles: [
-      {
-        id: 'gl-draw-polygon-fill-inactive',
-        type: 'fill',
-        paint: aoiPaintOptions,
-      },
-    ],
   };
   const [mapObj, setMapObj] = useState({
     map: null,
