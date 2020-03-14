@@ -32,7 +32,7 @@ truncate taskingmanager.users cascade;
 --   previous roles were 8: experienced mapper, 4: experienced validator, 2: project manager, 1: admin, 0: mapper
 --   new roles are 4: experienced validator, 2: project manager, 1: admin, 0: mapper, -1: read only
 insert into taskingmanager.users (id,username,role,mapping_level, tasks_mapped, tasks_validated, tasks_invalidated,
-                          is_email_verified, date_registered, last_validation_date)
+                          is_email_verified, date_registered)
 (select id,username,
 	case
           when role is null then 0

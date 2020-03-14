@@ -439,7 +439,6 @@ CREATE TABLE public.users (
     linkedin_id character varying,
     twitter_id character varying,
     date_registered timestamp without time zone,
-    last_validation_date timestamp without time zone,
     validation_message boolean DEFAULT true NOT NULL,
     is_expert boolean
 );
@@ -934,7 +933,7 @@ COPY public.tasks (id, project_id, x, y, zoom, geometry, task_status, locked_by,
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.users (id, username, role, mapping_level, tasks_mapped, tasks_validated, tasks_invalidated, projects_mapped, email_address, facebook_id, is_email_verified, linkedin_id, twitter_id, date_registered, last_validation_date, validation_message, is_expert) FROM stdin;
+COPY public.users (id, username, role, mapping_level, tasks_mapped, tasks_validated, tasks_invalidated, projects_mapped, email_address, facebook_id, is_email_verified, linkedin_id, twitter_id, date_registered, validation_message, is_expert) FROM stdin;
 2823295	ramyaragupathy	0	3	0	0	0	{2}	\N	\N	f	\N	\N	2019-04-09 03:11:54.503164	2019-04-09 03:11:54.503182	t	f
 360183	wille	1	3	2	1	0	{1,2}	\N	\N	f	\N	\N	2019-04-08 10:51:26.758678	2019-04-08 11:40:37.239041	t	f
 94253	xamanu	1	3	0	0	0	\N	\N	\N	f	\N	\N	2019-04-19 13:44:25.422959	2019-04-19 13:44:25.422967	t	f

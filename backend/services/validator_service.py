@@ -19,7 +19,7 @@ from backend.models.postgis.task import (
     TaskInvalidationHistory,
     TaskMappingIssue,
 )
-from backend.models.postgis.utils import NotFound, UserLicenseError, timestamp
+from backend.models.postgis.utils import NotFound, UserLicenseError
 from backend.models.postgis.project_info import ProjectInfo
 from backend.services.messaging.message_service import MessageService
 from backend.services.project_service import ProjectService
@@ -152,10 +152,6 @@ class ValidatorService:
                         validated_dto.project_id,
                     )
                     message_sent_to.append(task.mapped_by)
-
-                if task_to_unlock["new_state"] == TaskStatus.VALIDATED:
-                    # Set last_validation_date for the mapper to current date
-                    task.mapper.last_validation_date = timestamp()
 
             # Update stats if user setting task to a different state from previous state
             prev_status = TaskHistory.get_last_status(project_id, task.id)

@@ -940,7 +940,7 @@ class Task(db.Model):
 
         # Raw SQL is easier to understand that SQL alchemy here :)
         sql = """select u.username, u.mapping_level, count(distinct(t.id)), json_agg(distinct(t.id)),
-                            max(th.action_date) last_seen, u.date_registered, u.last_validation_date
+                            max(th.action_date) last_seen, u.date_registered
                       from tasks t,
                            task_history th,
                            users u
@@ -950,7 +950,7 @@ class Task(db.Model):
                        and t.project_id = :project_id
                        and t.task_status = 2
                        and th.action_text = 'MAPPED'
-                     group by u.username, u.mapping_level, u.date_registered, u.last_validation_date"""
+                     group by u.username, u.mapping_level, u.date_registered"""
 
         results = db.engine.execute(text(sql), project_id=project_id)
         if results.rowcount == 0:
@@ -965,7 +965,6 @@ class Task(db.Model):
             user_mapped.tasks_mapped = row[3]
             user_mapped.last_seen = row[4]
             user_mapped.date_registered = row[5]
-            user_mapped.last_validation_date = row[6]
 
             mapped_tasks_dto.mapped_tasks.append(user_mapped)
 

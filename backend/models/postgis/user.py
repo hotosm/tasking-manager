@@ -59,8 +59,6 @@ class User(db.Model):
     comments_notifications = db.Column(db.Boolean, default=False, nullable=False)
     projects_notifications = db.Column(db.Boolean, default=True, nullable=False)
     date_registered = db.Column(db.DateTime, default=timestamp)
-    # Represents the date the user last had one of their tasks validated
-    last_validation_date = db.Column(db.DateTime, default=timestamp)
 
     # Relationships
     accepted_licenses = db.relationship("License", secondary=users_licenses_table)

@@ -94,7 +94,6 @@ class MappedTasksByUser(Model):
     last_seen = UTCDateTimeType(required=True, serialized_name="lastSeen")
     mapping_level = StringType(required=True, serialized_name="mappingLevel")
     date_registered = UTCDateTimeType(serialized_name="dateRegistered")
-    last_validation_date = UTCDateTimeType(serialized_name="lastValidationDate")
 
 
 class InvalidatedTask(Model):
