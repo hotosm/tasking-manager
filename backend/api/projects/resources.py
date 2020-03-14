@@ -86,7 +86,10 @@ class ProjectsRestAPI(Resource):
             )
 
             project_dto = ProjectService.get_project_dto_for_mapper(
-                project_id, request.environ.get("HTTP_ACCEPT_LANGUAGE"), abbreviated
+                project_id,
+                tm.authenticated_user_id,
+                request.environ.get("HTTP_ACCEPT_LANGUAGE"),
+                abbreviated,
             )
             project_dto = project_dto.to_primitive()
 
