@@ -237,7 +237,7 @@ class SystemContactAdminRestAPI(Resource):
                 data.get("content"),
             )
             SMTPService._send_message(
-                current_app.config["EMAIL_FROM_ADDRESS"],
+                current_app.config["MAIL_DEFAULT_SENDER"],
                 "Tasking Manager Contact",
                 message,
                 message,
