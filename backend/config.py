@@ -66,7 +66,7 @@ class EnvironmentConfig:
     MAIL_USE_TLS = int(os.getenv("TM_SMTP_USE_TLS", False))
     MAIL_USE_SSL = int(os.getenv("TM_SMTP_USE_SSL", False))
     MAIL_DEFAULT_SENDER = os.getenv("TM_EMAIL_FROM_ADDRESS", None)
-    MAIL_DEBUG = True # if LOG_LEVEL == logging.DEBUG else False
+    MAIL_DEBUG = True if LOG_LEVEL == 'DEBUG' else False
 
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
