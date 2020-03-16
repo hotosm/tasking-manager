@@ -83,16 +83,6 @@ class SMTPService:
         current_app.logger.debug(f"Email sent {to_address}")
 
     @staticmethod
-    def _init_smtp_client():
-        """ Initialise SMTP client from app settings """
-        smtp_settings = current_app.config["SMTP_SETTINGS"]
-        sender = smtplib.SMTP(smtp_settings["host"], port=smtp_settings["smtp_port"])
-        sender.starttls()
-        sender.login(smtp_settings["smtp_user"], smtp_settings["smtp_password"])
-
-        return sender
-
-    @staticmethod
     def _generate_email_verification_url(email_address: str, user_name: str):
         """ Generate email verification url with unique token """
         entropy = current_app.secret_key if current_app.secret_key else "un1testingmode"
