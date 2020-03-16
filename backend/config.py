@@ -25,9 +25,6 @@ class EnvironmentConfig:
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)
 
-    # The address to use as the sender on auto generated emails
-    EMAIL_FROM_ADDRESS = os.getenv("TM_EMAIL_FROM_ADDRESS", None)
-
     # A freely definable secret key for connecting the front end with the back end
     SECRET_KEY = os.getenv("TM_SECRET", None)
 
@@ -61,13 +58,15 @@ class EnvironmentConfig:
     # Time to wait until task auto-unlock (e.g. '2h' or '7d' or '30m' or '1h30m')
     TASK_AUTOUNLOCK_AFTER = os.getenv("TM_TASK_AUTOUNLOCK_AFTER", "2h")
 
-    # Configuration for sending emails
-    SMTP_SETTINGS = {
-        "host": os.getenv("TM_SMTP_HOST", None),
-        "smtp_user": os.getenv("TM_SMTP_USER", None),
-        "smtp_port": os.getenv("TM_SMTP_PORT", 25),
-        "smtp_password": os.getenv("TM_SMTP_PASSWORD", None),
-    }
+    # Configuration for smtp server
+    MAIL_SERVER = os.getenv("TM_SMTP_HOST", None)
+    MAIL_USERNAME = os.getenv("TM_SMTP_USER", None)
+    MAIL_PASSWORD = os.getenv("TM_SMTP_PASSWORD", None)
+    MAIL_PORT = os.getenv("TM_SMTP_PORT", None)
+    MAIL_USE_TLS = int(os.getenv("TM_SMTP_USE_TLS", False))
+    MAIL_USE_SSL = int(os.getenv("TM_SMTP_USE_SSL", False))
+    MAIL_DEFAULT_SENDER = os.getenv("TM_EMAIL_FROM_ADDRESS", None)
+    MAIL_DEBUG = True # if LOG_LEVEL == logging.DEBUG else False
 
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
