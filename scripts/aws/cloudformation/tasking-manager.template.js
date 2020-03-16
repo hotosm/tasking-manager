@@ -487,6 +487,19 @@ const Resources = {
       Type: 'application'
     }
   },
+  TaskingManagerLoadBalancerRoute53: {
+    Type: 'AWS::Route53::RecordSet',
+    Properties: {
+      Name: cf.join('-', [cf.stackName, 'api.hotosm.org']),
+      Type: 'A',
+      AliasTarget: {
+        DNSName: cf.getAtt('TaskingManagerLoadBalancer', 'DNSName'),
+        HostedZoneId: cf.getAtt('TaskingManagerLoadBalancer', 'CanonicalHostedZoneID')
+      },
+      HostedZoneId: 'Z2O929GW6VWG99', // Should we configure this?
+
+    }
+  },
   TaskingManagerTargetGroup: {
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup',
     Properties: {
@@ -642,10 +655,10 @@ const Resources = {
 };
 
 const Outputs = {
-  LoadBalancerURL: {
-    Value: cf.getAtt('TaskingManagerLoadBalancer', 'DNSName'),
+  CloudfrontDistributionID: {
+    Value: cf.ref('TaskingManagerReactCloudfront'),
     Export: {
-      Name: cf.join('-', [cf.stackName, 'loadbalancer-url',cf.region])
+      Name: cf.join('-', [cf.stackName, 'cloudfront-id', cf.region])
     }
   }
 }

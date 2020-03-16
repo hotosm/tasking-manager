@@ -259,12 +259,13 @@ jobs:
           export TM_ORG_INSTAGRAM=${<< parameters.org_instagram >>}
           export TM_ORG_YOUTUBE=${<< parameters.org_youtube >>}
           export TM_ORG_GITHUB=${<< parameters.org_github >>}
-          export TM_APP_API_URL="https://`aws cloudformation list-exports --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-loadbalancer-url-${AWS_REGION}'].Value" --output=text`"
-          echo $TM_APP_API_URL
+          export TM_APP_API_URL="https://tasking-manager-<< parameters.stack_name >>-api.hotosm.org"
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
           npm install
           npm run build
           aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-react-app --delete
+          export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
+          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
     - run:
         name: Cleanup
         when: always
