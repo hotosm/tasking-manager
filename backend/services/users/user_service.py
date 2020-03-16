@@ -373,17 +373,15 @@ class UserService:
 
     @staticmethod
     @cached(user_filter_cache)
-    def filter_users(
-        username: str, project_id: int, page: int, is_project_manager: bool = False
-    ) -> UserFilterDTO:
+    def filter_users(username: str, project_id: int, page: int) -> UserFilterDTO:
         """ Gets paginated list of users, filtered by username, for autocomplete """
-        return User.filter_users(username, project_id, page, is_project_manager)
+        return User.filter_users(username, project_id, page)
 
     @staticmethod
     def is_user_a_project_manager(user_id: int) -> bool:
         """ Is the user a project manager """
         user = UserService.get_user_by_id(user_id)
-        if UserRole(user.role) in [UserRole.ADMIN, UserRole.PROJECT_MANAGER]:
+        if UserRole(user.role) in [UserRole.ADMIN]:
             return True
 
         return False
@@ -415,9 +413,7 @@ class UserService:
         user = UserService.get_user_by_id(user_id)
 
         if UserRole(user.role) in [
-            UserRole.VALIDATOR,
             UserRole.ADMIN,
-            UserRole.PROJECT_MANAGER,
         ]:
             return True
 
@@ -576,16 +572,8 @@ class UserService:
         admin = UserService.get_user_by_id(admin_user_id)
         admin_role = UserRole(admin.role)
 
-        if admin_role == UserRole.PROJECT_MANAGER and requested_role == UserRole.ADMIN:
+        if admin_role != UserRole.ADMIN and requested_role == UserRole.ADMIN:
             raise UserServiceError(f"You must be an Admin to assign Admin role")
-
-        if (
-            admin_role == UserRole.PROJECT_MANAGER
-            and requested_role == UserRole.PROJECT_MANAGER
-        ):
-            raise UserServiceError(
-                f"You must be an Admin to assign Project Manager role"
-            )
 
         user = UserService.get_user_by_username(username)
         user.set_user_role(requested_role)

@@ -179,9 +179,7 @@ class User(db.Model):
         return db.session.query(User.id).all()
 
     @staticmethod
-    def filter_users(
-        user_filter: str, project_id: int, page: int, is_project_manager: bool = False
-    ) -> UserFilterDTO:
+    def filter_users(user_filter: str, project_id: int, page: int) -> UserFilterDTO:
         """ Finds users that matches first characters, for auto-complete.
 
         Users who have participated (mapped or validated) in the project, if given, will be
@@ -195,11 +193,6 @@ class User(db.Model):
             .filter(User.username.ilike(user_filter.lower() + "%"))
             .order_by(desc("participant").nullslast(), User.username)
         )
-
-        if is_project_manager:
-            query = query.filter(
-                User.role.in_([UserRole.ADMIN.value, UserRole.PROJECT_MANAGER.value])
-            )
 
         results = query.paginate(page, 20, True)
 

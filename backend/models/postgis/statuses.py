@@ -97,8 +97,6 @@ class UserRole(Enum):
     READ_ONLY = -1
     MAPPER = 0
     ADMIN = 1
-    PROJECT_MANAGER = 2
-    VALIDATOR = 4
 
 
 class Editors(Enum):
