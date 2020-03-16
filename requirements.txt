@@ -4,6 +4,7 @@ appdirs==1.4.3
 attrs==19.3.0
 black==19.10b0
 bleach==3.1.1
+blinker==1.4
 cachetools==4.0.0
 certifi==2019.11.28
 chardet==3.0.4
@@ -14,6 +15,7 @@ flake8==3.7.9
 Flask==1.1.1
 Flask-Cors==3.0.8
 Flask-HTTPAuth==3.3.0
+Flask-Mail==0.9.1
 Flask-Migrate==2.5.3
 Flask-OAuthlib==0.9.4
 Flask-RESTful==0.3.8
