@@ -5,6 +5,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
+from flask_mail import Message
+from backend import mail
 from backend.services.messaging.template_service import get_template
 
 
@@ -60,27 +62,24 @@ class SMTPService:
         to_address: str, subject: str, html_message: str, text_message: str
     ):
         """ Helper sends SMTP message """
-        from_address = current_app.config["EMAIL_FROM_ADDRESS"]
+        from_address = current_app.config["MAIL_DEFAULT_SENDER"]
 
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = subject
-        msg["From"] = from_address
-        msg["To"] = to_address
+        msg = Message()
+
+        msg.subject = subject
+        msg.sender = from_address
+        msg.add_recipient(to_address)
 
         # Record the MIME types of both parts - text/plain and text/html.
-        part1 = MIMEText(text_message, "plain")
-        part2 = MIMEText(html_message, "html")
-        msg.attach(part1)
-        msg.attach(part2)
+        msg.body = text_message
+        msg.html = html_message
 
         current_app.logger.debug(f"Sending email via SMTP {to_address}")
 
         if current_app.config["LOG_LEVEL"] == logging.DEBUG:
             current_app.logger.debug(msg.as_string())
         else:
-            sender = SMTPService._init_smtp_client()
-            sender.sendmail(from_address, to_address, msg.as_string())
-            sender.quit()
+            mail.send(message=msg)
         current_app.logger.debug(f"Email sent {to_address}")
 
     @staticmethod
