@@ -7,10 +7,10 @@ import messages from './messages';
 export function Testimonials() {
   const testimonials = [
     {
-      name: 'Michael Yani',
-      bio: messages.michaelYaniBio,
-      citation: messages.michaelYaniCitation,
-      cssCode: 'michaelyani',
+      name: 'Lauren Bateman',
+      bio: messages.ifrcBio,
+      citation: messages.ifrcCitation,
+      cssCode: 'ifrc',
     },
   ];
   return (
