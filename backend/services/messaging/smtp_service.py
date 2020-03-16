@@ -1,8 +1,5 @@
 import logging
-import smtplib
 import urllib.parse
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from flask_mail import Message
