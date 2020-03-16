@@ -693,7 +693,7 @@ class UserService:
     @staticmethod
     def refresh_mapper_level() -> int:
         """ Helper function to run thru all users in the DB and update their mapper level """
-        users = User.get_all_users_not_pagainated()
+        users = User.get_all_users_not_paginated()
         users_updated = 1
         total_users = len(users)
 
