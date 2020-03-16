@@ -8,6 +8,7 @@ from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
 
 from backend.config import EnvironmentConfig
 
@@ -20,6 +21,7 @@ def format_url(endpoint):
 db = SQLAlchemy()
 migrate = Migrate()
 oauth = OAuth()
+mail = Mail()
 
 osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
 
@@ -50,6 +52,7 @@ def create_app(env=None):
     app.logger.debug(f"Connecting to the databse")
     db.init_app(app)
     migrate.init_app(app, db)
+    mail.init_app(app)
 
     app.logger.debug(f"Initialising frontend routes")
 
