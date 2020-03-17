@@ -8,13 +8,13 @@ export default defineMessages({
     id: 'home.testimonials.title',
     defaultMessage: 'You can make a difference',
   },
-  michaelYaniCitation: {
-    id: 'home.testimonials.michaelYani.citation',
+  ifrcCitation: {
+    id: 'home.testimonials.ifrc.citation',
     defaultMessage:
-      "Mapping has made me learn how to use a smart phone to collect data and direct people to places they didn't know around the district. I have also started teaching other people how to use smart phones to locate places around the district.",
+      "In the early days of the Cyclone Idai response, IFRC was looking for detailed maps to get a sense of the scale of the flooding, which were also used for search and rescue operations. Later on, we had requests to identify where certain buildings, such as health centres or hospitals, were located so our health team could assess the damage and medical needs of patients.",
   },
-  michaelYaniBio: {
-    id: 'home.testimonials.michaelYani.bio',
-    defaultMessage: 'a refugee from South Sudan who currently resides in Rhino Refugee Settlement',
+  ifrcBio: {
+    id: 'home.testimonials.ifrc.bio',
+    defaultMessage: 'Remote Coordinator for the IFRC Information Management Team for Cyclone Idai',
   },
 });
