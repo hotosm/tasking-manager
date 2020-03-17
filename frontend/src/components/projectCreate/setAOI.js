@@ -18,7 +18,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
   const [arbitraryTasks, setArbitrary] = useState(metadata.arbitraryTasks);
   const layer_name = 'aoi';
 
-  const setDataGeom = geom => {
+  const setDataGeom = (geom, display: true) => {
     mapObj.map.fitBounds(bbox(geom), { padding: 20 });
     const geomArea = area(geom) / 1e6;
     const zoomLevel = parseInt(mapObj.map.getZoom()) + 4;
@@ -32,7 +32,9 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
       tempTaskGrid: grid,
     });
 
-    addLayer('aoi', geom, mapObj.map);
+    if (display === true) {
+      addLayer('aoi', geom, mapObj.map);
+    }
   };
 
   const verifyAndSetData = event => {
@@ -102,6 +104,12 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
   };
 
   const deleteHandler = () => {
+    const features = mapObj.draw.getAll();
+    if (features.features.length > 0) {
+      const id = features.features[0].id;
+      mapObj.draw.delete(id);
+    }
+
     if (mapObj.map.getLayer(layer_name)) {
       mapObj.map.removeLayer(layer_name);
     }
@@ -114,13 +122,12 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
   const drawHandler = () => {
     const updateArea = event => {
       // Validate area first.
-      const id = event.features[0].id;
       const geom = featureCollection(event.features);
-      mapObj.draw.delete(id);
       setArbitrary(false);
-      setDataGeom(geom);
+      setDataGeom(geom, false);
     };
 
+    mapObj.map.on('draw.update', updateArea);
     mapObj.map.once('draw.create', updateArea);
     mapObj.draw.changeMode('draw_polygon');
   };
