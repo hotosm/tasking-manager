@@ -198,7 +198,7 @@ export const SignUp = ({ closeModal }) => {
 
   const login = () => {
     closeModal();
-    createLoginWindow('/welcome');
+    createLoginWindow('/explore');
   };
 
   const GetStep = step => {
