@@ -24,7 +24,7 @@ const TaskSelectionFooter = props => {
   const fetchLockedTasks = useFetchLockedTasks();
 
   const lockSuccess = (status, endpoint, windowObjectReference) => {
-    openEditor(
+    const urlParams = openEditor(
       editor,
       props.project,
       props.tasks,
@@ -33,11 +33,13 @@ const TaskSelectionFooter = props => {
       windowObjectReference,
     );
     updateReduxState(props.selectedTasks, props.project.projectId, status);
-    navigate(`/projects/${props.project.projectId}/${endpoint}/`);
+    // hardcoded locale while we solve how to load the user locale on iD
+    navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}&locale=en`);
   };
 
   const lockFailed = windowObjectReference => {
-    if (editor !== 'JOSM') {
+    // JOSM and iD don't open a new window
+    if (!['JOSM', 'ID'].includes(editor)) {
       windowObjectReference.close();
     }
     fetchLockedTasks();
@@ -51,7 +53,7 @@ const TaskSelectionFooter = props => {
   };
   const lockTasks = () => {
     let windowObjectReference;
-    if (editor !== 'JOSM') {
+    if (!['JOSM', 'ID'].includes(editor)) {
       windowObjectReference = window.open(
         '',
         `TM-${props.project.projectId}-${props.selectedTasks}`,
@@ -82,7 +84,7 @@ const TaskSelectionFooter = props => {
         .catch(e => lockFailed(windowObjectReference));
     }
     if (['resumeMapping', 'resumeValidation'].includes(props.taskAction)) {
-      openEditor(
+      const urlParams = openEditor(
         editor,
         props.project,
         props.tasks,
@@ -91,7 +93,8 @@ const TaskSelectionFooter = props => {
         windowObjectReference,
       );
       const endpoint = props.taskAction === 'resumeMapping' ? 'map' : 'validate';
-      navigate(`/projects/${props.project.projectId}/${endpoint}/`);
+      // hardcoded locale while we solve how to load the user locale on iD
+      navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}&locale=en`);
     }
     // if user can not map or validate the project, lead him to the explore projects page
     if (

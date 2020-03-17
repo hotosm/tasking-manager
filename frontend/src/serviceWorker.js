@@ -22,8 +22,17 @@ export function register(config) {
     }
 
     window.addEventListener('load', () => {
-      const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
-      registerValidSW(swUrl, config);
+      if(window.location.href.match(/*\/api-docs\/*/)){
+          // Reload the page and unregister if in path
+          navigator.serviceWorker.ready.then(registration => {
+            registration.unregister().then(() => {
+                window.location.reload();
+            });
+          });
+      } else {
+        const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+        registerValidSW(swUrl, config);
+      }
     });
   }
 }

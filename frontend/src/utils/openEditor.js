@@ -13,12 +13,12 @@ export function openEditor(
     sendJosmCommands(project, tasks, selectedTasks, windowSize);
     return;
   }
-  if (windowObjectReference == null || windowObjectReference.closed) {
-    windowObjectReference = window.open('', `iD-${project}-${selectedTasks}`);
-  }
   const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
   if (editor === 'ID') {
-    windowObjectReference.location.href = getIdUrl(project, center, zoom, selectedTasks);
+    return getIdUrl(project, center, zoom, selectedTasks, '?editor=ID');
+  }
+  if (windowObjectReference == null || windowObjectReference.closed) {
+    windowObjectReference = window.open('', `iD-${project}-${selectedTasks}`);
   }
   if (editor === 'POTLATCH_2') {
     windowObjectReference.location.href = getPotlatch2Url(center, zoom);

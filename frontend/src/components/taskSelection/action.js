@@ -17,6 +17,8 @@ import { openEditor } from '../../utils/openEditor';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { TaskHistory } from './taskActivity';
 
+const Editor = React.lazy(() => import('../editor'));
+
 export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
@@ -29,21 +31,28 @@ export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
   return (
     <div className="cf vh-minus-122-ns overflow-y-hidden">
       <div className="w-70 fl h-100 relative">
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          type="media"
-          rows={26}
-          delay={10}
-          ready={tasks !== undefined && tasks.features !== undefined}
-        >
-          <TasksMap
-            mapResults={tasks}
-            className="dib w-100 fl h-100-ns vh-75"
-            taskBordersOnly={false}
-            animateZoom={false}
-            selected={tasksIds}
-          />
-        </ReactPlaceholder>
+        {editor === 'ID' ? (
+            <React.Suspense fallback={<div className={`w7 h5`}>Loading iD...</div>}>
+              <Editor />
+            </React.Suspense>
+          ) : (
+            <ReactPlaceholder
+              showLoadingAnimation={true}
+              type="media"
+              rows={26}
+              delay={10}
+              ready={tasks !== undefined && tasks.features !== undefined}
+            >
+              <TasksMap
+                mapResults={tasks}
+                className="dib w-100 fl h-100-ns vh-75"
+                taskBordersOnly={false}
+                animateZoom={false}
+                selected={tasksIds}
+              />
+            </ReactPlaceholder>
+          )
+        }
       </div>
       <div className="w-30 fr pt3 ph3 h-100 overflow-y-scroll">
         <ReactPlaceholder

@@ -2,7 +2,14 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, render_template, current_app, send_from_directory
+from flask import (
+    Flask,
+    session,
+    render_template,
+    current_app,
+    send_from_directory,
+    abort,
+)
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
@@ -76,6 +83,23 @@ def create_app(env=None):
     def api():
         api_url = current_app.config["API_DOCS_URL"]
         return render_template("swagger.html", doc_link=api_url)
+
+    # Route to Swagger UI
+    @app.route("/id/")
+    def id_editor():
+        if session.get("osm_oauth", None) is None:
+            abort(403)
+
+        context = {
+            "consumer_key": current_app.config["OSM_OAUTH_SETTINGS"]["consumer_key"],
+            "consumer_secret": current_app.config["OSM_OAUTH_SETTINGS"][
+                "consumer_secret"
+            ],
+            "oauth_token": session["osm_oauth"]["oauth_token"],
+            "oauth_token_secret": session["osm_oauth"]["oauth_token_secret"],
+        }
+
+        return render_template("id.html", **context)
 
     # Add paths to API endpoints
     add_api_endpoints(app)
