@@ -159,7 +159,7 @@ jobs:
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"TaskingManagerAppBaseUrl\":\"${<< parameters.base_url >>}\", \"TaskingManagerApiVersion\":\"${<< parameters.api_version >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\", \"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\", \"TaskingManagerDefaultChangesetComment\":\"${<< parameters.tm_default_changeset_comment >>}\", \"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\", \"TaskingManagerEmailFromAddress\":\"${<< parameters.email_from_address >>}\", \"TaskingManagerSMTPHost\":\"${<< parameters.smtp_host >>}\", \"TaskingManagerSMTPPassword\":\"${<< parameters.smtp_password >>}\", \"TaskingManagerSMTPUser\":\"${<< parameters.smtp_user >>}\", \"TaskingManagerSMTPPort\":\"${<< parameters.smtp_port >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\",  \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"MatomoSiteID\":\"${<< parameters.matomo_site_id >>}\", \"MatomoEndpoint\":\"${<< parameters.matomo_endpoint >>}\", \"MapboxToken\":\"${<< parameters.mapbox_token >>}\", \"OrgName\":\"${<< parameters.org_name >>}\", \"OrgCode\":\"${<< parameters.org_code >>}\", \"OrgUrl\":\"${<< parameters.org_url >>}\", \"OrgPrivacyPolicy\":\"${<< parameters.org_privacy_policy >>}\", \"OrgTwitter\":\"${<< parameters.org_twitter >>}\", \"OrgFacebook\":\"${<< parameters.org_fb >>}\", \"OrgInstagram\":\"${<< parameters.org_instagram >>}\", \"OrgYoutube\":\"${<< parameters.org_youtube >>}\", \"OrgGitHub\":\"${<< parameters.org_github >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -232,6 +232,40 @@ jobs:
           export NODE_PATH=/usr/lib/node_modules
           validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
           cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
+    - run:
+        name: Deploy Frontend to S3
+        command: |
+          export TM_APP_BASE_URL=${<< parameters.base_url >>}
+          export TM_APP_API_VERSION=${<< parameters.api_version >>}
+          export TM_CONSUMER_KEY=${<< parameters.consumer_key >>}
+          export TM_CONSUMER_SECRET=${<< parameters.consumer_secret >>}
+          export TM_EMAIL_FROM_ADDRESS=${<< parameters.email_from_address >>}
+          export TM_LOG_DIR=${<< parameters.log_dir >>}
+          export TM_SECRET=${<< parameters.tm_secret >>}
+          export TM_SMTP_HOST=${<< parameters.smtp_host >>}
+          export TM_SMTP_PASSWORD=${<< parameters.smtp_password >>}
+          export TM_SMTP_PORT=${<< parameters.smtp_port >>}
+          export TM_SMTP_USER=${<< parameters.smtp_user >>}
+          export TM_DEFAULT_CHANGESET_COMMENT=${<< parameters.tm_default_changeset_comment >>}
+          export TM_MATOMO_ID=${<< parameters.matomo_site_id >>}
+          export TM_MATOMO_ENDPOINT=${<< parameters.matomo_endpoint >>}
+          export TM_MAPBOX_TOKEN=${<< parameters.mapbox_token >>}
+          export TM_ORG_NAME=${<< parameters.org_name >>}
+          export TM_ORG_CODE=${<< parameters.org_code >>}
+          export TM_ORG_URL=${<< parameters.org_url >>}
+          export TM_ORG_PRIVACY_POLICY=${<< parameters.org_privacy_policy >>}
+          export TM_ORG_TWITTER=${<< parameters.org_twitter >>}
+          export TM_ORG_FB=${<< parameters.org_fb >>}
+          export TM_ORG_INSTAGRAM=${<< parameters.org_instagram >>}
+          export TM_ORG_YOUTUBE=${<< parameters.org_youtube >>}
+          export TM_ORG_GITHUB=${<< parameters.org_github >>}
+          export TM_APP_API_URL="https://tasking-manager-<< parameters.stack_name >>-api.hotosm.org"
+          cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
+          npm install
+          npm run build
+          aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-react-app --delete
+          export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
+          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
     - run:
         name: Cleanup
         when: always
