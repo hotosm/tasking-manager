@@ -9,32 +9,32 @@ export function NotificationOrderBySelector(props) {
     {
       label: <FormattedMessage {...messages.sortByRead} />,
       value: 'read.DESC',
-      sort: 'read',
-      type: 'DESC',
+      type: 'read',
+      sort: 'DESC',
     },
     {
       label: <FormattedMessage {...messages.sortByDateDesc} />,
       value: 'date.DESC',
-      sort: 'date',
-      type: 'DESC',
+      type: 'date',
+      sort: 'DESC',
     },
     {
       label: <FormattedMessage {...messages.sortByDateAsc} />,
       value: 'date.ASC',
-      sort: 'date',
-      type: 'ASC',
+      type: 'date',
+      sort: 'ASC',
     },
     {
       label: <FormattedMessage {...messages.sortByIdDesc} />,
       value: 'projects.DESC',
-      sort: 'projects',
-      type: 'DESC',
+      type: 'projects',
+      sort: 'DESC',
     },
     {
       label: <FormattedMessage {...messages.sortByIdAsc} />,
       value: 'projects.ASC',
-      sort: 'projects',
-      type: 'ASC',
+      type: 'projects',
+      sort: 'ASC',
     },
   ];
   const onSortSelect = arr => {
