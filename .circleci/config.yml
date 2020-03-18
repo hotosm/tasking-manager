@@ -150,6 +150,9 @@ jobs:
         type: env_var_name
       org_github:
         type: env_var_name
+      log_level:
+        type: enum
+        enum: ["INFO", "DEBUG"]
     working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3.7-buster
@@ -159,7 +162,7 @@ jobs:
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\",\"TaskingManagerLogLevel\":\"${<< parameters.log_level >>}\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -240,6 +243,7 @@ jobs:
           export TM_CONSUMER_KEY=${<< parameters.consumer_key >>}
           export TM_CONSUMER_SECRET=${<< parameters.consumer_secret >>}
           export TM_EMAIL_FROM_ADDRESS=${<< parameters.email_from_address >>}
+          export TM_LOG_LEVEL=${<< parameters.log_level >>}
           export TM_LOG_DIR=${<< parameters.log_dir >>}
           export TM_SECRET=${<< parameters.tm_secret >>}
           export TM_SMTP_HOST=${<< parameters.smtp_host >>}
@@ -309,6 +313,7 @@ workflows:
         consumer_secret: TM_CONSUMER_SECRET_STAGING
         tm_secret: TM_SECRET_STAGING
         email_from_address: TM_EMAIL_FROM_ADDRESS_STAGING
+        log_level: "INFO"
         smtp_host: TM_SMTP_HOST_STAGING
         smtp_password: TM_SMTP_PASSWORD_STAGING
         smtp_user: TM_SMTP_USER_STAGING
@@ -350,6 +355,7 @@ workflows:
         consumer_secret: TM_CONSUMER_SECRET_PRODUCTION
         tm_secret: TM_SECRET_PRODUCTION
         email_from_address: TM_EMAIL_FROM_ADDRESS_PRODUCTION
+        log_level: "INFO"
         smtp_host: TM_SMTP_HOST_PRODUCTION
         smtp_password: TM_SMTP_PASSWORD_PRODUCTION
         smtp_user: TM_SMTP_USER_PRODUCTION
@@ -391,6 +397,7 @@ workflows:
         consumer_secret: TM_CONSUMER_SECRET_TEACHOSM
         tm_secret: TM_SECRET_TEACHOSM
         email_from_address: TM_EMAIL_FROM_ADDRESS_TEACHOSM
+        log_level: "INFO"
         smtp_host: TM_SMTP_HOST_TEACHOSM
         smtp_password: TM_SMTP_PASSWORD_TEACHOSM
         smtp_user: TM_SMTP_USER_TEACHOSM
@@ -432,6 +439,7 @@ workflows:
         consumer_secret: TM_CONSUMER_SECRET_ASSISTED
         tm_secret: TM_SECRET_ASSISTED
         email_from_address: TM_EMAIL_FROM_ADDRESS_ASSISTED
+        log_level: "INFO"
         smtp_host: TM_SMTP_HOST_ASSISTED
         smtp_password: TM_SMTP_PASSWORD_ASSISTED
         smtp_user: TM_SMTP_USER_ASSISTED
@@ -473,6 +481,7 @@ workflows:
         consumer_secret: TM_CONSUMER_SECRET_TM4
         tm_secret: TM_SECRET_TM4
         email_from_address: TM_EMAIL_FROM_ADDRESS_TM4
+        log_level: "INFO"
         smtp_host: TM_SMTP_HOST_TM4
         smtp_password: TM_SMTP_PASSWORD_TM4
         smtp_user: TM_SMTP_USER_TM4
