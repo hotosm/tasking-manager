@@ -3,7 +3,7 @@ import { getMenuItensForUser } from '../index';
 it('test menuItems for unlogged user', () => {
   const userDetails = {};
   const menuItems = getMenuItensForUser(userDetails, false).map(i => i.link);
-  expect(menuItems).toEqual(['explore']);
+  expect(menuItems).toEqual(['explore', 'about']);
   // disable learn and about while the content is rewritten
   // expect(menuItems).toEqual(['explore', 'learn', 'about']);
 });
@@ -11,7 +11,7 @@ it('test menuItems for unlogged user', () => {
 it('test menuItems for logged non admin user', () => {
   const userDetails = { username: 'test', role: 'MAPPER' };
   const menuItems = getMenuItensForUser(userDetails, false).map(i => i.link);
-  expect(menuItems).toEqual(['explore', 'contributions']);
+  expect(menuItems).toEqual(['explore', 'contributions', 'about']);
   // disable learn and about while the content is rewritten
   // expect(menuItems).toEqual(['explore', 'contributions', 'learn', 'about']);
 });
@@ -19,7 +19,7 @@ it('test menuItems for logged non admin user', () => {
 it('test menuItems for logged non admin user, but org manager', () => {
   const userDetails = { username: 'test', role: 'MAPPER' };
   const menuItems = getMenuItensForUser(userDetails, true).map(i => i.link);
-  expect(menuItems).toEqual(['explore', 'contributions', 'manage']);
+  expect(menuItems).toEqual(['explore', 'contributions', 'manage', 'about']);
   // disable learn and about while the content is rewritten
   // expect(menuItems).toEqual(['explore', 'contributions', 'learn', 'about']);
 });
@@ -27,7 +27,7 @@ it('test menuItems for logged non admin user, but org manager', () => {
 it('test menuItems for logged admin user', () => {
   const userDetails = { username: 'test', role: 'ADMIN' };
   const menuItems = getMenuItensForUser(userDetails, false).map(i => i.link);
-  expect(menuItems).toEqual(['explore', 'contributions', 'manage']);
+  expect(menuItems).toEqual(['explore', 'contributions', 'manage', 'about']);
   // disable learn and about while the content is rewritten
   // expect(menuItems).toEqual(['explore', 'contributions', 'manage', 'learn', 'about']);
 });
@@ -35,7 +35,7 @@ it('test menuItems for logged admin user', () => {
 it('test menuItems for logged project manager user', () => {
   const userDetails = { username: 'test', role: 'PROJECT_MANAGER' };
   const menuItems = getMenuItensForUser(userDetails, false).map(i => i.link);
-  expect(menuItems).toEqual(['explore', 'contributions', 'manage']);
+  expect(menuItems).toEqual(['explore', 'contributions', 'manage', 'about']);
   // disable learn and about while the content is rewritten
   // expect(menuItems).toEqual(['explore', 'contributions', 'manage', 'learn', 'about']);
 });
@@ -43,7 +43,7 @@ it('test menuItems for logged project manager user', () => {
 it('test menuItems for logged project manager user, but org manager', () => {
   const userDetails = { username: 'test', role: 'PROJECT_MANAGER' };
   const menuItems = getMenuItensForUser(userDetails, true).map(i => i.link);
-  expect(menuItems).toEqual(['explore', 'contributions', 'manage']);
+  expect(menuItems).toEqual(['explore', 'contributions', 'manage', 'about']);
   // disable learn and about while the content is rewritten
   // expect(menuItems).toEqual(['explore', 'contributions', 'manage', 'learn', 'about']);
 });

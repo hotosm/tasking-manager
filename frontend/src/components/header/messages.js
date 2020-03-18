@@ -63,7 +63,7 @@ export default defineMessages({
   },
   proceedOSMTitle: {
     id: 'signUp.proceed_osm.osm_title',
-    defaultMessage: 'Do you have OpenStreetMap account?',
+    defaultMessage: 'Do you have an OpenStreetMap account?',
   },
   proceedOSMPart1: {
     id: 'signup.proceed_osm.text1',

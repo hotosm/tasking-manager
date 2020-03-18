@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-
+import { addLayer } from './index';
 import messages from './messages';
 import { Button } from '../button';
 
@@ -14,6 +14,9 @@ const validateStep = props => {
         const message = 'Project geometry not set';
         return { error: true, message: message };
       } else {
+        const id = props.metadata.geom.features[0].id;
+        props.mapObj.draw.delete(id);
+        addLayer('aoi', props.metadata.geom, props.mapObj.map);
         props.updateMetadata({
           ...props.metadata,
           tasksNo: props.metadata.taskGrid.features.length,
@@ -45,7 +48,7 @@ const clearParamsStep = props => {
   switch (props.index) {
     case 2: //clear Tasks
       props.mapObj.map.removeLayer('grid');
-      props.updateMetadata({ ...props.metadata, tasksNo: 0 });
+      props.updateMetadata({ ...props.metadata, tasksNo: 0, taskGrid: null, tempTaskGrid: null });
       break;
     case 3:
       props.updateMetadata({ ...props.metadata, tempTaskGrid: null });

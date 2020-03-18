@@ -38,13 +38,22 @@ const Parameters = {
     Type: 'String',
     Description: 'POSTGRES_USER'
   },
-  TaskingManagerAppBaseUrl: {
+  DatabaseSize: {
+    Description: 'Database size in GB',
     Type: 'String',
-    Description: 'TM_APP_BASE_URL'
+    Default: '100'
   },
-  TaskingManagerApiVersion: {
+  ELBSubnets: {
+    Description: 'ELB subnets',
+    Type: 'String'
+  },
+  SSLCertificateIdentifier: {
     Type: 'String',
-    Description: 'TM_APP_API_VERSION'
+    Description: 'SSL certificate for HTTPS protocol'
+  },
+  TaskingManagerLogDirectory: {
+    Description: 'TM_LOG_DIR environment variable',
+    Type: 'String'
   },
   TaskingManagerConsumerKey: {
     Description: 'TM_CONSUMER_KEY',
@@ -57,6 +66,10 @@ const Parameters = {
   TaskingManagerSecret: {
     Description: 'TM_SECRET',
     Type: 'String'
+  },
+  TaskingManagerAppBaseUrl: {
+    Type: 'String',
+    Description: 'TM_APP_BASE_URL'
   },
   TaskingManagerEmailFromAddress: {
     Description: 'TM_EMAIL_FROM_ADDRESS',
@@ -82,71 +95,6 @@ const Parameters = {
     Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
     Type: 'String'
   },
-  TaskingManagerLogDirectory: {
-    Description: 'TM_LOG_DIR environment variable',
-    Type: 'String'
-  },
-  DatabaseSize: {
-    Description: 'Database size in GB',
-    Type: 'String',
-    Default: '100'
-  },
-  ELBSubnets: {
-    Description: 'ELB subnets',
-    Type: 'String'
-  },
-  SSLCertificateIdentifier: {
-    Type: 'String',
-    Description: 'SSL certificate for HTTPS protocol'
-  },
-  MatomoSiteID: {
-    Type: 'String',
-    Description: 'site id from matomo app'
-  },
-  MatomoEndpoint: {
-    Type: 'String',
-    Description: 'Endpoint URL for matomo tracking'
-  },
-  MapboxToken: {
-    Type: 'String',
-    Description: 'Mapbox Token'
-  },
-  OrgName: {
-    Type: 'String',
-    Description: 'OrgName'
-  },
-  OrgCode: {
-    Type: 'String',
-    Description: 'OrgCode'
-  },
-  OrgUrl: {
-    Type: 'String',
-    Description: 'Org Url. Do not add http://'
-  },
-  OrgPrivacyPolicy: {
-    Type: 'String',
-    Description: 'PrivacyPolicy URL. Do not add http://'
-  },
-  OrgTwitter: {
-    Type: 'String',
-    Description: 'Twitter URL'
-  },
-  OrgFacebook: {
-    Type: 'String',
-    Description: 'Facebook URL'
-  },
-  OrgInstagram: {
-    Type: 'String',
-    Description: 'Instagram URL'
-  },
-  OrgYoutube: {
-    Type: 'String',
-    Description: 'Youtube Url'
-  },
-  OrgGitHub: {
-    Type: 'String',
-    Description: 'Github URL'
-  }
 };
 
 const Conditions = {
@@ -381,36 +329,19 @@ const Resources = {
         cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
         cf.sub('export POSTGRES_USER="${PostgresUser}"'),
         cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
-        cf.sub('export TM_APP_API_VERSION="${TaskingManagerApiVersion}"'),
         cf.sub('export TM_CONSUMER_KEY="${TaskingManagerConsumerKey}"'),
         cf.sub('export TM_CONSUMER_SECRET="${TaskingManagerConsumerSecret}"'),
-        cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
-        cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
         cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
         cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
         cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
         cf.sub('export TM_SMTP_PORT="${TaskingManagerSMTPPort}"'),
         cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
         cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
-        cf.sub('export TM_MATOMO_ID="${MatomoSiteID}"'),
-        cf.sub('export TM_MATOMO_ENDPOINT="${MatomoEndpoint}"'),
-        cf.sub('export TM_MAPBOX_TOKEN="${MapboxToken}"'),
-        cf.sub('export TM_ORG_NAME="${OrgName}"'),
-        cf.sub('export TM_ORG_CODE="${OrgCode}"'),
-        cf.sub('export TM_ORG_URL="${OrgUrl}"'),
-        cf.sub('export TM_ORG_PRIVACY_POLICY="${OrgPrivacyPolicy}"'),
-        cf.sub('export TM_ORG_TWITTER="${OrgTwitter}"'),
-        cf.sub('export TM_ORG_FB="${OrgFacebook}"'),
-        cf.sub('export TM_ORG_INSTAGRAM="${OrgInstagram}"'),
-        cf.sub('export TM_ORG_YOUTUBE="${OrgYoutube}"'),
-        cf.sub('export TM_ORG_GITHUB="${OrgGitHub}"'),
+        cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
+        cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',
-        'cd frontend/',
-        'npm install',
-        'npm run build',
-        'cd ../',
         'echo "------------------------------------------------------------"',
         'gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 3 --timeout 179 manage:application &',
         cf.sub('sudo cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
@@ -556,6 +487,19 @@ const Resources = {
       Type: 'application'
     }
   },
+  TaskingManagerLoadBalancerRoute53: {
+    Type: 'AWS::Route53::RecordSet',
+    Properties: {
+      Name: cf.join('-', [cf.stackName, 'api.hotosm.org']),
+      Type: 'A',
+      AliasTarget: {
+        DNSName: cf.getAtt('TaskingManagerLoadBalancer', 'DNSName'),
+        HostedZoneId: cf.getAtt('TaskingManagerLoadBalancer', 'CanonicalHostedZoneID')
+      },
+      HostedZoneId: 'Z2O929GW6VWG99', // Should we configure this?
+
+    }
+  },
   TaskingManagerTargetGroup: {
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup',
     Properties: {
@@ -624,7 +568,99 @@ const Resources = {
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
     }
+  },
+  TaskingManagerReactBucket: {
+    Type: 'AWS::S3::Bucket',
+    Properties: {
+      BucketName: cf.join('-', [cf.stackName, 'react-app']),
+      AccessControl: "PublicRead",
+      PublicAccessBlockConfiguration: {
+        BlockPublicAcls: false,
+        BlockPublicPolicy: false,
+        IgnorePublicAcls: false,
+        RestrictPublicBuckets: false
+      },
+      WebsiteConfiguration: {
+        ErrorDocument: 'index.html',
+        IndexDocument: 'index.html'
+      }
+    }
+  },
+  TaskingManagerReactBucketPolicy: {
+    Type: 'AWS::S3::BucketPolicy',
+    Properties: {
+      Bucket : cf.ref('TaskingManagerReactBucket'),
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement:[{
+          Action: [ 's3:GetObject'],
+          Effect: 'Allow',
+          Principal: '*',
+          Resource: [ cf.join('',
+            [
+              cf.getAtt('TaskingManagerReactBucket', 'Arn'), 
+              '/*'
+            ]
+          )],
+          Sid: 'AddPerm'
+        }]
+      }
+    }
+  },
+  TaskingManagerReactCloudfront: {
+    Type: "AWS::CloudFront::Distribution",
+    Properties: {
+      DistributionConfig: {
+        DefaultRootObject: 'index.html',
+        Enabled: true,
+        Origins: [{
+          Id: cf.join('-', [cf.stackName, 'react-app']),
+          DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only'
+          }
+        }],
+        CustomErrorResponses: [{
+          ErrorCachingMinTTL : 0,
+          ErrorCode: 403,
+          ResponseCode: 200,
+          ResponsePagePath: '/index.html'
+        },{
+          ErrorCachingMinTTL : 0,
+          ErrorCode: 404,
+          ResponseCode: 200,
+          ResponsePagePath: '/index.html'
+        }],
+        DefaultCacheBehavior: {
+          AllowedMethods: ['GET', 'HEAD', 'OPTIONS'],
+          CachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+          ForwardedValues: {
+            QueryString: true,
+            Cookies: {
+              Forward: 'all'
+            },
+            Headers: ['Accept', 'Authorization', 'Referer']
+          },
+          TargetOriginId: cf.join('-', [cf.stackName, 'react-app']),
+          ViewerProtocolPolicy: "redirect-to-https"
+        },
+        ViewerCertificate: {
+          AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
+          MinimumProtocolVersion: 'TLSv1.2_2018',
+          SslSupportMethod: 'sni-only'
+        }
+      }
+    }
   }
 };
 
-module.exports = { Parameters, Resources, Conditions }
+const Outputs = {
+  CloudfrontDistributionID: {
+    Value: cf.ref('TaskingManagerReactCloudfront'),
+    Export: {
+      Name: cf.join('-', [cf.stackName, 'cloudfront-id', cf.region])
+    }
+  }
+}
+
+module.exports = { Parameters, Resources, Conditions, Outputs }

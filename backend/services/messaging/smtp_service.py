@@ -60,6 +60,8 @@ class SMTPService:
     ):
         """ Helper sends SMTP message """
         from_address = current_app.config["MAIL_DEFAULT_SENDER"]
+        if from_address is None:
+            raise ValueError("Missing TM_EMAIL_FROM_ADDRESS environment variable")
 
         msg = Message()
 
@@ -72,8 +74,7 @@ class SMTPService:
         msg.html = html_message
 
         current_app.logger.debug(f"Sending email via SMTP {to_address}")
-
-        if current_app.config["LOG_LEVEL"] == logging.DEBUG:
+        if current_app.config["LOG_LEVEL"] == "DEBUG":
             current_app.logger.debug(msg.as_string())
         else:
             mail.send(message=msg)

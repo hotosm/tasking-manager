@@ -87,10 +87,15 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step 
       });
 
       mapObj.map.on('style.load', event => {
-        addLayer('aoi', metadata.geom, mapObj.map);
+        const features = mapObj.draw.getAll();
+        if (features.features.length === 0) {
+          addLayer('aoi', metadata.geom, mapObj.map);
+        }
 
         if (metadata.taskGrid && step === 2) {
           addLayer('grid', metadata.taskGrid, mapObj.map);
+        } else {
+          mapObj.map.removeLayer('grid');
         }
       });
     }
