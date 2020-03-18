@@ -98,6 +98,8 @@ jobs:
         type: env_var_name
       base_url:
         type: env_var_name
+      app_url:
+        type: env_var_name
       api_version:
         type: env_var_name
       consumer_key:
@@ -162,7 +164,7 @@ jobs:
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\",\"TaskingManagerLogLevel\":\"${<< parameters.log_level >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\",\"TaskingManagerLogLevel\":\"${<< parameters.log_level >>}\", "TaskingManagerAppUrl\":\"${<< parameters.app_url >>}\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -308,6 +310,7 @@ workflows:
         postgres_password: POSTGRES_PASSWORD_STAGING
         postgres_user: POSTGRES_USER_STAGING
         base_url: TM_APP_BASE_URL_STAGING
+        app_url: TM_APP_URL_STAGING
         api_version: TM_APP_API_VERSION_STAGING
         consumer_key: TM_CONSUMER_KEY_STAGING
         consumer_secret: TM_CONSUMER_SECRET_STAGING
@@ -350,6 +353,7 @@ workflows:
         postgres_password: POSTGRES_PASSWORD_PRODUCTION
         postgres_user: POSTGRES_USER_PRODUCTION
         base_url: TM_APP_BASE_URL_PRODUCTION
+        app_url: TM_APP_URL_PRODUCTION
         api_version: TM_APP_API_VERSION_PRODUCTION
         consumer_key: TM_CONSUMER_KEY_PRODUCTION
         consumer_secret: TM_CONSUMER_SECRET_PRODUCTION
@@ -392,6 +396,7 @@ workflows:
         postgres_password: POSTGRES_PASSWORD_TEACHOSM
         postgres_user: POSTGRES_USER_TEACHOSM
         base_url: TM_APP_BASE_URL_TEACHOSM
+        app_url: TM_APP_URL_TEACHOSM
         api_version: TM_APP_API_VERSION_TEACHOSM
         consumer_key: TM_CONSUMER_KEY_TEACHOSM
         consumer_secret: TM_CONSUMER_SECRET_TEACHOSM
@@ -434,6 +439,7 @@ workflows:
         postgres_password: POSTGRES_PASSWORD_ASSISTED
         postgres_user: POSTGRES_USER_ASSISTED
         base_url: TM_APP_BASE_URL_ASSISTED
+        app_url: TM_APP_URL_ASSISTED
         api_version: TM_APP_API_VERSION_ASSISTED
         consumer_key: TM_CONSUMER_KEY_ASSISTED
         consumer_secret: TM_CONSUMER_SECRET_ASSISTED
@@ -476,6 +482,7 @@ workflows:
         postgres_password: POSTGRES_PASSWORD_TM4
         postgres_user: POSTGRES_USER_TM4
         base_url: TM_APP_BASE_URL_TM4
+        app_url: TM_APP_URL_TM4
         api_version: TM_APP_API_VERSION_TM4
         consumer_key: TM_CONSUMER_KEY_TM4
         consumer_secret: TM_CONSUMER_SECRET_TM4
