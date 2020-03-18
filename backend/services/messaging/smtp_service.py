@@ -1,4 +1,3 @@
-import logging
 import smtplib
 import urllib.parse
 from email.mime.multipart import MIMEMultipart
@@ -61,6 +60,8 @@ class SMTPService:
     ):
         """ Helper sends SMTP message """
         from_address = current_app.config["EMAIL_FROM_ADDRESS"]
+        if from_address is None:
+            raise ValueError("Missing TM_EMAIL_FROM_ADDRESS environment variable")
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
@@ -74,8 +75,7 @@ class SMTPService:
         msg.attach(part2)
 
         current_app.logger.debug(f"Sending email via SMTP {to_address}")
-
-        if current_app.config["LOG_LEVEL"] == logging.DEBUG:
+        if current_app.config["LOG_LEVEL"] == "DEBUG":
             current_app.logger.debug(msg.as_string())
         else:
             sender = SMTPService._init_smtp_client()
