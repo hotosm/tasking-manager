@@ -51,7 +51,7 @@
   "signUp.modal.title": "Sign up",
   "signUp.modal.form_email": "Email",
   "signUp.modal.form_name": "Name",
-  "signUp.proceed_osm.osm_title": "Do you have OpenStreetMap account?",
+  "signUp.proceed_osm.osm_title": "Do you have an OpenStreetMap account?",
   "signup.proceed_osm.text1": "The Tasking Manager works with OpenStreetMap, a collaborative, open-source map of the world. Everything you map on the Tasking Manager is going to be available on OpenStreetMap.",
   "signup.proceed_osm.text2": "First, you'll need an account on OpenStreetMap.org in order to get started.",
   "signup.proceed_osm.login": "I already have an OpenStreetMap account",
