@@ -18,7 +18,9 @@ class Authorized extends React.Component {
     }
     const username = this.params.get('username');
     const sessionToken = this.params.get('session_token');
-    this.props.authenticateUser(username, sessionToken);
+    const osm_oauth_token = this.params.get('osm_oauth_token');
+    const osm_oauth_token_secret = this.params.get('osm_oauth_token_secret');
+    this.props.authenticateUser(username, sessionToken, osm_oauth_token, osm_oauth_token_secret);
     this.setState({
       isReadyToRedirect: true,
     });
@@ -42,12 +44,10 @@ let mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = dispatch => {
   return {
-    authenticateUser: (username, token) => dispatch(setAuthDetails(username, token)),
+    authenticateUser: (username, token, osm_oauth_token, osm_oauth_token_secret) =>
+      dispatch(setAuthDetails(username, token, osm_oauth_token, osm_oauth_token_secret)),
   };
 };
 
-Authorized = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Authorized);
+Authorized = connect(mapStateToProps, mapDispatchToProps)(Authorized);
 export { Authorized };
