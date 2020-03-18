@@ -151,7 +151,8 @@ jobs:
       org_github:
         type: env_var_name
       log_level:
-        type: env_var_name
+        type: enum
+        enum: ["INFO", "DEBUG"]
     working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3.7-buster
