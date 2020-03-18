@@ -147,6 +147,12 @@ export default defineMessages({
     id: 'pages.about.title',
     defaultMessage: 'About Tasking Manager',
   },
+  aboutIntro: {
+    id: 'pages.about.intro',
+    defaultMessage:
+      'Every day, a global community works tirelessly behind the scenes to literally put people on the map. They contribute to the online Open Data map of the world. Universal access to geospatial information is heavily changing how people use maps and what they build with them.',
+  },
+
   learn: {
     id: 'pages.learn.title',
     defaultMessage: 'Learn',
@@ -182,21 +188,22 @@ export default defineMessages({
   tmDescription: {
     id: 'pages.about.description',
     defaultMessage:
-      'The Tasking Manager is a mapping tool designed and built for the coordination of volunteers and the organization of groups for collaborative mapping in OpenStreetMap.',
+      'The purpose of the Tasking Manager is to divide a large mapping project into smaller tasks that can be completed rapidly and collaboratively, with many people contributing to a collective project goal. The tool shows what needs to be mapped, which areas need to be reviewed and validated for quality assurance and which areas are completed.',
+  },
+  tmDescription2: {
+    id: 'pages.about.description2',
+    defaultMessage:
+      'This approach allows the distribution of tasks to many individual mappers. It also allows monitoring of project progress and helps to improve the consistency of the mapping (e.g. elements to cover, specific tags to use, etc.',
   },
   osmDescription: {
     id: 'pages.about.OpenStreetMap.description',
     defaultMessage:
-      '{osmLink} is the community-driven free and editable map of the world, supported by the not-for-profit OpenStreetMap Foundation. Read more on the {osmWikiLink} or join the discussion with your local OSM community.',
+      'All work is done through {osmLink}. OpenStreetMap is the community-driven free and editable map of the world, supported by the not-for-profit OpenStreetMap Foundation.',
   },
-  howItWorks: {
-    id: 'pages.about.howItWorks.title',
-    defaultMessage: 'How does it work?',
-  },
-  howItWorksPart1: {
-    id: 'pages.about.howItWorks.description.part_1',
+  osmWiki: {
+    id: 'pages.about.OpenStreetMap.wiki',
     defaultMessage:
-      'The Tasking Manager allows you to divide up a mapping project into smaller tasks that can be completed rapidly with many people working on the same overall area. It shows which areas need to be mapped and which areas need to be reviewed for quality assurance.',
+      'Read more on the {osmWikiLink} or join the discussion with your local OSM community.',
   },
   floss: {
     id: 'pages.about.floss.title',
@@ -205,15 +212,7 @@ export default defineMessages({
   flossDescription: {
     id: 'pages.about.floss.description',
     defaultMessage:
-      'The Tasking Manager has been built by the {hotLink} and it is  Free and Open Source software. Please feel free to report issues and contribute.',
-  },
-  repositoryLink: {
-    id: 'pages.about.floss.repository_link',
-    defaultMessage: 'The {code} is available for you.',
-  },
-  appCode: {
-    id: 'pages.about.floss.application_code',
-    defaultMessage: 'application code',
+      'The Tasking Manager is Free and Open Source software developed by {hotLink}. The application’s code can be accessed through {code}, where you can report issues and make contributions.',
   },
   editProject: {
     id: 'pages.edit_project.title',
