@@ -40,7 +40,9 @@ class ChatService:
             is_org_manager = False
             if hasattr(project, "organisation_id") and project.organisation_id:
                 org_id = project.organisation_id
-                org = OrganisationService.get_organisation_by_id_as_dto(org_id)
+                org = OrganisationService.get_organisation_by_id_as_dto(
+                    org_id, authenticated_user_id
+                )
                 if org.is_manager:
                     is_org_manager = True
 
