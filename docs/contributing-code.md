@@ -3,41 +3,40 @@
 Project and code leads are experienced HOT volunteer and staff developers and the main points of contact for the project. They are also the final reviewers of issues and pull requests. Code leads will review pull requests and provide feedback. The purpose of this role is to help contributors,
 provide consistency and ensure code quality.
 
-All of the Tasking Manager development is going to happen in the [projects repository](https://github.com/hotosm/tasking-manager) and everything we work on shall be related to and documented in issues of the related [issue queue](https://github.com/hotosm/tasking-manager/issues).
+All of the Tasking Manager development is going to happen in the [project repository](https://github.com/hotosm/tasking-manager) and everything we work on shall be related to and documented in issues of the related [issue queue](https://github.com/hotosm/tasking-manager/issues).
 
 ## Code basics
 
-1. Write tests to all new backend features and use some tool (like coveralls.io) to measure test coverage.
-2. Consider write tests when building the new frontend
-3. Stick to pep8 python style guide for the backend
+1. Write tests for all new backend features and use a tool (like coveralls.io) to measure test coverage.
+2. Consider writing tests when building new frontend.
+3. Stick to pep8 python style guide for the backend.
 4. Apply JSLint style guide rules for the frontend code.
-5. Export translatable strings with `make refresh-translatables` and include them into your commit.
+5. Export translatable strings with `make refresh-translatables` and include them in your commit.
 
 ## Code collaboration and version control
 
-*Note: We use **git flow** as our branching model. [Read](https://nvie.com/posts/a-successful-git-branching-model/) [more](https://jeffkreeftmeijer.com/git-flow/) ([cheatsheet](https://danielkummer.github.io/git-flow-cheatsheet/)) if you aren’t familiar with it, yet. Probably you want to install a [helper application](https://github.com/nvie/gitflow/wiki/Installation) to facilitate the flow a bit.*
+*Note: We use **git flow** as our branching model. Read more [here](https://nvie.com/posts/a-successful-git-branching-model/) and [here](https://jeffkreeftmeijer.com/git-flow/), and refer to this [cheatsheet](https://danielkummer.github.io/git-flow-cheatsheet/) if you aren’t familiar with it yet. You probably want to install a [helper application](https://github.com/nvie/gitflow/wiki/Installation) to facilitate the flow a bit.*
 
-* Use a branches on the tasking-manager project. This allows other to rebase your branch when they are reviewing or to continue started work. We follow git flow’s naming convention
+* Use branches in the tasking-manager project. This allows others to rebase your branch when they are reviewing or to continue started work. We follow git flow’s naming convention
   - `feature/ISSUENUMBER-SHORT-TITLE-SEPARATED-BY-HYPHENS` for general new features you are working on
   - `hotfix/ISSUENUMBER-SHORT-TITLE-SEPARATED-BY-HYPHENS` for important bug fixes that need to go into the main releases as soon as possible
 (e.g. for a normal feature feature/893-restrict-available-editors).
 * Make sure your PR is always up to date and rebased with the latest develop branch.
-* Let’s build a nice and understandable commit history of the project. Please use [meaningful commit messages](https://medium.com/@nawarpianist/git-commit-best-practices-dab8d722de99) and try to unite/squash related work into one commit. Eventually we will squash commits before merging a new feature or hotfix into the main branches (develop and master).
-* Give meaningful and understandable testing instructions in your PR. Highlight important preconditions and try to make life easy for the reviewer.
+* Try to build a nice and understandable commit history of the project. Please use [meaningful commit messages](https://medium.com/@nawarpianist/git-commit-best-practices-dab8d722de99) and try to unite/squash related work into one commit. Eventually we will squash commits before merging a new feature or hotfix into the main branches (develop and master).
+* Give meaningful and understandable testing instructions in your PR. Highlight important preconditions and try to make life easier for the reviewer.
 
 ### Comments
 
-Sometimes it's not apparent from the code itself what it does, or,
+Sometimes it's not apparent from the code itself what it does, or
 more importantly, **why** it does that. Good comments help your fellow
-developers to read the code and satisfy themselves that it is doing the
+developers understand the code better and make sure that it is doing the
 right thing.
 
 When developing, you should:
 
 * Comment your code - do not go overboard, but explain the bits which
-might be difficult to understand what the code does, why it does it
-and why it should be the way it is or where it might be improved in the future.
-* Check existing comments to ensure that they are not misleading.
+might be difficult to understand. As a general rule of thumb, try to explain what the code does, why it does it, and why it should be the way it is or where it could be improved in the future.
+* Check existing comments to ensure they are not misleading.
 
 ### Committing
 
@@ -60,7 +59,7 @@ other commits, namely:
 For simple commits the one line summary is often enough and the body
 of the commit message can be left out.
 
-Before sending a PR, make sure you run the following commands and include the changes into your commit.
+Before sending a PR, make sure you run the following commands and include the changes in your commit.
 
 * Code formatting: Format all backend code correctly by running [Black](https://pypi.org/project/black/): `black manage.py backend tests migrations` and all frontend code by running [prettier](https://prettier.io/): `yarn prettier` (inside the `frontend` directory).
 * Coding standards: Make sure you adhere to the coding standards eventually risen by [Flake8](http://flake8.pycqa.org/en/latest/): `flake8 manage.py backend tests migrations`
