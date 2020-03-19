@@ -33,8 +33,7 @@ const TaskSelectionFooter = props => {
       windowObjectReference,
     );
     updateReduxState(props.selectedTasks, props.project.projectId, status);
-    // hardcoded locale while we solve how to load the user locale on iD
-    navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}&locale=en`);
+    navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}`);
   };
 
   const lockFailed = windowObjectReference => {
@@ -93,8 +92,7 @@ const TaskSelectionFooter = props => {
         windowObjectReference,
       );
       const endpoint = props.taskAction === 'resumeMapping' ? 'map' : 'validate';
-      // hardcoded locale while we solve how to load the user locale on iD
-      navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}&locale=en`);
+      navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}`);
     }
     // if user can not map or validate the project, lead him to the explore projects page
     if (

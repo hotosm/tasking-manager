@@ -89,9 +89,17 @@ export default defineMessages({
     id: 'project.input.placeholders.filter',
     defaultMessage: 'Filter tasks by id or username',
   },
-  startAnotherEditor: {
-    id: 'project.editor.start_another_editor',
-    defaultMessage: 'Start another editor',
+  reloadEditor: {
+    id: 'project.editor.reload_editor',
+    defaultMessage: 'Reload editor',
+  },
+  showSidebar: {
+    id: 'project.sidebar.show',
+    defaultMessage: 'Show sidebar',
+  },
+  hideSidebar: {
+    id: 'project.sidebar.hide',
+    defaultMessage: 'Hide sidebar',
   },
   task: {
     id: 'project.task',
@@ -279,7 +287,7 @@ export default defineMessages({
   },
   editStatus: {
     id: 'project.tasks.action.selection.title',
-    defaultMessage: 'Edit status',
+    defaultMessage: 'Task status',
   },
   badImagery: {
     id: 'project.tasks.action.options.bad_imagery',

@@ -208,3 +208,7 @@ div.messageBodyLinks {
   }
   color: $blue-grey;
 }
+
+.w-100-minus-4rem {
+  width: calc(100% - 4rem);
+}

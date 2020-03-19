@@ -30,7 +30,7 @@ export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Obj
           }}
         />
       </div>
-      <Button className="bg-red white" onClick={() => navigate(`/projects/${projectId}/${action}`)}>
+      <Button className="bg-red white" onClick={() => navigate(`/projects/${projectId}/tasks/`)}>
         <FormattedMessage {...messages.goToProject} values={{ project: projectId }} />
       </Button>
     </>
@@ -55,7 +55,7 @@ export function SameProjectLock({ lockedTasks, action }: Object) {
       </div>
       <Button
         className="bg-red white"
-        onClick={() => navigate(`/projects/${lockedTasks.get('project')}/${action}`)}
+        onClick={() => navigate(`/projects/${lockedTasks.get('project')}/tasks/`)}
       >
         <FormattedMessage
           {...messages[
