@@ -26,11 +26,11 @@ The short version is:
 
 ## The issue queue and the repository
 
-The main tool to manager the Tasking Manager Software is through its [repository on Github](https://github.com/hotosm/tasking-manager). Attached to this repository there is an [issue queue](https://github.com/hotosm/tasking-manager/issues), where most communication, planning and reporting of errors is happening. Feel free to take part in these conversations
+The main tool used to manage the Tasking Manager software is its [repository on Github](https://github.com/hotosm/tasking-manager). In this repository, there is an [issue queue](https://github.com/hotosm/tasking-manager/issues), where most communication, planning and reporting of errors happens. Feel free to take part in these conversations.
 
 ## Contribute now!
 
-All kind of contributions are welcome and the [issue queue](https://github.com/hotosm/tasking-manager/issues) the best way to get started. We have specific guide for contributing to the taksing Manger with:
+All kind of contributions are welcome and the [issue queue](https://github.com/hotosm/tasking-manager/issues) is the best way to get started. We have specific guides for contributing to the Tasking Manager:
 
 * **[translation](./contributing-translation.md)**
 * **[code](./contributing-code.md)**
