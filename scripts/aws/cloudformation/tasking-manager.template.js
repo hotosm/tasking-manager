@@ -77,7 +77,8 @@ const Parameters = {
   },
   TaskingManagerLogLevel: {
     Description: 'TM_LOG_LEVEL',
-    Type: 'String'
+    Type: 'String',
+    Default: 'INFO'
   },
   TaskingManagerSMTPHost: {
     Description: 'TM_SMTP_HOST environment variable',
