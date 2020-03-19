@@ -23,7 +23,7 @@ class InterestService:
     def get(interest_id):
         interest = InterestService.get_by_id(interest_id)
         return interest.as_dto()
-        
+
     @staticmethod
     def get_by_id(interest_id):
         interest = Interest.get_by_id(interest_id)
