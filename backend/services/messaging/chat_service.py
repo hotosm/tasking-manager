@@ -97,4 +97,17 @@ class ChatService:
     @cached(chat_cache)
     def get_messages(project_id: int, page: int, per_page: int) -> ProjectChatDTO:
         """ Get all messages attached to a project """
-        return ProjectChat.get_messages(project_id, page, per_page)
+
+        project_chat_dto = ProjectChat.get_messages(project_id, page, per_page)
+        for chat_dto in project_chat_dto.chat:
+            validated_usernames = MessageService._parse_message_for_username(
+                chat_dto.message
+            )
+            for username in validated_usernames:
+                try:
+                    UserService.get_user_by_username(username)
+                except Exception:
+                    validated_usernames.remove(username)
+            chat_dto.tagged_users = validated_usernames
+
+        return project_chat_dto
