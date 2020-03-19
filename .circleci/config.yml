@@ -155,6 +155,7 @@ jobs:
       log_level:
         type: enum
         enum: ["INFO", "DEBUG"]
+        default: "INFO"
     working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3.7-buster
@@ -164,7 +165,7 @@ jobs:
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\",\"TaskingManagerLogLevel\":\"${<< parameters.log_level >>}\", \"TaskingManagerURL\":\"${<< parameters.app_url >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\",\"TaskingManagerLogLevel\":\"<< parameters.log_level >>\", \"TaskingManagerURL\":\"${<< parameters.app_url >>}\"}'" >> $BASH_ENV
     - run:
         name: Install Node and modules
         command: |
@@ -245,7 +246,7 @@ jobs:
           export TM_CONSUMER_KEY=${<< parameters.consumer_key >>}
           export TM_CONSUMER_SECRET=${<< parameters.consumer_secret >>}
           export TM_EMAIL_FROM_ADDRESS=${<< parameters.email_from_address >>}
-          export TM_LOG_LEVEL=${<< parameters.log_level >>}
+          export TM_LOG_LEVEL=<< parameters.log_level >>
           export TM_LOG_DIR=${<< parameters.log_dir >>}
           export TM_SECRET=${<< parameters.tm_secret >>}
           export TM_SMTP_HOST=${<< parameters.smtp_host >>}
