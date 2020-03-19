@@ -24,6 +24,9 @@ export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
   const tasksIds = activeTasks ? activeTasks.map(task => task.taskId) : [];
+  const [editorRef, setEditorRef] = useState(null);
+  const [disabled, setDisable] = useState(false);
+
   const callEditor = arr => {
     setActiveEditor(arr[0].value);
     const url = openEditor(arr[0].value, project, tasks, tasksIds, [
@@ -42,7 +45,7 @@ export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
       <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
         {editor === 'ID' ? (
           <React.Suspense fallback={<div className={`w7 h5`}>Loading iD...</div>}>
-            <Editor />
+            <Editor editorRef={editorRef} setEditorRef={setEditorRef} setDisable={setDisable} />
           </React.Suspense>
         ) : (
           <ReactPlaceholder
@@ -115,7 +118,12 @@ export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
                     editor={activeEditor}
                     callEditor={callEditor}
                   />
-                  <CompletionTabForMapping project={project} tasksIds={tasksIds} />
+                  <CompletionTabForMapping
+                    project={project}
+                    tasksIds={tasksIds}
+                    editorRef={editorRef}
+                    disabled={disabled}
+                  />
                 </>
               )}
               {activeSection === 'completion' && action === 'VALIDATION' && (
@@ -163,7 +171,7 @@ export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
   );
 }
 
-function CompletionTabForMapping({ project, tasksIds }: Object) {
+function CompletionTabForMapping({ project, tasksIds, editorRef, disabled }: Object) {
   const token = useSelector(state => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
   const [taskComment, setTaskComment] = useState('');
@@ -264,7 +272,7 @@ function CompletionTabForMapping({ project, tasksIds }: Object) {
         <Button
           className="bg-red white w-100 fl"
           onClick={() => submitTask()}
-          disabled={!selectedStatus}
+          disabled={disabled || !selectedStatus}
         >
           <FormattedMessage {...messages.submitTask} />
         </Button>
