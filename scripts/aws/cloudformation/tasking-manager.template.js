@@ -75,6 +75,11 @@ const Parameters = {
     Description: 'TM_EMAIL_FROM_ADDRESS',
     Type: 'String'
   },
+  TaskingManagerLogLevel: {
+    Description: 'TM_LOG_LEVEL',
+    Type: 'String',
+    Default: 'INFO'
+  },
   TaskingManagerSMTPHost: {
     Description: 'TM_SMTP_HOST environment variable',
     Type: 'String'
@@ -95,6 +100,10 @@ const Parameters = {
     Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
     Type: 'String'
   },
+  TaskingManagerURL: {
+    Description: 'URL for setting CNAME in Distribution',
+    Type: 'String'
+  }
 };
 
 const Conditions = {
@@ -338,6 +347,7 @@ const Resources = {
         cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
         cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
         cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
+        cf.sub('export TM_LOG_LEVEL="${TaskingManagerLogLevel}"'),
         cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
@@ -496,8 +506,7 @@ const Resources = {
         DNSName: cf.getAtt('TaskingManagerLoadBalancer', 'DNSName'),
         HostedZoneId: cf.getAtt('TaskingManagerLoadBalancer', 'CanonicalHostedZoneID')
       },
-      HostedZoneId: 'Z2O929GW6VWG99', // Should we configure this?
-
+      HostedZoneId: 'Z2O929GW6VWG99',
     }
   },
   TaskingManagerTargetGroup: {
@@ -509,6 +518,7 @@ const Resources = {
       HealthCheckTimeoutSeconds: 10,
       HealthyThresholdCount: 3,
       UnhealthyThresholdCount: 3,
+      // HealthCheckPath: '/api/v2/system/heartbeat/', TODO get working path
       Port: 8000,
       Protocol: 'HTTP',
       VpcId: cf.importValue(cf.join('-', ['hotosm-network-production', 'default-vpc', cf.region])),
@@ -612,6 +622,9 @@ const Resources = {
     Properties: {
       DistributionConfig: {
         DefaultRootObject: 'index.html',
+        Aliases: [
+          cf.ref('TaskingManagerURL')
+        ],
         Enabled: true,
         Origins: [{
           Id: cf.join('-', [cf.stackName, 'react-app']),
@@ -650,6 +663,18 @@ const Resources = {
           SslSupportMethod: 'sni-only'
         }
       }
+    }
+  },
+  TaskingManagerRoute53: {
+    Type: 'AWS::Route53::RecordSet',
+    Properties: {
+      Name: cf.ref('TaskingManagerURL'),
+      Type: 'A',
+      AliasTarget: {
+        DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
+        HostedZoneId: 'Z2FDTNDATAQYW2'
+      },
+      HostedZoneId: 'Z2O929GW6VWG99',
     }
   }
 };
