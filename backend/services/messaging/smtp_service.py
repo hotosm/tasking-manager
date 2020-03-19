@@ -1,4 +1,3 @@
-import logging
 import urllib.parse
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
