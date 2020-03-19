@@ -291,15 +291,15 @@ export default defineMessages({
   },
   badImagery: {
     id: 'project.tasks.action.options.bad_imagery',
-    defaultMessage: 'It was not possible to map due to poor imagery',
+    defaultMessage: 'It is not possible to map this task',
   },
   incomplete: {
     id: 'project.tasks.action.options.mapping_incomplete',
-    defaultMessage: 'I could not map everything',
+    defaultMessage: 'Task partially mapped, but needs more work',
   },
   completelyMapped: {
     id: 'project.tasks.action.options.mapping_complete',
-    defaultMessage: 'I completely mapped this task',
+    defaultMessage: 'Task has been completely mapped',
   },
   markAsValid: {
     id: 'project.tasks.action.options.validate',
