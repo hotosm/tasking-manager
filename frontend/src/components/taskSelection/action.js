@@ -484,7 +484,7 @@ function SidebarToggle({ setShowSidebar, editorRef }: Object) {
             <SidebarIcon
               onClick={() => {
                 setShowSidebar(false);
-                editorRef.ui().restart();
+                editorRef.ui().onResize();
               }}
             />
           </div>
