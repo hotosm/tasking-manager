@@ -193,7 +193,7 @@ class ProjectService:
 
     @staticmethod
     def evaluate_mapping_permission(
-        project_id: int, user_id: int, mapping_permission: int,
+        project_id: int, user_id: int, mapping_permission: int
     ):
         allowed_roles = [
             TeamRoles.MAPPER.value,

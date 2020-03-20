@@ -36,6 +36,15 @@ class Interest(db.Model):
 
         return interest
 
+    @staticmethod
+    def get_by_name(name: str):
+        """ Get interest by name """
+        interest = Interest.query.filter(Interest.name == name).first()
+        if interest is None:
+            raise NotFound(f"Interest name {name} not found")
+
+        return interest
+
     def update(self, dto):
         """ Update existing interest """
         self.name = dto.name
