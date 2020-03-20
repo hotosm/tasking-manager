@@ -97,7 +97,9 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
             rows={3}
             ready={typeof project.projectId === 'number' && project.projectId > 0}
           >
-            {activeEditor === 'ID' && <SidebarToggle setShowSidebar={setShowSidebar} />}
+            {activeEditor === 'ID' && (
+              <SidebarToggle setShowSidebar={setShowSidebar} editorRef={editorRef} />
+            )}
             <HeaderLine author={project.author} projectId={project.projectId} />
             <div className="cf pb3">
               <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
@@ -473,13 +475,18 @@ function ReopenEditor({ project, action, editor, callEditor }: Object) {
   );
 }
 
-function SidebarToggle({ setShowSidebar }: Object) {
+function SidebarToggle({ setShowSidebar, editorRef }: Object) {
   return (
     <div>
       <FormattedMessage {...messages.hideSidebar}>
         {msg => (
           <div className="fr pointer" title={msg}>
-            <SidebarIcon onClick={() => setShowSidebar(false)} />
+            <SidebarIcon
+              onClick={() => {
+                setShowSidebar(false);
+                editorRef.ui().restart();
+              }}
+            />
           </div>
         )}
       </FormattedMessage>
