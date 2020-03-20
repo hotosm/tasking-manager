@@ -20,14 +20,19 @@ from backend.services.users.user_service import UserService
 
 class InterestService:
     @staticmethod
+    def get(interest_id):
+        interest = InterestService.get_by_id(interest_id)
+        return interest.as_dto()
+
+    @staticmethod
     def get_by_id(interest_id):
         interest = Interest.get_by_id(interest_id)
         return interest
 
     @staticmethod
-    def get(interest_id):
-        interest = InterestService.get_by_id(interest_id)
-        return interest.as_dto()
+    def get_by_name(name):
+        interest = Interest.get_by_name(name)
+        return interest
 
     @staticmethod
     def create(interest_name):
