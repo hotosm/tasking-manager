@@ -36,8 +36,15 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
           .attr('class', 'source-switch');
       });
 
+      const thereAreChanges = changes =>
+        changes.modified.length || changes.created.length || changes.deleted.length;
+
       editorRef.history().on('change', () => {
-        setDisable(true);
+        if (thereAreChanges(editorRef.changes())) {
+          setDisable(true);
+        } else {
+          setDisable(false);
+        }
       });
     }
   }, [session, editorRef, setDisable]);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
@@ -19,13 +19,38 @@ import { TaskHistory } from './taskActivity';
 
 const Editor = React.lazy(() => import('../editor'));
 
-export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
+export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
+  const userDetails = useSelector(state => state.auth.get('userDetails'));
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
   const tasksIds = activeTasks ? activeTasks.map(task => task.taskId) : [];
   const [editorRef, setEditorRef] = useState(null);
   const [disabled, setDisable] = useState(false);
+
+  useEffect(() => {
+    if (!editor && projectIsReady && userDetails.defaultEditor && tasks && tasksIds) {
+      let editorToUse;
+      if (action === 'MAPPING') {
+        editorToUse = project.mappingEditors.includes(userDetails.defaultEditor)
+          ? [userDetails.defaultEditor]
+          : project.mappingEditors;
+      } else {
+        editorToUse = project.validationEditors.includes(userDetails.defaultEditor)
+          ? [userDetails.defaultEditor]
+          : project.validationEditors;
+      }
+      const url = openEditor(editorToUse[0], project, tasks, tasksIds, [
+        window.innerWidth,
+        window.innerHeight,
+      ]);
+      if (url) {
+        navigate(`./${url}`);
+      } else {
+        navigate(`./?editor=${editorToUse[0]}`);
+      }
+    }
+  }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds]);
 
   const callEditor = arr => {
     setActiveEditor(arr[0].value);
@@ -44,7 +69,7 @@ export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
     <div className="cf vh-minus-122-ns overflow-y-hidden">
       <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
         {editor === 'ID' ? (
-          <React.Suspense fallback={<div className={`w7 h5`}>Loading iD...</div>}>
+          <React.Suspense fallback={<div className={`w7 h5 center`}>Loading iD...</div>}>
             <Editor editorRef={editorRef} setEditorRef={setEditorRef} setDisable={setDisable} />
           </React.Suspense>
         ) : (
@@ -121,7 +146,6 @@ export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
                   <CompletionTabForMapping
                     project={project}
                     tasksIds={tasksIds}
-                    editorRef={editorRef}
                     disabled={disabled}
                   />
                 </>
@@ -134,7 +158,11 @@ export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
                     editor={activeEditor}
                     callEditor={callEditor}
                   />
-                  <CompletionTabForValidation project={project} tasksIds={tasksIds} />
+                  <CompletionTabForValidation
+                    project={project}
+                    tasksIds={tasksIds}
+                    disabled={disabled}
+                  />
                 </>
               )}
               {activeSection === 'instructions' && (
@@ -171,7 +199,7 @@ export function TaskMapAction({ project, tasks, activeTasks, action, editor }) {
   );
 }
 
-function CompletionTabForMapping({ project, tasksIds, editorRef, disabled }: Object) {
+function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
   const token = useSelector(state => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
   const [taskComment, setTaskComment] = useState('');
@@ -194,7 +222,7 @@ function CompletionTabForMapping({ project, tasksIds, editorRef, disabled }: Obj
   };
 
   const submitTask = () => {
-    if (selectedStatus) {
+    if (!disabled && selectedStatus) {
       let url;
       let payload = { comment: taskComment };
       if (selectedStatus === 'MAPPED') {
@@ -289,7 +317,7 @@ function CompletionTabForMapping({ project, tasksIds, editorRef, disabled }: Obj
   );
 }
 
-function CompletionTabForValidation({ project, tasksIds }: Object) {
+function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
   const token = useSelector(state => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
   const [taskComment, setTaskComment] = useState('');
@@ -306,7 +334,7 @@ function CompletionTabForValidation({ project, tasksIds }: Object) {
   };
 
   const submitTask = () => {
-    if (selectedStatus) {
+    if (!disabled && selectedStatus) {
       let url;
       let payload = {
         validatedTasks: tasksIds.map(taskId => ({
@@ -369,7 +397,7 @@ function CompletionTabForValidation({ project, tasksIds }: Object) {
         <Button
           className="bg-red white w-100 fl"
           onClick={() => submitTask()}
-          disabled={!selectedStatus}
+          disabled={disabled || !selectedStatus}
         >
           <FormattedMessage {...messages[tasksIds.length > 0 ? 'submitTasks' : 'submitTask']} />
         </Button>
