@@ -8,12 +8,12 @@ import csv
 from flask_migrate import MigrateCommand
 from flask_script import Manager
 from dotenv import load_dotenv
-from server import create_app, initialise_counters
-from server.services.users.authentication_service import AuthenticationService
-from server.services.users.user_service import UserService
-from server.services.stats_service import StatsService
-from server.services.interests_service import InterestService
-from server.models.postgis.utils import NotFound
+from backend import create_app, initialise_counters
+from backend.services.users.authentication_service import AuthenticationService
+from backend.services.users.user_service import UserService
+from backend.services.stats_service import StatsService
+from backend.services.interests_service import InterestService
+from backend.models.postgis.utils import NotFound
 
 
 # Load configuration from file into environment
