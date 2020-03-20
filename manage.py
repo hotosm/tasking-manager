@@ -3,13 +3,17 @@ import subprocess
 import warnings
 import base64
 import json
+import csv
+
 from flask_migrate import MigrateCommand
 from flask_script import Manager
 from dotenv import load_dotenv
-from backend import create_app, initialise_counters
-from backend.services.users.authentication_service import AuthenticationService
-from backend.services.users.user_service import UserService
-from backend.services.stats_service import StatsService
+from server import create_app, initialise_counters
+from server.services.users.authentication_service import AuthenticationService
+from server.services.users.user_service import UserService
+from server.services.stats_service import StatsService
+from server.services.interests_service import InterestService
+from server.models.postgis.utils import NotFound
 
 
 # Load configuration from file into environment
@@ -103,6 +107,37 @@ def build_locales():
         with open(current_locale_file, "w") as locale_file:
             locale_file.write(json.dumps(current_locale, indent=3))
             print(f"updated locale {lang_code} on file {current_locale_file}")
+
+
+@manager.command
+def update_project_categories(filename):
+    with open(filename, "r", encoding="ISO-8859-1", newline="") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            project_id = int(row.get("projectId"))
+            primary_category = row.get("primaryCat")
+            interest_ids = []
+            if primary_category:
+                try:
+                    interest = InterestService.get_by_name(primary_category)
+                except NotFound:
+                    interest = InterestService.create(primary_category)
+                interest_ids.append(interest.id)
+
+            secondary_category = row.get("secondaryCat")
+            if secondary_category:
+                try:
+                    interest = InterestService.get_by_name(secondary_category)
+                except NotFound:
+                    interest = InterestService.create(secondary_category)
+                interest_ids.append(interest.id)
+
+            try:
+                InterestService.create_or_update_project_interests(
+                    project_id, interest_ids
+                )
+            except Exception as e:
+                print(f"Problem updating {project_id}: {type(e)}")
 
 
 if __name__ == "__main__":
