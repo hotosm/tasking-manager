@@ -11,24 +11,27 @@ export function openEditor(
 ) {
   if (editor === 'JOSM') {
     sendJosmCommands(project, tasks, selectedTasks, windowSize);
-    return;
+    return '?editor=JOSM';
+  }
+  const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
+  if (editor === 'ID') {
+    return getIdUrl(project, center, zoom, selectedTasks, '?editor=ID');
   }
   if (windowObjectReference == null || windowObjectReference.closed) {
     windowObjectReference = window.open('', `iD-${project}-${selectedTasks}`);
   }
-  const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
-  if (editor === 'ID') {
-    windowObjectReference.location.href = getIdUrl(project, center, zoom, selectedTasks);
-  }
   if (editor === 'POTLATCH_2') {
     windowObjectReference.location.href = getPotlatch2Url(center, zoom);
+    return '?editor=POTLATCH_2';
   }
   if (editor === 'FIELD_PAPERS') {
     windowObjectReference.location.href = getFieldPapersUrl(center, zoom);
+    return '?editor=FIELD_PAPERS';
   }
   if (editor === 'CUSTOM') {
     const customUrl = project.customEditor.url;
     windowObjectReference.location.href = getIdUrl(project, center, zoom, selectedTasks, customUrl);
+    return '?editor=CUSTOM';
   }
 }
 
@@ -76,10 +79,12 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl)
     urlForImagery = urlForImagery.replace('zoom', 'z');
     url += '&background=custom:' + encodeURIComponent(urlForImagery);
   }
-  // Add GPX
+  // add GPX
   if (project.projectId && selectedTasks) {
     url += '&gpx=' + encodeURIComponent(getTaskGpxUrl(project.projectId, selectedTasks).href);
   }
+  // add hardcoded locale while we solve how to load the user locale on iD
+  url += '&locale=en';
   return url;
 }
 

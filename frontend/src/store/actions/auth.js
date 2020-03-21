@@ -9,6 +9,7 @@ export const types = {
   UPDATE_OSM_INFO: 'UPDATE_OSM_INFO',
   GET_USER_DETAILS: 'GET_USER_DETAILS',
   SET_TOKEN: 'SET_TOKEN',
+  SET_SESSION: 'SET_SESSION',
   CLEAR_SESSION: 'CLEAR_SESSION',
 };
 
@@ -38,6 +39,8 @@ export const updateUserEmail = (userDetails, token, relevant_fields) => dispatch
 export const logout = () => dispatch => {
   safeStorage.removeItem('username');
   safeStorage.removeItem('token');
+  safeStorage.removeItem('osm_oauth_token');
+  safeStorage.removeItem('osm_oauth_token_secret');
   dispatch(clearUserDetails());
 };
 
@@ -68,11 +71,31 @@ export function updateToken(token) {
   };
 }
 
-export const setAuthDetails = (username, token) => dispatch => {
+export function updateSession(session) {
+  return {
+    type: types.SET_SESSION,
+    session: session,
+  };
+}
+
+export const setAuthDetails = (
+  username,
+  token,
+  osm_oauth_token,
+  osm_oauth_token_secret,
+) => dispatch => {
   const encoded_token = btoa(token);
   safeStorage.setItem('token', encoded_token);
   safeStorage.setItem('username', username);
+  safeStorage.setItem('osm_oauth_token', osm_oauth_token);
+  safeStorage.setItem('osm_oauth_token_secret', osm_oauth_token_secret);
   dispatch(updateToken(encoded_token));
+  dispatch(
+    updateSession({
+      osm_oauth_token: osm_oauth_token,
+      osm_oauth_token_secret: osm_oauth_token_secret,
+    }),
+  );
   dispatch(setUserDetails(username, encoded_token));
 };
 

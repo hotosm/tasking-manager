@@ -4,6 +4,22 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on task selection.
  */
 export default defineMessages({
+  unsavedChanges: {
+    id: 'project.tasks.unsaved_map_changes.title',
+    defaultMessage: 'You have some unsaved map changes',
+  },
+  unsavedChangesToSplit: {
+    id: 'project.tasks.unsaved_map_changes.split',
+    defaultMessage: 'Save or undo it to be able to split the task',
+  },
+  unsavedChangesToUnlock: {
+    id: 'project.tasks.unsaved_map_changes.unlock',
+    defaultMessage: 'Save or undo it to be able to select another task',
+  },
+  closeModal: {
+    id: 'project.tasks.unsaved_map_changes.actions.close_modal',
+    defaultMessage: 'Close',
+  },
   lockError: {
     id: 'project.tasks.lock_error.generic',
     defaultMessage: "It wasn't possible to lock this task for you...",
@@ -89,9 +105,17 @@ export default defineMessages({
     id: 'project.input.placeholders.filter',
     defaultMessage: 'Filter tasks by id or username',
   },
-  startAnotherEditor: {
-    id: 'project.editor.start_another_editor',
-    defaultMessage: 'Start another editor',
+  reloadEditor: {
+    id: 'project.editor.reload_editor',
+    defaultMessage: 'Reload editor',
+  },
+  showSidebar: {
+    id: 'project.sidebar.show',
+    defaultMessage: 'Show sidebar',
+  },
+  hideSidebar: {
+    id: 'project.sidebar.hide',
+    defaultMessage: 'Hide sidebar',
   },
   task: {
     id: 'project.task',
@@ -279,19 +303,19 @@ export default defineMessages({
   },
   editStatus: {
     id: 'project.tasks.action.selection.title',
-    defaultMessage: 'Edit status',
+    defaultMessage: 'Task status',
   },
   badImagery: {
     id: 'project.tasks.action.options.bad_imagery',
-    defaultMessage: 'It was not possible to map due to poor imagery',
+    defaultMessage: 'It is not possible to map this task',
   },
   incomplete: {
     id: 'project.tasks.action.options.mapping_incomplete',
-    defaultMessage: 'I could not map everything',
+    defaultMessage: 'Task partially mapped, but needs more work',
   },
   completelyMapped: {
     id: 'project.tasks.action.options.mapping_complete',
-    defaultMessage: 'I completely mapped this task',
+    defaultMessage: 'Task has been completely mapped',
   },
   markAsValid: {
     id: 'project.tasks.action.options.validate',

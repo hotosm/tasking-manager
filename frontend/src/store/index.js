@@ -11,6 +11,10 @@ const persistedState = {
       username: safeStorage.getItem('username'),
     }),
     token: safeStorage.getItem('token'),
+    session: {
+      osm_oauth_token: safeStorage.getItem('osm_oauth_token'),
+      osm_oauth_token_secret: safeStorage.getItem('osm_oauth_token_secret'),
+    },
   }),
   preferences: {
     locale: safeStorage.getItem('locale'),
