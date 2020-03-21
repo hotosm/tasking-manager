@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
+import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -11,7 +12,7 @@ import { HeaderLine } from '../projectDetail/header';
 import { Button } from '../button';
 import { Dropdown } from '../dropdown';
 import { CheckCircle } from '../checkCircle';
-import { CloseIcon, SidebarIcon } from '../svgIcons';
+import { CloseIcon, SidebarIcon, AlertIcon } from '../svgIcons';
 import { getEditors } from '../../utils/editorsList';
 import { openEditor } from '../../utils/openEditor';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -205,22 +206,31 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
   const token = useSelector(state => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
   const [taskComment, setTaskComment] = useState('');
+  const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
 
   const splitTask = () => {
-    fetchLocalJSONAPI(
-      `projects/${project.projectId}/tasks/actions/split/${tasksIds[0]}/`,
-      token,
-      'POST',
-    ).then(r => navigate(`../tasks/`));
+    if (!disabled) {
+      fetchLocalJSONAPI(
+        `projects/${project.projectId}/tasks/actions/split/${tasksIds[0]}/`,
+        token,
+        'POST',
+      ).then(r => navigate(`../tasks/`));
+    } else {
+      setShowMapChangesModal('split');
+    }
   };
 
   const stopMapping = () => {
-    pushToLocalJSONAPI(
-      `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`,
-      '{}',
-      token,
-    ).then(r => navigate(`/projects/${project.projectId}/tasks/`));
+    if (!disabled) {
+      pushToLocalJSONAPI(
+        `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`,
+        '{}',
+        token,
+      ).then(r => navigate(`/projects/${project.projectId}/tasks/`));
+    } else {
+      setShowMapChangesModal('unlock');
+    }
   };
 
   const submitTask = () => {
@@ -245,6 +255,12 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
 
   return (
     <div>
+      {disabled && showMapChangesModal && (
+        <UnsavedMapChangesModal
+          setShowModal={setShowMapChangesModal}
+          action={showMapChangesModal}
+        />
+      )}
       <div className="bb b--grey-light w-100"></div>
       <div className="cf">
         <h4 className="ttu blue-grey f5">
@@ -323,16 +339,21 @@ function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
   const token = useSelector(state => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
   const [taskComment, setTaskComment] = useState('');
+  const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
 
   const stopValidation = () => {
-    pushToLocalJSONAPI(
-      `projects/${project.projectId}/tasks/actions/stop-validation/`,
-      JSON.stringify({
-        resetTasks: tasksIds.map(taskId => ({ taskId: taskId, comment: taskComment })),
-      }),
-      token,
-    ).then(r => navigate(`../tasks/`));
+    if (!disabled) {
+      pushToLocalJSONAPI(
+        `projects/${project.projectId}/tasks/actions/stop-validation/`,
+        JSON.stringify({
+          resetTasks: tasksIds.map(taskId => ({ taskId: taskId, comment: taskComment })),
+        }),
+        token,
+      ).then(r => navigate(`../tasks/`));
+    } else {
+      setShowMapChangesModal('unlock');
+    }
   };
 
   const submitTask = () => {
@@ -357,6 +378,12 @@ function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
 
   return (
     <div>
+      {disabled && showMapChangesModal && (
+        <UnsavedMapChangesModal
+          setShowModal={setShowMapChangesModal}
+          action={showMapChangesModal}
+        />
+      )}
       <div className="bb b--grey-light w-100"></div>
       <div className="cf">
         <h4 className="ttu blue-grey f5">
@@ -484,12 +511,42 @@ function SidebarToggle({ setShowSidebar, editorRef }: Object) {
             <SidebarIcon
               onClick={() => {
                 setShowSidebar(false);
-                editorRef.ui().onResize();
+                editorRef.ui().restart();
               }}
             />
           </div>
         )}
       </FormattedMessage>
     </div>
+  );
+}
+
+function UnsavedMapChangesModal({ setShowModal, action }: Object) {
+  return (
+    <Popup
+      modal
+      open
+      closeOnEscape={true}
+      closeOnDocumentClick={true}
+      onClose={() => setShowModal(null)}
+    >
+      {close => (
+        <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns tc">
+          <div className="cf tc red pb3">
+            <AlertIcon height="50px" width="50px" />
+          </div>
+          <h3 className="barlow-condensed f3 fw6 mv0">
+            <FormattedMessage {...messages.unsavedChanges} />
+          </h3>
+          <div className="mv4 lh-title">
+            {action === 'split' && <FormattedMessage {...messages.unsavedChangesToSplit} />}
+            {action === 'unlock' && <FormattedMessage {...messages.unsavedChangesToUnlock} />}
+          </div>
+          <Button className="bg-red white" onClick={() => close()}>
+            <FormattedMessage {...messages.closeModal} />
+          </Button>
+        </div>
+      )}
+    </Popup>
   );
 }

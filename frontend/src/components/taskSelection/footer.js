@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { navigate } from '@reach/router';
-import { FormattedMessage } from 'react-intl';
 import Popup from 'reactjs-popup';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { getEditors } from '../../utils/editorsList';

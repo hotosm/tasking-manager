@@ -4,6 +4,22 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on task selection.
  */
 export default defineMessages({
+  unsavedChanges: {
+    id: 'project.tasks.unsaved_map_changes.title',
+    defaultMessage: 'You have some unsaved map changes',
+  },
+  unsavedChangesToSplit: {
+    id: 'project.tasks.unsaved_map_changes.split',
+    defaultMessage: 'Save or undo it to be able to split the task',
+  },
+  unsavedChangesToUnlock: {
+    id: 'project.tasks.unsaved_map_changes.unlock',
+    defaultMessage: 'Save or undo it to be able to select another task',
+  },
+  closeModal: {
+    id: 'project.tasks.unsaved_map_changes.actions.close_modal',
+    defaultMessage: 'Close',
+  },
   lockError: {
     id: 'project.tasks.lock_error.generic',
     defaultMessage: "It wasn't possible to lock this task for you...",
