@@ -87,7 +87,7 @@
   },
   "devDependencies": {
     "combine-react-intl-messages": "^4.0.0",
-    "prettier": "^1.19.1",
+    "prettier": "^2.0.0",
     "react-test-renderer": "^16.13.0"
   },
   "jest": {
