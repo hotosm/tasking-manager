@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { navigate } from '@reach/router';
-import { FormattedMessage } from 'react-intl';
 import Popup from 'reactjs-popup';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { getEditors } from '../../utils/editorsList';
@@ -24,7 +24,7 @@ const TaskSelectionFooter = props => {
   const fetchLockedTasks = useFetchLockedTasks();
 
   const lockSuccess = (status, endpoint, windowObjectReference) => {
-    openEditor(
+    const urlParams = openEditor(
       editor,
       props.project,
       props.tasks,
@@ -33,11 +33,12 @@ const TaskSelectionFooter = props => {
       windowObjectReference,
     );
     updateReduxState(props.selectedTasks, props.project.projectId, status);
-    navigate(`/projects/${props.project.projectId}/${endpoint}/`);
+    navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}`);
   };
 
   const lockFailed = windowObjectReference => {
-    if (editor !== 'JOSM') {
+    // JOSM and iD don't open a new window
+    if (!['JOSM', 'ID'].includes(editor)) {
       windowObjectReference.close();
     }
     fetchLockedTasks();
@@ -51,7 +52,7 @@ const TaskSelectionFooter = props => {
   };
   const lockTasks = () => {
     let windowObjectReference;
-    if (editor !== 'JOSM') {
+    if (!['JOSM', 'ID'].includes(editor)) {
       windowObjectReference = window.open(
         '',
         `TM-${props.project.projectId}-${props.selectedTasks}`,
@@ -82,7 +83,7 @@ const TaskSelectionFooter = props => {
         .catch(e => lockFailed(windowObjectReference));
     }
     if (['resumeMapping', 'resumeValidation'].includes(props.taskAction)) {
-      openEditor(
+      const urlParams = openEditor(
         editor,
         props.project,
         props.tasks,
@@ -91,7 +92,7 @@ const TaskSelectionFooter = props => {
         windowObjectReference,
       );
       const endpoint = props.taskAction === 'resumeMapping' ? 'map' : 'validate';
-      navigate(`/projects/${props.project.projectId}/${endpoint}/`);
+      navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}`);
     }
     // if user can not map or validate the project, lead him to the explore projects page
     if (

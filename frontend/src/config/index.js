@@ -22,6 +22,8 @@ export const MAP_MAX_AREA = process.env.REACT_APP_MAP_MAX_AREA || 5000;
 export const ORG_NAME = process.env.REACT_APP_ORG_NAME || '';
 export const ORG_CODE = process.env.REACT_APP_ORG_CODE || '';
 export const ORG_URL = process.env.REACT_APP_ORG_URL || '';
+export const OSM_CONSUMER_KEY = process.env.REACT_APP_OSM_CONSUMER_KEY || '';
+export const OSM_CONSUMER_SECRET = process.env.REACT_APP_OSM_CONSUMER_SECRET || '';
 export const ORG_PRIVACY_POLICY_URL = process.env.REACT_APP_ORG_PRIVACY_POLICY_URL || '';
 export const OSM_REGISTER_URL =
   process.env.REACT_APP_OSM_REGISTER_URL || 'https://www.openstreetmap.org/user/new';

@@ -42,6 +42,8 @@ export const createLoginWindow = redirectTo => {
       fetchLocalJSONAPI(callback_url).then(res => {
         const params = new URLSearchParams({
           username: res.username,
+          osm_oauth_token: res.session.oauth_token,
+          osm_oauth_token_secret: res.session.oauth_token_secret,
           session_token: res.session_token,
           picture: res.picture,
           redirect_to: redirectTo,

@@ -93,7 +93,6 @@ export function TaskAction({ project, action }: Object) {
 
 export function TaskActionPossible({ project, tasks, action, editor }) {
   const [tasksGeojson, setTasksGeojson] = useState();
-  // eslint-disable-next-line
   const [projectDataError, projectDataLoading, projectData] = useFetch(
     `projects/${project}/queries/summary/`,
     project,
@@ -107,6 +106,7 @@ export function TaskActionPossible({ project, tasks, action, editor }) {
     <div className="cf">
       <TaskMapAction
         project={projectData}
+        projectIsReady={!projectDataError && !projectDataLoading}
         tasks={tasksGeojson}
         activeTasks={tasks}
         action={action}

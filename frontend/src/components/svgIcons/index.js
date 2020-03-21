@@ -56,3 +56,4 @@ export { LinkedinIcon } from './linkedin';
 export { MarkerIcon } from './marker';
 export { TwitterIconNoBg } from './twitterNoBg';
 export { ZoomPlusIcon } from './zoomPlus';
+export { SidebarIcon } from './sidebar';
