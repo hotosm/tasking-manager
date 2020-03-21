@@ -34,6 +34,12 @@ it('exports ORG_YOUTUBE', () => {
 it('exports ORG_GITHUB', () => {
   expect(typeof config.ORG_GITHUB).toBe('string');
 });
+it('exports OSM_CONSUMER_KEY', () => {
+  expect(typeof config.OSM_CONSUMER_KEY).toBe('string');
+});
+it('exports OSM_CONSUMER_SECRET', () => {
+  expect(typeof config.OSM_CONSUMER_SECRET).toBe('string');
+});
 it('exports DEFAULT locale to be english', () => {
   expect(config.DEFAULT_LOCALE).toBe('en');
 });

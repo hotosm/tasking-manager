@@ -5,6 +5,7 @@ import { types } from '../actions/auth';
 const initialState = Map({
   userDetails: {},
   token: '',
+  session: {},
   osm: {},
   isOrgManager: false,
 });
@@ -22,6 +23,9 @@ export function authorizationReducer(state = initialState, action) {
     }
     case types.SET_TOKEN: {
       return state.set('token', action.token);
+    }
+    case types.SET_SESSION: {
+      return state.set('session', action.session);
     }
     case types.CLEAR_SESSION: {
       return initialState;
