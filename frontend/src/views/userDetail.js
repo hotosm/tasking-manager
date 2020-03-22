@@ -12,6 +12,7 @@ import { TopCauses } from '../components/userDetail/topCauses';
 import { TopProjects } from '../components/userDetail/topProjects';
 import { EditsByNumbers } from '../components/userDetail/editsByNumbers';
 import ContributionTimeline from '../components/userDetail/contributionTimeline';
+import { NotFound } from './notFound';
 import { fetchOSMStatsAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 
@@ -43,8 +44,9 @@ export const UserDetail = ({ username, withHeader = true }) => {
 
   const blockClass = 'w-33-l w-50-m w-100 fl pa2';
   const titleClass = 'f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mb3';
-
-  return (
+  return errorDetails ? (
+    <NotFound />
+  ) : (
     <div className="bg-tan w-100">
       {withHeader && (
         <div className="w-100 cf pb3">
