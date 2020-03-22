@@ -7,14 +7,14 @@ import '@hotosm/id/dist/iD.css';
 import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET } from '../config';
 
 export default function Editor({ editorRef, setEditorRef, setDisable }) {
-  const session = useSelector(state => state.auth.get('session'));
+  const session = useSelector((state) => state.auth.get('session'));
 
   useEffect(() => {
     setEditorRef(window.iD.coreContext());
   }, [setEditorRef]);
 
   useEffect(() => {
-    if (session && window && iD && editorRef) {
+    if (session && iD && editorRef) {
       editorRef.embed(true).assetPath('/static/');
       editorRef.init();
 
@@ -28,7 +28,7 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
       };
       osm.switch(auth);
 
-      editorRef.ui()(document.getElementById('id-container'), function() {
+      editorRef.ui()(document.getElementById('id-container'), function () {
         editorRef
           .container()
           .select('#about-list')
@@ -36,7 +36,7 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
           .attr('class', 'source-switch');
       });
 
-      const thereAreChanges = changes =>
+      const thereAreChanges = (changes) =>
         changes.modified.length || changes.created.length || changes.deleted.length;
 
       editorRef.history().on('change', () => {
