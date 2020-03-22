@@ -31,8 +31,7 @@ function getMenuItensForUser(userDetails, isOrgManager) {
       authenticated: true,
     },
     { label: messages.manage, link: 'manage', authenticated: true, manager: true },
-    // disable learn and about while the content is rewritten
-    // { label: messages.learn, link: 'learn', showAlways: true },
+    { label: messages.learn, link: 'learn', showAlways: true },
     { label: messages.about, link: 'about', showAlways: true },
   ];
   let filteredMenuItems;
