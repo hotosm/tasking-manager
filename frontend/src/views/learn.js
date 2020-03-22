@@ -4,102 +4,268 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { TopBar } from '../components/header/topBar';
 
-export function LearnPage() {
-  const [activeSection, setActiveSection] = useState('mapping');
+import CommunityLogo from '../assets/img/icons/community.jpg';
+import EmergencyMappingLogo from '../assets/img/icons/emergency-mapping.jpg';
+import TechnicalLogo from '../assets/img/icons/technical.jpg';
+
+import ValidateStepIdentity from '../assets/img/icons/validate_step_identify.png';
+import ValidateStepBuild from '../assets/img/icons/validate_step_build.png';
+import ValidateStepCollaborate from '../assets/img/icons/validate_step_collaborate.png';
+
+import SelectProject from '../assets/img/icons/map_step_select_project.png';
+import SelectTask from '../assets/img/icons/map_step_select_task.png';
+import MapOSM from '../assets/img/icons/map_step_osm.png';
+
+const LearnNav = ({ sections, section, setSection }) => {
   return (
-    <div className="pt180 pull-center">
-      <TopBar pageName={<FormattedMessage {...messages.learn} />} />
-      <div className="pl6-l ph4 mr4-l pt4 f5 w-60-l">
-        <div className="cf ttu barlow-condensed f3 pv2 blue-dark">
-          <span
-            className={`mr4 pb2 pointer ${activeSection === 'mapping' && 'bb b--blue-dark'}`}
-            onClick={() => setActiveSection('mapping')}
-          >
-            <FormattedMessage {...messages.howToMap} />
-          </span>
-          <span
-            className={`mr4 pb2 pointer ${activeSection === 'validation' && 'bb b--blue-dark'}`}
-            onClick={() => setActiveSection('validation')}
-          >
-            <FormattedMessage {...messages.howToValidate} />
-          </span>
+    <div className="w-50 w-100-m">
+      <ul className="pa0 ma0 list bg-tan">
+        {sections.map(s => {
+          return (
+            <li
+              className={`f5 dib mh2 pa3 link pointer underline-hover ${
+                section === s ? 'underline' : ''
+              }`}
+              onClick={() => setSection(s)}
+            >
+              {<FormattedMessage {...messages[s]} />}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+
+const Steps = ({ items }) => {
+  return (
+    <div className="flex justify-between mv5 db-m relative">
+      {items.map((v, i) => {
+        return (
+          <div className="shadow-1 w-30 pa3 z-2 bg-white">
+            <img style={{ width: '36%' }} src={v.img} alt={v.message} />
+
+            <p className="blue-dark b f4 pt0">
+              <span className="mr1">{i + 1}.</span>
+              {<FormattedMessage {...messages[`${v.message}Title`]} />}
+            </p>
+            <p className="blue-grey lh-title f5">
+              {<FormattedMessage {...messages[`${v.message}Description`]} values={v.values} />}
+            </p>
+          </div>
+        );
+      })}
+      <div
+        style={{ height: '60%' }}
+        className="w-100 bg-tan absolute bottom--2 right--2 z-1 "
+      ></div>
+    </div>
+  );
+};
+
+const Intro = ({ section, messagesObjs }) => {
+  return (
+    <div className="w-100 h5">
+      <div className="flex justify-between db-m center-m">
+        <div className="w-30">
+          <p className="barlow-condensed f2 ttu b fw6">
+            {<FormattedMessage {...messages[section]} />}
+          </p>
         </div>
-        <div className="pt3">
-          {activeSection === 'mapping' && <MappingInstructions />}
-          {activeSection === 'validation' && <ValidationInstructions />}
+        <div className="w-60 lh-copy f4">
+          <p className="b">{<FormattedMessage {...messages[messagesObjs.intro]} />}</p>
+          <p className="f5">{<FormattedMessage {...messages[messagesObjs.description]} />}</p>
         </div>
       </div>
     </div>
   );
-}
+};
 
-function MappingInstructions() {
+const Tutorials = ({ tutorials }) => {
   return (
-    <>
-      <p>
-        <a className="link red fw5" href="https://openstreetmap.org">
-          OpenStreetMap
-        </a>{' '}
-        is a collaborative, crowd sourced, free map of the world. Anyone can contribute to
-        OpenStreetMap to map any part of the world that interests them.
-      </p>
-      <p>
-        The Tasking Manager is a tool that coordinates many people mapping a specific geographic
-        area in OpenStreetMap.
-      </p>
-      <p>
-        <i>Do you have an OpenStreetMap account already? You can start over with step 4.</i>
-      </p>
-      <p>
-        1) Click on the sign-up button in the upper right corner of the Tasking Manager homepage
-      </p>
-      <p>
-        2) Provide your email address. We will use it to send you further information during the
-        sign-up process.
-      </p>
-      <p>
-        3) You will be redirected to OpenStreetMap.org. Select Register Now and fill out the sign-up
-        form.
-      </p>
-      <p>
-        4) Go to the Tasking Manager homepage and click on the login button in the upper right
-        corner.
-      </p>
-      <p>
-        5) Choose one of the recommended projects on the welcome page or click on “Explore” in the
-        main navigation to find a mapping project to work on, and select one of your interest.
-      </p>
-      <p>
-        5) Choose one of the recommended projects on the welcome page or click on “Explore” in the
-        main navigation to find a mapping project to work on, and select one of your interest.
-      </p>
-      <p>6) Read the instructions for the project</p>
-      <p>
-        7) Map a randomly selected task for mapping by clicking on the button “Map a task”.
-        <i>
-          Alternatively you can also select one from the list or map and choose “Map selected task”.
-        </i>
-      </p>
-      <p>
-        8) You will be switched to an OpenStreetMap editor; map all the features asked for in the
-        instructions.
-      </p>
-      <i>In case you need assistance on mapping, check the documentation on learnOSM.org.</i>
-      <p>9) When finished mapping, save your edits and select the button “Submit task”.</p>
-      <p>
-        <i>
-          After this, you can go back to step 7 and select a new task for mapping. Thank you for
-          your contribution to OpenStreetMap.
-        </i>
-      </p>
-    </>
-  );
-}
+    <div className="mv3">
+      <h3 className="f2 ttu barlow-condensed fw6">
+        <FormattedMessage {...messages.learnTutorialsTitle} />
+      </h3>
+      <div className="flex justify-start">
+        {tutorials.map(v => {
+          return (
+            <div style={{ height: '20rem' }} className="w-25 shadow-4 h5 mr4">
+              <div style={{ height: '45%' }} className="bg-tan"></div>
+              <div className="pa3">
+                <p>
+                  <a className="blue-dark b" rel="noopener noreferrer" target="_blank" href={v.url}>
+                    {<FormattedMessage {...messages[`${v.message}Title`]} />}
+                  </a>
+                </p>
 
-function ValidationInstructions() {
-  return (
-    <>
-      <p>Instructions on how to validate</p>
-    </>
+                <p className="blue-grey lh-title f5">
+                  {<FormattedMessage {...messages[`${v.message}Description`]} />}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
-}
+};
+
+const LearnStruct = ({ section, messagesObjs, items }) => {
+  return (
+    <div>
+      <Intro section={section} messagesObjs={messagesObjs} />
+      <Steps items={items} />
+    </div>
+  );
+};
+
+const LearnToManage = ({ section }) => {
+  const messagesObjs = {
+    intro: 'learnManageIntro',
+    description: 'learnManageDescription',
+  };
+
+  const items = [
+    { message: 'learnManageStepJoin', img: CommunityLogo },
+    { message: 'learnManageStepCreate', img: EmergencyMappingLogo },
+    {
+      message: 'learnManageStepData',
+      img: TechnicalLogo,
+      values: {
+        exportToolLink: (
+          <a className="link red fw5" href="https://export.hotosm.org/">
+            HOT Export Tool
+          </a>
+        ),
+        overpassLink: (
+          <a className="link red fw5" href="https://dev.overpass-api.de/overpass-doc/en">
+            Overpass API
+          </a>
+        ),
+      },
+    },
+  ];
+
+  const tutorials = [
+    {
+      message: 'learnOSMTutorial',
+      url: 'http://nick-tallguy.github.io/en/coordination/tm-admin/',
+    },
+  ];
+
+  return (
+    <div className="w-100">
+      <LearnStruct section={section} messagesObjs={messagesObjs} items={items} />
+      <Tutorials tutorials={tutorials} />
+    </div>
+  );
+};
+
+const LearnToValidate = ({ section }) => {
+  const messagesObjs = {
+    intro: 'learnValidateIntro',
+    description: 'learnValidateDescription',
+  };
+
+  const items = [
+    { message: 'learnValidateStepIdentify', img: ValidateStepIdentity },
+    {
+      message: 'learnValidateStepBuild',
+      img: ValidateStepBuild,
+      values: {
+        taggingLink: (
+          <a className="link red fw5" href="https://wiki.openstreetmap.org/wiki/Map_Features">
+            OpenStreetMap tagging schema
+          </a>
+        ),
+      },
+    },
+    {
+      message: 'learnValidateStepCollaborate',
+      img: ValidateStepCollaborate,
+      values: {
+        mailingListLink: (
+          <a className="link red fw5" href="https://wiki.openstreetmap.org/wiki/Mailing_lists">
+            mailing lists
+          </a>
+        ),
+        forumLink: (
+          <a className="link red fw5" href="https://forum.openstreetmap.org/">
+            forum
+          </a>
+        ),
+      },
+    },
+  ];
+
+  return (
+    <div className="w-100">
+      <LearnStruct section={section} messagesObjs={messagesObjs} items={items} />
+      <p className="w-60 lh-copy f5 left mb5">
+        {<FormattedMessage {...messages.learnValidateNote} />}
+      </p>
+    </div>
+  );
+};
+
+const LearnToMap = ({ section }) => {
+  const messagesObjs = {
+    intro: 'learnMapIntro',
+    description: 'learnMapDescription',
+  };
+
+  const items = [
+    { message: 'learnMapStepSelectProject', img: SelectProject },
+    { message: 'learnMapStepSelectTask', img: SelectTask },
+    { message: 'learnMapStepMapOSM', img: MapOSM },
+  ];
+
+  const tutorials = [
+    {
+      message: 'learnQuickStartTutorial',
+      url: 'https://docs.google.com/document/d/1wrzXROoiR9TgoZvGvho7YGLrGRFmEtZw8ezuW1mewbI/edit',
+    },
+    {
+      message: 'learnTMManualTutorial',
+      url: 'http://nick-tallguy.github.io/en/coordination/tm-user/',
+    },
+    { message: 'learnOSMStepByStepTutorial', url: 'https://learnosm.org/en/beginner/' },
+  ];
+
+  return (
+    <div className="w-100">
+      <Intro section={section} messagesObjs={messagesObjs} />
+      <Steps items={items} />
+      <Tutorials tutorials={tutorials} />
+    </div>
+  );
+};
+
+const getSection = (section, sections) => {
+  switch (section) {
+    case sections[0]:
+      return <LearnToMap section={section} />;
+    case sections[1]:
+      return <LearnToValidate section={section} />;
+    case sections[2]:
+      return <LearnToManage section={section} />;
+    default:
+      return;
+  }
+};
+
+export const LearnPage = () => {
+  const sections = ['learnMapTitle', 'learnValidateTitle', 'learnManageTitle'];
+
+  const [section, setSection] = useState(sections[0]);
+  return (
+    <div className="pt180 pull-center">
+      <TopBar pageName={<FormattedMessage {...messages.learn} />} />
+      <div className="ph6-l">
+        <LearnNav sections={sections} section={section} setSection={setSection} />
+        <div className="w-100 mt3">{getSection(section, sections)}</div>
+      </div>
+    </div>
+  );
+};
