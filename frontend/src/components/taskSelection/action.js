@@ -255,12 +255,22 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
 
   return (
     <div>
-      {disabled && showMapChangesModal && (
-        <UnsavedMapChangesModal
-          setShowModal={setShowMapChangesModal}
-          action={showMapChangesModal}
-        />
-      )}
+      {disabled && showMapChangesModal &&
+        <Popup
+          modal
+          open
+          closeOnEscape={true}
+          closeOnDocumentClick={true}
+          onClose={() => setShowMapChangesModal(null)}
+        >
+          {close =>
+            <UnsavedMapChangesModalContent
+              close={close}
+              action={showMapChangesModal}
+            />
+          }
+        </Popup>
+      }
       <div className="bb b--grey-light w-100"></div>
       <div className="cf">
         <h4 className="ttu blue-grey f5">
@@ -378,12 +388,22 @@ function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
 
   return (
     <div>
-      {disabled && showMapChangesModal && (
-        <UnsavedMapChangesModal
-          setShowModal={setShowMapChangesModal}
-          action={showMapChangesModal}
-        />
-      )}
+      {disabled && showMapChangesModal &&
+        <Popup
+          modal
+          open
+          closeOnEscape={true}
+          closeOnDocumentClick={true}
+          onClose={() => setShowMapChangesModal(null)}
+        >
+          {close =>
+            <UnsavedMapChangesModalContent
+              close={close}
+              action={showMapChangesModal}
+            />
+          }
+        </Popup>
+      }
       <div className="bb b--grey-light w-100"></div>
       <div className="cf">
         <h4 className="ttu blue-grey f5">
@@ -521,32 +541,22 @@ function SidebarToggle({ setShowSidebar, editorRef }: Object) {
   );
 }
 
-function UnsavedMapChangesModal({ setShowModal, action }: Object) {
+function UnsavedMapChangesModalContent({ close, action }: Object) {
   return (
-    <Popup
-      modal
-      open
-      closeOnEscape={true}
-      closeOnDocumentClick={true}
-      onClose={() => setShowModal(null)}
-    >
-      {close => (
-        <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns tc">
-          <div className="cf tc red pb3">
-            <AlertIcon height="50px" width="50px" />
-          </div>
-          <h3 className="barlow-condensed f3 fw6 mv0">
-            <FormattedMessage {...messages.unsavedChanges} />
-          </h3>
-          <div className="mv4 lh-title">
-            {action === 'split' && <FormattedMessage {...messages.unsavedChangesToSplit} />}
-            {action === 'unlock' && <FormattedMessage {...messages.unsavedChangesToUnlock} />}
-          </div>
-          <Button className="bg-red white" onClick={() => close()}>
-            <FormattedMessage {...messages.closeModal} />
-          </Button>
-        </div>
-      )}
-    </Popup>
+    <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns tc">
+      <div className="cf tc red pb3">
+        <AlertIcon height="50px" width="50px" />
+      </div>
+      <h3 className="barlow-condensed f3 fw6 mv0">
+        <FormattedMessage {...messages.unsavedChanges} />
+      </h3>
+      <div className="mv4 lh-title">
+        {action === 'split' && <FormattedMessage {...messages.unsavedChangesToSplit} />}
+        {action === 'unlock' && <FormattedMessage {...messages.unsavedChangesToUnlock} />}
+      </div>
+      <Button className="bg-red white" onClick={() => close()}>
+        <FormattedMessage {...messages.closeModal} />
+      </Button>
+    </div>
   );
 }
