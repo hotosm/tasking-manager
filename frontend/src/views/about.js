@@ -6,10 +6,10 @@ import { TopBar } from '../components/header/topBar';
 
 export function AboutPage() {
   return (
-    <div className="pt180 pull-center bg-white blue-dark cf">
+    <div className="pt180 pull-center bg-white blue-dark cf lh-copy f5">
       <TopBar pageName={<FormattedMessage {...messages.about} />} />
-      <div className="pl6-l ph4 mr4-l pt4 f4 w-60-l lh-title">
-        <p className="f3 b">{<FormattedMessage {...messages.aboutIntro} />}</p>
+      <div className="pl6-l ph4 mr4-l pt4 w-60-l">
+        <p className="f4 b">{<FormattedMessage {...messages.aboutIntro} />}</p>
         <p>{<FormattedMessage {...messages.tmDescription} />}</p>
         <p>{<FormattedMessage {...messages.tmDescription2} />}</p>
         <p>
@@ -38,19 +38,17 @@ export function AboutPage() {
         </p>
       </div>
       <div className="w-100 ph6-l ph4 pt2 cf mb4">
-        <div className="w-60 fl">
-          <h1 className="v-mid f2 barlow-condensed ttu fw8">
-            <FormattedMessage {...messages.floss} />
-          </h1>
-        </div>
-        <div className="w-40 fl">
+        <h1 className="v-mid f2 barlow-condensed ttu fw8">
+          <FormattedMessage {...messages.floss} />
+        </h1>
+        <div className="w-60-l cf flex items-center">
           <img
-            className="w-25 fl mw3 mr2"
+            className="mw3 mr2"
             src="https://opensource.org/files/OSIApproved_1.png"
             alt="OSI aproved license"
           />
-          <div className="w-75 fl v-mid pl3 f5">
-            <p className="ma0 lh-title">
+          <div className="v-mid pl3">
+            <p className="ma0">
               <FormattedMessage
                 {...messages.flossDescription}
                 values={{
