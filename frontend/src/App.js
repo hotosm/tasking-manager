@@ -42,6 +42,13 @@ import {
   NotificationDetail,
 } from './views/notifications';
 
+const SwaggerView = React.lazy(() => import('./views/swagger'));
+const ApiDocsView = () => (
+  <React.Suspense fallback={<div className={`w7 h5 center`}>Loading...</div>}>
+    <SwaggerView />
+  </React.Suspense>
+);
+
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
  *  create special sub-router for Projects page and wrap it only around that */
 function App() {
@@ -104,6 +111,7 @@ function App() {
             </NotificationsPage>
             <ProjectDetailPage path="projects/:id" />
             <ContactPage path="contact/" />
+            <ApiDocsView path="/api-docs/" />
             <Redirect from="project/:id" to="projects/:id" noThrow />
             <NotFound default />
           </Router>

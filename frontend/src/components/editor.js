@@ -8,10 +8,13 @@ import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET } from '../config';
 
 export default function Editor({ editorRef, setEditorRef, setDisable }) {
   const session = useSelector((state) => state.auth.get('session'));
+  const windowInit = typeof window !== undefined;
 
   useEffect(() => {
-    setEditorRef(window.iD.coreContext());
-  }, [setEditorRef]);
+    if (windowInit) {
+      setEditorRef(window.iD.coreContext());
+    }
+  }, [windowInit, setEditorRef]);
 
   useEffect(() => {
     if (session && iD && editorRef) {
