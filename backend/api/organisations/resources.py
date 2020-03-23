@@ -331,7 +331,9 @@ class OrganisationsAllAPI(Resource):
 
         # Obtain organisations
         try:
-            results_dto = OrganisationService.get_organisations_as_dto(manager_user_id)
+            results_dto = OrganisationService.get_organisations_as_dto(
+                manager_user_id, tm.authenticated_user_id
+            )
             return results_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "No projects found"}, 404
