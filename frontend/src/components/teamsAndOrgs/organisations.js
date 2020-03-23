@@ -17,13 +17,9 @@ export function OrgsManagement({ organisations, userDetails }: Object) {
       showAddButton={isAdmin}
       managementView={true}
     >
-      {isAdmin ? (
-        organisations.map((org, n) => <OrganisationCard details={org} key={n} />)
-      ) : (
-        <div>
-          <FormattedMessage {...messages.notAllowed} />
-        </div>
-      )}
+      {organisations.map((org, n) => (
+        <OrganisationCard details={org} key={n} />
+      ))}
     </Management>
   );
 }
@@ -79,7 +75,7 @@ export function OrganisationForm(props) {
 
   return (
     <Form
-      onSubmit={values => props.updateOrg(values)}
+      onSubmit={(values) => props.updateOrg(values)}
       initialValues={props.organisation}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
