@@ -11,8 +11,8 @@ from backend.models.dtos.interests_dto import (
 from backend.models.postgis.task import TaskHistory
 from backend.models.postgis.interests import (
     Interest,
-    projects_interests,
-    users_interests,
+    project_interests,
+    user_interests,
 )
 from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
@@ -52,14 +52,14 @@ class InterestService:
             Interest.query.with_entities(
                 Interest.id,
                 Interest.name,
-                func.count(distinct(users_interests.c.user_id)).label("count_users"),
-                func.count(distinct(projects_interests.c.project_id)).label(
+                func.count(distinct(user_interests.c.user_id)).label("count_users"),
+                func.count(distinct(project_interests.c.project_id)).label(
                     "count_projects"
                 ),
             )
-            .outerjoin(users_interests, Interest.id == users_interests.c.interest_id)
+            .outerjoin(user_interests, Interest.id == user_interests.c.interest_id)
             .outerjoin(
-                projects_interests, Interest.id == projects_interests.c.interest_id
+                project_interests, Interest.id == project_interests.c.interest_id
             )
             .group_by(Interest.id)
             .order_by(Interest.id)
@@ -120,12 +120,12 @@ class InterestService:
         res = (
             db.session.query(
                 Interest.name,
-                func.count(projects_interests.c.interest_id)
-                / func.sum(func.count(projects_interests.c.interest_id)).over(),
+                func.count(project_interests.c.interest_id)
+                / func.sum(func.count(project_interests.c.interest_id)).over(),
             )
-            .group_by(projects_interests.c.interest_id, Interest.name)
-            .filter(projects_interests.c.project_id.in_(stmt))
-            .join(Interest, Interest.id == projects_interests.c.interest_id)
+            .group_by(project_interests.c.interest_id, Interest.name)
+            .filter(project_interests.c.project_id.in_(stmt))
+            .join(Interest, Interest.id == project_interests.c.interest_id)
         )
 
         rates = [InterestrateDTO({"name": r[0], "rate": r[1]}) for r in res.all()]
