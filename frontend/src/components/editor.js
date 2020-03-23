@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-
-import * as iD from '@hotosm/id/dist/index';
+import * as iD from '@hotosm/id';
 import '@hotosm/id/dist/iD.css';
 
 import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET } from '../config';
@@ -43,7 +42,7 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
         changes.modified.length || changes.created.length || changes.deleted.length;
 
       editorRef.history().on('change', () => {
-        if (thereAreChanges(editorRef.changes())) {
+        if (thereAreChanges(editorRef.history().changes())) {
           setDisable(true);
         } else {
           setDisable(false);
