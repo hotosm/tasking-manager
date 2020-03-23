@@ -518,7 +518,7 @@ const Resources = {
       HealthCheckTimeoutSeconds: 10,
       HealthyThresholdCount: 3,
       UnhealthyThresholdCount: 3,
-      // HealthCheckPath: '/api/v2/system/heartbeat/', TODO get working path
+      HealthCheckPath: '/api/v2/system/heartbeat/',
       Port: 8000,
       Protocol: 'HTTP',
       VpcId: cf.importValue(cf.join('-', ['hotosm-network-production', 'default-vpc', cf.region])),
