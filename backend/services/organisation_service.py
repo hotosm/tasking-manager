@@ -122,12 +122,15 @@ class OrganisationService:
             return Organisation().get_organisations_managed_by_user(manager_user_id)
 
     @staticmethod
-    def get_organisations_as_dto(manager_user_id: int):
+    def get_organisations_as_dto(manager_user_id: int, authenticated_user_id: int):
         orgs = OrganisationService.get_organisations(manager_user_id)
         orgs_dto = ListOrganisationsDTO()
         orgs_dto.organisations = []
         for org in orgs:
-            orgs_dto.organisations.append(org.as_dto())
+            org_dto = org.as_dto()
+            if not authenticated_user_id:
+                del org_dto.managers
+            orgs_dto.organisations.append(org_dto)
 
         return orgs_dto
 
