@@ -12,7 +12,7 @@ from backend.models.dtos.user_dto import (
     ProjectParticipantUser,
     ListedUser,
 )
-from backend.models.postgis.licenses import License, users_licenses_table
+from backend.models.postgis.licenses import License, user_licenses_table
 from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.statuses import (
     MappingLevel,
@@ -21,7 +21,7 @@ from backend.models.postgis.statuses import (
     UserGender,
 )
 from backend.models.postgis.utils import NotFound, timestamp
-from backend.models.postgis.interests import Interest, users_interests
+from backend.models.postgis.interests import Interest, user_interests
 
 
 class User(db.Model):
@@ -63,8 +63,8 @@ class User(db.Model):
     last_validation_date = db.Column(db.DateTime, default=timestamp)
 
     # Relationships
-    accepted_licenses = db.relationship("License", secondary=users_licenses_table)
-    interests = db.relationship(Interest, secondary=users_interests, backref="users")
+    accepted_licenses = db.relationship("License", secondary=user_licenses_table)
+    interests = db.relationship(Interest, secondary=user_interests, backref="users")
 
     @property
     def missing_maps_profile_url(self):

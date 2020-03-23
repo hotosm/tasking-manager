@@ -3,8 +3,8 @@ from backend.models.postgis.utils import NotFound
 from backend import db
 
 # Secondary table defining the many-to-many join
-users_licenses_table = db.Table(
-    "users_licenses",
+user_licenses_table = db.Table(
+    "user_licenses",
     db.metadata,
     db.Column("user", db.BigInteger, db.ForeignKey("users.id")),
     db.Column("license", db.Integer, db.ForeignKey("licenses.id")),
@@ -23,7 +23,7 @@ class License(db.Model):
 
     projects = db.relationship("Project", backref="license")
     users = db.relationship(
-        "License", secondary=users_licenses_table
+        "License", secondary=user_licenses_table
     )  # Many to Many relationship
 
     @staticmethod

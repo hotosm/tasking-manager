@@ -26,7 +26,7 @@ from backend.models.postgis.utils import (
     ST_Area,
 )
 
-from backend.models.postgis.interests import projects_interests
+from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
 
 from backend import db
@@ -206,8 +206,8 @@ class ProjectSearchService:
             )
         if search_dto.interests:
             query = query.join(
-                projects_interests, projects_interests.c.project_id == Project.id
-            ).filter(projects_interests.c.interest_id.in_(search_dto.interests))
+                project_interests, project_interests.c.project_id == Project.id
+            ).filter(project_interests.c.interest_id.in_(search_dto.interests))
         query = query.filter(Project.status.in_(project_status_array))
         if search_dto.created_by:
             query = query.filter(Project.author_id == search_dto.created_by)

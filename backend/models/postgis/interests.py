@@ -3,16 +3,16 @@ from backend.models.dtos.interests_dto import InterestDTO
 from backend.models.postgis.utils import NotFound
 
 # Secondary table defining many-to-many join for interests of a user.
-users_interests = db.Table(
-    "users_interests",
+user_interests = db.Table(
+    "user_interests",
     db.metadata,
     db.Column("interest_id", db.Integer, db.ForeignKey("interests.id")),
     db.Column("user_id", db.BigInteger, db.ForeignKey("users.id")),
 )
 
 # Secondary table defining many-to-many join for interests of a project.
-projects_interests = db.Table(
-    "projects_interests",
+project_interests = db.Table(
+    "project_interests",
     db.metadata,
     db.Column("interest_id", db.Integer, db.ForeignKey("interests.id")),
     db.Column("project_id", db.BigInteger, db.ForeignKey("projects.id")),

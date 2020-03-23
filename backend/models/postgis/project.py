@@ -65,7 +65,7 @@ from backend.models.postgis.utils import (
     ST_Y,
 )
 from backend.services.grid.grid_service import GridService
-from backend.models.postgis.interests import Interest, projects_interests
+from backend.models.postgis.interests import Interest, project_interests
 
 # Secondary table defining many-to-many join for projects that were favorited by users.
 project_favorites = db.Table(
@@ -227,7 +227,7 @@ class Project(db.Model):
         Campaign, secondary=campaign_projects, backref="projects"
     )
     interests = db.relationship(
-        Interest, secondary=projects_interests, backref="projects"
+        Interest, secondary=project_interests, backref="projects"
     )
 
     def create_draft_project(self, draft_project_dto: DraftProjectDTO):
