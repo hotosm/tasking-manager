@@ -19,7 +19,7 @@ export function TeamsManagement({ teams, userDetails, managementView }: Object) 
   useEffect(() => {
     if (userDetails.role !== 'ADMIN' && userDetails.id && token) {
       fetchLocalJSONAPI(`organisations/?manager_user_id=${userDetails.id}`, token).then(r => {
-        if (r.organisations.lenght > 0) {
+        if (r.organisations.length > 0) {
           setIsOrgManager(true);
         }
       });
