@@ -646,6 +646,7 @@
   "user.settings.apiDocs": "API Documentation",
   "user.settings.apiKey.description": "With this API Key, you can authenticate and use all the resources of the Tasking Manager API. For more details, checkout the {link}.",
   "user.settings.email.confirmation": "Please check your email account in order to confirm your email address.",
+  "user.settings.email.resend": "Resend validation email",
   "users.detail.MyProjects": "My projects",
   "users.detail.MyTasks": "My tasks",
   "users.detail.MyContribs": "My contributions",
