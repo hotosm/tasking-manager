@@ -40,4 +40,9 @@ class Notification(db.Model):
         notifications = Notification.query.filter(
             Notification.user_id == user_id
         ).first()
-        return notifications.unread_count
+
+        count = 0
+        if notifications is not None:
+            count = notifications.unread_count
+
+        return count
