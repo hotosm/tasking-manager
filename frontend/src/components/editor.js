@@ -51,5 +51,5 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
     }
   }, [session, editorRef, setDisable]);
 
-  return <div style={{ height: '1000px' }} id="id-container"></div>;
+  return <div className="w-100 vh-minus-122-ns" id="id-container"></div>;
 }
