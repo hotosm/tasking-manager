@@ -7,7 +7,7 @@ from backend.services.project_service import ProjectService
 from backend.services.users.authentication_service import token_auth, tm
 
 
-class ProjectFavoriteAPI(Resource):
+class ProjectsFavoritesAPI(Resource):
     @token_auth.login_required
     def get(self, project_id: int):
         """

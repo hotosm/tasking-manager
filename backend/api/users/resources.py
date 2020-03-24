@@ -4,6 +4,7 @@ from schematics.exceptions import DataError
 from backend.models.dtos.user_dto import UserSearchQuery
 from backend.services.users.authentication_service import token_auth, tm
 from backend.services.users.user_service import UserService, NotFound
+from backend.services.project_service import ProjectService
 
 
 class UsersRestAPI(Resource):
@@ -215,7 +216,92 @@ class UsersQueriesUsernameFilterAPI(Resource):
             return {"Error": "Unable to fetch matching users"}, 500
 
 
-class UserFavoritesAPI(Resource):
+class UsersQueriesOwnLockedAPI(Resource):
+    @token_auth.login_required
+    def get(self):
+        """
+        Gets any locked task on the project for the logged in user
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+        responses:
+            200:
+                description: Task user is working on
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: User is not working on any tasks
+            500:
+                description: Internal Server Error
+        """
+        try:
+            locked_tasks = ProjectService.get_task_for_logged_in_user(
+                tm.authenticated_user_id
+            )
+            return locked_tasks.to_primitive(), 200
+        except Exception as e:
+            error_msg = f"UsersQueriesOwnLockedAPI - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
+class UsersQueriesOwnLockedDetailsAPI(Resource):
+    @token_auth.login_required
+    def get(self):
+        """
+        Gets details of any locked task for the logged in user
+        ---
+        tags:
+            - mapping
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+        responses:
+            200:
+                description: Task user is working on
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: User is not working on any tasks
+            500:
+                description: Internal Server Error
+        """
+        try:
+            preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
+            locked_tasks = ProjectService.get_task_details_for_logged_in_user(
+                tm.authenticated_user_id, preferred_locale
+            )
+            return locked_tasks.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User has no locked tasks"}, 404
+        except Exception as e:
+            error_msg = f"UsersQueriesOwnLockedDetailsAPI - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
+class UsersQueriesFavoritesAPI(Resource):
     @token_auth.login_required
     def get(self):
         """
@@ -251,7 +337,49 @@ class UserFavoritesAPI(Resource):
             return {"Error": error_msg}, 500
 
 
-class UserRecommendedProjectsAPI(Resource):
+class UsersQueriesInterestsAPI(Resource):
+    @token_auth.login_required
+    def get(self, username):
+        """
+        Get interests by username
+        ---
+        tags:
+          - interests
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: username
+              in: path
+              description: Mapper's OpenStreetMap username
+              required: true
+              type: string
+        responses:
+            200:
+                description: User interests returned
+            404:
+                description: User not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            user = UserService.get_user_by_username(username)
+            interests_dto = UserService.get_interests(user)
+            return interests_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "User not found"}, 404
+        except Exception as e:
+            error_msg = f"UserInterests GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
+class UsersRecommendedProjectsAPI(Resource):
     @token_auth.login_required
     def get(self, username):
         """
@@ -304,47 +432,5 @@ class UserRecommendedProjectsAPI(Resource):
             return {"Error": "User or mapping not found"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
-
-
-class UserInterestsAPI(Resource):
-    @token_auth.login_required
-    def get(self, username):
-        """
-        Get interests by username
-        ---
-        tags:
-          - interests
-        produces:
-          - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
-            - name: username
-              in: path
-              description: Mapper's OpenStreetMap username
-              required: true
-              type: string
-        responses:
-            200:
-                description: User interests returned
-            404:
-                description: User not found
-            500:
-                description: Internal Server Error
-        """
-        try:
-            user = UserService.get_user_by_username(username)
-            interests_dto = UserService.get_interests(user)
-            return interests_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "User not found"}, 404
-        except Exception as e:
-            error_msg = f"UserInterests GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
