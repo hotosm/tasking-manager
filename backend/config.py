@@ -28,6 +28,9 @@ class EnvironmentConfig:
     # The address to use as the sender on auto generated emails
     EMAIL_FROM_ADDRESS = os.getenv("TM_EMAIL_FROM_ADDRESS", None)
 
+    # The address to use as the receiver in contact form.
+    EMAIL_CONTACT_ADDRESS = os.getenv("TM_EMAIL_CONTACT_ADDRESS", None)
+
     # A freely definable secret key for connecting the front end with the back end
     SECRET_KEY = os.getenv("TM_SECRET", None)
 

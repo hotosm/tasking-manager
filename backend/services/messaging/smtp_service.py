@@ -32,6 +32,21 @@ class SMTPService:
         return True
 
     @staticmethod
+    def send_contact_admin_email(data):
+        email_to = current_app.config["EMAIL_CONTACT_ADDRESS"]
+        if email_to is None:
+            raise ValueError("variable TM_EMAIL_CONTACT_ADDRESS not set")
+
+        message = """New contact from {name} <{email}>.
+            <p>{content}</p>
+            """.format(
+            name=data.get("name"), email=data.get("email"), content=data.get("content"),
+        )
+
+        subject = "New contact from {name}".format(name=data.get("name"))
+        SMTPService._send_message(email_to, subject, message, message)
+
+    @staticmethod
     def send_email_alert(to_address: str, username: str):
         """ Send an email to user to alert them they have a new message"""
         current_app.logger.debug(f"Test if email required {to_address}")
