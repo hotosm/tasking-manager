@@ -4,7 +4,6 @@ from flask_swagger import swagger
 
 from backend.services.settings_service import SettingsService
 from backend.services.messaging.smtp_service import SMTPService
-from backend.services.users.authentication_service import token_auth, tm
 
 
 class SystemDocsAPI(Resource):
@@ -182,8 +181,6 @@ class SystemLanguagesAPI(Resource):
 
 
 class SystemContactAdminRestAPI(Resource):
-    @tm.pm_only(False)
-    @token_auth.login_required
     def post(self):
         """
         Send an email to the system admin
@@ -193,12 +190,6 @@ class SystemContactAdminRestAPI(Resource):
         produces:
           - application/json
         parameters:
-          - in: header
-            name: Authorization
-            description: Base64 encoded session token
-            required: true
-            type: string
-            default: Token sessionTokenHere==
           - in: body
             name: body
             required: true
@@ -219,29 +210,12 @@ class SystemContactAdminRestAPI(Resource):
             description: Email sent successfully
           400:
               description: Invalid Request
-          401:
-              description: Unauthorized - Invalid credentials
-          403:
-              description: Forbidden
           500:
             description: A problem occurred
         """
         try:
             data = request.get_json()
-            message = """New contact from {} <{}> (UID: {}).
-                <p>{}</p>
-                """.format(
-                data.get("name"),
-                data.get("email"),
-                tm.authenticated_user_id,
-                data.get("content"),
-            )
-            SMTPService._send_message(
-                current_app.config["EMAIL_FROM_ADDRESS"],
-                "Tasking Manager Contact",
-                message,
-                message,
-            )
+            SMTPService.send_contact_admin_email(data)
             return {"Success": "Email sent"}, 201
         except Exception as e:
             error_msg = f"Application GET API - unhandled error: {str(e)}"
