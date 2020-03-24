@@ -27,11 +27,11 @@ it('dropdown-content is not rendered before the user clicks on the button', () =
   expect(elementInstance.findByType('div').props.className).toBe('dib pointer relative');
   expect(() =>
     elementInstance.findByProps({
-      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column',
     }),
   ).toThrow(
     new Error(
-      'No instances found with props: {"className":"db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column"}',
+      'No instances found with props: {"className":"db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column"}',
     ),
   );
 });
@@ -45,7 +45,7 @@ it('dropdown-content show/hide with clicks', () => {
   elementInstance.findByType(CustomButton).props.onClick();
   expect(
     elementInstance.findByProps({
-      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column',
     }).type,
   ).toBe('div');
   expect(elementInstance.findAllByType(CheckIcon).length).toBe(1);
@@ -54,11 +54,11 @@ it('dropdown-content show/hide with clicks', () => {
   elementInstance.findByType(CustomButton).props.onClick();
   expect(() =>
     elementInstance.findByProps({
-      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column',
     }),
   ).toThrow(
     new Error(
-      'No instances found with props: {"className":"db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column"}',
+      'No instances found with props: {"className":"db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column"}',
     ),
   );
 });
@@ -72,11 +72,11 @@ it('dropdown-content disappear after click on option', () => {
   // dropdown-content should disappear after selecting an option
   expect(() =>
     elementInstance.findByProps({
-      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column',
     }),
   ).toThrow(
     new Error(
-      'No instances found with props: {"className":"db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column"}',
+      'No instances found with props: {"className":"db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column"}',
     ),
   );
 });
@@ -91,7 +91,7 @@ it('dropdown behaviour with href props', () => {
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
-      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column',
     }).type,
   ).toBe('div');
   // number of dropdown options should be 3
@@ -126,7 +126,7 @@ it('dropdown behaviour with multi enabled', () => {
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
-      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column',
     }).type,
   ).toBe('div');
   // number of dropdown options should be 3
@@ -157,7 +157,7 @@ it('dropdown with toTop enabled should have bottom-3 class', () => {
   // dropdown-content must be rendered after the click
   expect(
     elementInstance.findByProps({
-      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column bottom-3',
+      className: 'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column bottom-3',
     }).type,
   ).toBe('div');
 });
@@ -193,7 +193,7 @@ it('dropdown with more than 9 options has "h5 overflow-y-scroll" classes', () =>
   expect(
     elementInstance.findByProps({
       className:
-        'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column bottom-3 h5 overflow-y-scroll',
+        'db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column bottom-3 h5 overflow-y-scroll',
     }).type,
   ).toBe('div');
 });

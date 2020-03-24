@@ -48,7 +48,7 @@ class DropdownContent extends React.PureComponent {
   render() {
     return (
       <div
-        className={`db tl mt1 ba b--grey-light br1 absolute shadow-1 z-5 flex flex-column${
+        className={`db tl mt1 ba b--grey-light br1 absolute shadow-1 z-999 flex flex-column${
           this.props.toTop ? ' bottom-3' : ''
         }${this.props.options.length > 9 ? ' h5 overflow-y-scroll' : ''}`}
       >
