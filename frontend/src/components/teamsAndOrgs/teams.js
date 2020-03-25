@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
@@ -8,33 +8,42 @@ import { Form, Field } from 'react-final-form';
 import messages from './messages';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { SwitchToggle, RadioField, OrganisationSelect } from '../formInputs';
 import { EditModeControl } from './editMode';
 import { Button } from '../button';
 
-export function TeamsManagement({ teams, userDetails, managementView }: Object) {
-  const token = useSelector(state => state.auth.get('token'));
-  const [isOrgManager, setIsOrgManager] = useState(false);
-  useEffect(() => {
-    if (userDetails.role !== 'ADMIN' && userDetails.id && token) {
-      fetchLocalJSONAPI(`organisations/?manager_user_id=${userDetails.id}`, token).then(r => {
-        if (r.organisations.length > 0) {
-          setIsOrgManager(true);
-        }
-      });
-    }
-  }, [userDetails.role, userDetails.id, token]);
+export function TeamsManagement({
+  teams,
+  userDetails,
+  managementView,
+  userTeamsOnly,
+  setUserTeamsOnly,
+}: Object) {
+  const isOrgManager = useSelector((state) => state.auth.get('isOrgManager'));
+
   return (
     <Management
-      title={<FormattedMessage {...messages.myTeams} />}
+      title={
+        managementView ? (
+          <FormattedMessage
+            {...messages.manage}
+            values={{ entity: <FormattedMessage {...messages.teams} /> }}
+          />
+        ) : (
+          <FormattedMessage {...messages.myTeams} />
+        )
+      }
+      isAdmin={userDetails.role === 'ADMIN' && managementView}
       showAddButton={(userDetails.role === 'ADMIN' || isOrgManager) && managementView}
       managementView={managementView}
+      userOnly={userTeamsOnly}
+      setUserOnly={setUserTeamsOnly}
+      userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
     >
       {teams.length ? (
         teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)
       ) : (
-        <div>
+        <div className="pb3 pt2">
           <FormattedMessage {...messages.noTeams} />
         </div>
       )}
@@ -95,7 +104,7 @@ export function TeamCard({ team, managementView }: Object) {
             <UserAvatarList
               size="small"
               textColor="white"
-              users={team.members.filter(user => user.function === 'MANAGER')}
+              users={team.members.filter((user) => user.function === 'MANAGER')}
               maxLength={8}
             />
           </div>
@@ -106,7 +115,7 @@ export function TeamCard({ team, managementView }: Object) {
             <UserAvatarList
               size="small"
               textColor="white"
-              users={team.members.filter(user => user.function !== 'MANAGER')}
+              users={team.members.filter((user) => user.function !== 'MANAGER')}
               maxLength={8}
             />
           </div>
@@ -149,7 +158,7 @@ export function TeamInformation(props) {
           <FormattedMessage {...messages.inviteOnly} />
         </label>
         <Field name="inviteOnly" className={fieldClasses}>
-          {props => (
+          {(props) => (
             <div className="fl">
               <SwitchToggle
                 isChecked={props.input.value}
@@ -187,7 +196,7 @@ export function TeamForm(props) {
 
   return (
     <Form
-      onSubmit={values => props.updateTeam(values)}
+      onSubmit={(values) => props.updateTeam(values)}
       initialValues={props.team}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
@@ -309,8 +318,8 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
 }
 
 export function TeamsBoxList({ teams }: Object) {
-  const mappingTeams = teams.filter(team => team.role === 'MAPPER');
-  const validationTeams = teams.filter(team => team.role === 'VALIDATOR');
+  const mappingTeams = teams.filter((team) => team.role === 'MAPPER');
+  const validationTeams = teams.filter((team) => team.role === 'VALIDATOR');
   return (
     <>
       {mappingTeams.length > 0 && (
@@ -319,7 +328,7 @@ export function TeamsBoxList({ teams }: Object) {
             <FormattedMessage {...messages.mappingTeams} />
           </h4>
           <div>
-            {mappingTeams.map(team => (
+            {mappingTeams.map((team) => (
               <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2" />
             ))}
           </div>
@@ -331,7 +340,7 @@ export function TeamsBoxList({ teams }: Object) {
             <FormattedMessage {...messages.validationTeams} />
           </h4>
           <div>
-            {validationTeams.map(team => (
+            {validationTeams.map((team) => (
               <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2" />
             ))}
           </div>
