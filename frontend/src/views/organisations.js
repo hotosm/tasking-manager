@@ -21,16 +21,19 @@ import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 
 export function ListOrganisations() {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const isOrgManager = useSelector((state) => state.auth.get('isOrgManager'));
   const [organisations, setOrganisations] = useState(null);
+  const [userOrgsOnly, setUserOrgsOnly] = useState(true);
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
-      fetchLocalJSONAPI(`organisations/?manager_user_id=${userDetails.id}`, token).then(orgs =>
+      const queryParam = userOrgsOnly ? `?manager_user_id=${userDetails.id}` : '';
+      fetchLocalJSONAPI(`organisations/${queryParam}`, token).then((orgs) =>
         setOrganisations(orgs.organisations),
       );
     }
-  }, [userDetails, token]);
+  }, [userDetails, token, userOrgsOnly]);
 
   const placeHolder = (
     <div className="pb4 bg-tan">
@@ -46,14 +49,20 @@ export function ListOrganisations() {
       delay={10}
       ready={organisations !== null}
     >
-      <OrgsManagement organisations={organisations} userDetails={userDetails} />
+      <OrgsManagement
+        organisations={organisations}
+        userOrgsOnly={userOrgsOnly}
+        setUserOrgsOnly={setUserOrgsOnly}
+        isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
+        isAdmin={userDetails.role === 'ADMIN'}
+      />
     </ReactPlaceholder>
   );
 }
 
 export function CreateOrganisation() {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
-  const token = useSelector(state => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [managers, setManagers] = useState([]);
   const [newOrgId, setNewOrgId] = useState(null);
 
@@ -69,25 +78,25 @@ export function CreateOrganisation() {
     }
   }, [newOrgId]);
 
-  const addManagers = values => {
+  const addManagers = (values) => {
     const newValues = values.filter(
-      newUser => !managers.map(i => i.username).includes(newUser.username),
+      (newUser) => !managers.map((i) => i.username).includes(newUser.username),
     );
     setManagers(managers.concat(newValues));
   };
-  const removeManagers = username => {
-    setManagers(managers.filter(i => i.username !== username));
+  const removeManagers = (username) => {
+    setManagers(managers.filter((i) => i.username !== username));
   };
-  const createOrg = payload => {
-    payload.managers = managers.map(user => user.username);
-    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST').then(result =>
+  const createOrg = (payload) => {
+    payload.managers = managers.map((user) => user.username);
+    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST').then((result) =>
       setNewOrgId(result.organisationId),
     );
   };
 
   return (
     <Form
-      onSubmit={values => createOrg(values)}
+      onSubmit={(values) => createOrg(values)}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
@@ -131,8 +140,8 @@ export function CreateOrganisation() {
 }
 
 export function EditOrganisation(props) {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
-  const token = useSelector(state => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [initManagers, setInitManagers] = useState(false);
   const [managers, setManagers] = useState([]);
   const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);
@@ -147,22 +156,22 @@ export function EditOrganisation(props) {
     }
   }, [organisation, managers, initManagers]);
 
-  const addManagers = values => {
+  const addManagers = (values) => {
     const newValues = values.filter(
-      newUser => !managers.map(i => i.username).includes(newUser.username),
+      (newUser) => !managers.map((i) => i.username).includes(newUser.username),
     );
     setManagers(managers.concat(newValues));
   };
-  const removeManagers = username => {
-    setManagers(managers.filter(i => i.username !== username));
+  const removeManagers = (username) => {
+    setManagers(managers.filter((i) => i.username !== username));
   };
 
   const updateManagers = () => {
-    let payload = JSON.stringify({ managers: managers.map(i => i.username) });
+    let payload = JSON.stringify({ managers: managers.map((i) => i.username) });
     pushToLocalJSONAPI(`organisations/${props.id}/`, payload, token, 'PATCH');
   };
 
-  const updateOrg = payload => {
+  const updateOrg = (payload) => {
     pushToLocalJSONAPI(`organisations/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
   };
 
