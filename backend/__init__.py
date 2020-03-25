@@ -161,7 +161,7 @@ def add_api_endpoints(app):
         ProjectsActionsSetInterestsAPI,
     )
 
-    from backend.api.projects.favorites import ProjectFavoriteAPI
+    from backend.api.projects.favorites import ProjectsFavoritesAPI
 
     # Tasks API import
     from backend.api.tasks.resources import (
@@ -170,8 +170,6 @@ def add_api_endpoints(app):
         TasksQueriesXmlAPI,
         TasksQueriesGpxAPI,
         TasksQueriesAoiAPI,
-        TasksQueriesOwnLockedAPI,
-        TasksQueriesOwnLockedDetailsAPI,
         TasksQueriesMappedAPI,
         TasksQueriesOwnInvalidatedAPI,
     )
@@ -241,9 +239,11 @@ def add_api_endpoints(app):
         UsersAllAPI,
         UsersQueriesUsernameAPI,
         UsersQueriesUsernameFilterAPI,
-        UserFavoritesAPI,
-        UserRecommendedProjectsAPI,
-        UserInterestsAPI,
+        UsersQueriesOwnLockedAPI,
+        UsersQueriesOwnLockedDetailsAPI,
+        UsersQueriesFavoritesAPI,
+        UsersQueriesInterestsAPI,
+        UsersRecommendedProjectsAPI,
     )
     from backend.api.users.tasks import UsersTasksAPI
     from backend.api.users.actions import (
@@ -394,7 +394,7 @@ def add_api_endpoints(app):
     )
 
     api.add_resource(
-        ProjectFavoriteAPI,
+        ProjectsFavoritesAPI,
         format_url("projects/<int:project_id>/favorite/"),
         methods=["GET", "POST", "DELETE"],
     )
@@ -447,13 +447,6 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksQueriesAoiAPI, format_url("projects/<int:project_id>/tasks/queries/aoi/")
-    )
-    api.add_resource(
-        TasksQueriesOwnLockedAPI, format_url("projects/tasks/queries/own/locked/")
-    )
-    api.add_resource(
-        TasksQueriesOwnLockedDetailsAPI,
-        format_url("projects/<int:project_id>/tasks/queries/own/locked/details/"),
     )
     api.add_resource(
         TasksQueriesMappedAPI,
@@ -683,7 +676,14 @@ def add_api_endpoints(app):
     api.add_resource(
         UsersQueriesUsernameAPI, format_url("users/queries/<string:username>/")
     )
-    api.add_resource(UserFavoritesAPI, format_url("users/queries/favorites/"))
+    api.add_resource(UsersQueriesFavoritesAPI, format_url("users/queries/favorites/"))
+    api.add_resource(
+        UsersQueriesOwnLockedAPI, format_url("users/queries/tasks/locked/")
+    )
+    api.add_resource(
+        UsersQueriesOwnLockedDetailsAPI,
+        format_url("users/queries/tasks/locked/details/"),
+    )
 
     # Users Actions endpoint
     api.add_resource(UsersActionsSetUsersAPI, format_url("users/me/actions/set-user/"))
@@ -718,13 +718,14 @@ def add_api_endpoints(app):
 
     # User RecommendedProjects endpoint
     api.add_resource(
-        UserRecommendedProjectsAPI,
+        UsersRecommendedProjectsAPI,
         format_url("users/<string:username>/recommended-projects/"),
     )
 
     # User Interests endpoint
     api.add_resource(
-        UserInterestsAPI, format_url("users/<string:username>/queries/interests/")
+        UsersQueriesInterestsAPI,
+        format_url("users/<string:username>/queries/interests/"),
     )
 
     # Users openstreetmap endpoint
