@@ -12,7 +12,7 @@ import { SwitchToggle, RadioField } from '../formInputs';
 import { pushUserDetails } from '../../store/actions/auth';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { getEditors } from '../../utils/editorsList';
-import { CheckIcon } from '../svgIcons';
+import { CheckIcon, CloseIcon } from '../svgIcons';
 
 const PROFILE_RELEVANT_FIELDS = [
   'name',
@@ -26,7 +26,7 @@ const PROFILE_RELEVANT_FIELDS = [
   'gender',
 ];
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   userDetails: state.auth.get('userDetails'),
   token: state.auth.get('token'),
 });
@@ -50,7 +50,7 @@ export const InterestsList = ({ interests, field, changeSelect }) => {
 
   return (
     <ul className="list w-100 pa0 flex flex-wrap">
-      {interests.map(i => (
+      {interests.map((i) => (
         <li
           onClick={() => changeSelect(i.id)}
           className={`${
@@ -67,14 +67,14 @@ export const InterestsList = ({ interests, field, changeSelect }) => {
 };
 
 function UserInterestsForm() {
-  const token = useSelector(state => state.auth.get('token'));
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const [interests, setInterests] = useState([]);
   const [enableSaveButton, setEnableSaveButton] = useState(false);
   const [success, setSuccess] = useState(null);
 
   useLayoutEffect(() => {
-    const getInterests = async username => {
+    const getInterests = async (username) => {
       const data = await fetchLocalJSONAPI(`users/${username}/queries/interests/`, token);
       setInterests(data.interests);
     };
@@ -84,8 +84,8 @@ function UserInterestsForm() {
     }
   }, [token, userDetails]);
 
-  const changeSelect = id => {
-    const index = interests.findIndex(i => i.id === id);
+  const changeSelect = (id) => {
+    const index = interests.findIndex((i) => i.id === id);
 
     const copy = interests.map((interest, idx) => {
       if (idx === index) {
@@ -99,22 +99,22 @@ function UserInterestsForm() {
   };
 
   const updateInterests = () => {
-    const postUpdate = ids => {
+    const postUpdate = (ids) => {
       pushToLocalJSONAPI(
         'users/me/actions/set-interests/',
         JSON.stringify({ interests: ids }),
         token,
       )
-        .then(res => {
+        .then((res) => {
           setSuccess(true);
           setEnableSaveButton(false);
         })
-        .catch(e => setSuccess(false));
+        .catch((e) => setSuccess(false));
     };
 
     // Get all true ids.
-    const trueInterests = interests.filter(i => i.userSelected === true);
-    const ids = trueInterests.map(i => i.id);
+    const trueInterests = interests.filter((i) => i.userSelected === true);
+    const ids = trueInterests.map((i) => i.id);
     postUpdate(ids);
   };
 
@@ -148,8 +148,16 @@ function _UserInformationForm(props) {
   const formFields = PROFILE_RELEVANT_FIELDS.concat(['selfDescriptionGender']);
   const prepareUserDetailsToPush = (values, fields) => {
     let data = {};
-    fields.filter(key => values.hasOwnProperty(key)).forEach(key => (data[key] = values[key]));
+    fields.filter((key) => values.hasOwnProperty(key)).forEach((key) => (data[key] = values[key]));
     return JSON.stringify(data);
+  };
+
+  const [resendStatus, setResend] = useState(null);
+
+  const ResendEmail = () => {
+    fetchLocalJSONAPI('users/me/actions/verify-email/', props.token, 'PATCH')
+      .then(() => setResend(true))
+      .catch(() => setResend(false));
   };
 
   return (
@@ -158,7 +166,7 @@ function _UserInformationForm(props) {
         <FormattedMessage {...messages.personalInfo} />
       </h3>
       <Form
-        onSubmit={values =>
+        onSubmit={(values) =>
           props.pushUserDetails(prepareUserDetailsToPush(values, formFields), props.token)
         }
         initialValues={props.userDetails}
@@ -197,6 +205,24 @@ function _UserInformationForm(props) {
                         !meta.dirty && (
                           <div className="mt1 red">
                             <FormattedMessage {...messages.emailConfirmationMsg} />
+                            <span
+                              onClick={ResendEmail}
+                              className="ml2 ma0 pa0 link pointer red b underline f6"
+                            >
+                              <FormattedMessage {...messages.emailResend} />
+                            </span>
+                            {resendStatus === true ? (
+                              <CheckIcon
+                                style={{ width: '0.7em', height: '0.7em' }}
+                                className="ml1 h1 w1 blue-dark"
+                              />
+                            ) : null}
+                            {resendStatus === false ? (
+                              <CloseIcon
+                                style={{ width: '0.7em', height: '0.7em' }}
+                                className="ml1 h1 w1 red"
+                              />
+                            ) : null}
                           </div>
                         )}
                     </div>
@@ -304,7 +330,7 @@ function _UserInformationForm(props) {
   );
 }
 
-const CustomField = props => {
+const CustomField = (props) => {
   const labelClasses = 'db blue-dark f4 fw6';
   const leftColClasses = 'w-100 w-60-m w-70-l fl';
   const rightColClasses = 'w-100 w-40-m w-30-l pb4 pb0-ns fl tr-ns';
@@ -340,15 +366,12 @@ function _SwitchToggleField(props) {
 
   return (
     <div className="fr pv2 dib">
-      <SwitchToggle onChange={e => onSwitchChange()} isChecked={value} />
+      <SwitchToggle onChange={(e) => onSwitchChange()} isChecked={value} />
     </div>
   );
 }
 
-const SwitchToggleField = connect(
-  mapStateToProps,
-  { pushUserDetails },
-)(_SwitchToggleField);
+const SwitchToggleField = connect(mapStateToProps, { pushUserDetails })(_SwitchToggleField);
 
 function _EditorDropdown(props) {
   const [value, setValue] = useState(null);
@@ -358,7 +381,7 @@ function _EditorDropdown(props) {
     }
   }, [value, props.userDetails]);
 
-  const onEditorSelect = arr => {
+  const onEditorSelect = (arr) => {
     if (arr.length === 1) {
       setValue(arr[0].value);
       props.pushUserDetails(JSON.stringify({ defaultEditor: arr[0].value }), props.token);
@@ -380,10 +403,7 @@ function _EditorDropdown(props) {
   );
 }
 
-const EditorDropdown = connect(
-  mapStateToProps,
-  { pushUserDetails },
-)(_EditorDropdown);
+const EditorDropdown = connect(mapStateToProps, { pushUserDetails })(_EditorDropdown);
 
 function _UserSettingsForm(props) {
   return (
@@ -436,10 +456,7 @@ function UserNotificationsForm(props) {
   );
 }
 
-const UserInformationForm = connect(
-  mapStateToProps,
-  { pushUserDetails },
-)(_UserInformationForm);
+const UserInformationForm = connect(mapStateToProps, { pushUserDetails })(_UserInformationForm);
 
 const UserSettingsForm = connect(mapStateToProps)(_UserSettingsForm);
 

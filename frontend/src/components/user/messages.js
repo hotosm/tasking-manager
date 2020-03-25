@@ -247,6 +247,10 @@ export default defineMessages({
     id: 'user.settings.email.confirmation',
     defaultMessage: 'Please check your email account in order to confirm your email address.',
   },
+  emailResend: {
+    id: 'user.settings.email.resend',
+    defaultMessage: 'Resend validation email',
+  },
   myProjects: {
     id: 'users.detail.MyProjects',
     defaultMessage: 'My projects',
