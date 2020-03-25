@@ -75,6 +75,10 @@ const Parameters = {
     Description: 'TM_EMAIL_FROM_ADDRESS',
     Type: 'String'
   },
+  TaskingManagerEmailContactAddress: {
+    Description: 'TM_EMAIL_CONTACT_ADDRESS',
+    Type: 'String'
+  },
   TaskingManagerLogLevel: {
     Description: 'TM_LOG_LEVEL',
     Type: 'String',
@@ -347,6 +351,7 @@ const Resources = {
         cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
         cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
         cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
+        cf.sub('export TM_EMAIL_CONTACT_ADDRESS="${TaskingManagerEmailContactAddress}"'),
         cf.sub('export TM_LOG_LEVEL="${TaskingManagerLogLevel}"'),
         cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
