@@ -16,6 +16,7 @@ import {
 import { useTagAPI } from '../hooks/UseTagAPI';
 import useForceUpdate from '../hooks/UseForceUpdate';
 import { useFetch } from '../hooks/UseFetch';
+import { NotFound } from './notFound';
 
 const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
 
@@ -166,7 +167,6 @@ export const MoreFilters = props => {
 
 export const ProjectDetailPage = props => {
   const userPreferences = useSelector(state => state.preferences);
-  const Error = ({ error }) => <span>Error:{error.message}</span>;
 
   // replace by queries/summary/ soon
   const [visualError, visualLoading, visualData] = useFetch(
@@ -178,10 +178,9 @@ export const ProjectDetailPage = props => {
     `projects/${props.id}/contributions/`,
   );
 
-  if (error) return <Error error={error} />;
-  if (visualError) return <Error error={visualError} />;
-
-  return (
+  return error || visualError ? (
+    <NotFound />
+  ) : (
     <ProjectDetail
       project={data}
       projectLoading={loading}
