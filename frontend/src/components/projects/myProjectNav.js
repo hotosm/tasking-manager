@@ -19,8 +19,9 @@ const isActiveButton = (buttonName, projectQuery) => {
   }
 };
 
-export const MyProjectNav = props => {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
+export const MyProjectNav = (props) => {
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const isOrgManager = useSelector((state) => state.auth.get('isOrgManager'));
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
 
   const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
@@ -32,10 +33,10 @@ export const MyProjectNav = props => {
     <header className="bt bb b--tan">
       <div className="cf">
         <div className="w-75-l w-60 fl">
-          <h3 className="barlow-condensed f2 ma0 pv3 mt1 v-mid dib ttu pl2 pl0-l">
+          <h3 className="barlow-condensed f2 ma0 pv3 dib v-mid ttu pl2 pl0-l">
             <FormattedMessage {...messages.myProjects} />
           </h3>
-          {userDetails && isUserAdminOrPM(userDetails.role) && (
+          {(userDetails.role === 'ADMIN' || isOrgManager) && (
             <Link to={'/manage/projects/new/'} className="dib ml3">
               <AddButton />
             </Link>
@@ -46,7 +47,7 @@ export const MyProjectNav = props => {
         <div className="w-90-ns w-100 fl dib">
           <div className="cf w-100">
             <FormattedMessage {...messages.searchPlaceholder}>
-              {msg => {
+              {(msg) => {
                 return (
                   <ProjectSearchBox
                     className="dib fl mh1 w-40"

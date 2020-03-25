@@ -52,6 +52,7 @@ export function InviteOnlyBox({ className }: Object) {
 }
 
 export function Management(props) {
+  // admin users can switch between all teams/orgs and only their teams/orgs
   return (
     <div className="pull-center cf bg-tan">
       <div className="cf mt1">
@@ -61,7 +62,28 @@ export function Management(props) {
             <AddButton />
           </Link>
         )}
+        {props.isAdmin && (
+          <div className="mt2 mb3">
+            <CustomButton
+              className={`link di f6 mh1 ph3 pv2 ba b--grey-light ${
+                props.userOnly ? 'bg-white blue-grey' : 'bg-blue-grey white fw5'
+              }`}
+              onClick={() => props.setUserOnly(false)}
+            >
+              <FormattedMessage {...messages.all} />
+            </CustomButton>
+            <CustomButton
+              className={`link di f6 mh1 ph3 pv2 ba b--grey-light ${
+                props.userOnly ? 'bg-blue-grey white fw5' : 'bg-white blue-grey'
+              }`}
+              onClick={() => props.setUserOnly(true)}
+            >
+              {props.userOnlyLabel}
+            </CustomButton>
+          </div>
+        )}
       </div>
+
       <div className="w-100 cf dib">{props.children}</div>
     </div>
   );

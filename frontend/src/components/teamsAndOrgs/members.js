@@ -11,14 +11,11 @@ import { Button } from '../button';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export function Members({ addMembers, removeMembers, saveMembersFn, members, type }: Object) {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [editMode, setEditMode] = useState(false);
-  let roleQueryParam = 'role=ADMIN,PROJECT_MANAGER';
-  let selectPlaceHolder = <FormattedMessage {...messages.searchManagers} />;
+  const selectPlaceHolder = <FormattedMessage {...messages.searchUsers} />;
   let title = <FormattedMessage {...messages.managers} />;
   if (type === 'members') {
-    roleQueryParam = '';
-    selectPlaceHolder = <FormattedMessage {...messages.searchUsers} />;
     title = <FormattedMessage {...messages.members} />;
   }
 
@@ -28,13 +25,10 @@ export function Members({ addMembers, removeMembers, saveMembersFn, members, typ
     }
     setEditMode(false);
   };
-  const promiseOptions = inputValue =>
-    new Promise(resolve => {
+  const promiseOptions = (inputValue) =>
+    new Promise((resolve) => {
       setTimeout(async () => {
-        const result = await fetchLocalJSONAPI(
-          `users/?username=${inputValue}&${roleQueryParam}`,
-          token,
-        );
+        const result = await fetchLocalJSONAPI(`users/?username=${inputValue}`, token);
         resolve(result.users);
       }, 1000);
     });
@@ -54,10 +48,10 @@ export function Members({ addMembers, removeMembers, saveMembersFn, members, typ
               defaultOptions
               placeholder={selectPlaceHolder}
               isClearable={false}
-              getOptionLabel={option => option.username}
-              getOptionValue={option => option.username}
+              getOptionLabel={(option) => option.username}
+              getOptionValue={(option) => option.username}
               loadOptions={promiseOptions}
-              onChange={values => addMembers(values || [])}
+              onChange={(values) => addMembers(values || [])}
               className="z-2"
             />
           )}
@@ -95,7 +89,7 @@ export function Members({ addMembers, removeMembers, saveMembersFn, members, typ
 }
 
 export function JoinRequests({ requests, teamId, addMembers, updateRequests }: Object) {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
 
   const acceptRejectRequest = useCallback(
     (user, action) => {
@@ -105,11 +99,11 @@ export function JoinRequests({ requests, teamId, addMembers, updateRequests }: O
         type: 'join-response',
         action: action,
       });
-      pushToLocalJSONAPI(`teams/${teamId}/actions/join/`, payload, token, 'PATCH').then(res => {
+      pushToLocalJSONAPI(`teams/${teamId}/actions/join/`, payload, token, 'PATCH').then((res) => {
         if (action === 'accept') {
           addMembers([user]);
         }
-        updateRequests(requests.filter(i => i.username !== user.username));
+        updateRequests(requests.filter((i) => i.username !== user.username));
       });
     },
     [teamId, requests, updateRequests, addMembers, token],
