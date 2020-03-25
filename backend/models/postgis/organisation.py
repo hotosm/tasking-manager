@@ -69,11 +69,6 @@ class Organisation(db.Model):
             if user is None:
                 raise NotFound(f"User {manager} Not Found")
 
-            if user.role not in [UserRole.ADMIN.value, UserRole.PROJECT_MANAGER.value]:
-                raise InvalidRoleException(
-                    "User needs to have admin or manager role to be a organisation manager"
-                )
-
             new_org.managers.append(user)
 
         new_org.create()
