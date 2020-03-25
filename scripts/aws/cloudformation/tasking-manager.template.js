@@ -113,7 +113,7 @@ const Parameters = {
 const Conditions = {
   UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
   DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
-  IsTaskingManagerProduction: cf.equals(cf.ref('AutoscalingPolicy'), 'Production (max 12)'),
+  IsTaskingManagerProduction: cf.equals(cf.ref('AutoscalingPolicy'), 'production'),
   IsTaskingManagerDemo: cf.equals(cf.ref('AutoscalingPolicy'), 'Demo (max 3)')
 };
 
