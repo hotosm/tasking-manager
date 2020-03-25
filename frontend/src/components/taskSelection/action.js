@@ -18,16 +18,23 @@ import { openEditor } from '../../utils/openEditor';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { TaskHistory } from './taskActivity';
 
+import DueDateBox from '../projectcard/dueDateBox';
+
 const Editor = React.lazy(() => import('../editor'));
 
 export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
-  const tasksIds = activeTasks ? activeTasks.map(task => task.taskId) : [];
+  const tasksIds = activeTasks ? activeTasks.map((task) => task.taskId) : [];
   const [editorRef, setEditorRef] = useState(null);
   const [disabled, setDisable] = useState(false);
+
+  const activeTask = activeTasks && activeTasks[0];
+  const timer = new Date(activeTask.lastUpdated);
+
+  timer.setSeconds(timer.getSeconds() + activeTask.autoUnlockSeconds);
 
   useEffect(() => {
     if (!editor && projectIsReady && userDetails.defaultEditor && tasks && tasksIds) {
@@ -53,7 +60,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     }
   }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds]);
 
-  const callEditor = arr => {
+  const callEditor = (arr) => {
     setActiveEditor(arr[0].value);
     const url = openEditor(arr[0].value, project, tasks, tasksIds, [
       window.innerWidth,
@@ -103,33 +110,37 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
             )}
             <HeaderLine author={project.author} projectId={project.projectId} />
             <div className="cf pb3">
-              <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
+              <h3 className="f2 fw6 mt2 mb1 ttu barlow-condensed blue-dark">
                 {project.projectInfo && project.projectInfo.name}
                 <span className="pl2">&#183;</span>
                 {tasksIds.map((task, n) => (
                   <span key={n} className="red ph2">{`#${task}`}</span>
                 ))}
               </h3>
+              <DueDateBox dueDate={timer} align="left" intervalMili={60000} />
             </div>
             <div className="cf">
               <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
                 <span
-                  className={`mr4-l mr3 pb2 pointer ${activeSection === 'completion' &&
-                    'bb b--blue-dark'}`}
+                  className={`mr4-l mr3 pb2 pointer ${
+                    activeSection === 'completion' && 'bb b--blue-dark'
+                  }`}
                   onClick={() => setActiveSection('completion')}
                 >
                   <FormattedMessage {...messages.completion} />
                 </span>
                 <span
-                  className={`mr4-l mr3 pb2 pointer ${activeSection === 'instructions' &&
-                    'bb b--blue-dark'}`}
+                  className={`mr4-l mr3 pb2 pointer ${
+                    activeSection === 'instructions' && 'bb b--blue-dark'
+                  }`}
                   onClick={() => setActiveSection('instructions')}
                 >
                   <FormattedMessage {...messages.instructions} />
                 </span>
                 <span
-                  className={`mr4-l mr3 pb2 pointer ${activeSection === 'history' &&
-                    'bb b--blue-dark'}`}
+                  className={`mr4-l mr3 pb2 pointer ${
+                    activeSection === 'history' && 'bb b--blue-dark'
+                  }`}
                   onClick={() => setActiveSection('history')}
                 >
                   <FormattedMessage {...messages.history} />
@@ -182,7 +193,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
       ) : (
         <div className="w-3 cf tc mt3 ph1 pl2 pr1 pointer">
           <FormattedMessage {...messages.showSidebar}>
-            {msg => (
+            {(msg) => (
               <div className="db" title={msg}>
                 <SidebarIcon onClick={() => setShowSidebar(true)} />
               </div>
@@ -203,7 +214,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
 }
 
 function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
   const [taskComment, setTaskComment] = useState('');
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
@@ -215,7 +226,7 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
         `projects/${project.projectId}/tasks/actions/split/${tasksIds[0]}/`,
         token,
         'POST',
-      ).then(r => navigate(`../tasks/`));
+      ).then((r) => navigate(`../tasks/`));
     } else {
       setShowMapChangesModal('split');
     }
@@ -227,7 +238,7 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
         `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`,
         '{}',
         token,
-      ).then(r => navigate(`/projects/${project.projectId}/tasks/`));
+      ).then((r) => navigate(`/projects/${project.projectId}/tasks/`));
     } else {
       setShowMapChangesModal('unlock');
     }
@@ -247,7 +258,7 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
       if (selectedStatus === 'BADIMAGERY') {
         url = `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`;
       }
-      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then(r =>
+      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) =>
         navigate(`/projects/${project.projectId}/tasks/`),
       );
     }
@@ -255,7 +266,7 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
 
   return (
     <div>
-      {disabled && showMapChangesModal &&
+      {disabled && showMapChangesModal && (
         <Popup
           modal
           open
@@ -263,14 +274,9 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
           closeOnDocumentClick={true}
           onClose={() => setShowMapChangesModal(null)}
         >
-          {close =>
-            <UnsavedMapChangesModalContent
-              close={close}
-              action={showMapChangesModal}
-            />
-          }
+          {(close) => <UnsavedMapChangesModalContent close={close} action={showMapChangesModal} />}
         </Popup>
-      }
+      )}
       <div className="bb b--grey-light w-100"></div>
       <div className="cf">
         <h4 className="ttu blue-grey f5">
@@ -321,7 +327,11 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>
-          <textarea onChange={e => setTaskComment(e.target.value)} rows="2" className="w-100 pa2" />
+          <textarea
+            onChange={(e) => setTaskComment(e.target.value)}
+            rows="2"
+            className="w-100 pa2"
+          />
         </p>
       </div>
       <div className="cf mv2">
@@ -346,7 +356,7 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
 }
 
 function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
   const [taskComment, setTaskComment] = useState('');
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
@@ -357,10 +367,10 @@ function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
       pushToLocalJSONAPI(
         `projects/${project.projectId}/tasks/actions/stop-validation/`,
         JSON.stringify({
-          resetTasks: tasksIds.map(taskId => ({ taskId: taskId, comment: taskComment })),
+          resetTasks: tasksIds.map((taskId) => ({ taskId: taskId, comment: taskComment })),
         }),
         token,
-      ).then(r => navigate(`../tasks/`));
+      ).then((r) => navigate(`../tasks/`));
     } else {
       setShowMapChangesModal('unlock');
     }
@@ -370,7 +380,7 @@ function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
     if (!disabled && selectedStatus) {
       let url;
       let payload = {
-        validatedTasks: tasksIds.map(taskId => ({
+        validatedTasks: tasksIds.map((taskId) => ({
           taskId: taskId,
           comment: taskComment,
           status: selectedStatus,
@@ -382,13 +392,13 @@ function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
       if (selectedStatus === 'INVALIDATED') {
         url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
       }
-      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then(r => navigate(`../tasks/`));
+      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => navigate(`../tasks/`));
     }
   };
 
   return (
     <div>
-      {disabled && showMapChangesModal &&
+      {disabled && showMapChangesModal && (
         <Popup
           modal
           open
@@ -396,14 +406,9 @@ function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
           closeOnDocumentClick={true}
           onClose={() => setShowMapChangesModal(null)}
         >
-          {close =>
-            <UnsavedMapChangesModalContent
-              close={close}
-              action={showMapChangesModal}
-            />
-          }
+          {(close) => <UnsavedMapChangesModalContent close={close} action={showMapChangesModal} />}
         </Popup>
-      }
+      )}
       <div className="bb b--grey-light w-100"></div>
       <div className="cf">
         <h4 className="ttu blue-grey f5">
@@ -439,7 +444,11 @@ function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>
-          <textarea onChange={e => setTaskComment(e.target.value)} rows="2" className="w-100 pa2" />
+          <textarea
+            onChange={(e) => setTaskComment(e.target.value)}
+            rows="2"
+            className="w-100 pa2"
+          />
         </p>
       </div>
       <div className="cf mb3">
@@ -508,7 +517,7 @@ function ReopenEditor({ project, action, editor, callEditor }: Object) {
       <Dropdown
         options={editorOptions}
         value={
-          editorOptions.map(i => i.value).includes(editor)
+          editorOptions.map((i) => i.value).includes(editor)
             ? editor
             : editorOptions.length && editorOptions[0].value
         }
@@ -526,7 +535,7 @@ function SidebarToggle({ setShowSidebar, editorRef }: Object) {
   return (
     <div>
       <FormattedMessage {...messages.hideSidebar}>
-        {msg => (
+        {(msg) => (
           <div className="fr pointer" title={msg}>
             <SidebarIcon
               onClick={() => {
