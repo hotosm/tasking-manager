@@ -15,26 +15,33 @@ depends_on = None
 
 
 def upgrade():
+    tm3_org_name = "TM3"
+    tm3_validator_team = "TM3-validators"
+    tm3_pm_team = "TM3-project-managers"
     conn = op.get_bind()
     # Create an undefined organisation
-    conn.execute("insert into organisations (name) values('undefined');")
-    fetch_org_id = "select * from organisations where name = 'undefined';"
+    conn.execute("insert into organisations (name) values('" + tm3_org_name + "');")
+    fetch_org_id = "select * from organisations where name = '" + tm3_org_name + "';"
     org_id = [r[0] for r in conn.execute(fetch_org_id)][0]
 
     # Create two new teams associated to `undefined` organisation
     create_validator_team = (
-        "insert into teams (visibility,name,invite_only,organisation_id) values (1,'undefined-validators',true,"
+        "insert into teams (visibility,invite_only,organisation_id,name) values (1,true,"
         + str(org_id)
-        + ");"
+        + ",'"
+        + tm3_validator_team
+        + "');"
     )
     conn.execute(create_validator_team)
     validator_team_id = [
         r[0] for r in conn.execute("select id from teams order by id desc limit 1;")
     ][0]
     create_pm_team = (
-        "insert into teams (visibility,name,invite_only,organisation_id) values (1,'undefined-pms',true,"
+        "insert into teams (visibility,invite_only,organisation_id,name) values (1,true,"
         + str(org_id)
-        + ");"
+        + ",'"
+        + tm3_pm_team
+        + "');"
     )
     conn.execute(create_pm_team)
     project_manager_team_id = [
@@ -96,17 +103,23 @@ def upgrade():
 
 
 def downgrade():
+    tm3_org_name = "TM3"
+    tm3_validator_team = "TM3-validators"
+    tm3_pm_team = "TM3-project-managers"
     conn = op.get_bind()
 
     # Fetch validator and project manager team ID
     validator_team_id = [
         r[0]
         for r in conn.execute(
-            "select id from teams where name = 'undefined-validators';"
+            "select id from teams where name = '" + tm3_validator_team + "';"
         )
     ][0]
     pm_team_id = [
-        r[0] for r in conn.execute("select id from teams where name = 'undefined-pms';")
+        r[0]
+        for r in conn.execute(
+            "select id from teams where name = '" + tm3_pm_team + "';"
+        )
     ][0]
 
     # Disassociate all projects from the team
@@ -137,6 +150,6 @@ def downgrade():
         + ");"
     )
     # Delete the teams and organisation
-    conn.execute("delete from teams where name = 'undefined-validators';")
-    conn.execute("delete from teams where name = 'undefined-pms';")
-    conn.execute("delete from organisations where name = 'undefined';")
+    conn.execute("delete from teams where name = '" + tm3_validator_team + "';")
+    conn.execute("delete from teams where name = '" + tm3_pm_team + "';")
+    conn.execute("delete from organisations where name = '" + tm3_org_name + "';")
