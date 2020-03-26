@@ -8,18 +8,15 @@ import messages from './messages';
 function DueDateBox({ intl, dueDate, intervalMili, align = 'right' }: Object) {
   const [timer, setTimer] = useState(Date.now());
   useEffect(() => {
-    if (intervalMili === undefined) {
-      return null;
+    let interval;
+
+    if (intervalMili) {
+      interval = setInterval(() => {
+        setTimer(Date.now());
+      }, intervalMili); // 1 minute
     }
 
-    const interval = setInterval(() => {
-      setTimer(Date.now());
-    }, intervalMili); // 1 minute
-
     return () => {
-      if (intervalMili === undefined) {
-        return null;
-      }
       clearInterval(interval);
     };
   }, [intervalMili]);
@@ -51,7 +48,6 @@ function DueDateBox({ intl, dueDate, intervalMili, align = 'right' }: Object) {
       round: true,
     };
   }
-  console.log(intervalMili, options);
 
   if (milliDifference < 60000 * 20 && intervalMili !== undefined) {
     className = className.replace('bg-grey-light', 'bg-red').replace('blue-grey', 'white');
