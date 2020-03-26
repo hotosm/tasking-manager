@@ -34,11 +34,6 @@ def verify_token(token):
         current_app.logger.debug(f"Token not valid {request.base_url}")
         return False
 
-    if tm.is_pm_only_resource:
-        if not UserService.is_user_a_project_manager(user_id):
-            current_app.logger.debug(f"User {user_id} is not a PM {request.base_url}")
-            return False
-
     tm.authenticated_user_id = (
         user_id  # Set the user ID on the decorator as a convenience
     )

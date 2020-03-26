@@ -378,15 +378,6 @@ class UserService:
         return User.filter_users(username, project_id, page)
 
     @staticmethod
-    def is_user_a_project_manager(user_id: int) -> bool:
-        """ Is the user a project manager """
-        user = UserService.get_user_by_id(user_id)
-        if UserRole(user.role) in [UserRole.ADMIN]:
-            return True
-
-        return False
-
-    @staticmethod
     def is_user_an_admin(user_id: int) -> bool:
         """ Is the user an admin """
         user = UserService.get_user_by_id(user_id)
