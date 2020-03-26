@@ -338,7 +338,7 @@ const TransferProject = ({ projectId }: Object) => {
   const [users, setUsers] = useState([]);
   const handleUsers = e => {
     const fetchUsers = user => {
-      fetchLocalJSONAPI(`users/?username=${user}&role=ADMIN,PROJECT_MANAGER`, token)
+      fetchLocalJSONAPI(`users/?username=${user}&role=ADMIN`, token)
         .then(res => setUsers(res.users.map(user => user.username)))
         .catch(e => setUsers([]));
     };

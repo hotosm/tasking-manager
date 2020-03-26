@@ -23,15 +23,3 @@ it('test menuItems for logged admin user', () => {
   const menuItems = getMenuItensForUser(userDetails, false).map(i => i.link);
   expect(menuItems).toEqual(['explore', 'contributions', 'manage', 'learn', 'about']);
 });
-
-it('test menuItems for logged project manager user', () => {
-  const userDetails = { username: 'test', role: 'PROJECT_MANAGER' };
-  const menuItems = getMenuItensForUser(userDetails, false).map(i => i.link);
-  expect(menuItems).toEqual(['explore', 'contributions', 'manage', 'learn', 'about']);
-});
-
-it('test menuItems for logged project manager user, but org manager', () => {
-  const userDetails = { username: 'test', role: 'PROJECT_MANAGER' };
-  const menuItems = getMenuItensForUser(userDetails, true).map(i => i.link);
-  expect(menuItems).toEqual(['explore', 'contributions', 'manage', 'learn', 'about']);
-});
