@@ -42,9 +42,9 @@ const LoginModal = ({ step, login }) => {
 };
 
 const ProceedOSM = ({ data, step, setStep, login }) => {
-  const NextStep = setStep => {
+  const NextStep = (setStep) => {
     window.open(OSM_REGISTER_URL, '_blank');
-    setStep(s => {
+    setStep((s) => {
       return { ...s, number: 3 };
     });
   };
@@ -82,13 +82,13 @@ const ProceedOSM = ({ data, step, setStep, login }) => {
 };
 
 const SignupForm = ({ data, setData, step, setStep }) => {
-  const onChange = e => {
+  const onChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
   const CheckFields = () => {
     if (data.name === '') {
-      setStep(s => {
+      setStep((s) => {
         return { ...s, errMessage: <FormattedMessage {...messages.invalidName} /> };
       });
       return;
@@ -96,7 +96,7 @@ const SignupForm = ({ data, setData, step, setStep }) => {
 
     /* eslint-disable-next-line */
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(data.email) === false) {
-      setStep(s => {
+      setStep((s) => {
         return { ...s, errMessage: <FormattedMessage {...messages.invalidEmail} /> };
       });
 
@@ -108,7 +108,7 @@ const SignupForm = ({ data, setData, step, setStep }) => {
     };
 
     const registerPromise = store.dispatch(registerUser(formData));
-    registerPromise.then(res => {
+    registerPromise.then((res) => {
       if (res.success === true) {
         safeStorage.setItem('email_address', data.email);
         safeStorage.setItem('name', data.name);
@@ -134,7 +134,7 @@ const SignupForm = ({ data, setData, step, setStep }) => {
             <FormattedMessage {...messages.signupLabelName} />
           </p>
           <FormattedMessage {...messages.namePlaceHolder}>
-            {msg => {
+            {(msg) => {
               return (
                 <input
                   className="pa2 w-60-l w-100 f6"
@@ -154,7 +154,7 @@ const SignupForm = ({ data, setData, step, setStep }) => {
             <FormattedMessage {...messages.signupLabelEmail} />
           </p>
           <FormattedMessage {...messages.emailPlaceholder}>
-            {msg => {
+            {(msg) => {
               return (
                 <input
                   className="pa2 w-60-l w-100 f6"
@@ -197,11 +197,16 @@ export const SignUp = ({ closeModal }) => {
   const [step, setStep] = useState({ number: 1, errMessage: null });
 
   const login = () => {
+    let redirect = '/welcome';
+    if (window.location.pathname.startsWith('/projects')) {
+      redirect = window.location.pathname;
+    }
+
     closeModal();
-    createLoginWindow('/welcome');
+    createLoginWindow(redirect);
   };
 
-  const GetStep = step => {
+  const GetStep = (step) => {
     switch (step.number) {
       case 1:
         return <SignupForm data={data} setData={setData} step={step} setStep={setStep} />;
