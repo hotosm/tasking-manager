@@ -75,7 +75,7 @@ export function ProjectCard({
   cardWidthClass = 'w-25-l',
   showBottomButtons = false,
 }: Object) {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const [isHovered, setHovered] = useState(false);
   const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
 
@@ -146,7 +146,9 @@ export function ProjectCard({
                     level={mapperLevel}
                     className="fl f7 mt1 ttc fw5 blue-grey"
                   />
-                  <DueDateBox dueDate={dueDate} />
+                  <div className="fr">
+                    <DueDateBox dueDate={dueDate} />
+                  </div>
                 </div>
               </div>
             </div>
