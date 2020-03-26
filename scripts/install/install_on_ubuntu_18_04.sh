@@ -38,15 +38,35 @@ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo s
 
 # Set up configuration
 # Sets db endpoint to localhost.
-cp example.env tasking-manager.env &&
+if ! test -f tasking-manager.env
+	then
+    cp example.env tasking-manager.env
+fi
+. ./tasking-manager.env &&
 sed -i '/POSTGRES_ENDPOINT/s/^# //g' tasking-manager.env &&
 
 # Set up data base
-sudo -u postgres psql -c "CREATE USER tm WITH PASSWORD 'tm';" &&
-sudo -u postgres createdb -T template0 tasking-manager -E UTF8 -O tm &&
-sudo -u postgres psql -d tasking-manager -c "CREATE EXTENSION postgis;" &&
+if ! sudo -u postgres psql -c "SELECT u.usename FROM pg_catalog.pg_user u;" | grep -w -q $POSTGRES_USER
+	then
+		sudo -u postgres psql -c "CREATE USER $POSTGRES_USER WITH PASSWORD '$POSTGRES_PASSWORD';"
+fi
+if ! sudo -u postgres psql -c "SELECT datname FROM pg_database WHERE datistemplate = false;" | grep -w -q $POSTGRES_DB
+	then
+    sudo -u postgres createdb -T template0 $POSTGRES_DB -E UTF8 -O $POSTGRES_USER &&
+    sudo -u postgres psql -d $POSTGRES_DB -c "CREATE EXTENSION postgis;"
+fi
 
-# Initiate database
+
+# Populate database
+cd tests/database/ &&
+sudo -u postgres psql -d $POSTGRES_DB -c "\i tasking-manager.sql" &&
+for tbl in `sudo -u postgres psql -qAt -c "select tablename from pg_tables where schemaname = 'public';" $POSTGRES_DB`;
+do  sudo -u postgres psql -c "alter table \"$tbl\" owner to $POSTGRES_USER" $POSTGRES_DB ; done &&
+for tbl in `sudo -u postgres psql -qAt -c "select tablename from pg_tables where schemaname = 'topology';" $POSTGRES_DB`;
+do  sudo -u postgres psql -c "alter table \"$tbl\" owner to $POSTGRES_USER" $POSTGRES_DB ; done &&
+cd ../../ &&
+
+# Upgrade database
 ./venv/bin/python3 manage.py db upgrade &&
 
 # Assamble the tasking manager interface
