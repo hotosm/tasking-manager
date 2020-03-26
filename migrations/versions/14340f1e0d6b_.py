@@ -23,7 +23,7 @@ def upgrade():
 
     # Create two new teams associated to `undefined` organisation
     create_validator_team = (
-        "insert into teams (name,invite_only,organisation_id) values ('undefined-validators',false,"
+        "insert into teams (visibility,name,invite_only,organisation_id) values (1,'undefined-validators',true,"
         + str(org_id)
         + ");"
     )
@@ -32,7 +32,7 @@ def upgrade():
         r[0] for r in conn.execute("select id from teams order by id desc limit 1;")
     ][0]
     create_pm_team = (
-        "insert into teams (name,invite_only,organisation_id) values ('undefined-pms',false,"
+        "insert into teams (visibility,name,invite_only,organisation_id) values (1,'undefined-pms',true,"
         + str(org_id)
         + ");"
     )
