@@ -55,7 +55,7 @@ def upgrade():
         validator_user_id = validator[0]
         # team function = 2(member) backend/models/postgis/statuses.py/TeamMemberFunctions
         update_validator_team = (
-            "insert into team_members (function,team_id,user_id) values (2,"
+            "insert into team_members (active,function,team_id,user_id) values (true,2,"
             + str(validator_team_id)
             + ","
             + str(validator_user_id)
@@ -90,7 +90,7 @@ def upgrade():
         pm_user_id = project_manager[0]
         # team function = 2(member) backend/models/postgis/statuses.py/TeamMemberFunctions
         update_pm_team = (
-            "insert into team_members (function,team_id,user_id) values (2,"
+            "insert into team_members (active,function,team_id,user_id) values (true,2,"
             + str(project_manager_team_id)
             + ","
             + str(pm_user_id)
