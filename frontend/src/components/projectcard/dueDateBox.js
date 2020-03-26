@@ -40,7 +40,7 @@ function DueDateBox({ intl, dueDate, intervalMili, align = 'right' }: Object) {
   };
 
   let className =
-    'relative lh-solid f7 tr br1 link ph1 pv2 bg-grey-light blue-grey truncate mw4 fl w-40';
+    'relative lh-solid f7 tr br1 link ph1 pv2 bg-grey-light blue-grey truncate mw4 dib';
   if (align === 'right') {
     className = className.replace('fl', 'fr');
   }
@@ -63,13 +63,15 @@ function DueDateBox({ intl, dueDate, intervalMili, align = 'right' }: Object) {
         <span>
           <ClockIcon className="absolute pl1 top-0 pt1 left-0" />
         </span>
-        <FormattedMessage
-          className="indent"
-          {...messages['dueDateRelativeRemainingDays']}
-          values={{
-            daysLeftHumanize: humanizeDuration(milliDifference, options),
-          }}
-        />
+        <span className="pl3 ml1">
+          <FormattedMessage
+            className="indent"
+            {...messages['dueDateRelativeRemainingDays']}
+            values={{
+              daysLeftHumanize: humanizeDuration(milliDifference, options),
+            }}
+          />
+        </span>
       </span>
     );
   } else {
