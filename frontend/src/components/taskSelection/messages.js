@@ -281,10 +281,6 @@ export default defineMessages({
     id: 'project.tasks.action.instructions.select_task',
     defaultMessage: 'Select one of the options below that matches your edit status',
   },
-  writeComment: {
-    id: 'project.input.placeholder.write_comment',
-    defaultMessage: 'Write a comment',
-  },
   instructionsComment: {
     id: 'project.tasks.action.instructions.leave_comment',
     defaultMessage: 'Leave a comment (optional)',
@@ -292,14 +288,6 @@ export default defineMessages({
   instructionsSubmit: {
     id: 'project.tasks.action.instructions.submit_task',
     defaultMessage: 'Submit your work',
-  },
-  comment: {
-    id: 'project.tasks.action.comment.title',
-    defaultMessage: 'Comment',
-  },
-  commentPlaceholder: {
-    id: 'project.tasks.action.comment.input.placeholder',
-    defaultMessage: 'Write a comment on this task',
   },
   editStatus: {
     id: 'project.tasks.action.selection.title',

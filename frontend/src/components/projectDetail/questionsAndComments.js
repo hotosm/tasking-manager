@@ -1,101 +1,15 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import ReactTextareaAutocomplete from '@webscopeio/react-textarea-autocomplete';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { PaginatorLine } from '../paginator';
-import { Button } from '../button';
-import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
+import { UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
-import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-
-const formatUserNamesToLink = text => {
-  const regex = /@\[([^\]]+)\]/gi;
-  // Find usernames with a regular expression. They all start with '[@' and end with ']'
-  const usernames = text && text.match(regex);
-  if (usernames) {
-    for (let i = 0; i < usernames.length; i++) {
-      // Strip off the first two characters: '@['
-      let username = usernames[i].substring(2, usernames[i].length);
-      // Strip off the last character
-      username = username.substring(0, username.length - 1);
-      text = text.replace(
-        usernames[i],
-        '<a class="pointer blue-grey b underline" href="/users/' +
-          username +
-          '">' +
-          username +
-          '</a>',
-      );
-    }
-  }
-  return text;
-};
-
-const Item = ({ entity: { name } }) => (
-  <div className="w-100 f6 pv2 ph3 f5 tc bg-tan blue-grey hover-bg-blue-grey hover-white pointer">
-    {`${name}`}
-  </div>
-);
-
-const PostProjectComment = ({ token, projectId, setStat }) => {
-  const [comment, setComment] = useState('');
-
-  const saveComment = () => {
-    if (comment === '') {
-      return null;
-    }
-    const url = `projects/${projectId}/comments/`;
-    const body = JSON.stringify({ message: comment });
-
-    pushToLocalJSONAPI(url, body, token).then(res => {
-      setStat(true);
-      setComment('');
-    });
-  };
-
-  const fetchUsers = async user => {
-    const url = `users/queries/filter/${user}/`;
-    const res = await fetchLocalJSONAPI(url, token);
-    const userItems = res.usernames.map(u => {
-      return { name: u };
-    });
-
-    return userItems;
-  };
-
-  return (
-    <div className="w-90-ns w-100 pv4 h4 bg-white center">
-      <div className="fl w-10 ph1 tc pt2">
-        <CurrentUserAvatar className="w-70-l w4 w3-m br-100" />
-      </div>
-      <div className="fl w-70 h-100">
-        <ReactTextareaAutocomplete
-          value={comment}
-          listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey w-40 overflow-auto"
-          onChange={e => setComment(e.target.value)}
-          className="w-100 f5 pa2"
-          loadingComponent={() => <span>Loading</span>}
-          rows={3}
-          trigger={{
-            '@': {
-              dataProvider: fetchUsers,
-              component: Item,
-              output: (item, trigger) => '@[' + item.name + ']',
-            },
-          }}
-        />
-      </div>
-      <div className="fl w-20 tc pt3">
-        <Button onClick={saveComment} className="bg-red white f5" disabled={comment === ''}>
-          <FormattedMessage {...messages.post} />
-        </Button>
-      </div>
-    </div>
-  );
-};
+import { formatUserNamesToLink } from '../../utils/formatUserNamesToLink';
+import { MentionUserTextArea } from '../mentionUserTextArea';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const QuestionsAndComments = ({ projectId }) => {
   const token = useSelector(state => state.auth.get('token'));
@@ -141,7 +55,11 @@ export const QuestionsAndComments = ({ projectId }) => {
           />
         )}
         {token !== null && (
-          <PostProjectComment projectId={projectId} token={token} setStat={setStat} />
+          <MentionUserTextArea
+            postUrl={`projects/${projectId}/comments/`}
+            onCommentUpload={setStat}
+            action="PROJECT"
+          />
         )}
       </div>
     </div>

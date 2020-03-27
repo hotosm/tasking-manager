@@ -9,67 +9,15 @@ import { useFetch } from '../../hooks/UseFetch';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
 import { formatOverpassLink } from '../../utils/overpassLink';
 import { compareLastUpdate } from '../../utils/sorting';
-import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
-import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { Button } from '../button';
+import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
+import { formatUserNamesToLink } from '../../utils/formatUserNamesToLink';
+import { UserAvatar } from '../user/avatar';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Dropdown } from '../dropdown';
-
-const PostComment = ({ projectId, taskId, setCommentPayload }) => {
-  const token = useSelector(state => state.auth.get('token'));
-  const [comment, setComment] = useState('');
-
-  const pushComment = () => {
-    pushToLocalJSONAPI(
-      `projects/${projectId}/comments/tasks/${taskId}/`,
-      JSON.stringify({ comment: comment }),
-      token,
-    ).then(res => {
-      setCommentPayload(res);
-      setComment('');
-    });
-  };
-
-  const saveComment = () => {
-    if (comment) {
-      pushComment();
-    }
-  };
-
-  return (
-    <>
-      <div className="w-100 pt3 h4">
-        <div className="fl w-10 pr2 pl4">
-          <CurrentUserAvatar className="h2 w2 br-100" />
-        </div>
-        <div className="fl w-90 h-100 pr3">
-          <FormattedMessage {...messages.writeComment}>
-            {msg => {
-              return (
-                <textarea
-                  value={comment}
-                  onChange={e => setComment(e.target.value)}
-                  name="comment"
-                  type="textarea"
-                  placeholder={msg}
-                  className="w-100 h-75 pa2 f6"
-                  rows="4"
-                />
-              );
-            }}
-          </FormattedMessage>
-        </div>
-      </div>
-      <div className="w-100 pb3 tr pr3">
-        <Button onClick={() => saveComment()} className="bg-red white f6">
-          <FormattedMessage {...messages.comment} />
-        </Button>
-      </div>
-    </>
-  );
-};
+import { MentionUserTextArea } from '../mentionUserTextArea';
 
 export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
@@ -160,7 +108,12 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
             {getTaskActionMessage(t.action, t.actionText)}{' '}
             <RelativeTimeWithUnit date={t.actionDate} />
           </p>
-          {t.action === 'COMMENT' ? <p className="i ma0 mt2 blue-grey">{t.actionText}</p> : null}
+          {t.action === 'COMMENT' ? (
+            <p
+              className="i ma0 mt2 blue-grey"
+              dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(t.actionText))}
+            />
+          ) : null}
         </div>
       </div>
     ));
@@ -269,7 +222,11 @@ export const TaskActivity = ({
           commentPayload={commentPayload !== null ? commentPayload : history}
         />
       </div>
-      <PostComment projectId={projectId} taskId={taskId} setCommentPayload={setCommentPayload} />
+      <MentionUserTextArea
+        postUrl={`projects/${projectId}/comments/tasks/${taskId}/`}
+        onCommentUpload={setCommentPayload}
+        action="TASK"
+      />
     </div>
   );
 };

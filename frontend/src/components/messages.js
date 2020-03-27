@@ -45,4 +45,16 @@ export default defineMessages({
     id: 'mapping.level.beginner',
     defaultMessage: 'Beginner',
   },
+  writeComment: {
+    id: 'project.input.placeholder.write_comment',
+    defaultMessage: 'Write a comment',
+  },
+  comment: {
+    id: 'project.tasks.action.comment.title',
+    defaultMessage: 'Comment',
+  },
+  commentPlaceholder: {
+    id: 'project.tasks.action.comment.input.placeholder',
+    defaultMessage: 'Write a comment on this task',
+  },
 });
