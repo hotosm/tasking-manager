@@ -225,6 +225,9 @@ class ProjectSearchService:
                     Project.id.in_([project.id for project in projects_favorited])
                 )
 
+        if search_dto.managed_by:
+            print("managedByMe")
+
         if search_dto.mapper_level and search_dto.mapper_level.upper() != "ALL":
             query = query.filter(
                 Project.mapper_level == MappingLevel[search_dto.mapper_level].value
