@@ -148,7 +148,6 @@ class ProjectSearchService:
         all_results, paginated_results = ProjectSearchService._filter_projects(
             search_dto
         )
-
         if paginated_results.total == 0:
             raise NotFound()
 
@@ -211,20 +210,15 @@ class ProjectSearchService:
         query = query.filter(Project.status.in_(project_status_array))
         if search_dto.created_by:
             query = query.filter(Project.author_id == search_dto.created_by)
-
         if search_dto.mapped_by:
             projects_mapped = UserService.get_projects_mapped(search_dto.mapped_by)
-            if projects_mapped:
-                query = query.filter(Project.id.in_(projects_mapped))
-
+            query = query.filter(Project.id.in_(projects_mapped))
         if search_dto.favorited_by:
             user = UserService.get_user_by_id(search_dto.favorited_by)
             projects_favorited = user.favorites
-            if projects_favorited:
-                query = query.filter(
-                    Project.id.in_([project.id for project in projects_favorited])
-                )
-
+            query = query.filter(
+                Project.id.in_([project.id for project in projects_favorited])
+            )
         if search_dto.mapper_level and search_dto.mapper_level.upper() != "ALL":
             query = query.filter(
                 Project.mapper_level == MappingLevel[search_dto.mapper_level].value
