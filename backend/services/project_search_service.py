@@ -28,6 +28,9 @@ from backend.models.postgis.utils import (
 
 from backend.models.postgis.interests import projects_interests
 from backend.services.users.user_service import UserService
+from backend.services.organisation_service import OrganisationService
+from backend.services.team_service import TeamService
+from backend.models.postgis.statuses import TeamRoles
 
 from backend import db
 from flask import current_app
@@ -168,13 +171,6 @@ class ProjectSearchService:
         dto = ProjectSearchResultsDTO()
         dto.map_results = feature_collection
 
-        # Get all total contributions for each paginated project.
-        # contrib_counts = ProjectSearchService.get_total_contributions(
-        #     paginated_results.items
-        # )
-
-        # zip_items = zip(paginated_results.items, contrib_counts)
-
         dto.results = [
             ProjectSearchService.create_result_dto(
                 p,
@@ -226,7 +222,21 @@ class ProjectSearchService:
                 )
 
         if search_dto.managed_by:
-            print("managedByMe")
+            print(query.all())
+            query = query.join(ProjectTeams).filter(
+                ProjectTeams.role == TeamRoles.PROJECT_MANAGER.value,
+                ProjectTeams.project_id == Project.id,
+            )
+            print(query.all())
+            user = UserService.get_user_by_id(search_dto.managed_by)
+            user_orgs_list = OrganisationService.get_organisations_managed_by_user(
+                search_dto.managed_by
+            )
+            orgs_managed = [org.id for org in user_orgs_list]
+            print(orgs_managed)
+            print(query.all())
+            query = query.filter(Project.organisation_id.in_(orgs_managed))
+            print(query.all())
 
         if search_dto.mapper_level and search_dto.mapper_level.upper() != "ALL":
             query = query.filter(

@@ -117,9 +117,9 @@ class OrganisationService:
     def get_organisations(manager_user_id: int):
         if manager_user_id is None:
             """ Get all organisations """
-            return Organisation().get_all_organisations()
+            return Organisation.get_all_organisations()
         else:
-            return Organisation().get_organisations_managed_by_user(manager_user_id)
+            return Organisation.get_organisations_managed_by_user(manager_user_id)
 
     @staticmethod
     def get_organisations_as_dto(manager_user_id: int, authenticated_user_id: int):
@@ -138,9 +138,9 @@ class OrganisationService:
     def get_organisations_managed_by_user(user_id: int):
         """ Get all organisations a user manages """
         if UserService.is_user_an_admin(user_id):
-            return Organisation().get_all_organisations()
+            return Organisation.get_all_organisations()
 
-        return Organisation().get_organisations_managed_by_user(user_id)
+        return Organisation.get_organisations_managed_by_user(user_id)
 
     @staticmethod
     def get_organisations_managed_by_user_as_dto(user_id: int):

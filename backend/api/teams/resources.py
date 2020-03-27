@@ -430,7 +430,7 @@ class TeamsAllAPI(Resource):
                 return {"Error": error_msg}, 403
         except TeamServiceError as e:
             return str(e), 400
-        except NotFound as e:
+        except NotFound:
             error_msg = "Team POST - Organisation does not exist"
             return {"Error": error_msg}, 400
         except Exception as e:
