@@ -5,6 +5,7 @@ from backend.models.dtos.team_dto import TeamDTO, NewTeamDTO, UpdateTeamDTO
 from backend.services.team_service import TeamService, TeamServiceError, NotFound
 from backend.services.users.authentication_service import token_auth, tm
 from backend.services.organisation_service import OrganisationService
+from backend.services.users.user_service import UserService
 
 
 class TeamsRestAPI(Resource):
@@ -397,20 +398,33 @@ class TeamsAllAPI(Resource):
                 description: Client Error - Invalid Request
             401:
                 description: Unauthorized - Invalid credentials
+            403:
+                description: Unauthorized - Forbidden
             500:
                 description: Internal Server Error
         """
+        user_id = tm.authenticated_user_id
+
         try:
             team_dto = NewTeamDTO(request.get_json())
-            team_dto.creator = tm.authenticated_user_id
+            team_dto.creator = user_id
             team_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return str(e), 400
 
         try:
-            team_id = TeamService.create_team(team_dto)
-            return {"teamId": team_id}, 201
+            organisation_id = team_dto.organisation_id
+
+            is_org_manager = TeamService.is_user_an_org_manager(
+                organisation_id, user_id
+            )
+            is_admin = UserService.is_user_an_admin(user_id)
+            if is_admin or is_org_manager:
+                team_id = TeamService.create_team(team_dto)
+                return {"teamId": team_id}, 201
+            else:
+                return "User not permitted to create team for the organisation", 403
         except TeamServiceError as e:
             return str(e), 400
         except Exception as e:
