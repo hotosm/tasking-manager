@@ -416,7 +416,7 @@ class TeamsAllAPI(Resource):
         try:
             organisation_id = team_dto.organisation_id
 
-            is_org_manager = TeamService.is_user_an_org_manager(
+            is_org_manager = OrganisationService.is_user_an_org_manager(
                 organisation_id, user_id
             )
             is_admin = UserService.is_user_an_admin(user_id)
@@ -424,9 +424,15 @@ class TeamsAllAPI(Resource):
                 team_id = TeamService.create_team(team_dto)
                 return {"teamId": team_id}, 201
             else:
-                return "User not permitted to create team for the organisation", 403
+                error_msg = (
+                    "Team POST - User not permitted to create team for the Organisation"
+                )
+                return {"Error": error_msg}, 403
         except TeamServiceError as e:
             return str(e), 400
+        except NotFound as e:
+            error_msg = "Team POST - Organisation does not exist"
+            return {"Error": error_msg}, 400
         except Exception as e:
             error_msg = f"Team POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

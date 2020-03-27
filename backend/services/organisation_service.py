@@ -211,6 +211,9 @@ class OrganisationService:
         """ Check that the user is an manager for the org """
 
         org = Organisation.get(organisation_id)
+
+        if org is None:
+            raise NotFound()
         user = UserService.get_user_by_id(user_id)
 
         return user in org.managers
