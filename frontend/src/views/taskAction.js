@@ -22,20 +22,18 @@ export function ValidateTask({ id }: Object) {
 }
 
 export function TaskAction({ project, action }: Object) {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
-  const token = useSelector(state => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
   // eslint-disable-next-line
   const [editor, setEditor] = useQueryParam('editor', StringParam);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (userDetails.id && token && action) {
-      fetchLocalJSONAPI(`users/${userDetails.id}/tasks/?status=LOCKED_FOR_${action}`, token).then(
-        res => {
-          setTasks(res.tasks);
-          setLoading(false);
-        },
-      );
+      fetchLocalJSONAPI(`users/queries/tasks/locked/details/`, token).then((res) => {
+        setTasks(res.tasks);
+        setLoading(false);
+      });
     }
   }, [action, userDetails.id, token]);
   if (token) {
@@ -99,7 +97,7 @@ export function TaskActionPossible({ project, tasks, action, editor }) {
   );
   useEffect(() => {
     if (project && tasks) {
-      fetchLocalJSONAPI(`projects/${project}/tasks/`).then(res => setTasksGeojson(res));
+      fetchLocalJSONAPI(`projects/${project}/tasks/`).then((res) => setTasksGeojson(res));
     }
   }, [project, tasks]);
   return (
