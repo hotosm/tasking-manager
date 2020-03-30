@@ -128,7 +128,6 @@ class TeamRoles(Enum):
 class TeamMemberFunctions(Enum):
     """ Describes the function a member can hold within a team """
 
-    EDITOR = 0
     MANAGER = 1
     MEMBER = 2
 
