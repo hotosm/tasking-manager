@@ -177,6 +177,7 @@ class TeamService:
 
     @staticmethod
     def get_all_teams(
+        user_id: int = None,
         team_name_filter: str = None,
         team_role_filter: str = None,
         member_filter: int = None,
@@ -186,6 +187,19 @@ class TeamService:
     ) -> TeamsListDTO:
 
         query = db.session.query(Team).outerjoin(TeamMembers).outerjoin(ProjectTeams)
+
+        orgs_query = None
+        is_admin = UserService.is_user_an_admin(user_id)
+
+        if organisation_filter:
+            orgs_query = query.filter(Team.organisation_id.in_(organisation_filter))
+
+        if manager_filter and not (manager_filter == user_id and is_admin):
+            query = query.filter(
+                TeamMembers.user_id == manager_filter,
+                TeamMembers.active == True,  # noqa
+                TeamMembers.function == TeamMemberFunctions.MANAGER.value,
+            )
 
         if team_name_filter:
             query = query.filter(Team.name.contains(team_name_filter))
@@ -202,21 +216,14 @@ class TeamService:
                 TeamMembers.user_id == member_filter, TeamMembers.active == True  # noqa
             )
 
-        if manager_filter:
-            query = query.filter(
-                TeamMembers.user_id == manager_filter,
-                TeamMembers.active == True,  # noqa
-                TeamMembers.function == TeamMemberFunctions.MANAGER.value,
-            )
-
         if member_request_filter:
             query = query.filter(
                 TeamMembers.user_id == member_request_filter,
                 TeamMembers.active == False,  # noqa
             )
 
-        if organisation_filter:
-            query = query.filter(Team.organisation_id == organisation_filter)
+        if orgs_query:
+            query = query.union(orgs_query)
 
         teams_list_dto = TeamsListDTO()
 
@@ -232,17 +239,23 @@ class TeamService:
             team_dto.organisation_id = team.organisation.id
             team_dto.members = []
             team_members = TeamService._get_team_members(team.id)
+            is_team_manager = False
             for member in team_members:
                 user = UserService.get_user_by_id(member.user_id)
                 member_dto = TeamMembersDTO()
                 member_dto.username = user.username
                 member_dto.function = TeamMemberFunctions(member.function).name
+                if member.user_id == user_id and member_dto.function == "MANAGER":
+                    is_team_manager = True
                 member_dto.picture_url = user.picture_url
                 member_dto.active = member.active
 
                 team_dto.members.append(member_dto)
-
-            teams_list_dto.teams.append(team_dto)
+            if team_dto.visibility == "PRIVATE" and not is_admin:
+                if is_team_manager:
+                    teams_list_dto.teams.append(team_dto)
+            else:
+                teams_list_dto.teams.append(team_dto)
 
         return teams_list_dto
 
