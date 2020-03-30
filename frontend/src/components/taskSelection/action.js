@@ -12,7 +12,7 @@ import { HeaderLine } from '../projectDetail/header';
 import { Button } from '../button';
 import { Dropdown } from '../dropdown';
 import { CheckCircle } from '../checkCircle';
-import { CloseIcon, SidebarIcon, AlertIcon } from '../svgIcons';
+import { CloseIcon, SidebarIcon, AlertIcon, QuestionCircleIcon } from '../svgIcons';
 import { getEditors } from '../../utils/editorsList';
 import { openEditor } from '../../utils/openEditor';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -148,35 +148,56 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
               </div>
             </div>
             <div className="pt3">
-              {activeSection === 'completion' && action === 'MAPPING' && (
+              {activeSection === 'completion' && (
                 <>
-                  <CompletionInstructions />
-                  <ReopenEditor
-                    project={project}
-                    action={action}
-                    editor={activeEditor}
-                    callEditor={callEditor}
-                  />
-                  <CompletionTabForMapping
-                    project={project}
-                    tasksIds={tasksIds}
-                    disabled={disabled}
-                  />
-                </>
-              )}
-              {activeSection === 'completion' && action === 'VALIDATION' && (
-                <>
-                  <ReopenEditor
-                    project={project}
-                    action={action}
-                    editor={activeEditor}
-                    callEditor={callEditor}
-                  />
-                  <CompletionTabForValidation
-                    project={project}
-                    tasksIds={tasksIds}
-                    disabled={disabled}
-                  />
+                  {action === 'MAPPING' && (
+                    <CompletionTabForMapping
+                      project={project}
+                      tasksIds={tasksIds}
+                      disabled={disabled}
+                    />
+                  )}
+                  {action === 'VALIDATION' && (
+                    <CompletionTabForValidation
+                      project={project}
+                      tasksIds={tasksIds}
+                      disabled={disabled}
+                    />
+                  )}
+                  <div className="pt3">
+                    <ReopenEditor
+                      project={project}
+                      action={action}
+                      editor={activeEditor}
+                      callEditor={callEditor}
+                    />
+                    {editor === 'ID' && (
+                      <Popup
+                        modal
+                        trigger={(open) => (
+                          <div className="w-50 cf fl tc pt4">
+                            <Button className="blue-dark bg-white dib">
+                              <FormattedMessage {...messages.tasksMap} />
+                            </Button>
+                          </div>
+                        )}
+                        closeOnEscape={true}
+                        closeOnDocumentClick={true}
+                      >
+                        {(close) => (
+                          <div className="vh-75">
+                            <TasksMap
+                              mapResults={tasks}
+                              className="dib w-100 fl h-100-ns vh-75"
+                              taskBordersOnly={false}
+                              animateZoom={false}
+                              selected={tasksIds}
+                            />
+                          </div>
+                        )}
+                      </Popup>
+                    )}
+                  </div>
                 </>
               )}
               {activeSection === 'instructions' && (
@@ -216,6 +237,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
 function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
+  const [showHelp, setShowHelp] = useState(false);
   const [taskComment, setTaskComment] = useState('');
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
@@ -256,7 +278,8 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
         url = `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`;
       }
       if (selectedStatus === 'BADIMAGERY') {
-        url = `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`;
+        url = `projects/${project.projectId}/tasks/actions/unlock-after-mapping/${tasksIds[0]}/`;
+        payload.status = 'BADIMAGERY';
       }
       pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) =>
         navigate(`/projects/${project.projectId}/tasks/`),
@@ -277,11 +300,20 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
           {(close) => <UnsavedMapChangesModalContent close={close} action={showMapChangesModal} />}
         </Popup>
       )}
-      <div className="bb b--grey-light w-100"></div>
       <div className="cf">
         <h4 className="ttu blue-grey f5">
           <FormattedMessage {...messages.editStatus} />
+          <QuestionCircleIcon
+            className="pointer dib v-mid pl2 pb1 blue-light"
+            height="1.25rem"
+            onClick={() => setShowHelp(!showHelp)}
+          />
         </h4>
+        {showHelp && (
+          <div className="cf">
+            <CompletionInstructions setVisibility={setShowHelp} />
+          </div>
+        )}
         <p>
           <input
             id="MAPPED"
@@ -343,7 +375,7 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
           <FormattedMessage {...messages.submitTask} />
         </Button>
       </div>
-      <div className="cf">
+      <div className="cf pb1">
         <Button className="bg-blue-dark white w-50 fl" onClick={() => splitTask()}>
           <FormattedMessage {...messages.splitTask} />
         </Button>
@@ -351,6 +383,7 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
           <FormattedMessage {...messages.selectAnotherTask} />
         </Button>
       </div>
+      <div className="bb b--grey-light w-100 pv2"></div>
     </div>
   );
 }
@@ -457,49 +490,46 @@ function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
           onClick={() => submitTask()}
           disabled={disabled || !selectedStatus}
         >
-          <FormattedMessage {...messages[tasksIds.length > 0 ? 'submitTasks' : 'submitTask']} />
+          <FormattedMessage {...messages[tasksIds.length > 1 ? 'submitTasks' : 'submitTask']} />
         </Button>
       </div>
       <div className="cf">
         <Button className="blue-dark bg-white w-100 fl" onClick={() => stopValidation()}>
-          <FormattedMessage {...messages.selectAnotherTask} />
+          <FormattedMessage {...messages.stopValidation} />
         </Button>
       </div>
+      <div className="bb b--grey-light w-100 pv2"></div>
     </div>
   );
 }
 
-function CompletionInstructions() {
-  const [active, setActive] = useState(true);
+function CompletionInstructions({ setVisibility }: Object) {
   return (
-    <>
-      <div className={active ? 'dib ph4-l w-100 cf dn-h-930' : 'dn'}>
-        <h4 className="fw8 f5 blue-dark di">
-          <FormattedMessage {...messages.finishMappingTitle} />
-        </h4>
-        <span
-          className="br-100 bg-grey-light white h1 w1 fr pointer tc v-mid di"
-          onClick={() => setActive(false)}
-        >
-          <CloseIcon className="pv1" />
-        </span>
-        <div className="blue-grey">
-          <p>
-            <CheckCircle className="bg-red white" />
-            <FormattedMessage {...messages.instructionsSelect} />
-          </p>
-          <p>
-            <CheckCircle className="bg-red white" />
-            <FormattedMessage {...messages.instructionsComment} />
-          </p>
-          <p>
-            <CheckCircle className="bg-red white" />
-            <FormattedMessage {...messages.instructionsSubmit} />
-          </p>
-        </div>
+    <div className="dib ph4-l w-100 cf">
+      <h4 className="fw8 f5 blue-dark di">
+        <FormattedMessage {...messages.finishMappingTitle} />
+      </h4>
+      <span
+        className="br-100 bg-grey-light white h1 w1 fr pointer tc v-mid di"
+        onClick={() => setVisibility(false)}
+      >
+        <CloseIcon className="pv1" />
+      </span>
+      <div className="blue-grey">
+        <p>
+          <CheckCircle className="bg-red white" />
+          <FormattedMessage {...messages.instructionsSelect} />
+        </p>
+        <p>
+          <CheckCircle className="bg-red white" />
+          <FormattedMessage {...messages.instructionsComment} />
+        </p>
+        <p>
+          <CheckCircle className="bg-red white" />
+          <FormattedMessage {...messages.instructionsSubmit} />
+        </p>
       </div>
-      <div className={active ? 'bb b--grey-light w-100' : 'dn'}></div>
-    </>
+    </div>
   );
 }
 
@@ -510,8 +540,8 @@ function ReopenEditor({ project, action, editor, callEditor }: Object) {
   );
 
   return (
-    <div className="relative pv2">
-      <span className="di pr3">
+    <div className="dib w-50 fl tc pt3 pb2 pr3">
+      <span className="db pb2 ttu blue-grey f6 fw5">
         <FormattedMessage {...messages.reloadEditor} />
       </span>
       <Dropdown
@@ -526,6 +556,7 @@ function ReopenEditor({ project, action, editor, callEditor }: Object) {
         onChange={callEditor}
         onAdd={() => {}}
         onRemove={() => {}}
+        toTop={true}
       />
     </div>
   );
