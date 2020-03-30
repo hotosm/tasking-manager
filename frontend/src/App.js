@@ -56,7 +56,7 @@ function App() {
   useMeta({ name: 'author', content: ORG_NAME });
 
   return (
-    <div className="App w-100 base-font bg-white">
+    <div className="App w-100 base-font bg-white flex flex-column min-vh-100">
       <Router>
         <Header path="/*" />
       </Router>
@@ -117,7 +117,7 @@ function App() {
           </Router>
         </QueryParamProvider>
       </div>
-      <Router primary={false}>
+      <Router primary={false} style={{marginTop: "auto"}}>
         <Footer path="/*" />
       </Router>
     </div>
