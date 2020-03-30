@@ -1,5 +1,4 @@
 from flask import current_app
-from cachetools import TTLCache, cached
 from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO
 from backend.models.postgis.project_chat import ProjectChat
 from backend.services.messaging.message_service import MessageService
@@ -9,8 +8,6 @@ from backend.services.team_service import TeamService
 from backend.services.users.user_service import UserService
 from backend.models.postgis.statuses import TeamRoles
 from backend import db
-
-chat_cache = TTLCache(maxsize=64, ttl=10)
 
 
 class ChatService:
@@ -96,7 +93,6 @@ class ChatService:
             return ProjectChat.get_messages(chat_dto.project_id, 1)
 
     @staticmethod
-    @cached(chat_cache)
     def get_messages(project_id: int, page: int, per_page: int) -> ProjectChatDTO:
         """ Get all messages attached to a project """
         return ProjectChat.get_messages(project_id, page, per_page)
