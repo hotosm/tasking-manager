@@ -500,6 +500,8 @@
   "project.tasks.action.options.invalidate": "More mapping is needed",
   "project.tasks.action.split_task": "Split task",
   "project.tasks.action.select_another_task": "Select another task",
+  "project.tasks.action.stop_validation": "Stop validation",
+  "project.tasks.action.tasks_map": "Tasks map",
   "project.tasks.action.submit_task": "Submit task",
   "project.tasks.action.submit_tasks": "Submit tasks",
   "project.tasks.history.title": "Task activity",

@@ -333,6 +333,14 @@ export default defineMessages({
     id: 'project.tasks.action.select_another_task',
     defaultMessage: 'Select another task',
   },
+  stopValidation: {
+    id: 'project.tasks.action.stop_validation',
+    defaultMessage: 'Stop validation',
+  },
+  tasksMap: {
+    id: 'project.tasks.action.tasks_map',
+    defaultMessage: 'Tasks map',
+  },
   submitTask: {
     id: 'project.tasks.action.submit_task',
     defaultMessage: 'Submit task',
