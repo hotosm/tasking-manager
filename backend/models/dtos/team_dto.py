@@ -31,7 +31,7 @@ def validate_team_member_function(value):
     except KeyError:
         raise ValidationError(
             f"Unknown teamMemberFunction: {value} Valid values are "
-            f"{TeamMemberFunctions.EDITOR.name}, "
+            f"{TeamMemberFunctions.MEMBER.name}, "
             f"{TeamMemberFunctions.MANAGER.name}"
         )
 
@@ -40,7 +40,7 @@ class TeamMembersDTO(Model):
     """ Describe a JSON model for team members """
 
     username = StringType(required=True)
-    function = StringType(required=True)
+    function = StringType(required=True, validators=[validate_team_member_function])
     active = StringType()
     picture_url = StringType(serialized_name="pictureUrl")
 
