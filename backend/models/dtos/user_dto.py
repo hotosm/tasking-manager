@@ -40,7 +40,7 @@ def is_known_role(value):
     except KeyError:
         raise ValidationError(
             f"Unknown mappingRole: {value} Valid values are {UserRole.ADMIN.name}, "
-            f"{UserRole.PROJECT_MANAGER.name}, {UserRole.MAPPER.name}, {UserRole.VALIDATOR.name}"
+            f"{UserRole.READ_ONLY.name}, {UserRole.MAPPER.name}"
         )
 
 

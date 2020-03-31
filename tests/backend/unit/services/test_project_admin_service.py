@@ -163,15 +163,6 @@ class TestProjectAdminService(unittest.TestCase):
         the_exception = e.exception
         self.assertTrue(isinstance(the_exception, ValueError))
 
-        stub_user.username = "pm"
-        stub_user.role = UserRole.PROJECT_MANAGER.value
-        mock_user.return_value = stub_user
-
-        with self.assertRaises(ValueError) as e:
-            ProjectAdminService.update_project(dto, mock_user.id)
-        the_exception = e.exception
-        self.assertTrue(isinstance(the_exception, ValueError))
-
         # stub_project.author_id = mock_user.id
 
         stub_user.username = "admin"
@@ -182,15 +173,6 @@ class TestProjectAdminService(unittest.TestCase):
             ProjectAdminService.update_project(dto, mock_user.id)
         except ProjectAdminServiceError:
             self.fail("update_project raised an exception with admin role")
-
-        stub_user.username = "validator"
-        stub_user.role = UserRole.VALIDATOR.value
-        mock_user.return_value = stub_user
-
-        with self.assertRaises(ValueError) as e:
-            ProjectAdminService.update_project(dto, mock_user.id)
-        the_exception = e.exception
-        self.assertTrue(isinstance(the_exception, ValueError))
 
     def test_no_project_info_for_default_locale_raises_error(self):
         # Arrange

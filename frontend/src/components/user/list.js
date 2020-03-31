@@ -59,7 +59,7 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
 };
 
 const RoleFilter = ({ filters, setFilters, updateFilters }) => {
-  const roles = ['ALL', 'MAPPER', 'VALIDATOR', 'PROJECT_MANAGER', 'ADMIN'];
+  const roles = ['ALL', 'MAPPER', 'ADMIN'];
 
   const options = roles.map(role => {
     return { value: role, label: <FormattedMessage {...messages[`userRole${role}`]} /> };
@@ -210,7 +210,7 @@ export const UsersTable = ({ filters, setFilters }) => {
 };
 
 const UserEditMenu = ({ user, token, close, setStatus }) => {
-  const roles = ['MAPPER', 'VALIDATOR', 'PROJECT_MANAGER', 'ADMIN', 'READ_ONLY'];
+  const roles = ['MAPPER', 'ADMIN', 'READ_ONLY'];
   const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
   const iconClass = 'h1 w1 red';
 
