@@ -6,6 +6,7 @@ from backend.services.users.authentication_service import token_auth, tm
 
 
 class ProjectsTeamsAPI(Resource):
+    @token_auth.login_required
     def get(self, project_id):
         """ Get teams assigned with a project
         ---
@@ -14,6 +15,12 @@ class ProjectsTeamsAPI(Resource):
         produces:
           - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - name: project_id
               in: path
               description: Unique project ID
@@ -23,6 +30,8 @@ class ProjectsTeamsAPI(Resource):
         responses:
             200:
                 description: Teams listed successfully
+            403:
+                description: Forbidden, if user is not authenticated
             404:
                 description: Not found
             500:
