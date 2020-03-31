@@ -28,6 +28,8 @@ from backend.models.postgis.utils import (
 
 from backend.models.postgis.interests import projects_interests
 from backend.services.users.user_service import UserService
+from backend.services.organisation_service import OrganisationService
+from backend.models.postgis.statuses import TeamRoles
 
 from backend import db
 from flask import current_app
@@ -167,13 +169,6 @@ class ProjectSearchService:
         dto = ProjectSearchResultsDTO()
         dto.map_results = feature_collection
 
-        # Get all total contributions for each paginated project.
-        # contrib_counts = ProjectSearchService.get_total_contributions(
-        #     paginated_results.items
-        # )
-
-        # zip_items = zip(paginated_results.items, contrib_counts)
-
         dto.results = [
             ProjectSearchService.create_result_dto(
                 p,
@@ -199,10 +194,12 @@ class ProjectSearchService:
                 project_status_array.append(ProjectStatus[project_status].value)
         else:
             project_status_array = [ProjectStatus.PUBLISHED.value]
+        print(project_status_array)
         if not search_dto.is_project_manager:
             project_status_array = list(
                 filter(lambda x: x != ProjectStatus.DRAFT.value, project_status_array)
             )
+        print(project_status_array)
         if search_dto.interests:
             query = query.join(
                 projects_interests, projects_interests.c.project_id == Project.id
@@ -272,6 +269,20 @@ class ProjectSearchService:
             order_by = desc(search_dto.order_by)
 
         query = query.order_by(order_by).group_by(Project.id)
+
+        if search_dto.managed_by:
+            team_projects = query.join(ProjectTeams).filter(
+                ProjectTeams.role == TeamRoles.PROJECT_MANAGER.value,
+                ProjectTeams.project_id == Project.id,
+            )
+            user = UserService.get_user_by_id(search_dto.managed_by)
+            user_orgs_list = OrganisationService.get_organisations_managed_by_user(
+                search_dto.managed_by
+            )
+            orgs_managed = [org.id for org in user_orgs_list]
+            org_projects = query.filter(Project.organisation_id.in_(orgs_managed))
+            query = org_projects.union(team_projects)
+
         all_results = query.all()
         paginated_results = query.paginate(search_dto.page, 14, True)
 

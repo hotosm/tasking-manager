@@ -501,6 +501,9 @@ class ProjectSearchBase(Resource):
             if request.args.get("favoritedByMe") == "true":
                 search_dto.favorited_by = tm.authenticated_user_id
 
+            if request.args.get("managedByMe") == "true":
+                search_dto.managed_by = tm.authenticated_user_id
+
         except Exception:
             pass
 
@@ -593,17 +596,24 @@ class ProjectsAllAPI(ProjectSearchBase):
               default: null
             - in: query
               name: createdByMe
-              description: Limit to projects created by authenticated user
+              description: Limit to projects created by the authenticated user
               type: boolean
               default: false
             - in: query
               name: mappedByMe
-              description: Limit to projects mapped/validated by authenticated user
+              description: Limit to projects mapped/validated by the authenticated user
               type: boolean
               default: false
             - in: query
               name: favoritedByMe
-              description: Limit to projects favorited by authenticated user
+              description: Limit to projects favorited by the authenticated user
+              type: boolean
+              default: false
+            - in: query
+              name: managedByMe
+              description:
+                Limit to projects that can be managed by the authenticated user,
+                excluding the ones created by them
               type: boolean
               default: false
             - in: query
