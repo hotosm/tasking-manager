@@ -1,7 +1,7 @@
 """empty message
 
 Revision ID: 14340f1e0d6b
-Revises: c40e1fdf6b70
+Revises: 7bbc01082457
 Create Date: 2020-03-13 10:35:57.594664
 
 """
@@ -9,7 +9,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "14340f1e0d6b"
-down_revision = "c40e1fdf6b70"
+down_revision = "7bbc01082457"
 branch_labels = None
 depends_on = None
 
