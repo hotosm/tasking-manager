@@ -203,10 +203,7 @@ class UsersQueriesUsernameFilterAPI(Resource):
         try:
             page = int(request.args.get("page")) if request.args.get("page") else 1
             project_id = request.args.get("projectId", None, int)
-            is_project_manager = request.args.get("isProjectManager", False) == "true"
-            users_dto = UserService.filter_users(
-                username, project_id, page, is_project_manager
-            )
+            users_dto = UserService.filter_users(username, project_id, page)
             return users_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404

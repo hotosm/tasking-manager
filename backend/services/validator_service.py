@@ -102,9 +102,8 @@ class ValidatorService:
         :param mapped_by: id of user who mapped the task
         :return: Boolean
         """
-        is_project_manager = UserService.is_user_a_project_manager(user_id)
         mapped_by_me = mapped_by == user_id
-        if is_project_manager or not mapped_by_me:
+        if not mapped_by_me:
             return True
         return False
 

@@ -489,8 +489,6 @@ class ProjectSearchBase(Resource):
         # See https://github.com/hotosm/tasking-manager/pull/922 for more info
         try:
             verify_token(request.environ.get("HTTP_AUTHORIZATION").split(None, 1)[1])
-            if UserService.is_user_a_project_manager(tm.authenticated_user_id):
-                search_dto.is_project_manager = True
 
             if request.args.get("createdByMe") == "true":
                 search_dto.created_by = tm.authenticated_user_id

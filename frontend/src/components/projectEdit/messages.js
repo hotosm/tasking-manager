@@ -317,7 +317,7 @@ export default defineMessages({
   randomTaskSelectionDescription: {
     id: 'projects.formInputs.random_task_selection.description',
     defaultMessage:
-      'If checked, users must edit tasks at random for the initial editing stage (project managers and admins are exempt).',
+      'If checked, users must edit tasks at random for the initial editing stage (managers and admins are exempt).',
   },
   imageryURL: {
     id: 'projects.formInputs.imagery',
@@ -456,14 +456,6 @@ export default defineMessages({
     id: 'project.formInputs.user_role.options.mapper',
     defaultMessage: 'Mapper',
   },
-  userRoleVALIDATOR: {
-    id: 'project.formInputs.user_role.options.validator',
-    defaultMessage: 'Validator',
-  },
-  userRolePROJECT_MANAGER: {
-    id: 'project.formInputs.user_role.options.project_manager',
-    defaultMessage: 'Project Manager',
-  },
   subjectPlaceholder: {
     id: 'project.formInputs.placeholders.subject',
     defaultMessage: 'Subject *',
@@ -525,15 +517,15 @@ export default defineMessages({
     defaultMessage: 'URL',
   },
   customEditorEnabled: {
-    id: 'projects.formInputs.custom_editor.enabled', 
+    id: 'projects.formInputs.custom_editor.enabled',
     defaultMessage: 'Enabled'
   },
   deleteCustomEditor: {
-    id: 'projects.formInputs.custom_editor.delete', 
+    id: 'projects.formInputs.custom_editor.delete',
     defaultMessage: 'Delete Custom Editor'
   },
   removeCustomEditor: {
-    id: 'projects.formInputs.custom_editor.remove', 
+    id: 'projects.formInputs.custom_editor.remove',
     defaultMessage: 'Remove Custom Editor'
   },
   confirmDeleteCustomEditor: {

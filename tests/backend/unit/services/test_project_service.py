@@ -53,7 +53,7 @@ class TestProjectService(unittest.TestCase):
         # Assert
         self.assertFalse(allowed)
 
-    @patch.object(UserService, "is_user_a_project_manager")
+    @patch.object(UserService, "is_user_an_admin")
     @patch.object(UserService, "is_user_blocked")
     @patch.object(Project, "get")
     def test_user_cant_map_if_project_not_published(

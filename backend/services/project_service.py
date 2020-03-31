@@ -250,8 +250,8 @@ class ProjectService:
 
         if ProjectStatus(
             project.status
-        ) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(
-            user_id
+        ) != ProjectStatus.PUBLISHED and not ProjectAdminService.is_user_action_permitted_on_project(
+            user_id, project_id
         ):
             return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
         tasks = Task.get_locked_tasks_for_user(user_id)
@@ -348,8 +348,8 @@ class ProjectService:
 
         if ProjectStatus(
             project.status
-        ) != ProjectStatus.PUBLISHED and not UserService.is_user_a_project_manager(
-            user_id
+        ) != ProjectStatus.PUBLISHED and not ProjectAdminService.is_user_action_permitted_on_project(
+            user_id, project_id
         ):
             return False, ValidatingNotAllowed.PROJECT_NOT_PUBLISHED
 

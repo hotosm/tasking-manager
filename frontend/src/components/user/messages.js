@@ -314,13 +314,5 @@ export default defineMessages({
   userRoleMAPPER: {
     id: 'user.user_role.options.mapper',
     defaultMessage: 'Mapper',
-  },
-  userRoleVALIDATOR: {
-    id: 'user.user_role.options.validator',
-    defaultMessage: 'Validator',
-  },
-  userRolePROJECT_MANAGER: {
-    id: 'user.user_role.options.project_manager',
-    defaultMessage: 'Project Manager',
-  },
+  }
 });
