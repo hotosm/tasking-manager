@@ -47,18 +47,18 @@ class ProjectAdminService:
         :returns ID of new draft project
         """
         user_id = draft_project_dto.user_id
-        is_pm = UserService.is_user_a_project_manager(user_id)
+        is_admin = UserService.is_user_an_admin(user_id)
         user_orgs = OrganisationService.get_organisations_managed_by_user_as_dto(
             user_id
         )
         is_org_manager = len(user_orgs.organisations) > 0
 
         # First things first, we need to validate that the author_id is a PM. issue #1715
-        if not (is_pm or is_org_manager):
+        if not (is_admin or is_org_manager):
             user = UserService.get_user_by_id(user_id)
             raise (
                 ProjectAdminServiceError(
-                    f"User {user.username} is not a project manager"
+                    f"User {user.username} is not permitted to create project"
                 )
             )
 
