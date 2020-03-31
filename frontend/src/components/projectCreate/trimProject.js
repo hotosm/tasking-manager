@@ -15,7 +15,7 @@ const clipProject = (clip, metadata, map, updateMetadata) => {
   }
   let intersect_array = [];
 
-  taskGrid.features.forEach(f => {
+  taskGrid.features.forEach((f) => {
     let poly = polygon(f.geometry.coordinates[0]);
     let contains = intersect(geom, poly);
     if (contains === null) {
@@ -24,7 +24,13 @@ const clipProject = (clip, metadata, map, updateMetadata) => {
 
     let feature = f;
     if (clip === true) {
-      feature = multiPolygon([contains.geometry.coordinates], f.properties);
+      if (contains.geometry.type === 'Polygon') {
+        feature = multiPolygon([contains.geometry.coordinates], f.properties);
+      } else {
+        feature = contains;
+        feature.properties = f.properties;
+        feature.properties.isSquare = false;
+      }
     }
     intersect_array.push(feature);
   });
