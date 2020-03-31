@@ -205,7 +205,7 @@ export default defineMessages({
   },
   timelineNotAvailable: {
     id: 'project.detail.sections.contributions.timelineError',
-    defaultMessage: 'The timeline will be available when at least one task is mapped.',
+    defaultMessage: 'A timeline is going to be available after the first task has been mapped.',
   },
   date: {
     id: 'project.detail.visualisation.date',
