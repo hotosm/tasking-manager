@@ -611,7 +611,9 @@ class ProjectsAllAPI(ProjectSearchBase):
               default: false
             - in: query
               name: managedByMe
-              description: Limit to projects tha can be managed by the authenticated user
+              description:
+                Limit to projects that can be managed by the authenticated user,
+                excluding the ones created by them
               type: boolean
               default: false
             - in: query
