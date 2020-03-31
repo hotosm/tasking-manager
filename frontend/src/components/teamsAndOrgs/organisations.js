@@ -9,15 +9,29 @@ import { Management } from './management';
 import { Button } from '../button';
 import { UserAvatarList } from '../user/avatar';
 
-export function OrgsManagement({ organisations, userDetails }: Object) {
-  const isAdmin = userDetails.role === 'ADMIN';
+export function OrgsManagement({
+  organisations,
+  isOrgManager,
+  isAdmin,
+  userOrgsOnly,
+  setUserOrgsOnly,
+}: Object) {
   return (
     <Management
-      title={<FormattedMessage {...messages.myOrganisations} />}
+      title={
+        <FormattedMessage
+          {...messages.manage}
+          values={{ entity: <FormattedMessage {...messages.organisations} /> }}
+        />
+      }
       showAddButton={isAdmin}
       managementView={true}
+      userOnlyLabel={<FormattedMessage {...messages.myOrganisations} />}
+      userOnly={userOrgsOnly}
+      setUserOnly={setUserOrgsOnly}
+      isAdmin={isAdmin}
     >
-      {isAdmin ? (
+      {isOrgManager ? (
         organisations.map((org, n) => <OrganisationCard details={org} key={n} />)
       ) : (
         <div>
@@ -32,14 +46,12 @@ export function OrganisationCard({ details }: Object) {
   return (
     <Link to={`${details.organisationId}/`} className="w-50-l w-100 fl ph1">
       <div className="bg-white blue-dark mv2 pb4 dib w-100 ba br1 b--grey-light shadow-hover">
-        <div className="w-20 fl">
-          {details.logo && (
-            <img src={details.logo} alt={`${details.name} logo`} className="ph2 pt2" />
-          )}
+        <div className="w-25 h4 fl pa3">
+          {details.logo && <img src={details.logo} alt={`${details.name} logo`} className="w-80" />}
         </div>
-        <div className="w-80 fl pl3">
+        <div className="w-75 fl pl3">
           <div className="w-100 dib">
-            <h3 className="barlow-condensed ttu f2 mb2 mt2 truncate">{details.name}</h3>
+            <h3 className="barlow-condensed ttu f3 mb2 mt2 truncate">{details.name}</h3>
             <span>
               {details.url && (
                 <a
@@ -79,7 +91,7 @@ export function OrganisationForm(props) {
 
   return (
     <Form
-      onSubmit={values => props.updateOrg(values)}
+      onSubmit={(values) => props.updateOrg(values)}
       initialValues={props.organisation}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (

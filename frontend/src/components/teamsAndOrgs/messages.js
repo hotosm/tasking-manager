@@ -85,8 +85,12 @@ export default defineMessages({
     defaultMessage: 'You will be able to add more users after you save for the first time.',
   },
   myOrganisations: {
-    id: 'management.myOrganisations',
+    id: 'management.filter.buttons.myOrganisations',
     defaultMessage: 'My Organizations',
+  },
+  all: {
+    id: 'management.filter.buttons.all',
+    defaultMessage: 'All',
   },
   myTeams: {
     id: 'management.myTeams',
@@ -159,10 +163,6 @@ export default defineMessages({
   settings: {
     id: 'management.settings',
     defaultMessage: 'Settings',
-  },
-  searchManagers: {
-    id: 'management.placeholder.search_managers',
-    defaultMessage: 'Search for Project Manager users',
   },
   searchUsers: {
     id: 'management.placeholder.search_users',
