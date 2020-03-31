@@ -18,7 +18,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
   const [arbitraryTasks, setArbitrary] = useState(metadata.arbitraryTasks);
   const layer_name = 'aoi';
 
-  const setDataGeom = (geom, display: true) => {
+  const setDataGeom = (geom, display) => {
     mapObj.map.fitBounds(bbox(geom), { padding: 20 });
     const geomArea = area(geom) / 1e6;
     const zoomLevel = parseInt(mapObj.map.getZoom()) + 4;
@@ -37,16 +37,16 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     }
   };
 
-  const verifyAndSetData = event => {
+  const verifyAndSetData = (event) => {
     try {
-      setDataGeom(event);
+      setDataGeom(event, true);
     } catch (e) {
       deleteHandler();
       setErr({ error: true, message: <FormattedMessage {...messages.invalidFile} /> });
     }
   };
 
-  const uploadFile = event => {
+  const uploadFile = (event) => {
     setArbitrary(true);
     let files = event.target.files;
     let file = files[0];
@@ -64,7 +64,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     const format = file.name.split('.')[1].toLowerCase();
 
     let fileReader = new FileReader();
-    fileReader.onload = e => {
+    fileReader.onload = (e) => {
       let geom = null;
       switch (format) {
         case 'json':
@@ -84,7 +84,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
           geom = osmtogeojson(xml);
           break;
         case 'zip':
-          shp(e.target.result).then(function(geom) {
+          shp(e.target.result).then(function (geom) {
             verifyAndSetData(geom);
           });
           break;
@@ -120,7 +120,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
   };
 
   const drawHandler = () => {
-    const updateArea = event => {
+    const updateArea = (event) => {
       // Validate area first.
       const geom = featureCollection(event.features);
       setArbitrary(false);
