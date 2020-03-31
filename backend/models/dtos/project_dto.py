@@ -301,7 +301,6 @@ class ProjectSearchDTO(Model):
     country = StringType()
     page = IntType(required=True)
     text_search = StringType()
-    is_project_manager = BooleanType(required=True, default=False)
     mapping_editors = ListType(StringType, validators=[is_known_editor])
     validation_editors = ListType(StringType, validators=[is_known_editor])
     teams = ListType(StringType())
@@ -347,7 +346,6 @@ class ProjectSearchDTO(Model):
                 self.campaign,
                 self.page,
                 self.text_search,
-                self.is_project_manager,
                 hashable_mapping_editors,
                 hashable_validation_editors,
                 self.created_by,

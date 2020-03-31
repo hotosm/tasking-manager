@@ -6,8 +6,6 @@ from backend.models.dtos.organisation_dto import (
     OrganisationManagerDTO,
 )
 
-from backend.models.postgis.statuses import UserRole
-
 from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_organisations
 from backend.models.postgis.utils import NotFound
@@ -98,14 +96,6 @@ class Organisation(db.Model):
 
                 if new_manager is None:
                     raise NotFound(f"User {manager} Not Found")
-
-                if new_manager.role not in [
-                    UserRole.ADMIN.value,
-                    UserRole.PROJECT_MANAGER.value,
-                ]:
-                    raise InvalidRoleException(
-                        "User needs to have admin or manager role to be a organisation manager"
-                    )
 
                 self.managers.append(new_manager)
 

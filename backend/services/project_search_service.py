@@ -194,12 +194,7 @@ class ProjectSearchService:
                 project_status_array.append(ProjectStatus[project_status].value)
         else:
             project_status_array = [ProjectStatus.PUBLISHED.value]
-        print(project_status_array)
-        if not search_dto.is_project_manager:
-            project_status_array = list(
-                filter(lambda x: x != ProjectStatus.DRAFT.value, project_status_array)
-            )
-        print(project_status_array)
+
         if search_dto.interests:
             query = query.join(
                 projects_interests, projects_interests.c.project_id == Project.id
