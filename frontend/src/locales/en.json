@@ -244,7 +244,7 @@
   "project.detail.sections.contributions.osmcha": "Changesets in OSMCha",
   "project.detail.sections.contributors": "Contributors",
   "project.detail.sections.relatedProjects": "Related projects",
-  "project.detail.sections.contributions.timelineError": "The timeline will be available when at least one task is mapped.",
+  "project.detail.sections.contributions.timelineError": "A timeline is going to be available after the first task has been mapped.",
   "project.detail.visualisation.date": "Date",
   "project.detail.visualisation.validated": "Validated",
   "project.detail.visualisation.mapped": "Mapped",
