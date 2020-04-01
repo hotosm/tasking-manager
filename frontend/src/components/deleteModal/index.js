@@ -11,12 +11,12 @@ import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
 
 export function DeleteModal({ id, name, type, className }: Object) {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [deleteStatus, setDeleteStatus] = useState(null);
   const [error, setErrorMessage] = useState(null);
   useEffect(() => {
     if (deleteStatus === 'success' && type === 'notifications') {
-      redirectTo(`../`);
+      redirectTo(`/inbox`);
     }
     if (deleteStatus === 'success') {
       redirectTo(`/manage/${type}/`);
@@ -25,8 +25,8 @@ export function DeleteModal({ id, name, type, className }: Object) {
   const deleteOrg = () => {
     setDeleteStatus('started');
     fetchLocalJSONAPI(`${type}/${id}/`, token, 'DELETE')
-      .then(success => setDeleteStatus('success'))
-      .catch(e => {
+      .then((success) => setDeleteStatus('success'))
+      .catch((e) => {
         setDeleteStatus('failure');
         setErrorMessage(e.message);
       });
@@ -38,10 +38,10 @@ export function DeleteModal({ id, name, type, className }: Object) {
       modal
       closeOnDocumentClick
     >
-      {close => (
+      {(close) => (
         <div
           className="pv4"
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
           }}
