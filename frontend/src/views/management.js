@@ -12,8 +12,8 @@ import { Teams } from '../components/teamsAndOrgs/teams';
 import { ManagementMenu } from '../components/teamsAndOrgs/menu';
 
 export function ManagementPageIndex() {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
-  const [projectsError, projectsLoading, projects] = useFetch(`projects/?createdByMe=true`);
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const [projectsError, projectsLoading, projects] = useFetch(`projects/?managedByMe=true`);
   const [teamsError, teamsLoading, teams] = useFetch(
     `teams/?manager=${userDetails.id}`,
     userDetails.id !== undefined,
@@ -23,7 +23,7 @@ export function ManagementPageIndex() {
     <>
       <Projects
         projects={!projectsLoading && !projectsError && projects}
-        viewAllQuery="?createdByMe=1"
+        viewAllQuery="?managedByMe=1"
         showAddButton={true}
         ownerEntity="user"
       />
@@ -37,10 +37,10 @@ export function ManagementPageIndex() {
   );
 }
 
-export const ManagementSection = props => {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
-  const token = useSelector(state => state.auth.get('token'));
-  const isOrgManager = useSelector(state => state.auth.get('isOrgManager'));
+export const ManagementSection = (props) => {
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
+  const isOrgManager = useSelector((state) => state.auth.get('isOrgManager'));
   const [isProjectManagerTeamMember, setIsProjectManager] = useState(undefined);
   // if a user is trying to access a project edit page and is not an organisation manager or an admin,
   // test if they are part of a PROJECT_MANAGER team.
@@ -53,9 +53,10 @@ export const ManagementSection = props => {
       if (userDetails.id) {
         // We are not verifying if the user can really edit the project, only if they're part of a PM team.
         // As the API make the complete permissions check, we avoid an extra API request that way.
-        fetchLocalJSONAPI(`teams/?member=${userDetails.id}&team_role=PROJECT_MANAGER`, token).then(
-          teams => setIsProjectManager(teams.teams.length > 0),
-        );
+        fetchLocalJSONAPI(
+          `teams/?member=${userDetails.id}&team_role=PROJECT_MANAGER`,
+          token,
+        ).then((teams) => setIsProjectManager(teams.teams.length > 0));
       }
     } catch {
       setIsProjectManager(false);
