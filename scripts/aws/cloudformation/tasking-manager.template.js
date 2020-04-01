@@ -11,7 +11,7 @@ const Parameters = {
   AutoscalingPolicy: {
     Type: 'String',
     AllowedValues: ['development', 'demo', 'production'],
-    Description: "development: min 1, max 1 instance; demo: min 1 max 3 instances; production: min 3 max 12 instances"
+    Description: "development: min 1, max 1 instance; demo: min 1 max 3 instances; production: min 2 max 9 instances"
   },
   DBSnapshot: {
     Type: 'String',
@@ -123,10 +123,10 @@ const Resources = {
     Type: 'AWS::AutoScaling::AutoScalingGroup',
     Properties: {
       AutoScalingGroupName: cf.stackName,
-      Cooldown: 600,
-      MinSize: cf.if('IsTaskingManagerProduction', 3, 1),
-      DesiredCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
-      MaxSize: cf.if('IsTaskingManagerProduction', 12, cf.if('IsTaskingManagerDemo', 3, 1)),
+      Cooldown: 300,
+      MinSize: cf.if('IsTaskingManagerProduction', 2, 1),
+      DesiredCapacity: cf.if('IsTaskingManagerProduction', 2, 1),
+      MaxSize: cf.if('IsTaskingManagerProduction', 9, cf.if('IsTaskingManagerDemo', 3, 1)),
       HealthCheckGracePeriod: 600,
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
@@ -146,7 +146,7 @@ const Resources = {
         AutoScalingGroupName: cf.ref('TaskingManagerASG'),
         PolicyType: 'TargetTrackingScaling',
         TargetTrackingConfiguration: {
-          TargetValue: 600,
+          TargetValue: 500,
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
             ResourceLabel: cf.join('/', [
@@ -163,7 +163,7 @@ const Resources = {
             ])
           }
         },
-        Cooldown: 600
+        Cooldown: 300
       }
   },
   TaskingManagerLaunchConfiguration: {
