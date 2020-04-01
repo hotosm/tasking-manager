@@ -24,6 +24,7 @@ const Editor = React.lazy(() => import('../editor'));
 
 export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const locale = useSelector((state) => state.preferences.locale);
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -48,24 +49,34 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
           ? [userDetails.defaultEditor]
           : project.validationEditors;
       }
-      const url = openEditor(editorToUse[0], project, tasks, tasksIds, [
-        window.innerWidth,
-        window.innerHeight,
-      ]);
+      const url = openEditor(
+        editorToUse[0],
+        project,
+        tasks,
+        tasksIds,
+        [window.innerWidth, window.innerHeight],
+        null,
+        locale,
+      );
       if (url) {
         navigate(`./${url}`);
       } else {
         navigate(`./?editor=${editorToUse[0]}`);
       }
     }
-  }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds]);
+  }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds, locale]);
 
   const callEditor = (arr) => {
     setActiveEditor(arr[0].value);
-    const url = openEditor(arr[0].value, project, tasks, tasksIds, [
-      window.innerWidth,
-      window.innerHeight,
-    ]);
+    const url = openEditor(
+      arr[0].value,
+      project,
+      tasks,
+      tasksIds,
+      [window.innerWidth, window.innerHeight],
+      null,
+      locale,
+    );
     if (url) {
       navigate(`./${url}`);
     } else {
