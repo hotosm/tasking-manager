@@ -14,7 +14,7 @@ from backend.models.postgis.message import Message, MessageType, NotFound
 from backend.models.postgis.notification import Notification
 from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.project import Project
-from backend.models.postgis.task import TaskStatus
+from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import get_template, get_profile_url
 from backend.services.users.user_service import UserService, User
@@ -131,9 +131,6 @@ class MessageService:
     ):
         """ Will send a canned message to anyone @'d in a comment """
         usernames = MessageService._parse_message_for_username(comment)
-        if len(usernames) == 0:
-            return  # Nobody @'d so return
-
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
             # project_title = ProjectService.get_project_title(project_id)
@@ -155,12 +152,22 @@ class MessageService:
                 message.add_message()
                 SMTPService.send_email_alert(user.email_address, user.username)
 
-        query = """ select user_id from task_history where project_id = :project_id and task_id = :task_id
-                    and action = 'STATE_CHANGE'"""
-        result = db.engine.execute(text(query), project_id=project_id, task_id=task_id)
-        contributed_users = [r[0] for r in result]
+        # Notify all contributors except the user that created the comment.
+        results = (
+            TaskHistory.query.with_entities(TaskHistory.user_id.distinct())
+            .filter(TaskHistory.project_id == project_id)
+            .filter(TaskHistory.task_id == task_id)
+            .filter(TaskHistory.user_id != comment_from)
+            .filter(TaskHistory.action == TaskAction.STATE_CHANGE.name)
+            .all()
+        )
+        contributed_users = [r[0] for r in results]
 
         if len(contributed_users) != 0:
+            user_from = User.query.get(comment_from)
+            if user_from is None:
+                raise ValueError("Username not found")
+
             task_link = MessageService.get_task_link(project_id, task_id)
             # project_title = ProjectService.get_project_title(project_id)
             for user_id in contributed_users:
@@ -174,7 +181,7 @@ class MessageService:
                 message.project_id = project_id
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = f"{comment_from} left a comment in Project {project_id} on {task_link}"
+                message.subject = f"{user_from.username} left a comment in Project {project_id} on {task_link}"
                 message.message = comment
                 message.add_message()
                 SMTPService.send_email_alert(user.email_address, user.username)
