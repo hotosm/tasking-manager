@@ -8,6 +8,7 @@ export function openEditor(
   selectedTasks,
   windowSize,
   windowObjectReference,
+  locale,
 ) {
   if (editor === 'JOSM') {
     sendJosmCommands(project, tasks, selectedTasks, windowSize);
@@ -15,7 +16,7 @@ export function openEditor(
   }
   const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
   if (editor === 'ID') {
-    return getIdUrl(project, center, zoom, selectedTasks, '?editor=ID');
+    return getIdUrl(project, center, zoom, selectedTasks, locale, '?editor=ID');
   }
   if (windowObjectReference == null || windowObjectReference.closed) {
     windowObjectReference = window.open('', `iD-${project}-${selectedTasks}`);
@@ -30,7 +31,14 @@ export function openEditor(
   }
   if (editor === 'CUSTOM') {
     const customUrl = project.customEditor.url;
-    windowObjectReference.location.href = getIdUrl(project, center, zoom, selectedTasks, customUrl);
+    windowObjectReference.location.href = getIdUrl(
+      project,
+      center,
+      zoom,
+      selectedTasks,
+      locale,
+      customUrl,
+    );
     return '?editor=CUSTOM';
   }
 }
@@ -65,7 +73,7 @@ export function getPotlatch2Url(centroid, zoomLevel) {
   ].join('/')}`;
 }
 
-export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl) {
+export function getIdUrl(project, centroid, zoomLevel, selectedTasks, locale = 'en', customUrl) {
   const base = customUrl
     ? formatCustomUrl(customUrl)
     : 'https://www.openstreetmap.org/edit?editor=id&';
@@ -84,7 +92,7 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl)
     url += '&gpx=' + encodeURIComponent(getTaskGpxUrl(project.projectId, selectedTasks).href);
   }
   // add hardcoded locale while we solve how to load the user locale on iD
-  url += '&locale=en';
+  url += '&locale=' + locale;
   return url;
 }
 
@@ -112,7 +120,7 @@ function loadTasksBoundaries(project, selectedTasks) {
     url: getTaskXmlUrl(project.projectId, selectedTasks).href,
   };
 
-  return fetch(formatJosmUrl('load_data', emptyTaskLayerParams)).then(result =>
+  return fetch(formatJosmUrl('load_data', emptyTaskLayerParams)).then((result) =>
     fetch(formatJosmUrl('import', tmTaskLayerParams)),
   );
 }
@@ -144,7 +152,7 @@ function loadOsmDataToTasks(project, bbox, selectedTasks) {
     new_layer: false,
   };
 
-  return fetch(formatJosmUrl('load_data', emptyOSMLayerParams)).then(result => {
+  return fetch(formatJosmUrl('load_data', emptyOSMLayerParams)).then((result) => {
     if (selectedTasks.length === 1) {
       //load OSM data and zoom to the bbox
       return fetch(formatJosmUrl('load_and_zoom', loadAndZoomParams));
@@ -170,7 +178,7 @@ function roundToDecimals(input, decimals) {
 
 export function formatUrlParams(params) {
   const urlParams = Object.keys(params)
-    .map(key => `${key}=${encodeURIComponent(params[key])}`)
+    .map((key) => `${key}=${encodeURIComponent(params[key])}`)
     .join('&');
   return `?${urlParams}`;
 }

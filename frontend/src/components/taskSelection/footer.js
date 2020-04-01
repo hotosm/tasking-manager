@@ -15,8 +15,9 @@ import { Imagery } from './imagery';
 import { MappingTypes } from '../mappingTypes';
 import { LockedTaskModalContent } from './lockedTasks';
 
-const TaskSelectionFooter = props => {
-  const token = useSelector(state => state.auth.get('token'));
+const TaskSelectionFooter = (props) => {
+  const token = useSelector((state) => state.auth.get('token'));
+  const locale = useSelector((state) => state.preferences.locale);
   const [editor, setEditor] = useState(props.defaultUserEditor);
   const [editorOptions, setEditorOptions] = useState([]);
   const [lockError, setLockError] = useState(false);
@@ -31,12 +32,13 @@ const TaskSelectionFooter = props => {
       props.selectedTasks,
       [window.innerWidth, window.innerHeight],
       windowObjectReference,
+      locale,
     );
     updateReduxState(props.selectedTasks, props.project.projectId, status);
     navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}`);
   };
 
-  const lockFailed = windowObjectReference => {
+  const lockFailed = (windowObjectReference) => {
     // JOSM and iD don't open a new window
     if (!['JOSM', 'ID'].includes(editor)) {
       windowObjectReference.close();
@@ -66,10 +68,10 @@ const TaskSelectionFooter = props => {
         JSON.stringify({ taskIds: props.selectedTasks }),
         token,
       )
-        .then(res => {
+        .then((res) => {
           lockSuccess('LOCKED_FOR_VALIDATION', 'validate', windowObjectReference);
         })
-        .catch(e => lockFailed(windowObjectReference));
+        .catch((e) => lockFailed(windowObjectReference));
     }
     if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(props.taskAction)) {
       fetchLocalJSONAPI(
@@ -77,10 +79,10 @@ const TaskSelectionFooter = props => {
         token,
         'POST',
       )
-        .then(res => {
+        .then((res) => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
         })
-        .catch(e => lockFailed(windowObjectReference));
+        .catch((e) => lockFailed(windowObjectReference));
     }
     if (['resumeMapping', 'resumeValidation'].includes(props.taskAction)) {
       const urlParams = openEditor(
@@ -90,6 +92,7 @@ const TaskSelectionFooter = props => {
         props.selectedTasks,
         [window.innerWidth, window.innerHeight],
         windowObjectReference,
+        locale,
       );
       const endpoint = props.taskAction === 'resumeMapping' ? 'map' : 'validate';
       navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}`);
@@ -142,7 +145,7 @@ const TaskSelectionFooter = props => {
     props.defaultUserEditor,
   ]);
 
-  const updateEditor = arr => setEditor(arr[0].value);
+  const updateEditor = (arr) => setEditor(arr[0].value);
   const titleClasses = 'db ttu f6 blue-light mb2';
 
   return (
@@ -155,7 +158,7 @@ const TaskSelectionFooter = props => {
           closeOnDocumentClick={true}
           onClose={() => setLockError(false)}
         >
-          {close => <LockedTaskModalContent project={props.project.projectId} />}
+          {(close) => <LockedTaskModalContent project={props.project.projectId} />}
         </Popup>
       )}
       <div className="w-25-ns w-40 fl">
