@@ -8,19 +8,19 @@ import systemAvatar from '../../assets/img/hot-system-avatar-square-opaque.png';
 import { DeleteModal } from '../deleteModal';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 
-export const rawHtmlNotification = notificationHtml => ({
+export const rawHtmlNotification = (notificationHtml) => ({
   __html: DOMPurify.sanitize(notificationHtml),
 });
-export const stripHtmlToText = notificationHtml =>
+export const stripHtmlToText = (notificationHtml) =>
   DOMPurify.sanitize(notificationHtml, { ALLOWED_TAGS: [] });
 
-const ReadLink = props => (
+const ReadLink = (props) => (
   <Link to={`/inbox/message/${props.messageId}/read`} className={`hover-red blue-dark`}>
     <EyeIcon className={`fr dn dib-ns h1 w1 pr1 pr3-l mv1 pv1`} />
   </Link>
 );
 
-const ListLink = props => (
+const ListLink = (props) => (
   <Link to={`/inbox/message/${props.messageId}/list`} className={`hover-red blue-dark`}>
     <ListIcon className={`fr dn dib-ns h1 w1 pr1 pr3-l mv1 pv1`} />
   </Link>
@@ -92,7 +92,7 @@ export function NotificationCard({
 
           <div
             className={`dib fr`}
-            onClick={e => {
+            onClick={(e) => {
               e.persist();
               e.preventDefault();
               e.stopPropagation();
@@ -106,13 +106,14 @@ export function NotificationCard({
               type="notifications"
             />
           </div>
-          <div
-            className={`fr-l di-l dn f7 truncate ttc w4 pa1 ma1`}
-            title={messageType.toLowerCase().replace(/_/g, ' ')}
-          >
-            {messageType.toLowerCase().replace(/_/g, ' ')}
-          </div>
-
+          {messageType !== null ? (
+            <div
+              className={`fr-l di-l dn f7 truncate ttc w4 pa1 ma1`}
+              title={messageType.toLowerCase().replace(/_/g, ' ')}
+            >
+              {messageType.toLowerCase().replace(/_/g, ' ')}
+            </div>
+          ) : null}
           {readOrListLink}
           {messageType === 'MENTION_NOTIFICATION' && (
             <div className="dn dib-ns fr ma1 ttu b--red ba red f7 pa1">1 mention</div>
