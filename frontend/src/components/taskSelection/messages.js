@@ -133,6 +133,10 @@ export default defineMessages({
     id: 'project.instructions',
     defaultMessage: 'Instructions',
   },
+  changesetComment: {
+    id: 'project.changesetComment',
+    defaultMessage: 'Changeset comment',
+  },
   contributions: {
     id: 'project.contributions',
     defaultMessage: 'contributions',
