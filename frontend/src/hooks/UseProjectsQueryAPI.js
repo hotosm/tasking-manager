@@ -28,6 +28,7 @@ const projectQueryAllSpecification = {
   orderBy: StringParam,
   orderByType: StringParam,
   createdByMe: BooleanParam,
+  managedByMe: BooleanParam,
   favoritedByMe: BooleanParam,
   mappedByMe: BooleanParam,
   status: StringParam,
@@ -54,6 +55,7 @@ const backendToQueryConversion = {
   orderBy: 'orderBy',
   orderByType: 'orderByType',
   createdByMe: 'createdByMe',
+  managedByMe: 'managedByMe',
   favoritedByMe: 'favoritedByMe',
   mappedByMe: 'mappedByMe',
   status: 'projectStatuses',
@@ -105,8 +107,8 @@ export const useProjectsQueryAPI = (
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
 
   /* Get the user bearer token from the Redux store */
-  const token = useSelector(state => state.auth.get('token'));
-  const locale = useSelector(state => state.preferences['locale']);
+  const token = useSelector((state) => state.auth.get('token'));
+  const locale = useSelector((state) => state.preferences['locale']);
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
@@ -213,7 +215,7 @@ export const useProjectsQueryAPI = (
   return [state, dispatch];
 };
 
-export const stringify = obj => {
+export const stringify = (obj) => {
   const encodedQuery = encodeQueryParams(projectQueryAllSpecification, obj);
   return stringifyUQP(encodedQuery);
 };

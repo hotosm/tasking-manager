@@ -259,6 +259,10 @@ export default defineMessages({
     id: 'users.detail.MyTasks',
     defaultMessage: 'My tasks',
   },
+  myTeams: {
+    id: 'users.detail.MyTeams',
+    defaultMessage: 'My teams',
+  },
   myContribs: {
     id: 'users.detail.MyContribs',
     defaultMessage: 'My contributions',
@@ -314,5 +318,5 @@ export default defineMessages({
   userRoleMAPPER: {
     id: 'user.user_role.options.mapper',
     defaultMessage: 'Mapper',
-  }
+  },
 });
