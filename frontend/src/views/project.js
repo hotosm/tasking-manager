@@ -20,7 +20,7 @@ import { NotFound } from './notFound';
 
 const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
 
-export const CreateProject = props => {
+export const CreateProject = (props) => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ProjectCreate {...props} />
@@ -28,7 +28,7 @@ export const CreateProject = props => {
   );
 };
 
-export const ProjectsPage = props => {
+export const ProjectsPage = (props) => {
   const initialData = {
     mapResults: {
       features: [],
@@ -43,7 +43,7 @@ export const ProjectsPage = props => {
   const [state] = useProjectsQueryAPI(initialData, fullProjectsQuery, forceUpdated);
   const [orgAPIState] = useTagAPI([], 'organisations');
 
-  const isMapShown = useSelector(state => state.preferences['mapShown']);
+  const isMapShown = useSelector((state) => state.preferences['mapShown']);
   const searchResultWidth = isMapShown ? 'w-60-l w-100' : 'w-100';
 
   return (
@@ -76,8 +76,8 @@ export const ProjectsPage = props => {
   );
 };
 
-export const ManageProjectsPage = props => {
-  const userToken = useSelector(state => state.auth.get('token'));
+export const UserProjectsPage = (props) => {
+  const userToken = useSelector((state) => state.auth.get('token'));
 
   const initialData = {
     mapResults: {
@@ -93,7 +93,7 @@ export const ManageProjectsPage = props => {
   const [state] = useProjectsQueryAPI(initialData, fullProjectsQuery, forceUpdated);
   const [orgAPIState] = useTagAPI([], 'organisations');
 
-  const isMapShown = useSelector(state => state.preferences['mapShown']);
+  const isMapShown = useSelector((state) => state.preferences['mapShown']);
   const searchResultWidth = isMapShown ? 'w-60-l w-100' : 'w-100';
 
   if (!userToken) {
@@ -103,16 +103,21 @@ export const ManageProjectsPage = props => {
 
   if (
     !fullProjectsQuery.createdByMe &&
+    !fullProjectsQuery.managedByMe &&
     !fullProjectsQuery.mappedByMe &&
     !fullProjectsQuery.favoritedByMe &&
     !fullProjectsQuery.status
   ) {
-    setProjectQuery({ mappedByMe: true });
+    setProjectQuery({ managedByMe: true });
   }
 
   return (
     <div className="pull-center bg-tan">
-      <MyProjectNav location={props.location} orgAPIState={orgAPIState}>
+      <MyProjectNav
+        location={props.location}
+        orgAPIState={orgAPIState}
+        management={props.management}
+      >
         {
           props.children
           /* This is where the MoreFilters component is rendered
@@ -141,11 +146,11 @@ export const ManageProjectsPage = props => {
   );
 };
 
-export const ProjectsPageIndex = props => {
+export const ProjectsPageIndex = (props) => {
   return null;
 };
 
-export const MoreFilters = props => {
+export const MoreFilters = (props) => {
   const [fullProjectsQuery] = useExploreProjectsQueryParams();
 
   const currentUrl = `/explore${
@@ -165,8 +170,8 @@ export const MoreFilters = props => {
   );
 };
 
-export const ProjectDetailPage = props => {
-  const userPreferences = useSelector(state => state.preferences);
+export const ProjectDetailPage = (props) => {
+  const userPreferences = useSelector((state) => state.preferences);
 
   // replace by queries/summary/ soon
   const [visualError, visualLoading, visualData] = useFetch(
@@ -195,3 +200,5 @@ export const ProjectDetailPage = props => {
     />
   );
 };
+
+export const ManageProjectsPage = (props) => <UserProjectsPage {...props} management={true} />;

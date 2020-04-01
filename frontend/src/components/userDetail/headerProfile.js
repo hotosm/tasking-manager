@@ -12,7 +12,7 @@ import OsmLogo from '../../assets/img/osm_logo.png';
 const SocialMedia = ({ data }) => {
   const socialMediaItems = ['twitterId', 'facebookId', 'linkedinId'];
 
-  const getSocialIcon = field => {
+  const getSocialIcon = (field) => {
     const iconStyle = {
       width: '1.4em',
       height: '1.4em',
@@ -65,7 +65,7 @@ const SocialMedia = ({ data }) => {
           {createLink('osm', data.username)}
         </div>
       </li>
-      {socialMediaItems.map(i => {
+      {socialMediaItems.map((i) => {
         if (data[i] === null) {
           return null;
         }
@@ -85,7 +85,10 @@ const SocialMedia = ({ data }) => {
 const MyContributionsNav = ({ username, authUser }) => {
   const items = [
     { url: `/contributions`, label: <FormattedMessage {...messages.myStats} /> },
-    { url: '/contributions/projects', label: <FormattedMessage {...messages.myProjects} /> },
+    {
+      url: '/contributions/projects/?mappedByMe=1',
+      label: <FormattedMessage {...messages.myProjects} />,
+    },
     { url: '/contributions/tasks', label: <FormattedMessage {...messages.myTasks} /> },
   ];
 
@@ -97,7 +100,7 @@ const MyContributionsNav = ({ username, authUser }) => {
 };
 
 export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
-  const authDetails = useSelector(state => state.auth.get('userDetails'));
+  const authDetails = useSelector((state) => state.auth.get('userDetails'));
   const [user, setUser] = useState({});
 
   useEffect(() => {

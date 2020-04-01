@@ -10,8 +10,8 @@ export function ManagementMenu({ isAdmin }: Object) {
   if (!isAdmin) {
     links = links.slice(0, 3);
   }
-  const items = links.map(item => ({
-    url: `/manage/${item}/`,
+  const items = links.map((item) => ({
+    url: `/manage/${item}/${item === 'projects' ? '?managedByMe=1' : ''}`,
     label: <FormattedMessage {...messages[item]} />,
   }));
 

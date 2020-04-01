@@ -9,7 +9,6 @@ import { useExploreProjectsQueryParams, stringify } from '../../hooks/UseProject
 import { ProjectSearchBox } from './projectSearchBox';
 import { OrderBySelector } from './orderBy';
 import { ShowMapToggle } from './projectNav';
-import { isUserAdminOrPM } from '../../utils/userPermissions';
 
 const isActiveButton = (buttonName, projectQuery) => {
   if (JSON.stringify(projectQuery).indexOf(buttonName) !== -1) {
@@ -27,14 +26,16 @@ export const MyProjectNav = (props) => {
   const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
   const notAnyFilter = !stringify(fullProjectsQuery);
 
-  // onSelectedItemChange={(changes) => console.log(changes)}
   return (
-    /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
     <header className="bt bb b--tan">
       <div className="cf">
         <div className="w-75-l w-60 fl">
           <h3 className="barlow-condensed f2 ma0 pv3 dib v-mid ttu pl2 pl0-l">
-            <FormattedMessage {...messages.myProjects} />
+            {props.management ? (
+              <FormattedMessage {...messages.manageProjects} />
+            ) : (
+              <FormattedMessage {...messages.myProjects} />
+            )}
           </h3>
           {(userDetails.role === 'ADMIN' || isOrgManager) && (
             <Link to={'/manage/projects/new/'} className="dib ml3">
@@ -76,37 +77,50 @@ export const MyProjectNav = (props) => {
         </div>
       </div>
       <div className="mt2 mb3">
-        <Link
-          to={`./?mappedByMe=1`}
-          className={`di mh1 ${isActiveButton('mappedByMe', fullProjectsQuery)} ${linkCombo}`}
-        >
-          <FormattedMessage {...messages.contributed} />
-        </Link>
-        <Link
-          to="./?favoritedByMe=1"
-          className={`di mh1 ${isActiveButton('favoritedByMe', fullProjectsQuery)} ${linkCombo}`}
-        >
-          <FormattedMessage {...messages.favorited} />
-        </Link>
-        {userDetails && isUserAdminOrPM(userDetails.role) && (
+        {!props.management && (
           <>
             <Link
-              to={`./?createdByMe=1`}
-              className={`di mh1 ${isActiveButton('createdByMe', fullProjectsQuery)} ${linkCombo}`}
+              to={`./?mappedByMe=1`}
+              className={`di mh1 ${isActiveButton('mappedByMe', fullProjectsQuery)} ${linkCombo}`}
             >
-              <FormattedMessage {...messages.created} />
+              <FormattedMessage {...messages.contributed} />
             </Link>
             <Link
-              to={`./?status=DRAFT`}
+              to="./?favoritedByMe=1"
+              className={`di mh1 ${isActiveButton(
+                'favoritedByMe',
+                fullProjectsQuery,
+              )} ${linkCombo}`}
+            >
+              <FormattedMessage {...messages.favorited} />
+            </Link>
+          </>
+        )}
+        {props.management && (userDetails.role === 'ADMIN' || isOrgManager) && (
+          <>
+            <Link
+              to={`./?managedByMe=1`}
+              className={`di mh1 ${isActiveButton('managedByMe', fullProjectsQuery)} ${linkCombo}`}
+            >
+              <FormattedMessage {...messages.active} />
+            </Link>
+            <Link
+              to={`./?status=DRAFT&managedByMe=true`}
               className={`di mh1 ${isActiveButton('DRAFT', fullProjectsQuery)} ${linkCombo}`}
             >
               <FormattedMessage {...messages.draft} />
             </Link>
             <Link
-              to={`./?status=ARCHIVED`}
+              to={`./?status=ARCHIVED&managedByMe=true`}
               className={`di mh1 ${isActiveButton('ARCHIVED', fullProjectsQuery)} ${linkCombo}`}
             >
               <FormattedMessage {...messages.archived} />
+            </Link>
+            <Link
+              to={`./?createdByMe=1`}
+              className={`di mh1 ${isActiveButton('createdByMe', fullProjectsQuery)} ${linkCombo}`}
+            >
+              <FormattedMessage {...messages.created} />
             </Link>
           </>
         )}
