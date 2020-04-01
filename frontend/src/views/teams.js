@@ -34,7 +34,7 @@ export function ManageTeams() {
 
 export function MyTeams() {
   return (
-    <div className="w-100 ph5-l ph2-m cf bg-tan blue-dark">
+    <div className="w-100 cf bg-tan blue-dark">
       <ListTeams />
     </div>
   );
@@ -385,7 +385,7 @@ export function TeamDetail(props) {
         </div>
         <div className="fixed bottom-0 cf bg-white h3 w-100">
           <div className="w-80-ns w-60-m w-50 h-100 fl tr">
-            <Link to={'/teams'}>
+            <Link to={'/contributions/teams'}>
               <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
                 <FormattedMessage {...messages.myTeams} />
               </CustomButton>

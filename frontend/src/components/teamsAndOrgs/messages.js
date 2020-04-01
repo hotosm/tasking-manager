@@ -164,10 +164,6 @@ export default defineMessages({
     id: 'management.settings',
     defaultMessage: 'Settings',
   },
-  searchManagers: {
-    id: 'management.placeholder.search_managers',
-    defaultMessage: 'Search for Project Manager users',
-  },
   searchUsers: {
     id: 'management.placeholder.search_users',
     defaultMessage: 'Search for Tasking Manager users',

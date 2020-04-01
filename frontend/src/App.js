@@ -12,6 +12,7 @@ import { AboutPage } from './views/about';
 import { LearnPage } from './views/learn';
 import { UserDetail } from './views/userDetail';
 import {
+  UserProjectsPage,
   ManageProjectsPage,
   CreateProject,
   ProjectsPage,
@@ -72,7 +73,8 @@ function App() {
             <ContributionsPageIndex path="contributions">
               <UserStats path="/" />
               <ContributionsPage path="tasks/*" />
-              <ManageProjectsPage path="projects/*" />
+              <UserProjectsPage path="projects/*" />
+              <MyTeams path="teams/*" />
             </ContributionsPageIndex>
             <AboutPage path="about" />
             <Authorized path="authorized" />
@@ -99,7 +101,6 @@ function App() {
               <EditInterest path="categories/:id" />
               <CreateInterest path="categories/new" />
             </ManagementSection>
-            <MyTeams path="teams" />
             <TeamDetail path="teams/:id/membership" />
             <SelectTask path="projects/:id/tasks" />
             <MapTask path="projects/:id/map" />
