@@ -17,7 +17,10 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
 
   useEffect(() => {
     if (session && iD && editorRef) {
-      editorRef.embed(true).assetPath('/static/');
+      editorRef
+        .embed(true)
+        .assetPath('/static/')
+        .containerNode(document.getElementById('id-container'));
       editorRef.init();
 
       let osm = editorRef.connection();
@@ -29,14 +32,6 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
         oauth_token_secret: session.osm_oauth_token_secret,
       };
       osm.switch(auth);
-
-      editorRef.ui()(document.getElementById('id-container'), function () {
-        editorRef
-          .container()
-          .select('#about-list')
-          .insert('li', '.user-list')
-          .attr('class', 'source-switch');
-      });
 
       const thereAreChanges = (changes) =>
         changes.modified.length || changes.created.length || changes.deleted.length;
