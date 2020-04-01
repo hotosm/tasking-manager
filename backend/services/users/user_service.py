@@ -17,7 +17,7 @@ from backend.models.dtos.user_dto import (
     UserCountriesContributed,
 )
 from backend.models.dtos.interests_dto import InterestsDTO, InterestDTO
-from backend.models.postgis.interests import Interest, projects_interests
+from backend.models.postgis.interests import Interest, project_interests
 from backend.models.postgis.message import Message
 from backend.models.postgis.project import Project
 from backend.models.postgis.user import User, UserRole, MappingLevel, UserEmail
@@ -196,15 +196,15 @@ class UserService:
             Interest.query.with_entities(
                 Interest.id,
                 Interest.name,
-                func.count(distinct(projects_interests.c.project_id)).label(
+                func.count(distinct(project_interests.c.project_id)).label(
                     "count_projects"
                 ),
             )
             .outerjoin(
-                projects_interests,
+                project_interests,
                 and_(
-                    Interest.id == projects_interests.c.interest_id,
-                    projects_interests.c.project_id.in_(stmt),
+                    Interest.id == project_interests.c.interest_id,
+                    project_interests.c.project_id.in_(stmt),
                 ),
             )
             .group_by(Interest.id)
