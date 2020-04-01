@@ -161,6 +161,10 @@ class MessageService:
         contributed_users = [r[0] for r in result]
 
         if len(contributed_users) != 0:
+            user_from = User.query.get(comment_from)
+            if user_from is None:
+                raise ValueError("Username not found")
+
             task_link = MessageService.get_task_link(project_id, task_id)
             # project_title = ProjectService.get_project_title(project_id)
             for user_id in contributed_users:
@@ -174,7 +178,7 @@ class MessageService:
                 message.project_id = project_id
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = f"{comment_from} left a comment in Project {project_id} on {task_link}"
+                message.subject = f"{user_from.username} left a comment in Project {project_id} on {task_link}"
                 message.message = comment
                 message.add_message()
                 SMTPService.send_email_alert(user.email_address, user.username)
