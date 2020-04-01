@@ -7,9 +7,13 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
+import redlock from '../../assets/img/red-lock.png';
 
 let lockIcon = new Image(17, 20);
 lockIcon.src = lock;
+
+let redlockIcon = new Image(30, 30);
+redlockIcon.src = redlock;
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -33,7 +37,9 @@ export const TasksMap = ({
   selected: selectedOnMap,
 }) => {
   const mapRef = React.createRef();
-  const locale = useSelector(state => state.preferences['locale']);
+  const locale = useSelector((state) => state.preferences['locale']);
+  const authDetails = useSelector((state) => state.auth.get('userDetails'));
+
   const [map, setMapObj] = useState(null);
 
   useLayoutEffect(() => {
@@ -61,14 +67,14 @@ export const TasksMap = ({
   useLayoutEffect(() => {
     if (zoomedTaskId) {
       const taskGeom = mapResults.features.filter(
-        task => task.properties.taskId === zoomedTaskId,
+        (task) => task.properties.taskId === zoomedTaskId,
       )[0].geometry;
       map.fitBounds(bbox(taskGeom), { padding: 40, maxZoom: 22, animate: true });
     }
   }, [zoomedTaskId, map, mapResults]);
 
   useLayoutEffect(() => {
-    const onSelectTaskClick = e => {
+    const onSelectTaskClick = (e) => {
       const task = e.features && e.features[0].properties;
       selectTask && selectTask(task.taskId, task.taskStatus);
     };
@@ -97,6 +103,7 @@ export const TasksMap = ({
     const mapboxLayerDefn = () => {
       if (map.getSource('tasks') === undefined) {
         map.addImage('lock', lockIcon, { width: 17, height: 20, data: lockIcon });
+        map.addImage('redlock', redlockIcon, { width: 30, height: 30, data: redlockIcon });
 
         map.addSource('tasks', {
           type: 'geojson',
@@ -111,20 +118,29 @@ export const TasksMap = ({
           map.scrollZoom.enable();
         }
 
+        const lockedByUser = ['==', ['get', 'lockedBy'], authDetails.id];
+
+        const locked = [
+          'any',
+          ['==', ['to-string', ['get', 'taskStatus']], 'LOCKED_FOR_MAPPING'],
+          ['==', ['to-string', ['get', 'taskStatus']], 'LOCKED_FOR_VALIDATION'],
+        ];
+
+        const taskStatusCondition = [
+          'case',
+          ['all', locked, lockedByUser],
+          'redlock',
+          locked,
+          'lock',
+          '',
+        ];
+
         map.addLayer({
           id: 'tasks-icon',
           type: 'symbol',
           source: 'tasks',
           layout: {
-            'icon-image': [
-              'match',
-              ['get', 'taskStatus'],
-              'LOCKED_FOR_MAPPING',
-              'lock',
-              'LOCKED_FOR_VALIDATION',
-              'lock',
-              '',
-            ],
+            'icon-image': taskStatusCondition,
             'icon-size': 0.7,
           },
         });
@@ -218,7 +234,7 @@ export const TasksMap = ({
       if (map.getSource('priority-area') === undefined && priorityAreas) {
         const priorityFeatureCollection = {
           type: 'FeatureCollection',
-          features: priorityAreas.map(poly => ({ type: 'Feature', geometry: poly })),
+          features: priorityAreas.map((poly) => ({ type: 'Feature', geometry: poly })),
         };
         map.addSource('priority-area', {
           type: 'geojson',
@@ -306,7 +322,7 @@ export const TasksMap = ({
         );
       }
 
-      map.on('mouseenter', 'tasks-fill', function(e) {
+      map.on('mouseenter', 'tasks-fill', function (e) {
         if (selectTask) {
           // Change the cursor style as a UI indicator.
           map.getCanvas().style.cursor = 'pointer';
@@ -314,10 +330,10 @@ export const TasksMap = ({
       });
 
       if (taskBordersOnly && navigate) {
-        map.on('mouseenter', 'point-tasks-centroid', function(e) {
+        map.on('mouseenter', 'point-tasks-centroid', function (e) {
           map.getCanvas().style.cursor = 'pointer';
         });
-        map.on('mouseleave', 'point-tasks-centroid', function(e) {
+        map.on('mouseleave', 'point-tasks-centroid', function (e) {
           map.getCanvas().style.cursor = '';
         });
         map.on('click', 'point-tasks-centroid', () => navigate('./tasks'));
@@ -325,7 +341,7 @@ export const TasksMap = ({
       }
 
       map.on('click', 'tasks-fill', onSelectTaskClick);
-      map.on('mouseleave', 'tasks-fill', function(e) {
+      map.on('mouseleave', 'tasks-fill', function (e) {
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = '';
       });
@@ -365,11 +381,11 @@ export const TasksMap = ({
       map.on('click', 'tasks-fill', onSelectTaskClick);
 
       if (taskBordersOnly === true) {
-        taskMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
-        countryMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'visible'));
+        taskMapLayers.forEach((lr) => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
+        countryMapLayers.forEach((lr) => lr && map.setLayoutProperty(lr, 'visibility', 'visible'));
       } else {
-        countryMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
-        taskMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'visible'));
+        countryMapLayers.forEach((lr) => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
+        taskMapLayers.forEach((lr) => lr && map.setLayoutProperty(lr, 'visibility', 'visible'));
         if (disableScrollZoom) {
           updateTMZoom();
         }
@@ -385,8 +401,8 @@ export const TasksMap = ({
       /* cleanup any extra click event listeners after each effect */
       if (map !== null && map.getSource('tasks') !== undefined && someResultsReady) {
         map.off('click', 'tasks-fill', onSelectTaskClick);
-        countryMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
-        taskMapLayers.forEach(lr => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
+        countryMapLayers.forEach((lr) => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
+        taskMapLayers.forEach((lr) => lr && map.setLayoutProperty(lr, 'visibility', 'none'));
       }
     };
   }, [
@@ -401,6 +417,7 @@ export const TasksMap = ({
     disableScrollZoom,
     navigate,
     animateZoom,
+    authDetails.id,
   ]);
 
   return <div id="map" className={className} ref={mapRef}></div>;

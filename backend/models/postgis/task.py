@@ -833,6 +833,7 @@ class Task(db.Model):
             Task.is_square,
             Task.task_status,
             Task.geometry.ST_AsGeoJSON().label("geojson"),
+            Task.locked_by,
             # subquery,
         )
 
@@ -894,6 +895,7 @@ class Task(db.Model):
                 taskZoom=task.zoom,
                 taskIsSquare=task.is_square,
                 taskStatus=TaskStatus(task.task_status).name,
+                lockedBy=task.locked_by,
             )
 
             feature = geojson.Feature(
