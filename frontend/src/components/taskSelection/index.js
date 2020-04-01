@@ -13,6 +13,7 @@ import { TasksMap } from './map.js';
 import { TaskList } from './taskList';
 import { TasksMapLegend } from './legend';
 import { ProjectInstructions } from './instructions';
+import { ChangesetCommentTags } from './changesetComment';
 import { ProjectHeader } from '../projectDetail/header';
 import Contributions from './contributions';
 import { UserPermissionErrorContent } from './permissionErrorModal';
@@ -23,22 +24,22 @@ const getRandomTaskByAction = (activities, taskAction) => {
   if (['validateATask', 'validateAnotherTask'].includes(taskAction)) {
     return getRandomArrayItem(
       activities
-        .filter(task => ['MAPPED', 'BADIMAGERY'].includes(task.taskStatus))
-        .map(task => task.taskId),
+        .filter((task) => ['MAPPED', 'BADIMAGERY'].includes(task.taskStatus))
+        .map((task) => task.taskId),
     );
   }
   if (['mapATask', 'mapAnotherTask'].includes(taskAction)) {
     return getRandomArrayItem(
       activities
-        .filter(task => ['READY', 'INVALIDATED'].includes(task.taskStatus))
-        .map(task => task.taskId),
+        .filter((task) => ['READY', 'INVALIDATED'].includes(task.taskStatus))
+        .map((task) => task.taskId),
     );
   }
 };
 
 export function TaskSelection({ project, type, loading }: Object) {
-  const user = useSelector(state => state.auth.get('userDetails'));
-  const lockedTasks = useSelector(state => state.lockedTasks);
+  const user = useSelector((state) => state.auth.get('userDetails'));
+  const lockedTasks = useSelector((state) => state.lockedTasks);
   const dispatch = useDispatch();
   const [tasks, setTasks] = useState([]);
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
@@ -84,7 +85,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   useEffect(() => {
     if (contributions && contributions.userContributions) {
       const currentUserContributions = contributions.userContributions.filter(
-        u => u.username === user.username,
+        (u) => u.username === user.username,
       );
       if (user.isExpert && currentUserContributions.length > 0) {
         setActiveSection('tasks');
@@ -99,10 +100,10 @@ export function TaskSelection({ project, type, loading }: Object) {
     // it checks if the user has tasks locked on the project and suggests to resume them
     if (!mapInit && initialActivities.activity && user.username) {
       const lockedByCurrentUser = initialActivities.activity
-        .filter(i => i.taskStatus.startsWith('LOCKED_FOR_'))
-        .filter(i => i.actionBy === user.username);
+        .filter((i) => i.taskStatus.startsWith('LOCKED_FOR_'))
+        .filter((i) => i.actionBy === user.username);
       if (lockedByCurrentUser.length) {
-        const tasks = lockedByCurrentUser.map(i => i.taskId);
+        const tasks = lockedByCurrentUser.map((i) => i.taskId);
         setSelectedTasks(tasks);
         setTaskAction(
           lockedByCurrentUser[0].taskStatus === 'LOCKED_FOR_MAPPING'
@@ -188,7 +189,7 @@ export function TaskSelection({ project, type, loading }: Object) {
       <div className="cf vh-minus-200-ns">
         {['mappingIsComplete', 'selectAnotherProject'].includes(taskAction) && (
           <Popup modal open closeOnEscape={true} closeOnDocumentClick={true}>
-            {close => (
+            {(close) => (
               <UserPermissionErrorContent
                 project={project}
                 userLevel={user.mappingLevel}
@@ -214,15 +215,17 @@ export function TaskSelection({ project, type, loading }: Object) {
                     <FormattedMessage {...messages.tasks} />
                   </span>
                   <span
-                    className={`mr4 pb2 pointer ${activeSection === 'instructions' &&
-                      'bb b--blue-dark'}`}
+                    className={`mr4 pb2 pointer ${
+                      activeSection === 'instructions' && 'bb b--blue-dark'
+                    }`}
                     onClick={() => setActiveSection('instructions')}
                   >
                     <FormattedMessage {...messages.instructions} />
                   </span>
                   <span
-                    className={`mr4 pb2 pointer ${activeSection === 'contributions' &&
-                      'bb b--blue-dark'}`}
+                    className={`mr4 pb2 pointer ${
+                      activeSection === 'contributions' && 'bb b--blue-dark'
+                    }`}
                     onClick={() => setActiveSection('contributions')}
                   >
                     <FormattedMessage {...messages.contributions} />
@@ -240,9 +243,12 @@ export function TaskSelection({ project, type, loading }: Object) {
                     />
                   ) : null}
                   {activeSection === 'instructions' ? (
-                    <ProjectInstructions
-                      instructions={project.projectInfo && project.projectInfo.instructions}
-                    />
+                    <>
+                      <ProjectInstructions
+                        instructions={project.projectInfo && project.projectInfo.instructions}
+                      />
+                      <ChangesetCommentTags tags={project.changesetComment} />
+                    </>
                   ) : null}
                   {activeSection === 'contributions' ? (
                     <Contributions
