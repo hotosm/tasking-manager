@@ -90,6 +90,7 @@ const MyContributionsNav = ({ username, authUser }) => {
       label: <FormattedMessage {...messages.myProjects} />,
     },
     { url: '/contributions/tasks', label: <FormattedMessage {...messages.myTasks} /> },
+    { url: '/contributions/teams', label: <FormattedMessage {...messages.myTeams} /> },
   ];
 
   return (

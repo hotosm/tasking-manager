@@ -36,17 +36,17 @@ function getMenuItensForUser(userDetails, isOrgManager) {
   ];
   let filteredMenuItems;
   if (userDetails.username) {
-    filteredMenuItems = menuItems.filter(item => item.authenticated === true || item.showAlways);
+    filteredMenuItems = menuItems.filter((item) => item.authenticated === true || item.showAlways);
     if (!isUserAdminOrPM(userDetails.role) && !isOrgManager) {
-      filteredMenuItems = filteredMenuItems.filter(item => !item.manager);
+      filteredMenuItems = filteredMenuItems.filter((item) => !item.manager);
     }
   } else {
-    filteredMenuItems = menuItems.filter(item => item.authenticated === false || item.showAlways);
+    filteredMenuItems = menuItems.filter((item) => item.authenticated === false || item.showAlways);
   }
   return filteredMenuItems;
 }
 
-const UserDisplay = props => {
+const UserDisplay = (props) => {
   return (
     <span>
       <CurrentUserAvatar className="br-100 v-mid red" width="32px" height="32px" />
@@ -55,10 +55,10 @@ const UserDisplay = props => {
   );
 };
 
-const AuthButtons = props => {
+const AuthButtons = (props) => {
   const { logInStyle, signUpStyle, redirectTo } = props;
   const [debouncedCreateLoginWindow] = useDebouncedCallback(
-    redirectToPass => createLoginWindow(redirectToPass),
+    (redirectToPass) => createLoginWindow(redirectToPass),
     3000,
     { leading: true },
   );
@@ -77,42 +77,18 @@ const AuthButtons = props => {
         modal
         closeOnDocumentClick
       >
-        {close => <SignUp closeModal={close} />}
+        {(close) => <SignUp closeModal={close} />}
       </Popup>
     </>
   );
 };
 
-const PopupItems = props => {
+const PopupItems = (props) => {
   return (
     <div className="v-mid tc">
-      {props.userDetails.username &&
-        props.menuItems
-          .filter(item => item.authenticated === true)
-          .map((item, n) => (
-            <p key={n}>
-              <Link to={item.link} className={props.linkCombo} onClick={props.close}>
-                <FormattedMessage {...item.label} />
-              </Link>
-            </p>
-          ))}
-      {props.userDetails.username && (
-        <>
-          <p>
-            <Link to={'/settings'} className={props.linkCombo} onClick={props.close}>
-              <FormattedMessage {...messages.settings} />
-            </Link>
-          </p>
-          <p>
-            <Link to={'/teams'} className={props.linkCombo} onClick={props.close}>
-              <FormattedMessage {...messages.myTeams} />
-            </Link>
-          </p>
-          <p className="bb b--grey-light"></p>
-        </>
-      )}
+      {/* links that don't require authentication */}
       {props.menuItems
-        .filter(item => item.authenticated === false || item.showAlways)
+        .filter((item) => item.authenticated === false || item.showAlways)
         .map((item, n) => (
           <p key={n}>
             <Link to={item.link} className={props.linkCombo} onClick={props.close}>
@@ -120,6 +96,29 @@ const PopupItems = props => {
             </Link>
           </p>
         ))}
+      <p className="bb b--grey-light"></p>
+      {/* links that require authentication */}
+      {props.userDetails.username &&
+        props.menuItems
+          .filter((item) => item.authenticated === true)
+          .map((item, n) => (
+            <p key={n}>
+              <Link to={item.link} className={props.linkCombo} onClick={props.close}>
+                <FormattedMessage {...item.label} />
+              </Link>
+            </p>
+          ))}
+      {/* user links */}
+      {props.userDetails.username && (
+        <>
+          <p>
+            <Link to={'/settings'} className={props.linkCombo} onClick={props.close}>
+              <FormattedMessage {...messages.settings} />
+            </Link>
+          </p>
+        </>
+      )}
+      {/* authentication section */}
       {props.userDetails.username ? (
         <Button className="bg-blue-dark white" onClick={() => props.logout()}>
           <FormattedMessage {...messages.logout} />
@@ -145,10 +144,9 @@ class Header extends React.Component {
       : { className: this.linkCombo };
   };
 
-  getUserLinks = role => {
+  getUserLinks = (role) => {
     return [
       { label: <FormattedMessage {...messages.settings} />, url: '/settings' },
-      { label: <FormattedMessage {...messages.myTeams} />, url: '/teams' },
       { label: <FormattedMessage {...messages.logout} />, url: '/logout' },
     ];
   };
@@ -167,7 +165,7 @@ class Header extends React.Component {
     );
   }
 
-  onUserMenuSelect = arr => {
+  onUserMenuSelect = (arr) => {
     if (arr.length === 1) {
       if (arr[0].url === '/logout') {
         this.props.logout();
@@ -184,7 +182,7 @@ class Header extends React.Component {
     return this.props.userDetails.hasOwnProperty('emailAddress') &&
       !this.props.userDetails.emailAddress ? (
       <Popup modal open closeOnEscape={false} closeOnDocumentClick={false}>
-        {close => <UpdateEmail closeModal={close} />}
+        {(close) => <UpdateEmail closeModal={close} />}
       </Popup>
     ) : null;
   }
@@ -251,8 +249,8 @@ class Header extends React.Component {
           <div className="fr dib tr mb1">
             {this.renderAuthenticationButtons()}
             <div className="dib v-mid dn-l">
-              <Popup trigger={open => <BurgerMenu open={open} />} modal closeOnDocumentClick>
-                {close => (
+              <Popup trigger={(open) => <BurgerMenu open={open} />} modal closeOnDocumentClick>
+                {(close) => (
                   <div>
                     <PopupItems
                       userDetails={this.props.userDetails}
@@ -273,7 +271,7 @@ class Header extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   userDetails: state.auth.get('userDetails'),
   isOrgManager: state.auth.get('isOrgManager'),
   token: state.auth.get('token'),

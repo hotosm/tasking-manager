@@ -10,21 +10,23 @@ import { ProjectSearchBox } from './projectSearchBox';
 import { OrderBySelector } from './orderBy';
 import { ShowMapToggle } from './projectNav';
 
-const isActiveButton = (buttonName, projectQuery) => {
-  if (JSON.stringify(projectQuery).indexOf(buttonName) !== -1) {
-    return 'bg-blue-grey white fw5';
-  } else {
-    return 'bg-white blue-grey';
-  }
-};
-
 export const MyProjectNav = (props) => {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const isOrgManager = useSelector((state) => state.auth.get('isOrgManager'));
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
 
   const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
+  const activeButtonClass = 'bg-blue-grey white fw5';
+  const inactiveButtonClass = 'bg-white blue-grey';
   const notAnyFilter = !stringify(fullProjectsQuery);
+
+  const isActiveButton = (buttonName, projectQuery) => {
+    if (JSON.stringify(projectQuery).indexOf(buttonName) !== -1) {
+      return activeButtonClass;
+    } else {
+      return inactiveButtonClass;
+    }
+  };
 
   return (
     <header className="bt bb b--tan">
@@ -100,18 +102,22 @@ export const MyProjectNav = (props) => {
           <>
             <Link
               to={`./?managedByMe=1`}
-              className={`di mh1 ${isActiveButton('managedByMe', fullProjectsQuery)} ${linkCombo}`}
+              className={`di mh1 ${
+                fullProjectsQuery.managedByMe && !fullProjectsQuery.status
+                  ? activeButtonClass
+                  : inactiveButtonClass
+              } ${linkCombo}`}
             >
               <FormattedMessage {...messages.active} />
             </Link>
             <Link
-              to={`./?status=DRAFT&managedByMe=true`}
+              to={`./?status=DRAFT&managedByMe=1`}
               className={`di mh1 ${isActiveButton('DRAFT', fullProjectsQuery)} ${linkCombo}`}
             >
               <FormattedMessage {...messages.draft} />
             </Link>
             <Link
-              to={`./?status=ARCHIVED&managedByMe=true`}
+              to={`./?status=ARCHIVED&managedByMe=1`}
               className={`di mh1 ${isActiveButton('ARCHIVED', fullProjectsQuery)} ${linkCombo}`}
             >
               <FormattedMessage {...messages.archived} />
