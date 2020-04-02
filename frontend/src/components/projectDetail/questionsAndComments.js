@@ -11,7 +11,7 @@ import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
-const formatUserNamesToLink = text => {
+const formatUserNamesToLink = (text) => {
   const regex = /@\[([^\]]+)\]/gi;
   // Find usernames with a regular expression. They all start with '[@' and end with ']'
   const usernames = text && text.match(regex);
@@ -34,11 +34,41 @@ const formatUserNamesToLink = text => {
   return text;
 };
 
-const Item = ({ entity: { name } }) => (
-  <div className="w-100 f6 pv2 ph3 f5 tc bg-tan blue-grey hover-bg-blue-grey hover-white pointer">
-    {`${name}`}
-  </div>
-);
+export const UserFetchTextarea = ({ value, setValueFn, token }) => {
+  const fetchUsers = async (user) => {
+    const url = `users/queries/filter/${user}/`;
+    const res = await fetchLocalJSONAPI(url, token);
+    const userItems = res.usernames.map((u) => {
+      return { name: u };
+    });
+
+    return userItems;
+  };
+
+  const Item = ({ entity: { name } }) => (
+    <div className="w-100 f6 pv2 ph3 f5 tc bg-tan blue-grey hover-bg-blue-grey hover-white pointer">
+      {`${name}`}
+    </div>
+  );
+
+  return (
+    <ReactTextareaAutocomplete
+      value={value}
+      listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey w-40 overflow-auto"
+      onChange={setValueFn}
+      className="w-100 f5 pa2"
+      loadingComponent={() => <span>Loading</span>}
+      rows={3}
+      trigger={{
+        '@': {
+          dataProvider: fetchUsers,
+          component: Item,
+          output: (item, trigger) => '@[' + item.name + ']',
+        },
+      }}
+    />
+  );
+};
 
 const PostProjectComment = ({ token, projectId, setStat }) => {
   const [comment, setComment] = useState('');
@@ -50,20 +80,10 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
     const url = `projects/${projectId}/comments/`;
     const body = JSON.stringify({ message: comment });
 
-    pushToLocalJSONAPI(url, body, token).then(res => {
+    pushToLocalJSONAPI(url, body, token).then((res) => {
       setStat(true);
       setComment('');
     });
-  };
-
-  const fetchUsers = async user => {
-    const url = `users/queries/filter/${user}/`;
-    const res = await fetchLocalJSONAPI(url, token);
-    const userItems = res.usernames.map(u => {
-      return { name: u };
-    });
-
-    return userItems;
   };
 
   return (
@@ -72,20 +92,10 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
         <CurrentUserAvatar className="w-70-l w4 w3-m br-100" />
       </div>
       <div className="fl w-70 h-100">
-        <ReactTextareaAutocomplete
+        <UserFetchTextarea
           value={comment}
-          listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey w-40 overflow-auto"
-          onChange={e => setComment(e.target.value)}
-          className="w-100 f5 pa2"
-          loadingComponent={() => <span>Loading</span>}
-          rows={3}
-          trigger={{
-            '@': {
-              dataProvider: fetchUsers,
-              component: Item,
-              output: (item, trigger) => '@[' + item.name + ']',
-            },
-          }}
+          setValueFn={(e) => setComment(e.target.value)}
+          token={token}
         />
       </div>
       <div className="fl w-20 tc pt3">
@@ -98,12 +108,12 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
 };
 
 export const QuestionsAndComments = ({ projectId }) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [response, setResponse] = useState(null);
   const [page, setPage] = useState(1);
   const [commentsStat, setStat] = useState(true);
 
-  const handlePagination = val => {
+  const handlePagination = (val) => {
     setPage(val);
     setStat(true);
   };
