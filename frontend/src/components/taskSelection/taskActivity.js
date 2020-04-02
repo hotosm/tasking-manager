@@ -13,9 +13,10 @@ import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Button } from '../button';
 import { Dropdown } from '../dropdown';
+import { UserFetchTextarea } from '../projectDetail/questionsAndComments';
 
 const PostComment = ({ projectId, taskId, setCommentPayload }) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [comment, setComment] = useState('');
 
   const pushComment = () => {
@@ -23,7 +24,7 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
       `projects/${projectId}/comments/tasks/${taskId}/`,
       JSON.stringify({ comment: comment }),
       token,
-    ).then(res => {
+    ).then((res) => {
       setCommentPayload(res);
       setComment('');
     });
@@ -42,21 +43,11 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
           <CurrentUserAvatar className="h2 w2 br-100" />
         </div>
         <div className="fl w-90 h-100 pr3">
-          <FormattedMessage {...messages.writeComment}>
-            {msg => {
-              return (
-                <textarea
-                  value={comment}
-                  onChange={e => setComment(e.target.value)}
-                  name="comment"
-                  type="textarea"
-                  placeholder={msg}
-                  className="w-100 h-75 pa2 f6"
-                  rows="4"
-                />
-              );
-            }}
-          </FormattedMessage>
+          <UserFetchTextarea
+            value={comment}
+            setValueFn={(e) => setComment(e.target.value)}
+            token={token}
+          />
         </div>
       </div>
       <div className="w-100 pb3 tr pr3">
@@ -69,7 +60,7 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
 };
 
 export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
@@ -175,7 +166,7 @@ export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) =>
   useEffect(() => {
     const users = [];
     if (history && history.taskHistory) {
-      history.taskHistory.forEach(item => {
+      history.taskHistory.forEach((item) => {
         if (!users.includes(item.actionBy)) {
           users.push(item.actionBy);
         }
