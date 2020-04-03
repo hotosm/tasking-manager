@@ -22,17 +22,14 @@ const Parameters = {
     Type: 'String',
     Description: 'Path to database dump on S3'
   },
-  JumpCloudAPIKey: {
-    Type: 'String',
-    Description: 'JumpCloud API Key'
-  },
   NewRelicLicense: {
     Type: 'String',
     Description: 'NEW_RELIC_LICENSE'
   },
   PostgresDB: {
     Type: 'String',
-    Description: 'POSTGRES_DB'
+    Description: 'POSTGRES_DB',
+    Default: 'tm'
   },
   PostgresPassword: {
     Type: 'String',
@@ -40,7 +37,8 @@ const Parameters = {
   },
   PostgresUser: {
     Type: 'String',
-    Description: 'POSTGRES_USER'
+    Description: 'POSTGRES_USER',
+    Default: 'taskingmanager'
   },
   TaskingManagerAppBaseUrl: {
     Type: 'String',
@@ -53,7 +51,8 @@ const Parameters = {
   },
   TaskingManagerConsumerKey: {
     Description: 'TM_CONSUMER_KEY',
-    Type: 'String'
+    Type: 'String',
+    Default: '86FeADYCgpgNufcP9MyOdqlIPjG3cX7AdFiTPhpr'
   },
   TaskingManagerConsumerSecret: {
       Description: 'TM_CONSUMER_SECRET',
@@ -70,7 +69,8 @@ const Parameters = {
   },
   TaskingManagerSMTPHost: {
     Description: 'TM_SMTP_HOST environment variable',
-    Type: 'String'
+    Type: 'String',
+    Default: 'email-smtp.us-east-1.amazonaws.com'
   },
   TaskingManagerSMTPPassword: {
     Description: 'TM_SMTP_PASSWORD environment variable',
@@ -82,7 +82,8 @@ const Parameters = {
   },
   TaskingManagerSMTPPort: {
     Description: 'TM_SMTP_PORT environment variable',
-    Type: 'String'
+    Type: 'String',
+    Default: '587'
   },
   TaskingManagerDefaultChangesetComment: {
     Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
@@ -100,11 +101,13 @@ const Parameters = {
   },
   ELBSubnets: {
     Description: 'ELB subnets',
-    Type: 'String'
+    Type: 'String',
+    Default: 'subnet-35b98b0f,subnet-47e2861e,subnet-5a119a3f,subnet-6ba8e81c,subnet-75902c79,subnet-f4f977df'
   },
   SSLCertificateIdentifier: {
     Type: 'String',
-    Description: 'SSL certificate for HTTPS protocol'
+    Description: 'SSL certificate for HTTPS protocol',
+    Default: 'certificate/1d74321b-1e5b-4e31-b97a-580deb39c539'
   },
   MatomoSiteID: {
     Type: 'String',
@@ -172,6 +175,22 @@ const Conditions = {
 };
 
 const Resources = {
+  TaskingManagerCodeDeployApplication: {  
+    Type: 'AWS::CodeDeploy::Application',
+    Properties: {
+      ApplicationName: "TaskingManager4",
+      ComputePlatform: "Server"
+    }
+  },
+  TaskingManagerCodeDeployGroup: {
+    Type: 'AWS::CodeDeploy::DeploymentGroup',
+    Properties: {
+      ApplicationName: cf.ref('TaskingManagerCodeDeployApplication'),
+      AutoScalingGroups: [ cf.ref('TaskingManagerASG') ],
+      DeploymentGroupName: 'TM4CDeployTest',
+      ServiceRoleArn: 'arn:aws:iam::670261699094:role/CodeDeployRole',
+    }
+  },
   TaskingManagerASG: {
     DependsOn: 'TaskingManagerLaunchConfiguration',
     Type: 'AWS::AutoScaling::AutoScalingGroup',
@@ -333,8 +352,7 @@ const Resources = {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
       LaunchConfigurationName: cf.stackName,
       ImageId: 'ami-07ebfd5b3428b6f4d',
-      InstanceType: 'c5d.large',
-      InstanceType: 'c5d.large',
+      InstanceType: 'c5.large',
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
         '#!/bin/bash',
@@ -345,29 +363,25 @@ const Resources = {
         'dpkg-reconfigure --frontend=noninteractive locales',
         'wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -',
         'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
-        'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
         'sudo apt-get -y update',
-        'sudo apt-get -y install python3',
-        'sudo apt-get -y install python3-pip',
-        'sudo apt-get -y install python3-dev',
-        'sudo apt-get -y install python3-venv',
+        'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade',
+        'sudo apt-get -y install python3 python3-pip python3-dev python3-venv',
+        'sudo apt-get -y install python-pip',
         'sudo apt-get -y install curl',
         'curl -o install-node10.sh -sL https://deb.nodesource.com/setup_10.x',
         'sudo chmod +x install-node10.sh',
         'sudo ./install-node10.sh',
         'sudo apt-get -y install nodejs',
-        'sudo apt-get install -y postgresql-11',
-        'sudo apt-get -y install postgresql-11-postgis',
-        'sudo apt-get -y install postgresql-11-postgis-scripts',
+        'sudo apt-get -y install postgresql-11 postgresql-11-postgis-3 postgresql-11-postgis-3-scripts',
         'sudo apt-get -y install postgis',
         'sudo apt-get -y install libpq-dev',
         'sudo apt-get -y install libxml2',
         'sudo apt-get -y install wget libxml2-dev',
-        'sudo apt-get -y install libgeos-3.5.0',
+        'sudo apt-get -y install libgeos-3.6.2',
         'sudo apt-get -y install libgeos-dev',
         'sudo apt-get -y install libproj9',
         'sudo apt-get -y install libproj-dev',
-        'sudo apt-get -y install python-pip libgdal1-dev',
+        'sudo apt-get -y install libgdal-dev',
         'sudo apt-get -y install libjson-c-dev',
         'sudo apt-get -y install git',
         'sudo apt-get -y install awscli',
@@ -382,7 +396,7 @@ const Resources = {
         'wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
         'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
         'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz',
-        'pip2 install aws-cfn-bootstrap-latest.tar.gz',
+        'pip install aws-cfn-bootstrap-latest.tar.gz',
         'echo "Exporting environment variables:"',
         cf.sub('echo "NEW_RELIC_LICENSE=${NewRelicLicense}" | tee /opt/tasking-manager.env'),
         cf.join('', ['echo "POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address'), '" | tee -a /opt/tasking-manager.env']),
@@ -482,6 +496,11 @@ const Resources = {
           Action: [ "sts:AssumeRole" ]
         }]
       },
+      ManagedPolicyArns: [
+          'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy',
+          'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy',
+          'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
+      ],
       Policies: [{
         PolicyName: "RDSPolicy",
         PolicyDocument: {
@@ -514,13 +533,7 @@ const Resources = {
             Effect: 'Allow',
             Resource: [ cf.join('',
               ['arn:aws:s3:::',
-                cf.select(0,
-                  cf.split('/',
-                    cf.select(1,
-                      cf.split('s3://', cf.ref('DatabaseDump'))
-                    )
-                  )
-                )
+                cf.select(2, cf.split('/', cf.ref('DatabaseDump')))
               ]
             )]
           }, {

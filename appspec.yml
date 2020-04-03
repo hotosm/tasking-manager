@@ -76,16 +76,18 @@ hooks:
 # During the AfterInstall deployment lifecycle event, run the commands 
 #   in the script specified in "location".
   AfterInstall:
-    - location: /scripts/aws/cloudformation/database-migrate.sh
+    - location: scripts/aws/cloudformation/post-download.sh
+      timeout: 600
+    - location: scripts/aws/cloudformation/database-migrate.sh
       timeout: 600
       runas: root
-    - location: /scripts/aws/cloudformation/frontend-setup.sh
+    - location: scripts/aws/cloudformation/frontend-setup.sh
       timeout: 200
       runas: root
 # During the ApplicationStart deployment lifecycle event, run the commands 
 #   in the script specified in "location".
   ApplicationStart:
-    - location: /scripts/aws/cloudformation/service-start.sh
+    - location: scripts/aws/cloudformation/service-start.sh
       timeout: 200
       runas: root
 # During the ValidateService deployment lifecycle event, run the commands 
