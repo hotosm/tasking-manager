@@ -76,4 +76,8 @@ export default defineMessages({
     id: 'users.detail.heatmapLegendLess',
     defaultMessage: 'less',
   },
+  delayPopup: {
+    id: 'users.detail.delay_popup',
+    defaultMessage: 'Usually these values are not updated instantly',
+  },
 });
