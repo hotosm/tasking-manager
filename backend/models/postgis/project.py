@@ -641,6 +641,9 @@ class Project(db.Model):
             self.tasks_validated,
             self.tasks_bad_imagery,
         )
+        project_stats.total_mapped = self.tasks_mapped
+        project_stats.total_validated = self.tasks_validated
+        project_stats.total_bad_imagery = self.tasks_bad_imagery
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         project_stats.aoi_centroid = geojson.loads(centroid_geojson)
         unique_mappers = (
@@ -802,6 +805,9 @@ class Project(db.Model):
             self.tasks_validated,
             self.tasks_bad_imagery,
         )
+        summary.total_mapped = self.tasks_mapped
+        summary.total_validated = self.tasks_validated
+        summary.total_bad_imagery = self.tasks_bad_imagery
         summary.project_teams = [
             ProjectTeamDTO(
                 dict(
@@ -930,6 +936,10 @@ class Project(db.Model):
             self.tasks_validated,
             self.tasks_bad_imagery,
         )
+
+        base_dto.total_mapped = self.tasks_mapped
+        base_dto.total_validated = self.tasks_validated
+        base_dto.total_bad_imagery = self.tasks_bad_imagery
 
         base_dto.project_teams = [
             ProjectTeamDTO(

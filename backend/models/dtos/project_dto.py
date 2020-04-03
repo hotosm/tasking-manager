@@ -240,6 +240,10 @@ class ProjectDTO(Model):
     percent_mapped = IntType(serialized_name="percentMapped")
     percent_validated = IntType(serialized_name="percentValidated")
     percent_bad_imagery = IntType(serialized_name="percentBadImagery")
+    total_mapped = IntType(serialized_name="totalMapped")
+    total_validated = IntType(serialized_name="totalValidated")
+    total_bad_imagery = IntType(serialized_name="totalBadImagery")
+
     task_creation_mode = StringType(
         required=True,
         serialized_name="taskCreationMode",
@@ -470,6 +474,9 @@ class ProjectSummary(Model):
     percent_mapped = IntType(serialized_name="percentMapped")
     percent_validated = IntType(serialized_name="percentValidated")
     percent_bad_imagery = IntType(serialized_name="percentBadImagery")
+    total_mapped = IntType(serialized_name="totalMapped")
+    total_validated = IntType(serialized_name="totalValidated")
+    total_bad_imagery = IntType(serialized_name="totalBadImagery")
     aoi_centroid = BaseType(serialized_name="aoiCentroid")
     mapper_level = StringType(serialized_name="mapperLevel")
     mapping_permission = IntType(
@@ -561,6 +568,9 @@ class ProjectStatsDTO(Model):
     percent_mapped = IntType(serialized_name="percentMapped")
     percent_validated = IntType(serialized_name="percentValidated")
     percent_bad_imagery = IntType(serialized_name="percentBadImagery")
+    total_mapped = IntType(serialized_name="totalMapped")
+    total_validated = IntType(serialized_name="totalValidated")
+    total_bad_imagery = IntType(serialized_name="totalBadImagery")
     aoi_centroid = BaseType(serialized_name="aoiCentroid")
 
 
