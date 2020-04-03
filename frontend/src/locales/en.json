@@ -653,6 +653,7 @@
   "users.detail.MyTasks": "My tasks",
   "users.detail.MyContribs": "My contributions",
   "users.detail.MyStats": "My stats",
+  "users.detail.delay_popup": "Usually these values are not updated instantly",
   "users.list.search.username": "Search by username",
   "users.list.total": "Total number of users: {total}",
   "users.list.actions.setRole": "Set role",

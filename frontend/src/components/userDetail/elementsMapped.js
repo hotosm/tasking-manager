@@ -3,8 +3,9 @@ import { ClockIcon, RoadIcon, HomeIcon, WavesIcon, MarkerIcon } from '../svgIcon
 import humanizeDuration from 'humanize-duration';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
+import ReactTooltip from 'react-tooltip';
 
-const getFieldData = field => {
+const getFieldData = (field) => {
   const iconClass = 'h-50 w-50';
   const iconStyle = { height: '45px' };
   switch (field) {
@@ -85,12 +86,25 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
   });
 
   return (
-    <div className="cf w-100">
-      <Element field={'time'} value={duration} />
-      <Element field={'buildings'} value={osmStats.total_building_count_add || 0} />
-      <Element field={'road'} value={osmStats.total_road_km_add || 0} />
-      <Element field={'poi'} value={osmStats.total_poi_count_add || 0} />
-      <Element field={'waterways'} value={osmStats.total_waterway_count_add || 0} />
+    <div>
+      <div className="cf w-100 relative pr2">
+        <Element field={'time'} value={duration} />
+        <Element field={'buildings'} value={osmStats.total_building_count_add || 0} />
+        <Element field={'road'} value={osmStats.total_road_km_add || 0} />
+        <Element field={'poi'} value={osmStats.total_poi_count_add || 0} />
+        <Element field={'waterways'} value={osmStats.total_waterway_count_add || 0} />
+        <FormattedMessage {...messages.delayPopup}>
+          {(msg) => (
+            <span
+              className="bg-blue-grey br-100 white ph1 f6 absolute bottom-0 right-0"
+              data-tip={msg}
+            >
+              ?
+            </span>
+          )}
+        </FormattedMessage>
+        <ReactTooltip />
+      </div>
     </div>
   );
 };
