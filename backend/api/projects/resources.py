@@ -693,7 +693,7 @@ class ProjectsQueriesBboxAPI(Resource):
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
                 tm.authenticated_user_id
             )
-            if len(orgs_dto.organisation) < 1:
+            if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a project manager")
         except ValueError as e:
             error_msg = f"ProjectsQueriesBboxAPI GET: {str(e)}"
@@ -767,7 +767,7 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
                 tm.authenticated_user_id
             )
-            if len(orgs_dto.organisation) < 1:
+            if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a project manager")
         except ValueError as e:
             error_msg = f"ProjectsQueriesOwnerAPI GET: {str(e)}"
