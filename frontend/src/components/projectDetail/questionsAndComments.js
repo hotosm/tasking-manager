@@ -11,7 +11,7 @@ import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
-const formatUserNamesToLink = text => {
+const formatUserNamesToLink = (text, taggedUsers) => {
   const regex = /@\[([^\]]+)\]/gi;
   // Find usernames with a regular expression. They all start with '[@' and end with ']'
   const usernames = text && text.match(regex);
@@ -21,14 +21,15 @@ const formatUserNamesToLink = text => {
       let username = usernames[i].substring(2, usernames[i].length);
       // Strip off the last character
       username = username.substring(0, username.length - 1);
-      text = text.replace(
-        usernames[i],
-        '<a class="pointer blue-grey b underline" href="/users/' +
-          username +
-          '">' +
-          username +
-          '</a>',
-      );
+      if (taggedUsers.includes(username))
+        text = text.replace(
+          usernames[i],
+          '<a class="pointer blue-grey b underline" href="/users/' +
+            username +
+            '">' +
+            username +
+            '</a>',
+        );
     }
   }
   return text;
@@ -178,7 +179,9 @@ function CommentList({ comments }: Object) {
             <div
               style={{ wordWrap: 'break-word' }}
               className="blue-grey f5 lh-title"
-              dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(comment.message))}
+              dangerouslySetInnerHTML={htmlFromMarkdown(
+                formatUserNamesToLink(comment.message, comment.taggedUsers),
+              )}
             />
           </div>
         </div>
