@@ -106,16 +106,20 @@ const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
   );
 };
 
-export const SearchNav = ({ filters, setFilters }) => {
+export const SearchNav = ({ filters, setFilters, initialFilters }) => {
   const updateFilters = (field, value) => {
     setFilters(f => {
       return { ...f, [field]: value };
     });
   };
 
+  const clearFilters = (e) => {
+    setFilters(initialFilters);
+  };
+
   return (
     <div className="w-100 mb3 flex items-center">
-      <div className="fl w-20 mr2">
+      <div className="fl w-20 mr3">
         <UserFilter filters={filters} setFilters={setFilters} updateFilters={updateFilters} />
       </div>
       <div className="mr3 tr">
@@ -125,8 +129,13 @@ export const SearchNav = ({ filters, setFilters }) => {
           updateFilters={updateFilters}
         />
       </div>
-      <div className="tr">
+      <div className="tr mr3">
         <RoleFilter filters={filters} setFilters={setFilters} updateFilters={updateFilters} />
+      </div>
+      <div className="tr red mr3 pointer" onClick={clearFilters}>
+        <p>
+          <FormattedMessage {...messages.clearFilters} />
+        </p>
       </div>
     </div>
   );

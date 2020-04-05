@@ -319,4 +319,8 @@ export default defineMessages({
     id: 'user.user_role.options.mapper',
     defaultMessage: 'Mapper',
   },
+  clearFilters: {
+    id: 'user.nav.clearFilters',
+    defaultMessage: 'Clear filters',
+  },
 });
