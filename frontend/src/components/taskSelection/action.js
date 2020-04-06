@@ -17,6 +17,7 @@ import { getEditors } from '../../utils/editorsList';
 import { openEditor } from '../../utils/openEditor';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { TaskHistory } from './taskActivity';
+import { ChangesetCommentTags } from './changesetComment';
 
 import DueDateBox from '../projectcard/dueDateBox';
 import { UserFetchTextarea } from '../projectDetail/questionsAndComments';
@@ -213,9 +214,12 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                 </>
               )}
               {activeSection === 'instructions' && (
-                <ProjectInstructions
-                  instructions={project.projectInfo && project.projectInfo.instructions}
-                />
+                <>
+                  <ProjectInstructions
+                    instructions={project.projectInfo && project.projectInfo.instructions}
+                  />
+                  <ChangesetCommentTags tags={project.changesetComment} />
+                </>
               )}
               {activeSection === 'history' && (
                 <TaskHistory projectId={project.projectId} taskId={tasksIds[0]} />
