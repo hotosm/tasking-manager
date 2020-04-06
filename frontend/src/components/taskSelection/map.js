@@ -12,7 +12,7 @@ import redlock from '../../assets/img/red-lock.png';
 let lockIcon = new Image(17, 20);
 lockIcon.src = lock;
 
-let redlockIcon = new Image(30, 30);
+let redlockIcon = new Image(17, 20);
 redlockIcon.src = redlock;
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -119,13 +119,11 @@ export const TasksMap = ({
         }
 
         const lockedByUser = ['==', ['get', 'lockedBy'], authDetails.id];
-
         const locked = [
           'any',
           ['==', ['to-string', ['get', 'taskStatus']], 'LOCKED_FOR_MAPPING'],
           ['==', ['to-string', ['get', 'taskStatus']], 'LOCKED_FOR_VALIDATION'],
         ];
-
         const taskStatusCondition = [
           'case',
           ['all', locked, lockedByUser],
