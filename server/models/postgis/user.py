@@ -34,7 +34,6 @@ class User(db.Model):
     username = db.Column(db.String, unique=True)
     role = db.Column(db.Integer, default=0, nullable=False)
     mapping_level = db.Column(db.Integer, default=1, nullable=False)
-    projects_mapped = db.Column(db.Integer, default=1, nullable=False)
     tasks_mapped = db.Column(db.Integer, default=0, nullable=False)
     tasks_validated = db.Column(db.Integer, default=0, nullable=False)
     tasks_invalidated = db.Column(db.Integer, default=0, nullable=False)
