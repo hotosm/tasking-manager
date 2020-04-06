@@ -18,7 +18,7 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
   return (
     <div>
       <FormattedMessage {...messages.enterUsername}>
-        {msg => {
+        {(msg) => {
           return (
             <form className="relative">
               <div>
@@ -32,7 +32,7 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
                 ref={inputRef}
                 autoComplete="off"
                 value={filters.username !== '' ? filters.username : ''}
-                onChange={e => updateFilters('username', e.target.value)}
+                onChange={(e) => updateFilters('username', e.target.value)}
                 placeholder={msg}
                 className={'input-reset ba b--grey-light pa1 lh-copy db w-100'}
                 style={{ textIndent: '30px' }}
@@ -42,7 +42,7 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
 
               <CloseIcon
                 onClick={() => {
-                  setFilters(p => {
+                  setFilters((p) => {
                     return { ...p, username: '' };
                   });
                 }}
@@ -61,7 +61,7 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
 const RoleFilter = ({ filters, setFilters, updateFilters }) => {
   const roles = ['ALL', 'MAPPER', 'ADMIN'];
 
-  const options = roles.map(role => {
+  const options = roles.map((role) => {
     return { value: role, label: <FormattedMessage {...messages[`userRole${role}`]} /> };
   });
 
@@ -70,7 +70,7 @@ const RoleFilter = ({ filters, setFilters, updateFilters }) => {
       <Dropdown
         onAdd={() => {}}
         onRemove={() => {}}
-        onChange={n => {
+        onChange={(n) => {
           const value = n && n[0] && n[0].value;
           updateFilters('role', value);
         }}
@@ -85,7 +85,7 @@ const RoleFilter = ({ filters, setFilters, updateFilters }) => {
 const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
   const mapperLevels = ['ALL', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
 
-  const options = mapperLevels.map(l => {
+  const options = mapperLevels.map((l) => {
     return { value: l, label: <FormattedMessage {...messages[`mapperLevel${l}`]} /> };
   });
 
@@ -94,7 +94,7 @@ const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
       <Dropdown
         onAdd={() => {}}
         onRemove={() => {}}
-        onChange={n => {
+        onChange={(n) => {
           const value = n && n[0] && n[0].value;
           updateFilters('level', value);
         }}
@@ -108,7 +108,7 @@ const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
 
 export const SearchNav = ({ filters, setFilters, initialFilters }) => {
   const updateFilters = (field, value) => {
-    setFilters(f => {
+    setFilters((f) => {
       return { ...f, [field]: value };
     });
   };
@@ -132,23 +132,23 @@ export const SearchNav = ({ filters, setFilters, initialFilters }) => {
       <div className="tr mr3">
         <RoleFilter filters={filters} setFilters={setFilters} updateFilters={updateFilters} />
       </div>
-      <div className="tr red mr3 pointer" onClick={clearFilters}>
-        <p>
+      {(filters.username || filters.level !== 'ALL' || filters.role !== 'ALL') && (
+        <div className="tr red pointer" onClick={clearFilters}>
           <FormattedMessage {...messages.clearFilters} />
-        </p>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export const UsersTable = ({ filters, setFilters }) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [response, setResponse] = useState(null);
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const [status, setStatus] = useState({ status: null, message: '' });
 
   useEffect(() => {
-    const fetchUsers = async filters => {
+    const fetchUsers = async (filters) => {
       const url = `users/?${filters}`;
       const res = await fetchLocalJSONAPI(url, token);
       setResponse(res);
@@ -170,7 +170,7 @@ export const UsersTable = ({ filters, setFilters }) => {
         }
         return null;
       })
-      .filter(v => v !== null)
+      .filter((v) => v !== null)
       .join('&');
 
     fetchUsers(urlFilters);
@@ -191,7 +191,7 @@ export const UsersTable = ({ filters, setFilters }) => {
       </p>
       <div className="w-100 f5">
         <ul className="list pa0 ma0">
-          {response.users.map(user => (
+          {response.users.map((user) => (
             <UserListCard
               user={user}
               key={user.id}
@@ -204,8 +204,8 @@ export const UsersTable = ({ filters, setFilters }) => {
         {response === null || response.pagination.total === 0 ? null : (
           <PaginatorLine
             activePage={filters.page}
-            setPageFn={val =>
-              setFilters(f => {
+            setPageFn={(val) =>
+              setFilters((f) => {
                 return { ...f, page: val };
               })
             }
@@ -243,7 +243,7 @@ const UserEditMenu = ({ user, token, close, setStatus }) => {
         <p className="b mv3">
           <FormattedMessage {...messages.setRole} />
         </p>
-        {roles.map(role => {
+        {roles.map((role) => {
           return (
             <div
               key={role}
@@ -262,7 +262,7 @@ const UserEditMenu = ({ user, token, close, setStatus }) => {
         <p className="b mv3">
           <FormattedMessage {...messages.setLevel} />
         </p>
-        {mapperLevels.map(level => {
+        {mapperLevels.map((level) => {
           return (
             <div
               key={level}
@@ -327,7 +327,7 @@ export function UserListCard({ user, token, username, setStatus }: Object) {
             closeOnDocumentClick
             className="user-popup"
           >
-            {close => (
+            {(close) => (
               <UserEditMenu user={user} token={token} close={close} setStatus={setStatus} />
             )}
           </Popup>
