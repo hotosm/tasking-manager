@@ -91,6 +91,7 @@ class TaskDTO(Model):
     last_updated = UTCDateTimeType(
         serialized_name="lastUpdated", serialize_when_none=False
     )
+    actions = ListType(StringType, required=True)
 
 
 class TaskDTOs(Model):

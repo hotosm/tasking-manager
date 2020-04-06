@@ -235,6 +235,7 @@ class UserService:
             TaskHistory.query.with_entities(
                 TaskHistory.project_id,
                 TaskHistory.task_id,
+                func.array_agg(TaskHistory.action).label("actions"),
                 func.max(TaskHistory.action_date),
             )
             .filter(TaskHistory.user_id == user_id)
@@ -267,7 +268,7 @@ class UserService:
                 Task.project_id == task_id_list.c.project_id,
             ),
         )
-        tasks = tasks.add_column("max_1")
+        tasks = tasks.add_column("max_1").add_column("actions")
 
         if project_status:
             tasks = tasks.filter(
@@ -282,8 +283,8 @@ class UserService:
 
         task_list = []
 
-        for task, action_date in results.items:
-            task_list.append(task.as_dto(last_updated=action_date))
+        for task, action_date, actions in results.items:
+            task_list.append(task.as_dto(last_updated=action_date, actions=actions))
 
         user_task_dtos.user_tasks = task_list
         user_task_dtos.pagination = Pagination(results)

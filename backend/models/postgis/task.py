@@ -987,6 +987,7 @@ class Task(db.Model):
         self,
         task_history: List[TaskHistoryDTO] = [],
         last_updated: datetime.datetime = None,
+        actions: List = None,
     ):
         """Just converts to a TaskDTO"""
         task_dto = TaskDTO()
@@ -997,6 +998,8 @@ class Task(db.Model):
         task_dto.task_history = task_history
         if last_updated:
             task_dto.last_updated = last_updated
+        if actions:
+            task_dto.actions = actions
         task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
         return task_dto
 
