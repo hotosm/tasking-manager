@@ -311,7 +311,7 @@ export default defineMessages({
   },
   incomplete: {
     id: 'project.tasks.action.options.mapping_incomplete',
-    defaultMessage: 'Task partially mapped, but needs more work',
+    defaultMessage: "Can't finish this task, set back to ready for mapping",
   },
   completelyMapped: {
     id: 'project.tasks.action.options.mapping_complete',

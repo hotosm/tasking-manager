@@ -241,6 +241,11 @@ class UserService:
             .group_by(TaskHistory.task_id, TaskHistory.project_id)
         )
 
+        if task_status:
+            base_query = base_query.filter(
+                TaskHistory.action_text == TaskStatus[task_status.upper()].name
+            )
+
         if start_date:
             base_query = base_query.filter(TaskHistory.action_date >= start_date)
 
@@ -263,11 +268,6 @@ class UserService:
             ),
         )
         tasks = tasks.add_column("max_1")
-
-        if task_status:
-            tasks = tasks.filter(
-                Task.task_status == TaskStatus[task_status.upper()].value
-            )
 
         if project_status:
             tasks = tasks.filter(
