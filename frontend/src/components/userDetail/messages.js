@@ -78,6 +78,6 @@ export default defineMessages({
   },
   delayPopup: {
     id: 'users.detail.delay_popup',
-    defaultMessage: 'Usually these values are not updated instantly',
+    defaultMessage: 'These statistics need heavy calculations and changes are showing up with a delay of around one hour.',
   },
 });
