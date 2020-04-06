@@ -270,7 +270,7 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
     if (!disabled) {
       pushToLocalJSONAPI(
         `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`,
-        '{}',
+        JSON.stringify({ comment: taskComment }),
         token,
       ).then((r) => navigate(`/projects/${project.projectId}/tasks/`));
     } else {
