@@ -39,7 +39,7 @@ oauthlib==2.0.2
 psycopg2==2.8.5
 pycodestyle==2.5.0
 pyflakes==2.1.1
-pyparsing==2.4.6
+pyparsing==2.4.7
 pyproj==2.6.0
 python-dateutil==2.8.1
 python-dotenv==0.12.0
