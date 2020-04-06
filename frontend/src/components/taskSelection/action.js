@@ -21,6 +21,7 @@ import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import DueDateBox from '../projectcard/dueDateBox';
 import { UserFetchTextarea } from '../projectDetail/questionsAndComments';
+import { useFetchLockedTasks } from '../../hooks/UseLockedTasks';
 
 const Editor = React.lazy(() => import('../editor'));
 
@@ -258,6 +259,7 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
   const [taskComment, setTaskComment] = useState('');
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
+  const fetchLockedTasks = useFetchLockedTasks();
 
   const splitTask = () => {
     if (!disabled) {
@@ -298,9 +300,10 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
         url = `projects/${project.projectId}/tasks/actions/unlock-after-mapping/${tasksIds[0]}/`;
         payload.status = 'BADIMAGERY';
       }
-      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) =>
-        navigate(`/projects/${project.projectId}/tasks/`),
-      );
+      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
+        fetchLockedTasks();
+        navigate(`/projects/${project.projectId}/tasks/`);
+      });
     }
   };
 
