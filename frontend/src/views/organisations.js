@@ -19,8 +19,10 @@ import {
 } from '../components/teamsAndOrgs/organisations';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export function ListOrganisations() {
+  useSetTitleTag('Manage organizations');
   const token = useSelector((state) => state.auth.get('token'));
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const isOrgManager = useSelector((state) => state.auth.get('isOrgManager'));
@@ -61,6 +63,7 @@ export function ListOrganisations() {
 }
 
 export function CreateOrganisation() {
+  useSetTitleTag('Create new organization');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [managers, setManagers] = useState([]);
@@ -140,6 +143,7 @@ export function CreateOrganisation() {
 }
 
 export function EditOrganisation(props) {
+  useSetTitleTag('Edit organization');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [initManagers, setInitManagers] = useState(false);

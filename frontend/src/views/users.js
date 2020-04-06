@@ -3,8 +3,10 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { SearchNav, UsersTable } from '../components/user/list';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export const UsersList = () => {
+  useSetTitleTag('Manage users');
   const initialFilters = { level: 'ALL', role: 'ALL', username: '', page: 1 };
   const [filters, setFilters] = useState(initialFilters);
 

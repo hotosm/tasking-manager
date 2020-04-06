@@ -16,6 +16,7 @@ import {
 import { useTagAPI } from '../hooks/UseTagAPI';
 import useForceUpdate from '../hooks/UseForceUpdate';
 import { useFetch } from '../hooks/UseFetch';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { NotFound } from './notFound';
 
 const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
@@ -29,6 +30,7 @@ export const CreateProject = (props) => {
 };
 
 export const ProjectsPage = (props) => {
+  useSetTitleTag('Explore projects');
   const initialData = {
     mapResults: {
       features: [],
@@ -77,6 +79,7 @@ export const ProjectsPage = (props) => {
 };
 
 export const UserProjectsPage = (props) => {
+  useSetTitleTag(props.management ? 'Manage projects' : 'My projects');
   const userToken = useSelector((state) => state.auth.get('token'));
 
   const initialData = {

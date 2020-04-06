@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
+import Popup from 'reactjs-popup';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { TopBar } from '../components/header/topBar';
 import { ContactForm } from '../components/homepage/contactForm';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
-import Popup from 'reactjs-popup';
 import { AlertIcon, HomeIcon } from '../components/svgIcons';
 import { Button } from '../components/button';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 const ContactUsPopup = ({ icon, title, body, proceed, proceedFn }) => (
   <Popup modal open closeOnDocumentClick>
-    {close => (
+    {(close) => (
       <div className="pv4">
         <div className="cf tc red">{icon}</div>
         <div className="cf blue-dark tc">
@@ -35,8 +36,9 @@ const ContactUsPopup = ({ icon, title, body, proceed, proceedFn }) => (
   </Popup>
 );
 
-export const ContactPage = props => {
-  const token = useSelector(state => state.auth.get('token'));
+export const ContactPage = (props) => {
+  useSetTitleTag('Contact us');
+  const token = useSelector((state) => state.auth.get('token'));
   const [sentStatus, setSentStatus] = useState(null);
   const [popups, setPopupMessage] = useState(null);
 
@@ -55,12 +57,12 @@ export const ContactPage = props => {
       );
     }
   }, [sentStatus, props]);
-  const sendContactUs = form => {
+  const sendContactUs = (form) => {
     setSentStatus('started');
     if (token) {
       pushToLocalJSONAPI(`system/contact-admin/`, JSON.stringify(form), token, 'POST')
-        .then(success => setSentStatus('success'))
-        .catch(e => {
+        .then((success) => setSentStatus('success'))
+        .catch((e) => {
           setSentStatus('failure');
           setPopupMessage(
             <ContactUsPopup

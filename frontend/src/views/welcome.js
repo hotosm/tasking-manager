@@ -1,6 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
+import ReactPlaceholder from 'react-placeholder';
+import 'react-placeholder/lib/reactPlaceholder.css';
 
 import { UserTopBar } from '../components/user/settings';
 import { HelpCard, FirstProjectBanner } from '../components/user/content';
@@ -8,11 +10,9 @@ import { calculateCompleteness } from '../components/user/completeness';
 import { UserInformationForm } from '../components/user/forms';
 import { WelcomeCard } from '../components/user/content';
 import { ProjectCard } from '../components/projectcard/projectCard';
-import { useFetch } from '../hooks/UseFetch';
-import ReactPlaceholder from 'react-placeholder';
-import 'react-placeholder/lib/reactPlaceholder.css';
-
 import { nCardPlaceholders } from '../components/projectcard/nCardPlaceholder';
+import { useFetch } from '../hooks/UseFetch';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 function IncompleteProfile() {
   return (
@@ -68,8 +68,9 @@ function NewContributor({ username, userIsloggedIn }) {
 }
 
 export function Welcome() {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
-  const userIsloggedIn = useSelector(state => state.auth.get('token'));
+  useSetTitleTag('Welcome');
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userIsloggedIn = useSelector((state) => state.auth.get('token'));
   if (userIsloggedIn) {
     const completeness = calculateCompleteness(userDetails);
     return (

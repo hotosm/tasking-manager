@@ -10,10 +10,12 @@ import {
   UserSettingsForm,
   UserNotificationsForm,
 } from '../components/user/forms';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export function Settings() {
-  const token = useSelector(state => state.auth.get('token'));
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  useSetTitleTag(`Settings`);
+  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
 
   if (token) {
     return (
