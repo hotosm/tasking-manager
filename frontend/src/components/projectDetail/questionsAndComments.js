@@ -87,7 +87,7 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
   };
 
   return (
-    <div className="w-90-ns w-100 pv4 h4 bg-white center">
+    <div className="w-90-ns w-100 cf pv4 bg-white center">
       <div className="fl w-10 ph1 tc pt2">
         <CurrentUserAvatar className="w-70-l w4 w3-m br-100" />
       </div>
