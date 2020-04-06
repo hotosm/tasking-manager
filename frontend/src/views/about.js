@@ -3,8 +3,10 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { TopBar } from '../components/header/topBar';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export function AboutPage() {
+  useSetTitleTag('About');
   return (
     <div className="pt180 pull-center bg-white blue-dark cf lh-copy f5">
       <TopBar pageName={<FormattedMessage {...messages.about} />} />
