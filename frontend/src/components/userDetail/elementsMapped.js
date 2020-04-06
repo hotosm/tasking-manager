@@ -1,9 +1,17 @@
 import React from 'react';
-import { ClockIcon, RoadIcon, HomeIcon, WavesIcon, MarkerIcon } from '../svgIcons';
 import humanizeDuration from 'humanize-duration';
-import { FormattedMessage } from 'react-intl';
-import messages from './messages';
 import ReactTooltip from 'react-tooltip';
+import { FormattedMessage } from 'react-intl';
+
+import messages from './messages';
+import {
+  ClockIcon,
+  RoadIcon,
+  HomeIcon,
+  WavesIcon,
+  MarkerIcon,
+  QuestionCircleIcon,
+} from '../svgIcons';
 
 const getFieldData = (field) => {
   const iconClass = 'h-50 w-50';
@@ -93,14 +101,15 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
         <Element field={'road'} value={osmStats.total_road_km_add || 0} />
         <Element field={'poi'} value={osmStats.total_poi_count_add || 0} />
         <Element field={'waterways'} value={osmStats.total_waterway_count_add || 0} />
+      </div>
+      <div className="cf w-100 relative tr pt3 pr3">
         <FormattedMessage {...messages.delayPopup}>
           {(msg) => (
-            <span
-              className="bg-blue-grey br-100 white ph1 f6 absolute bottom-0 right-0"
+            <QuestionCircleIcon
+              className="pointer dib v-mid pl2 pb1 blue-light"
+              height="1.25rem"
               data-tip={msg}
-            >
-              ?
-            </span>
+            />
           )}
         </FormattedMessage>
         <ReactTooltip />
