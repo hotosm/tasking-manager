@@ -51,7 +51,7 @@ export const ProjectHeader = ({ project }: Object) => {
         projectId={project.projectId}
         priority={project.projectPriority}
       />
-      <div className="cf pb3">
+      <div className="cf">
         <div>
           <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark dib">
             {project.projectInfo && project.projectInfo.name}
@@ -68,7 +68,7 @@ export const ProjectHeader = ({ project }: Object) => {
 
 function TagLine({ campaigns = [], countries = [] }: Object) {
   let tags = [];
-  tags = campaigns.map(i => i.name).concat(countries);
+  tags = campaigns.map((i) => i.name).concat(countries);
   return (
     <span className="blue-light">
       {tags.map((tag, n) => (
