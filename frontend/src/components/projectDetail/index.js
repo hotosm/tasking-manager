@@ -114,9 +114,9 @@ export const ProjectDetailLeft = (props) => {
           ready={typeof props.project.projectId === 'number'}
         >
           <ProjectHeader project={props.project} />
-          <section className={`lh-copy h-100 overflow-x-scroll`}>
+          <section className="lh-title h-100 overflow-x-scroll">
             <div className="pr2" dangerouslySetInnerHTML={htmlShortDescription} />
-            <div className="pv2">
+            <div>
               <a href="#description" className="link base-font bg-white f6 bn pn red pointer">
                 <span className="pr2 ttu f6 fw6">
                   <FormattedMessage {...messages.readMore} />
@@ -177,7 +177,7 @@ export const ProjectDetailLeft = (props) => {
             percentMapped={props.project.percentMapped}
             percentValidated={props.project.percentValidated}
           />
-          <div className="cf pb1 h2 bg-white">
+          <div className="cf pb1 bg-white">
             <MappingLevelMessage
               level={props.project.mapperLevel}
               className="tl f5 mt1 ttc fw5 blue-dark"

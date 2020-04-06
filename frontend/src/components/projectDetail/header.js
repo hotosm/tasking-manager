@@ -47,7 +47,7 @@ export const ProjectHeader = ({ project }: Object) => {
         projectId={project.projectId}
         priority={project.projectPriority}
       />
-      <div className="cf pb3">
+      <div className="cf">
         <div>
           <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark dib">
             {project.projectInfo && project.projectInfo.name}
