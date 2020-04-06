@@ -19,6 +19,7 @@ import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSON
 import { TaskHistory } from './taskActivity';
 
 import DueDateBox from '../projectcard/dueDateBox';
+import { UserFetchTextarea } from '../projectDetail/questionsAndComments';
 
 const Editor = React.lazy(() => import('../editor'));
 
@@ -269,7 +270,7 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
     if (!disabled) {
       pushToLocalJSONAPI(
         `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`,
-        '{}',
+        JSON.stringify({ comment: taskComment }),
         token,
       ).then((r) => navigate(`/projects/${project.projectId}/tasks/`));
     } else {
@@ -370,10 +371,10 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>
-          <textarea
-            onChange={(e) => setTaskComment(e.target.value)}
-            rows="2"
-            className="w-100 pa2"
+          <UserFetchTextarea
+            value={taskComment}
+            setValueFn={(e) => setTaskComment(e.target.value)}
+            token={token}
           />
         </p>
       </div>
