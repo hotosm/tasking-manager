@@ -8,6 +8,7 @@ import { Form } from 'react-final-form';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import {
   getMembersDiff,
@@ -29,10 +30,12 @@ import { DeleteModal } from '../components/deleteModal';
 import { NotFound } from './notFound';
 
 export function ManageTeams() {
+  useSetTitleTag('Manage teams');
   return <ListTeams managementView={true} />;
 }
 
 export function MyTeams() {
+  useSetTitleTag('My teams');
   return (
     <div className="w-100 cf bg-tan blue-dark">
       <ListTeams />
@@ -105,6 +108,7 @@ const leaveTeamRequest = (team_id, username, role, token) => {
 };
 
 export function CreateTeam() {
+  useSetTitleTag('Create new team');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [managers, setManagers] = useState([]);
@@ -217,6 +221,7 @@ export function CreateTeam() {
 }
 
 export function EditTeam(props) {
+  useSetTitleTag('Edit team');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, team] = useFetch(`teams/${props.id}/`);
@@ -322,6 +327,7 @@ export function EditTeam(props) {
 }
 
 export function TeamDetail(props) {
+  useSetTitleTag(`Team #${props.id}`);
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, team] = useFetch(`teams/${props.id}/`);

@@ -13,9 +13,11 @@ import { FormSubmitButton, CustomButton } from '../components/button';
 import { Projects } from '../components/teamsAndOrgs/projects';
 import { DeleteModal } from '../components/deleteModal';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export const CreateInterest = () => {
-  const token = useSelector(state => state.auth.get('token'));
+  useSetTitleTag('Create new category');
+  const token = useSelector((state) => state.auth.get('token'));
   const [newInterestId, setNewInterestId] = useState(null);
 
   useEffect(() => {
@@ -24,15 +26,15 @@ export const CreateInterest = () => {
     }
   }, [newInterestId]);
 
-  const createInterest = payload => {
-    pushToLocalJSONAPI('interests/', JSON.stringify(payload), token, 'POST').then(result =>
+  const createInterest = (payload) => {
+    pushToLocalJSONAPI('interests/', JSON.stringify(payload), token, 'POST').then((result) =>
       setNewInterestId(result.id),
     );
   };
 
   return (
     <Form
-      onSubmit={values => createInterest(values)}
+      onSubmit={(values) => createInterest(values)}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
@@ -76,7 +78,8 @@ export const CreateInterest = () => {
 };
 
 export const ListInterests = () => {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  useSetTitleTag('Manage categories');
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   // TO DO: filter teams of current user
   const [error, loading, interests] = useFetch(`interests/`);
 
@@ -102,9 +105,10 @@ export const ListInterests = () => {
   );
 };
 
-export const EditInterest = props => {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
-  const token = useSelector(state => state.auth.get('token'));
+export const EditInterest = (props) => {
+  useSetTitleTag('Edit category');
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, interest] = useFetch(`interests/${props.id}/`);
 
   const [projectsError, projectsLoading, projects] = useFetch(
@@ -112,7 +116,7 @@ export const EditInterest = props => {
     props.id,
   );
 
-  const updateInterest = payload => {
+  const updateInterest = (payload) => {
     pushToLocalJSONAPI(`interests/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
   };
 

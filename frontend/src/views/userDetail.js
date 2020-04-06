@@ -15,9 +15,11 @@ import ContributionTimeline from '../components/userDetail/contributionTimeline'
 import { NotFound } from './notFound';
 import { fetchOSMStatsAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export const UserDetail = ({ username, withHeader = true }) => {
-  const token = useSelector(state => state.auth.get('token'));
+  useSetTitleTag(username);
+  const token = useSelector((state) => state.auth.get('token'));
   const [osmStats, setOsmStats] = useState({});
   const [errorDetails, loadingDetails, userDetails] = useFetch(
     `users/queries/${username}/`,
@@ -34,7 +36,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
 
   useEffect(() => {
     if (token && username) {
-      fetchOSMStatsAPI(`users/${username}`, token).then(res => setOsmStats(res));
+      fetchOSMStatsAPI(`users/${username}`, token).then((res) => setOsmStats(res));
     }
   }, [token, username]);
 

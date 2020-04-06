@@ -17,9 +17,11 @@ import {
 import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export function ListCampaigns() {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  useSetTitleTag('Manage campaigns');
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   // TO DO: filter teams of current user
   const [error, loading, campaigns] = useFetch(`campaigns/`);
 
@@ -46,7 +48,8 @@ export function ListCampaigns() {
 }
 
 export function CreateCampaign() {
-  const token = useSelector(state => state.auth.get('token'));
+  useSetTitleTag('Create new campaign');
+  const token = useSelector((state) => state.auth.get('token'));
   const [newCampaignId, setNewCampaignId] = useState(null);
 
   useEffect(() => {
@@ -55,15 +58,15 @@ export function CreateCampaign() {
     }
   }, [newCampaignId]);
 
-  const createCampaign = payload => {
-    pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST').then(result =>
+  const createCampaign = (payload) => {
+    pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST').then((result) =>
       setNewCampaignId(result.campaignId),
     );
   };
 
   return (
     <Form
-      onSubmit={values => createCampaign(values)}
+      onSubmit={(values) => createCampaign(values)}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
@@ -107,15 +110,16 @@ export function CreateCampaign() {
 }
 
 export function EditCampaign(props) {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
-  const token = useSelector(state => state.auth.get('token'));
+  useSetTitleTag('Edit campaign');
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`);
   const [projectsError, projectsLoading, projects] = useFetch(
     `projects/?campaign=${campaign.name}`,
     campaign.name,
   );
 
-  const updateCampaign = payload => {
+  const updateCampaign = (payload) => {
     pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
   };
 

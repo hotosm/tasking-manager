@@ -13,8 +13,10 @@ import { TaskResults } from '../components/contributions/taskResults';
 import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
 import { HeaderProfile } from '../components/userDetail/headerProfile';
 import { UserDetail } from './userDetail';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
-export const ContributionsPage = props => {
+export const ContributionsPage = (props) => {
+  useSetTitleTag('My tasks');
   const initialData = {
     mapResults: {
       features: [],
@@ -24,7 +26,7 @@ export const ContributionsPage = props => {
     pagination: { hasNext: false, hasPrev: false, page: 1 },
   };
 
-  const userToken = useSelector(state => state.auth.get('token'));
+  const userToken = useSelector((state) => state.auth.get('token'));
   //eslint-disable-next-line
   const [contributionsQuery, setContributionsQuery] = useTaskContributionQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
@@ -54,7 +56,7 @@ export const ContributionsPage = props => {
   );
 };
 
-export const ContributionsPageIndex = props => {
+export const ContributionsPageIndex = (props) => {
   return (
     <div className="bg-tan w-100 cf">
       <div className="w-100 cf pb3">
@@ -65,8 +67,9 @@ export const ContributionsPageIndex = props => {
   );
 };
 
-export const UserStats = props => {
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
+export const UserStats = (props) => {
+  useSetTitleTag('My stats');
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   return (
     <ReactPlaceholder
       type="media"

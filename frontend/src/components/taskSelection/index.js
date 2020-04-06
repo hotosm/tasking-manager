@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
+import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { getTaskAction } from '../../utils/projectPermissions';
 import { getRandomArrayItem } from '../../utils/random';
 import { updateTasksStatus } from '../../utils/updateTasksStatus';
@@ -50,6 +51,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [taskAction, setTaskAction] = useState('mapATask');
   const [activeStatus, setActiveStatus] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
+  useSetProjectPageTitleTag(project);
 
   /* eslint-disable-next-line */
   const [tasksActivitiesError, tasksActivitiesLoading, initialActivities] = useFetch(

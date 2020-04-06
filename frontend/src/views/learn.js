@@ -15,12 +15,14 @@ import ValidateStepCollaborate from '../assets/img/icons/validate_step_collabora
 import SelectProject from '../assets/img/icons/map_step_select_project.png';
 import SelectTask from '../assets/img/icons/map_step_select_task.png';
 import MapOSM from '../assets/img/icons/map_step_osm.png';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 const LearnNav = ({ sections, section, setSection }) => {
+  useSetTitleTag('Learn');
   return (
     <div className="w-50 w-100-m">
       <ul className="pa0 ma0 list bg-tan">
-        {sections.map(s => {
+        {sections.map((s) => {
           return (
             <li
               className={`f5 dib mh2 pa3 link pointer underline-hover ${
@@ -88,7 +90,7 @@ const Tutorials = ({ tutorials }) => {
         <FormattedMessage {...messages.learnTutorialsTitle} />
       </h3>
       <div className="flex justify-start">
-        {tutorials.map(v => {
+        {tutorials.map((v) => {
           return (
             <div style={{ height: '20rem' }} className="w-25 shadow-4 h5 mr4">
               <div style={{ height: '45%' }} className="bg-tan"></div>
