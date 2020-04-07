@@ -12,6 +12,10 @@ export default defineMessages({
     id: 'formInputs.organisation.select',
     defaultMessage: 'Select organization',
   },
+  country: {
+    id: 'formInputs.country.select',
+    defaultMessage: 'Country',
+  },
   definition: {
     id: 'foooter.definition',
     defaultMessage:

@@ -1,9 +1,11 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { PriorityBox } from '../projectcard/projectCard';
+import { translateCountry } from '../../utils/countries';
 
 export function HeaderLine({ author, projectId, priority }: Object) {
   const userLink = (
@@ -44,6 +46,7 @@ export const ProjectStatusBox = ({ status, className }: Object) => {
 };
 
 export const ProjectHeader = ({ project }: Object) => {
+  const locale = useSelector((state) => state.preferences.locale);
   return (
     <>
       <HeaderLine
@@ -60,7 +63,14 @@ export const ProjectHeader = ({ project }: Object) => {
             <ProjectStatusBox status={project.status} className={'pv2 ph3 ml3 mb3 v-mid dib'} />
           )}
         </div>
-        <TagLine campaigns={project.campaigns} countries={project.countryTag} />
+        <TagLine
+          campaigns={project.campaigns}
+          countries={
+            locale.includes('en')
+              ? project.countryTag
+              : translateCountry(project.countryTag, locale)
+          }
+        />
       </div>
     </>
   );
@@ -68,7 +78,7 @@ export const ProjectHeader = ({ project }: Object) => {
 
 function TagLine({ campaigns = [], countries = [] }: Object) {
   let tags = [];
-  tags = campaigns.map(i => i.name).concat(countries);
+  tags = campaigns.map((i) => i.name).concat(countries);
   return (
     <span className="blue-light">
       {tags.map((tag, n) => (

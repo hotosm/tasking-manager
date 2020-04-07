@@ -31,8 +31,9 @@ const dataFetchReducer = (state, action) => {
   }
 };
 
-export const useTagAPI = (initialData, tagType) => {
-  const token = useSelector(state => state.auth.get('token'));
+export const useTagAPI = (initialData, tagType, processDataFn) => {
+  const token = useSelector((state) => state.auth.get('token'));
+  const locale = useSelector((state) => state.preferences.locale);
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
     isError: false,
@@ -60,6 +61,9 @@ export const useTagAPI = (initialData, tagType) => {
 
         if (!didCancel) {
           if (result && result.headers && result.headers['content-type'].indexOf('json') !== -1) {
+            if (processDataFn) {
+              result.data.tags = processDataFn(result.data.tags, locale);
+            }
             dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
           } else {
             console.error('Invalid return content-type for organisation tags');
@@ -79,7 +83,7 @@ export const useTagAPI = (initialData, tagType) => {
     return () => {
       didCancel = true;
     };
-  }, [tagType, token]);
+  }, [tagType, token, processDataFn, locale]);
 
   return [state];
 };

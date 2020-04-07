@@ -9,6 +9,7 @@
     "@formatjs/intl-utils": "^2.2.0",
     "@formatjs/macro": "^0.2.6",
     "@hotosm/id": "^2.17.3-beta-5",
+    "@hotosm/iso-countries-languages": "^0.3.1",
     "@lokibai/react-use-copy-clipboard": "^1.0.4",
     "@mapbox/geo-viewport": "^0.4.0",
     "@mapbox/mapbox-gl-draw": "^1.1.2",

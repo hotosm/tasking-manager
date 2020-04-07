@@ -7,6 +7,7 @@ import { Form, Field } from 'react-final-form';
 import messages from './messages';
 import { FormSubmitButton, Button } from '../button';
 import { Dropdown } from '../dropdown';
+import { UserCountrySelect } from '../formInputs';
 import { LocaleSelector } from '../localeSelect';
 import { SwitchToggle, RadioField } from '../formInputs';
 import { pushUserDetails } from '../../store/actions/auth';
@@ -246,13 +247,7 @@ function _UserInformationForm(props) {
                   <label className={labelClasses}>
                     <FormattedMessage {...messages.country} />
                   </label>
-                  <Field
-                    name="country"
-                    component="input"
-                    type="text"
-                    className={fieldClasses}
-                    autoComplete="country-name"
-                  />
+                  <UserCountrySelect className={fieldClasses} />
                 </div>
               </div>
               <div className="cf pt3">
