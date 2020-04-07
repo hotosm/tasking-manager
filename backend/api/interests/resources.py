@@ -52,7 +52,7 @@ class InterestsAllAPI(Resource):
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
                 tm.authenticated_user_id
             )
-            if len(orgs_dto.organisation) < 1:
+            if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"InterestsAllAPI POST: {str(e)}"
@@ -147,7 +147,7 @@ class InterestsRestAPI(Resource):
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
                 tm.authenticated_user_id
             )
-            if len(orgs_dto.organisation) < 1:
+            if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"InterestsRestAPI GET: {str(e)}"
@@ -208,7 +208,7 @@ class InterestsRestAPI(Resource):
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
                 tm.authenticated_user_id
             )
-            if len(orgs_dto.organisation) < 1:
+            if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"InterestsAllAPI PATCH: {str(e)}"
@@ -267,7 +267,7 @@ class InterestsRestAPI(Resource):
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
                 tm.authenticated_user_id
             )
-            if len(orgs_dto.organisation) < 1:
+            if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"InterestsAllAPI DELETE: {str(e)}"
