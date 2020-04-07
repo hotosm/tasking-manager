@@ -11,16 +11,17 @@ import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const PermissionsForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
-  const userDetails = useSelector(state => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [organisations, setOrganisations] = useState([]);
   useEffect(() => {
     if (userDetails && userDetails.id) {
       const query = userDetails.role === 'ADMIN' ? '' : `?manager_user_id=${userDetails.id}`;
-      fetchLocalJSONAPI(`organisations/${query}`)
-        .then(result => setOrganisations(result.organisations))
-        .catch(e => console.log(e));
+      fetchLocalJSONAPI(`organisations/${query}`, token)
+        .then((result) => setOrganisations(result.organisations))
+        .catch((e) => console.log(e));
     }
-  }, [userDetails]);
+  }, [userDetails, token]);
 
   const permissions = [
     { label: <FormattedMessage {...messages.permissions_ANY} />, value: 'ANY' },
@@ -38,7 +39,7 @@ export const PermissionsForm = () => {
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.mappingPermissionDescription} />
         </p>
-        {permissions.map(permission => (
+        {permissions.map((permission) => (
           <label className="db pv2" key={permission}>
             <input
               value={permission.value}
@@ -63,7 +64,7 @@ export const PermissionsForm = () => {
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.validationPermissionDescription} />
         </p>
-        {permissions.map(permission => (
+        {permissions.map((permission) => (
           <label className="db pv2" key={permission}>
             <input
               value={permission.value}
@@ -91,8 +92,8 @@ export const PermissionsForm = () => {
         </p>
         <Select
           isClearable={false}
-          getOptionLabel={option => option.name}
-          getOptionValue={option => option.organisationId}
+          getOptionLabel={(option) => option.name}
+          getOptionValue={(option) => option.organisationId}
           options={organisations}
           defaultValue={
             projectInfo.organisation && {
@@ -101,7 +102,7 @@ export const PermissionsForm = () => {
             }
           }
           placeholder={<FormattedMessage {...messages.selectOrganisation} />}
-          onChange={value =>
+          onChange={(value) =>
             setProjectInfo({ ...projectInfo, organisation: value.organisationId || '' })
           }
           className="z-5"

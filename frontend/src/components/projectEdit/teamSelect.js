@@ -22,8 +22,8 @@ export const TeamSelect = () => {
   const [org, setOrg] = useState(null);
 
   useEffect(() => {
-    fetchLocalJSONAPI('organisations/', null).then(r => setOrgs(r.organisations));
-    fetchLocalJSONAPI('teams/', null).then(t => setTeams(t.teams));
+    fetchLocalJSONAPI('organisations/', null).then((r) => setOrgs(r.organisations));
+    fetchLocalJSONAPI('teams/', null).then((t) => setTeams(t.teams));
   }, []);
 
   const teamRoles = [
@@ -32,21 +32,21 @@ export const TeamSelect = () => {
     { value: 'PROJECT_MANAGER', label: 'Project Manager' },
   ];
 
-  const getLabel = value => {
-    return teamRoles.filter(r => r.value === value)[0].label;
+  const getLabel = (value) => {
+    return teamRoles.filter((r) => r.value === value)[0].label;
   };
 
-  const editTeam = id => {
-    const team = projectInfo.teams.filter(t => t.teamId === id)[0];
-    const role = teamRoles.filter(r => team.role === r.value)[0];
+  const editTeam = (id) => {
+    const team = projectInfo.teams.filter((t) => t.teamId === id)[0];
+    const role = teamRoles.filter((r) => team.role === r.value)[0];
 
-    setTeamSelect(t => {
+    setTeamSelect((t) => {
       return { ...t, edit: true, team: team, role: role };
     });
   };
 
-  const removeTeam = id => {
-    const teams = projectInfo.teams.filter(t => t.teamId !== id);
+  const removeTeam = (id) => {
+    const teams = projectInfo.teams.filter((t) => t.teamId !== id);
     setProjectInfo({ ...projectInfo, teams: teams });
   };
 
@@ -66,7 +66,7 @@ export const TeamSelect = () => {
   };
 
   const updateTeam = () => {
-    const teams = projectInfo.teams.map(t => {
+    const teams = projectInfo.teams.map((t) => {
       let item = t;
       if (t.teamId === teamSelect.team.teamId) {
         item = newTeam();
@@ -78,27 +78,27 @@ export const TeamSelect = () => {
   };
 
   const handleSelect = (value, field) => {
-    setTeamSelect(v => {
+    setTeamSelect((v) => {
       return { ...v, [field]: value };
     });
   };
 
   // Get only ids.
-  const teamsIds = projectInfo.teams.map(t => {
+  const teamsIds = projectInfo.teams.map((t) => {
     return t.teamId;
   });
 
-  let filteredTeams = teams.filter(t => !teamsIds.includes(t.teamId));
+  let filteredTeams = teams.filter((t) => !teamsIds.includes(t.teamId));
 
   if (org !== null) {
     filteredTeams = [
       {
         label: org.name,
-        options: filteredTeams.filter(t => t.organisationId === org.organisationId),
+        options: filteredTeams.filter((t) => t.organisationId === org.organisationId),
       },
       {
         label: 'Others',
-        options: filteredTeams.filter(t => t.organisationId !== org.organisationId),
+        options: filteredTeams.filter((t) => t.organisationId !== org.organisationId),
       },
     ];
   }
@@ -106,7 +106,7 @@ export const TeamSelect = () => {
   return (
     <div className="w-80">
       <div className="mb4">
-        {projectInfo.teams.map(t => {
+        {projectInfo.teams.map((t) => {
           return (
             <div className="w-100 cf pa2 bg-white blue-dark mb2">
               <div className="w-50 fl fw5">
@@ -141,31 +141,31 @@ export const TeamSelect = () => {
       </div>
       <Select
         isClearable={true}
-        getOptionLabel={option => option.name}
-        getOptionValue={option => option.organisationId}
+        getOptionLabel={(option) => option.name}
+        getOptionValue={(option) => option.organisationId}
         placeholder={<FormattedMessage {...messages.filterByOrg} />}
         options={orgs}
         value={org}
-        onChange={value => setOrg(value)}
-        className="mb2 z-5"
+        onChange={(value) => setOrg(value)}
+        className="mb2 z-4"
       />
       <div className="cf pb3 flex justify-between">
         <Select
-          getOptionLabel={option => option.name}
-          getOptionValue={option => option.teamId}
+          getOptionLabel={(option) => option.name}
+          getOptionValue={(option) => option.teamId}
           options={filteredTeams}
-          onChange={value => handleSelect(value, 'team')}
-          className="w-40 fl pr2 z-5"
+          onChange={(value) => handleSelect(value, 'team')}
+          className="w-40 fl pr2 z-3"
           value={teamSelect.team.name !== null ? teamSelect.team : null}
           placeholder={<FormattedMessage {...messages.selectTeam} />}
           isDisabled={teamSelect.edit}
         />
         <Select
-          getOptionLabel={option => option.label}
-          getOptionValue={option => option.value}
+          getOptionLabel={(option) => option.label}
+          getOptionValue={(option) => option.value}
           options={teamRoles}
-          onChange={value => handleSelect(value, 'role')}
-          className="w-40 fl mr2 z-5"
+          onChange={(value) => handleSelect(value, 'role')}
+          className="w-40 fl mr2 z-3"
           isDisabled={teamSelect.team.name === null ? true : false}
           value={teamSelect.role.value !== null ? teamSelect.role : null}
           placeholder={<FormattedMessage {...messages.selectRole} />}
