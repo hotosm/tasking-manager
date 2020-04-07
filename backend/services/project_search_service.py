@@ -193,7 +193,10 @@ class ProjectSearchService:
             for project_status in search_dto.project_statuses:
                 project_status_array.append(ProjectStatus[project_status].value)
             query = query.filter(Project.status.in_(project_status_array))
-
+        else:
+            if not search_dto.created_by:
+                project_status_array = [ProjectStatus.PUBLISHED.value]
+                query = query.filter(Project.status.in_(project_status_array))
         if search_dto.interests:
             query = query.join(
                 project_interests, project_interests.c.project_id == Project.id
