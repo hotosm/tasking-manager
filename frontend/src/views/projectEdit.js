@@ -16,6 +16,7 @@ import { ActionsForm } from '../components/projectEdit/actionsForm';
 import { CustomEditorForm } from '../components/projectEdit/customEditorForm';
 import { Button } from '../components/button';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export const StateContext = React.createContext();
 
@@ -38,15 +39,16 @@ export const handleCheckButton = (event, arrayElement) => {
   if (event.target.checked === true) {
     arrayElement.push(event.target.value);
   } else {
-    arrayElement = arrayElement.filter(t => t !== event.target.value);
+    arrayElement = arrayElement.filter((t) => t !== event.target.value);
   }
 
   return arrayElement;
 };
 
 export function ProjectEdit({ id }) {
-  const token = useSelector(state => state.auth.get('token'));
-  const user = useSelector(state => state.auth.get('userDetails'));
+  useSetTitleTag(`Edit project #${id}`);
+  const token = useSelector((state) => state.auth.get('token'));
+  const user = useSelector((state) => state.auth.get('userDetails'));
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [languages, setLanguages] = useState(null);
@@ -95,7 +97,7 @@ export function ProjectEdit({ id }) {
   }
 
   const renderList = () => {
-    const checkSelected = optionSelected => {
+    const checkSelected = (optionSelected) => {
       let liClass = 'w-90 link barlow-condensed f4 fw5 pv3 pl2 pointer';
       if (option === optionSelected) {
         liClass = liClass.concat(' fw6 bg-grey-light');
@@ -118,18 +120,20 @@ export function ProjectEdit({ id }) {
     return (
       <div>
         <ul className="list pl0 mt0 ttu">
-          {elements.filter(elm => !elm.expert_required || user.isExpert).map((elm, n) => (
-            <li key={n} className={checkSelected(elm.value)} onClick={() => setOption(elm.value)}>
-              <FormattedMessage {...messages[`projectEditSection_${elm.value}`]} />
-              {elm.required && ' *'}
-            </li>
-          ))}
+          {elements
+            .filter((elm) => !elm.expert_required || user.isExpert)
+            .map((elm, n) => (
+              <li key={n} className={checkSelected(elm.value)} onClick={() => setOption(elm.value)}>
+                <FormattedMessage {...messages[`projectEditSection_${elm.value}`]} />
+                {elm.required && ' *'}
+              </li>
+            ))}
         </ul>
       </div>
     );
   };
 
-  const renderForm = option => {
+  const renderForm = (option) => {
     switch (option) {
       case 'description':
         return <DescriptionForm languages={languages} />;
@@ -162,8 +166,8 @@ export function ProjectEdit({ id }) {
   const saveChanges = () => {
     const updateProject = () => {
       pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')
-        .then(res => setSuccess(true))
-        .catch(e => setError(true));
+        .then((res) => setSuccess(true))
+        .catch((e) => setError(true));
     };
     updateProject();
   };
@@ -218,9 +222,7 @@ export function ProjectEdit({ id }) {
             setError: setError,
           }}
         >
-          <div className="fl w-70-l w-100 ph0-l ph4-m ph2">
-            {renderForm(option)}
-          </div>
+          <div className="fl w-70-l w-100 ph0-l ph4-m ph2">{renderForm(option)}</div>
         </StateContext.Provider>
       </ReactPlaceholder>
     </div>

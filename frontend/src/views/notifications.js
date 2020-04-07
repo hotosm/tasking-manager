@@ -1,22 +1,19 @@
 import React from 'react';
-
-import { useInboxQueryAPI, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
-
-import useForceUpdate from '../hooks/UseForceUpdate';
 import { useSelector } from 'react-redux';
 
+import { useInboxQueryAPI, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
+import useForceUpdate from '../hooks/UseForceUpdate';
 import { InboxNav, InboxNavMini, InboxNavMiniBottom } from '../components/notifications/inboxNav';
 import {
   NotificationResults,
   NotificationResultsMini,
 } from '../components/notifications/notificationResults';
-
 import { NotificationBodyModal } from '../components/notifications/notificationBodyCard';
 import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
-
 import { useFetch } from '../hooks/UseFetch';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
-export const NotificationPopout = props => {
+export const NotificationPopout = (props) => {
   return (
     <div
       style={{ minWidth: '390px', width: '390px', zIndex: '100', right: '4rem' }}
@@ -27,7 +24,7 @@ export const NotificationPopout = props => {
         newMsgCount={
           props.state &&
           props.state.notifications &&
-          props.state.notifications.filter(n => !n.read).length
+          props.state.notifications.filter((n) => !n.read).length
         }
       />
       <NotificationResultsMini
@@ -45,7 +42,8 @@ export const NotificationPopout = props => {
   );
 };
 
-export const NotificationsPage = props => {
+export const NotificationsPage = (props) => {
+  useSetTitleTag('Notifications');
   const initialData = {
     mapResults: {
       features: [],
@@ -54,7 +52,7 @@ export const NotificationsPage = props => {
     results: [],
     pagination: { hasNext: false, hasPrev: false, page: 1 },
   };
-  const userToken = useSelector(state => state.auth.get('token'));
+  const userToken = useSelector((state) => state.auth.get('token'));
   const [inboxQuery, setInboxQuery] = useInboxQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
   const [state] = useInboxQueryAPI(initialData, inboxQuery, forceUpdated);
@@ -87,11 +85,11 @@ export const NotificationsPage = props => {
   );
 };
 
-export const NotificationPageIndex = props => {
+export const NotificationPageIndex = (props) => {
   return null;
 };
 
-export const NotificationDetail = props => {
+export const NotificationDetail = (props) => {
   const [thisNotificationError, thisNotificationLoading, thisNotification] = useFetch(
     `notifications/${props.id}/`,
   );

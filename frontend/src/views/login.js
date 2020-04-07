@@ -5,9 +5,11 @@ import { FormattedMessage } from 'react-intl';
 
 import { AuthButtons } from '../components/header';
 import messages from './messages';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export function Login({ redirectTo }: Object) {
-  const userIsloggedIn = useSelector(state => state.auth.get('token'));
+  useSetTitleTag('Learn');
+  const userIsloggedIn = useSelector((state) => state.auth.get('token'));
   if (!userIsloggedIn) {
     return (
       <div className="cf w-100 pv5">

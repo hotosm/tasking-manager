@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
-import { useMeta, useTitle } from 'react-meta-elements';
 
 import messages from './messages';
 
@@ -24,11 +23,12 @@ import { BigProjectTeaser } from './bigProjectTeaser';
 import { QuestionsAndComments } from './questionsAndComments';
 import { PermissionBox } from './permissionBox';
 import { OSMChaButton } from './osmchaButton';
+import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 
 /* lazy imports must be last import */
 const TaskLineGraphViz = React.lazy(() => import('./taskLineGraphViz'));
 
-const ProjectDetailTypeBar = props => {
+const ProjectDetailTypeBar = (props) => {
   const titleClasses = 'db ttu f6 blue-light mb2';
   return (
     <div className="cf">
@@ -50,7 +50,7 @@ const ProjectDetailTypeBar = props => {
   );
 };
 
-const ProjectDetailMap = props => {
+const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
 
   var taskBordersGeoJSON = props.project.areaOfInterest && {
@@ -90,7 +90,7 @@ const ProjectDetailMap = props => {
       {taskBordersOnly && (
         <div className="cf left-1 top-1 absolute">
           <div className="cf ttu bg-white barlow-condensed f4 pv2">
-            <span onClick={e => setTaskBordersOnly(false)} className="pb2 mh2 pointer ph2">
+            <span onClick={(e) => setTaskBordersOnly(false)} className="pb2 mh2 pointer ph2">
               <FormattedMessage {...messages.zoomToTasks} />
             </span>
           </div>
@@ -100,21 +100,10 @@ const ProjectDetailMap = props => {
   );
 };
 
-export const ProjectDetailLeft = props => {
+export const ProjectDetailLeft = (props) => {
   const htmlShortDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.shortDescription);
-  useTitle(
-    `#${props.project.projectId || 'Tasking Manager'}: ${props.project.projectInfo &&
-      props.project.projectInfo.name}`,
-  );
-  useMeta({
-    property: 'og:title',
-    content: `#${props.project.projectId || 'Tasking Manager'}: ${props.project.projectInfo &&
-      props.project.projectInfo.name}`,
-  });
-  // useMeta({name: 'application-name', content: `#${props.project.projectId || "Tasking Manager"}: ${props.project.projectInfo && props.project.projectInfo.name}` });
-  // useMeta({name: 'description', content: `#${props.project.projectId || "Tasking Manager"}: ${props.project.projectInfo && props.project.projectInfo.name}` });
-  // useMeta({name: 'og:description', content: `#${props.project.projectId || "Tasking Manager"}: ${props.project.projectInfo && props.project.projectInfo.name}` });
+
   return (
     <div className={`${props.className}`}>
       <div className="h-75 z-1">
@@ -202,10 +191,13 @@ export const ProjectDetailLeft = props => {
   );
 };
 
-export const ProjectDetail = props => {
+export const ProjectDetail = (props) => {
+  useSetProjectPageTitleTag(props.project);
+
   const htmlDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
   const h2Classes = 'pl4 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark';
+
   return (
     <div className={`${props.className || 'bg-white blue-dark'}`}>
       <div className="bb b--grey-light">

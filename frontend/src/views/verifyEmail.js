@@ -6,8 +6,10 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export function EmailVerification({ id }: Object) {
+  useSetTitleTag('Verify email');
   /* eslint-disable-next-line */
   const [token, setToken] = useQueryParam('token', StringParam);
   /* eslint-disable-next-line */
@@ -16,8 +18,8 @@ export function EmailVerification({ id }: Object) {
 
   useEffect(() => {
     fetchLocalJSONAPI(`/api/v2/system/authentication/email/?token=${token}&username=${username}`)
-      .then(success => setStatus('emailVerified'))
-      .catch(error => setStatus('verificationError'));
+      .then((success) => setStatus('emailVerified'))
+      .catch((error) => setStatus('verificationError'));
   }, [token, username]);
 
   return (
