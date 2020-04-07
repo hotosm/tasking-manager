@@ -92,4 +92,8 @@ export default defineMessages({
     id: 'mytasks.tasks.title',
     defaultMessage: 'Task #{task} · Project #{project}',
   },
+  retry: {
+    id: 'mytasks.tasks.button.retry',
+    defaultMessage: 'Retry',
+  },
 });

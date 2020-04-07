@@ -7,7 +7,7 @@ import messages from './messages';
 import { useDownshiftSelection } from 'downshift-hooks';
 import Select from 'react-select';
 
-export const TagFilterPickerCheckboxes = props => {
+export const TagFilterPickerCheckboxes = (props) => {
   const state = props.tagOptionsFromAPI;
   const fieldsetTitle = <FormattedMessage {...messages[props.fieldsetName]} />;
   const fieldsetTitlePlural = <FormattedMessage {...messages[`${props.fieldsetName}s`]} />;
@@ -57,16 +57,25 @@ export const TagFilterPickerAutocomplete = ({
   allQueryParams,
   setQuery,
 }) => {
-  const getLabelAndValue = option => {
+  const getLabel = (option) => {
     if (option.name) {
       return option.name;
     } else {
       return option;
     }
   };
+  const getValue = (option) => {
+    if (option.value) {
+      return option.value;
+    }
+    if (option.name) {
+      return option.name;
+    }
+    return option;
+  };
 
-  const handleTagChange = change => {
-    const value = change.name ? change.name : change;
+  const handleTagChange = (change) => {
+    const value = getValue(change);
     const isAllTags = change && value === defaultSelectedItem;
     /* should we encodeURIComponent the change.value? */
     const newValue = isAllTags ? undefined : value;
@@ -83,8 +92,8 @@ export const TagFilterPickerAutocomplete = ({
   return (
     <Select
       onChange={handleTagChange}
-      getOptionLabel={getLabelAndValue}
-      getOptionValue={getLabelAndValue}
+      getOptionLabel={getLabel}
+      getOptionValue={getValue}
       autoFocus={true}
       placeholder={allQueryParams[fieldsetName] || fieldsetTitle}
       options={tagOptions}
@@ -107,7 +116,7 @@ export const TagFilterPickerAutocompleteDownshift = ({
   allQueryParams,
   setQuery,
 }) => {
-  const handleTagChange = change => {
+  const handleTagChange = (change) => {
     const isAllTags = change && change.selectedItem === defaultSelectedItem;
     const newValue = isAllTags ? undefined : change.selectedItem;
     setQuery(

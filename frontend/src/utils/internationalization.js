@@ -34,7 +34,7 @@ const translatedMessages = {
   de: de,
   en: en,
   es: es,
-  'fa_IR': fa_IR,
+  fa: fa_IR,
   fr: fr,
   he: he,
   hu: hu,
@@ -50,7 +50,7 @@ const translatedMessages = {
   tl: tl,
   tr: tr,
   uk: uk,
-  'zh_TW': zh_TW,
+  zh: zh_TW,
 };
 
 /* Safari 12- and IE */
@@ -90,17 +90,17 @@ const supportedLocales = [
   // { value: 'tl', label: 'Filipino (Tagalog)' },
   { value: 'tr', label: 'Türkçe' },
   { value: 'uk', label: 'Українська' },
-  // { value: 'zh-_TW', label: '中国台湾' },
+  // { value: 'zh-TW', label: '中国台湾' },
 ];
 
 function getSupportedLocale(locale) {
   if (locale) {
-    let filtered = supportedLocales.filter(i => i.value === locale);
+    let filtered = supportedLocales.filter((i) => i.value === locale);
     if (filtered.length) {
       return filtered[0];
     }
     // if we don't have the specific language variation, return the generic locale
-    filtered = supportedLocales.filter(i => i.value === locale.substr(0, 2));
+    filtered = supportedLocales.filter((i) => i.value === locale.substr(0, 2));
     if (filtered.length) {
       return filtered[0];
     }
@@ -117,7 +117,7 @@ function getTranslatedMessages(locale) {
 }
 
 /* textComponent is for orderBy <select>, see codesandbox at https://github.com/facebook/react/issues/15513 */
-let ConnectedIntl = props => {
+let ConnectedIntl = (props) => {
   useEffect(() => {
     if (props.locale === null) {
       props.setLocale(getSupportedLocale(navigator.language).value);
@@ -135,7 +135,7 @@ let ConnectedIntl = props => {
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   locale: state.preferences.locale,
 });
 

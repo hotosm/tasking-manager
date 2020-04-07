@@ -1,21 +1,22 @@
 import React from 'react';
 import { Link } from '@reach/router';
-import { FormattedMessage } from 'react-intl';
 import { useQueryParam } from 'use-query-params';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import { Button } from '../button';
 import { useTagAPI } from '../../hooks/UseTagAPI';
 import { useExploreProjectsQueryParams } from '../../hooks/UseProjectsQueryAPI';
 import { MappingTypeFilterPicker } from './mappingTypeFilterPicker';
 import { TagFilterPickerCheckboxes } from './tagFilterPicker';
 import { CommaArrayParam } from '../../utils/CommaArrayParam';
-import messages from './messages';
+import { formatFilterCountriesData } from '../../utils/countries';
 
-export const MoreFiltersForm = props => {
+export const MoreFiltersForm = (props) => {
   /* one useQueryParams for the main form */
   const [formQuery, setFormQuery] = useExploreProjectsQueryParams();
 
-  const handleInputChange = event => {
+  const handleInputChange = (event) => {
     const target = event.target;
     let value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
@@ -41,7 +42,7 @@ export const MoreFiltersForm = props => {
   } = formQuery;
   const [campaignAPIState] = useTagAPI([], 'campaigns');
   const [orgAPIState] = useTagAPI([], 'organisations');
-  const [countriesAPIState] = useTagAPI([], 'countries');
+  const [countriesAPIState] = useTagAPI([], 'countries', formatFilterCountriesData);
 
   /* another useQueryParam for the second form */
   const [mappingTypesInQuery, setMappingTypes] = useQueryParam('types', CommaArrayParam);

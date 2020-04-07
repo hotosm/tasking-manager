@@ -6,7 +6,7 @@ import 'react-placeholder/lib/reactPlaceholder.css';
 import messages from './messages';
 import { TaskCard } from './taskCard';
 
-export const TaskResults = props => {
+export const TaskResults = (props) => {
   const state = props.state;
 
   return (
@@ -31,7 +31,7 @@ export const TaskResults = props => {
           <FormattedMessage {...messages.errorLoadingTasks} />
           <div className="pa2">
             <button className="pa1" onClick={() => props.retryFn()}>
-              Retry
+              <FormattedMessage {...messages.retry} />
             </button>
           </div>
         </div>
@@ -45,11 +45,11 @@ export const TaskResults = props => {
   );
 };
 
-const TaskCards = props => {
+const TaskCards = (props) => {
   if (!props || !props.pageOfCards || props.pageOfCards.length === 0) {
     return null;
   }
-  const filterFn = n => n;
+  const filterFn = (n) => n;
   const filteredCards = props.pageOfCards.filter(filterFn);
 
   if (filteredCards < 1) {
