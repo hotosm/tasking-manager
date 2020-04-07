@@ -93,13 +93,20 @@ def downgrade():
         project_id = project[0]
         mapping_permission = project[1]
         validation_permission = project[2]
-        mapping_restriction = None
+        mapping_restriction = False
         validation_role_restriction = None
         validation_level_restriction = None
 
         # Reverse map V4 permission integers to V3 restrictions
         d = Determiner()
-        mapping_restriction = d.determine_mapping_permission(mapping_permission, True)
+
+        try:
+            mapping_restriction = d.determine_mapping_permission(
+                mapping_permission, True
+            )
+        except Exception:
+            mapping_restriction = False
+
         validation_restriction = d.determine_validation_permission(
             validation_permission, True
         ).split(",")
