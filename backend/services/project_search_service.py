@@ -192,14 +192,12 @@ class ProjectSearchService:
         if search_dto.project_statuses:
             for project_status in search_dto.project_statuses:
                 project_status_array.append(ProjectStatus[project_status].value)
-        else:
-            project_status_array = [ProjectStatus.PUBLISHED.value]
+            query = query.filter(Project.status.in_(project_status_array))
 
         if search_dto.interests:
             query = query.join(
                 project_interests, project_interests.c.project_id == Project.id
             ).filter(project_interests.c.interest_id.in_(search_dto.interests))
-        query = query.filter(Project.status.in_(project_status_array))
         if search_dto.created_by:
             query = query.filter(Project.author_id == search_dto.created_by)
         if search_dto.mapped_by:
@@ -276,7 +274,8 @@ class ProjectSearchService:
             )
             orgs_managed = [org.id for org in user_orgs_list]
             org_projects = query.filter(Project.organisation_id.in_(orgs_managed))
-            query = org_projects.union(team_projects)
+            my_projects = query.filter(Project.author_id == search_dto.managed_by)
+            query = org_projects.union(team_projects).union(my_projects)
 
         all_results = query.all()
         paginated_results = query.paginate(search_dto.page, 14, True)
