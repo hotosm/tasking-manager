@@ -5,6 +5,7 @@ import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { formatCountryList } from '../utils/countries';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 
 export const RadioField = ({ name, value, className }: Object) => (
@@ -41,6 +42,7 @@ export function OrganisationSelect({ className }: Object) {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [organisations, setOrganisations] = useState([]);
+
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
       const query = userDetails.role === 'ADMIN' ? '' : `?manager_user_id=${userDetails.id}`;
@@ -59,6 +61,41 @@ export function OrganisationSelect({ className }: Object) {
           options={organisations}
           placeholder={props.input.value || <FormattedMessage {...messages.selectOrganisation} />}
           onChange={(value) => props.input.onChange(value.organisationId || '')}
+          className="z-5"
+        />
+      )}
+    </Field>
+  );
+}
+
+export function UserCountrySelect({ className }: Object) {
+  const locale = useSelector((state) => state.preferences.locale);
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    if (locale) {
+      setOptions(formatCountryList(locale));
+    }
+  }, [locale]);
+
+  const getPlaceholder = (value) => {
+    const placeholder = options.filter((option) => option.value === value);
+    if (placeholder.length) {
+      return placeholder[0].label;
+    }
+    return '';
+  };
+
+  return (
+    <Field name="country" className={className}>
+      {(props) => (
+        <Select
+          isClearable={false}
+          options={options}
+          placeholder={
+            getPlaceholder(props.input.value) || <FormattedMessage {...messages.country} />
+          }
+          onChange={(value) => props.input.onChange(value.value)}
           className="z-5"
         />
       )}
