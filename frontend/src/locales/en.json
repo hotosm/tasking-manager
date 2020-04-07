@@ -1,4 +1,9 @@
 {
+  "banner.title": "About the information we collect",
+  "banner.button.disagree": "I do not agree",
+  "banner.button.agree": "I agree",
+  "banner.privacyPolicy": "privacy policy",
+  "banner.text": "We use cookies and similar technologies to recognize and analyze your visits, and measure traffic usage and activity. You can learn about how we use the data about your visit or information you provide reading our {link}. By clicking \"I Agree\", you consent to the use of cookies.",
   "mytasks.mainSection.title": "My Tasks",
   "mytasks.contribution": "Contribution",
   "mytasks.filter.all": "All",
