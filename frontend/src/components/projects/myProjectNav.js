@@ -102,7 +102,11 @@ export const MyProjectNav = (props) => {
           <>
             <Link
               to={`./?status=PUBLISHED&managedByMe=1`}
-              className={`di mh1 ${isActiveButton('PUBLISHED', fullProjectsQuery)} ${linkCombo}`}
+              className={`di mh1 ${
+                fullProjectsQuery.managedByMe && fullProjectsQuery.status === 'PUBLISHED'
+                  ? activeButtonClass
+                  : inactiveButtonClass
+              } ${linkCombo}`}
             >
               <FormattedMessage {...messages.active} />
             </Link>

@@ -167,7 +167,7 @@ export const MoreFilters = (props) => {
       </div>
       <div
         onClick={() => props.navigate(currentUrl)}
-        className="absolute right-0 z-5 br w-60-l w-0 h-100 bg-blue-dark o-70 h6"
+        className="absolute right-0 z-4 br w-60-l w-0 h-100 bg-blue-dark o-70 h6"
       ></div>
     </>
   );

@@ -7,6 +7,7 @@ import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import DueDateBox from './dueDateBox';
 import ProjectProgressBar from './projectProgressBar';
 import { MappingLevelMessage } from '../mappingLevel';
+import { ProjectStatusBox } from '../projectDetail/statusBox';
 import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
 
 export function PriorityBox({ priority, extraClasses }: Object) {
@@ -65,6 +66,7 @@ export function ProjectCard({
   lastUpdated,
   dueDate,
   priority,
+  status,
   mapperLevel,
   campaignTag,
   percentMapped,
@@ -106,7 +108,11 @@ export function ProjectCard({
         <article className={``}>
           <div className={`${bottomButtonSpacer} ph3 ba br1 b--grey-light bg-white shadow-hover`}>
             <div className="mt3 fr">
-              <PriorityBox priority={priority} extraClasses={'pv1 ph2 dib'} />
+              {['DRAFT', 'ARCHIVED'].includes(status) ? (
+                <ProjectStatusBox status={status} className={'pv1 ph1 dib'} />
+              ) : (
+                <PriorityBox priority={priority} extraClasses={'pv1 ph2 dib'} />
+              )}
             </div>
             <div className="w-50 cf red dib">
               <img
