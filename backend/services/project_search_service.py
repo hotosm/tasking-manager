@@ -1,5 +1,5 @@
 import geojson
-from cachetools import TTLCache, cached
+from cachetools import TTLCache
 from shapely.geometry import Polygon, box
 from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
@@ -144,7 +144,6 @@ class ProjectSearchService:
         return [p.total for p in project_contributors_count]
 
     @staticmethod
-    @cached(search_cache)
     def search_projects(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
         """ Searches all projects for matches to the criteria provided by the user """
         all_results, paginated_results = ProjectSearchService._filter_projects(
