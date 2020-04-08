@@ -101,9 +101,9 @@ export const MyProjectNav = (props) => {
         {props.management && (userDetails.role === 'ADMIN' || isOrgManager) && (
           <>
             <Link
-              to={`./?managedByMe=1`}
+              to={`./?status=PUBLISHED&managedByMe=1`}
               className={`di mh1 ${
-                fullProjectsQuery.managedByMe && !fullProjectsQuery.status
+                fullProjectsQuery.managedByMe && fullProjectsQuery.status === 'PUBLISHED'
                   ? activeButtonClass
                   : inactiveButtonClass
               } ${linkCombo}`}

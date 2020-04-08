@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { PriorityBox } from '../projectcard/projectCard';
 import { translateCountry } from '../../utils/countries';
+import { ProjectStatusBox } from './statusBox';
 
 export function HeaderLine({ author, projectId, priority }: Object) {
   const userLink = (
@@ -36,14 +37,6 @@ export function HeaderLine({ author, projectId, priority }: Object) {
     </div>
   );
 }
-
-export const ProjectStatusBox = ({ status, className }: Object) => {
-  return (
-    <div className={`tc br1 f7 ttu ba b--red red ${className}`}>
-      <FormattedMessage {...messages[`status_${status}`]} />
-    </div>
-  );
-};
 
 export const ProjectHeader = ({ project }: Object) => {
   const locale = useSelector((state) => state.preferences.locale);
