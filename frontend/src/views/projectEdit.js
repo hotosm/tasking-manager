@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect, navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
@@ -45,10 +45,11 @@ export const handleCheckButton = (event, arrayElement) => {
   return arrayElement;
 };
 
-export function ProjectEdit({ id }) {
+export function ProjectEdit(props) {
+  const { id } = props;
   useSetTitleTag(`Edit project #${id}`);
-  const token = useSelector((state) => state.auth.get('token'));
-  const user = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector(state => state.auth.get('token'));
+  const user = useSelector(state => state.auth.get('userDetails'));
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [languages, setLanguages] = useState(null);
@@ -69,6 +70,22 @@ export function ProjectEdit({ id }) {
       },
     ],
   });
+  const elements = useMemo(() => [
+    { value: 'description', required: true },
+    { value: 'instructions', required: true },
+    { value: 'metadata', required: true },
+    { value: 'priority_areas' },
+    { value: 'imagery' },
+    { value: 'permissions' },
+    { value: 'settings' },
+    { value: 'actions' },
+  ], []);
+
+  useLayoutEffect(() => {
+    const hash = props.location.hash && props.location.hash.slice(1);
+    const isValid = elements.some(element => element.value === hash);
+    setOption((isValid && hash) || 'description');
+  }, [props.location, elements]);
 
   useLayoutEffect(() => {
     setSuccess(false);
@@ -104,18 +121,6 @@ export function ProjectEdit({ id }) {
       }
       return liClass;
     };
-
-    const elements = [
-      { value: 'description', required: true },
-      { value: 'instructions', required: true },
-      { value: 'metadata', required: true },
-      { value: 'priority_areas' },
-      { value: 'imagery' },
-      { value: 'permissions' },
-      { value: 'settings' },
-      { value: 'actions' },
-      { value: 'custom_editor', expert_required: true },
-    ];
 
     return (
       <div>
