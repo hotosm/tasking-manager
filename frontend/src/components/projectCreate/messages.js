@@ -93,6 +93,18 @@ export default defineMessages({
     id: 'management.projects.create.errors.invalid',
     defaultMessage: 'Invalid file',
   },
+  unsupportedGeom: {
+    id: 'management.projects.create.errors.unsupported_geom',
+    defaultMessage: 'Unsupported geometry type {geometry}',
+  },
+  noFeatureCollection: {
+    id: 'management.projects.create.errors.no_featurecollection',
+    defaultMessage: 'type field is not FeatureCollection',
+  },
+  closedLinestring: {
+    id: 'management.projects.create.errors.closed_linestring',
+    defaultMessage: 'Points do not form a closed linestring',
+  },
   fileSize: {
     id: 'management.projects.create.errors.fileSize',
     defaultMessage: 'File size is higher than {fileSize} bytes',

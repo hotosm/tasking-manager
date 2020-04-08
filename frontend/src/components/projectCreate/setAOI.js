@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import area from '@turf/area';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
+import lineToPolygon from '@turf/line-to-polygon';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -21,7 +22,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
   const setDataGeom = (geom, display) => {
     mapObj.map.fitBounds(bbox(geom), { padding: 20 });
     const geomArea = area(geom) / 1e6;
-    const zoomLevel = parseInt(mapObj.map.getZoom()) + 4;
+    const zoomLevel = 11;
     const grid = makeGrid(geom, zoomLevel, {});
     updateMetadata({
       ...metadata,
@@ -37,12 +38,46 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     }
   };
 
+  const validateFeature = (e, supportedGeoms, err) => {
+    if (supportedGeoms.includes(e.geometry.type) === false) {
+      err.message = (
+        <FormattedMessage {...messages.unsupportedGeom} values={{ geometry: e.geometry.type }} />
+      );
+
+      throw err;
+    }
+
+    // Transform lineString to polygon
+    if (e.geometry.type === 'LineString') {
+      const coords = e.geometry.coordinates;
+      if (JSON.stringify(coords[0]) !== JSON.stringify(coords[coords.length - 1])) {
+        err.message = <FormattedMessage {...messages.closedLinestring} />;
+        throw err;
+      }
+      const polygon = lineToPolygon(e);
+      return polygon;
+    }
+
+    return e;
+  };
+
   const verifyAndSetData = (event) => {
+    let err = { code: 403, message: null };
+
     try {
+      if (event.type !== 'FeatureCollection') {
+        err.message = <FormattedMessage {...messages.noFeatureCollection} />;
+        throw err;
+      }
+      // Validate geometry for each feature.
+      const supportedGeoms = ['Polygon', 'MultiPolygon', 'LineString'];
+      const features = event.features.map((e) => validateFeature(e, supportedGeoms, err));
+
+      event.features = features;
       setDataGeom(event, true);
     } catch (e) {
       deleteHandler();
-      setErr({ error: true, message: <FormattedMessage {...messages.invalidFile} /> });
+      setErr({ error: true, message: e.message });
     }
   };
 
