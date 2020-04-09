@@ -37,10 +37,16 @@ const formatUserNamesToLink = (text) => {
 export const UserFetchTextarea = ({ value, setValueFn, token }) => {
   const fetchUsers = async (user) => {
     const url = `users/queries/filter/${user}/`;
-    const res = await fetchLocalJSONAPI(url, token);
-    const userItems = res.usernames.map((u) => {
-      return { name: u };
-    });
+
+    let userItems;
+    try {
+      const res = await fetchLocalJSONAPI(url, token);
+      userItems = res.usernames.map((u) => {
+        return { name: u };
+      });
+    } catch (e) {
+      userItems = [];
+    }
 
     return userItems;
   };
@@ -52,21 +58,23 @@ export const UserFetchTextarea = ({ value, setValueFn, token }) => {
   );
 
   return (
-    <ReactTextareaAutocomplete
-      value={value}
-      listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey w-40 overflow-auto"
-      onChange={setValueFn}
-      className="w-100 f5 pa2"
-      loadingComponent={() => <span>Loading</span>}
-      rows={3}
-      trigger={{
-        '@': {
-          dataProvider: fetchUsers,
-          component: Item,
-          output: (item, trigger) => '@[' + item.name + ']',
-        },
-      }}
-    />
+    <div className="relative">
+      <ReactTextareaAutocomplete
+        value={value}
+        listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey w-40 overflow-auto absolute bottom--1"
+        onChange={setValueFn}
+        className="w-100 f5 pa2"
+        loadingComponent={() => <span>Loading</span>}
+        rows={3}
+        trigger={{
+          '@': {
+            dataProvider: fetchUsers,
+            component: Item,
+            output: (item, trigger) => '@[' + item.name + ']',
+          },
+        }}
+      />
+    </div>
   );
 };
 
