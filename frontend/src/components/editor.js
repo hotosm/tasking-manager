@@ -10,10 +10,10 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
   const windowInit = typeof window !== undefined;
 
   useEffect(() => {
-    if (windowInit) {
+    if (windowInit && !editorRef) {
       setEditorRef(window.iD.coreContext());
     }
-  }, [windowInit, setEditorRef]);
+  }, [windowInit, setEditorRef, editorRef]);
 
   useEffect(() => {
     if (session && iD && editorRef) {
