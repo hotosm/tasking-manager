@@ -263,7 +263,7 @@ jobs:
           export TM_ORG_NAME=${<< parameters.org_name >>}
           export TM_ORG_CODE=${<< parameters.org_code >>}
           export TM_ORG_URL=${<< parameters.org_url >>}
-          export TM_ORG_PRIVACY_POLICY=${<< parameters.org_privacy_policy >>}
+          export TM_ORG_PRIVACY_POLICY_URL=${<< parameters.org_privacy_policy >>}
           export TM_ORG_TWITTER=${<< parameters.org_twitter >>}
           export TM_ORG_FB=${<< parameters.org_fb >>}
           export TM_ORG_INSTAGRAM=${<< parameters.org_instagram >>}
