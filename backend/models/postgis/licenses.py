@@ -1,5 +1,4 @@
 from backend.models.dtos.licenses_dto import LicenseDTO, LicenseListDTO
-from backend.models.postgis.utils import NotFound
 from backend import db
 
 # Secondary table defining the many-to-many join
@@ -60,9 +59,6 @@ class License(db.Model):
     def get_all() -> LicenseListDTO:
         """ Gets all licenses currently stored """
         results = License.query.all()
-
-        if len(results) == 0:
-            raise NotFound()
 
         dto = LicenseListDTO()
         for result in results:

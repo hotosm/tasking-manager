@@ -29,6 +29,7 @@ import { ListOrganisations, CreateOrganisation, EditOrganisation } from './views
 import { MyTeams, ManageTeams, CreateTeam, EditTeam, TeamDetail } from './views/teams';
 import { ListCampaigns, CreateCampaign, EditCampaign } from './views/campaigns';
 import { ListInterests, CreateInterest, EditInterest } from './views/interests';
+import { ListLicenses, CreateLicense, EditLicense } from './views/licenses';
 import { UsersList } from './views/users';
 import { NotFound } from './views/notFound';
 import { SelectTask } from './views/taskSelection';
@@ -101,6 +102,9 @@ function App() {
               <ListInterests path="categories/" />
               <EditInterest path="categories/:id" />
               <CreateInterest path="categories/new" />
+              <CreateLicense path="licenses/new" />
+              <ListLicenses path="licenses/" />
+              <EditLicense path="licenses/:id" />
             </ManagementSection>
             <TeamDetail path="teams/:id/membership" />
             <SelectTask path="projects/:id/tasks" />

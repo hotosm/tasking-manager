@@ -92,6 +92,10 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.titles.campaign_information',
     defaultMessage: 'Campaign information',
   },
+  manageLicense: {
+    id: 'management.license.manage',
+    defaultMessage: 'Manage license',
+  },
   manageCategory: {
     id: 'management.category.manage',
     defaultMessage: 'Manage category',
@@ -100,9 +104,21 @@ export default defineMessages({
     id: 'management.interest.title',
     defaultMessage: 'Category information',
   },
+  licenseInfo: {
+    id: 'management.license.title',
+    defaultMessage: 'License information',
+  },
   newCategory: {
     id: 'management.category.creation',
     defaultMessage: 'Create new category',
+  },
+  newLicense: {
+    id: 'management.license.creation',
+    defaultMessage: 'Create new license',
+  },
+  createLicense: {
+    id: 'management.license.button.create',
+    defaultMessage: 'Create license',
   },
   createCategory: {
     id: 'management.category.button.create',

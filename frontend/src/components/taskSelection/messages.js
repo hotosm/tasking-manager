@@ -29,6 +29,18 @@ export default defineMessages({
     defaultMessage:
       'Some error occurred when trying to lock this task. Check if your user matches the level, role and permissions required by this project.',
   },
+  lockErrorLicense: {
+    id: 'project.tasks.lock_error.license.description',
+    defaultMessage: 'This project has a required license. Please accept in order to continue',
+  },
+  acceptLicense: {
+    id: 'project.tasks.lock_error.license.accept',
+    defaultMessage: 'Accept',
+  },
+  cancelLicense: {
+    id: 'project.tasks.lock_error.license.cancel',
+    defaultMessage: 'Cancel',
+  },
   anotherLockedTask: {
     id: 'project.tasks.lock_error.another_project',
     defaultMessage: 'We found another mapping task already locked by you',
