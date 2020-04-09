@@ -72,10 +72,14 @@ class OrganisationService:
         return organisation
 
     @staticmethod
+    def get_organisation_name_by_id(organisation_id: int) -> str:
+        return Organisation.get_organisation_name_by_id(organisation_id)
+
+    @staticmethod
     def create_organisation(new_organisation_dto: NewOrganisationDTO) -> int:
         """
         Creates a new organisation using an organisation dto
-        :param organisation_dto: Organisation DTO
+        :param new_organisation_dto: Organisation DTO
         :returns: ID of new Organisation
         """
         try:

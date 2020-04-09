@@ -128,6 +128,14 @@ class Organisation(db.Model):
         return Organisation.query.filter_by(name=organisation_name).first()
 
     @staticmethod
+    def get_organisation_name_by_id(organisation_id: int):
+        """ Get organisation name by id
+        :param organisation_id:
+        :return: Organisation name
+        """
+        return Organisation.query.get(organisation_id).name
+
+    @staticmethod
     def get_all_organisations():
         """ Gets all organisations"""
         return Organisation.query.all()
