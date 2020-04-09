@@ -20,7 +20,7 @@ const TaskSelectionFooter = (props) => {
   const locale = useSelector((state) => state.preferences.locale);
   const [editor, setEditor] = useState(props.defaultUserEditor);
   const [editorOptions, setEditorOptions] = useState([]);
-  const [lockError, setLockError] = useState(false);
+  const [lockError, setLockError] = useState(null);
   const dispatch = useDispatch();
   const fetchLockedTasks = useFetchLockedTasks();
 
@@ -38,13 +38,13 @@ const TaskSelectionFooter = (props) => {
     navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}`);
   };
 
-  const lockFailed = (windowObjectReference) => {
+  const lockFailed = (windowObjectReference, message) => {
     // JOSM and iD don't open a new window
     if (!['JOSM', 'ID'].includes(editor)) {
       windowObjectReference.close();
     }
     fetchLockedTasks();
-    setLockError(true);
+    setLockError(message);
   };
 
   const updateReduxState = (tasks, project, status) => {
@@ -71,7 +71,7 @@ const TaskSelectionFooter = (props) => {
         .then((res) => {
           lockSuccess('LOCKED_FOR_VALIDATION', 'validate', windowObjectReference);
         })
-        .catch((e) => lockFailed(windowObjectReference));
+        .catch((e) => lockFailed(windowObjectReference, e.message));
     }
     if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(props.taskAction)) {
       fetchLocalJSONAPI(
@@ -82,7 +82,7 @@ const TaskSelectionFooter = (props) => {
         .then((res) => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
         })
-        .catch((e) => lockFailed(windowObjectReference));
+        .catch((e) => lockFailed(windowObjectReference, e.message));
     }
     if (['resumeMapping', 'resumeValidation'].includes(props.taskAction)) {
       const urlParams = openEditor(
@@ -147,18 +147,24 @@ const TaskSelectionFooter = (props) => {
 
   const updateEditor = (arr) => setEditor(arr[0].value);
   const titleClasses = 'db ttu f6 blue-light mb2';
-
   return (
     <div className="cf bg-white pb2 ph4-l ph2">
-      {lockError && (
+      {lockError !== null && (
         <Popup
           modal
           open
           closeOnEscape={true}
           closeOnDocumentClick={true}
-          onClose={() => setLockError(false)}
+          onClose={() => setLockError(null)}
         >
-          {(close) => <LockedTaskModalContent project={props.project.projectId} />}
+          {(close) => (
+            <LockedTaskModalContent
+              project={props.project}
+              error={lockError}
+              close={close}
+              lockTasks={lockTasks}
+            />
+          )}
         </Popup>
       )}
       <div className="w-25-ns w-40 fl">

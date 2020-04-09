@@ -3,34 +3,30 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
-import { API_URL } from '../../config';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import Select from 'react-select';
 
 export const ImageryForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
-  const [licenses, setLicenses] = useState([{ licenseId: 0, name: 'no-license' }]);
+  const [licenses, setLicenses] = useState(null);
 
   useLayoutEffect(() => {
     const fetchLicenses = async () => {
-      const res = await fetch(`${API_URL}licenses/`);
-      if (res.status === 200) {
-        const licenses_json = res.json();
-        setLicenses(l => l.concat(licenses_json.licenses));
-      }
+      const res = await fetchLocalJSONAPI('licenses/');
+      setLicenses(res.licenses);
     };
     fetchLicenses();
   }, [setLicenses]);
 
-  const handleLicense = e => {
-    let licenseId = undefined;
-    if (e.target.value !== '0') {
-      licenseId = e.target.value;
-    }
-    setProjectInfo({ ...projectInfo, licenseId: licenseId });
-  };
-
-  const handleChange = event => {
+  const handleChange = (event) => {
     setProjectInfo({ ...projectInfo, [event.target.name]: event.target.value });
   };
+
+  let defaultValue = null;
+  if (licenses !== null && projectInfo.licenseId !== null) {
+    defaultValue = licenses.filter((l) => l.licenseId === projectInfo.licenseId)[0];
+    //defaultValue = { name: license.name, value: license.licenseId };
+  }
 
   return (
     <div className="w-100">
@@ -59,13 +55,24 @@ export const ImageryForm = () => {
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.license} />
         </label>
-        <select name="licenseId" onChange={handleLicense} className="pa2">
-          {licenses.map(l => (
-            <option key={l.licenseId} value={l.licenseId}>
-              {l.name}
-            </option>
-          ))}
-        </select>
+        <Select
+          isClearable={true}
+          getOptionLabel={(option) => option.name}
+          getOptionValue={(option) => option.licenseId}
+          value={defaultValue}
+          options={licenses}
+          placeholder={<FormattedMessage {...messages.selectLicense} />}
+          onChange={(l) => {
+            let licenseId = null;
+            if (l !== null) {
+              licenseId = l.licenseId;
+            }
+            setProjectInfo((p) => {
+              return { ...p, licenseId: licenseId };
+            });
+          }}
+          className="w-50 z-5"
+        />
       </div>
     </div>
   );
