@@ -494,10 +494,10 @@ function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>
-          <textarea
-            onChange={(e) => setTaskComment(e.target.value)}
-            rows="2"
-            className="w-100 pa2"
+          <UserFetchTextarea
+            value={taskComment}
+            setValueFn={(e) => setTaskComment(e.target.value)}
+            token={token}
           />
         </p>
       </div>
