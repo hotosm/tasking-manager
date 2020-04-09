@@ -113,10 +113,10 @@ export function EditCampaign(props) {
   useSetTitleTag('Edit campaign');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
-  const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`);
+  const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`, props.id);
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?campaign=${campaign.name}`,
-    campaign.name,
+    `projects/?campaign=${encodeURIComponent(campaign.name)}`,
+    campaign.name !== undefined,
   );
 
   const updateCampaign = (payload) => {
