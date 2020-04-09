@@ -657,7 +657,7 @@ const Resources = {
             Cookies: {
               Forward: 'all'
             },
-            Headers: ['Accept', 'Authorization', 'Referer']
+            Headers: ['Accept', 'Referer']
           },
           TargetOriginId: cf.join('-', [cf.stackName, 'react-app']),
           ViewerProtocolPolicy: "redirect-to-https"
