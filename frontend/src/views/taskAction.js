@@ -29,13 +29,15 @@ export function TaskAction({ project, action }: Object) {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    if (userDetails.id && token && action) {
-      fetchLocalJSONAPI(`users/queries/tasks/locked/details/`, token).then((res) => {
-        setTasks(res.tasks);
-        setLoading(false);
-      });
+    if (userDetails.id && token && action && project) {
+      fetchLocalJSONAPI(`users/queries/tasks/locked/details/`, token)
+        .then((res) => {
+          setTasks(res.tasks);
+          setLoading(false);
+        })
+        .catch((e) => navigate(`/projects/${project}/tasks/`));
     }
-  }, [action, userDetails.id, token]);
+  }, [action, userDetails.id, token, project]);
   if (token) {
     if (loading) {
       return (
