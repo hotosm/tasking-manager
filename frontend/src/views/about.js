@@ -61,7 +61,7 @@ export function AboutPage() {
                   ),
                   code: (
                     <a className="link red fw5" href="https://github.com/hotosm/tasking-manager">
-                      Github
+                      GitHub
                     </a>
                   ),
                 }}
