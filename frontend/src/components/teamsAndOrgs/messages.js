@@ -64,6 +64,10 @@ export default defineMessages({
     id: 'management.categories',
     defaultMessage: 'Categories',
   },
+  licenses: {
+    id: 'management.licenses',
+    defaultMessage: 'Licenses',
+  },
   users: {
     id: 'management.users',
     defaultMessage: 'Users',
@@ -140,6 +144,10 @@ export default defineMessages({
     id: 'management.fields.name',
     defaultMessage: 'Name',
   },
+  plainText: {
+    id: 'management.fields.plain_text',
+    defaultMessage: 'Plain Text',
+  },
   description: {
     id: 'management.fields.description',
     defaultMessage: 'Description',
@@ -195,6 +203,10 @@ export default defineMessages({
   noCategories: {
     id: 'management.no_categories',
     defaultMessage: 'There are no categories yet.',
+  },
+  noLicenses: {
+    id: 'management.no_licenses',
+    defaultMessage: 'There are no licenses yet.',
   },
   public: {
     id: 'management.teams.visibility.public',

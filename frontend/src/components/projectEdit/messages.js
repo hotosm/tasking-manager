@@ -30,6 +30,10 @@ export default defineMessages({
     defaultMessage:
       'Organization that is coordinating the project, if there is any. The managers of that organization will have administration rights over the project.',
   },
+  selectLicense: {
+    id: 'projects.formInputs.license.select',
+    defaultMessage: 'Select license',
+  },
   selectOrganisation: {
     id: 'projects.formInputs.organisation.select',
     defaultMessage: 'Select organization',
@@ -518,18 +522,19 @@ export default defineMessages({
   },
   customEditorEnabled: {
     id: 'projects.formInputs.custom_editor.enabled',
-    defaultMessage: 'Enabled'
+    defaultMessage: 'Enabled',
   },
   deleteCustomEditor: {
     id: 'projects.formInputs.custom_editor.delete',
-    defaultMessage: 'Delete Custom Editor'
+    defaultMessage: 'Delete Custom Editor',
   },
   removeCustomEditor: {
     id: 'projects.formInputs.custom_editor.remove',
-    defaultMessage: 'Remove Custom Editor'
+    defaultMessage: 'Remove Custom Editor',
   },
   confirmDeleteCustomEditor: {
     id: 'projects.formInputs.custom_editor.delete.confirm',
-    defaultMessage: 'This will remove the custom editor from the project. Are you sure you don\'t want to disable the custom editor by toggling the "Enabled" checkbox above?'
-  }
+    defaultMessage:
+      'This will remove the custom editor from the project. Are you sure you don\'t want to disable the custom editor by toggling the "Enabled" checkbox above?',
+  },
 });
