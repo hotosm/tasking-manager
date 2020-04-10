@@ -43,8 +43,8 @@ export function NextMappingLevel({ changesetsCount }: Object) {
 }
 
 export function UserTopBar() {
-  const user = useSelector(state => state.auth.get('userDetails'));
-  const osmUserInfo = useSelector(state => state.auth.get('osm'));
+  const user = useSelector((state) => state.auth.get('userDetails'));
+  const osmUserInfo = useSelector((state) => state.auth.get('osm'));
 
   const placeholder = (
     <div className="pl2 dib">
@@ -69,12 +69,7 @@ export function UserTopBar() {
           <div className="pl2 dib">
             <h3 className="ttu f2 fw-6 mv0 barlow-condensed">{user.name || user.username}</h3>
             <p className="f4 blue-dark mt3 mb2">
-              <FormattedMessage
-                {...messages.mapper}
-                values={{
-                  level: <MappingLevelMessage level={user.mappingLevel} />,
-                }}
-              />
+              <MappingLevelMessage level={user.mappingLevel} />
             </p>
             <NextMappingLevel changesetsCount={osmUserInfo ? osmUserInfo.changesetCount : 0} />
           </div>

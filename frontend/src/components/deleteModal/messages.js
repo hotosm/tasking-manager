@@ -18,7 +18,7 @@ export default defineMessages({
   },
   failure_organisations: {
     id: 'deleteModal.status.failure.organisations',
-    defaultMessage: 'An error occurred when trying to delete this organisation.',
+    defaultMessage: 'An error occurred when trying to delete this organization.',
   },
   failure_interests: {
     id: 'deleteModal.status.failure.interests',
@@ -54,7 +54,7 @@ export default defineMessages({
   },
   confirmDeleteTitle_organisations: {
     id: 'deleteModal.title.organisation',
-    defaultMessage: 'Are you sure you want to delete this organisation?',
+    defaultMessage: 'Are you sure you want to delete this organization?',
   },
   confirmDeleteTitle_licenses: {
     id: 'deleteModal.title.licenses',
