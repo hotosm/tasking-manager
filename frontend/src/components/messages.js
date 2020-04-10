@@ -39,14 +39,14 @@ export default defineMessages({
   },
   mappingLevelADVANCED: {
     id: 'mapping.level.advanced',
-    defaultMessage: 'Advanced',
+    defaultMessage: 'Advanced mapper',
   },
   mappingLevelINTERMEDIATE: {
     id: 'mapping.level.intermediate',
-    defaultMessage: 'Intermediate',
+    defaultMessage: 'Intermediate mapper',
   },
   mappingLevelBEGINNER: {
     id: 'mapping.level.beginner',
-    defaultMessage: 'Beginner',
+    defaultMessage: 'Beginner mapper',
   },
 });
