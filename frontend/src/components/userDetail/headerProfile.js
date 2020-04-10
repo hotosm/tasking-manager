@@ -134,12 +134,7 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
           <div className="mb4">
             <p className="barlow-condensed f2 ttu b ma0 mb2">{user.name || user.username}</p>
             <p className="f4 ma0 mb2">
-              <FormattedMessage
-                {...messages.mapper}
-                values={{
-                  level: <MappingLevelMessage level={user.mappingLevel} />,
-                }}
-              />
+              <MappingLevelMessage level={user.mappingLevel} />
             </p>
             <NextMappingLevel changesetsCount={changesets} />
           </div>
