@@ -50,6 +50,7 @@ export { PencilIcon } from './pencil';
 export { PlusIcon } from './plus';
 export { ProfilePictureIcon } from './profilePicture';
 export { HashtagIcon } from './hashtag';
+export { CopyrightIcon } from './copyright';
 export { RefreshIcon } from './refresh';
 export { EnvelopeIcon } from './envelope';
 export { LinkedinIcon } from './linkedin';

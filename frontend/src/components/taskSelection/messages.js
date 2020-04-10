@@ -30,15 +30,19 @@ export default defineMessages({
       'Some error occurred when trying to lock this task. Check if your user matches the level, role and permissions required by this project.',
   },
   lockErrorLicense: {
+    id: 'project.tasks.lock_error.license.title',
+    defaultMessage: 'This project has a required license.',
+  },
+  lockErrorLicenseDescription: {
     id: 'project.tasks.lock_error.license.description',
-    defaultMessage: 'This project has a required license. Please accept in order to continue',
+    defaultMessage: 'Please accept this license in order to colaborate in this project. ',
   },
   acceptLicense: {
     id: 'project.tasks.lock_error.license.accept',
     defaultMessage: 'Accept',
   },
-  cancelLicense: {
-    id: 'project.tasks.lock_error.license.cancel',
+  cancel: {
+    id: 'project.tasks.lock_error.cancel',
     defaultMessage: 'Cancel',
   },
   anotherLockedTask: {
