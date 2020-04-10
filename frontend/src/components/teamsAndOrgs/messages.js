@@ -140,6 +140,10 @@ export default defineMessages({
     id: 'management.titles.campaign_information',
     defaultMessage: 'Campaign information',
   },
+  licenseInfo: {
+    id: 'management.titles.license_information',
+    defaultMessage: 'License information',
+  },
   name: {
     id: 'management.fields.name',
     defaultMessage: 'Name',

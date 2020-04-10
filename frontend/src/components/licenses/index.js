@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from '../teamsAndOrgs/messages';
 import { Management } from '../teamsAndOrgs/management';
 import { EditModeControl } from '../teamsAndOrgs/editMode';
-import { HashtagIcon } from '../svgIcons';
+import { CopyrightIcon } from '../svgIcons';
 import { Button } from '../button';
 
 export const LicenseCard = ({ license }) => {
@@ -16,7 +16,7 @@ export const LicenseCard = ({ license }) => {
         <div className="dib v-mid pr3">
           <div className="z-1 fl br-100 tc h2 w2 bg-blue-light white">
             <span className="relative w-50 dib">
-              <HashtagIcon style={{ paddingTop: '0.4175rem' }} />
+              <CopyrightIcon style={{ paddingTop: '0.475rem' }} />
             </span>
           </div>
         </div>
@@ -41,7 +41,7 @@ export const LicensesManagement = ({ licenses, userDetails }) => {
       {licenses.length ? (
         licenses.map((i, n) => <LicenseCard license={i} />)
       ) : (
-        <div>
+        <div className="pv3">
           <FormattedMessage {...messages.noLicenses} />
         </div>
       )}
@@ -85,7 +85,7 @@ export const LicenseForm = (props) => {
           <div className="blue-grey mb3">
             <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
               <h3 className="f3 fw6 dib blue-dark mv0">
-                <FormattedMessage {...messages.categoryInfo} />
+                <FormattedMessage {...messages.licenseInfo} />
               </h3>
               <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
               <form id="license-form" onSubmit={handleSubmit}>
