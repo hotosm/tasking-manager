@@ -92,19 +92,19 @@ const LicenseError = ({ id, close, lockTasks }) => {
   return (
     <>
       <h3 className="barlow-condensed f3 fw6 mv0">
-        <FormattedMessage {...messages.lockError} />
+        <FormattedMessage {...messages.lockErrorLicense} />
       </h3>
       {license === null ? null : (
-        <div className="mv4 lh-title">
-          <FormattedMessage {...messages.lockErrorLicense} />
-          <div className="h5 overflow-scroll">
-            <p className="barlow-condensed b f4 ttu">{license.name}</p>
+        <div className="mt3 lh-title">
+          <FormattedMessage {...messages.lockErrorLicenseDescription} />
+          <div className="h5 ph2 overflow-scroll">
+            <p className="fw6 f5 ttu">{license.name}</p>
             <p className="f6">{license.description}</p>
             <p className="f6">{license.plainText}</p>
           </div>
-          <div className="w-100 tr pt3">
-            <Button onClick={() => close()} className="blue-dark bg-grey-light mr2">
-              <FormattedMessage {...messages.cancelLicense} />
+          <div className="w-100 pt3">
+            <Button onClick={() => close()} className="blue-dark bg-white mr2">
+              <FormattedMessage {...messages.cancel} />
             </Button>
             <Button onClick={() => AcceptLicense()} className="white bg-red">
               <FormattedMessage {...messages.acceptLicense} />
