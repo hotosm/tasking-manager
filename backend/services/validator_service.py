@@ -61,9 +61,7 @@ class ValidatorService:
             user_can_validate = ValidatorService._user_can_validate_task(
                 validation_dto.user_id, task.mapped_by
             )
-            if not ValidatorService._user_can_validate_task(
-                validation_dto.user_id, task.mapped_by
-            ):
+            if not user_can_validate:
                 raise ValidatorServiceError(
                     f"Tasks cannot be validated by the same user who marked task as mapped or badimagery"
                 )
@@ -102,10 +100,14 @@ class ValidatorService:
         :param mapped_by: id of user who mapped the task
         :return: Boolean
         """
-        mapped_by_me = mapped_by == user_id
-        if not mapped_by_me:
+        is_admin = UserService.is_user_an_admin(user_id)
+        if is_admin:
             return True
-        return False
+        else:
+            mapped_by_me = mapped_by == user_id
+            if not mapped_by_me:
+                return True
+            return False
 
     @staticmethod
     def unlock_tasks_after_validation(
