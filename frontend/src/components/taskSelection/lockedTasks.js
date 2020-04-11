@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
@@ -71,6 +72,50 @@ export function SameProjectLock({ lockedTasks, action }: Object) {
   );
 }
 
+const LicenseError = ({ id, close, lockTasks }) => {
+  const token = useSelector((state) => state.auth.get('token'));
+  const [license, setLicense] = useState(null);
+  useEffect(() => {
+    const fetchLicense = async (id) => {
+      const res = await fetchLocalJSONAPI(`licenses/${id}/`);
+      setLicense(res);
+    };
+    fetchLicense(id);
+  }, [id]);
+
+  const AcceptLicense = () => {
+    pushToLocalJSONAPI(`licenses/${id}/actions/accept-for-me/`, null, token).then(() =>
+      lockTasks(),
+    );
+  };
+
+  return (
+    <>
+      <h3 className="barlow-condensed f3 fw6 mv0">
+        <FormattedMessage {...messages.lockErrorLicense} />
+      </h3>
+      {license === null ? null : (
+        <div className="mt3 lh-title">
+          <FormattedMessage {...messages.lockErrorLicenseDescription} />
+          <div className="h5 ph2 overflow-scroll">
+            <p className="fw6 f5 ttu">{license.name}</p>
+            <p className="f6">{license.description}</p>
+            <p className="f6">{license.plainText}</p>
+          </div>
+          <div className="w-100 pt3">
+            <Button onClick={() => close()} className="blue-dark bg-white mr2">
+              <FormattedMessage {...messages.cancel} />
+            </Button>
+            <Button onClick={() => AcceptLicense()} className="white bg-red">
+              <FormattedMessage {...messages.acceptLicense} />
+            </Button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 export function LockError() {
   return (
     <>
@@ -84,16 +129,19 @@ export function LockError() {
   );
 }
 
-export function LockedTaskModalContent({ project, error }: Object) {
-  const lockedTasks = useSelector(state => state.lockedTasks);
+export function LockedTaskModalContent({ project, error, close, lockTasks }: Object) {
+  const lockedTasks = useSelector((state) => state.lockedTasks);
   const action = lockedTasks.get('status') === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
-
   return (
     <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
+      {!lockedTasks.get('project') && error === 'CONFLICT' ? (
+        <LicenseError id={project.licenseId} close={close} lockTasks={lockTasks} />
+      ) : null}
+
       {/* User has not tasks locked, but other error happened */}
-      {!lockedTasks.get('project') && <LockError />}
+      {!lockedTasks.get('project') && error !== 'CONFLICT' && <LockError />}
       {/* User has tasks locked on another project */}
-      {lockedTasks.get('project') && lockedTasks.get('project') !== project && (
+      {lockedTasks.get('project') && lockedTasks.get('project') !== project.projectId && (
         <AnotherProjectLock
           projectId={lockedTasks.get('project')}
           action={action}
@@ -101,7 +149,7 @@ export function LockedTaskModalContent({ project, error }: Object) {
         />
       )}
       {/* User has tasks locked on the current project */}
-      {lockedTasks.get('project') === project && (
+      {lockedTasks.get('project') === project.projectId && (
         <SameProjectLock action={action} lockedTasks={lockedTasks} />
       )}
     </div>

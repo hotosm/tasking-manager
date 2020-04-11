@@ -24,6 +24,10 @@ export default defineMessages({
     id: 'deleteModal.status.failure.interests',
     defaultMessage: 'An error occurred when trying to delete this interest.',
   },
+  failure_licenses: {
+    id: 'deleteModal.status.failure.licenses',
+    defaultMessage: 'An error occurred when trying to delete this license.',
+  },
   failure_campaigns: {
     id: 'deleteModal.status.failure.campaigns',
     defaultMessage: 'An error occurred when trying to delete this campaign.',
@@ -51,6 +55,10 @@ export default defineMessages({
   confirmDeleteTitle_organisations: {
     id: 'deleteModal.title.organisation',
     defaultMessage: 'Are you sure you want to delete this organisation?',
+  },
+  confirmDeleteTitle_licenses: {
+    id: 'deleteModal.title.licenses',
+    defaultMessage: 'Are you sure you want to delete this license?',
   },
   confirmDeleteTitle_interests: {
     id: 'deleteModal.title.interests',
