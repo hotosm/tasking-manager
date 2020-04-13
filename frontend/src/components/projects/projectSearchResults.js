@@ -7,13 +7,13 @@ import { nCardPlaceholders } from '../projectcard/nCardPlaceholder';
 import { ProjectCard } from '../projectcard/projectCard';
 import messages from './messages';
 
-export const ProjectSearchResults = props => {
+export const ProjectSearchResults = (props) => {
   const state = props.state;
   const cardWidthClass = 'w-third-l';
 
   return (
     <div className={`${props.className}`}>
-      <p className={`blue-grey ml2 f7`}>
+      <p className={`blue-grey f7`}>
         {state.isLoading ? (
           <span>&nbsp;</span>
         ) : (
@@ -44,7 +44,7 @@ export const ProjectSearchResults = props => {
           </div>
         </div>
       ) : null}
-      <div className="cf mh5 mh2-ns db">
+      <div className="cf db">
         <ReactPlaceholder
           customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
           ready={!state.isLoading}
@@ -60,7 +60,7 @@ export const ProjectSearchResults = props => {
   );
 };
 
-const ExploreProjectCards = props => {
+const ExploreProjectCards = (props) => {
   if (props.pageOfCards && props.pageOfCards.length === 0) {
     return null;
   }
