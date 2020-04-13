@@ -327,11 +327,11 @@ export default defineMessages({
   },
   badImagery: {
     id: 'project.tasks.action.options.bad_imagery',
-    defaultMessage: 'It is not possible to map this task',
+    defaultMessage: 'It is not possible to map this task (due to bad imagery)',
   },
   incomplete: {
     id: 'project.tasks.action.options.mapping_incomplete',
-    defaultMessage: "Can't finish this task, set back to ready for mapping",
+    defaultMessage: "Unfinished",
   },
   completelyMapped: {
     id: 'project.tasks.action.options.mapping_complete',
