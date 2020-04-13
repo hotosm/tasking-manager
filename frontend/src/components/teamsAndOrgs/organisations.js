@@ -44,7 +44,7 @@ export function OrgsManagement({
 
 export function OrganisationCard({ details }: Object) {
   return (
-    <Link to={`${details.organisationId}/`} className="w-50-l w-100 fl ph1">
+    <Link to={`${details.organisationId}/`} className="w-50-l w-100 fl pr3">
       <div className="bg-white blue-dark mv2 pb4 dib w-100 ba br1 b--grey-light shadow-hover">
         <div className="w-25 h4 fl pa3">
           {details.logo && <img src={details.logo} alt={`${details.name} logo`} className="w-80" />}

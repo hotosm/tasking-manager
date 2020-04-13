@@ -62,7 +62,7 @@ export const ProjectsPage = (props) => {
         <ProjectSearchResults
           state={state}
           retryFn={forceUpdate}
-          className={`${searchResultWidth} fl`}
+          className={`${searchResultWidth} pl3 fl`}
         />
         {isMapShown && (
           <ProjectsMap

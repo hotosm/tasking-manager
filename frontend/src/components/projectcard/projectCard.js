@@ -102,7 +102,7 @@ export function ProjectCard({
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative fl ${cardWidthClass} base-font w-50-m w-100 mb3 ${bottomButtonMargin} ph2 blue-dark mw5 `}
+      className={`relative fl ${cardWidthClass} base-font w-50-m w-100 mb3 ${bottomButtonMargin} pr3 blue-dark mw5 `}
     >
       <Link className={`no-underline color-inherit `} to={`/projects/${projectId}`}>
         <article className={``}>

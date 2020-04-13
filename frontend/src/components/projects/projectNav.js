@@ -11,9 +11,9 @@ import { ProjectSearchBox } from './projectSearchBox';
 import { OrderBySelector } from './orderBy';
 import { SwitchToggle } from '../formInputs';
 
-export const ShowMapToggle = props => {
+export const ShowMapToggle = (props) => {
   const dispatch = useDispatch();
-  const isMapShown = useSelector(state => state.preferences['mapShown']);
+  const isMapShown = useSelector((state) => state.preferences['mapShown']);
   return (
     <div className="fr pv2 dib-ns dn blue-dark">
       <SwitchToggle
@@ -25,12 +25,12 @@ export const ShowMapToggle = props => {
   );
 };
 
-const DifficultyDropdown = props => {
+const DifficultyDropdown = (props) => {
   return (
     <Dropdown
       onAdd={() => {}}
       onRemove={() => {}}
-      onChange={n => {
+      onChange={(n) => {
         const value = n && n[0] && n[0].value;
         props.setQuery(
           {
@@ -54,7 +54,7 @@ const DifficultyDropdown = props => {
   );
 };
 
-export const ProjectNav = props => {
+export const ProjectNav = (props) => {
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
   const encodedParams = stringify(fullProjectsQuery)
     ? ['?', stringify(fullProjectsQuery)].join('')
@@ -80,7 +80,7 @@ export const ProjectNav = props => {
   return (
     /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
     <header className="bt bb b--tan w-100 ">
-      <div className="mt2 mb1 ph2 dib lh-copy w-100 cf">
+      <div className="mt2 mb1 ph3 dib lh-copy w-100 cf">
         <div className="w-80-l w-90-m w-100 fl dib">
           <div className="dib">
             <div className="mv2 dib">
