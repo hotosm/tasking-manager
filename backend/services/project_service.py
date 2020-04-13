@@ -340,9 +340,6 @@ class ProjectService:
         if UserService.is_user_blocked(user_id):
             return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
-        if ProjectAdminService.is_user_action_permitted_on_project(user_id, project_id):
-            return True, "User allowed to validate"
-
         project = ProjectService.get_project_by_id(project_id)
         validation_permission = project.validation_permission
 
