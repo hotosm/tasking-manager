@@ -163,6 +163,9 @@ class TeamsRestAPI(Resource):
             team = TeamService.get_team_by_id(team_id)
             team_dto = UpdateTeamDTO(request.get_json())
             team_dto.team_id = team_id
+            team_dto.organisation = OrganisationService.get_organisation_name_by_id(
+                team_dto.organisation
+            )
             team_dto.validate()
 
             if not TeamService.user_is_manager(
