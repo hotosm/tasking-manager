@@ -4,10 +4,6 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on user components.
  */
 export default defineMessages({
-  mapper: {
-    id: 'user.mapper',
-    defaultMessage: '{level} mapper',
-  },
   nextLevel: {
     id: 'user.nextLevel',
     defaultMessage: '{changesets} / {nextLevelThreshold} changesets to {level}',
@@ -97,7 +93,7 @@ export default defineMessages({
   languageDescription: {
     id: 'user.settings.language.description',
     defaultMessage:
-      'Define your prefered language. It will also affect the language of the maps you see on Tasking Manager.',
+      'Define your preferred language. It will also affect the language of the maps you see on Tasking Manager.',
   },
   becomeValidator: {
     id: 'user.settings.become_validator',
