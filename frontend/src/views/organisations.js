@@ -211,7 +211,11 @@ export function EditOrganisation(props) {
           viewAllQuery={`?organisation=${organisation.name}`}
           ownerEntity="organisation"
         />
-        <Teams teams={organisation.teams} viewAllQuery={`?organisationId=${props.id}`} />
+        <Teams
+          teams={organisation.teams}
+          viewAllQuery={`?organisationId=${props.id}`}
+          isReady={!error && !loading}
+        />
       </div>
     </div>
   );
