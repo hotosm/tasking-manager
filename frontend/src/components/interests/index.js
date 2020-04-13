@@ -11,7 +11,7 @@ import { Button } from '../button';
 
 export const InterestCard = ({ interest }) => {
   return (
-    <Link to={`${interest.id}/`} className="w-50-ns w-100 fl ph1">
+    <Link to={`${interest.id}/`} className="w-50-ns w-100 fl pr3">
       <div className="cf bg-white blue-dark br1 mv2 pv4 ph3 ba br1 b--grey-light shadow-hover">
         <div className="dib v-mid pr3">
           <div className="z-1 fl br-100 tc h2 w2 bg-blue-light white">
@@ -49,7 +49,7 @@ export const InterestsManagement = ({ interests, userDetails }) => {
   );
 };
 
-export const InterestInformation = props => {
+export const InterestInformation = (props) => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
@@ -65,12 +65,12 @@ export const InterestInformation = props => {
   );
 };
 
-export const InterestForm = props => {
+export const InterestForm = (props) => {
   const [editMode, setEditMode] = useState(false);
 
   return (
     <Form
-      onSubmit={values => props.updateInterest(values)}
+      onSubmit={(values) => props.updateInterest(values)}
       initialValues={props.interest}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
