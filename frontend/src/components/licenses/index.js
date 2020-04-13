@@ -11,7 +11,7 @@ import { Button } from '../button';
 
 export const LicenseCard = ({ license }) => {
   return (
-    <Link to={`${license.licenseId}/`} className="w-50-ns w-100 fl ph1">
+    <Link to={`${license.licenseId}/`} className="w-50-ns w-100 fl pr3">
       <div className="cf bg-white blue-dark br1 mv2 pv4 ph3 ba br1 b--grey-light shadow-hover">
         <div className="dib v-mid pr3">
           <div className="z-1 fl br-100 tc h2 w2 bg-blue-light white">
