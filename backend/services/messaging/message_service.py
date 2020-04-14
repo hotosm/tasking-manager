@@ -12,7 +12,6 @@ from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType, NotFound
 from backend.models.postgis.notification import Notification
-from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.project import Project
 from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
 from backend.services.messaging.smtp_service import SMTPService
@@ -414,12 +413,7 @@ class MessageService:
         query = Message.query
 
         if project is not None:
-            query = (
-                db.session.query(Message, ProjectInfo)
-                .filter(Message.project_id == ProjectInfo.project_id)
-                .filter(ProjectInfo.locale.in_([locale, "en"]))
-                .filter(ProjectInfo.name.ilike("%" + project.lower() + "%"))
-            )
+            query = query.filter(Message.project_id == project)
 
         if task_id is not None:
             query = query.filter(Message.task_id == task_id)

@@ -168,7 +168,7 @@ class NotificationsAllAPI(Resource):
             sort_direction = request.args.get("sortDirection", "desc")
             message_type = request.args.get("messageType", None)
             from_username = request.args.get("from")
-            project = request.args.get("project")
+            project = request.args.get("project", None, int)
             task_id = request.args.get("taskId", None, int)
             user_messages = MessageService.get_all_messages(
                 tm.authenticated_user_id,

@@ -22,6 +22,7 @@ const inboxQueryAllSpecification = {
   fromUsername: StringParam,
   text: StringParam,
   taskId: NumberParam,
+  project: NumberParam,
   page: NumberParam,
   pageSize: NumberParam,
   orderBy: StringParam,
