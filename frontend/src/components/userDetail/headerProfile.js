@@ -33,8 +33,10 @@ const SocialMedia = ({ data }) => {
   const createLink = (field, value) => {
     const aClass = 'blue-grey no-underline';
     let url = null;
-    var array = value.split("/");
-    value = array[array.length - 1];
+    if(value) {
+      var array = value.split("/");
+      value = array[array.length - 1];
+    }
     switch (field) {
       case 'twitterId':
         url = 'https://www.twitter.com/' + value;
