@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
@@ -38,7 +37,6 @@ const ContactUsPopup = ({ icon, title, body, proceed, proceedFn }) => (
 
 export const ContactPage = (props) => {
   useSetTitleTag('Contact us');
-  const token = useSelector((state) => state.auth.get('token'));
   const [sentStatus, setSentStatus] = useState(null);
   const [popups, setPopupMessage] = useState(null);
 
@@ -59,27 +57,21 @@ export const ContactPage = (props) => {
   }, [sentStatus, props]);
   const sendContactUs = (form) => {
     setSentStatus('started');
-    if (token) {
-      pushToLocalJSONAPI(`system/contact-admin/`, JSON.stringify(form), token, 'POST')
-        .then((success) => setSentStatus('success'))
-        .catch((e) => {
-          setSentStatus('failure');
-          setPopupMessage(
-            <ContactUsPopup
-              icon={<AlertIcon height="50px" width="50px" />}
-              title={<FormattedMessage {...messages.contactUsThanksError} />}
-              body={e.message}
-              proceed={<FormattedMessage {...messages.contactUsThanksProceed} />}
-              proceedFn={() => null}
-            />,
-          );
-        });
-    } else {
-      window.open(
-        `mailto:sysadmin@hotosm.org?subject="Tasking Manager contact"&body=${form.content}`,
-      );
-      setSentStatus('success');
-    }
+
+    pushToLocalJSONAPI(`system/contact-admin/`, JSON.stringify(form), null, 'POST')
+      .then((success) => setSentStatus('success'))
+      .catch((e) => {
+        setSentStatus('failure');
+        setPopupMessage(
+          <ContactUsPopup
+            icon={<AlertIcon height="50px" width="50px" />}
+            title={<FormattedMessage {...messages.contactUsThanksError} />}
+            body={e.message}
+            proceed={<FormattedMessage {...messages.contactUsThanksProceed} />}
+            proceedFn={() => null}
+          />,
+        );
+      });
   };
 
   return (
