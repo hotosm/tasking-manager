@@ -39,6 +39,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const activeTask = activeTasks && activeTasks[0];
   const timer = new Date(activeTask.lastUpdated);
 
+  const [taskComment, setTaskComment] = useState('');
+
   timer.setSeconds(timer.getSeconds() + activeTask.autoUnlockSeconds);
 
   useEffect(() => {
@@ -170,6 +172,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       project={project}
                       tasksIds={tasksIds}
                       disabled={disabled}
+                      taskComment={taskComment}
+                      setTaskComment={setTaskComment}
                     />
                   )}
                   {action === 'VALIDATION' && (
@@ -177,6 +181,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       project={project}
                       tasksIds={tasksIds}
                       disabled={disabled}
+                      taskComment={taskComment}
+                      setTaskComment={setTaskComment}
                     />
                   )}
                   <div className="pt3">
@@ -252,11 +258,16 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   );
 }
 
-function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
+function CompletionTabForMapping({
+  project,
+  tasksIds,
+  disabled,
+  taskComment,
+  setTaskComment,
+}: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
   const [showHelp, setShowHelp] = useState(false);
-  const [taskComment, setTaskComment] = useState('');
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
   const fetchLockedTasks = useFetchLockedTasks();
@@ -408,10 +419,15 @@ function CompletionTabForMapping({ project, tasksIds, disabled }: Object) {
   );
 }
 
-function CompletionTabForValidation({ project, tasksIds, disabled }: Object) {
+function CompletionTabForValidation({
+  project,
+  tasksIds,
+  disabled,
+  taskComment,
+  setTaskComment,
+}: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [selectedStatus, setSelectedStatus] = useState();
-  const [taskComment, setTaskComment] = useState('');
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
 
