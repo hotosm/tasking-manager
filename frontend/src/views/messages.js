@@ -72,6 +72,10 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.button.cancel',
     defaultMessage: 'Cancel',
   },
+  createOrgError: {
+    id: 'teamsAndOrgs.management.organisation.create_org_error',
+    defaultMessage: 'Error creating organisation.',
+  },
   manageOrganisation: {
     id: 'teamsAndOrgs.management.organisation.manage',
     defaultMessage: 'Manage organization',

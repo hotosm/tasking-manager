@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
@@ -87,7 +87,7 @@ export function OrganisationCard({ details }: Object) {
 export function OrganisationForm(props) {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
-  const [editMode, setEditMode] = useState(false);
+  const { editMode, setEditMode } = props;
 
   return (
     <Form
@@ -140,19 +140,23 @@ export function OrganisationForm(props) {
               </form>
             </div>
             {editMode && (
-              <div className="cf pt0 h3">
-                <div className="w-70-l w-50 fl tr dib bg-grey-light">
+              <div className="cf pt0 h3 flex justify-end bg-grey-light">
+                {props.updateError && (
+                  <div className="w-40-l w-50 tc flex justify-center items-center bg-red white">
+                    <FormattedMessage {...messages.updateError} />
+                  </div>
+                )}
+                <div className="w-30-l w-50 flex justify-center items-center">
                   <Button className="blue-dark bg-grey-light h3" onClick={() => setEditMode(false)}>
                     <FormattedMessage {...messages.cancel} />
                   </Button>
                 </div>
-                <div className="w-30-l w-50 h-100 fr dib">
+                <div className="w-30-l w-50 h-100 dib">
                   <Button
                     onClick={() => {
                       document
                         .getElementById('org-form')
                         .dispatchEvent(new Event('submit', { cancelable: true }));
-                      setEditMode(false);
                     }}
                     className="w-100 h-100 bg-red white"
                     disabledClassName="bg-red o-50 white w-100 h-100"

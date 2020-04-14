@@ -68,6 +68,7 @@ export function CreateOrganisation() {
   const token = useSelector((state) => state.auth.get('token'));
   const [managers, setManagers] = useState([]);
   const [newOrgId, setNewOrgId] = useState(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (userDetails && userDetails.username && managers.length === 0) {
@@ -92,9 +93,14 @@ export function CreateOrganisation() {
   };
   const createOrg = (payload) => {
     payload.managers = managers.map((user) => user.username);
-    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST').then((result) =>
-      setNewOrgId(result.organisationId),
-    );
+    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        setError(false);
+        setNewOrgId(result.organisationId);
+      })
+      .catch((error) => {
+        setError(true);
+      });
   };
 
   return (
@@ -117,15 +123,20 @@ export function CreateOrganisation() {
                 />
               </div>
             </div>
-            <div className="bottom-0 right-0 left-0 cf bg-white h3 fixed">
-              <div className="w-80-ns w-60-m w-50 h-100 fl tr">
-                <Link to={'../'}>
-                  <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
+            <div className="bottom-0 right-0 left-0 cf bg-white h3 flex justify-end fixed">
+              {error && (
+                <div className="w-60-ns w-40-m w-50 h-100 tc pa3 bg-red white">
+                  <FormattedMessage {...messages.createOrgError} />
+                </div>
+              )}
+              <div className="w-20-l w-30-m w-50 h-100 tc">
+                <Link to={'../'} onClick={() => setError(false)}>
+                  <CustomButton className="bg-white pr2 h-100 bn bg-white blue-dark">
                     <FormattedMessage {...messages.cancel} />
                   </CustomButton>
                 </Link>
               </div>
-              <div className="w-20-l w-40-m w-50 h-100 fr">
+              <div className="w-20-l w-30-m w-50 h-100 tc">
                 <FormSubmitButton
                   disabled={submitting || pristine}
                   className="w-100 h-100 bg-red white"
@@ -153,6 +164,9 @@ export function EditOrganisation(props) {
     `projects/?organisationId=${props.id}`,
     props.id,
   );
+  const [updateError, setUpdateError] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+
   useEffect(() => {
     if (!initManagers && organisation && organisation.managers) {
       setManagers(organisation.managers);
@@ -176,7 +190,14 @@ export function EditOrganisation(props) {
   };
 
   const updateOrg = (payload) => {
-    pushToLocalJSONAPI(`organisations/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
+    pushToLocalJSONAPI(`organisations/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
+      .then((response) => {
+        if (updateError) setUpdateError(false);
+        setEditMode(false);
+      })
+      .catch((e) => {
+        setUpdateError(true);
+      });
   };
 
   return (
@@ -196,6 +217,9 @@ export function EditOrganisation(props) {
           userDetails={userDetails}
           organisation={{ name: organisation.name, url: organisation.url, logo: organisation.logo }}
           updateOrg={updateOrg}
+          updateError={updateError}
+          editMode={editMode}
+          setEditMode={setEditMode}
           disabledForm={error || loading}
         />
         <Members

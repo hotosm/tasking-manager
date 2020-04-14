@@ -192,6 +192,10 @@ export default defineMessages({
     id: 'management.button.cancel',
     defaultMessage: 'Cancel',
   },
+  updateError: {
+    id: 'management.error.update_error',
+    defaultMessage: 'Couldn\'t update!',
+  },
   administrators: {
     id: 'management.teams.administrators',
     defaultMessage: 'Administrators',
