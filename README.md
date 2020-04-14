@@ -6,7 +6,7 @@ The tool for coordination of volunteers and organization of groups to map on Ope
 
 With this tool an area of interest can be defined and divided up into smaller tasks that can be completed rapidly. It shows which areas need to be mapped and which areas need a review for quality assurance. You can see the tool in action: log into the widely used [HOT Tasking Manager](https://tasks.hotosm.org/) and start mapping.
 
-[<img src="./docs/assets/project-view.jpg" />](./docs/assets/project-view.jpg)
+[<img src="./docs/assets/project-view.gif" />](./docs/assets/project-view.gif)
 
 This is Free and Open Source Software. You are welcome to use the code and set up your own instance. The Tasking Manager has been initially designed and built by and for the [Humanitarian OpenStreetMap Team](https://www.hotosm.org/), and is nowadays used by many communities and organizations.
 
