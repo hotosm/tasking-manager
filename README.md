@@ -20,4 +20,11 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 * [Install TM with Docker](./docs/setup-docker.md)
 * [Setup the TM for development](./docs/setup-development.md)
+* [Customize your instance of the TM](./docs/customize.md)
 * Help us and submit [pull requests](https://github.com/hotosm/tasking-manager/pulls)
+
+## Features
+
+* [<img src="./docs/assets/mapathon.jpg" />](./docs/assets/mapathon.jpg) run mapathons for your organization
+* [<img src="./docs/assets/tm-unbranded.jpg" />](./docs/assets/tm-unbranded.jpg) easy to install and customize your Tasking Manager
+* [<img src="./docs/assets/integrated-id.jpg" />](./docs/assets/integrated-id.jpg) comes with integrated iD editor
