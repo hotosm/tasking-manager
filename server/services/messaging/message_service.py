@@ -118,7 +118,7 @@ class MessageService:
         validation_message.task_id = task_id
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
-        validation_message.subject = f'Your mapping in Project {project_id} on {task_link} has just been {status_text}'
+        validation_message.subject = f'Your mapping in Project {project_id} on {task_id} has just been {status_text}'
         validation_message.message = text_template
         validation_message.add_message()
 
@@ -174,7 +174,7 @@ class MessageService:
             message.task_id = task_id
             message.from_user_id = comment_from
             message.to_user_id = user.id
-            message.subject = f'You were mentioned in a comment in Project {project_id} on {task_link}'
+            message.subject = f'You were mentioned in a comment in Project {project_id} on {task_id}'
             message.message = comment
             message.add_message()
             SMTPService.send_email_alert(user.email_address, user.username)

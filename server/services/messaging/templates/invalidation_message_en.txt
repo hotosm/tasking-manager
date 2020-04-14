@@ -8,6 +8,8 @@ Unfortunately, the task you marked as "Completely Mapped" was just marked as inv
 <h3>Comments</h3>
 [COMMENTS]
 <br />
+---------
+<br />
 Thank you very much for mapping!<br />
 <br />
 Please note: You can opt-out of these automated validation messages by visiting your User Profile and clicking "Edit-Add Contact Details."<br />
