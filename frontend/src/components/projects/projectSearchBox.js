@@ -7,11 +7,11 @@ import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 
 export const ProjectSearchBox = ({
   fullProjectsQuery,
-  fullProjectsQuery: { text: queryParamText },
   setQuery,
   className,
   isMobile,
   placeholder,
+  searchField = 'text'
 }) => {
   const [isFocus, setFocus] = useState(false);
   // const [searchTerm, setSearchTerm] = useState(props.fullProjectsQuery.text);
@@ -27,16 +27,16 @@ export const ProjectSearchBox = ({
         {
           ...fullProjectsQuery,
           page: undefined,
-          text: newValue,
+          [searchField]: newValue,
         },
         'pushIn',
       ),
-    [fullProjectsQuery, setQuery],
+    [fullProjectsQuery, setQuery, searchField],
   );
 
   const isFocusMobile = isMobile && isFocus;
-  const iconStyleForInputtedText = !fullProjectsQuery.text ? 'grey-light' : 'red';
-  const clearIconStyleForInputtedText = !fullProjectsQuery.text ? 'dn' : 'red dib-ns';
+  const iconStyleForInputtedText = !fullProjectsQuery[searchField] ? 'grey-light' : 'red';
+  const clearIconStyleForInputtedText = !fullProjectsQuery[searchField] ? 'dn' : 'red dib-ns';
 
   return (
     <nav ref={navRef} className={`${className || ''} mt1 mt2-ns`}>
@@ -51,7 +51,7 @@ export const ProjectSearchBox = ({
           id="name"
           ref={inputRef}
           autoComplete="off"
-          value={queryParamText || ''}
+          value={fullProjectsQuery[searchField] || ''}
           onFocus={() => setFocus(true)}
           onChange={event => {
             const value = event.target.value;
