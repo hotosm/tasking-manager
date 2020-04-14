@@ -40,6 +40,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const timer = new Date(activeTask.lastUpdated);
 
   const [taskComment, setTaskComment] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState();
 
   timer.setSeconds(timer.getSeconds() + activeTask.autoUnlockSeconds);
 
@@ -174,6 +175,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       disabled={disabled}
                       taskComment={taskComment}
                       setTaskComment={setTaskComment}
+                      selectedStatus={selectedStatus}
+                      setSelectedStatus={setSelectedStatus}
                     />
                   )}
                   {action === 'VALIDATION' && (
@@ -183,6 +186,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       disabled={disabled}
                       taskComment={taskComment}
                       setTaskComment={setTaskComment}
+                      selectedStatus={selectedStatus}
+                      setSelectedStatus={setSelectedStatus}
                     />
                   )}
                   <div className="pt3">
@@ -264,9 +269,10 @@ function CompletionTabForMapping({
   disabled,
   taskComment,
   setTaskComment,
+  selectedStatus,
+  setSelectedStatus,
 }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
-  const [selectedStatus, setSelectedStatus] = useState();
   const [showHelp, setShowHelp] = useState(false);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
@@ -425,9 +431,10 @@ function CompletionTabForValidation({
   disabled,
   taskComment,
   setTaskComment,
+  selectedStatus,
+  setSelectedStatus,
 }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
-  const [selectedStatus, setSelectedStatus] = useState();
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
 
