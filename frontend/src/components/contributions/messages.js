@@ -62,7 +62,7 @@ export default defineMessages({
   },
   lastUpdatedByUser: {
     id: 'mytasks.nav.lastUpdatedBy',
-    defaultMessage: 'You worked on this task {time}',
+    defaultMessage: 'Last updated {time}',
   },
   viewAll: {
     id: 'mytasks.nav.viewAll',
