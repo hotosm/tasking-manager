@@ -104,7 +104,7 @@ class TeamDTO(Model):
     visibility = StringType(
         required=True, validators=[validate_team_visibility], serialize_when_none=False
     )
-    members = ListType(ModelType(TeamMembersDTO), serialize_when_none=False)
+    members = ListType(ModelType(TeamMembersDTO))
 
 
 class TeamsListDTO(Model):
