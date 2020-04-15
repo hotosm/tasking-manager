@@ -18,7 +18,7 @@
   "mytasks.navFilters.error": "Error while loading the tasks",
   "mytasks.pagination.count": "Showing {number} of {total}",
   "mytasks.nav.xNew": "{xNew} New",
-  "mytasks.nav.lastUpdatedBy": "You worked on this task {time}",
+  "mytasks.nav.lastUpdatedBy": "Last updated {time}",
   "mytasks.nav.viewAll": "View All",
   "mytasks.nav.delete.button": "Delete",
   "mytasks.nav.noContributedItems": "No Contributed Items",
