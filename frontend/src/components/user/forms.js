@@ -161,6 +161,10 @@ function _UserInformationForm(props) {
       .catch(() => setResend(false));
   };
 
+  const RequiredIndicator = () => {
+    return <span className="ml1 b red">*</span>;
+  };
+
   return (
     <div className="bg-white shadow-4 pa4 mb3">
       <h3 className="f3 blue-dark mt0 fw6">
@@ -173,10 +177,11 @@ function _UserInformationForm(props) {
         initialValues={props.userDetails}
         render={({ handleSubmit, pristine, form, submitting, values }) => (
           <form onSubmit={handleSubmit} className="blue-grey">
-            <fieldset className="bn" disabled={submitting || !props.userDetails.username}>
+            <fieldset className="bn ph0" disabled={submitting || !props.userDetails.username}>
               <div className="cf">
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.name} />
+                  <RequiredIndicator />
                 </label>
                 <Field
                   name="name"
@@ -189,6 +194,7 @@ function _UserInformationForm(props) {
               <div className="cf">
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.email} />
+                  <RequiredIndicator />
                 </label>
                 <Field
                   name="emailAddress"
@@ -229,6 +235,10 @@ function _UserInformationForm(props) {
                     </div>
                   )}
                 </Field>
+                <p className="f6 mv2">
+                  <span className="red b">* </span>
+                  <FormattedMessage {...messages.required} />
+                </p>
               </div>
               <div className="cf">
                 <div className="w-100 w-50-ns fl pr3-ns">
