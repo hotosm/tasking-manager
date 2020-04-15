@@ -17,6 +17,7 @@ import { CustomEditorForm } from '../components/projectEdit/customEditorForm';
 import { Button } from '../components/button';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { useEditProjectAllowed } from '../hooks/UsePermissions';
 
 export const StateContext = React.createContext();
 
@@ -69,6 +70,7 @@ export function ProjectEdit({ id }) {
       },
     ],
   });
+  const [userCanEditProject] = useEditProjectAllowed(projectInfo);
 
   useLayoutEffect(() => {
     setSuccess(false);
@@ -94,6 +96,18 @@ export function ProjectEdit({ id }) {
 
   if (!token) {
     return <Redirect to={'login'} noThrow />;
+  }
+
+  if (projectInfo.projectId && !userCanEditProject) {
+    return (
+      <div className="cf w-100 pv5">
+        <div className="tc">
+          <h3 className="f3 fw8 mb4 barlow-condensed">
+            <FormattedMessage {...messages.editNotAllowed} />
+          </h3>
+        </div>
+      </div>
+    );
   }
 
   const renderList = () => {
