@@ -96,4 +96,44 @@ export default defineMessages({
     id: 'notifications.refresh',
     defaultMessage: 'Refresh',
   },
+  SYSTEM: {
+    id: 'notifications.message.type.system',
+    defaultMessage: 'System',
+  },
+  BROADCAST: {
+    id: 'notifications.message.type.broadcast',
+    defaultMessage: 'Broadcast',
+  },
+  MENTION_NOTIFICATION: {
+    id: 'notifications.message.type.mention_notification',
+    defaultMessage: 'Mention',
+  },
+  VALIDATION_NOTIFICATION: {
+    id: 'notifications.message.type.validation_notification',
+    defaultMessage: 'Validation',
+  },
+  INVALIDATION_NOTIFICATION: {
+    id: 'notifications.message.type.invalidation_notification',
+    defaultMessage: 'Invalidation',
+  },
+  REQUEST_TEAM_NOTIFICATION: {
+    id: 'notifications.message.type.request_team_notification',
+    defaultMessage: 'Request team',
+  },
+  INVITATION_NOTIFICATION: {
+    id: 'notifications.message.type.invitation_notification',
+    defaultMessage: 'Invitation',
+  },
+  TASK_COMMENT_NOTIFICATION: {
+    id: 'notifications.message.type.task_comment_notification',
+    defaultMessage: 'Task comment',
+  },
+  PROJECT_CHAT_NOTIFICATION: {
+    id: 'notifications.message.type.project_chat_notification',
+    defaultMessage: 'Project chat',
+  },
+  PROJECT_ACTIVITY_NOTIFICATION: {
+    id: 'notifications.message.type.project_activity_notification',
+    defaultMessage: 'Project activity',
+  },
 });
