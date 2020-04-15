@@ -89,6 +89,7 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^3.2.1",
     "combine-react-intl-messages": "^4.0.0",
     "prettier": "^2.0.0",
     "react-test-renderer": "^16.13.1"

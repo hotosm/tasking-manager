@@ -12,7 +12,9 @@ import { ShowMapToggle } from './projectNav';
 
 export const MyProjectNav = (props) => {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const isOrgManager = useSelector((state) => state.auth.get('isOrgManager'));
+  const isOrgManager = useSelector(
+    (state) => state.auth.get('organisations') && state.auth.get('organisations').length,
+  );
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
 
   const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';

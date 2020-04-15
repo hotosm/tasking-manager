@@ -19,7 +19,9 @@ export function TeamsManagement({
   userTeamsOnly,
   setUserTeamsOnly,
 }: Object) {
-  const isOrgManager = useSelector((state) => state.auth.get('isOrgManager'));
+  const isOrgManager = useSelector(
+    (state) => state.auth.get('organisations') && state.auth.get('organisations').length,
+  );
 
   return (
     <Management
