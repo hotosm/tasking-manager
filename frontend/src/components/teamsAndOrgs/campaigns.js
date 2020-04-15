@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
@@ -66,8 +66,8 @@ export function CampaignInformation(props) {
 }
 
 export function CampaignForm(props) {
-  const [editMode, setEditMode] = useState(false);
-
+  const { editMode, setEditMode } = props;
+  const { updateError, setUpdateError } = props;
   return (
     <Form
       onSubmit={(values) => props.updateCampaign(values)}
@@ -88,11 +88,22 @@ export function CampaignForm(props) {
                   <CampaignInformation />
                 </fieldset>
               </form>
+              {updateError && (
+                <div className="bg-red pa1 mv2 white">
+                  <FormattedMessage {...messages.updateCampaignError} />
+                </div>
+              )}
             </div>
             {editMode && (
               <div className="cf pt0 h3">
                 <div className="w-70-l w-50 fl tr dib bg-grey-light">
-                  <Button className="blue-dark bg-grey-light h3" onClick={() => setEditMode(false)}>
+                  <Button
+                    className="blue-dark bg-grey-light h3"
+                    onClick={() => {
+                      setUpdateError(false);
+                      setEditMode(false);
+                    }}
+                  >
                     <FormattedMessage {...messages.cancel} />
                   </Button>
                 </div>
@@ -102,7 +113,6 @@ export function CampaignForm(props) {
                       document
                         .getElementById('campaign-form')
                         .dispatchEvent(new Event('submit', { cancelable: true }));
-                      setEditMode(false);
                     }}
                     className="w-100 h-100 bg-red white"
                     disabledClassName="bg-red o-50 white w-100 h-100"

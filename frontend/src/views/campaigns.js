@@ -51,6 +51,7 @@ export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
   const token = useSelector((state) => state.auth.get('token'));
   const [newCampaignId, setNewCampaignId] = useState(null);
+  const [createError, setCreateError] = useState(false);
 
   useEffect(() => {
     if (newCampaignId) {
@@ -59,9 +60,14 @@ export function CreateCampaign() {
   }, [newCampaignId]);
 
   const createCampaign = (payload) => {
-    pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST').then((result) =>
-      setNewCampaignId(result.campaignId),
-    );
+    pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        setCreateError(false);
+        setNewCampaignId(result.campaignId);
+      })
+      .catch((error) => {
+        setCreateError(true);
+      });
   };
 
   return (
@@ -80,13 +86,23 @@ export function CreateCampaign() {
                     <FormattedMessage {...messages.campaignInfo} />
                   </h3>
                   <CampaignInformation />
+                  {createError && (
+                    <div className="bg-red pa1 mv2 white">
+                      <FormattedMessage {...messages.createCampaignError} />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="w-40-l w-100 fl pl5-l pl0 "></div>
             </div>
             <div className="fixed left-0 bottom-0 cf bg-white h3 w-100">
               <div className="w-80-ns w-60-m w-50 h-100 fl tr">
-                <Link to={'../'}>
+                <Link
+                  to={'../'}
+                  onClick={() => {
+                    setCreateError(false);
+                  }}
+                >
                   <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
                     <FormattedMessage {...messages.cancel} />
                   </CustomButton>
@@ -118,9 +134,19 @@ export function EditCampaign(props) {
     `projects/?campaign=${encodeURIComponent(campaign.name)}`,
     campaign.name !== undefined,
   );
+  const [updateError, setUpdateError] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   const updateCampaign = (payload) => {
-    pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
+    pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
+      .then((res) => {
+        setUpdateError(false);
+        setEditMode(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setUpdateError(true);
+      });
   };
 
   return (
@@ -137,6 +163,10 @@ export function EditCampaign(props) {
           campaign={{ name: campaign.name }}
           updateCampaign={updateCampaign}
           disabledForm={error || loading}
+          editMode={editMode}
+          setEditMode={setEditMode}
+          updateError={updateError}
+          setUpdateError={setUpdateError}
         />
       </div>
       <div className="w-60-l w-100 mt4 pl5-l pl0 fl">

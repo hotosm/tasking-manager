@@ -144,6 +144,10 @@ export default defineMessages({
     id: 'management.titles.license_information',
     defaultMessage: 'License information',
   },
+  updateCampaignError: {
+    id: 'management.errors.update_error',
+    defaultMessage: 'Couldn\'t update the information !',
+  },
   name: {
     id: 'management.fields.name',
     defaultMessage: 'Name',
@@ -235,5 +239,5 @@ export default defineMessages({
   noTeamsFound: {
     id: 'management.organisation.teams.no_found',
     defaultMessage: 'No teams found.',
-  },
+  }
 });

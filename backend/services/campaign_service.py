@@ -29,6 +29,16 @@ class CampaignService:
         return campaign
 
     @staticmethod
+    def get_campaign_by_name(campaign_name: str) -> Campaign:
+        """Gets the specified campaign by name"""
+        campaign = Campaign.query.filter(Campaign.name == campaign_name).first()
+
+        if campaign is None:
+            raise NotFound()
+
+        return campaign
+
+    @staticmethod
     def delete_campaign(campaign_id: int):
         """Delete campaign for a project"""
         campaign = Campaign.query.get(campaign_id)
@@ -98,14 +108,18 @@ class CampaignService:
 
     @staticmethod
     def create_campaign(campaign_dto: NewCampaignDTO):
-        campaign = Campaign.from_dto(campaign_dto)
-        campaign.create()
-        if campaign_dto.organisations:
-            for org_id in campaign_dto.organisations:
-                organisation = OrganisationService.get_organisation_by_id(org_id)
-                campaign.organisation.append(organisation)
-            db.session.commit()
-        return campaign
+        try:
+            CampaignService.get_campaign_by_name(campaign_dto.name)
+        except NotFound:
+            campaign = Campaign.from_dto(campaign_dto)
+            campaign.create()
+            if campaign_dto.organisations:
+                for org_id in campaign_dto.organisations:
+                    organisation = OrganisationService.get_organisation_by_id(org_id)
+                    campaign.organisation.append(organisation)
+                db.session.commit()
+            return campaign
+        raise ValueError("Campaign with same name already exists")
 
     @staticmethod
     def create_campaign_project(dto: CampaignProjectDTO):
@@ -153,8 +167,12 @@ class CampaignService:
 
     @staticmethod
     def update_campaign(campaign_dto: CampaignDTO, campaign_id: int):
-        campaign = Campaign.query.get(campaign_id)
-        if not campaign:
-            raise NotFound(f"Campaign id {campaign_id} not found")
-        campaign.update(campaign_dto)
-        return campaign
+        try:
+            CampaignService.get_campaign_by_name(campaign_dto.name)
+        except NotFound:
+            campaign = Campaign.query.get(campaign_id)
+            if not campaign:
+                raise NotFound(f"Campaign id {campaign_id} not found")
+            campaign.update(campaign_dto)
+            return campaign
+        raise ValueError("Campaign with same name already exists")

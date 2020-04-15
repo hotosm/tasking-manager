@@ -44,6 +44,10 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.campaign.creation',
     defaultMessage: 'Create new campaign',
   },
+  createCampaignError: {
+    id: 'teamsAndOrgs.management.campaign.create_error',
+    defaultMessage: 'Could not create campaign !',
+  },
   createOrganisation: {
     id: 'teamsAndOrgs.management.organisation.button.create',
     defaultMessage: 'Create organization',
