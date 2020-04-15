@@ -116,6 +116,10 @@ export default defineMessages({
     id: 'user.notifications.projects',
     defaultMessage: 'Project updates',
   },
+  required: {
+    id: 'user.settings.required',
+    defaultMessage: 'Required fields',
+  },
   projectUpdatesDescription: {
     id: 'user.notifications.projects.description',
     defaultMessage: 'You get a notification when a project you have contributed to makes progress.',
