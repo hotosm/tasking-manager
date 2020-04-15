@@ -7,7 +7,8 @@ const initialState = Map({
   token: '',
   session: {},
   osm: {},
-  isOrgManager: false,
+  organisations: [],
+  pmTeams: [],
 });
 
 export function authorizationReducer(state = initialState, action) {
@@ -18,8 +19,11 @@ export function authorizationReducer(state = initialState, action) {
     case types.SET_OSM: {
       return state.set('osm', action.osm);
     }
-    case types.SET_ORG_MANAGER: {
-      return state.set('isOrgManager', action.isOrgManager);
+    case types.SET_ORGANISATIONS: {
+      return state.set('organisations', action.organisations);
+    }
+    case types.SET_PM_TEAMS: {
+      return state.set('pmTeams', action.teams);
     }
     case types.SET_TOKEN: {
       return state.set('token', action.token);

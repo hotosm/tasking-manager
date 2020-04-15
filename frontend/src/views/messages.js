@@ -20,6 +20,10 @@ export default defineMessages({
     id: 'management.forbiddenAccess.title',
     defaultMessage: 'You are not allowed to access the management area.',
   },
+  editNotAllowed: {
+    id: 'management.forbiddenEdit.title',
+    defaultMessage: 'You are not allowed to edit this project.',
+  },
   loginRequired: {
     id: 'loginPage.title',
     defaultMessage: 'Login or register an account',

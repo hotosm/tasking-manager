@@ -36,6 +36,22 @@ export default defineMessages({
     id: 'project.card.projectPriorityLow',
     defaultMessage: 'Low',
   },
+  priorityDescriptionURGENT: {
+    id: 'project.card.projectPriorityUrgent.description',
+    defaultMessage: 'Urgent priority',
+  },
+  priorityDescriptionHIGH: {
+    id: 'project.card.projectPriorityHigh.description',
+    defaultMessage: 'High priority',
+  },
+  priorityDescriptionMEDIUM: {
+    id: 'project.card.projectPriorityMedium.description',
+    defaultMessage: 'Medium priority',
+  },
+  priorityDescriptionLOW: {
+    id: 'project.card.projectPriorityLow.description',
+    defaultMessage: 'Low priority',
+  },
   dueDateRelativeRemainingDays: {
     id: 'project.card.dueDateLeft',
     defaultMessage: '{daysLeftHumanize} left',

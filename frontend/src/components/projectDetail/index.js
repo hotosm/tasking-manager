@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 
@@ -113,7 +113,7 @@ export const ProjectDetailLeft = (props) => {
           delay={500}
           ready={typeof props.project.projectId === 'number'}
         >
-          <ProjectHeader project={props.project} />
+          <ProjectHeader project={props.project} showEditLink={true} />
           <section className="lh-title h-100 overflow-x-scroll">
             <div className="pr2" dangerouslySetInnerHTML={htmlShortDescription} />
             <div>

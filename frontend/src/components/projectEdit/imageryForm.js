@@ -1,10 +1,10 @@
 import React, { useContext, useState, useLayoutEffect } from 'react';
+import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import Select from 'react-select';
 
 export const ImageryForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -12,8 +12,9 @@ export const ImageryForm = () => {
 
   useLayoutEffect(() => {
     const fetchLicenses = async () => {
-      const res = await fetchLocalJSONAPI('licenses/');
-      setLicenses(res.licenses);
+      fetchLocalJSONAPI('licenses/')
+        .then((res) => setLicenses(res.licenses))
+        .catch((e) => console.log(e));
     };
     fetchLicenses();
   }, [setLicenses]);

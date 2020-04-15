@@ -56,6 +56,10 @@ export default defineMessages({
     id: 'project.detail.typesOfMapping',
     defaultMessage: 'Types of Mapping',
   },
+  editProject: {
+    id: 'project.detail.editProject',
+    defaultMessage: 'Edit project',
+  },
   editor: {
     id: 'project.detail.editor',
     defaultMessage: 'Editor',
