@@ -630,6 +630,7 @@
   "user.slack": "Username on HOT Slack",
   "user.form.save": "Save",
   "user.settings.title": "Settings",
+  "user.settings.required": "Required fields",
   "user.notifications.title": "Notifications",
   "user.settings.expert_mode": "Expert mode",
   "user.settings.expert_mode.description": "Expert mode makes advanced and experimental features available. Most users should leave this off.",
