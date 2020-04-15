@@ -4,23 +4,12 @@ import { Link } from '@reach/router';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
-import DueDateBox from './dueDateBox';
 import ProjectProgressBar from './projectProgressBar';
 import { MappingLevelMessage } from '../mappingLevel';
 import { ProjectStatusBox } from '../projectDetail/statusBox';
 import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
-
-export function PriorityBox({ priority, extraClasses }: Object) {
-  let color = 'blue-grey';
-  let borderColor = 'b--blue-grey';
-  if (priority === 'URGENT') {
-    color = 'red';
-    borderColor = 'b--red';
-  }
-  const text = priority ? <FormattedMessage {...messages[`projectPriority${priority}`]} /> : '';
-
-  return <div className={`tc br1 f7 ttu ba ${borderColor} ${color} ${extraClasses}`}>{text}</div>;
-}
+import DueDateBox from './dueDateBox';
+import { PriorityBox } from './priorityBox';
 
 export function ProjectTeaser({
   lastUpdated,
@@ -107,11 +96,16 @@ export function ProjectCard({
       <Link className={`no-underline color-inherit `} to={`/projects/${projectId}`}>
         <article className={``}>
           <div className={`${bottomButtonSpacer} ph3 ba br1 b--grey-light bg-white shadow-hover`}>
-            <div className="mt3 fr">
+            <div className="fr">
               {['DRAFT', 'ARCHIVED'].includes(status) ? (
                 <ProjectStatusBox status={status} className={'pv1 ph1 dib'} />
               ) : (
-                <PriorityBox priority={priority} extraClasses={'pv1 ph2 dib'} />
+                <PriorityBox
+                  priority={priority}
+                  extraClasses={'pv1 ph2 dib'}
+                  hideMediumAndLow={!showBottomButtons}
+                  showIcon={priority !== 'URGENT'} // inside the cards, don't show the icon for urgent, due to the space required
+                />
               )}
             </div>
             <div className="w-50 cf red dib">

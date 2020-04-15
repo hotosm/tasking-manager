@@ -25,7 +25,9 @@ export function ListOrganisations() {
   useSetTitleTag('Manage organizations');
   const token = useSelector((state) => state.auth.get('token'));
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const isOrgManager = useSelector((state) => state.auth.get('isOrgManager'));
+  const isOrgManager = useSelector(
+    (state) => state.auth.get('organisations') && state.auth.get('organisations').length,
+  );
   const [organisations, setOrganisations] = useState(null);
   const [userOrgsOnly, setUserOrgsOnly] = useState(true);
   useEffect(() => {
@@ -211,7 +213,11 @@ export function EditOrganisation(props) {
           viewAllQuery={`?organisation=${organisation.name}`}
           ownerEntity="organisation"
         />
-        <Teams teams={organisation.teams} viewAllQuery={`?organisationId=${props.id}`} />
+        <Teams
+          teams={organisation.teams}
+          viewAllQuery={`?organisationId=${props.id}`}
+          isReady={!error && !loading}
+        />
       </div>
     </div>
   );

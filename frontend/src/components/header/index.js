@@ -18,11 +18,10 @@ import { UpdateEmail } from './updateEmail';
 import { CurrentUserAvatar } from '../user/avatar';
 import { logout } from '../../store/actions/auth';
 import { createLoginWindow } from '../../utils/login';
-import { isUserAdminOrPM } from '../../utils/userPermissions';
 import { NotificationBell } from './notificationBell';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
 
-function getMenuItensForUser(userDetails, isOrgManager) {
+function getMenuItensForUser(userDetails, organisations) {
   const menuItems = [
     { label: messages.exploreProjects, link: 'explore', showAlways: true },
     {
@@ -37,7 +36,10 @@ function getMenuItensForUser(userDetails, isOrgManager) {
   let filteredMenuItems;
   if (userDetails.username) {
     filteredMenuItems = menuItems.filter((item) => item.authenticated === true || item.showAlways);
-    if (!isUserAdminOrPM(userDetails.role) && !isOrgManager) {
+    if (
+      userDetails.role !== 'ADMIN' &&
+      (organisations === undefined || organisations.length === 0)
+    ) {
       filteredMenuItems = filteredMenuItems.filter((item) => !item.manager);
     }
   } else {
@@ -152,7 +154,7 @@ class Header extends React.Component {
   };
 
   renderMenuItems() {
-    let filteredMenuItems = getMenuItensForUser(this.props.userDetails, this.props.isOrgManager);
+    let filteredMenuItems = getMenuItensForUser(this.props.userDetails, this.props.organisations);
 
     return (
       <div className="v-mid">
@@ -273,7 +275,7 @@ class Header extends React.Component {
 
 const mapStateToProps = (state) => ({
   userDetails: state.auth.get('userDetails'),
-  isOrgManager: state.auth.get('isOrgManager'),
+  organisations: state.auth.get('organisations'),
   token: state.auth.get('token'),
 });
 

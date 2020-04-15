@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
 
@@ -9,6 +10,7 @@ import { PencilIcon, WasteIcon, LinkIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const TeamSelect = () => {
+  const token = useSelector((state) => state.auth.get('token'));
   const nullState = {
     team: { name: null, teamId: null },
     role: { value: null, label: null },
@@ -22,9 +24,9 @@ export const TeamSelect = () => {
   const [org, setOrg] = useState(null);
 
   useEffect(() => {
-    fetchLocalJSONAPI('organisations/', null).then((r) => setOrgs(r.organisations));
-    fetchLocalJSONAPI('teams/', null).then((t) => setTeams(t.teams));
-  }, []);
+    fetchLocalJSONAPI('organisations/', token).then((r) => setOrgs(r.organisations));
+    fetchLocalJSONAPI('teams/', token).then((t) => setTeams(t.teams));
+  }, [token]);
 
   const teamRoles = [
     { value: 'MAPPER', label: 'Mapper' },

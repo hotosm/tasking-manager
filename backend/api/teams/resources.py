@@ -279,6 +279,7 @@ class TeamsRestAPI(Resource):
 
 
 class TeamsAllAPI(Resource):
+    @token_auth.login_required
     def get(self):
         """
         Gets all teams
@@ -288,6 +289,12 @@ class TeamsAllAPI(Resource):
         produces:
           - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
             - in: query
               name: team_name
               description: name of the team to filter by
@@ -328,8 +335,16 @@ class TeamsAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        try:
+            user_id = tm.authenticated_user_id
+        except Exception as e:
+            error_msg = f"Teams GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
 
         filters = {}
+
+        filters["user_id"] = user_id
         filters["team_name_filter"] = request.args.get("team_name")
         try:
             member_filter = request.args.get("member")
