@@ -20,7 +20,12 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
       <FormattedMessage {...messages.enterUsername}>
         {(msg) => {
           return (
-            <form className="relative">
+            <form
+              className="relative"
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
+            >
               <div>
                 <SearchIcon
                   onClick={() => inputRef.current.focus()}
