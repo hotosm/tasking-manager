@@ -69,7 +69,11 @@ export function NotificationCard({
   };
 
   return (
-    <Link to={`/inbox/message/${messageId}`} className={`no-underline `}>
+    <Link
+      to={`/inbox/message/${messageId}`}
+      className={`no-underline `}
+      onClick={() => setMessageAsRead(messageId)}
+    >
       <article className={`db base-font bg-white w-100 mb1 blue-dark mw8 ${readStyle}`}>
         <div className="pv3 pr3 ba br1 b--grey-light">
           <div className={`fl dib w2 h3 mh3`}>
