@@ -5,6 +5,7 @@ import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import projectEditMessages from '../components/projectEdit/messages';
 import { DescriptionForm } from '../components/projectEdit/descriptionForm';
 import { InstructionsForm } from '../components/projectEdit/instructionsForm';
 import { MetadataForm } from '../components/projectEdit/metadataForm';
@@ -18,6 +19,7 @@ import { Button } from '../components/button';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useEditProjectAllowed } from '../hooks/UsePermissions';
+import { AlertIcon, CheckIcon, CloseIcon } from '../components/svgIcons';
 
 export const StateContext = React.createContext();
 
@@ -48,6 +50,7 @@ export const handleCheckButton = (event, arrayElement) => {
 
 export function ProjectEdit({ id }) {
   useSetTitleTag(`Edit project #${id}`);
+  const mandatoryFields = ['name', 'shortDescription', 'description', 'instructions'];
   const token = useSelector((state) => state.auth.get('token'));
   const user = useSelector((state) => state.auth.get('userDetails'));
   const [error, setError] = useState(null);
@@ -181,9 +184,110 @@ export function ProjectEdit({ id }) {
     const updateProject = () => {
       pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')
         .then((res) => setSuccess(true))
-        .catch((e) => setError(true));
+        .catch((e) => setError('SERVER'));
     };
-    updateProject();
+
+    // Remove locales with less than 3 fields.
+    const locales = projectInfo.projectInfoLocales;
+    // Get data for default locale.
+    const filtered = locales
+      .filter((l) => l.locale === projectInfo.defaultLocale)
+      .map((l) => {
+        return {
+          locale: l.locale,
+          fields: mandatoryFields.filter(
+            (m) => Object.keys(l).includes(m) === false || l[m] === '',
+          ),
+        };
+      })
+      .filter((l) => l.fields.length > 0);
+
+    if (projectInfo.mappingTypes.length === 0) {
+      filtered.push({ locale: null, fields: ['mappingTypes'] });
+    }
+
+    if (filtered.length > 0) {
+      setError(filtered);
+    } else {
+      updateProject();
+    }
+  };
+
+  const ServerMessage = () => {
+    return (
+      <div className="mb2">
+        <CloseIcon className="h2 w2 red mr2" />
+        <FormattedMessage {...messages.updateError} />
+      </div>
+    );
+  };
+
+  const SuccessMessage = () => {
+    return (
+      <div className="mb2">
+        <CheckIcon className="h2 w2 blue-dark mr2" />
+        <FormattedMessage {...messages.updateSuccess} />
+      </div>
+    );
+  };
+
+  const MissingField = (locale) => {
+    if (locale === null) {
+      return <FormattedMessage {...messages.missingFields} />;
+    }
+
+    return (
+      <FormattedMessage
+        {...messages.missingFieldsForLocale}
+        values={{ locale: <span className="ttc b f5">{locale} </span> }}
+      />
+    );
+  };
+
+  const ErrorMessage = ({ e }) => {
+    return (
+      <p>
+        {e.fields.map((f, i) => {
+          return (
+            <span className="b">
+              {<FormattedMessage {...projectEditMessages[f]} />}
+              {i === e.fields.length - 1 ? null : ','}
+            </span>
+          );
+        })}
+      </p>
+    );
+  };
+
+  const ErrorMessages = ({ error }) => {
+    return (
+      <div className="mb2">
+        {error.map((e) => {
+          return (
+            <div className="mb4">
+              <AlertIcon className="h2 w2 red" />
+              {MissingField(e.locale)}
+              <ErrorMessage e={e} />
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const UpdateMessage = ({ error, success }) => {
+    let message = null;
+    if (success === true) {
+      message = <SuccessMessage />;
+    }
+    if (error !== null && error !== 'SERVER') {
+      message = <ErrorMessages error={error} />;
+    }
+    if (error !== null && error === 'SERVER') {
+      message = <ServerMessage />;
+    }
+
+    return <div className="w-80 mt3 tc">{message}</div>;
   };
 
   return (
@@ -205,18 +309,7 @@ export function ProjectEdit({ id }) {
           <Button onClick={() => navigate(`/projects/${id}`)} className="bg-white blue-dark ml2">
             <FormattedMessage {...messages.goToProjectPage} />
           </Button>
-          <p className="pt2">
-            {success && (
-              <span className="blue-dark bg-grey-light pa2">
-                <FormattedMessage {...messages.updateSuccess} />
-              </span>
-            )}
-            {error && (
-              <span className="bg-red white pa2">
-                <FormattedMessage {...messages.updateError} values={{ error: error }} />
-              </span>
-            )}
-          </p>
+          <UpdateMessage error={error} success={success} />
         </ReactPlaceholder>
       </div>
       <ReactPlaceholder

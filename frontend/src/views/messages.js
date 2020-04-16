@@ -409,7 +409,15 @@ export default defineMessages({
   },
   updateError: {
     id: 'pages.edit_project.actions.update.error',
-    defaultMessage: 'Project update failed: {error}',
+    defaultMessage: 'Project update failed: Server Error',
+  },
+  missingFields: {
+    id: 'pages.edit_project.actions.missing_fields',
+    defaultMessage: 'Missing Fields:',
+  },
+  missingFieldsForLocale: {
+    id: 'pages.edit_project.actions.missing_fields_for_locale',
+    defaultMessage: 'Missing Fields for locale default {locale}:',
   },
   projectEditSection_description: {
     id: 'pages.edit_project.sections.description',
