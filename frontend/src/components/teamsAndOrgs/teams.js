@@ -95,11 +95,13 @@ export function TeamCard({ team, managementView }: Object) {
     >
       <article className="fl w-30-l base-font w-50-m w-100 mb3 pr3 blue-dark mw5">
         <div className="bg-white ph3 pb3 ba br1 b--grey-light shadow-hover">
-          <h3 className="fw7">{team.name}</h3>
+          <h3 className="fw6 f4 fw6 h3 lh-title mt3 mb2 overflow-y-hidden" title={team.name}>
+            {team.name}
+          </h3>
           <div className="db h2" title={team.organisation}>
             <img src={team.logo} alt={team.organisation} className="h2" />
           </div>
-          <h4 className="f6 fw5 mb3 ttu blue-light">
+          <h4 className="f6 fw5 mb2 mt3 ttu blue-light">
             <FormattedMessage {...messages.managers} />
           </h4>
           <div className="db h2">
@@ -110,7 +112,7 @@ export function TeamCard({ team, managementView }: Object) {
               maxLength={8}
             />
           </div>
-          <h4 className="f6 fw5 mb3 ttu blue-light">
+          <h4 className="f6 fw5 mv2 ttu blue-light">
             <FormattedMessage {...messages.teamMembers} />
           </h4>
           <div className="db h2">
@@ -122,8 +124,12 @@ export function TeamCard({ team, managementView }: Object) {
             />
           </div>
           <div className="cf pt3">
-            <VisibilityBox visibility={team.visibility} extraClasses="pv1 ph2 dib" />
-            {team.inviteOnly && <InviteOnlyBox className="pv1 ph2 dib ml2" />}
+            <div className="db">
+              <VisibilityBox visibility={team.visibility} extraClasses="pv1 ph2 dib" />
+            </div>
+            <div className="db pt2 h2">
+              {team.inviteOnly && <InviteOnlyBox className="pv1 ph2 dib" />}
+            </div>
           </div>
         </div>
       </article>

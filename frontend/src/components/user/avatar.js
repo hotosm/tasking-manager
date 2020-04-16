@@ -5,10 +5,16 @@ import { useSelector } from 'react-redux';
 import { ProfilePictureIcon, CloseIcon } from '../svgIcons';
 import { getRandomArrayItem } from '../../utils/random';
 
-export const CurrentUserAvatar = props => {
-  const userPicture = useSelector(state => state.auth.getIn(['userDetails', 'pictureUrl']));
+export const CurrentUserAvatar = (props) => {
+  const userPicture = useSelector((state) => state.auth.getIn(['userDetails', 'pictureUrl']));
   if (userPicture) {
-    return <img {...props} src={userPicture} alt={'user avatar'} />;
+    return (
+      <div
+        {...props}
+        style={{ backgroundImage: `url(${userPicture})`, backgroundSize: 'cover' }}
+        alt={'user avatar'}
+      />
+    );
   }
   return <ProfilePictureIcon {...props} />;
 };
@@ -16,6 +22,7 @@ export const CurrentUserAvatar = props => {
 export const UserAvatar = ({
   name,
   username,
+  number,
   picture,
   size,
   colorClasses,
@@ -45,20 +52,23 @@ export const UserAvatar = ({
   if (name) {
     letters = name
       .split(' ')
-      .map(word => word[0])
+      .map((word) => word[0])
       .join('');
+  } else if (number) {
+    letters = number;
   } else {
     letters = username
       .split(' ')
-      .map(word => word[0])
+      .map((word) => word[0])
       .join('');
   }
+  if (picture) sizeStyles.backgroundImage = `url(${picture})`;
 
   const avatar = (
     <div
       title={username}
       style={sizeStyles}
-      className={`dib mh1 br-100 tc v-mid ${colorClasses} ${sizeClasses}`}
+      className={`dib mh1 br-100 tc v-mid cover ${colorClasses} ${sizeClasses}`}
     >
       {removeFn && editMode && (
         <div
@@ -69,13 +79,7 @@ export const UserAvatar = ({
           <CloseIcon className="pt1" />
         </div>
       )}
-      {picture ? (
-        <img
-          className={`tc br-100 dib v-mid ${sizeClasses} ${editMode ? 'relative top--1' : ''}`}
-          src={picture}
-          alt={name || username}
-        />
-      ) : (
+      {!picture && (
         <span className="relative tc w-100 dib ttu dib barlow-condensed v-mid" style={textPadding}>
           {letters.substr(0, 3)}
         </span>
@@ -122,7 +126,7 @@ export const UserAvatarList = ({
       {maxLength && users.length - maxLength > 0 && (
         <div style={{ marginLeft: '-1.5rem' }} className="dib">
           <UserAvatar
-            name={`+ ${users.length - maxLength}`}
+            number={`+${users.length - maxLength > 999 ? 999 : users.length - maxLength}`}
             size={size}
             colorClasses={`blue-dark bg-grey-light`}
             disableLink={true}
