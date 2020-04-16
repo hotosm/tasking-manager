@@ -7,11 +7,11 @@ import messages from './messages';
 import { NotificationCard, NotificationCardMini } from './notificationCard';
 import { RefreshIcon } from '../svgIcons';
 
-export const NotificationResultsMini = props => {
+export const NotificationResultsMini = (props) => {
   return <NotificationResults {...props} useMiniCard={true} />;
 };
 
-export const NotificationResults = props => {
+export const NotificationResults = (props) => {
   const state = props.state;
   const stateNotifications = !props.useMiniCard
     ? props.state.notifications
@@ -20,7 +20,7 @@ export const NotificationResults = props => {
     !state.isError &&
     props.useMiniCard &&
     props.state.unreadNotificationsMini &&
-    props.liveUnreadCount !== props.state.unreadNotificationsMini.filter(n => !n.read).length;
+    props.liveUnreadCount !== props.state.unreadNotificationsMini.filter((n) => !n.read).length;
   return (
     <div className={props.className || ''}>
       {!stateNotifications ? (
@@ -62,9 +62,13 @@ export const NotificationResults = props => {
           </div>
         </div>
       ) : null}
-      <div className={`cf ${!props.useMiniCard ? 'mh2 db' : 'dib'}`}>
+      <div className={`cf ${!props.useMiniCard ? 'ml1 db' : 'dib'}`}>
         <ReactPlaceholder ready={!state.isFirstLoading} type="media" rows={10}>
-          <NotificationCards pageOfCards={stateNotifications} useMiniCard={props.useMiniCard} />
+          <NotificationCards
+            pageOfCards={stateNotifications}
+            useMiniCard={props.useMiniCard}
+            retryFn={props.retryFn}
+          />
         </ReactPlaceholder>
       </div>
       {showRefreshButton && (
@@ -78,7 +82,7 @@ export const NotificationResults = props => {
   );
 };
 
-const NotificationCards = props => {
+const NotificationCards = (props) => {
   if (!props || !props.pageOfCards || props.pageOfCards.length === 0) {
     return (
       <div className="mb3 blue-grey">
@@ -86,7 +90,7 @@ const NotificationCards = props => {
       </div>
     );
   }
-  const filterFn = props.useMiniCard ? n => !n.read : n => n;
+  const filterFn = props.useMiniCard ? (n) => !n.read : (n) => n;
   const filteredCards = props.pageOfCards.filter(filterFn);
 
   if (filteredCards < 1) {
@@ -101,7 +105,7 @@ const NotificationCards = props => {
     props.useMiniCard ? (
       <NotificationCardMini {...card} key={n} />
     ) : (
-      <NotificationCard {...card} key={n} />
+      <NotificationCard {...card} key={n} retryFn={props.retryFn} />
     ),
   );
 };
