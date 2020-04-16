@@ -32,6 +32,10 @@ export default defineMessages({
     id: 'notifications.filter.clear',
     defaultMessage: 'Clear filters',
   },
+  markAsRead: {
+    id: 'notifications.markAsRead',
+    defaultMessage: 'Mark as read',
+  },
   errorLoadingTheXForY: {
     id: 'notifications.navFilters.error',
     defaultMessage: 'Error loading the {xWord} for {yWord}',

@@ -1,16 +1,17 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
+import ReactTooltip from 'react-tooltip';
 import DOMPurify from 'dompurify';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
+import systemAvatar from '../../assets/img/hot-system-avatar-square-opaque.png';
 import { EyeIcon } from '../svgIcons';
 import { UserAvatar } from '../user/avatar';
-import systemAvatar from '../../assets/img/hot-system-avatar-square-opaque.png';
 import { DeleteModal } from '../deleteModal';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
-import { useSelector } from 'react-redux';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { FormattedMessage } from 'react-intl';
-import messages from './messages';
 
 export const rawHtmlNotification = (notificationHtml) => ({
   __html: DOMPurify.sanitize(notificationHtml),
@@ -81,27 +82,37 @@ export function NotificationCard({
           ></strong>
 
           <div
-            className={`dib fr`}
+            className={`dib fr w3`}
             onClick={(e) => {
               e.persist();
               e.preventDefault();
               e.stopPropagation();
             }}
           >
-            <EyeIcon
-              onClick={() => setMessageAsRead(messageId)}
-              style={{ width: '20px', height: '20px' }}
-              className={`fl dn dib-ns h1 w1 pr1 pr3-l nr4 ml4 mv1 pv1 hover-red blue-dark`}
-            />
+            {!read && (
+              <>
+                <FormattedMessage {...messages.markAsRead}>
+                  {(msg) => (
+                    <EyeIcon
+                      onClick={() => setMessageAsRead(messageId)}
+                      style={{ width: '20px', height: '20px' }}
+                      className={`fl dn dib-ns h1 w1 pr1 nr4 mv1 pv1 hover-red blue-grey`}
+                      data-tip={msg}
+                    />
+                  )}
+                </FormattedMessage>
+                <ReactTooltip />
+              </>
+            )}
             <DeleteModal
-              className={`fr bg-transparent bw0 w2 h2 lh-copy overflow-hidden `}
+              className={`fr bg-transparent bw0 w2 h2 lh-copy overflow-hidden`}
               id={messageId}
               name={"'" + stripHtmlToText(subject) + "'"}
               type="notifications"
             />
           </div>
           {messageType !== null ? (
-            <div className={`fr-l di-l dn f7 truncate ttc w4 pa1 ma1`} title={messageType}>
+            <div className={`fr-l di-l dn f7 truncate w4 pa1 ma1`} title={messageType}>
               <FormattedMessage {...messages[messageType]} />
             </div>
           ) : null}
