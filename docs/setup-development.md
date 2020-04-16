@@ -137,7 +137,6 @@ python3 manage.py runserver -d -r
 You can access the API documentation on [http://localhost:5000/api-docs](http://localhost:5000/api-docs), it also allows you to execute requests on your local TM instance. The API docs is also available on our [production](https://tasks.hotosm.org/api-docs) and [staging](https://tasks-stage.hotosm.org/api-docs/) instances.
 
 #### API Authentication
-
 In order to authenticate on the API, you need to have an Authorization Token.
 
 1. Run the command line `manage.py` with the `gen_token` option and `-u <OSM_User_ID_number>`. The command line can be run in any shell session as long as you are in the tasking-manager directory.
@@ -160,7 +159,13 @@ Your user must have logged in to the local testing instance once of course and h
 
 You can get your OSM user id number either by finding it in your local testing/dev database `select * from users` or from OSM by viewing the edit history of your user, selecting a changeset from the list, and then at the bottom link `Changeset XML` and it will be in the `uid` field of the XML returned.
 
-To get your token on the production or staging Tasking Manager instances, after sign in in the browser, inspect a network request and search for the `Authorization` field in the request headers section.
+#### API Authentication on remote instance
+
+To get your token on the production or staging Tasking Manager instances, sign in in the browser and then either:
+
+- go to the user profile page, enable _Expert mode_ in the settings, and copy the token from the _API Key_ section. 
+- inspect a network request and search for the `Authorization` field in the request headers section.
+
 
 ### DevOps
 
