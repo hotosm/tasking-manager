@@ -41,11 +41,11 @@ export const MyProjectNav = (props) => {
               <FormattedMessage {...messages.myProjects} />
             )}
           </h3>
-          {(userDetails.role === 'ADMIN' || isOrgManager) && (
+          {userDetails.role === 'ADMIN' || isOrgManager ? (
             <Link to={'/manage/projects/new/'} className="dib ml3">
               <AddButton />
             </Link>
-          )}
+          ) : null}
         </div>
       </div>
       <div className="dib lh-copy w-100 cf">
