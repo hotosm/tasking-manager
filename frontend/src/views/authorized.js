@@ -3,7 +3,7 @@ import { Redirect } from '@reach/router';
 import { connect } from 'react-redux';
 import { setAuthDetails } from '../store/actions/auth';
 
-const useComponentWillMount = fn => {
+const useComponentWillMount = (fn) => {
   const willMount = useRef(true);
   if (willMount.current) {
     fn();
@@ -29,26 +29,19 @@ function AuthorizedView(props) {
     props.authenticateUser(username, sessionToken, osm_oauth_token, osm_oauth_token_secret);
     setIsReadyToRedirect(true);
   });
-  const redirectUrl = params.get('redirect_to') && params.get('redirect_to') !== '/'
-    ? params.get('redirect_to')
-    : '/welcome';
+  const redirectUrl =
+    params.get('redirect_to') && params.get('redirect_to') !== '/'
+      ? params.get('redirect_to')
+      : '/welcome';
 
-  return (
-    <>
-      {isReadyToRedirect ? (
-        <Redirect to={redirectUrl} noThrow />
-      ) : (
-        <div>redirecting</div>
-      )}
-    </>
-  );
+  return <>{isReadyToRedirect ? <Redirect to={redirectUrl} noThrow /> : <div>redirecting</div>}</>;
 }
 
 let mapStateToProps = (state, props) => ({
   location: props.location,
 });
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     authenticateUser: (username, token, osm_oauth_token, osm_oauth_token_secret) =>
       dispatch(setAuthDetails(username, token, osm_oauth_token, osm_oauth_token_secret)),
