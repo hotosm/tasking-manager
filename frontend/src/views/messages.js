@@ -409,15 +409,15 @@ export default defineMessages({
   },
   updateError: {
     id: 'pages.edit_project.actions.update.error',
-    defaultMessage: 'Project update failed: Server Error',
+    defaultMessage: 'Saving the project failed because of a Server Error. Please try again later or contact the administrator if problem persists.',
   },
   missingFields: {
     id: 'pages.edit_project.actions.missing_fields',
-    defaultMessage: 'Missing Fields:',
+    defaultMessage: 'Saving the project failed because you need to provide information for these required fields:',
   },
   missingFieldsForLocale: {
     id: 'pages.edit_project.actions.missing_fields_for_locale',
-    defaultMessage: 'Missing Fields for locale default {locale}:',
+    defaultMessage: 'Saving the project failed because you need to provide information for these fields in your default language ({locale}):',
   },
   projectEditSection_description: {
     id: 'pages.edit_project.sections.description',

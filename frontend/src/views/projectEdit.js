@@ -19,7 +19,7 @@ import { Button } from '../components/button';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useEditProjectAllowed } from '../hooks/UsePermissions';
-import { AlertIcon, CheckIcon, CloseIcon } from '../components/svgIcons';
+import { CheckIcon, CloseIcon } from '../components/svgIcons';
 
 export const StateContext = React.createContext();
 
@@ -215,8 +215,8 @@ export function ProjectEdit({ id }) {
 
   const ServerMessage = () => {
     return (
-      <div className="mb2">
-        <CloseIcon className="h2 w2 red mr2" />
+      <div className="red ba b--red pa2 br1 dib pa2">
+        <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
         <FormattedMessage {...messages.updateError} />
       </div>
     );
@@ -224,8 +224,8 @@ export function ProjectEdit({ id }) {
 
   const SuccessMessage = () => {
     return (
-      <div className="mb2">
-        <CheckIcon className="h2 w2 blue-dark mr2" />
+      <div className="blue-grey b--blue-grey ba br1 dib pa2">
+        <CheckIcon className="h1 w1 mr2" />
         <FormattedMessage {...messages.updateSuccess} />
       </div>
     );
@@ -239,33 +239,33 @@ export function ProjectEdit({ id }) {
     return (
       <FormattedMessage
         {...messages.missingFieldsForLocale}
-        values={{ locale: <span className="ttc b f5">{locale} </span> }}
+        values={{ locale: <span className="b f5">"{locale}"</span> }}
       />
     );
   };
 
   const ErrorMessage = ({ e }) => {
     return (
-      <p>
+      <ul className="mt2 mb0">
         {e.fields.map((f, i) => {
           return (
-            <span className="b">
+            <li className="b">
               {<FormattedMessage {...projectEditMessages[f]} />}
               {i === e.fields.length - 1 ? null : ','}
-            </span>
+            </li>
           );
         })}
-      </p>
+      </ul>
     );
   };
 
   const ErrorMessages = ({ error }) => {
     return (
-      <div className="mb2">
+      <div className="mr4 red ba b--red pa2 br1 dib pa2">
         {error.map((e) => {
           return (
-            <div className="mb4">
-              <AlertIcon className="h2 w2 red" />
+            <div className="pv2">
+              <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
               {MissingField(e.locale)}
               <ErrorMessage e={e} />
             </div>
@@ -287,7 +287,7 @@ export function ProjectEdit({ id }) {
       message = <ServerMessage />;
     }
 
-    return <div className="w-80 mt3 tc">{message}</div>;
+    return <div className="db mt3">{message}</div>;
   };
 
   return (
