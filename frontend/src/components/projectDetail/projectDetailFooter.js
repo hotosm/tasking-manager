@@ -7,11 +7,12 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { AddToFavorites } from './favorites';
 
-export const ProjectDetailFooter = props => {
+export const ProjectDetailFooter = (props) => {
   return (
     <div
-      className={`${props.className ||
-        ''} cf bt b--grey-light pl4 w-100 z-4 bg-white fixed bottom-0 left-0`}
+      className={`${
+        props.className || ''
+      } cf bt b--grey-light pl4 w-100 z-4 bg-white fixed bottom-0 left-0`}
     >
       {/* TODO ADD ANCHORS */}
       <div className="dib-ns fl w-60-ns dn pt3 mt2">
@@ -38,7 +39,7 @@ export const ProjectDetailFooter = props => {
         <a  className="link" href="#relatedProjects"><FormattedMessage {...messages.relatedProjects} /></a> */}
       </div>
       <div className="w-40-ns w-100 fr">
-        <div className="w-20 fl tc dib pt2 pb3 o-10">
+        <div className="w-20 fl tc dib pt2 pb3 o-025">
           <ShareIcon className="pt3 pr2 v-btm" />
           <FormattedMessage {...messages.share} />
         </div>

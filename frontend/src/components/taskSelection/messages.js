@@ -365,17 +365,22 @@ export default defineMessages({
     id: 'project.tasks.action.options.mapping_incomplete',
     defaultMessage: "Can't finish this task, set back to ready for mapping",
   },
+  mappedQuestion: {
+    id: 'project.tasks.action.options.mapped_question',
+    defaultMessage: 'Is this task completely mapped?',
+  },
+
   completelyMapped: {
     id: 'project.tasks.action.options.mapping_complete',
-    defaultMessage: 'Task has been completely mapped',
+    defaultMessage: 'Yes',
   },
   markAsValid: {
     id: 'project.tasks.action.options.validate',
-    defaultMessage: 'Validate and mark as finished',
+    defaultMessage: 'No',
   },
   markAsInvalid: {
     id: 'project.tasks.action.options.invalidate',
-    defaultMessage: 'More mapping is needed',
+    defaultMessage: 'The imagery is bad',
   },
   splitTask: {
     id: 'project.tasks.action.split_task',

@@ -138,7 +138,7 @@ class Organisation(db.Model):
     @staticmethod
     def get_all_organisations():
         """ Gets all organisations"""
-        return Organisation.query.all()
+        return Organisation.query.order_by(Organisation.name).all()
 
     @staticmethod
     def get_organisations_managed_by_user(user_id: int):
@@ -149,6 +149,7 @@ class Organisation(db.Model):
                 (organisation_managers.c.organisation_id == Organisation.id)
                 & (organisation_managers.c.user_id == user_id)
             )
+            .order_by(Organisation.name)
             .all()
         )
         return query_results

@@ -112,6 +112,9 @@ export function CompletionTabForMapping({
             <CompletionInstructions setVisibility={setShowHelp} />
           </div>
         )}
+        <p className="b">
+          <FormattedMessage {...messages.mappedQuestion} />
+        </p>
         <p>
           <input
             id="MAPPED"

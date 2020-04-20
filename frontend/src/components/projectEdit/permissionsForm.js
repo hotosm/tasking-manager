@@ -1,28 +1,13 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import Select from 'react-select';
+import React, { useContext } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { SwitchToggle } from '../formInputs';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { TeamSelect } from './teamSelect';
-import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const PermissionsForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
-  const [organisations, setOrganisations] = useState([]);
-  useEffect(() => {
-    if (userDetails && userDetails.id) {
-      const query = userDetails.role === 'ADMIN' ? '' : `?manager_user_id=${userDetails.id}`;
-      fetchLocalJSONAPI(`organisations/${query}`, token)
-        .then((result) => setOrganisations(result.organisations))
-        .catch((e) => console.log(e));
-    }
-  }, [userDetails, token]);
-
   const permissions = [
     { label: <FormattedMessage {...messages.permissions_ANY} />, value: 'ANY' },
     { label: <FormattedMessage {...messages.permissions_LEVEL} />, value: 'LEVEL' },
@@ -82,40 +67,12 @@ export const PermissionsForm = () => {
           </label>
         ))}
       </div>
-
-      <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>
-          <FormattedMessage {...messages.organisation} />
-        </label>
-        <p className={styleClasses.pClass}>
-          <FormattedMessage {...messages.organisationDescription} />
-        </p>
-        <Select
-          isClearable={false}
-          getOptionLabel={(option) => option.name}
-          getOptionValue={(option) => option.organisationId}
-          options={organisations}
-          defaultValue={
-            projectInfo.organisation && {
-              name: projectInfo.organisationName,
-              value: projectInfo.organisation,
-            }
-          }
-          placeholder={<FormattedMessage {...messages.selectOrganisation} />}
-          onChange={(value) =>
-            setProjectInfo({ ...projectInfo, organisation: value.organisationId || '' })
-          }
-          className="z-5"
-        />
-      </div>
-
       <div className={styleClasses.divClass.replace('w-70', 'w-90')}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.teams} />
         </label>
         <TeamSelect />
       </div>
-
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.privacy} />

@@ -1,14 +1,32 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-
+import { useSelector } from 'react-redux';
 import messages from './messages';
 import { StateContext, styleClasses, handleCheckButton } from '../../views/projectEdit';
 import { ProjectInterests } from './projectInterests';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import Select from 'react-select';
 
 export const MetadataForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const [interests, setInterests] = useState([]);
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
+  const [organisations, setOrganisations] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
+
+  useEffect(() => {
+    if (userDetails && userDetails.id) {
+      const query = userDetails.role === 'ADMIN' ? '' : `?manager_user_id=${userDetails.id}`;
+      fetchLocalJSONAPI(`organisations/${query}`, token)
+        .then((result) => setOrganisations(result.organisations))
+        .catch((e) => console.log(e));
+    }
+
+    fetchLocalJSONAPI('campaigns/')
+      .then((res) => setCampaigns(res.campaigns))
+      .catch((e) => console.log(e));
+  }, [userDetails, token]);
 
   const elements = [
     { item: 'ROADS', showItem: 'Roads' },
@@ -20,7 +38,7 @@ export const MetadataForm = () => {
 
   const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
 
-  const handleMappingTypes = event => {
+  const handleMappingTypes = (event) => {
     let types = projectInfo.mappingTypes;
 
     types = handleCheckButton(event, types);
@@ -29,7 +47,7 @@ export const MetadataForm = () => {
 
   useEffect(() => {
     if (interests.length === 0) {
-      fetchLocalJSONAPI('interests/').then(res => {
+      fetchLocalJSONAPI('interests/').then((res) => {
         setInterests(res.interests);
       });
     }
@@ -44,7 +62,7 @@ export const MetadataForm = () => {
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.mapperLevelDescription} />
         </p>
-        {mapperLevels.map(level => (
+        {mapperLevels.map((level) => (
           <label className="db pv2" key={level}>
             <input
               value={level}
@@ -66,7 +84,7 @@ export const MetadataForm = () => {
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.mappingTypes} />*
         </label>
-        {elements.map(elm => (
+        {elements.map((elm) => (
           <label className="db pv2">
             <input
               className="mr2 h"
@@ -80,6 +98,49 @@ export const MetadataForm = () => {
           </label>
         ))}
       </div>
+      <div className={styleClasses.divClass}>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.organisation} />
+        </label>
+        <p className={styleClasses.pClass}>
+          <FormattedMessage {...messages.organisationDescription} />
+        </p>
+        <Select
+          isClearable={false}
+          getOptionLabel={(option) => option.name}
+          getOptionValue={(option) => option.organisationId}
+          options={organisations}
+          defaultValue={
+            projectInfo.organisation && {
+              name: projectInfo.organisationName,
+              value: projectInfo.organisation,
+            }
+          }
+          placeholder={<FormattedMessage {...messages.selectOrganisation} />}
+          onChange={(value) =>
+            setProjectInfo({ ...projectInfo, organisation: value.organisationId || '' })
+          }
+          className="z-5"
+        />
+      </div>
+      <div className={styleClasses.divClass}>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.campaign} />
+        </label>
+        <Select
+          isClearable={false}
+          getOptionLabel={(option) => option.name}
+          getOptionValue={(option) => option.id}
+          isMulti={true}
+          options={campaigns}
+          placeholder={<FormattedMessage {...messages.selectCampaign} />}
+          className="z-4"
+          defaultValue={projectInfo.campaigns}
+          isSearchable={true}
+          onChange={(value) => setProjectInfo({ ...projectInfo, campaigns: value })}
+        />
+      </div>
+
       <div className={styleClasses.divClass.replace('w-70', 'w-80')}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.categories} />

@@ -54,7 +54,7 @@ class Campaign(db.Model):
 
     @staticmethod
     def get_all_campaigns() -> CampaignListDTO:
-        query = Campaign.query.distinct()
+        query = Campaign.query.order_by(Campaign.name).distinct()
         campaign_list_dto = CampaignListDTO()
         for campaign in query:
             campaign_dto = CampaignDTO()
