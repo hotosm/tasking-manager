@@ -195,7 +195,7 @@ function CommentList({ comments }: Object) {
           <div className="cf db">
             <div
               style={{ wordWrap: 'break-word' }}
-              className="blue-grey f5 lh-title"
+              className="blue-grey f5 lh-title markdown-content"
               dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(comment.message))}
             />
           </div>
