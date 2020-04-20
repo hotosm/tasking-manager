@@ -49,6 +49,7 @@ from backend.models.postgis.statuses import (
     MappingPermission,
     ValidationPermission,
     UserRole,
+    TeamMemberFunctions,
 )
 from backend.models.postgis.task import Task, TaskHistory
 from backend.models.postgis.team import Team
@@ -989,13 +990,45 @@ class Project(db.Model):
 
         return self, base_dto
 
+    def check_draft_project_visibility(self, authenticated_user_id: int):
+        """" Check if a User is allowed to see a Draft Project """
+        is_allowed_user = False
+        if authenticated_user_id:
+            is_team_manager = False
+            user = User().get_by_id(authenticated_user_id)
+            user_orgs = Organisation.get_organisations_managed_by_user(
+                authenticated_user_id
+            )
+            if self.teams:
+                for project_team in self.teams:
+                    team_members = Team.get(project_team.team_id)._get_team_members()
+                    for member in team_members:
+                        if (
+                            user.username == member["username"]
+                            and member["function"] == TeamMemberFunctions.MANAGER.name
+                        ):
+                            is_team_manager = True
+                            break
+            if (
+                UserRole(user.role) == UserRole.ADMIN
+                or authenticated_user_id == self.author_id
+                or self.organisation in user_orgs
+                or is_team_manager
+            ):
+                is_allowed_user = True
+        return is_allowed_user
+
     def as_dto_for_mapping(
         self, authenticated_user_id: int, locale: str, abbrev: bool
     ) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
         # Check for project visibility settings
         is_allowed_user = True
-        if self.private:
+        if self.status == ProjectStatus.DRAFT.value:
+            if not self.check_draft_project_visibility(authenticated_user_id):
+                is_allowed_user = False
+
+        if self.private and is_allowed_user:
             is_allowed_user = False
             if authenticated_user_id:
                 user = User().get_by_id(authenticated_user_id)
