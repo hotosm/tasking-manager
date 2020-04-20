@@ -8,7 +8,7 @@ import messages from './messages';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export function Login({ redirectTo }: Object) {
-  useSetTitleTag('Learn');
+  useSetTitleTag('Login');
   const userIsloggedIn = useSelector((state) => state.auth.get('token'));
   if (!userIsloggedIn) {
     return (
@@ -21,12 +21,12 @@ export function Login({ redirectTo }: Object) {
             aStyle="mh1 v-mid dn dib-ns"
             logInStyle="blue-dark bg-white"
             signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
-            redirectTo={redirectTo}
+            redirectTo={redirectTo || '/welcome'}
           />
         </div>
       </div>
     );
   } else {
-    return <Redirect to={redirectTo || 'user'} noThrow />;
+    return <Redirect to={redirectTo || '/welcome'} noThrow />;
   }
 }
