@@ -89,7 +89,9 @@ class MessageService:
         validation_message.message = text_template
         validation_message.add_message()
 
-        SMTPService.send_email_alert(user.email_address, user.username)
+        SMTPService.send_email_alert(
+            user.email_address, user.username, validation_message.id
+        )
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
@@ -109,20 +111,36 @@ class MessageService:
                 f"{project_link}<br/><br/>" + message_dto.message
             )  # Append project link to end of message
 
-            msg_count = 0
+            messages = []
             for contributor in contributors:
                 message = Message.from_dto(contributor[0], message_dto)
                 message.message_type = MessageType.BROADCAST.value
                 message.project_id = project_id
                 message.save()
                 user = UserService.get_user_by_id(contributor[0])
-                SMTPService.send_email_alert(user.email_address, user.username)
-                msg_count += 1
-                if msg_count == 10:
-                    time.sleep(
-                        0.5
-                    )  # Sleep for 0.5 seconds to avoid hitting AWS rate limits every 10 messages
-                    msg_count = 0
+                messages.append(dict(message=message, user=user))
+
+            MessageService._push_messages(messages)
+
+    @staticmethod
+    def _push_messages(messages):
+        if len(messages) == 0:
+            return
+
+        # Flush messages to get the id
+        db.session.add_all([m["message"] for m in messages])
+        db.session.flush()
+
+        for i, message in enumerate(messages):
+            user = message.get("user")
+            SMTPService.send_email_alert(
+                user.email_address, user.username, message["message"].id
+            )
+
+            if i + 1 % 10 == 0:
+                time.sleep(0.5)
+
+        db.session.commit()
 
     @staticmethod
     def send_message_after_comment(
@@ -133,6 +151,8 @@ class MessageService:
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
             # project_title = ProjectService.get_project_title(project_id)
+
+            messages = []
             for username in usernames:
 
                 try:
@@ -148,8 +168,9 @@ class MessageService:
                 message.to_user_id = user.id
                 message.subject = f"You were mentioned in a comment in Project {project_id} on {task_link}"
                 message.message = comment
-                message.add_message()
-                SMTPService.send_email_alert(user.email_address, user.username)
+                messages.append(dict(message=message, user=user))
+
+            MessageService._push_messages(messages)
 
         # Notify all contributors except the user that created the comment.
         results = (
@@ -169,6 +190,7 @@ class MessageService:
 
             task_link = MessageService.get_task_link(project_id, task_id)
             # project_title = ProjectService.get_project_title(project_id)
+            messages = []
             for user_id in contributed_users:
                 try:
                     user = UserService.get_user_dto_by_id(user_id)
@@ -182,8 +204,9 @@ class MessageService:
                 message.to_user_id = user.id
                 message.subject = f"{user_from.username} left a comment in Project {project_id} on {task_link}"
                 message.message = comment
-                message.add_message()
-                SMTPService.send_email_alert(user.email_address, user.username)
+                messages.append(dict(message=message, user=user))
+
+            MessageService._push_messages(messages)
 
     @staticmethod
     def send_request_to_join_team(
@@ -259,6 +282,7 @@ class MessageService:
 
         link = MessageService.get_project_link(project_id)
 
+        messages = []
         for username in usernames:
             current_app.logger.debug(f"Searching for {username}")
             try:
@@ -274,8 +298,9 @@ class MessageService:
             message.to_user_id = user.id
             message.subject = f"You were mentioned in Project Chat on {link}"
             message.message = chat
-            message.add_message()
-            # SMTPService.send_email_alert(user.email_address, user.username)
+            messages.append(dict(message=message, user=user))
+
+        MessageService._push_messages(messages)
 
         query = (
             """ select user_id from project_favorites where project_id = :project_id"""
@@ -286,6 +311,7 @@ class MessageService:
         if len(favorited_users) != 0:
             project_link = MessageService.get_project_link(project_id)
             # project_title = ProjectService.get_project_title(project_id)
+            messages = []
             for user_id in favorited_users:
 
                 try:
@@ -301,8 +327,9 @@ class MessageService:
                     f"{chat_from} left a comment in Project {project_link}"
                 )
                 message.message = chat
-                message.add_message()
-                SMTPService.send_email_alert(user.email_address, user.username)
+                messages.append(dict(message=message, user=user))
+
+        MessageService._push_messages(messages)
 
     @staticmethod
     def send_favorite_project_activities(user_id: int):
@@ -326,6 +353,7 @@ class MessageService:
             )
         )
         user = UserService.get_user_dto_by_id(user_id)
+        messages = []
         for project in recently_updated_projects:
             activity_message = []
             query_last_active_users = """ select distinct(user_id) from
@@ -354,8 +382,9 @@ class MessageService:
             message.message = (
                 f"{activity_message} contributed to Project {project_link} recently"
             )
-            message.add_message()
-            SMTPService.send_email_alert(user.email_address, user.username)
+            messages.append(dict(message=message, user=user))
+
+        MessageService._push_messages(messages)
 
     @staticmethod
     def resend_email_validation(user_id: int):
