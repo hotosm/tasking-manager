@@ -309,7 +309,7 @@ workflows:
         - build
         stack_name: "staging"
         environment_name: "staging"
-        autoscaling_policy: "development"
+        autoscaling_policy: "production"
         postgres_db: POSTGRES_DB_STAGING
         postgres_password: POSTGRES_PASSWORD_STAGING
         postgres_user: POSTGRES_USER_STAGING
