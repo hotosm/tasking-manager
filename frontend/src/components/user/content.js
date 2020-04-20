@@ -131,10 +131,18 @@ export function HelpCard() {
         <a href="learn" className="link red pr4">
           <FormattedMessage {...messages.howToMap} />
         </a>
-        <a href="learn" className="link red pr4">
-          <FormattedMessage {...messages.howToMapBuildings} />
+        <a
+          href="https://docs.google.com/document/d/1wrzXROoiR9TgoZvGvho7YGLrGRFmEtZw8ezuW1mewbI/edit"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="link red pr4">
+          <FormattedMessage {...messages.quickStart} />
         </a>
-        <a href="learn" className="link red">
+        <a
+          href="https://learnosm.org/en/beginner/start-osm/"
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="link red">
           <FormattedMessage {...messages.whatIsOSM} />
         </a>
       </p>
