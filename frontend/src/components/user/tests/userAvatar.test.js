@@ -7,22 +7,34 @@ import { CloseIcon } from '../../svgIcons';
 describe('UserAvatar', () => {
   it('with picture url and default size', () => {
     const element = TestRenderer.create(
-      <UserAvatar username={'Mary'} picture={'http://image.xyz/photo.jpg'} />,
+      <UserAvatar username={'Mary'} picture={'http://image.xyz/photo.jpg'} colorClasses="red" />,
     );
     const elementInstance = element.root;
-    expect(elementInstance.findByType('img').props.src).toBe('http://image.xyz/photo.jpg');
-    expect(elementInstance.findByType('img').props.className).toBe('tc br-100 dib v-mid h2 w2 f5 ');
-    expect(elementInstance.findByType('img').props.alt).toBe('Mary');
+    expect(elementInstance.findByProps({ title: 'Mary' }).type).toBe('div');
+    expect(elementInstance.findByProps({ title: 'Mary' }).props.style.backgroundImage).toBe(
+      'url(http://image.xyz/photo.jpg)',
+    );
+    expect(elementInstance.findByProps({ title: 'Mary' }).props.className).toBe(
+      'dib mh1 br-100 tc v-mid cover red h2 w2 f5',
+    );
   });
 
   it('with picture url and large size', () => {
     const element = TestRenderer.create(
-      <UserAvatar username={'Mary'} size="large" picture={'http://image.xyz/photo.jpg'} />,
+      <UserAvatar
+        username={'Mary'}
+        colorClasses="orange"
+        size="large"
+        picture={'http://image.xyz/photo2.jpg'}
+      />,
     );
     const elementInstance = element.root;
-    expect(elementInstance.findByType('img').props.src).toBe('http://image.xyz/photo.jpg');
-    expect(elementInstance.findByType('img').props.className).toBe('tc br-100 dib v-mid h3 w3 f2 ');
-    expect(elementInstance.findByType('img').props.alt).toBe('Mary');
+    expect(elementInstance.findByProps({ title: 'Mary' }).props.style.backgroundImage).toBe(
+      'url(http://image.xyz/photo2.jpg)',
+    );
+    expect(elementInstance.findByProps({ title: 'Mary' }).props.className).toBe(
+      'dib mh1 br-100 tc v-mid cover orange h3 w3 f2',
+    );
   });
 
   it('without picture url and with large size', () => {
@@ -31,7 +43,7 @@ describe('UserAvatar', () => {
     );
     const elementInstance = element.root;
     expect(elementInstance.findByType('div').props.className).toBe(
-      'dib mh1 br-100 tc v-mid white bg-red h3 w3 f2',
+      'dib mh1 br-100 tc v-mid cover white bg-red h3 w3 f2',
     );
     expect(elementInstance.findByType('span').props.children).toContain('M');
     expect(elementInstance.findByType('span').props.style).toStrictEqual({
@@ -45,7 +57,7 @@ describe('UserAvatar', () => {
     );
     const elementInstance = element.root;
     expect(elementInstance.findByType('div').props.className).toBe(
-      'dib mh1 br-100 tc v-mid white bg-red h2 w2 f5',
+      'dib mh1 br-100 tc v-mid cover white bg-red h2 w2 f5',
     );
     expect(elementInstance.findByType('span').props.children).toContain('MP');
     expect(elementInstance.findByType('span').props.style).toStrictEqual({
@@ -215,14 +227,33 @@ describe('UserAvatarList', () => {
     expect(elementInstance.findAllByProps({ className: 'dib' })[1].props.style).toStrictEqual({
       marginLeft: '-1.25rem',
     });
-    expect(() => elementInstance.findByProps({ name: '+ 3' })).not.toThrow(
-      new Error('No instances found with props: {"name": "+ 3"}'),
+    expect(() => elementInstance.findByProps({ number: '+3' })).not.toThrow(
+      new Error('No instances found with props: {"name": "+3"}'),
     );
-    expect(elementInstance.findByProps({ name: '+ 3' }).props.colorClasses).toBe(
+    expect(elementInstance.findByProps({ number: '+3' }).props.colorClasses).toBe(
       'blue-dark bg-grey-light',
     );
     expect(
-      elementInstance.findByProps({ colorClasses: 'blue-dark bg-grey-light' }).props.name,
-    ).toBe('+ 3');
+      elementInstance.findByProps({ colorClasses: 'blue-dark bg-grey-light' }).props.number,
+    ).toBe('+3');
+  });
+  it('with more than 999 users not shown render +999 as label', () => {
+    const element = TestRenderer.create(
+      <UserAvatarList
+        users={[...Array(1020).keys()].map((i) => ({ username: `user_${i}` }))}
+        maxLength={15}
+      />,
+    );
+    const elementInstance = element.root;
+    expect(elementInstance.findAllByType(UserAvatar).length).toBe(16);
+    expect(() => elementInstance.findByProps({ number: '+999' })).not.toThrow(
+      new Error('No instances found with props: {"name": "+999"}'),
+    );
+    expect(elementInstance.findByProps({ number: '+999' }).props.colorClasses).toBe(
+      'blue-dark bg-grey-light',
+    );
+    expect(
+      elementInstance.findByProps({ colorClasses: 'blue-dark bg-grey-light' }).props.number,
+    ).toBe('+999');
   });
 });
