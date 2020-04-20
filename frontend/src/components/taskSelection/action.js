@@ -16,6 +16,7 @@ import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import DueDateBox from '../projectcard/dueDateBox';
+import { Preloader } from '../preloader'; 
 import {
   CompletionTabForMapping,
   CompletionTabForValidation,
@@ -94,7 +95,9 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     <div className="cf vh-minus-122-ns overflow-y-hidden">
       <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
         {editor === 'ID' ? (
-          <React.Suspense fallback={<div className={`w7 h5 center`}>Loading iD...</div>}>
+          <React.Suspense
+            fallback={<Preloader className="h-100" />}
+          >
             <Editor editorRef={editorRef} setEditorRef={setEditorRef} setDisable={setDisable} />
           </React.Suspense>
         ) : (
