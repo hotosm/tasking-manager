@@ -29,6 +29,7 @@ function AuthorizedView(props) {
     props.authenticateUser(username, sessionToken, osm_oauth_token, osm_oauth_token_secret);
     setIsReadyToRedirect(true);
   });
+
   const redirectUrl =
     params.get('redirect_to') && params.get('redirect_to') !== '/'
       ? params.get('redirect_to')
