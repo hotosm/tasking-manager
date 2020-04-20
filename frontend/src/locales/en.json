@@ -671,7 +671,7 @@
   "user.completeness.button": "Complete my profile",
   "user.help.card.title": "Need help?",
   "user.help.card.howToMap": "How to map?",
-  "user.help.card.howToMapBuildings": "How to map buildings?",
+  "user.help.card.quickStart": "Quick start guide",
   "user.help.card.whatIsOSM": "What is OpenStreetMap?",
   "user.welcome.firstProject.title": "Contribute to your first project",
   "user.welcome.firstProject.text1": "Looks like you haven't mapped any tasks yet.",
