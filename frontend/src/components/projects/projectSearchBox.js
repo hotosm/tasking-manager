@@ -11,7 +11,7 @@ export const ProjectSearchBox = ({
   className,
   isMobile,
   placeholder,
-  searchField = 'text'
+  searchField = 'text',
 }) => {
   const [isFocus, setFocus] = useState(false);
   // const [searchTerm, setSearchTerm] = useState(props.fullProjectsQuery.text);

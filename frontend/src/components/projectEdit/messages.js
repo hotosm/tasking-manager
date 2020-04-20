@@ -21,6 +21,10 @@ export default defineMessages({
     id: 'projects.formInputs.organisation.title',
     defaultMessage: 'Organization',
   },
+  campaign: {
+    id: 'projects.formInputs.campaign.title',
+    defaultMessage: 'Campaign',
+  },
   categories: {
     id: 'projects.formInputs.categories.title',
     defaultMessage: 'Categories',
@@ -37,6 +41,10 @@ export default defineMessages({
   selectOrganisation: {
     id: 'projects.formInputs.organisation.select',
     defaultMessage: 'Select organization',
+  },
+  selectCampaign: {
+    id: 'projects.formInputs.campaign.select',
+    defaultMessage: 'Select campaign',
   },
   permissions_ANY: {
     id: 'projects.formInputs.permissions.any',
