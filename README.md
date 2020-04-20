@@ -14,10 +14,11 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 * Get familiar with our [contributor guidelines](./docs/contributing.md)
 * Join the [working groups](./docs/working-groups.md)
-* Help us to [translate the TM](./docs/contributing-translation.md)
+* Help us to [translate the user interface](./docs/contributing-translation.md)
 
 ## Developers
 
 * [Install TM with Docker](./docs/setup-docker.md)
 * [Setup the TM for development](./docs/setup-development.md)
+* [Learn about migrations between major versions](./docs/migration.md)
 * Help us and submit [pull requests](https://github.com/hotosm/tasking-manager/pulls)
