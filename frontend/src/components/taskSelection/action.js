@@ -35,7 +35,6 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const tasksIds = activeTasks ? activeTasks.map((task) => task.taskId) : [];
   const [editorRef, setEditorRef] = useState(null);
   const [disabled, setDisable] = useState(false);
-
   const activeTask = activeTasks && activeTasks[0];
   const timer = new Date(activeTask.lastUpdated);
 
@@ -155,14 +154,16 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                 >
                   <FormattedMessage {...messages.instructions} />
                 </span>
-                <span
-                  className={`mr4-l mr3 pb2 pointer ${
-                    activeSection === 'history' && 'bb b--blue-dark'
-                  }`}
-                  onClick={() => setActiveSection('history')}
-                >
-                  <FormattedMessage {...messages.history} />
-                </span>
+                {activeTasks && activeTasks.length === 1 && (
+                  <span
+                    className={`mr4-l mr3 pb2 pointer ${
+                      activeSection === 'history' && 'bb b--blue-dark'
+                    }`}
+                    onClick={() => setActiveSection('history')}
+                  >
+                    <FormattedMessage {...messages.history} />
+                  </span>
+                )}
               </div>
             </div>
             <div className="pt3">
@@ -172,6 +173,11 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                     <CompletionTabForMapping
                       project={project}
                       tasksIds={tasksIds}
+                      taskInstructions={
+                        activeTasks && activeTasks.length === 1
+                          ? activeTasks[0].perTaskInstructions
+                          : null
+                      }
                       disabled={disabled}
                       taskComment={taskComment}
                       setTaskComment={setTaskComment}
@@ -183,6 +189,11 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                     <CompletionTabForValidation
                       project={project}
                       tasksIds={tasksIds}
+                      taskInstructions={
+                        activeTasks && activeTasks.length === 1
+                          ? activeTasks[0].perTaskInstructions
+                          : null
+                      }
                       disabled={disabled}
                       taskComment={taskComment}
                       setTaskComment={setTaskComment}
