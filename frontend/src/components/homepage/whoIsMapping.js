@@ -26,12 +26,12 @@ function contactCard() {
 
 export function WhoIsMapping() {
   const organizations = [
-    { url: 'https://www.gfdrr.org/', name: 'gfdrr' },
-    { url: 'https://www.usaid.gov/', name: 'usaid' },
     { url: 'https://www.redcross.org/', name: 'redcross' },
-    { url: 'https://www.unicef.org/', name: 'unicef' },
-    { url: 'http://aws.amazon.com/', name: 'aws' },
+    { url: 'https://www.redcross.org.uk/', name: 'brc' },
     { url: 'https://www.msf.org/', name: 'msf' },
+    { url: 'https://www.worldbank.org/', name: 'wb' },
+    { url: 'https://www.usaid.gov/', name: 'usaid' },
+    { url: 'https://www.bing.com/', name: 'bing' },
   ];
   return (
     <div className="cf v-mid bg-split-blue-white">
