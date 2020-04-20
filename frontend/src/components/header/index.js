@@ -51,7 +51,7 @@ function getMenuItensForUser(userDetails, organisations) {
 const UserDisplay = (props) => {
   return (
     <span>
-      <CurrentUserAvatar className="br-100 v-mid red" width="32px" height="32px" />
+      <CurrentUserAvatar className="br-100 v-mid red h2 w2 dib" />
       <span className="pl2">{props.username}</span>
     </span>
   );
