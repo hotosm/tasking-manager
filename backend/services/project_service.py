@@ -22,7 +22,7 @@ from backend.models.postgis.statuses import (
     ValidationPermission,
     TeamRoles,
 )
-from backend.models.postgis.task import Task, TaskHistory, TaskAction
+from backend.models.postgis.task import Task, TaskHistory
 from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
 from backend.services.project_search_service import ProjectSearchService
@@ -75,25 +75,26 @@ class ProjectService:
 
         stats = (
             TaskHistory.query.with_entities(
-                TaskHistory.action.label("action"),
+                TaskHistory.action_text.label("action_text"),
                 func.DATE(TaskHistory.action_date).label("day"),
-                func.count(TaskHistory.action_date).label("cnt"),
+                TaskHistory.task_id.label("task_id"),
             )
             .filter(TaskHistory.project_id == project_id)
             .filter(
+                TaskHistory.action == "STATE_CHANGE",
                 or_(
-                    TaskHistory.action == TaskAction.LOCKED_FOR_MAPPING.name,
-                    TaskHistory.action == TaskAction.LOCKED_FOR_VALIDATION.name,
-                )
+                    TaskHistory.action_text == "MAPPED",
+                    TaskHistory.action_text == "VALIDATED",
+                    TaskHistory.action_text == "INVALIDATED",
+                ),
             )
             .filter(
                 func.DATE(TaskHistory.action_date)
                 > datetime.date.today() - datetime.timedelta(days=365)
             )
-            .group_by("action", "day")
+            .group_by("action_text", "day", "task_id")
             .order_by("day")
         )
-
         # Filter tasks by user_id only.
 
         contribs_dto = ProjectContribsDTO()
@@ -102,6 +103,9 @@ class ProjectService:
         dates_list = []
         cumulative_mapped = 0
         cumulative_validated = 0
+        tasks_mapped = []
+        tasks_validated = []
+
         for date in dates:
             dto = ProjectContribDTO(
                 {
@@ -111,14 +115,22 @@ class ProjectService:
                     "total_tasks": project.total_tasks,
                 }
             )
+            # s -> ('LOCKED_FOR_MAPPING', datetime.date(2019, 4, 23), 1)
+            # s[0] -> action, s[1] -> date, s[2] -> count
             values = [(s[0], s[2]) for s in stats if date == s[1]]
+            values.sort(reverse=True)
             for val in values:
-                if val[0] == TaskAction.LOCKED_FOR_MAPPING.name:
-                    dto.mapped = val[1]
-                    cumulative_mapped += val[1]
-                elif val[0] == TaskAction.LOCKED_FOR_VALIDATION.name:
-                    dto.validated = val[1]
-                    cumulative_validated += int(val[1])
+                if val[0] == "MAPPED":
+                    dto.mapped += 1
+                    tasks_mapped.append(val[1])
+                    tasks_mapped = list(set(tasks_mapped))
+                else:
+                    dto.validated += 1
+                    tasks_validated.append(val[1])
+                    tasks_validated = list(set(tasks_validated))
+
+                cumulative_mapped = len(tasks_mapped)
+                cumulative_validated = len(tasks_validated)
 
                 dto.cumulative_mapped = cumulative_mapped
                 dto.cumulative_validated = cumulative_validated
