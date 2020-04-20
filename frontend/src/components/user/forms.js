@@ -278,7 +278,7 @@ function _UserInformationForm(props) {
                   <Field name="facebookId" component="input" type="text" className={fieldClasses} />
                 </div>
                 <div className="w-100 w-50-ns fl pl3-ns">
-                  <label className={labelClasses}>Linkedin</label>
+                  <label className={labelClasses}>LinkedIn</label>
                   <Field name="linkedinId" component="input" type="text" className={fieldClasses} />
                 </div>
               </div>

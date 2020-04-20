@@ -9,7 +9,7 @@ import { translateCountry } from '../../utils/countries';
 import { ProjectStatusBox } from './statusBox';
 import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 
-export function HeaderLine({ author, projectId, priority, showEditLink }: Object) {
+export function HeaderLine({ author, projectId, priority, showEditLink, organisation }: Object) {
   const userLink = (
     <Link to={`/users/${author}`} className="link blue-dark underline">
       {author}
@@ -29,6 +29,7 @@ export function HeaderLine({ author, projectId, priority, showEditLink }: Object
             values={{ user: userLink, id: projectIdLink }}
           />
         </span>
+        {organisation ? <span className="b">/{organisation}</span> : null}
       </div>
       <div className="w-30-ns w-100 dib fl tr">
         {showEditLink && (
@@ -59,6 +60,7 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
         author={project.author}
         projectId={project.projectId}
         priority={project.projectPriority}
+        organisation={project.organisationName}
         showEditLink={showEditLink && userCanEditProject}
       />
       <div className="cf">
