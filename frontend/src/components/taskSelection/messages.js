@@ -457,6 +457,10 @@ export default defineMessages({
     id: 'project.tasks.locked_by_user',
     defaultMessage: '{lockStatus} by {user}',
   },
+  taskExtraInfo: {
+    id: 'project.tasks.extra_information.title',
+    defaultMessage: 'Specific task information',
+  },
   mappingLevelALL: {
     id: 'project.level.all',
     defaultMessage: 'All levels',

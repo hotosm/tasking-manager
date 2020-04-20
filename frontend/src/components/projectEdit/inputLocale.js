@@ -5,7 +5,7 @@ import messages from './messages';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 
-export const InputLocale = props => {
+export const InputLocale = (props) => {
   const { projectInfo, setProjectInfo, success, setSuccess, error, setError } = useContext(
     StateContext,
   );
@@ -15,8 +15,8 @@ export const InputLocale = props => {
 
   const locales = projectInfo.projectInfoLocales;
 
-  const updateState = e => {
-    let selected = locales.filter(f => f.locale === language);
+  const updateState = (e) => {
+    let selected = locales.filter((f) => f.locale === language);
     let data = null;
     if (selected.length === 0) {
       data = { locale: language, [e.target.name]: e.target.value };
@@ -25,12 +25,12 @@ export const InputLocale = props => {
       data[e.target.name] = e.target.value;
     }
     // create element with new locale.
-    let newLocales = locales.filter(f => f.locale !== language);
+    let newLocales = locales.filter((f) => f.locale !== language);
     newLocales.push(data);
     setProjectInfo({ ...projectInfo, projectInfoLocales: newLocales });
   };
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setValue(e.target.value);
     if (props.preview !== false) {
       const html = htmlFromMarkdown(e.target.value);
@@ -52,7 +52,7 @@ export const InputLocale = props => {
   }, [language, setSuccess, setError]);
 
   const getValue = useCallback(() => {
-    const data = locales.filter(l => l.locale === language);
+    const data = locales.filter((l) => l.locale === language);
     if (data.length > 0) {
       return data[0][props.name];
     } else {
@@ -129,7 +129,10 @@ export const InputLocale = props => {
           <h3 className="ttu f6 fw6 blue-grey mb1">
             <FormattedMessage {...messages.preview} />
           </h3>
-          <div dangerouslySetInnerHTML={preview} className="pv1 ph3 bg-grey-light blue-dark" />
+          <div
+            dangerouslySetInnerHTML={preview}
+            className="pv1 ph3 bg-grey-light blue-dark markdown-content"
+          />
         </div>
       )}
     </div>
