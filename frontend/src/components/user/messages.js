@@ -185,9 +185,9 @@ export default defineMessages({
     id: 'user.help.card.howToMap',
     defaultMessage: 'How to map?',
   },
-  howToMapBuildings: {
-    id: 'user.help.card.howToMapBuildings',
-    defaultMessage: 'How to map buildings?',
+  quickStart: {
+    id: 'user.help.card.quickStart',
+    defaultMessage: 'Quick start guide',
   },
   whatIsOSM: {
     id: 'user.help.card.whatIsOSM',
