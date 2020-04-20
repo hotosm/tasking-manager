@@ -115,7 +115,7 @@ export const ProjectDetailLeft = (props) => {
         >
           <ProjectHeader project={props.project} showEditLink={true} />
           <section className="lh-title h-100 overflow-x-scroll">
-            <div className="pr2" dangerouslySetInnerHTML={htmlShortDescription} />
+            <div className="pr2 markdown-content" dangerouslySetInnerHTML={htmlShortDescription} />
             <div>
               <a href="#description" className="link base-font bg-white f6 bn pn red pointer">
                 <span className="pr2 ttu f6 fw6">
@@ -228,7 +228,7 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.description} />
       </h3>
       <div
-        className="pv2 ph4 w-60-l w-80-m w-100 lh-title"
+        className="pv2 ph4 w-60-l w-80-m w-100 lh-title markdown-content"
         dangerouslySetInnerHTML={htmlDescription}
       />
 

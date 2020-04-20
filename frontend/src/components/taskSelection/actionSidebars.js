@@ -8,8 +8,16 @@ import messages from './messages';
 import { Button } from '../button';
 import { Dropdown } from '../dropdown';
 import { CheckCircle } from '../checkCircle';
-import { CloseIcon, SidebarIcon, AlertIcon, QuestionCircleIcon } from '../svgIcons';
+import {
+  CloseIcon,
+  SidebarIcon,
+  AlertIcon,
+  QuestionCircleIcon,
+  ChevronRightIcon,
+  ChevronDownIcon,
+} from '../svgIcons';
 import { getEditors } from '../../utils/editorsList';
+import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { UserFetchTextarea } from '../projectDetail/questionsAndComments';
 import { useFetchLockedTasks } from '../../hooks/UseLockedTasks';
@@ -17,6 +25,7 @@ import { useFetchLockedTasks } from '../../hooks/UseLockedTasks';
 export function CompletionTabForMapping({
   project,
   tasksIds,
+  taskInstructions,
   disabled,
   taskComment,
   setTaskComment,
@@ -89,6 +98,7 @@ export function CompletionTabForMapping({
         </Popup>
       )}
       <div className="cf">
+        {taskInstructions && <TaskSpecificInstructions instructions={taskInstructions} />}
         <h4 className="ttu blue-grey f5">
           <FormattedMessage {...messages.editStatus} />
           <QuestionCircleIcon
@@ -179,6 +189,7 @@ export function CompletionTabForMapping({
 export function CompletionTabForValidation({
   project,
   tasksIds,
+  taskInstructions,
   disabled,
   taskComment,
   setTaskComment,
@@ -238,6 +249,9 @@ export function CompletionTabForValidation({
       )}
       <div className="bb b--grey-light w-100"></div>
       <div className="cf">
+        {taskInstructions && (
+          <TaskSpecificInstructions instructions={taskInstructions} open={false} />
+        )}
         <h4 className="ttu blue-grey f5">
           <FormattedMessage {...messages.editStatus} />
         </h4>
@@ -391,6 +405,28 @@ function UnsavedMapChangesModalContent({ close, action }: Object) {
       <Button className="bg-red white" onClick={() => close()}>
         <FormattedMessage {...messages.closeModal} />
       </Button>
+    </div>
+  );
+}
+
+function TaskSpecificInstructions({ instructions, open = true }: Object) {
+  const [isOpen, setIsOpen] = useState(open);
+  return (
+    <div className="">
+      <h4 className="ttu blue-grey mb0 pointer" onClick={() => setIsOpen(!isOpen)}>
+        {isOpen ? (
+          <ChevronDownIcon style={{ height: '14px' }} className="pr1 pb1 v-mid" />
+        ) : (
+          <ChevronRightIcon style={{ height: '14px' }} className="pr1 pb1 v-mid" />
+        )}
+        <FormattedMessage {...messages.taskExtraInfo} />
+      </h4>
+      {isOpen && (
+        <div
+          className="markdown-content"
+          dangerouslySetInnerHTML={htmlFromMarkdown(instructions)}
+        />
+      )}
     </div>
   );
 }
