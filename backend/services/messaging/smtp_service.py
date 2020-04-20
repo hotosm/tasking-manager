@@ -47,16 +47,19 @@ class SMTPService:
         SMTPService._send_message(email_to, subject, message, message)
 
     @staticmethod
-    def send_email_alert(to_address: str, username: str):
+    def send_email_alert(to_address: str, username: str, message_id: int = None):
         """ Send an email to user to alert them they have a new message"""
         current_app.logger.debug(f"Test if email required {to_address}")
         if not to_address:
             return False  # Many users will not have supplied email address so return
+        message_path = ""
+        if message_id is not None:
+            message_path = f"/message/{message_id}"
 
         # TODO these could be localised if needed, in the future
         html_template = get_template("message_alert_en.html")
         text_template = get_template("message_alert_en.txt")
-        inbox_url = f"{current_app.config['APP_BASE_URL']}/inbox"
+        inbox_url = f"{current_app.config['APP_BASE_URL']}/inbox{message_path}"
 
         html_template = html_template.replace("[USERNAME]", username)
         html_template = html_template.replace("[PROFILE_LINK]", inbox_url)

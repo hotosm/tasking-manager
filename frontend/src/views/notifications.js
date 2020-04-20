@@ -12,6 +12,7 @@ import { NotificationBodyModal } from '../components/notifications/notificationB
 import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { Login } from './login';
 
 export const NotificationPopout = (props) => {
   return (
@@ -58,8 +59,7 @@ export const NotificationsPage = (props) => {
   const [state] = useInboxQueryAPI(initialData, inboxQuery, forceUpdated);
 
   if (!userToken) {
-    /* use replace to so the back button does not get interrupted */
-    props.navigate('/login', { replace: true });
+    return <Login redirectTo={window.location.pathname} />;
   }
   // const [isPopoutFocus, setPopoutFocus] = useState(true);
 
