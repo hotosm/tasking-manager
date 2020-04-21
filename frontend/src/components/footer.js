@@ -5,7 +5,6 @@ import { FormattedMessage } from 'react-intl';
 
 import { TwitterIcon, FacebookIcon, YoutubeIcon, GithubIcon, InstagramIcon } from './svgIcons';
 import messages from './messages';
-import headerMessages from './header/messages';
 import { getMenuItensForUser } from './header';
 import {
   ORG_TWITTER,
@@ -72,14 +71,11 @@ export function Footer({ location }: Object) {
             </Link>
             <div className="pt2 f7 lh-title">
               <a href={ORG_PRIVACY_POLICY_URL} className="link white">
-                <FormattedMessage {...headerMessages.privacyPolicy} />
+                <FormattedMessage {...messages.privacyPolicy} />
               </a>
             </div>
           </div>
           <div className="pt2 f7 mb2 w-50-l w-100 tl tr-l fr">
-            <a href="https://github.com/hotosm/tasking-manager/" className="link white">
-              <FormattedMessage {...messages.feedback} />
-            </a>
             <a href="https://osm.org/about" className="link white pl1">
               <FormattedMessage {...messages.learn} />
             </a>
