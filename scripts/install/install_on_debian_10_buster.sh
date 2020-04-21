@@ -57,13 +57,13 @@ fi
 
 
 # Populate database
-cd tests/database/ &&
-sudo -u postgres psql -d $POSTGRES_DB -c "\i tasking-manager.sql" &&
-for tbl in `sudo -u postgres psql -qAt -c "select tablename from pg_tables where schemaname = 'public';" $POSTGRES_DB`;
-do  sudo -u postgres psql -c "alter table \"$tbl\" owner to $POSTGRES_USER" $POSTGRES_DB ; done &&
-for tbl in `sudo -u postgres psql -qAt -c "select tablename from pg_tables where schemaname = 'topology';" $POSTGRES_DB`;
-do  sudo -u postgres psql -c "alter table \"$tbl\" owner to $POSTGRES_USER" $POSTGRES_DB ; done &&
-cd ../../ &&
+#cd tests/database/ &&
+#sudo -u postgres psql -d $POSTGRES_DB -c "\i tasking-manager.sql" &&
+#for tbl in `sudo -u postgres psql -qAt -c "select tablename from pg_tables where schemaname = 'public';" $POSTGRES_DB`;
+#do  sudo -u postgres psql -c "alter table \"$tbl\" owner to $POSTGRES_USER" $POSTGRES_DB ; done &&
+#for tbl in `sudo -u postgres psql -qAt -c "select tablename from pg_tables where schemaname = 'topology';" $POSTGRES_DB`;
+#do  sudo -u postgres psql -c "alter table \"$tbl\" owner to $POSTGRES_USER" $POSTGRES_DB ; done &&
+#cd ../../ &&
 
 # Upgrade database
 ./venv/bin/python3 manage.py db upgrade &&
