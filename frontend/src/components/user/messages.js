@@ -187,7 +187,7 @@ export default defineMessages({
   },
   quickStart: {
     id: 'user.help.card.quickStart',
-    defaultMessage: 'Quick start guide',
+    defaultMessage: 'Quickstart guide',
   },
   whatIsOSM: {
     id: 'user.help.card.whatIsOSM',

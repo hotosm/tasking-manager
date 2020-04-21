@@ -226,7 +226,7 @@ const LearnToMap = ({ section }) => {
   const tutorials = [
     {
       message: 'learnQuickStartTutorial',
-      url: 'https://docs.google.com/document/d/1wrzXROoiR9TgoZvGvho7YGLrGRFmEtZw8ezuW1mewbI/edit',
+      url: 'learn/quickstart',
     },
     {
       message: 'learnTMManualTutorial',

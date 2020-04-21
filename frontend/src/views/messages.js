@@ -177,6 +177,10 @@ export default defineMessages({
     id: 'pages.learn.title',
     defaultMessage: 'Learn',
   },
+  learnPages: {
+    id: 'pages.learn.pages',
+    defaultMessage: 'Learn pages',
+  },
   learnMapTitle: {
     id: 'pages.learn.map.title',
     defaultMessage: 'Learn to map',
@@ -197,7 +201,7 @@ export default defineMessages({
   },
   learnQuickStartTutorialTitle: {
     id: 'pages.learn.tutorials.quick_start.title',
-    defaultMessage: 'Quick start guide',
+    defaultMessage: 'Quickstart guide',
   },
   learnQuickStartTutorialDescription: {
     id: 'pages.learn.tutorials.quick_start.description',
@@ -341,6 +345,81 @@ export default defineMessages({
     id: 'pages.learn.manage.steps.data.description',
     defaultMessage:
       'Download the data and use it for your initial purpose. The {exportToolLink} and the {overpassLink} are excellent to pick the information you need.',
+  },
+  quickstartTitle: {
+    id: 'pages.quickstart.title',
+    defaultMessage:
+      'Quickstart guide',
+  },
+  quickstartIntro: {
+    id: 'pages.quickstart.intro',
+    defaultMessage:
+      'These step-by-step instructions help you to get started mapping with the Tasking Manager on OpenStreetMap.',
+  },
+  quickstartStep1: {
+    id: 'pages.quickstart.quickstartStep1',
+    defaultMessage:
+      'Click on the {signUp} button in the upper right corner of the {tmHomepage} homepage',
+  },
+  quickstartStep1Note: {
+    id: 'pages.quickstart.quickstartStep1Note',
+    defaultMessage:
+      'Do you have an OpenStreetMap account already? You can start over with step 4.',
+  },
+  quickstartStep2: {
+    id: 'pages.quickstart.quickstartStep2',
+    defaultMessage:
+      'Provide your name and email address. We will use this informtation to guide you through the sign-up process',
+  },
+  quickstartStep3: {
+    id: 'pages.quickstart.quickstartStep3',
+    defaultMessage:
+      'A new tab will open allowing you to register on OpenStreetMap.org. Fill out the form and select {signUp}.',
+  },
+  quickstartStep4: {
+    id: 'pages.quickstart.quickstartStep4',
+    defaultMessage:
+      'Close the tab and go back to the {tmHomepage}. Click the button to {logIn}.',
+  },
+  quickstartStep5: {
+    id: 'pages.quickstart.quickstartStep5',
+    defaultMessage:
+      'Select {exploreProjects} in the main navigation to find a mapping project to work on.',
+  },
+  quickstartStep6: {
+    id: 'pages.quickstart.quickstartStep6',
+    defaultMessage:
+      'Read the introduction to the project and click on {contribute} in order to get into mapping.',
+  },
+  quickstartStep7: {
+    id: 'pages.quickstart.quickstartStep7',
+    defaultMessage:
+      'Map a randomly selected task for mapping by clicking on the button {mapATask}.',
+  },
+  quickstartStep7Note: {
+    id: 'pages.quickstart.quickstartStep7Note',
+    defaultMessage:
+      'Alternatively, you can also select one from the  map or the task and choose “Map selected task”.',
+  },
+  quickstartStep8: {
+    id: 'pages.quickstart.quickstartStep8',
+    defaultMessage:
+      'This opens the editor; map all the features asked for in the instructions.',
+  },
+  quickstartStep8Note: {
+    id: 'pages.quickstart.quickstartStep8Note',
+    defaultMessage:
+      'For more information on mapping in OpenStreetMap please have a look at our {learnPage} and the tutorials linked there.',
+  },
+  quickstartStep9: {
+    id: 'pages.quickstart.quickstartStep9',
+    defaultMessage:
+      'When finished mapping, save your edits and select the button {submitTask}.',
+  },
+  quickstartStep9Note: {
+    id: 'pages.quickstart.quickstartStep9Note',
+    defaultMessage:
+      'After this, you can go back to step 7 and select a new task for mapping. Thank you for your contribution to OpenStreetMap!',
   },
   contactUs: {
     id: 'pages.concact.title',
