@@ -9,7 +9,7 @@ import ProjectProgressBar from '../projectcard/projectProgressBar';
 import DueDateBox from '../projectcard/dueDateBox';
 
 import { MappingLevelMessage } from '../mappingLevel';
-import { UserAvatarList } from '../user/avatar';
+import { UserAvatar, UserAvatarList } from '../user/avatar';
 
 import { TasksMap } from '../taskSelection/map.js';
 import { ProjectHeader } from './header';
@@ -123,25 +123,6 @@ export const ProjectDetailLeft = (props) => {
                 </span>
               </a>
             </div>
-            <div className="cf w-100">
-              {props.project.organisationName && (
-                <>
-                  <p>
-                    <FormattedMessage
-                      {...messages.projectCoordination}
-                      values={{
-                        organisation: <span className="fw6">{props.project.organisationName}</span>,
-                      }}
-                    />
-                  </p>
-                  <img
-                    className="w4 pa1 z-1"
-                    src={props.project.organisationLogo}
-                    alt={props.project.organisationName}
-                  />
-                </>
-              )}
-            </div>
           </section>
         </ReactPlaceholder>
       </div>
@@ -231,7 +212,21 @@ export const ProjectDetail = (props) => {
         className="pv2 ph4 w-60-l w-80-m w-100 lh-title markdown-content"
         dangerouslySetInnerHTML={htmlDescription}
       />
-
+      <a href="#author" style={{ visibility: 'hidden' }} name="author">
+        <FormattedMessage {...messages.author} />
+      </a>
+      <h3 className={`${h2Classes}`}>
+        <FormattedMessage {...messages.author} />
+      </h3>
+      <div className="cf db mb3 ph4">
+        {props.project.author && (
+          <UserAvatar
+            username={props.project.author}
+            size="large"
+            colorClasses="white bg-red"
+          />
+        )}
+      </div>     
       <a href="#teams" style={{ visibility: 'hidden' }} name="teams">
         <FormattedMessage {...messages.teamsAndPermissions} />
       </a>
