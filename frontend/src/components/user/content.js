@@ -132,9 +132,7 @@ export function HelpCard() {
           <FormattedMessage {...messages.howToMap} />
         </a>
         <a
-          href="https://docs.google.com/document/d/1wrzXROoiR9TgoZvGvho7YGLrGRFmEtZw8ezuW1mewbI/edit"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="quickstart"
           className="link red pr4">
           <FormattedMessage {...messages.quickStart} />
         </a>
