@@ -34,7 +34,7 @@ from backend.models.postgis.statuses import TeamRoles
 from backend import db
 from flask import current_app
 from geoalchemy2 import shape
-from sqlalchemy import func, distinct, desc
+from sqlalchemy import func, distinct, desc, or_
 import math
 
 
@@ -245,11 +245,19 @@ class ProjectSearchService:
         if search_dto.text_search:
             # We construct an OR search, so any projects that contain or more of the search terms should be returned
             or_search = search_dto.text_search.replace(" ", " | ")
-            query = query.filter(
+
+            opts = [
                 ProjectInfo.text_searchable.match(
                     or_search, postgresql_regconfig="english"
-                )
-            )
+                ),
+                ProjectInfo.name.like(f"%{search_dto.text_search}%"),
+            ]
+            try:
+                opts.append(Project.id == int(search_dto.text_search))
+            except ValueError:
+                pass
+
+            query = query.filter(or_(*opts))
 
         if search_dto.country:
             # Unnest country column array.
