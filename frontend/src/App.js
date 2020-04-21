@@ -12,6 +12,7 @@ import { Preloader } from './components/preloader';
 import { Home } from './views/home';
 import { AboutPage } from './views/about';
 import { LearnPage } from './views/learn';
+import { QuickstartPage } from './views/quickstart';
 import { UserDetail } from './views/userDetail';
 import {
   UserProjectsPage,
@@ -79,6 +80,7 @@ let App = props => {
                   <MoreFilters path="/filters/*" />
                 </ProjectsPage>
                 <LearnPage path="learn" />
+                <QuickstartPage path="learn/quickstart" />
                 <ContributionsPageIndex path="contributions">
                   <UserStats path="/" />
                   <ContributionsPage path="tasks/*" />
