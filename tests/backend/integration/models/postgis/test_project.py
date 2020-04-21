@@ -82,7 +82,7 @@ class TestProject(unittest.TestCase):
         self.update_project_with_info()
 
         # Act
-        project_dto = self.test_project.as_dto_for_mapping("en", False)
+        project_dto = self.test_project.as_dto_for_mapping()
 
         # Assert
         self.assertIsInstance(project_dto.area_of_interest, geojson.MultiPolygon)
@@ -128,7 +128,7 @@ class TestProject(unittest.TestCase):
 
         # Act - Create empty italian translation
         self.test_project.update(test_dto)
-        dto = self.test_project.as_dto_for_mapping("it", False)
+        dto = self.test_project.as_dto_for_mapping(locale="it")
 
         # Assert
         self.assertEqual(

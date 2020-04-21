@@ -385,12 +385,6 @@ class Project(db.Model):
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
         self.default_locale = project_dto.default_locale
-        self.mapping_permission = MappingPermission[
-            project_dto.mapping_permission.upper()
-        ].value
-        self.validation_permission = ValidationPermission[
-            project_dto.validation_permission.upper()
-        ].value
         self.enforce_random_task_selection = project_dto.enforce_random_task_selection
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
@@ -483,6 +477,16 @@ class Project(db.Model):
                 self.custom_editor.delete()
 
         self.campaign = [Campaign.query.get(c.id) for c in project_dto.campaigns]
+
+        if project_dto.mapping_permission:
+            self.mapping_permission = MappingPermission[
+                project_dto.mapping_permission.upper()
+            ].value
+
+        if project_dto.validation_permission:
+            self.validation_permission = ValidationPermission[
+                project_dto.validation_permission.upper()
+            ].value
 
         # Update Interests.
         self.interests = []
@@ -992,7 +996,7 @@ class Project(db.Model):
         return self, base_dto
 
     def as_dto_for_mapping(
-        self, authenticated_user_id: int, locale: str, abbrev: bool
+        self, authenticated_user_id: int=None, locale: str = "en", abbrev: bool = True
     ) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
         # Check for project visibility settings
