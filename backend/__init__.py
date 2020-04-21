@@ -275,6 +275,7 @@ def add_api_endpoints(app):
         SystemAuthenticationCallbackAPI,
     )
     from backend.api.system.applications import SystemApplicationsRestAPI
+    from backend.api.system.image_upload import SystemImageUploadRestAPI
 
     # Projects REST endpoint
     api.add_resource(ProjectsAllAPI, format_url("projects/"), methods=["GET"])
@@ -746,6 +747,9 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         SystemAuthenticationEmailAPI, format_url("system/authentication/email/")
+    )
+    api.add_resource(
+        SystemImageUploadRestAPI, format_url("system/image-upload/"), methods=["POST"],
     )
     api.add_resource(
         SystemApplicationsRestAPI,
