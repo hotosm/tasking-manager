@@ -4,10 +4,6 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on project cards.
  */
 export default defineMessages({
-  projectCoordination: {
-    id: 'project.detail.coordination',
-    defaultMessage: 'This project is coordinated by {organisation}',
-  },
   noProjectTeams: {
     id: 'project.detail.teams.empty',
     defaultMessage: "This project doesn't have any teams associated with.",
@@ -47,10 +43,6 @@ export default defineMessages({
   dueDateRelativeRemainingDays: {
     id: 'project.detail.dueDateLeft',
     defaultMessage: '{daysLeftHumanize} left',
-  },
-  createdBy: {
-    id: 'project.createdBy',
-    defaultMessage: '{id} | Created by {user}',
   },
   typesOfMapping: {
     id: 'project.detail.typesOfMapping',
@@ -136,6 +128,10 @@ export default defineMessages({
   teamsAndPermissions: {
     id: 'project.detail.teams_permissions',
     defaultMessage: 'Teams & Permissions',
+  },
+  author: {
+    id: 'project.detail.author',
+    defaultMessage: 'Author',
   },
   whoCanMap: {
     id: 'project.detail.mapping_permissions',
