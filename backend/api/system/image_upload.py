@@ -42,6 +42,8 @@ class SystemImageUploadRestAPI(Resource):
         responses:
           200:
             description: Image uploaded successfully
+          400:
+            description: Input parameter error
           403:
             description: User is not authorized to upload images
           500:
@@ -51,7 +53,7 @@ class SystemImageUploadRestAPI(Resource):
             current_app.config["IMAGE_UPLOAD_API_URL"] is None
             or current_app.config["IMAGE_UPLOAD_API_KEY"] is None
         ):
-            return {"Error": "There is not an upload image service defined."}, 500
+            return {"Error": "Image upload service not defined"}, 500
 
         try:
             is_org_manager = (
@@ -89,7 +91,7 @@ class SystemImageUploadRestAPI(Resource):
                         400,
                     )
             else:
-                return {"Error": "User is not admin or organisation manager."}, 403
+                return {"Error": "User is not admin or organisation manager"}, 403
         except Exception as e:
             error_msg = f"Image upload POST API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
