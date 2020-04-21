@@ -36,12 +36,12 @@ export function WhoIsMapping() {
   return (
     <div className="cf v-mid bg-split-blue-white">
       <div className="ph6-l ph4 pt3 pb5 white cf">
-        <div className="bg-red mw5">
-          <h3 className="pa1 f2 fw8 tc lh-copy white ttu barlow-condensed">
+        <div className="cf fl w-100">
+          <h3 className="bg-red dib pv1 ph2 f2 fw8 tc lh-copy white ttu barlow-condensed">
             <FormattedMessage {...messages.whoIsMappingTitle} />
           </h3>
         </div>
-        <div className="w-75-l w-100 fl">
+        <div className="w-75-l w-100 fl cf">
           <p className="pr2 mb4 f5 f4-ns lh-title mw6">
             <FormattedMessage {...messages.whoIsMappingHeadline} />
           </p>
