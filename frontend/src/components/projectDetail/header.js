@@ -10,11 +10,6 @@ import { ProjectStatusBox } from './statusBox';
 import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 
 export function HeaderLine({ author, projectId, priority, showEditLink, organisation }: Object) {
-  const userLink = (
-    <Link to={`/users/${author}`} className="link blue-dark underline">
-      {author}
-    </Link>
-  );
   const projectIdLink = (
     <Link to={`/projects/${projectId}`} className="no-underline pointer">
       <span className="blue-light">#{projectId}</span>
@@ -24,12 +19,9 @@ export function HeaderLine({ author, projectId, priority, showEditLink, organisa
     <div className="cf">
       <div className="w-70-ns w-100 dib fl pv2">
         <span className="blue-dark">
-          <FormattedMessage
-            {...messages.createdBy}
-            values={{ user: userLink, id: projectIdLink }}
-          />
+          {projectIdLink}
         </span>
-        {organisation ? <span className="b">/{organisation}</span> : null}
+        {organisation ? <span> | {organisation}</span> : null}
       </div>
       <div className="w-30-ns w-100 dib fl tr">
         {showEditLink && (
