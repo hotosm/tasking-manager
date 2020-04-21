@@ -15,8 +15,8 @@ import ValidateStepCollaborate from '../assets/img/icons/validate_step_collabora
 import SelectProject from '../assets/img/icons/map_step_select_project.png';
 import SelectTask from '../assets/img/icons/map_step_select_task.png';
 import MapOSM from '../assets/img/icons/map_step_osm.png';
-import LearnOSMLogo from '../assets/img/learn_osm.png';
-import HOTLogo from '../assets/img/main-logo.svg';
+import LearnOSMLogo from '../assets/img/learn-osm-logo.svg';
+import QuickstartLogo from '../assets/img/info-logo.svg';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 const LearnNav = ({ sections, section, setSection }) => {
@@ -232,7 +232,7 @@ const LearnToMap = ({ section }) => {
     {
       message: 'learnQuickStartTutorial',
       url: 'learn/quickstart',
-      img: HOTLogo,
+      img: QuickstartLogo,
     },
     {
       message: 'learnTMManualTutorial',
