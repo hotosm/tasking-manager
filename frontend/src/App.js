@@ -56,7 +56,7 @@ const ApiDocsView = () => (
 
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
  *  create special sub-router for Projects page and wrap it only around that */
-let App = props => {
+let App = (props) => {
   useMeta({ property: 'og:url', content: process.env.REACT_APP_BASE_URL });
   useMeta({ name: 'author', content: ORG_NAME });
   const { isLoading } = props;
@@ -125,7 +125,8 @@ let App = props => {
                 <ProjectDetailPage path="projects/:id" />
                 <ContactPage path="contact/" />
                 <ApiDocsView path="/api-docs/" />
-                <Redirect from="project/:id" to="projects/:id" noThrow />
+                <Redirect from="project/:id" to="/projects/:id" noThrow />
+                <Redirect from="contribute/" to="/explore" noThrow />
                 <NotFound default />
               </Router>
             </QueryParamProvider>
@@ -140,7 +141,7 @@ let App = props => {
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   isLoading: state.loader.isLoading,
 });
 
