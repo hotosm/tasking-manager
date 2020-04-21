@@ -1,0 +1,96 @@
+import requests
+import json
+
+from flask_restful import Resource, request, current_app
+
+from backend.services.organisation_service import OrganisationService
+from backend.services.users.authentication_service import token_auth, tm
+
+
+class SystemImageUploadRestAPI(Resource):
+    @token_auth.login_required
+    def post(self):
+        """
+        Uploads an image using the image upload service
+        ---
+        tags:
+          - system
+        produces:
+          - application/json
+        parameters:
+          - in: header
+            name: Authorization
+            description: Base64 encoded session token
+            required: true
+            type: string
+            default: Token sessionTokenHere==
+          - in: body
+            name: body
+            required: true
+            description: JSON object containing image data that will be uploaded
+            schema:
+              properties:
+                  data:
+                      type: string
+                      default: base64 encoded image data
+                  mime:
+                      type: string
+                      default: file mime/type
+                  filename:
+                      type: string
+                      default: filename
+        responses:
+          200:
+            description: Image uploaded successfully
+          403:
+            description: User is not authorized to upload images
+          500:
+            description: A problem occurred
+        """
+        if (
+            current_app.config["IMAGE_UPLOAD_API_URL"] is None
+            or current_app.config["IMAGE_UPLOAD_API_KEY"] is None
+        ):
+            return {"Error": "There is not an upload image service defined."}, 500
+
+        try:
+            is_org_manager = (
+                len(
+                    OrganisationService.get_organisations_managed_by_user(
+                        tm.authenticated_user_id
+                    )
+                )
+                > 0
+            )
+            data = request.get_json()
+            if is_org_manager:
+                if data.get("filename") is None:
+                    return {"Error": "Missing filename parameter"}, 400
+                if data.get("mime") in ["image/png", "image/jpeg", "image/webp"]:
+                    headers = {
+                        "x-api-key": current_app.config["IMAGE_UPLOAD_API_KEY"],
+                        "Content-Type": "application/json",
+                    }
+                    url = "{}?filename={}".format(
+                        current_app.config["IMAGE_UPLOAD_API_URL"], data.get("filename")
+                    )
+                    result = requests.post(
+                        url, headers=headers, data=json.dumps({"image": data})
+                    )
+                    if result.ok:
+                        return result.json(), 201
+                    else:
+                        return result.json(), 400
+                else:
+                    return (
+                        {
+                            "Error": "Mimetype is not allowed. Use are 'image/png', 'image/jpeg', 'image/webp'"
+                        },
+                        400,
+                    )
+            else:
+                return {"Error": "User is not admin or organisation manager."}, 403
+        except Exception as e:
+            error_msg = f"Image upload POST API - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": "Unable to upload image"}, 500

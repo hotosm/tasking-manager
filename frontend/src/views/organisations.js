@@ -14,7 +14,7 @@ import { Teams } from '../components/teamsAndOrgs/teams';
 import { Projects } from '../components/teamsAndOrgs/projects';
 import {
   OrganisationForm,
-  OrgInformation,
+  CreateOrgInfo,
   OrgsManagement,
 } from '../components/teamsAndOrgs/organisations';
 import { FormSubmitButton, CustomButton } from '../components/button';
@@ -110,7 +110,7 @@ export function CreateOrganisation() {
                 <FormattedMessage {...messages.newOrganisation} />
               </h3>
               <div className="w-40-l w-100">
-                <OrgInformation userDetails={userDetails} managers={managers} />
+                <CreateOrgInfo userDetails={userDetails} managers={managers} />
                 <Members
                   addMembers={addManagers}
                   removeMembers={removeManagers}

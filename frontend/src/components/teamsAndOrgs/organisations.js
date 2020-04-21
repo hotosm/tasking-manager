@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
-import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
+import ReactPlaceholder from 'react-placeholder';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { IMAGE_UPLOAD_SERVICE } from '../../config';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { EditModeControl } from './editMode';
 import { Management } from './management';
 import { Button } from '../button';
@@ -85,8 +89,6 @@ export function OrganisationCard({ details }: Object) {
 }
 
 export function OrganisationForm(props) {
-  const labelClasses = 'db pt3 pb2';
-  const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
   const [editMode, setEditMode] = useState(false);
 
   return (
@@ -106,36 +108,7 @@ export function OrganisationForm(props) {
                   className="bn pa0"
                   disabled={submitting || props.disabledForm || !editMode}
                 >
-                  <div className="cf">
-                    <label className={labelClasses}>
-                      <FormattedMessage {...messages.name} />
-                    </label>
-                    <Field
-                      name="name"
-                      component="input"
-                      type="text"
-                      className={fieldClasses}
-                      required
-                    />
-                  </div>
-                  <div className="cf">
-                    <label className={labelClasses}>
-                      <FormattedMessage {...messages.website} />
-                    </label>
-                    <Field name="url" component="input" type="text" className={fieldClasses} />
-                  </div>
-                  <div className="cf">
-                    <label className={labelClasses}>
-                      <FormattedMessage {...messages.image} />
-                    </label>
-                    <Field
-                      name="logo"
-                      component="input"
-                      type="text"
-                      className={fieldClasses}
-                      required
-                    />
-                  </div>
+                  <OrgInformation />
                 </fieldset>
               </form>
             </div>
@@ -170,14 +143,52 @@ export function OrganisationForm(props) {
 }
 
 export function OrgInformation(props) {
+  const token = useSelector((state) => state.auth.get('token'));
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
+  const uploadImage = (file, onChange) => {
+    const fileInfo = file.files[0];
+    const promise = new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(fileInfo);
+      reader.onload = () => {
+        if (!!reader.result) {
+          resolve(reader.result);
+        } else {
+          reject(Error('Failed converting to base64'));
+        }
+      };
+    });
+    promise.then(
+      (result) => {
+        const payload = JSON.stringify({
+          mime: fileInfo.type,
+          data: result.split('base64,')[1],
+          filename: fileInfo.name,
+        });
+        setUploading(true);
+        pushToLocalJSONAPI('system/image-upload/', payload, token)
+          .then((res) => {
+            onChange(res.url);
+            setUploading(false);
+            setUploadError(null);
+          })
+          .catch((e) => {
+            setUploadError(e);
+            setUploading(false);
+          });
+      },
+      (err) => {
+        setUploadError(err);
+      },
+    );
+  };
+
   return (
-    <div className="bg-white b--grey-light ba pa4 mb3">
-      <h3 className="f3 blue-dark mv0 fw6">
-        <FormattedMessage {...messages.orgInfo} />
-      </h3>
+    <>
       <div className="cf">
         <label className={labelClasses}>
           <FormattedMessage {...messages.name} />
@@ -194,8 +205,48 @@ export function OrgInformation(props) {
         <label className={labelClasses}>
           <FormattedMessage {...messages.image} />
         </label>
-        <Field name="logo" component="input" type="text" className={fieldClasses} required />
+        {IMAGE_UPLOAD_SERVICE ? (
+          <Field name="logo" className={fieldClasses} required>
+            {(fieldProps) => (
+              <>
+                <input
+                  type="file"
+                  multiple={false}
+                  accept="image/png, image/jpeg, image/webp"
+                  onChange={(e) => uploadImage(e.target, fieldProps.input.onChange)}
+                />
+                <ReactPlaceholder
+                  type="media"
+                  className="pt2"
+                  rows={0}
+                  showLoadingAnimation={true}
+                  ready={!uploading}
+                >
+                  <img
+                    src={fieldProps.input.value}
+                    alt={fieldProps.input.value}
+                    className="h3 db pt2"
+                  />
+                  {uploadError && <pre>{uploadError}</pre>}
+                </ReactPlaceholder>
+              </>
+            )}
+          </Field>
+        ) : (
+          <Field name="logo" component="input" type="text" className={fieldClasses} required />
+        )}
       </div>
+    </>
+  );
+}
+
+export function CreateOrgInfo(props) {
+  return (
+    <div className="bg-white b--grey-light ba pa4 mb3">
+      <h3 className="f3 blue-dark mv0 fw6">
+        <FormattedMessage {...messages.orgInfo} />
+      </h3>
+      <OrgInformation {...props} />
     </div>
   );
 }
