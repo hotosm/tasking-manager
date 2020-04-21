@@ -1,4 +1,3 @@
-import datetime
 from cachetools import TTLCache, cached
 from flask import current_app
 from backend import db
@@ -70,9 +69,10 @@ class ProjectService:
 
     @staticmethod
     def get_contribs_by_day(project_id: int) -> ProjectContribsDTO:
-        # Validate that project exists.
+        # Validate that project exists
         project = ProjectService.get_project_by_id(project_id)
 
+        # Fetch all state change with date and task ID
         stats = (
             TaskHistory.query.with_entities(
                 TaskHistory.action_text.label("action_text"),
@@ -88,23 +88,25 @@ class ProjectService:
                     TaskHistory.action_text == "INVALIDATED",
                 ),
             )
-            .filter(
-                func.DATE(TaskHistory.action_date)
-                > datetime.date.today() - datetime.timedelta(days=365)
-            )
             .group_by("action_text", "day", "task_id")
             .order_by("day")
         )
-        # Filter tasks by user_id only.
 
         contribs_dto = ProjectContribsDTO()
+        # Filter and store unique dates
         dates = list(set(r[1] for r in stats))
-        dates.sort(reverse=False)  # Why was this reversed?
+        dates.sort(
+            reverse=False
+        )  # Why was this reversed? To have the dates in ascending order
         dates_list = []
         cumulative_mapped = 0
         cumulative_validated = 0
-        tasks_mapped = []
-        tasks_validated = []
+        # A hashmap to track task state change updates
+        tasks = {
+            "MAPPED": {"total": 0},
+            "VALIDATED": {"total": 0},
+            "INVALIDATED": {"total": 0},
+        }
 
         for date in dates:
             dto = ProjectContribDTO(
@@ -116,22 +118,47 @@ class ProjectService:
                 }
             )
             # s -> ('LOCKED_FOR_MAPPING', datetime.date(2019, 4, 23), 1)
-            # s[0] -> action, s[1] -> date, s[2] -> count
+            # s[0] -> action, s[1] -> date, s[2] -> task_id
             values = [(s[0], s[2]) for s in stats if date == s[1]]
-            values.sort(reverse=True)
+            values.sort(reverse=True)  # Most recent action comes first
             for val in values:
-                if val[0] == "MAPPED":
-                    dto.mapped += 1
-                    tasks_mapped.append(val[1])
-                    tasks_mapped = list(set(tasks_mapped))
+                task_id = val[1]
+                task_status = val[0]
+
+                if task_status == "MAPPED":
+                    if task_id not in tasks["MAPPED"]:
+                        tasks["MAPPED"][task_id] = 1
+                        tasks["MAPPED"]["total"] += 1
+                        dto.mapped += 1
+                elif task_status == "VALIDATED":
+                    if task_id not in tasks["VALIDATED"]:
+                        tasks["VALIDATED"][task_id] = 1
+                        tasks["VALIDATED"]["total"] += 1
+                        dto.validated += 1
+                        if task_id in tasks["INVALIDATED"]:
+                            del tasks["INVALIDATED"][task_id]
+                            tasks["INVALIDATED"]["total"] -= 1
+                        if task_id not in tasks["MAPPED"]:
+                            tasks["MAPPED"][task_id] = 1
+                            tasks["MAPPED"]["total"] += 1
+                            dto.mapped += 1
                 else:
-                    dto.validated += 1
-                    tasks_validated.append(val[1])
-                    tasks_validated = list(set(tasks_validated))
+                    if task_id not in tasks["INVALIDATED"]:
+                        tasks["INVALIDATED"][task_id] = 1
+                        tasks["INVALIDATED"]["total"] += 1
+                        if task_id in tasks["MAPPED"]:
+                            del tasks["MAPPED"][task_id]
+                            tasks["MAPPED"]["total"] -= 1
+                            if dto.mapped > 0:
+                                dto.mapped -= 1
+                        if task_id in tasks["VALIDATED"]:
+                            del tasks["VALIDATED"][task_id]
+                            tasks["VALIDATED"]["total"] -= 1
+                            if dto.validated > 0:
+                                dto.validated -= 1
 
-                cumulative_mapped = len(tasks_mapped)
-                cumulative_validated = len(tasks_validated)
-
+                cumulative_mapped = tasks["MAPPED"]["total"]
+                cumulative_validated = tasks["VALIDATED"]["total"]
                 dto.cumulative_mapped = cumulative_mapped
                 dto.cumulative_validated = cumulative_validated
             dates_list.append(dto)
