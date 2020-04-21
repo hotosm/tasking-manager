@@ -165,7 +165,7 @@ export default defineMessages({
   },
   about: {
     id: 'pages.about.title',
-    defaultMessage: 'About Tasking Manager',
+    defaultMessage: 'About',
   },
   aboutIntro: {
     id: 'pages.about.intro',
@@ -449,7 +449,7 @@ export default defineMessages({
   tmDescription2: {
     id: 'pages.about.description2',
     defaultMessage:
-      'This approach allows the distribution of tasks to many individual mappers. It also allows monitoring of project progress and helps to improve the consistency of the mapping (e.g. elements to cover, specific tags to use, etc.',
+      'This approach allows the distribution of tasks to many individual mappers. It also allows monitoring of project progress and helps to improve the consistency of the mapping (e.g. elements to cover, specific tags to use, etc.)',
   },
   osmDescription: {
     id: 'pages.about.OpenStreetMap.description',
@@ -468,7 +468,7 @@ export default defineMessages({
   flossDescription: {
     id: 'pages.about.floss.description',
     defaultMessage:
-      'The Tasking Manager is Free and Open Source software developed by {hotLink}. The application’s code can be accessed through {code}, where you can report issues and make contributions.',
+      'The Tasking Manager is Free and Open Source software developed by the {hotLink}. The application’s code can be accessed through {code}, where you can report issues and make contributions.',
   },
   editProject: {
     id: 'pages.edit_project.title',

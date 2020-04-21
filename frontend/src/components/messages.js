@@ -19,19 +19,19 @@ export default defineMessages({
   definition: {
     id: 'foooter.definition',
     defaultMessage:
-      'Tasking Manager is a platform where individuals can support humanitarian response by mapping in OpenStreetMap.',
+      'Tasking Manager is a platform where individuals can team up for mapping in OpenStreetMap',
   },
   credits: {
     id: 'footer.credits',
-    defaultMessage: 'Made by HOTOSM Community. Get in touch.',
-  },
-  feedback: {
-    id: 'footer.feedback',
-    defaultMessage: 'Give feedback on GitHub.',
+    defaultMessage: 'Free and Open Source Software brought to you by the Humanitarian OpenStreetMap Team.',
   },
   learn: {
     id: 'footer.learn',
     defaultMessage: 'Learn more about OpenStreetMap.',
+  },
+  privacyPolicy: {
+    id: 'footer.privacyPolicy',
+    defaultMessage: 'Privacy Policy',
   },
   mappingLevelALL: {
     id: 'mapping.level.all',
