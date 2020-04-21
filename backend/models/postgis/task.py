@@ -955,8 +955,6 @@ class Task(db.Model):
                      group by u.username, u.mapping_level, u.date_registered, u.last_validation_date"""
 
         results = db.engine.execute(text(sql), project_id=project_id)
-        if results.rowcount == 0:
-            raise NotFound()
 
         mapped_tasks_dto = MappedTasks()
         for row in results:
