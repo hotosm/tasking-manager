@@ -100,3 +100,7 @@ class EnvironmentConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_POOL_SIZE = 10
     SQLALCHEMY_MAX_OVERFLOW = 10
+
+    # Image upload Api
+    IMAGE_UPLOAD_API_KEY = os.getenv("TM_IMAGE_UPLOAD_API_KEY", None)
+    IMAGE_UPLOAD_API_URL = os.getenv("TM_IMAGE_UPLOAD_API_URL", None)
