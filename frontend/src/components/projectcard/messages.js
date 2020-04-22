@@ -58,7 +58,7 @@ export default defineMessages({
   },
   editProject: {
     id: 'project.card.edit_project.button',
-    defaultMessage: 'Edit project',
+    defaultMessage: 'Edit',
   },
   projectPage: {
     id: 'project.card.project_page.button',
@@ -66,6 +66,6 @@ export default defineMessages({
   },
   projectTasks: {
     id: 'project.card.project_tasks.button',
-    defaultMessage: 'Go to tasks',
+    defaultMessage: 'Tasks',
   },
 });
