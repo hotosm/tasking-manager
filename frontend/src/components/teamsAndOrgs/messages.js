@@ -8,6 +8,10 @@ export default defineMessages({
     id: 'management.messages.notAllowed',
     defaultMessage: 'You are not allowed to manage organizations.',
   },
+  imageUploadFailed: {
+    id: 'management.messages.imageUpload.error',
+    defaultMessage: 'The image upload failed.',
+  },
   managers: {
     id: 'management.fields.managers',
     defaultMessage: 'Managers',
