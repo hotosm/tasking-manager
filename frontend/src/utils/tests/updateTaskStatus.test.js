@@ -1,4 +1,4 @@
-import { updateTasksStatus, getActivityStatus } from '../updateTasksStatus';
+import { updateTasksStatus, getActivityForTask } from '../updateTasksStatus';
 
 it('test update tasks geojson with new status from activities', () => {
   const tasks = {
@@ -64,12 +64,12 @@ it('test update tasks geojson with new status from activities', () => {
   };
 
   expect(
-    updateTasksStatus(tasks, activities).features.filter(i => i.properties.taskStatus === 'READY')
+    updateTasksStatus(tasks, activities).features.filter((i) => i.properties.taskStatus === 'READY')
       .length,
   ).toEqual(1);
   expect(
     updateTasksStatus(tasks, activities).features.filter(
-      i => i.properties.taskStatus === 'MAPPED' && i.properties.taskId === 1,
+      (i) => i.properties.taskStatus === 'MAPPED' && i.properties.taskId === 1,
     ).length,
   ).toEqual(1);
 });
@@ -77,11 +77,18 @@ it('test update tasks geojson with new status from activities', () => {
 it('test getActivityStatus', () => {
   const activities = {
     activity: [
-      { taskId: 1, taskStatus: 'MAPPED', actionDate: null },
+      {
+        taskId: 1,
+        taskStatus: 'MAPPED',
+        actionDate: '2019-08-27T12:36:21.281426',
+        actionBy: 'test',
+      },
       { taskId: 2, taskStatus: 'READY', actionDate: null },
     ],
   };
-  expect(getActivityStatus(activities, 1)).toEqual('MAPPED');
-  expect(getActivityStatus(activities, 2)).toEqual('READY');
-  expect(getActivityStatus(activities, 42)).toEqual(null);
+  expect(getActivityForTask(activities, 1).taskStatus).toEqual('MAPPED');
+  expect(getActivityForTask(activities, 1).actionDate).toEqual('2019-08-27T12:36:21.281426');
+  expect(getActivityForTask(activities, 1).actionBy).toEqual('test');
+  expect(getActivityForTask(activities, 2).taskStatus).toEqual('READY');
+  expect(getActivityForTask(activities, 42)).toBeFalsy();
 });
