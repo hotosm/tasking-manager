@@ -585,6 +585,7 @@
   "project.permissions.error.userIsNotValidationTeamMember": "You need to be member of one of the validation teams to be able to validate this project.",
   "project.permissions.error.userIsNotMappingTeamMember": "You need to be member of one of the mapping teams to be able to map this project.",
   "management.messages.notAllowed": "You are not allowed to manage organizations.",
+  "management.messages.imageUpload.error": "The image upload failed.",
   "management.fields.managers": "Managers",
   "management.link.manage": "Manage {entity}",
   "management.members": "Members",
