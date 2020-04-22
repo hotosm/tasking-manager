@@ -98,7 +98,7 @@ export function ProjectEdit({ id }) {
   }, [id]);
 
   if (!token) {
-    return <Redirect to={'login'} noThrow />;
+    return <Redirect to={'/login'} noThrow />;
   }
 
   if (projectInfo.projectId && !userCanEditProject) {
