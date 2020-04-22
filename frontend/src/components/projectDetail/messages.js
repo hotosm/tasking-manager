@@ -8,6 +8,18 @@ export default defineMessages({
     id: 'project.detail.teams.empty',
     defaultMessage: "This project doesn't have any teams associated with.",
   },
+  coordination: {
+    id: 'project.detail.coordination',
+    defaultMessage: 'Coordination',
+  },
+  projectCoordination: {
+    id: 'project.detail.coordination.description',
+    defaultMessage: 'This project is coordinated by {organisation} and was created by {user}.',
+  },
+  createdBy: {
+    id: 'project.detail.createdBy',
+    defaultMessage: 'Project created by {user}.',
+  },
   projectTotalContributors: {
     id: 'project.detail.contributorCount',
     defaultMessage: '{number} total contributors',

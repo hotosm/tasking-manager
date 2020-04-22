@@ -357,10 +357,6 @@ export default defineMessages({
     id: 'project.tasks.action.confirmation.no',
     defaultMessage: 'No',
   },
-  incomplete: {
-    id: 'project.tasks.action.options.mapping_incomplete',
-    defaultMessage: "Can't finish this task, set back to ready for mapping",
-  },
   mappedQuestion: {
     id: 'project.tasks.action.options.mapped_question',
     defaultMessage: 'Is this task completely mapped?',
