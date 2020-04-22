@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=notify
-; EnvironmentFile=/tasking-manager/localenv.conf
+EnvironmentFile=/opt/tasking-manager.env
 
 ; Should run as root (initially)
 User=root
