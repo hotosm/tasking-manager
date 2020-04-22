@@ -65,7 +65,7 @@ export function ProjectCard({
   showBottomButtons = false,
 }: Object) {
   const [isHovered, setHovered] = useState(false);
-  const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
+  const linkCombo = 'link pa2 f6 ba b--grey-light di w-50 truncate tc';
 
   const showBottomButtonsHovered = showBottomButtons === true ? isHovered : false;
   const bottomButtonSpacer = showBottomButtons ? 'pt3 pb4' : 'pv3';
@@ -74,14 +74,11 @@ export function ProjectCard({
     <div className="absolute bottom-0 w-100 pr3">
       <Link
         to={`/manage/projects/${projectId}`}
-        className={`fl f6 di w-50 tc bg-grey-light blue-grey bn ${linkCombo}`}
+        className={`fl bg-grey-light blue-grey bn ${linkCombo}`}
       >
         <FormattedMessage {...messages.editProject} />
       </Link>
-      <Link
-        to={`/projects/${projectId}/tasks`}
-        className={`fr f6 di w-50 tc bg-red white bn ${linkCombo}`}
-      >
+      <Link to={`/projects/${projectId}/tasks`} className={`fr bg-red white bn ${linkCombo}`}>
         <FormattedMessage {...messages.projectTasks} />
       </Link>
     </div>
