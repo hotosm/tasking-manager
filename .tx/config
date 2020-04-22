@@ -20,6 +20,7 @@ trans.ml = frontend/src/locales/ml.json
 trans.nl_NL = frontend/src/locales/nl_NL.json
 trans.pt = frontend/src/locales/pt.json
 trans.pt_BR = frontend/src/locales/pt_BR.json
+trans.sv = frontend/src/locales/sv.json
 trans.sw = frontend/src/locales/sw.json
 trans.tl = frontend/src/locales/tl.json
 trans.tr = frontend/src/locales/tr.json

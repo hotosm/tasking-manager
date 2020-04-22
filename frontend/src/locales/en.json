@@ -539,7 +539,6 @@
   "project.tasks.action.proceed.confirmation": "Do want to proceed?",
   "project.tasks.action.confirmation.yes": "Yes",
   "project.tasks.action.confirmation.no": "No",
-  "project.tasks.action.options.mapping_incomplete": "Can't finish this task, set back to ready for mapping",
   "project.tasks.action.options.mapped_question": "Is this task completely mapped?",
   "project.tasks.action.options.validated_question": "Is this task well mapped?",
   "project.tasks.action.options.complete": "Yes",
