@@ -19,6 +19,7 @@ import ml from '../locales/ml.json';
 import nl_NL from '../locales/nl_NL.json';
 import pt from '../locales/pt.json';
 import pt_BR from '../locales/pt_BR.json';
+import sv from '../locales/sv.json';
 import sw from '../locales/sw.json';
 import tl from '../locales/tl.json';
 import tr from '../locales/tr.json';
@@ -46,6 +47,7 @@ const translatedMessages = {
   nl: nl_NL,
   pt: pt,
   'pt-BR': pt_BR,
+  sv: sv,
   sw: sw,
   tl: tl,
   tr: tr,
@@ -76,20 +78,21 @@ const supportedLocales = [
   { value: 'es', label: 'Español' },
   // { value: 'fa-IR', label: 'فارسی' },
   { value: 'fr', label: 'Français' },
-  // { value: 'he', label: 'עברית' },
+  { value: 'he', label: 'עברית' },
   { value: 'hu', label: 'Magyar' },
   { value: 'id', label: 'Indonesia' },
-  { value: 'it', label: 'Italiano' },
+  // { value: 'it', label: 'Italiano' },
   { value: 'ja', label: '日本語' },
   // { value: 'mg', label: 'Malagasy' },
   // { value: 'ml', label: 'Malayalam' },
   { value: 'nl', label: 'Nederlands' },
   { value: 'pt', label: 'Português' },
   { value: 'pt-BR', label: 'Português (Brasil)' },
+  { value: 'sv', label: 'Svenska' },
   { value: 'sw', label: 'Kiswahili' },
   // { value: 'tl', label: 'Filipino (Tagalog)' },
   { value: 'tr', label: 'Türkçe' },
-  { value: 'uk', label: 'Українська' },
+  // { value: 'uk', label: 'Українська' },
   // { value: 'zh-TW', label: '中国台湾' },
 ];
 
