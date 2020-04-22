@@ -84,6 +84,14 @@ const Parameters = {
     Type: 'String',
     Default: 'INFO'
   },
+  TaskingManagerImageUploadAPIURL: {
+    Description: 'URL for image upload service',
+    Type: 'String'
+  },
+  TaskingManagerImageUploadAPIKey: {
+    Description: 'API Key for image upload service',
+    Type: 'String'
+  },
   TaskingManagerSMTPHost: {
     Description: 'TM_SMTP_HOST environment variable',
     Type: 'String'
@@ -354,6 +362,8 @@ const Resources = {
         cf.sub('export TM_EMAIL_CONTACT_ADDRESS="${TaskingManagerEmailContactAddress}"'),
         cf.sub('export TM_LOG_LEVEL="${TaskingManagerLogLevel}"'),
         cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
+        cf.sub('export TM_IMAGE_UPLOAD_API_URL="${TaskingManagerImageUploadAPIURL}"'),
+        cf.sub('export TM_IMAGE_UPLOAD_API_KEY="${TaskingManagerImageUploadAPIKey}"'),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
         './venv/bin/python3.6 manage.py db upgrade',
