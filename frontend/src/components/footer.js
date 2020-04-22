@@ -36,7 +36,7 @@ export function Footer({ location }: Object) {
     return <></>;
   } else {
     return (
-      <footer className="ph3 ph6-l pv4 white bg-blue-dark">
+      <footer className="ph3 ph6-l pb5 pt4 white bg-blue-dark">
         <div className="cf">
           <div className="pt2 w-50-l w-100 fl mb2 f3-l lh-title">
             <FormattedMessage {...messages.definition} />
@@ -46,7 +46,7 @@ export function Footer({ location }: Object) {
               <Link
                 key={n}
                 to={item.link}
-                className="link barlow-condensed white f5 ttu di-l dib pt3 pt3-m pl4-l w-100 w-auto-l"
+                className="link barlow-condensed white f5 ttu di-l dib pt3 pt3-m ml4-l w-100 w-auto-l"
               >
                 <FormattedMessage {...item.label} />
               </Link>
@@ -70,7 +70,7 @@ export function Footer({ location }: Object) {
               <FormattedMessage {...messages.credits} />
             </Link>
             <div className="pt2 f7 lh-title">
-              <a href={ORG_PRIVACY_POLICY_URL} className="link white">
+              <a href={`https://${ORG_PRIVACY_POLICY_URL}`} className="link white">
                 <FormattedMessage {...messages.privacyPolicy} />
               </a>
             </div>
