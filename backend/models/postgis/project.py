@@ -996,7 +996,7 @@ class Project(db.Model):
         return self, base_dto
 
     def as_dto_for_mapping(
-        self, authenticated_user_id: int=None, locale: str = "en", abbrev: bool = True
+        self, authenticated_user_id: int = None, locale: str = "en", abbrev: bool = True
     ) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
         # Check for project visibility settings
