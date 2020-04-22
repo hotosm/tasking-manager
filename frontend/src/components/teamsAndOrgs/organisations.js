@@ -227,7 +227,7 @@ export function OrgInformation(props) {
                     alt={fieldProps.input.value}
                     className="h3 db pt2"
                   />
-                  {uploadError && <pre>{uploadError}</pre>}
+                  {uploadError && <FormattedMessage {...messages.imageUploadFailed} />}
                 </ReactPlaceholder>
               </>
             )}
