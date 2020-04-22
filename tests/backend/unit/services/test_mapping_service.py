@@ -184,8 +184,11 @@ class TestMappingService(unittest.TestCase):
         self.assertEqual(test_task.task_history[0].action_text, TaskStatus.MAPPED.name)
         self.assertEqual(TaskStatus.MAPPED.name, test_task.task_status)
 
+    @patch.object(ProjectService, "is_user_permitted_to_validate")
     @patch.object(TaskHistory, "get_last_action")
-    def test_task_is_undoable_if_last_change_made_by_you(self, last_action):
+    def test_task_is_undoable_if_last_change_made_by_you(
+        self, last_action, mock_project
+    ):
         # Arrange
         task_history = TaskHistory(1, 1, 1)
         task_history.user_id = 1
@@ -196,13 +199,17 @@ class TestMappingService(unittest.TestCase):
         task.mapped_by = 1
 
         # Act
+        mock_project.return_value = True
         is_undoable = MappingService._is_task_undoable(1, task)
 
         # Assert
         self.assertTrue(is_undoable)
 
+    @patch.object(ProjectService, "is_user_permitted_to_validate")
     @patch.object(TaskHistory, "get_last_action")
-    def test_task_is_not_undoable_if_last_change_not_made_by_you(self, last_action):
+    def test_task_is_not_undoable_if_last_change_not_made_by_you(
+        self, last_action, mock_project
+    ):
         # Arrange
         task_history = TaskHistory(1, 1, 1)
         task_history.user_id = 2
@@ -213,6 +220,7 @@ class TestMappingService(unittest.TestCase):
         task.mapped_by = 1
 
         # Act
+        mock_project.return_value = False
         is_undoable = MappingService._is_task_undoable(1, task)
 
         # Assert
