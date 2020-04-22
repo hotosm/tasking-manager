@@ -146,7 +146,6 @@ export function CreateTeam() {
     setMembers(members.filter((i) => i.username !== username));
   };
   const createTeam = (payload) => {
-    payload.organisation_id = payload.organisation;
     delete payload['organisation'];
     pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST').then((result) => {
       managers
@@ -205,7 +204,7 @@ export function CreateTeam() {
               </div>
               <div className="w-20-l w-40-m w-50 h-100 fr">
                 <FormSubmitButton
-                  disabled={submitting || pristine || !values.organisation || !values.visibility}
+                  disabled={submitting || pristine || !values.organisation_id || !values.visibility}
                   className="w-100 h-100 bg-red white"
                   disabledClassName="bg-red o-50 white w-100 h-100"
                 >
@@ -293,7 +292,7 @@ export function EditTeam(props) {
             description: team.description,
             inviteOnly: team.inviteOnly,
             visibility: team.visibility,
-            organisation: team.organisation,
+            organisation_id: team.organisation_id,
           }}
           updateTeam={updateTeam}
           disabledForm={error || loading}
