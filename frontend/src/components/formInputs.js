@@ -51,15 +51,19 @@ export function OrganisationSelect({ className }: Object) {
         .catch((e) => console.log(e));
     }
   }, [userDetails, token]);
+  const getOrgPlaceholder = (id) => {
+    const orgs = organisations.filter((org) => org.organisationId === id);
+    return orgs.length ? orgs[0].name : <FormattedMessage {...messages.selectOrganisation} />;
+  };
   return (
-    <Field name="organisation" className={className} required>
+    <Field name="organisation_id" className={className} required>
       {(props) => (
         <Select
           isClearable={false}
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.organisationId}
           options={organisations}
-          placeholder={props.input.value || <FormattedMessage {...messages.selectOrganisation} />}
+          placeholder={getOrgPlaceholder(props.input.value)}
           onChange={(value) => props.input.onChange(value.organisationId || '')}
           className="z-5"
         />
