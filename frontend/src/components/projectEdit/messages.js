@@ -44,7 +44,7 @@ export default defineMessages({
   },
   selectCampaign: {
     id: 'projects.formInputs.campaign.select',
-    defaultMessage: 'Select campaign',
+    defaultMessage: 'Select campaigns',
   },
   permissions_ANY: {
     id: 'projects.formInputs.permissions.any',
