@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Popup from 'reactjs-popup';
 import ReactPlaceholder from 'react-placeholder';
@@ -6,10 +6,12 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
+import { useMemoCompare } from '../../hooks/UseMemoCompare';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { getTaskAction } from '../../utils/projectPermissions';
 import { getRandomArrayItem } from '../../utils/random';
 import { updateTasksStatus } from '../../utils/updateTasksStatus';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { TasksMap } from './map.js';
 import { TaskList } from './taskList';
 import { TasksMapLegend } from './legend';
@@ -42,7 +44,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   const user = useSelector((state) => state.auth.get('userDetails'));
   const lockedTasks = useSelector((state) => state.lockedTasks);
   const dispatch = useDispatch();
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState();
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
   const [selected, setSelectedTasks] = useState([]);
@@ -64,6 +66,8 @@ export function TaskSelection({ project, type, loading }: Object) {
     `projects/${project.projectId}/activities/latest/`,
     60000,
   );
+
+  // get teams the user is part of
   /* eslint-disable-next-line */
   const [userTeamsError, userTeamsLoading, userTeams] = useFetch(
     `teams/?member=${user.id}`,
@@ -80,10 +84,43 @@ export function TaskSelection({ project, type, loading }: Object) {
     project.projectId !== undefined,
   );
 
+  // initialize the tasks with the project data and the initialActivities
   useEffect(() => {
-    setTasks(project.tasks);
-  }, [project]);
+    if (project && project.tasks && initialActivities && initialActivities.activity) {
+      setTasks(updateTasksStatus(project.tasks, initialActivities));
+    }
+  }, [project, initialActivities]);
 
+  const latestTasks = useRef(tasks);
+  // it's needed to avoid the following useEffect to be triggered every time the tasks change
+  useEffect(() => {
+    latestTasks.current = tasks;
+  });
+  // refresh the task status on the map each time the activities are updated
+  useEffect(() => {
+    if (latestTasks.current && activities) {
+      setTasks(updateTasksStatus(latestTasks.current, activities));
+    }
+  }, [latestTasks, activities]);
+
+  // we use this in order to only trigger the following useEffect if there are
+  // new tasks on activities endpoint data
+  const latestActivities = useMemoCompare(
+    activities,
+    (prev) => prev && prev.activity.length === activities.activity.length,
+  );
+
+  // update tasks geometry if there are new tasks (caused by task splits)
+  useEffect(() => {
+    if (latestActivities && latestActivities.activity) {
+      fetchLocalJSONAPI(`projects/${project.projectId}/tasks/`).then((res) =>
+        setTasks(updateTasksStatus(res, latestActivities)),
+      );
+    }
+  }, [latestActivities, project.projectId]);
+
+  // show the tasks tab when the page loads if the user has already contributed
+  // to the project. If no, show the intructions tab.
   useEffect(() => {
     if (contributions && contributions.userContributions) {
       const currentUserContributions = contributions.userContributions.filter(
@@ -105,14 +142,14 @@ export function TaskSelection({ project, type, loading }: Object) {
         .filter((i) => i.taskStatus.startsWith('LOCKED_FOR_'))
         .filter((i) => i.actionBy === user.username);
       if (lockedByCurrentUser.length) {
-        const tasks = lockedByCurrentUser.map((i) => i.taskId);
-        setSelectedTasks(tasks);
+        const userLockedTasks = lockedByCurrentUser.map((i) => i.taskId);
+        setSelectedTasks(userLockedTasks);
         setTaskAction(
           lockedByCurrentUser[0].taskStatus === 'LOCKED_FOR_MAPPING'
             ? 'resumeMapping'
             : 'resumeValidation',
         );
-        dispatch({ type: 'SET_LOCKED_TASKS', tasks: tasks });
+        dispatch({ type: 'SET_LOCKED_TASKS', tasks: userLockedTasks });
         dispatch({ type: 'SET_PROJECT', project: project.projectId });
         dispatch({ type: 'SET_TASKS_STATUS', status: lockedByCurrentUser[0].taskStatus });
       } else {
@@ -131,13 +168,6 @@ export function TaskSelection({ project, type, loading }: Object) {
     user,
     userTeams.teams,
   ]);
-
-  // refresh the task status on the map each time the activities are updated
-  useEffect(() => {
-    if (project && project.tasks && activities) {
-      setTasks(updateTasksStatus(project.tasks, activities));
-    }
-  }, [project, activities]);
 
   // chooses a random task to the user
   useEffect(() => {
@@ -237,7 +267,7 @@ export function TaskSelection({ project, type, loading }: Object) {
                   {activeSection === 'tasks' ? (
                     <TaskList
                       project={project}
-                      tasks={activities || initialActivities}
+                      tasks={tasks}
                       selectTask={selectTask}
                       selected={selected}
                       setZoomedTaskId={setZoomedTaskId}

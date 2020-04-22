@@ -10,7 +10,7 @@ import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
-import { compareLastUpdate } from '../../utils/sorting';
+import { compareHistoryLastUpdate } from '../../utils/sorting';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Button, CustomButton } from '../button';
@@ -174,7 +174,7 @@ export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) =>
         }
       });
       setLastActivityDate(
-        history.taskHistory.sort(compareLastUpdate)[history.taskHistory.length - 1],
+        history.taskHistory.sort(compareHistoryLastUpdate)[history.taskHistory.length - 1],
       );
     }
     setContributors(users);
