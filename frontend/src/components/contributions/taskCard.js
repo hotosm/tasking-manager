@@ -94,13 +94,8 @@ export function TaskCard({
               modal
               closeOnDocumentClick
             >
-              {close => (
-                <TaskActivity
-                  taskId={taskId}
-                  projectName={projectId} // add project name when we have that data available on the API
-                  projectId={projectId}
-                  close={close}
-                />
+              {(close) => (
+                <TaskActivity taskId={taskId} project={{ projectId: projectId }} close={close} />
               )}
             </Popup>
             {isHovered &&
