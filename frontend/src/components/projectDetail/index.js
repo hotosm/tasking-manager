@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
@@ -178,6 +179,11 @@ export const ProjectDetail = (props) => {
   const htmlDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
   const h2Classes = 'pl4 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark';
+  const userLink = (
+    <Link to={`/users/${props.project.author}`} className="link blue-dark underline">
+      {props.project.author}
+    </Link>
+  );
 
   return (
     <div className={`${props.className || 'bg-white blue-dark'}`}>
@@ -212,21 +218,40 @@ export const ProjectDetail = (props) => {
         className="pv2 ph4 w-60-l w-80-m w-100 lh-title markdown-content"
         dangerouslySetInnerHTML={htmlDescription}
       />
-      <a href="#author" style={{ visibility: 'hidden' }} name="author">
-        <FormattedMessage {...messages.author} />
+      <a href="#coordination" style={{ visibility: 'hidden' }} name="coordination">
+        <FormattedMessage {...messages.coordination} />
       </a>
       <h3 className={`${h2Classes}`}>
-        <FormattedMessage {...messages.author} />
+        <FormattedMessage {...messages.coordination} />
       </h3>
       <div className="cf db mb3 ph4">
-        {props.project.author && (
-          <UserAvatar
-            username={props.project.author}
-            size="large"
-            colorClasses="white bg-red"
-          />
+        {props.project.organisationName && (
+          <>
+            <p>
+              <FormattedMessage
+                {...messages.projectCoordination}
+                values={{
+                  organisation: <span className="fw6">{props.project.organisationName}</span>,
+                  user: userLink,
+                }}
+              />
+            </p>
+            <img
+              className="w5 mt3 pa1 z-1"
+              src={props.project.organisationLogo}
+              alt={props.project.organisationName}
+            />
+          </>
         )}
-      </div>     
+        {!props.project.organisationName && props.project.author && (
+          <>
+            <p>
+              <FormattedMessage {...messages.createdBy} values={{ user: userLink }} />
+            </p>
+            <UserAvatar username={props.project.author} size="large" colorClasses="white bg-red" />
+          </>
+        )}
+      </div>
       <a href="#teams" style={{ visibility: 'hidden' }} name="teams">
         <FormattedMessage {...messages.teamsAndPermissions} />
       </a>
