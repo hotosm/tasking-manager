@@ -159,7 +159,7 @@ export function TeamInformation(props) {
         <label className={labelClasses}>
           <FormattedMessage {...messages.organisation} />
         </label>
-        <OrganisationSelect name="organisation" />
+        <OrganisationSelect name="organisation_id" />
       </div>
       <div className="cf pt1">
         <label className={labelClasses}>
