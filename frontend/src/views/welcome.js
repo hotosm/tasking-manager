@@ -85,6 +85,6 @@ export function Welcome() {
       </div>
     );
   } else {
-    return <Redirect to={'login'} noThrow />;
+    return <Redirect to={'/login'} noThrow />;
   }
 }

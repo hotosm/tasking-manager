@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Redirect } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -180,10 +179,6 @@ export const UsersTable = ({ filters, setFilters }) => {
 
     fetchUsers(urlFilters);
   }, [filters, token, status]);
-
-  if (!token) {
-    return <Redirect to={'login'} noThrow />;
-  }
 
   if (response === null) {
     return null;

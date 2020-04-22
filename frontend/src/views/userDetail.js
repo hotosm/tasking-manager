@@ -41,7 +41,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
   }, [token, username]);
 
   if (!token) {
-    return <Redirect to={'login'} noThrow />;
+    return <Redirect to={'/login'} noThrow />;
   }
 
   const blockClass = 'w-33-l w-50-m w-100 fl pa2';

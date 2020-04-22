@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -26,9 +27,9 @@ export function QuickstartPage() {
       message: 'quickstartStep1',
       values: {
         tmHomepage: (
-          <a className="link red fw5" href="/">
+          <Link className="link red fw5" to="/">
             Tasking Manager
-          </a>
+          </Link>
         ),
         signUp: (
           <span className="b bg-grey-light">
@@ -58,9 +59,9 @@ export function QuickstartPage() {
       img: QuickstartStep4Picture,
       values: {
         tmHomepage: (
-          <a className="link red fw5" href="/">
+          <Link className="link red fw5" to="/">
             Tasking Manager
-          </a>
+          </Link>
         ),
         logIn: (
           <span className="b bg-grey-light">
@@ -108,9 +109,9 @@ export function QuickstartPage() {
       img: QuickstartStep8Picture,
       values: {
         learnPage: (
-          <a className="link red fw5" href="/learn">
+          <Link className="link red fw5" to="/learn">
             <FormattedMessage {...messages.learnPages} />
-          </a>
+          </Link>
         ),
         submitTask: (
           <span className="b bg-grey-light">

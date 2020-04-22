@@ -68,8 +68,8 @@ const AlertMessage = ({ err }) => {
   }
 };
 
-const ProjectCreate = props => {
-  const token = useSelector(state => state.auth.get('token'));
+const ProjectCreate = (props) => {
+  const token = useSelector((state) => state.auth.get('token'));
   // eslint-disable-next-line
   const [cloneFromId, setCloneFromId] = useQueryParam('cloneFrom', NumberParam);
   const [step, setStep] = useState(1);
@@ -77,7 +77,7 @@ const ProjectCreate = props => {
   const [err, setErr] = useState({ error: false, message: null });
 
   const fetchCloneProjectInfo = useCallback(
-    async cloneFromId => {
+    async (cloneFromId) => {
       const res = await fetchLocalJSONAPI(`projects/${cloneFromId}/`);
       setCloneProjectName(res.projectInfo.name);
     },
@@ -128,7 +128,7 @@ const ProjectCreate = props => {
   });
 
   if (!token) {
-    return <Redirect to={'login'} noThrow />;
+    return <Redirect to={'/login'} noThrow />;
   }
 
   const renderCurrentStep = () => {

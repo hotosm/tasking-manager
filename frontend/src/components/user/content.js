@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from '@reach/router';
 import { FormattedMessage, FormattedNumber, FormattedRelativeTime } from 'react-intl';
 import { selectUnit } from '@formatjs/intl-utils';
 import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
@@ -40,7 +41,7 @@ export function APIKeyCard({ token }) {
 }
 
 export function OSMCard({ username }: Object) {
-  const osmUserInfo = useSelector(state => state.auth.get('osm'));
+  const osmUserInfo = useSelector((state) => state.auth.get('osm'));
   const { value, unit } = selectUnit(
     osmUserInfo ? new Date(osmUserInfo.accountCreated) : new Date(),
   );
@@ -128,19 +129,18 @@ export function HelpCard() {
         <FormattedMessage {...messages.helpTitle} />
       </h3>
       <p>
-        <a href="learn" className="link red pr4">
+        <Link to={'/learn'} className="link red mr4">
           <FormattedMessage {...messages.howToMap} />
-        </a>
-        <a
-          href="quickstart"
-          className="link red pr4">
+        </Link>
+        <Link to={'/learn/quickstart'} className="link red mr4">
           <FormattedMessage {...messages.quickStart} />
-        </a>
+        </Link>
         <a
           href="https://learnosm.org/en/beginner/start-osm/"
-          target="_blank" 
+          target="_blank"
           rel="noopener noreferrer"
-          className="link red">
+          className="link red"
+        >
           <FormattedMessage {...messages.whatIsOSM} />
         </a>
       </p>
