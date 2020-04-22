@@ -30,6 +30,7 @@ from backend.models.dtos.project_dto import (
     ProjectTeamDTO,
 )
 from backend.models.dtos.interests_dto import InterestDTO
+
 from backend.models.dtos.tags_dto import TagsDTO
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.custom_editors import CustomEditor

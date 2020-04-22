@@ -152,6 +152,7 @@ class ProjectInfoDTO(Model):
 
 class CustomEditorDTO(Model):
     """ DTO to define a custom editor """
+
     name = StringType(required=True)
     description = StringType()
     url = StringType(required=True)
