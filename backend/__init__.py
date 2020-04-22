@@ -9,6 +9,7 @@ from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
+
 from backend.config import EnvironmentConfig
 
 
@@ -47,7 +48,7 @@ def create_app(env=None):
     app.logger.info(f"Starting up a new Tasking Manager application")
 
     # Connect to database
-    app.logger.debug(f"Connecting to the databse")
+    app.logger.debug(f"Connecting to the database")
     db.init_app(app)
     migrate.init_app(app, db)
 

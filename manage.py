@@ -4,6 +4,7 @@ import warnings
 import base64
 import json
 import csv
+import datetime
 
 from flask_migrate import MigrateCommand
 from flask_script import Manager
@@ -14,6 +15,11 @@ from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
 from backend.models.postgis.utils import NotFound
+from backend.models.postgis.task import Task, TaskHistory
+
+from sqlalchemy import func
+import atexit
+from apscheduler.scheduler import Scheduler
 
 
 # Load configuration from file into environment
@@ -47,6 +53,36 @@ manager = Manager(application)
 
 # Enable db migrations to be run via the command line
 manager.add_command("db", MigrateCommand)
+
+# Setup a background cron job
+cron = Scheduler(daemon=True)
+# Initiate the background thread
+cron.start()
+application.logger.debug("Initiated background thread to auto unlock tasks")
+
+# Job runs once every 2 hours
+@cron.interval_schedule(hours=2)
+@manager.command
+def auto_unlock_tasks():
+    with application.app_context():
+        # Identify distinct project IDs that were touched in the last 2 hours
+        query = (
+            TaskHistory.query.with_entities(TaskHistory.project_id)
+            .filter(
+                func.DATE(TaskHistory.action_date)
+                > datetime.datetime.utcnow() - datetime.timedelta(minutes=130)
+            )
+            .distinct()
+        )
+        projects = query.all()
+        # For each project update task history for tasks that were not manually unlocked
+        for project in projects:
+            project_id = project[0]
+            Task.auto_unlock_tasks(project_id)
+
+
+# Shutdown your cron thread when the application is stopped
+atexit.register(lambda: cron.shutdown(wait=False))
 
 
 @manager.option("-u", "--user_id", help="Test User ID")
