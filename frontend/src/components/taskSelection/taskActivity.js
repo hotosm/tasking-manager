@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { viewport } from '@mapbox/geo-viewport';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { CloseIcon } from '../svgIcons';
-import { useFetch } from '../../hooks/UseFetch';
+import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
+import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
 import { compareLastUpdate } from '../../utils/sorting';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { Button } from '../button';
+import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { UserFetchTextarea } from '../projectDetail/questionsAndComments';
 
@@ -75,7 +77,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
       setHistory(res.taskHistory);
     };
 
-    if (!commentPayload) {
+    if (!commentPayload && projectId && taskId) {
       getTaskInfo();
     }
   }, [projectId, taskId, token, commentPayload]);
@@ -208,7 +210,7 @@ export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) =>
           },
         ]}
         display={<FormattedMessage {...messages.taskData} />}
-        className="blue-dark bg-white mr1 v-mid pv2 ph2 ba b--grey-light link"
+        className="blue-dark bg-white v-mid pv2 ph2 ba b--grey-light link"
       />
     );
   } else {
@@ -216,51 +218,151 @@ export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) =>
   }
 };
 
-export const TaskActivity = ({
-  taskId,
-  projectId,
-  projectName,
-  changesetComment,
-  bbox,
-  close,
-}: Object) => {
+export const TaskActivity = ({ taskId, status, project, bbox, close }: Object) => {
+  const token = useSelector((state) => state.auth.get('token'));
+  const [userCanReset] = useEditProjectAllowed(project);
+  // use it to hide the reset task action button
+  const [resetSuccess, setResetSuccess] = useState(false);
   const [commentPayload, setCommentPayload] = useState(null);
-  // eslint-disable-next-line
-  const [historyError, historyLoading, history] = useFetch(
-    `projects/${projectId}/tasks/${taskId}/`,
-    projectId !== undefined && taskId !== undefined,
-  );
+  useEffect(() => {
+    if (token && project.projectId && taskId) {
+      fetchLocalJSONAPI(`projects/${project.projectId}/tasks/${taskId}/`, token)
+        .then((res) => setCommentPayload(res))
+        .catch((e) => console.log(e));
+    }
+  }, [project.projectId, taskId, token]);
+
+  const resetTask = () => {
+    pushToLocalJSONAPI(
+      `projects/${project.projectId}/tasks/actions/undo-last-action/${taskId}/`,
+      {},
+      token,
+    ).then((res) => {
+      setCommentPayload(res);
+      setResetSuccess(true);
+    });
+  };
 
   return (
     <div className="h-100 bg-white">
-      <div className="w-100 pv3 ph4 blue-dark bg-tan relative">
+      <div className="w-100 pt2 pb3 pl4 pr2 blue-dark bg-tan relative">
         <CloseIcon className="h1 w1 fr pointer" onClick={() => close()} />
-        <p className="ttu f3 pa0 ma0 barlow-condensed b mb2">
-          <FormattedMessage {...messages.taskActivity} />
-        </p>
         <div className="f5 pa0 ma0 cf">
-          <div className="w-80-l w-100 fl pt2">
-            <b>#{taskId}:</b> {projectName}
+          <div className="w-40-l w-100 fl pt2">
+            <p className="ttu f3 pa0 ma0 barlow-condensed b mb2">
+              <FormattedMessage {...messages.taskActivity} />
+            </p>
+            <b>#{taskId}</b>
+            {project.projectInfo && project.projectInfo.name ? `: ${project.projectInfo.name}` : ''}
           </div>
-          <div className="w-20-l w-100 fl tr">
-            {bbox && changesetComment && (
-              <TaskDataDropdown
-                history={commentPayload !== null ? commentPayload : history}
-                bbox={bbox}
-                changesetComment={changesetComment}
-              />
+          <div className="w-60-l w-100 fl tr pr3 pt2">
+            {userCanReset && (
+              <div className="ph1 dib">
+                {['VALIDATED', 'BADIMAGERY'].includes(status) && (
+                  <EditorDropdown bbox={bbox} taskId={taskId} project={project} />
+                )}
+              </div>
+            )}
+            <div className="ph1 dib">
+              {bbox && project.changesetComment && (
+                <TaskDataDropdown
+                  history={commentPayload}
+                  bbox={bbox}
+                  changesetComment={project.changesetComment}
+                />
+              )}
+            </div>
+          </div>
+          <div className="fl tr w-100 pt2 pr3">
+            {userCanReset && ['VALIDATED', 'BADIMAGERY'].includes(status) && !resetSuccess && (
+              <UndoLastTaskAction resetFn={resetTask} status={status} />
             )}
           </div>
         </div>
       </div>
       <div className="blue-dark h5 overflow-scroll">
         <TaskHistory
-          projectId={projectId}
+          projectId={project.projectId}
           taskId={taskId}
-          commentPayload={commentPayload !== null ? commentPayload : history}
+          commentPayload={commentPayload}
         />
       </div>
-      <PostComment projectId={projectId} taskId={taskId} setCommentPayload={setCommentPayload} />
+      <PostComment
+        projectId={project.projectId}
+        taskId={taskId}
+        setCommentPayload={setCommentPayload}
+      />
     </div>
   );
 };
+
+function EditorDropdown({ project, taskId, bbox }: Object) {
+  const locale = useSelector((state) => state.preferences.locale);
+  const loadTaskOnEditor = (arr) => {
+    if (arr[0].value === 'ID') {
+      let windowObjectReference = window.open('', `iD-${project.projectId}-${taskId}`);
+      const { center, zoom } = viewport(bbox, [window.innerWidth, window.innerHeight]);
+      windowObjectReference.location.href = getIdUrl(project, center, zoom, [taskId], locale);
+    }
+    if (arr[0].value === 'JOSM') {
+      sendJosmCommands(project, {}, [taskId], [window.innerWidth, window.innerHeight], bbox);
+    }
+  };
+
+  return (
+    <Dropdown
+      options={[
+        { label: 'iD Editor', value: 'ID' },
+        { label: 'JOSM', value: 'JOSM' },
+      ]}
+      value={[]}
+      display={<FormattedMessage {...messages.openEditor} />}
+      className="bg-white b--grey-light ba pa2 dib v-mid"
+      onChange={loadTaskOnEditor}
+      onAdd={() => {}}
+      onRemove={() => {}}
+    />
+  );
+}
+
+function UndoLastTaskAction({ status, resetFn }: Object) {
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  return (
+    <>
+      {showConfirmation ? (
+        <>
+          <span className="dib pb2">
+            <FormattedMessage {...messages[`confirmRevert${status}`]} />
+            <span className="fw6">
+              {' '}
+              <FormattedMessage {...messages.proceed} />
+            </span>
+          </span>
+          <CustomButton
+            className="mh1 dib link ph3 f6 pv2 bg-white blue-dark ba b--white"
+            onClick={() => setShowConfirmation(false)}
+          >
+            <FormattedMessage {...messages.no} />
+          </CustomButton>
+          <CustomButton
+            className="mh1 dib link ph3 f6 pv2 bg-red white ba b--red"
+            onClick={() => {
+              resetFn();
+              setShowConfirmation(false);
+            }}
+          >
+            <FormattedMessage {...messages.yes} />
+          </CustomButton>
+        </>
+      ) : (
+        <CustomButton
+          className="mh1 link ph3 f6 pv2 bg-red white ba b--red"
+          onClick={() => setShowConfirmation(true)}
+        >
+          <FormattedMessage {...messages[`revert${status}`]} />
+        </CustomButton>
+      )}
+    </>
+  );
+}

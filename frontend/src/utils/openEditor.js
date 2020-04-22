@@ -96,8 +96,8 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, locale = '
   return url;
 }
 
-const sendJosmCommands = async (project, tasks, selectedTasks, windowSize) => {
-  const bbox = getSelectedTasksBBox(tasks, selectedTasks);
+export const sendJosmCommands = async (project, tasks, selectedTasks, windowSize, taskBbox) => {
+  const bbox = taskBbox ? taskBbox : getSelectedTasksBBox(tasks, selectedTasks);
   await loadTasksBoundaries(project, selectedTasks);
   await loadImageryonJosm(project);
   await loadOsmDataToTasks(project, bbox, selectedTasks);
