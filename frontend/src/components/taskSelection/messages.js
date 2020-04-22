@@ -125,6 +125,10 @@ export default defineMessages({
     id: 'project.editor.reload_editor',
     defaultMessage: 'Reload editor',
   },
+  openEditor: {
+    id: 'project.editor.open_editor',
+    defaultMessage: 'Open editor',
+  },
   showSidebar: {
     id: 'project.sidebar.show',
     defaultMessage: 'Show sidebar',
@@ -324,6 +328,34 @@ export default defineMessages({
   editStatus: {
     id: 'project.tasks.action.selection.title',
     defaultMessage: 'Task status',
+  },
+  revertVALIDATED: {
+    id: 'project.tasks.action.invalidate',
+    defaultMessage: 'Request revalidation',
+  },
+  confirmRevertVALIDATED: {
+    id: 'project.tasks.action.invalidate.confirmation',
+    defaultMessage: 'This action will revert the status of the task to "Ready for validation".',
+  },
+  revertBADIMAGERY: {
+    id: 'project.tasks.action.set_as_ready',
+    defaultMessage: 'Request mapping',
+  },
+  confirmRevertBADIMAGERY: {
+    id: 'project.tasks.action.set_as_ready.confirmation',
+    defaultMessage: 'This action will revert the status of the task to "Available for mapping".',
+  },
+  proceed: {
+    id: 'project.tasks.action.proceed.confirmation',
+    defaultMessage: 'Do want to proceed?',
+  },
+  yes: {
+    id: 'project.tasks.action.confirmation.yes',
+    defaultMessage: 'Yes',
+  },
+  no: {
+    id: 'project.tasks.action.confirmation.no',
+    defaultMessage: 'No',
   },
   badImagery: {
     id: 'project.tasks.action.options.bad_imagery',
