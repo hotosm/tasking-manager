@@ -17,8 +17,8 @@ export function useEditProjectAllowed(project) {
     if (organisations && organisations.includes(project.organisation)) setIsAllowed(true);
     // users that are member of a PROJECT_MANAGER team associated with the project can edit it
     const teams = project.teams
-      .filter((team) => team.role === 'PROJECT_MANAGER')
-      .map((team) => team.teamId);
+      ? project.teams.filter((team) => team.role === 'PROJECT_MANAGER').map((team) => team.teamId)
+      : [];
     if (pmTeams && pmTeams.some((item) => teams.includes(item))) {
       setIsAllowed(true);
     }

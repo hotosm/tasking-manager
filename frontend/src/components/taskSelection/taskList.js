@@ -51,7 +51,14 @@ export function TaskStatus({ status, lockHolder }: Object) {
   );
 }
 
-function TaskItem({ data, project, setZoomedTaskId, selectTask, selected = [], geometry }: Object) {
+function TaskItem({
+  data,
+  project,
+  setZoomedTaskId,
+  setActiveTaskModal,
+  selectTask,
+  selected = [],
+}: Object) {
   return (
     <div
       className={`cf db ba br1 mt2 ${
@@ -85,21 +92,12 @@ function TaskItem({ data, project, setZoomedTaskId, selectTask, selected = [], g
       </div>
       <div className="w-10-l w-20 pv3 fl dib blue-light">
         <div className="dib v-mid">
-          <Popup
-            trigger={<ListIcon width="18px" height="18px" className="pointer hover-blue-grey" />}
-            modal
-            closeOnDocumentClick
-          >
-            {(close) => (
-              <TaskActivity
-                taskId={data.taskId}
-                status={data.taskStatus}
-                project={project}
-                bbox={bbox(geometry)}
-                close={close}
-              />
-            )}
-          </Popup>
+          <ListIcon
+            width="18px"
+            height="18px"
+            className="pointer hover-blue-grey"
+            onClick={() => setActiveTaskModal(data.taskId)}
+          />
         </div>
         <div className="pl2 dib v-mid">
           <ZoomPlusIcon
@@ -160,25 +158,30 @@ export function TaskList({
 }: Object) {
   const user = useSelector((state) => state.auth.get('userDetails'));
   const [readyTasks, setTasks] = useState([]);
+  const [activeTaskModal, setActiveTaskModal] = useState(null);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
   const [sortBy, setSortingOption] = useQueryParam('sortBy', StringParam);
   const [statusFilter, setStatusFilter] = useQueryParam('filter', StringParam);
 
   useEffect(() => {
-    if (tasks && tasks.activity) {
-      let newTasks = tasks.activity;
+    if (tasks && tasks.features) {
+      let newTasks = tasks.features;
       if (statusFilter === 'readyToMap') {
-        newTasks = newTasks.filter((task) => ['READY', 'INVALIDATED'].includes(task.taskStatus));
+        newTasks = newTasks.filter((task) =>
+          ['READY', 'INVALIDATED'].includes(task.properties.taskStatus),
+        );
       }
       if (statusFilter === 'readyToValidate') {
-        newTasks = newTasks.filter((task) => ['MAPPED', 'BADIMAGERY'].includes(task.taskStatus));
+        newTasks = newTasks.filter((task) =>
+          ['MAPPED', 'BADIMAGERY'].includes(task.properties.taskStatus),
+        );
       }
       if (textSearch) {
         if (Number(textSearch)) {
           newTasks = newTasks.filter(
             (task) =>
-              task.taskId === Number(textSearch) ||
-              (task.actionBy && task.actionBy.includes(textSearch)),
+              task.properties.taskId === Number(textSearch) ||
+              (task.properties.actionBy && task.properties.actionBy.includes(textSearch)),
           );
         } else {
           const usersTaskIds = userContributions
@@ -187,8 +190,9 @@ export function TaskList({
             .flat();
           newTasks = newTasks.filter(
             (task) =>
-              usersTaskIds.includes(task.taskId) ||
-              (task.actionBy && task.actionBy.toLowerCase().includes(textSearch.toLowerCase())),
+              usersTaskIds.includes(task.properties.taskId) ||
+              (task.properties.actionBy &&
+                task.properties.actionBy.toLowerCase().includes(textSearch.toLowerCase())),
           );
         }
       }
@@ -254,7 +258,7 @@ export function TaskList({
         showLoadingAnimation={true}
         rows={6}
         delay={50}
-        ready={tasks && tasks.activity && tasks.activity.length}
+        ready={tasks && tasks.features && tasks.features.length}
       >
         {readyTasks && (
           <PaginatedList
@@ -264,14 +268,60 @@ export function TaskList({
             }
             ItemComponent={TaskItem}
             setZoomedTaskId={setZoomedTaskId}
+            setActiveTaskModal={setActiveTaskModal}
             selected={selected}
             selectTask={selectTask}
             project={project}
-            tasksGeoJSON={project.tasks}
           />
         )}
       </ReactPlaceholder>
+      {activeTaskModal && (
+        <TaskActivityModal
+          project={project}
+          tasks={readyTasks}
+          taskId={activeTaskModal}
+          setActiveTaskModal={setActiveTaskModal}
+        />
+      )}
     </div>
+  );
+}
+
+function TaskActivityModal({ taskId, setActiveTaskModal, tasks, project }: Object) {
+  const [taskData, setActiveTaskData] = useState();
+  useEffect(() => {
+    const filteredTasks = tasks.filter((task) => task.properties.taskId === taskId);
+    setActiveTaskData(filteredTasks.length ? filteredTasks[0] : null);
+  }, [tasks, taskId]);
+  return (
+    <Popup open modal closeOnDocumentClick onClose={() => setActiveTaskModal(null)}>
+      {(close) => (
+        <>
+          {taskData ? (
+            <TaskActivity
+              taskId={taskId}
+              project={project}
+              status={taskData ? taskData.properties.taskStatus : 'READY'}
+              bbox={taskData ? bbox(taskData.geometry) : ''}
+              close={close}
+            />
+          ) : (
+            <div className="w-100 pa4 blue-dark bg-white">
+              <CloseIcon className="h1 w1 fr pointer" onClick={() => close()} />
+              <h3 className="ttu f3 pa0 ma0 barlow-condensed b mb4">
+                <FormattedMessage {...messages.taskSplitted} />
+              </h3>
+              <p className="pb0">
+                <FormattedMessage
+                  {...messages.taskSplittedDescription}
+                  values={{ id: <b>#{taskId}</b> }}
+                />
+              </p>
+            </div>
+          )}
+        </>
+      )}
+    </Popup>
   );
 }
 
@@ -281,8 +331,8 @@ function PaginatedList({
   pageSize,
   project,
   setZoomedTaskId,
+  setActiveTaskModal,
   selectTask,
-  tasksGeoJSON,
   selected,
 }: Object) {
   const [page, setPage] = useQueryParam('page', NumberParam);
@@ -303,7 +353,8 @@ function PaginatedList({
     if (selected.length === 1) {
       setPage(
         Math.ceil(
-          (latestItems.current.findIndex((task) => task.taskId === selected[0]) + 1) / pageSize,
+          (latestItems.current.findIndex((task) => task.properties.taskId === selected[0]) + 1) /
+            pageSize,
         ),
       );
     }
@@ -320,15 +371,12 @@ function PaginatedList({
         {items.slice(pageSize * ((page || 1) - 1), pageSize * (page || 1)).map((item, n) => (
           <ItemComponent
             key={n}
-            data={item}
+            data={item.properties}
             project={project}
             selectTask={selectTask}
             selected={selected}
-            geometry={
-              tasksGeoJSON.features.filter((task) => task.properties.taskId === item.taskId)[0]
-                .geometry
-            }
             setZoomedTaskId={setZoomedTaskId}
+            setActiveTaskModal={setActiveTaskModal}
           />
         ))}
       </div>

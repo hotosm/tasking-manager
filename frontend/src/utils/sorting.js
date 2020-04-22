@@ -1,9 +1,13 @@
 export function compareTaskId(a, b) {
-  if (a.taskId > b.taskId) return 1;
-  if (b.taskId > a.taskId) return -1;
+  if (a.properties.taskId > b.properties.taskId) return 1;
+  if (b.properties.taskId > a.properties.taskId) return -1;
   return 0;
 }
 
 export function compareLastUpdate(a, b) {
+  return new Date(b.properties.actionDate) - new Date(a.properties.actionDate);
+}
+
+export function compareHistoryLastUpdate(a, b) {
   return new Date(b.actionDate) - new Date(a.actionDate);
 }
