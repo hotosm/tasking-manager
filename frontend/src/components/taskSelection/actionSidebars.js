@@ -112,6 +112,9 @@ export function CompletionTabForMapping({
             <CompletionInstructions setVisibility={setShowHelp} />
           </div>
         )}
+        <p className="b">
+          <FormattedMessage {...messages.mappedQuestion} />
+        </p>
         <p>
           <input
             id="MAPPED"
@@ -122,7 +125,7 @@ export function CompletionTabForMapping({
             onClick={() => setSelectedStatus('MAPPED')}
           />
           <label htmlFor="MAPPED">
-            <FormattedMessage {...messages.completelyMapped} />
+            <FormattedMessage {...messages.complete} />
           </label>
         </p>
         <p>
@@ -255,6 +258,9 @@ export function CompletionTabForValidation({
         <h4 className="ttu blue-grey f5">
           <FormattedMessage {...messages.editStatus} />
         </h4>
+        <p className="b">
+          <FormattedMessage {...messages.validatedQuestion} />
+        </p>
         <p>
           <input
             type="radio"
@@ -264,7 +270,7 @@ export function CompletionTabForValidation({
             onClick={() => setSelectedStatus('VALIDATED')}
           />
           <label for="VALIDATED">
-            <FormattedMessage {...messages.markAsValid} />
+            <FormattedMessage {...messages.complete} />
           </label>
         </p>
         <p>
@@ -276,7 +282,7 @@ export function CompletionTabForValidation({
             onClick={() => setSelectedStatus('INVALIDATED')}
           />
           <label for="INVALIDATED">
-            <FormattedMessage {...messages.markAsInvalid} />
+            <FormattedMessage {...messages.incomplete} />
           </label>
         </p>
       </div>

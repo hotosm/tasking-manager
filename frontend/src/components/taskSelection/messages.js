@@ -357,25 +357,25 @@ export default defineMessages({
     id: 'project.tasks.action.confirmation.no',
     defaultMessage: 'No',
   },
-  badImagery: {
-    id: 'project.tasks.action.options.bad_imagery',
-    defaultMessage: 'It is not possible to map this task',
+  mappedQuestion: {
+    id: 'project.tasks.action.options.mapped_question',
+    defaultMessage: 'Is this task completely mapped?',
+  },
+  validatedQuestion: {
+    id: 'project.tasks.action.options.validated_question',
+    defaultMessage: 'Is this task well mapped?',
+  },
+  complete: {
+    id: 'project.tasks.action.options.complete',
+    defaultMessage: 'Yes',
   },
   incomplete: {
-    id: 'project.tasks.action.options.mapping_incomplete',
-    defaultMessage: "Can't finish this task, set back to ready for mapping",
+    id: 'project.tasks.action.options.incomplete',
+    defaultMessage: 'No',
   },
-  completelyMapped: {
-    id: 'project.tasks.action.options.mapping_complete',
-    defaultMessage: 'Task has been completely mapped',
-  },
-  markAsValid: {
-    id: 'project.tasks.action.options.validate',
-    defaultMessage: 'Validate and mark as finished',
-  },
-  markAsInvalid: {
-    id: 'project.tasks.action.options.invalidate',
-    defaultMessage: 'More mapping is needed',
+  badImagery: {
+    id: 'project.tasks.action.options.bad_imagery',
+    defaultMessage: "The imagery is bad",
   },
   splitTask: {
     id: 'project.tasks.action.split_task',

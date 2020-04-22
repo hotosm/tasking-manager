@@ -482,6 +482,8 @@ class Project(db.Model):
             if self.custom_editor:
                 self.custom_editor.delete()
 
+        self.campaign = [Campaign.query.get(c.id) for c in project_dto.campaigns]
+
         # Update Interests.
         self.interests = []
         if project_dto.interests:
@@ -1044,7 +1046,11 @@ class Project(db.Model):
 
     @staticmethod
     def get_all_countries():
-        query = db.session.query(func.unnest(Project.country)).distinct()
+        query = (
+            db.session.query(func.unnest(Project.country).label("country"))
+            .distinct()
+            .order_by("country")
+        )
         tags_dto = TagsDTO()
         tags_dto.tags = [r[0] for r in query]
         return tags_dto

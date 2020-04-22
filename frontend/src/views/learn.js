@@ -15,6 +15,8 @@ import ValidateStepCollaborate from '../assets/img/icons/validate_step_collabora
 import SelectProject from '../assets/img/icons/map_step_select_project.png';
 import SelectTask from '../assets/img/icons/map_step_select_task.png';
 import MapOSM from '../assets/img/icons/map_step_osm.png';
+import LearnOSMLogo from '../assets/img/learn-osm-logo.svg';
+import QuickstartLogo from '../assets/img/info-logo.svg';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 const LearnNav = ({ sections, section, setSection }) => {
@@ -93,7 +95,9 @@ const Tutorials = ({ tutorials }) => {
         {tutorials.map((v) => {
           return (
             <div style={{ height: '20rem' }} className="w-25 shadow-4 h5 mr4">
-              <div style={{ height: '45%' }} className="bg-tan"></div>
+              <div style={{ height: '45%' }} className="bg-tan flex items-center justify-center">
+                <img src={v.img} alt={v.message} style={{ width: '55%' }} />
+              </div>
               <div className="pa3">
                 <p>
                   <a className="blue-dark b" rel="noopener noreferrer" target="_blank" href={v.url}>
@@ -153,6 +157,7 @@ const LearnToManage = ({ section }) => {
     {
       message: 'learnOSMTutorial',
       url: 'http://nick-tallguy.github.io/en/coordination/tm-admin/',
+      img: LearnOSMLogo,
     },
   ];
 
@@ -227,12 +232,18 @@ const LearnToMap = ({ section }) => {
     {
       message: 'learnQuickStartTutorial',
       url: 'learn/quickstart',
+      img: QuickstartLogo,
     },
     {
       message: 'learnTMManualTutorial',
       url: 'http://nick-tallguy.github.io/en/coordination/tm-user/',
+      img: LearnOSMLogo,
     },
-    { message: 'learnOSMStepByStepTutorial', url: 'https://learnosm.org/en/beginner/' },
+    {
+      message: 'learnOSMStepByStepTutorial',
+      url: 'https://learnosm.org/en/beginner/',
+      img: LearnOSMLogo,
+    },
   ];
 
   return (

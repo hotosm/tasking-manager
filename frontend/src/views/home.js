@@ -5,7 +5,6 @@ import { StatsSection } from '../components/homepage/stats';
 import { MappingFlow } from '../components/homepage/mappingFlow';
 import { WhoIsMapping } from '../components/homepage/whoIsMapping';
 import { Testimonials } from '../components/homepage/testimonials/index';
-import { FeaturedProjects } from '../components/homepage/featuredProjects';
 
 export function Home() {
   return (
@@ -13,7 +12,6 @@ export function Home() {
       <Jumbotron />
       <StatsSection />
       <MappingFlow />
-      <FeaturedProjects />
       <WhoIsMapping />
       <Testimonials />
       <SecondaryJumbotron />

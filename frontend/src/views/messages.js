@@ -165,7 +165,7 @@ export default defineMessages({
   },
   about: {
     id: 'pages.about.title',
-    defaultMessage: 'About Tasking Manager',
+    defaultMessage: 'About',
   },
   aboutIntro: {
     id: 'pages.about.intro',
@@ -359,22 +359,22 @@ export default defineMessages({
   quickstartStep1: {
     id: 'pages.quickstart.quickstartStep1',
     defaultMessage:
-      'Click on the {signUp} button in the upper right corner of the {tmHomepage} homepage',
+      'Click on the {signUp} button in the upper right corner of the {tmHomepage} homepage.',
   },
   quickstartStep1Note: {
     id: 'pages.quickstart.quickstartStep1Note',
     defaultMessage:
-      'Do you have an OpenStreetMap account already? You can start over with step 4.',
+      'Do you have an OpenStreetMap account already? You can skip ahead to step 4.',
   },
   quickstartStep2: {
     id: 'pages.quickstart.quickstartStep2',
     defaultMessage:
-      'Provide your name and email address. We will use this informtation to guide you through the sign-up process',
+      'Provide your name and email address. We will use this information to guide you through the sign-up process.',
   },
   quickstartStep3: {
     id: 'pages.quickstart.quickstartStep3',
     defaultMessage:
-      'A new tab will open allowing you to register on OpenStreetMap.org. Fill out the form and select {signUp}.',
+      'A new tab will open allowing you to register on OpenStreetMap.org. Provide your account information and press the {signUp} button at the bottom of the form.',
   },
   quickstartStep4: {
     id: 'pages.quickstart.quickstartStep4',
@@ -384,12 +384,12 @@ export default defineMessages({
   quickstartStep5: {
     id: 'pages.quickstart.quickstartStep5',
     defaultMessage:
-      'Select {exploreProjects} in the main navigation to find a mapping project to work on.',
+      'Select {exploreProjects} in the main navigation to find a project to help map. Or use the link provided by your mapathon instructor.',
   },
   quickstartStep6: {
     id: 'pages.quickstart.quickstartStep6',
     defaultMessage:
-      'Read the introduction to the project and click on {contribute} in order to get into mapping.',
+      'Read the introduction to the project and click on {contribute} to begin with a mapping task.',
   },
   quickstartStep7: {
     id: 'pages.quickstart.quickstartStep7',
@@ -409,7 +409,7 @@ export default defineMessages({
   quickstartStep8Note: {
     id: 'pages.quickstart.quickstartStep8Note',
     defaultMessage:
-      'For more information on mapping in OpenStreetMap please have a look at our {learnPage} and the tutorials linked there.',
+      'For more information on mapping in OpenStreetMap please have a look at our tutorials on the {learnPage}.',
   },
   quickstartStep9: {
     id: 'pages.quickstart.quickstartStep9',
@@ -449,7 +449,7 @@ export default defineMessages({
   tmDescription2: {
     id: 'pages.about.description2',
     defaultMessage:
-      'This approach allows the distribution of tasks to many individual mappers. It also allows monitoring of project progress and helps to improve the consistency of the mapping (e.g. elements to cover, specific tags to use, etc.',
+      'This approach allows the distribution of tasks to many individual mappers. It also allows monitoring of project progress and helps to improve the consistency of the mapping (e.g. elements to cover, specific tags to use, etc.)',
   },
   osmDescription: {
     id: 'pages.about.OpenStreetMap.description',
@@ -468,7 +468,7 @@ export default defineMessages({
   flossDescription: {
     id: 'pages.about.floss.description',
     defaultMessage:
-      'The Tasking Manager is Free and Open Source software developed by {hotLink}. The application’s code can be accessed through {code}, where you can report issues and make contributions.',
+      'The Tasking Manager is Free and Open Source software developed by the {hotLink}. The application’s code can be accessed through {code}, where you can report issues and make contributions.',
   },
   editProject: {
     id: 'pages.edit_project.title',

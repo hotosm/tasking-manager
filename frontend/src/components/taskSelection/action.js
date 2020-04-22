@@ -125,7 +125,11 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
             {activeEditor === 'ID' && (
               <SidebarToggle setShowSidebar={setShowSidebar} editorRef={editorRef} />
             )}
-            <HeaderLine author={project.author} projectId={project.projectId} />
+            <HeaderLine
+              author={project.author}
+              projectId={project.projectId}
+              organisation={project.organisationName}
+            />
             <div className="cf pb3">
               <h3 className="f2 fw6 mt2 mb1 ttu barlow-condensed blue-dark">
                 {project.projectInfo && project.projectInfo.name}
