@@ -187,6 +187,9 @@ const Resources = {
     Properties: {
       ApplicationName: cf.ref('TaskingManagerCodeDeployApplication'),
       AutoScalingGroups: [ cf.ref('TaskingManagerASG') ],
+      LoadBalancerInfo: {
+          ElbInfoList: [ { Name: cf.stackName } ],
+      },
       DeploymentGroupName: 'TM4CDeployTest',
       ServiceRoleArn: 'arn:aws:iam::670261699094:role/CodeDeployRole',
     }
