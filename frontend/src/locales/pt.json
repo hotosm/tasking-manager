@@ -551,6 +551,8 @@
   "project.tasks.action.submit_task": "Enviar tarefa",
   "project.tasks.action.submit_tasks": "Enviar tarefas",
   "project.tasks.history.title": "Atividade da tarefa",
+  "project.tasks.history.splitted": "",
+  "project.tasks.history.splitted.description": "",
   "project.tasks.activity.data.links": "Dados da tarefa",
   "project.tasks.activity.overpass.download": "Download do viaduto",
   "project.tasks.activity.overpass.visualization": "Visualize com viaduto",

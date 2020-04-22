@@ -551,6 +551,8 @@
   "project.tasks.action.submit_task": "Taak indienen",
   "project.tasks.action.submit_tasks": "Taken indienen",
   "project.tasks.history.title": "Activiteit taak",
+  "project.tasks.history.splitted": "",
+  "project.tasks.history.splitted.description": "",
   "project.tasks.activity.data.links": "Gegevens taak",
   "project.tasks.activity.overpass.download": "Downloaden vanaf Overpass",
   "project.tasks.activity.overpass.visualization": "Visualiseren met Overpass",

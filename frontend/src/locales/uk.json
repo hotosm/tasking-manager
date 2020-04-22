@@ -551,6 +551,8 @@
   "project.tasks.action.submit_task": "Надіслати",
   "project.tasks.action.submit_tasks": "Надіслати",
   "project.tasks.history.title": "Історія завдання",
+  "project.tasks.history.splitted": "",
+  "project.tasks.history.splitted.description": "",
   "project.tasks.activity.data.links": "Дані завдання",
   "project.tasks.activity.overpass.download": "Завантажити через Overpass",
   "project.tasks.activity.overpass.visualization": "Показати в Overpass",
