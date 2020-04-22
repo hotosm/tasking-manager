@@ -551,6 +551,8 @@
   "project.tasks.action.submit_task": "Skicka uppgift",
   "project.tasks.action.submit_tasks": "Skicka uppgifter",
   "project.tasks.history.title": "Uppgift aktivitet",
+  "project.tasks.history.splitted": "",
+  "project.tasks.history.splitted.description": "",
   "project.tasks.activity.data.links": "Uppgift data",
   "project.tasks.activity.overpass.download": "Ladda ner från Overpass",
   "project.tasks.activity.overpass.visualization": "",

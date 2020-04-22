@@ -551,6 +551,8 @@
   "project.tasks.action.submit_task": "タスクを投稿",
   "project.tasks.action.submit_tasks": "タスクを投稿",
   "project.tasks.history.title": "タスクの活動状況",
+  "project.tasks.history.splitted": "",
+  "project.tasks.history.splitted.description": "",
   "project.tasks.activity.data.links": "データをタスクにする",
   "project.tasks.activity.overpass.download": "Overpassダウンロード",
   "project.tasks.activity.overpass.visualization": "Overpassで可視化",

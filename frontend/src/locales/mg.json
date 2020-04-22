@@ -551,6 +551,8 @@
   "project.tasks.action.submit_task": "",
   "project.tasks.action.submit_tasks": "",
   "project.tasks.history.title": "",
+  "project.tasks.history.splitted": "",
+  "project.tasks.history.splitted.description": "",
   "project.tasks.activity.data.links": "",
   "project.tasks.activity.overpass.download": "",
   "project.tasks.activity.overpass.visualization": "",

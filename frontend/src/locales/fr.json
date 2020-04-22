@@ -551,6 +551,8 @@
   "project.tasks.action.submit_task": "Soumettre la tâche",
   "project.tasks.action.submit_tasks": "Soumettre les tâches",
   "project.tasks.history.title": "Activité de la tâche",
+  "project.tasks.history.splitted": "",
+  "project.tasks.history.splitted.description": "",
   "project.tasks.activity.data.links": "données associées à la tâche",
   "project.tasks.activity.overpass.download": "Télécharger depuis Overpass",
   "project.tasks.activity.overpass.visualization": "Visualiser avec Overpass",

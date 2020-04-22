@@ -551,6 +551,8 @@
   "project.tasks.action.submit_task": "Odeslat úlohu",
   "project.tasks.action.submit_tasks": "Odeslat úlohy",
   "project.tasks.history.title": "Aktivita v úloze",
+  "project.tasks.history.splitted": "",
+  "project.tasks.history.splitted.description": "",
   "project.tasks.activity.data.links": "Data úloh",
   "project.tasks.activity.overpass.download": "Stáhnout z Overpass ",
   "project.tasks.activity.overpass.visualization": "Vizualizace pomocí Overpass",

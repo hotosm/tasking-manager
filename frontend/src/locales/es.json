@@ -551,6 +551,8 @@
   "project.tasks.action.submit_task": "Enviar tarea",
   "project.tasks.action.submit_tasks": "Enviar tareas",
   "project.tasks.history.title": "Actividad de la tarea",
+  "project.tasks.history.splitted": "",
+  "project.tasks.history.splitted.description": "",
   "project.tasks.activity.data.links": "Datos de la tarea",
   "project.tasks.activity.overpass.download": "Descargar desde Overpass",
   "project.tasks.activity.overpass.visualization": "Vizualizar con Overpass",
