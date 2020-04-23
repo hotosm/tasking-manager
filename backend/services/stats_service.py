@@ -43,7 +43,6 @@ class StatsService:
         """ Update stats when a task has had a state change """
 
         if new_state in [
-            TaskStatus.READY,
             TaskStatus.LOCKED_FOR_VALIDATION,
             TaskStatus.LOCKED_FOR_MAPPING,
         ]:
