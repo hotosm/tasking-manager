@@ -335,7 +335,7 @@ export default defineMessages({
   },
   confirmRevertVALIDATED: {
     id: 'project.tasks.action.invalidate.confirmation',
-    defaultMessage: 'This action will revert the status of the task to "Ready for validation".',
+    defaultMessage: 'Task status will be changed to "Ready for validation".',
   },
   revertBADIMAGERY: {
     id: 'project.tasks.action.set_as_ready',
@@ -343,7 +343,7 @@ export default defineMessages({
   },
   confirmRevertBADIMAGERY: {
     id: 'project.tasks.action.set_as_ready.confirmation',
-    defaultMessage: 'This action will revert the status of the task to "Available for mapping".',
+    defaultMessage: 'Task status will be changed to "Available for mapping".',
   },
   proceed: {
     id: 'project.tasks.action.proceed.confirmation',
@@ -375,7 +375,7 @@ export default defineMessages({
   },
   badImagery: {
     id: 'project.tasks.action.options.bad_imagery',
-    defaultMessage: "The imagery is bad",
+    defaultMessage: 'The imagery is bad',
   },
   splitTask: {
     id: 'project.tasks.action.split_task',
