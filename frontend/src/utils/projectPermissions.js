@@ -2,10 +2,10 @@ export function userCanMap(user, project, userTeams = []) {
   if (user.role === 'READ_ONLY') return false;
   if (user.role === 'ADMIN') return true;
   const projectTeamsIds = project.teams
-    .filter(team => ['MAPPER', 'VALIDATOR', 'PROJECT_MANAGER'].includes(team.role))
-    .map(team => team.teamId);
+    .filter((team) => ['MAPPER', 'VALIDATOR', 'PROJECT_MANAGER'].includes(team.role))
+    .map((team) => team.teamId);
   const isUserMemberOfATeam =
-    userTeams.filter(team => projectTeamsIds.includes(team.teamId)).length > 0;
+    userTeams.filter((team) => projectTeamsIds.includes(team.teamId)).length > 0;
   const isUserExperienced = ['INTERMEDIATE', 'ADVANCED'].includes(user.mappingLevel);
 
   // check for private projects
@@ -40,10 +40,10 @@ export function userCanValidate(user, project, userTeams = []) {
   if (user.role === 'READ_ONLY') return false;
   if (user.role === 'ADMIN') return true;
   const projectTeamsIds = project.teams
-    .filter(team => ['VALIDATOR', 'PROJECT_MANAGER'].includes(team.role))
-    .map(team => team.teamId);
+    .filter((team) => ['VALIDATOR', 'PROJECT_MANAGER'].includes(team.role))
+    .map((team) => team.teamId);
   const isUserMemberOfATeam =
-    userTeams.filter(team => projectTeamsIds.includes(team.teamId)).length > 0;
+    userTeams.filter((team) => projectTeamsIds.includes(team.teamId)).length > 0;
   const isUserExperienced = ['INTERMEDIATE', 'ADVANCED'].includes(user.mappingLevel);
 
   // check for private projects
@@ -100,7 +100,7 @@ export function getMessageOnValidationContext(mappingIsPossible, taskStatus) {
 
 export function getTaskAction(user, project, taskStatus, userTeams = []) {
   // nothing more to do if all tasks are validated or set as BADIMAGERY
-  if (project.percentValidated + project.percentBadImagery === 100) {
+  if (project.percentValidated + project.percentBadImagery >= 100) {
     return 'projectIsComplete';
   }
   const validationIsPossible = userCanValidate(user, project, userTeams);
@@ -113,7 +113,7 @@ export function getTaskAction(user, project, taskStatus, userTeams = []) {
   if (mappingIsPossible) {
     return getMessageOnMappingContext(taskStatus);
   }
-  if (project.percentMapped + project.percentBadImagery === 100) {
+  if (project.percentMapped + project.percentBadImagery >= 100) {
     return 'mappingIsComplete';
   }
   return 'selectAnotherProject';
