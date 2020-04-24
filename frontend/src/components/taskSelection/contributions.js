@@ -10,7 +10,7 @@ import ProjectProgressBar from '../projectcard/projectProgressBar';
 import { computeCompleteness } from '../../utils/projectCompletenessCalc';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 
-const Contributions = props => {
+const Contributions = (props) => {
   const mappingLevels = [
     { value: 'ALL', label: props.intl.formatMessage(messages.mappingLevelALL) },
     { value: 'ADVANCED', label: props.intl.formatMessage(messages.mappingLevelADVANCED) },
@@ -19,14 +19,14 @@ const Contributions = props => {
   ];
 
   const [level, setLevel] = useState(mappingLevels[0]);
-  const { percentMapped, percentValidated } = computeCompleteness(props.tasks);
+  const { percentMapped, percentValidated, percentBadImagery } = computeCompleteness(props.tasks);
 
   const MappingLevelSelect = () => {
     return (
       <Select
         isClearable={false}
         options={mappingLevels}
-        onChange={value => setLevel(value)}
+        onChange={(value) => setLevel(value)}
         className="w-30 fr mb3 pointer"
         value={level}
       />
@@ -45,24 +45,24 @@ const Contributions = props => {
       let filteredTasksByStatus = props.tasks.features;
       if (status === 'MAPPED') {
         filteredTasksByStatus = filteredTasksByStatus.filter(
-          task => task.properties.taskStatus === 'MAPPED',
+          (task) => task.properties.taskStatus === 'MAPPED',
         );
       }
       if (status === 'VALIDATED') {
         filteredTasksByStatus = filteredTasksByStatus.filter(
-          task => task.properties.taskStatus === 'VALIDATED',
+          (task) => task.properties.taskStatus === 'VALIDATED',
         );
       }
       const ids = filteredTasksByStatus
-        .filter(t => taskIds.includes(t.properties.taskId))
-        .map(f => f.properties.taskId);
+        .filter((t) => taskIds.includes(t.properties.taskId))
+        .map((f) => f.properties.taskId);
       props.selectTask(ids, status, user);
     }
   };
 
   let contributionsArray = props.contribsData.userContributions || [];
   if (level.value !== 'ALL') {
-    contributionsArray = contributionsArray.filter(u => u.mappingLevel === level.value);
+    contributionsArray = contributionsArray.filter((u) => u.mappingLevel === level.value);
   }
 
   return (
@@ -71,6 +71,7 @@ const Contributions = props => {
         <ProjectProgressBar
           percentMapped={percentMapped}
           percentValidated={percentValidated}
+          percentBadImagery={percentBadImagery}
           className="pt1 pb3"
         />
         <OSMChaButton project={props.project} className="bg-white blue-light bn mv2" />
@@ -83,7 +84,7 @@ const Contributions = props => {
           delay={50}
           ready={contributionsArray !== undefined}
         >
-          {contributionsArray.map(user => {
+          {contributionsArray.map((user) => {
             return (
               <div
                 className={`w-100 cf pv3 ph3-ns ph1 ba bw1 mb2 ${
