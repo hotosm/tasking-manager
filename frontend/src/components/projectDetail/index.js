@@ -158,6 +158,7 @@ export const ProjectDetailLeft = (props) => {
             className="pb2 bg-white"
             percentMapped={props.project.percentMapped}
             percentValidated={props.project.percentValidated}
+            percentBadImagery={props.project.percentBadImagery}
           />
           <div className="cf pb1 bg-white">
             <MappingLevelMessage

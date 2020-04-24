@@ -20,6 +20,10 @@ export default defineMessages({
     id: 'project.card.percentValidated',
     defaultMessage: 'Validated',
   },
+  percentBadImagery: {
+    id: 'project.card.percentBadImagery',
+    defaultMessage: 'Bad imagery',
+  },
   projectPriorityURGENT: {
     id: 'project.card.projectPriorityUrgent',
     defaultMessage: 'Urgent',
