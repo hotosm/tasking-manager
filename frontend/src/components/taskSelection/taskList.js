@@ -155,6 +155,7 @@ export function TaskList({
   setZoomedTaskId,
   selected,
   userContributions,
+  updateActivities,
 }: Object) {
   const user = useSelector((state) => state.auth.get('userDetails'));
   const [readyTasks, setTasks] = useState([]);
@@ -281,13 +282,20 @@ export function TaskList({
           tasks={readyTasks}
           taskId={activeTaskModal}
           setActiveTaskModal={setActiveTaskModal}
+          updateActivities={updateActivities}
         />
       )}
     </div>
   );
 }
 
-function TaskActivityModal({ taskId, setActiveTaskModal, tasks, project }: Object) {
+function TaskActivityModal({
+  taskId,
+  setActiveTaskModal,
+  tasks,
+  project,
+  updateActivities,
+}: Object) {
   const [taskData, setActiveTaskData] = useState();
   useEffect(() => {
     const filteredTasks = tasks.filter((task) => task.properties.taskId === taskId);
@@ -304,6 +312,7 @@ function TaskActivityModal({ taskId, setActiveTaskModal, tasks, project }: Objec
               status={taskData ? taskData.properties.taskStatus : 'READY'}
               bbox={taskData ? bbox(taskData.geometry) : ''}
               close={close}
+              updateActivities={updateActivities}
             />
           ) : (
             <div className="w-100 pa4 blue-dark bg-white">
@@ -338,7 +347,7 @@ function PaginatedList({
   const [page, setPage] = useQueryParam('page', NumberParam);
   const lastPage = howManyPages(items.length, pageSize);
   // change page to 1 if the page number is not valid
-  if (items && page > lastPage) {
+  if (items && page && page > lastPage) {
     setPage(1);
   }
 
@@ -351,12 +360,10 @@ function PaginatedList({
     // switch the taskList page to always show the selected task.
     // Only do it if there is only one task selected
     if (selected.length === 1) {
-      setPage(
-        Math.ceil(
-          (latestItems.current.findIndex((task) => task.properties.taskId === selected[0]) + 1) /
-            pageSize,
-        ),
-      );
+      const newPage =
+        (latestItems.current.findIndex((task) => task.properties.taskId === selected[0]) + 1) /
+        pageSize;
+      if (newPage) setPage(Math.ceil(newPage));
     }
   }, [selected, latestItems, setPage, pageSize]);
 

@@ -18,9 +18,7 @@ export function HeaderLine({ author, projectId, priority, showEditLink, organisa
   return (
     <div className="cf">
       <div className="w-70-ns w-100 dib fl pv2">
-        <span className="blue-dark">
-          {projectIdLink}
-        </span>
+        <span className="blue-dark">{projectIdLink}</span>
         {organisation ? <span> | {organisation}</span> : null}
       </div>
       <div className="w-30-ns w-100 dib fl tr">
@@ -83,10 +81,10 @@ function TagLine({ campaigns = [], countries = [] }: Object) {
   return (
     <span className="blue-light">
       {tags.map((tag, n) => (
-        <>
+        <span key={n}>
           <span className={n === 0 ? 'dn' : 'ph2'}>&#183;</span>
           {tag}
-        </>
+        </span>
       ))}
     </span>
   );
