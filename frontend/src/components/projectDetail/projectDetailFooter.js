@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from '@reach/router';
+import { useSelector } from 'react-redux';
 import { Button } from '../button';
 
 import { ShareIcon } from '../svgIcons';
@@ -8,6 +9,7 @@ import messages from './messages';
 import { AddToFavorites } from './favorites';
 
 export const ProjectDetailFooter = (props) => {
+  const userIsloggedIn = useSelector((state) => state.auth.get('token'));
   return (
     <div
       className={`${
@@ -47,9 +49,11 @@ export const ProjectDetailFooter = (props) => {
           <ShareIcon className="pt3 pr2 v-btm" />
           <FormattedMessage {...messages.share} />
         </div>
-        <div className="w-40 fl tc dib pt2 pb3">
-          <AddToFavorites projectId={props.projectId} />
-        </div>
+        {userIsloggedIn && (
+          <div className="w-40 fl tc dib pt2 pb3">
+            <AddToFavorites projectId={props.projectId} />
+          </div>
+        )}
         <div className="dib w-40 tr fr">
           <Link to={`./tasks`} className="">
             <Button className="white bg-red h3 w-100">
