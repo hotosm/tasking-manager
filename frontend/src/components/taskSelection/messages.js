@@ -417,6 +417,10 @@ export default defineMessages({
     id: 'project.tasks.activity.data.links',
     defaultMessage: 'Task data',
   },
+  projectId: {
+    id: 'project.tasks.activity.project_id',
+    defaultMessage: 'Project #{id}',
+  },
   overpassDownload: {
     id: 'project.tasks.activity.overpass.download',
     defaultMessage: 'Download from Overpass',

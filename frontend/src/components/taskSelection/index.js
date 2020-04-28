@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Popup from 'reactjs-popup';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
+import { useFetch } from '../../hooks/UseFetch';
+import { useInterval } from '../../hooks/UseInterval';
 import { useMemoCompare } from '../../hooks/UseMemoCompare';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { getTaskAction } from '../../utils/projectPermissions';
@@ -45,6 +46,8 @@ export function TaskSelection({ project, type, loading }: Object) {
   const lockedTasks = useSelector((state) => state.lockedTasks);
   const dispatch = useDispatch();
   const [tasks, setTasks] = useState();
+  const [activities, setActivities] = useState();
+  const [contributions, setContributions] = useState();
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
   const [selected, setSelectedTasks] = useState([]);
@@ -55,17 +58,30 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [activeUser, setActiveUser] = useState(null);
   useSetProjectPageTitleTag(project);
 
-  /* eslint-disable-next-line */
-  const [tasksActivitiesError, tasksActivitiesLoading, initialActivities] = useFetch(
-    `projects/${project.projectId}/activities/latest/`,
-    project.projectId !== undefined,
-  );
+  const getActivities = useCallback((id) => {
+    fetchLocalJSONAPI(`projects/${id}/activities/latest/`)
+      .then((res) => setActivities(res))
+      .catch((e) => console.log(e));
+  }, []);
+
+  const getContributions = useCallback((id) => {
+    fetchLocalJSONAPI(`projects/${id}/contributions/`)
+      .then((res) => setContributions(res))
+      .catch((e) => console.log(e));
+  }, []);
+
+  // fetch activities and contributions when the component is started
+  useEffect(() => {
+    getActivities(project.projectId);
+    getContributions(project.projectId);
+  }, [getActivities, getContributions, project.projectId]);
   // refresh activities each 60 seconds
-  /* eslint-disable-next-line */
-  const [activitiesError, activities] = useFetchIntervaled(
-    `projects/${project.projectId}/activities/latest/`,
-    60000,
-  );
+  useInterval(() => {
+    getActivities(project.projectId);
+    if (activeSection === 'contributions') {
+      getContributions(project.projectId);
+    }
+  }, 60000);
 
   // get teams the user is part of
   /* eslint-disable-next-line */
@@ -73,23 +89,6 @@ export function TaskSelection({ project, type, loading }: Object) {
     `teams/?member=${user.id}`,
     user.id !== undefined,
   );
-
-  /* eslint-disable-next-line */
-  const [contributionsError, contributionsLoading, contributions] = useFetch(
-    `projects/${project.projectId}/contributions/`,
-    project.projectId !== undefined,
-  );
-  const [priorityAreasError, priorityAreasLoading, priorityAreas] = useFetch(
-    `projects/${project.projectId}/queries/priority-areas/`,
-    project.projectId !== undefined,
-  );
-
-  // initialize the tasks with the project data and the initialActivities
-  useEffect(() => {
-    if (project && project.tasks && initialActivities && initialActivities.activity) {
-      setTasks(updateTasksStatus(project.tasks, initialActivities));
-    }
-  }, [project, initialActivities]);
 
   const latestTasks = useRef(tasks);
   // it's needed to avoid the following useEffect to be triggered every time the tasks change
@@ -122,7 +121,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   // show the tasks tab when the page loads if the user has already contributed
   // to the project. If no, show the intructions tab.
   useEffect(() => {
-    if (contributions && contributions.userContributions) {
+    if (contributions && contributions.userContributions && activeSection === null) {
       const currentUserContributions = contributions.userContributions.filter(
         (u) => u.username === user.username,
       );
@@ -132,13 +131,13 @@ export function TaskSelection({ project, type, loading }: Object) {
         setActiveSection('instructions');
       }
     }
-  }, [contributions, user.username, user]);
+  }, [contributions, user.username, user, activeSection]);
 
   useEffect(() => {
     // run it only when the component is initialized
     // it checks if the user has tasks locked on the project and suggests to resume them
-    if (!mapInit && initialActivities.activity && user.username) {
-      const lockedByCurrentUser = initialActivities.activity
+    if (!mapInit && activities && activities.activity && user.username) {
+      const lockedByCurrentUser = activities.activity
         .filter((i) => i.taskStatus.startsWith('LOCKED_FOR_'))
         .filter((i) => i.actionBy === user.username);
       if (lockedByCurrentUser.length) {
@@ -158,26 +157,14 @@ export function TaskSelection({ project, type, loading }: Object) {
       }
       setMapInit(true);
     }
-  }, [
-    lockedTasks,
-    dispatch,
-    initialActivities,
-    user.username,
-    mapInit,
-    project,
-    user,
-    userTeams.teams,
-  ]);
+  }, [lockedTasks, dispatch, activities, user.username, mapInit, project, user, userTeams.teams]);
 
   // chooses a random task to the user
   useEffect(() => {
-    if (!activities && initialActivities && initialActivities.activity) {
-      setRandomTask([getRandomTaskByAction(initialActivities.activity, taskAction)]);
-    }
     if (activities && activities.activity) {
       setRandomTask([getRandomTaskByAction(activities.activity, taskAction)]);
     }
-  }, [activities, initialActivities, taskAction]);
+  }, [activities, taskAction]);
 
   function selectTask(selection, status = null, selectedUser = null) {
     // if selection is an array, just update the state
@@ -258,22 +245,25 @@ export function TaskSelection({ project, type, loading }: Object) {
                     className={`mr4 pb2 pointer ${
                       activeSection === 'contributions' && 'bb b--blue-dark'
                     }`}
-                    onClick={() => setActiveSection('contributions')}
+                    onClick={() => {
+                      getContributions(project.projectId);
+                      setActiveSection('contributions');
+                    }}
                   >
                     <FormattedMessage {...messages.contributions} />
                   </span>
                 </div>
                 <div className="pt3">
-                  {activeSection === 'tasks' ? (
+                  <div className={`${activeSection !== 'tasks' ? 'dn' : ''}`}>
                     <TaskList
                       project={project}
                       tasks={tasks}
                       selectTask={selectTask}
                       selected={selected}
                       setZoomedTaskId={setZoomedTaskId}
-                      userContributions={contributions.userContributions}
+                      userContributions={contributions && contributions.userContributions}
                     />
-                  ) : null}
+                  </div>
                   {activeSection === 'instructions' ? (
                     <>
                       <ProjectInstructions
@@ -303,7 +293,7 @@ export function TaskSelection({ project, type, loading }: Object) {
             type={'media'}
             rows={26}
             delay={200}
-            ready={typeof project === 'object' && mapInit}
+            ready={typeof project === 'object' && typeof tasks === 'object' && mapInit}
           >
             <TasksMap
               mapResults={tasks}
@@ -315,7 +305,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               selectTask={selectTask}
               selected={selected}
               taskBordersOnly={false}
-              priorityAreas={!priorityAreasError && !priorityAreasLoading && priorityAreas}
+              priorityAreas={project.priorityAreas}
               animateZoom={false}
             />
             <TasksMapLegend />
