@@ -58,7 +58,7 @@
     "shpjs": "^3.4.3",
     "swagger-ui-react": "^3.25.0",
     "tachyons": "^4.11.1",
-    "use-query-params": "^0.6.0",
+    "use-query-params": "^1.1.1",
     "webfontloader": "^1.6.28"
   },
   "scripts": {
