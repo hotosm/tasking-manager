@@ -91,7 +91,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     if (file.size >= MAX_FILESIZE) {
       setErr({
         error: true,
-        message: <FormattedMessage {...messages.fileSize} values={{ fileSize: MAX_FILESIZE }} />,
+        message: <FormattedMessage {...messages.fileSize} values={{ fileSize: MAX_FILESIZE/1000000 }} />,
       });
       return null;
     }
