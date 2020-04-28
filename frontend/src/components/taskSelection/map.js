@@ -117,21 +117,19 @@ export const TasksMap = ({
         } else {
           map.scrollZoom.enable();
         }
-
-        const lockedByUser = ['==', ['get', 'lockedBy'], authDetails.id];
         const locked = [
           'any',
           ['==', ['to-string', ['get', 'taskStatus']], 'LOCKED_FOR_MAPPING'],
           ['==', ['to-string', ['get', 'taskStatus']], 'LOCKED_FOR_VALIDATION'],
         ];
-        const taskStatusCondition = [
-          'case',
-          ['all', locked, lockedByUser],
-          'redlock',
-          locked,
-          'lock',
-          '',
-        ];
+
+        let taskStatusCondition = ['case'];
+
+        if (authDetails.id !== undefined) {
+          const all_condition = ['all', locked, ['==', ['get', 'lockedBy'], authDetails.id]];
+          taskStatusCondition = [...taskStatusCondition, ...[all_condition, 'redlock']];
+        }
+        taskStatusCondition = [...taskStatusCondition, ...[locked, 'lock', '']];
 
         map.addLayer({
           id: 'tasks-icon',
