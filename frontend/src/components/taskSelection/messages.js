@@ -375,7 +375,7 @@ export default defineMessages({
   },
   badImagery: {
     id: 'project.tasks.action.options.bad_imagery',
-    defaultMessage: "The imagery is bad",
+    defaultMessage: 'The imagery is bad',
   },
   splitTask: {
     id: 'project.tasks.action.split_task',
@@ -416,6 +416,10 @@ export default defineMessages({
   taskData: {
     id: 'project.tasks.activity.data.links',
     defaultMessage: 'Task data',
+  },
+  projectId: {
+    id: 'project.tasks.activity.project_id',
+    defaultMessage: 'Project #{id}',
   },
   overpassDownload: {
     id: 'project.tasks.activity.overpass.download',

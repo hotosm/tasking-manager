@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { viewport } from '@mapbox/geo-viewport';
 import { FormattedMessage } from 'react-intl';
@@ -7,6 +7,7 @@ import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { CloseIcon } from '../svgIcons';
 import { useEditProjectAllowed } from '../../hooks/UsePermissions';
+import { useInterval } from '../../hooks/UseInterval';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
@@ -71,16 +72,19 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
     }
   }, [commentPayload]);
 
-  useEffect(() => {
-    const getTaskInfo = async () => {
-      const res = await fetchLocalJSONAPI(`projects/${projectId}/tasks/${taskId}/`, token);
-      setHistory(res.taskHistory);
-    };
+  const getTaskInfo = useCallback(
+    (projectId, taskId, token) =>
+      fetchLocalJSONAPI(`projects/${projectId}/tasks/${taskId}/`, token).then((res) =>
+        setHistory(res.taskHistory),
+      ),
+    [],
+  );
 
-    if (!commentPayload && projectId && taskId) {
-      getTaskInfo();
+  useEffect(() => {
+    if (commentPayload === undefined && projectId && taskId && token) {
+      getTaskInfo(projectId, taskId, token);
     }
-  }, [projectId, taskId, token, commentPayload]);
+  }, [projectId, taskId, token, commentPayload, getTaskInfo]);
 
   const getTaskActionMessage = (action, actionText) => {
     let message = '';
@@ -218,19 +222,35 @@ export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) =>
   }
 };
 
-export const TaskActivity = ({ taskId, status, project, bbox, close }: Object) => {
+export const TaskActivity = ({
+  taskId,
+  status,
+  project,
+  bbox,
+  close,
+  updateActivities,
+}: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [userCanReset] = useEditProjectAllowed(project);
   // use it to hide the reset task action button
   const [resetSuccess, setResetSuccess] = useState(false);
   const [commentPayload, setCommentPayload] = useState(null);
-  useEffect(() => {
-    if (token && project.projectId && taskId) {
+
+  const getHistory = useCallback(
+    () =>
       fetchLocalJSONAPI(`projects/${project.projectId}/tasks/${taskId}/`, token)
         .then((res) => setCommentPayload(res))
-        .catch((e) => console.log(e));
+        .catch((e) => console.log(e)),
+    [project.projectId, taskId, token],
+  );
+
+  useEffect(() => {
+    if (token && project.projectId && taskId) {
+      getHistory();
     }
-  }, [project.projectId, taskId, token]);
+  }, [project.projectId, taskId, token, getHistory]);
+  // update the task history each 60 seconds
+  useInterval(() => getHistory(), 60000);
 
   const resetTask = () => {
     pushToLocalJSONAPI(
@@ -239,6 +259,7 @@ export const TaskActivity = ({ taskId, status, project, bbox, close }: Object) =
       token,
     ).then((res) => {
       setCommentPayload(res);
+      if (updateActivities !== undefined) updateActivities(project.projectId);
       setResetSuccess(true);
     });
   };
@@ -253,7 +274,13 @@ export const TaskActivity = ({ taskId, status, project, bbox, close }: Object) =
               <FormattedMessage {...messages.taskActivity} />
             </p>
             <b>#{taskId}</b>
-            {project.projectInfo && project.projectInfo.name ? `: ${project.projectInfo.name}` : ''}
+            {project.projectInfo && project.projectInfo.name ? (
+              `: ${project.projectInfo.name}`
+            ) : (
+              <span>
+                , <FormattedMessage {...messages.projectId} values={{ id: project.projectId }} />
+              </span>
+            )}
           </div>
           <div className="w-60-l w-100 fl tr pr3 pt2">
             {userCanReset && (

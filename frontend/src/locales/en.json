@@ -554,6 +554,7 @@
   "project.tasks.history.splitted": "Task unavailable",
   "project.tasks.history.splitted.description": "The task {id} was splitted and its history is not available anymore",
   "project.tasks.activity.data.links": "Task data",
+  "project.tasks.activity.project_id": "Project #{id}",
   "project.tasks.activity.overpass.download": "Download from Overpass",
   "project.tasks.activity.overpass.visualization": "Visualize with Overpass",
   "project.tasks.activity.osmcha": "View changesets in OSMCha",
