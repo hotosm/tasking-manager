@@ -92,7 +92,7 @@ const supportedLocales = [
   { value: 'sw', label: 'Kiswahili' },
   // { value: 'tl', label: 'Filipino (Tagalog)' },
   { value: 'tr', label: 'Türkçe' },
-  // { value: 'uk', label: 'Українська' },
+  { value: 'uk', label: 'Українська' },
   // { value: 'zh-TW', label: '中国台湾' },
 ];
 
