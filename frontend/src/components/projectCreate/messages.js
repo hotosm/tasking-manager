@@ -107,7 +107,7 @@ export default defineMessages({
   },
   fileSize: {
     id: 'management.projects.create.errors.fileSize',
-    defaultMessage: 'File size is higher than {fileSize} bytes',
+    defaultMessage: 'We only accept files up to {fileSize} MB. Please reduce the size of your file and try again.',
   },
   splitTaskDescription: {
     id: 'management.projects.create.split_task.description',
