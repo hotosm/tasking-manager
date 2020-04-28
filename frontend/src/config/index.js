@@ -35,7 +35,7 @@ export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.co
 export const MATOMO_ID = process.env.REACT_APP_MATOMO_ID || '';
 export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL !== undefined;
 
-export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 5000000; // bytes
+export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 1000000; // bytes
 
 export const TASK_COLOURS = {
   READY: '#fff',
