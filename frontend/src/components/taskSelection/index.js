@@ -9,7 +9,7 @@ import { useFetch } from '../../hooks/UseFetch';
 import { useInterval } from '../../hooks/UseInterval';
 import { useMemoCompare } from '../../hooks/UseMemoCompare';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
-import { getTaskAction } from '../../utils/projectPermissions';
+import { getTaskAction, userCanValidate } from '../../utils/projectPermissions';
 import { getRandomArrayItem } from '../../utils/random';
 import { updateTasksStatus } from '../../utils/updateTasksStatus';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -48,6 +48,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [tasks, setTasks] = useState();
   const [activities, setActivities] = useState();
   const [contributions, setContributions] = useState();
+  const [isValidationAllowed, setIsValidationAllowed] = useState(false);
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
   const [selected, setSelectedTasks] = useState([]);
@@ -136,6 +137,12 @@ export function TaskSelection({ project, type, loading }: Object) {
       }
     }
   }, [contributions, user.username, user, activeSection]);
+
+  useEffect(() => {
+    if (project.hasOwnProperty('teams') && userTeams !== undefined) {
+      setIsValidationAllowed(userCanValidate(user, project, userTeams.teams));
+    }
+  }, [userTeams, project, user]);
 
   useEffect(() => {
     // run it only when the component is initialized
@@ -262,6 +269,8 @@ export function TaskSelection({ project, type, loading }: Object) {
                     <TaskList
                       project={project}
                       tasks={tasks}
+                      userCanValidate={isValidationAllowed}
+                      updateActivities={getActivities}
                       selectTask={selectTask}
                       selected={selected}
                       setZoomedTaskId={setZoomedTaskId}
