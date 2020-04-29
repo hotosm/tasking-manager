@@ -330,7 +330,7 @@ class ProjectAdminService:
             if org.is_manager:
                 is_org_manager = True
 
-        is_team_member = None
+        is_manager_team = None
         if hasattr(project, "project_teams") and project.project_teams:
             teams_dto = TeamService.get_project_teams_as_dto(project_id)
             if teams_dto.teams:
@@ -347,6 +347,6 @@ class ProjectAdminService:
                     )
                 ]
                 if user_membership:
-                    is_team_member = True
+                    is_manager_team = True
 
-        return is_admin or is_author or is_org_manager or is_team_member
+        return is_admin or is_author or is_org_manager or is_manager_team
