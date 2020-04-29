@@ -240,19 +240,22 @@ class TeamService:
             team_dto.members = []
             team_members = TeamService._get_team_members(team.id)
             is_team_manager = False
+            is_team_member = False
             for member in team_members:
                 user = UserService.get_user_by_id(member.user_id)
                 member_dto = TeamMembersDTO()
                 member_dto.username = user.username
                 member_dto.function = TeamMemberFunctions(member.function).name
-                if member.user_id == user_id and member_dto.function == "MANAGER":
-                    is_team_manager = True
+                if member.user_id == user_id:
+                    is_team_member = True
+                    if member_dto.function == "MANAGER":
+                        is_team_manager = True
                 member_dto.picture_url = user.picture_url
                 member_dto.active = member.active
 
                 team_dto.members.append(member_dto)
             if team_dto.visibility == "PRIVATE" and not is_admin:
-                if is_team_manager:
+                if is_team_manager or is_team_member:
                     teams_list_dto.teams.append(team_dto)
             else:
                 teams_list_dto.teams.append(team_dto)

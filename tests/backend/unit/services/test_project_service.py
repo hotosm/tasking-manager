@@ -9,6 +9,7 @@ from backend.services.project_service import (
     UserService,
     MappingNotAllowed,
 )
+from backend.services.project_service import ProjectAdminService
 from backend.models.dtos.project_dto import LockedTasksForUser
 from backend.models.postgis.task import Task
 
@@ -53,19 +54,19 @@ class TestProjectService(unittest.TestCase):
         # Assert
         self.assertFalse(allowed)
 
-    @patch.object(UserService, "is_user_an_admin")
     @patch.object(UserService, "is_user_blocked")
+    @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
     @patch.object(Project, "get")
     def test_user_cant_map_if_project_not_published(
-        self, mock_project, mock_user_blocked, mock_user_pm_status
+        self, mock_project, mock_user_action_permitted, mock_user_blocked
     ):
         # Arrange
         stub_project = Project()
         stub_project.status = ProjectStatus.DRAFT.value
         mock_project.return_value = stub_project
 
-        mock_user_pm_status.return_value = False
         mock_user_blocked.return_value = False
+        mock_user_action_permitted.return_value = False
 
         # Act
         allowed, reason = ProjectService.is_user_permitted_to_map(1, 1)
