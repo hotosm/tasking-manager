@@ -38,6 +38,7 @@
     "marked": "^1.0.0",
     "node-sass": "^4.13.0",
     "osmtogeojson": "^3.0.0-beta.3",
+    "query-string": "^6.12.1",
     "react": "^16.13.1",
     "react-calendar-heatmap": "^1.8.1",
     "react-click-outside": "^3.0.1",
@@ -58,7 +59,7 @@
     "shpjs": "^3.4.3",
     "swagger-ui-react": "^3.25.0",
     "tachyons": "^4.11.1",
-    "use-query-params": "^0.6.0",
+    "use-query-params": "^1.1.1",
     "webfontloader": "^1.6.28"
   },
   "scripts": {

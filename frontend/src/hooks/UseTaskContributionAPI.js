@@ -2,7 +2,8 @@ import { useSelector } from 'react-redux';
 import { useEffect, useReducer } from 'react';
 import axios from 'axios';
 
-import { useQueryParams, StringParam, stringify as stringifyUQP } from 'use-query-params';
+import { useQueryParams, StringParam } from 'use-query-params';
+import { stringify as stringifyUQP } from 'query-string';
 import { CommaArrayParam } from '../utils/CommaArrayParam';
 import { useThrottle } from '../hooks/UseThrottle';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
@@ -97,9 +98,9 @@ export const useTaskContributionAPI = (
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
 
   /* Get the user bearer token from the Redux store */
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const user_id = useSelector(
-    state => state.auth.get('userDetails') && state.auth.get('userDetails').id,
+    (state) => state.auth.get('userDetails') && state.auth.get('userDetails').id,
   );
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
