@@ -1,11 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  useQueryParams,
-  StringParam,
-  stringify as stringifyUQP,
-  NumberParam,
-} from 'use-query-params';
+import { useQueryParams, StringParam, NumberParam } from 'use-query-params';
+import { stringify as stringifyUQP } from 'query-string';
 import axios from 'axios';
 
 import { CommaArrayParam } from '../utils/CommaArrayParam';
@@ -66,9 +62,9 @@ export const useInboxQueryAPI = (
 ) => {
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
   /* Get the user bearer token from the Redux store */
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
 
-  const state = useSelector(state => state.notifications);
+  const state = useSelector((state) => state.notifications);
   const dispatch = useDispatch();
 
   useEffect(() => {

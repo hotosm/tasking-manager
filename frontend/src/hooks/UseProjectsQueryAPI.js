@@ -3,11 +3,11 @@ import { useSelector } from 'react-redux';
 import {
   useQueryParams,
   encodeQueryParams,
-  stringify as stringifyUQP,
   StringParam,
   NumberParam,
   BooleanParam,
 } from 'use-query-params';
+import { stringify as stringifyUQP } from 'query-string';
 import axios from 'axios';
 
 import { CommaArrayParam } from '../utils/CommaArrayParam';
