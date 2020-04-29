@@ -10,7 +10,6 @@ import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { TaskActivity } from './taskActivity';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
-import { userCanValidate } from '../../utils/projectPermissions';
 import { TASK_COLOURS } from '../../config';
 import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
@@ -112,9 +111,8 @@ function TaskItem({
   );
 }
 
-export function TaskFilter({ project, statusFilter, setStatusFn }: Object) {
+export function TaskFilter({ userCanValidate, statusFilter, setStatusFn }: Object) {
   const user = useSelector((state) => state.auth.get('userDetails'));
-  const validationIsPossible = user && project ? userCanValidate(user, project) : false;
   const activeClass = 'bg-blue-grey white';
   const inactiveClass = 'bg-white blue-grey';
 
@@ -133,7 +131,7 @@ export function TaskFilter({ project, statusFilter, setStatusFn }: Object) {
         >
           <FormattedMessage {...messages.filterReadyToMap} />
         </Button>
-        {validationIsPossible && (
+        {userCanValidate && (
           <Button
             onClick={() => setStatusFn('readyToValidate')}
             className={`dbi ${statusFilter === 'readyToValidate' ? activeClass : inactiveClass}`}
@@ -150,6 +148,7 @@ export function TaskFilter({ project, statusFilter, setStatusFn }: Object) {
 export function TaskList({
   project,
   tasks,
+  userCanValidate,
   activeFilter,
   selectTask,
   setZoomedTaskId,
@@ -253,7 +252,11 @@ export function TaskList({
             </div>
           </div>
         )}
-        <TaskFilter project={project} statusFilter={statusFilter} setStatusFn={setStatusFilter} />
+        <TaskFilter
+          userCanValidate={userCanValidate}
+          statusFilter={statusFilter}
+          setStatusFn={setStatusFilter}
+        />
       </div>
       <ReactPlaceholder
         showLoadingAnimation={true}
