@@ -41,7 +41,7 @@ export const ManagementSection = (props) => {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const isOrgManager = useSelector(
-    (state) => state.auth.get('organisations') && state.auth.get('organisations').length,
+    (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
   );
 
   return (
