@@ -59,15 +59,19 @@ export function TaskSelection({ project, type, loading }: Object) {
   useSetProjectPageTitleTag(project);
 
   const getActivities = useCallback((id) => {
-    fetchLocalJSONAPI(`projects/${id}/activities/latest/`)
-      .then((res) => setActivities(res))
-      .catch((e) => console.log(e));
+    if (id) {
+      fetchLocalJSONAPI(`projects/${id}/activities/latest/`)
+        .then((res) => setActivities(res))
+        .catch((e) => console.log(e));
+    }
   }, []);
 
   const getContributions = useCallback((id) => {
-    fetchLocalJSONAPI(`projects/${id}/contributions/`)
-      .then((res) => setContributions(res))
-      .catch((e) => console.log(e));
+    if (id) {
+      fetchLocalJSONAPI(`projects/${id}/contributions/`)
+        .then((res) => setContributions(res))
+        .catch((e) => console.log(e));
+    }
   }, []);
 
   // fetch activities and contributions when the component is started

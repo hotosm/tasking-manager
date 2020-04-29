@@ -20,7 +20,7 @@ export function TeamsManagement({
   setUserTeamsOnly,
 }: Object) {
   const isOrgManager = useSelector(
-    (state) => state.auth.get('organisations') && state.auth.get('organisations').length,
+    (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
   );
 
   return (

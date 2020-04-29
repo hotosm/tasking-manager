@@ -26,7 +26,7 @@ export function ListOrganisations() {
   const token = useSelector((state) => state.auth.get('token'));
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const isOrgManager = useSelector(
-    (state) => state.auth.get('organisations') && state.auth.get('organisations').length,
+    (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
   );
   const [organisations, setOrganisations] = useState(null);
   const [userOrgsOnly, setUserOrgsOnly] = useState(true);
