@@ -280,7 +280,9 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
             <FormattedMessage {...messages.organisation} />
           </h4>
           <p>
-            <img src={team.logo} alt="organisation logo" className="mw4" />
+            {typeof team.logo === 'string' && (
+              <img src={team.logo} alt="organisation logo" className="mw4" />
+            )}
           </p>
           <p>{team.organisation}</p>
         </div>
@@ -295,7 +297,7 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
                 username={user.username}
                 picture={user.pictureUrl}
                 size="large"
-                colorClasses="white bg-blue-grey"
+                colorClasses="white bg-blue-grey mv1"
               />
             ))}
           </div>
@@ -308,7 +310,7 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
                 key={n}
                 username={user.username}
                 picture={user.pictureUrl}
-                colorClasses="white bg-blue-grey"
+                colorClasses="white bg-blue-grey mv1"
               />
             ))}
           </div>

@@ -63,7 +63,7 @@ export function Members({ addMembers, removeMembers, saveMembersFn, members, typ
               username={user.username}
               picture={user.pictureUrl}
               size="large"
-              colorClasses="white bg-blue-grey"
+              colorClasses="white bg-blue-grey mv1"
               removeFn={members.length > 1 && removeMembers}
               editMode={members.length > 1 && editMode}
             />
