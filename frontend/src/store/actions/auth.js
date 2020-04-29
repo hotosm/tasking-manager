@@ -106,12 +106,13 @@ export const setAuthDetails = (username, token, osm_oauth_token, osm_oauth_token
   dispatch(setUserDetails(username, encoded_token));
 };
 
-export const setUserDetails = (username, encodedToken) => (dispatch) => {
-  // UPDATES OSM INFORMATION OF THE USER
-dispatch(setLoader(true));
+// UPDATES OSM INFORMATION OF THE USER
+export const setUserDetails = (username, encodedToken, update = false) => (dispatch) => {
+  // only trigger the loader if this function is not being triggered to update the user information
+  if (!update) dispatch(setLoader(true));
   fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encodedToken)
-    .then(osmInfo => dispatch(updateOSMInfo(osmInfo)))
-    .catch(error => {
+    .then((osmInfo) => dispatch(updateOSMInfo(osmInfo)))
+    .catch((error) => {
       console.log(error);
       dispatch(setLoader(false));
     });
@@ -144,8 +145,8 @@ export const getUserDetails = (state) => (dispatch) => {
   }
 };
 
-export const pushUserDetails = (userDetails, token) => (dispatch) => {
+export const pushUserDetails = (userDetails, token, update = false) => (dispatch) => {
   pushToLocalJSONAPI(`users/me/actions/set-user/`, userDetails, token, 'PATCH').then((data) =>
-    dispatch(setUserDetails(safeStorage.getItem('username'), token)),
+    dispatch(setUserDetails(safeStorage.getItem('username'), token, update)),
   );
 };

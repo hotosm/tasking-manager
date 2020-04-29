@@ -172,7 +172,7 @@ function _UserInformationForm(props) {
       </h3>
       <Form
         onSubmit={(values) =>
-          props.pushUserDetails(prepareUserDetailsToPush(values, formFields), props.token)
+          props.pushUserDetails(prepareUserDetailsToPush(values, formFields), props.token, true)
         }
         initialValues={props.userDetails}
         render={({ handleSubmit, pristine, form, submitting, values }) => (
@@ -365,7 +365,7 @@ function _SwitchToggleField(props) {
   const onSwitchChange = () => {
     let payload = {};
     payload[props.fieldName] = !value;
-    props.pushUserDetails(JSON.stringify(payload), props.token);
+    props.pushUserDetails(JSON.stringify(payload), props.token, true);
     setValue(!value);
   };
 
@@ -389,7 +389,7 @@ function _EditorDropdown(props) {
   const onEditorSelect = (arr) => {
     if (arr.length === 1) {
       setValue(arr[0].value);
-      props.pushUserDetails(JSON.stringify({ defaultEditor: arr[0].value }), props.token);
+      props.pushUserDetails(JSON.stringify({ defaultEditor: arr[0].value }), props.token, true);
     } else if (arr.length > 1) {
       throw new Error('filter select array is big');
     }
