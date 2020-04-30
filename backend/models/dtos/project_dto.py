@@ -488,6 +488,7 @@ class ProjectSummary(Model):
     project_info = ModelType(
         ProjectInfoDTO, serialized_name="projectInfo", serialize_when_none=False
     )
+    license_id = IntType(serialized_name="licenseId")
     short_description = StringType(serialized_name="shortDescription")
     status = StringType()
     imagery = StringType()
