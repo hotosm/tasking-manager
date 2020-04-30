@@ -743,6 +743,7 @@ class Project(db.Model):
         ).name
         summary.random_task_selection_enforced = self.enforce_random_task_selection
         summary.private = self.private
+        summary.license_id = self.license_id
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map
         summary.imagery = self.imagery
