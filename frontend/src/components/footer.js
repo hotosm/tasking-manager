@@ -26,7 +26,7 @@ const socialNetworks = [
 export function Footer({ location }: Object) {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
 
-  const noFooterViews = ['tasks', 'map', 'validate', 'new', 'membership'];
+  const noFooterViews = ['tasks', 'map', 'validate', 'new', 'membership', 'api-docs'];
   const activeView = location.pathname
     .split('/')
     .filter((i) => i !== '')
