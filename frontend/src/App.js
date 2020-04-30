@@ -40,6 +40,7 @@ import { MapTask, ValidateTask } from './views/taskAction';
 import { EmailVerification } from './views/verifyEmail';
 import { ProjectEdit } from './views/projectEdit';
 import { ContactPage } from './views/contact';
+import { SwaggerView } from './views/swagger';
 import { ContributionsPage, ContributionsPageIndex, UserStats } from './views/contributions';
 import {
   NotificationsPage,
@@ -47,13 +48,6 @@ import {
   NotificationDetail,
 } from './views/notifications';
 import { Banner } from './components/banner/index';
-
-const SwaggerView = React.lazy(() => import('./views/swagger'));
-const ApiDocsView = () => (
-  <React.Suspense fallback={<div className={`w7 h5 center`}>Loading...</div>}>
-    <SwaggerView />
-  </React.Suspense>
-);
 
 /*TODO(tdk): if QueryParamProvider is not needed elsewhere,
  *  create special sub-router for Projects page and wrap it only around that */
@@ -126,7 +120,7 @@ let App = (props) => {
                 </NotificationsPage>
                 <ProjectDetailPage path="projects/:id" />
                 <ContactPage path="contact/" />
-                <ApiDocsView path="/api-docs/" />
+                <SwaggerView path="/api-docs/" />
                 <Redirect from="project/:id" to="/projects/:id" noThrow />
                 <Redirect from="contribute/" to="/explore" noThrow />
                 <NotFound default />
