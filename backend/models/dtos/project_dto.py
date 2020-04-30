@@ -450,7 +450,7 @@ class ProjectSummary(Model):
     """ Model used for PM dashboard """
 
     project_id = IntType(required=True, serialized_name="projectId")
-    area = FloatType(serialized_name="projectArea(in sq.km)")
+    default_locale = StringType(serialized_name="defaultLocale")
     author = StringType()
     created = UTCDateTimeType()
     due_date = UTCDateTimeType(serialized_name="dueDate")
@@ -479,6 +479,9 @@ class ProjectSummary(Model):
         serialized_name="validationPermission",
         validators=[is_known_validation_permission],
     )
+    allowed_usernames = ListType(
+        StringType(), serialized_name="allowedUsernames", default=[]
+    )
     random_task_selection_enforced = BooleanType(
         required=False, default=False, serialized_name="enforceRandomTaskSelection"
     )
@@ -488,10 +491,11 @@ class ProjectSummary(Model):
     project_info = ModelType(
         ProjectInfoDTO, serialized_name="projectInfo", serialize_when_none=False
     )
-    license_id = IntType(serialized_name="licenseId")
     short_description = StringType(serialized_name="shortDescription")
     status = StringType()
     imagery = StringType()
+    license_id = IntType(serialized_name="licenseId")
+    id_presets = ListType(StringType, serialized_name="idPresets", default=[])
     mapping_editors = ListType(
         StringType,
         min_size=1,
