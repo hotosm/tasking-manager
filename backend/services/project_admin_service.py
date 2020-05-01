@@ -124,9 +124,6 @@ class ProjectAdminService:
         if project_dto.license_id:
             ProjectAdminService._validate_imagery_licence(project_dto.license_id)
 
-        if project_dto.private:
-            ProjectAdminService._validate_allowed_users(project_dto)
-
         if ProjectAdminService.is_user_action_permitted_on_project(
             authenticated_user_id, project_id
         ):
@@ -144,27 +141,6 @@ class ProjectAdminService:
             LicenseService.get_license_as_dto(license_id)
         except NotFound:
             raise ProjectAdminServiceError(f"LicenseId {license_id} not found")
-
-    @staticmethod
-    def _validate_allowed_users(project_dto: ProjectDTO):
-        """ Ensures that all usernames are known and returns their user ids """
-        if len(project_dto.allowed_usernames) == 0:
-            raise ProjectAdminServiceError(
-                "Must have at least one allowed user on a private project"
-            )
-
-        try:
-            allowed_users = []
-            for username in project_dto.allowed_usernames:
-                user = UserService.get_user_by_username(username)
-                allowed_users.append(user)
-
-            # Dynamically attach the user object to the DTO for more efficient persistence
-            project_dto.allowed_users = allowed_users
-        except NotFound:
-            raise ProjectAdminServiceError(
-                f"allowedUsers contains an unknown username {user}"
-            )
 
     @staticmethod
     def delete_project(project_id: int, authenticated_user_id: int):
