@@ -311,3 +311,33 @@ describe('PRIVATE projects', () => {
     expect(userCanMap(user, project, userTeams)).toBe(true);
   });
 });
+
+it('CAN be mapped by Organisation manager', () => {
+  const userTeams = [];
+  const userOrgs = [108];
+  const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
+  const project1 = {
+    mappingPermission: 'ANY',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+    organisation: 108,
+  };
+  const project2 = {
+    mappingPermission: 'TEAMS',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+    organisation: 108,
+  };
+  const project3 = {
+    mappingPermission: 'LEVEL',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+    organisation: 108,
+  };
+  const project4 = {
+    mappingPermission: 'TEAMS_LEVEL',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+    organisation: 108,
+  };
+  expect(userCanMap(user, project1, userTeams, userOrgs)).toBe(true);
+  expect(userCanMap(user, project2, userTeams, userOrgs)).toBe(true);
+  expect(userCanMap(user, project3, userTeams, userOrgs)).toBe(true);
+  expect(userCanMap(user, project4, userTeams, userOrgs)).toBe(true);
+});
