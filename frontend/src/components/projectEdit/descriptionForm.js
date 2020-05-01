@@ -27,8 +27,8 @@ export const DescriptionForm = ({ languages }) => {
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.status} />
         </label>
-        {projectStatusOptions.map(option => (
-          <label className="db pv2" key={option.value}>
+        {projectStatusOptions.map((option) => (
+          <label className="dib pr5" key={option.value}>
             <input
               value={option.value}
               checked={projectInfo.status === option.value}
@@ -49,8 +49,8 @@ export const DescriptionForm = ({ languages }) => {
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.priority} />
         </label>
-        {projectPriorityOptions.map(option => (
-          <label className="db pv2" key={option.value}>
+        {projectPriorityOptions.map((option) => (
+          <label className="dib pr5" key={option.value}>
             <input
               value={option.value}
               checked={projectInfo.projectPriority === option.value}
