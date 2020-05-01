@@ -12,10 +12,6 @@ from sqlalchemy import text, desc, func
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm.session import make_transient
-from geoalchemy2.shape import to_shape
-from shapely.ops import transform
-from functools import partial
-import pyproj
 import requests
 
 from backend import db
@@ -717,19 +713,7 @@ class Project(db.Model):
         else:
             summary.priority = "LOW"
         summary.author = User().get_by_id(self.author_id).username
-        polygon = to_shape(self.geometry)
-        polygon_aea = transform(
-            partial(
-                pyproj.transform,
-                pyproj.Proj(init="EPSG:4326"),
-                pyproj.Proj(
-                    proj="aea", lat_1=polygon.bounds[1], lat_2=polygon.bounds[3]
-                ),
-            ),
-            polygon,
-        )
-        area = polygon_aea.area / 1000000
-        summary.area = area
+        summary.default_locale = self.default_locale
         summary.country_tag = self.country
         summary.changeset_comment = self.changeset_comment
         summary.due_date = self.due_date
@@ -743,6 +727,7 @@ class Project(db.Model):
         ).name
         summary.random_task_selection_enforced = self.enforce_random_task_selection
         summary.private = self.private
+        summary.license_id = self.license_id
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map
         summary.imagery = self.imagery
