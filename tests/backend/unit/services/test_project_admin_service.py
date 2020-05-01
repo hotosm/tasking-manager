@@ -104,9 +104,10 @@ class TestProjectAdminService(unittest.TestCase):
             ProjectAdminService.update_project(dto, mock_user.id)
 
     @patch.object(User, "get_by_id")
+    @patch.object(Project, "update")
     @patch.object(Project, "get")
-    def test_updating_a_private_project_with_no_allowed_users_causes_an_error(
-        self, mock_project, mock_user
+    def test_updating_a_private_project_with_no_allowed_users(
+        self, mock_project, mock_project2, mock_user
     ):
         # Arrange
         mock_project.return_value = Project()
@@ -121,8 +122,10 @@ class TestProjectAdminService(unittest.TestCase):
 
         mock_user.return_value = stub_user
 
-        with self.assertRaises(ProjectAdminServiceError):
+        try:
             ProjectAdminService.update_project(dto, mock_user.id)
+        except ProjectAdminServiceError:
+            self.fail("update_project raised an exception when setting it as private")
 
     @patch.object(User, "get_by_id")
     @patch.object(Project, "update")
