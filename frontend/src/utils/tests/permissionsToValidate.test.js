@@ -301,3 +301,33 @@ describe('PRIVATE projects', () => {
     expect(userCanValidate(user, project, userTeams)).toBe(true);
   });
 });
+
+it('CAN be validated by Organisation manager', () => {
+  const userTeams = [];
+  const userOrgs = [108];
+  const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
+  const project1 = {
+    mappingPermission: 'ANY',
+    teams: [{ teamId: 7, role: 'VALIDATOR' }],
+    organisation: 108,
+  };
+  const project2 = {
+    mappingPermission: 'TEAMS',
+    teams: [{ teamId: 7, role: 'VALIDATOR' }],
+    organisation: 108,
+  };
+  const project3 = {
+    mappingPermission: 'LEVEL',
+    teams: [{ teamId: 7, role: 'VALIDATOR' }],
+    organisation: 108,
+  };
+  const project4 = {
+    mappingPermission: 'TEAMS_LEVEL',
+    teams: [{ teamId: 7, role: 'VALIDATOR' }],
+    organisation: 108,
+  };
+  expect(userCanValidate(user, project1, userTeams, userOrgs)).toBe(true);
+  expect(userCanValidate(user, project2, userTeams, userOrgs)).toBe(true);
+  expect(userCanValidate(user, project3, userTeams, userOrgs)).toBe(true);
+  expect(userCanValidate(user, project4, userTeams, userOrgs)).toBe(true);
+});

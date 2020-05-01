@@ -1,6 +1,7 @@
-export function userCanMap(user, project, userTeams = []) {
+export function userCanMap(user, project, userTeams = [], userOrgs = []) {
   if (user.role === 'READ_ONLY') return false;
   if (user.role === 'ADMIN') return true;
+  if (project.organisation && userOrgs.includes(project.organisation)) return true;
   const projectTeamsIds = project.teams
     .filter((team) => ['MAPPER', 'VALIDATOR', 'PROJECT_MANAGER'].includes(team.role))
     .map((team) => team.teamId);
@@ -36,9 +37,10 @@ export function userCanMap(user, project, userTeams = []) {
   }
 }
 
-export function userCanValidate(user, project, userTeams = []) {
+export function userCanValidate(user, project, userTeams = [], userOrgs = []) {
   if (user.role === 'READ_ONLY') return false;
   if (user.role === 'ADMIN') return true;
+  if (project.organisation && userOrgs.includes(project.organisation)) return true;
   const projectTeamsIds = project.teams
     .filter((team) => ['VALIDATOR', 'PROJECT_MANAGER'].includes(team.role))
     .map((team) => team.teamId);
@@ -98,14 +100,15 @@ export function getMessageOnValidationContext(mappingIsPossible, taskStatus) {
   return 'validateATask';
 }
 
-export function getTaskAction(user, project, taskStatus, userTeams = []) {
+export function getTaskAction(user, project, taskStatus, userTeams = [], userOrgs = []) {
   // nothing more to do if all tasks are validated or set as BADIMAGERY
   if (project.percentValidated + project.percentBadImagery >= 100) {
     return 'projectIsComplete';
   }
-  const validationIsPossible = userCanValidate(user, project, userTeams);
+  const validationIsPossible = userCanValidate(user, project, userTeams, userOrgs);
   const mappingIsPossible =
-    userCanMap(user, project, userTeams) && project.percentMapped + project.percentBadImagery < 100;
+    userCanMap(user, project, userTeams, userOrgs) &&
+    project.percentMapped + project.percentBadImagery < 100;
 
   if (validationIsPossible) {
     return getMessageOnValidationContext(mappingIsPossible, taskStatus);
