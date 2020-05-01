@@ -43,6 +43,7 @@ const getRandomTaskByAction = (activities, taskAction) => {
 
 export function TaskSelection({ project, type, loading }: Object) {
   const user = useSelector((state) => state.auth.get('userDetails'));
+  const userOrgs = useSelector((state) => state.auth.get('organisations'));
   const lockedTasks = useSelector((state) => state.lockedTasks);
   const dispatch = useDispatch();
   const [tasks, setTasks] = useState();
@@ -157,11 +158,21 @@ export function TaskSelection({ project, type, loading }: Object) {
         dispatch({ type: 'SET_TASKS_STATUS', status: lockedByCurrentUser[0].taskStatus });
       } else {
         // otherwise we check if the user can map or validate the project
-        setTaskAction(getTaskAction(user, project, null, userTeams.teams));
+        setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
       }
       setMapInit(true);
     }
-  }, [lockedTasks, dispatch, activities, user.username, mapInit, project, user, userTeams.teams]);
+  }, [
+    lockedTasks,
+    dispatch,
+    activities,
+    user.username,
+    mapInit,
+    project,
+    user,
+    userTeams.teams,
+    userOrgs,
+  ]);
 
   // chooses a random task to the user
   useEffect(() => {
@@ -174,12 +185,12 @@ export function TaskSelection({ project, type, loading }: Object) {
     // if selection is an array, just update the state
     if (typeof selection === 'object') {
       setSelectedTasks(selection);
-      setTaskAction(getTaskAction(user, project, status));
+      setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));
     } else {
       // unselecting tasks
       if (selected.includes(selection)) {
         setSelectedTasks([]);
-        setTaskAction(getTaskAction(user, project, null, userTeams.teams));
+        setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
       } else {
         setSelectedTasks([selection]);
         if (lockedTasks.get('tasks').includes(selection)) {
@@ -189,7 +200,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               : 'resumeValidation',
           );
         } else {
-          setTaskAction(getTaskAction(user, project, status, userTeams.teams));
+          setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));
         }
       }
     }
