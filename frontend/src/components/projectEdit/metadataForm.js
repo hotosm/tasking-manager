@@ -63,7 +63,7 @@ export const MetadataForm = () => {
           <FormattedMessage {...messages.mapperLevelDescription} />
         </p>
         {mapperLevels.map((level) => (
-          <label className="db pv2" key={level}>
+          <label className="dib pr5" key={level}>
             <input
               value={level}
               checked={projectInfo.mapperLevel === level}
