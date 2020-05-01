@@ -733,6 +733,7 @@ class Project(db.Model):
         summary.entities_to_map = self.entities_to_map
         summary.imagery = self.imagery
         if self.organisation_id:
+            summary.organisation = self.organisation_id
             summary.organisation_name = self.organisation.name
             summary.organisation_logo = self.organisation.logo
 

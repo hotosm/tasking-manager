@@ -457,6 +457,7 @@ class ProjectSummary(Model):
     last_updated = UTCDateTimeType(serialized_name="lastUpdated")
     priority = StringType(serialized_name="projectPriority")
     campaigns = ListType(ModelType(CampaignDTO), default=[])
+    organisation = IntType()
     organisation_name = StringType(serialized_name="organisationName")
     organisation_logo = StringType(serialized_name="organisationLogo")
     country_tag = ListType(StringType, serialized_name="countryTag")
