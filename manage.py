@@ -153,19 +153,12 @@ def update_project_categories(filename):
             project_id = int(row.get("projectId"))
             primary_category = row.get("primaryCat")
             interest_ids = []
+            # Map only primary_category interest to projects
             if primary_category:
                 try:
                     interest = InterestService.get_by_name(primary_category)
                 except NotFound:
                     interest = InterestService.create(primary_category)
-                interest_ids.append(interest.id)
-
-            secondary_category = row.get("secondaryCat")
-            if secondary_category:
-                try:
-                    interest = InterestService.get_by_name(secondary_category)
-                except NotFound:
-                    interest = InterestService.create(secondary_category)
                 interest_ids.append(interest.id)
 
             try:
