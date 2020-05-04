@@ -20,7 +20,7 @@ import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { UserFetchTextarea } from '../projectDetail/questionsAndComments';
-import { useFetchLockedTasks } from '../../hooks/UseLockedTasks';
+import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedTasks';
 
 export function CompletionTabForMapping({
   project,
@@ -37,6 +37,7 @@ export function CompletionTabForMapping({
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
   const fetchLockedTasks = useFetchLockedTasks();
+  const clearLockedTasks = useClearLockedTasks();
 
   const splitTask = () => {
     if (!disabled) {
@@ -44,7 +45,10 @@ export function CompletionTabForMapping({
         `projects/${project.projectId}/tasks/actions/split/${tasksIds[0]}/`,
         token,
         'POST',
-      ).then((r) => navigate(`../tasks/`));
+      ).then((r) => {
+        clearLockedTasks();
+        navigate(`../tasks/`);
+      });
     } else {
       setShowMapChangesModal('split');
     }
@@ -56,7 +60,10 @@ export function CompletionTabForMapping({
         `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`,
         JSON.stringify({ comment: taskComment }),
         token,
-      ).then((r) => navigate(`/projects/${project.projectId}/tasks/`));
+      ).then((r) => {
+        clearLockedTasks();
+        navigate(`/projects/${project.projectId}/tasks/`);
+      });
     } else {
       setShowMapChangesModal('unlock');
     }
@@ -201,6 +208,8 @@ export function CompletionTabForValidation({
 }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
+  const fetchLockedTasks = useFetchLockedTasks();
+  const clearLockedTasks = useClearLockedTasks();
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
 
   const stopValidation = () => {
@@ -211,7 +220,10 @@ export function CompletionTabForValidation({
           resetTasks: tasksIds.map((taskId) => ({ taskId: taskId, comment: taskComment })),
         }),
         token,
-      ).then((r) => navigate(`../tasks/`));
+      ).then((r) => {
+        clearLockedTasks();
+        navigate(`../tasks/`);
+      });
     } else {
       setShowMapChangesModal('unlock');
     }
@@ -233,7 +245,10 @@ export function CompletionTabForValidation({
       if (selectedStatus === 'INVALIDATED') {
         url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
       }
-      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => navigate(`../tasks/`));
+      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
+        fetchLockedTasks();
+        navigate(`../tasks/`);
+      });
     }
   };
 
