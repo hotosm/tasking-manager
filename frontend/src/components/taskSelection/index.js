@@ -7,6 +7,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { useFetch } from '../../hooks/UseFetch';
 import { useInterval } from '../../hooks/UseInterval';
+import { useGetLockedTasks } from '../../hooks/UseLockedTasks';
 import { useMemoCompare } from '../../hooks/UseMemoCompare';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { getTaskAction, userCanValidate } from '../../utils/projectPermissions';
@@ -44,7 +45,7 @@ const getRandomTaskByAction = (activities, taskAction) => {
 export function TaskSelection({ project, type, loading }: Object) {
   const user = useSelector((state) => state.auth.get('userDetails'));
   const userOrgs = useSelector((state) => state.auth.get('organisations'));
-  const lockedTasks = useSelector((state) => state.lockedTasks);
+  const lockedTasks = useGetLockedTasks();
   const dispatch = useDispatch();
   const [tasks, setTasks] = useState();
   const [activities, setActivities] = useState();
