@@ -166,6 +166,7 @@
   "project.card.lastContribution": "Legutóbbi szerkesztés",
   "project.card.percentMapped": "Feltérképezve",
   "project.card.percentValidated": "Érvényesítve",
+  "project.card.percentBadImagery": "",
   "project.card.projectPriorityUrgent": "Sürgős",
   "project.card.projectPriorityHigh": "Magas",
   "project.card.projectPriorityMedium": "Közepes",
