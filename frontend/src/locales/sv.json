@@ -166,6 +166,7 @@
   "project.card.lastContribution": "Senaste bidrag",
   "project.card.percentMapped": "Kartad",
   "project.card.percentValidated": "Validerad",
+  "project.card.percentBadImagery": "",
   "project.card.projectPriorityUrgent": "Brådskande",
   "project.card.projectPriorityHigh": "Högt",
   "project.card.projectPriorityMedium": "Medium",

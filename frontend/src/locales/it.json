@@ -166,6 +166,7 @@
   "project.card.lastContribution": "Ultimo contributo",
   "project.card.percentMapped": "Mappato",
   "project.card.percentValidated": "Validato",
+  "project.card.percentBadImagery": "Foto aeree inutilizzabili",
   "project.card.projectPriorityUrgent": "Urgente",
   "project.card.projectPriorityHigh": "Alta",
   "project.card.projectPriorityMedium": "Medio",

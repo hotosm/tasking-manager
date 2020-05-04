@@ -170,7 +170,7 @@ const LearnToManage = ({ section }) => {
   const tutorials = [
     {
       message: 'learnOSMTutorial',
-      url: 'http://nick-tallguy.github.io/en/coordination/tm-admin/',
+      url: 'https://learnosm.org/en/coordination/tm-admin/',
       img: LearnOSMLogo,
     },
   ];
@@ -250,7 +250,7 @@ const LearnToMap = ({ section }) => {
     },
     {
       message: 'learnTMManualTutorial',
-      url: 'http://nick-tallguy.github.io/en/coordination/tm-user/',
+      url: 'https://learnosm.org/en/coordination/tm-user/',
       img: LearnOSMLogo,
     },
     {
