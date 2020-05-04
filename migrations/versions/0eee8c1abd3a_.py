@@ -45,9 +45,10 @@ def upgrade():
         count = count + 1
         project_id = project[0]
         try:
-            project_centroid = shapely.wkt.loads(str(project[1]))
+            project_centroid = shapely.wkt.loads(project[1])
         except Exception as e:
-            print(e)
+            sys.stdout.write("\033[K")
+            print("Geometry Exception: Project " + str(project_id) + " " + str(e))
             continue
 
         if not project_centroid.is_valid:
