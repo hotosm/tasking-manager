@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
+import { useGetLockedTasks } from '../../hooks/UseLockedTasks';
 
 export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Object) {
   return (
@@ -130,7 +131,7 @@ export function LockError() {
 }
 
 export function LockedTaskModalContent({ project, error, close, lockTasks }: Object) {
-  const lockedTasks = useSelector((state) => state.lockedTasks);
+  const lockedTasks = useGetLockedTasks();
   const action = lockedTasks.get('status') === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
   return (
     <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
