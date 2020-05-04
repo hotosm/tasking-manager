@@ -48,7 +48,7 @@ const clearParamsStep = props => {
   switch (props.index) {
     case 2: //clear Tasks
       props.mapObj.map.removeLayer('grid');
-      props.updateMetadata({ ...props.metadata, tasksNo: 0, taskGrid: null, tempTaskGrid: null });
+      props.updateMetadata({ ...props.metadata, tasksNo: 0});
       break;
     case 3:
       props.updateMetadata({ ...props.metadata, taskGrid: props.metadata.tempTaskGrid });
