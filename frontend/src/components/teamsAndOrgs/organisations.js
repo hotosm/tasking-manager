@@ -51,23 +51,11 @@ export function OrganisationCard({ details }: Object) {
     <Link to={`${details.organisationId}/`} className="w-50-l w-100 fl pr3">
       <div className="bg-white blue-dark mv2 pb4 dib w-100 ba br1 b--grey-light shadow-hover">
         <div className="w-25 h4 fl pa3">
-          {details.logo && <img src={details.logo} alt={`${details.name} logo`} className="w-80" />}
+          {details.logo && <img src={details.logo} alt={`${details.name} logo`} className="w-70" />}
         </div>
         <div className="w-75 fl pl3">
           <div className="w-100 dib">
             <h3 className="barlow-condensed ttu f3 mb2 mt2 truncate">{details.name}</h3>
-            <span>
-              {details.url && (
-                <a
-                  className="blue-grey link pointer"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={details.url}
-                >
-                  {details.url}
-                </a>
-              )}
-            </span>
           </div>
           <div className="w-100 dib pt2 fl">
             <h4 className="ttu blue-grey f6">

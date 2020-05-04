@@ -108,7 +108,7 @@ export function TeamCard({ team, managementView }: Object) {
             <UserAvatarList
               size="small"
               textColor="white"
-              users={team.members.filter((user) => user.function === 'MANAGER')}
+              users={team.members.filter((user) => user.function === 'MANAGER' && user.active)}
               maxLength={8}
             />
           </div>
@@ -119,7 +119,7 @@ export function TeamCard({ team, managementView }: Object) {
             <UserAvatarList
               size="small"
               textColor="white"
-              users={team.members.filter((user) => user.function !== 'MANAGER')}
+              users={team.members.filter((user) => user.function !== 'MANAGER' && user.active)}
               maxLength={8}
             />
           </div>
