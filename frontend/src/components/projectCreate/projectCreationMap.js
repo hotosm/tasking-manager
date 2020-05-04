@@ -92,7 +92,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step 
           addLayer('aoi', metadata.geom, mapObj.map);
         }
 
-        if (metadata.taskGrid && step === 2) {
+        if (metadata.taskGrid && step !== 1) {
           addLayer('grid', metadata.taskGrid, mapObj.map);
         } else {
           mapObj.map.removeLayer('grid');
