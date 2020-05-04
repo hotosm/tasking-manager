@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
-import { MappingIcon, ValidationIcon, DataUseIcon } from '../svgIcons';
 
 import messages from './messages';
+import { MappingIcon, ValidationIcon, DataUseIcon } from '../svgIcons';
 
 function MappingCard({ image, title, description }: Object) {
   return (
