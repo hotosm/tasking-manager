@@ -24,7 +24,7 @@ export const useFetchLockedTasks = () => {
 
 export const useClearLockedTasks = () => {
   const dispatch = useDispatch();
-  const memoCallback = useCallback(async () => {
+  const memoCallback = useCallback(() => {
     dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
     dispatch({ type: 'SET_PROJECT', project: null });
     dispatch({ type: 'SET_TASKS_STATUS', status: null });
