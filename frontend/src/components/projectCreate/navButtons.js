@@ -51,7 +51,7 @@ const clearParamsStep = props => {
       props.updateMetadata({ ...props.metadata, tasksNo: 0, taskGrid: null, tempTaskGrid: null });
       break;
     case 3:
-      props.updateMetadata({ ...props.metadata, tempTaskGrid: null });
+      props.updateMetadata({ ...props.metadata, taskGrid: props.metadata.tempTaskGrid });
       break;
     default:
       break;
