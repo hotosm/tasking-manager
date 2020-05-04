@@ -4,12 +4,10 @@
     max-height: 100vh;
     overflow-y: scroll;
   }
-
   .user-popup-content {
     width: 70% !important;
     left: 15% !important;
   }
-
   .user-popup-overlay {
     background-color: $blue-dark;
     opacity: 0.8;
@@ -17,6 +15,11 @@
 }
 
 @media screen and (min-width: 30em) {
+  #jumbotron {
+    video, img {
+      object-position: 0 0;
+    }
+  }
   .vh-minus-200-ns {
     height: calc(100vh - 200px);
   }
@@ -69,10 +72,6 @@
 
 .bg-split-white-grey-light {
   background: linear-gradient(to right, $white, $white 20%, $grey-light 20%, $grey-light);
-}
-
-.bg-jumbotron {
-  background: url('../img/hero_banner.jpg') left;
 }
 
 .bg-sec-jumbotron {
@@ -222,4 +221,8 @@ div.messageBodyLinks {
 
 .mapbox-improve-map {
   display: none;
+}
+
+.object-fit-cover {
+  object-fit: cover;
 }

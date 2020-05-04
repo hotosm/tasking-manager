@@ -44,6 +44,9 @@ it('exports MATOMO_ID', () => {
   expect(typeof config.MATOMO_ID).toBe('string');
 });
 it('exports IMAGE_UPLOAD_SERVICE', () => {
+  expect(typeof config.HOMEPAGE_VIDEO_URL).toBe('string');
+});
+it('exports IMAGE_UPLOAD_SERVICE', () => {
   expect(typeof config.IMAGE_UPLOAD_SERVICE).toBe('boolean');
 });
 it('exports DEFAULT locale to be english', () => {
