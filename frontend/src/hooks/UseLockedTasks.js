@@ -21,3 +21,13 @@ export const useFetchLockedTasks = () => {
   }, [token, dispatch]);
   return memoCallback;
 };
+
+export const useClearLockedTasks = () => {
+  const dispatch = useDispatch();
+  const memoCallback = useCallback(async () => {
+    dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
+    dispatch({ type: 'SET_PROJECT', project: null });
+    dispatch({ type: 'SET_TASKS_STATUS', status: null });
+  }, [dispatch]);
+  return memoCallback;
+};
