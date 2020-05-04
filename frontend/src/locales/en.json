@@ -166,6 +166,7 @@
   "project.card.lastContribution": "Last contribution",
   "project.card.percentMapped": "Mapped",
   "project.card.percentValidated": "Validated",
+  "project.card.percentBadImagery": "Bad imagery",
   "project.card.projectPriorityUrgent": "Urgent",
   "project.card.projectPriorityHigh": "High",
   "project.card.projectPriorityMedium": "Medium",

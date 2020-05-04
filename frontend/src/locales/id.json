@@ -166,6 +166,7 @@
   "project.card.lastContribution": "Kontribusi terakhir",
   "project.card.percentMapped": "Dipetakan",
   "project.card.percentValidated": "Divalidasi",
+  "project.card.percentBadImagery": "Citra satelit buruk",
   "project.card.projectPriorityUrgent": "Urgen",
   "project.card.projectPriorityHigh": "Tinggi",
   "project.card.projectPriorityMedium": "Sedang",
