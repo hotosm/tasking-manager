@@ -44,7 +44,11 @@ def upgrade():
     for project in projects:
         count = count + 1
         project_id = project[0]
-        project_centroid = shapely.wkt.loads(project[1])
+        try:
+            project_centroid = shapely.wkt.loads(str(project[1]))
+        except Exception as e:
+            print(e)
+            continue
 
         if not project_centroid.is_valid:
             project_centroid = project_centroid.buffer(0)
