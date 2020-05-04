@@ -358,7 +358,7 @@ workflows:
               - deployment/hot-tasking-manager
         requires:
           - build
-        stack_name: "production"
+        stack_name: "tm4-production"
         environment_name: "production"
         autoscaling_policy: "production"
         postgres_db: POSTGRES_DB_PRODUCTION
