@@ -61,7 +61,7 @@ let App = (props) => {
       {isLoading ? (
         <Preloader />
       ) : (
-        <div className="App w-100 base-font bg-white">
+        <div className="w-100 base-font bg-white" lang={props.locale}>
           <Router>
             <Header path="/*" />
           </Router>
@@ -139,6 +139,7 @@ let App = (props) => {
 
 const mapStateToProps = (state) => ({
   isLoading: state.loader.isLoading,
+  locale: state.preferences.locale,
 });
 
 App = connect(mapStateToProps)(App);
