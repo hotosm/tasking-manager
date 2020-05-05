@@ -154,6 +154,8 @@ jobs:
         type: env_var_name
       org_github:
         type: env_var_name
+      org_homepage_video_url:
+        type: env_var_name
       log_level:
         type: enum
         enum: ["INFO", "DEBUG"]
@@ -273,6 +275,7 @@ jobs:
           export TM_ORG_INSTAGRAM=${<< parameters.org_instagram >>}
           export TM_ORG_YOUTUBE=${<< parameters.org_youtube >>}
           export TM_ORG_GITHUB=${<< parameters.org_github >>}
+          export TM_HOMEPAGE_VIDEO_URL=${<< parameters.org_homepage_video_url >>}
           export TM_APP_API_URL="https://tasking-manager-<< parameters.stack_name >>-api.hotosm.org"
           export TM_IMAGE_UPLOAD_API_URL=${<< parameters.upload_api_url >>}
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
@@ -348,6 +351,7 @@ workflows:
         org_instagram: TM_ORG_INSTAGRAM             #=https://www.instagram.com/hot.osm/
         org_youtube: TM_ORG_YOUTUBE                 #=https://www.youtube.com/user/hotosm
         org_github: TM_ORG_GITHUB                   #=https://github.com/hotosm/
+        org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL #=https://cdn.hotosm.org/tasking-manager/mapping.mp4
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
     - deploy:
@@ -394,6 +398,7 @@ workflows:
         org_instagram: TM_ORG_INSTAGRAM
         org_youtube: TM_ORG_YOUTUBE
         org_github: TM_ORG_GITHUB
+        org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
     - deploy:
@@ -440,6 +445,7 @@ workflows:
         org_instagram: TM_ORG_INSTAGRAM
         org_youtube: TM_ORG_YOUTUBE
         org_github: TM_ORG_GITHUB
+        org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
     - deploy:
@@ -486,6 +492,7 @@ workflows:
         org_instagram: TM_ORG_INSTAGRAM
         org_youtube: TM_ORG_YOUTUBE
         org_github: TM_ORG_GITHUB
+        org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
     - deploy:
@@ -532,5 +539,6 @@ workflows:
         org_instagram: TM_ORG_INSTAGRAM
         org_youtube: TM_ORG_YOUTUBE
         org_github: TM_ORG_GITHUB
+        org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
