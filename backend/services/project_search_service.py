@@ -83,7 +83,7 @@ class ProjectSearchService:
                 Organisation.name.label("organisation_name"),
                 Organisation.logo.label("organisation_logo"),
             )
-            .filter(Project.private is not True)
+            .filter(Project.private.is_(False))
             .outerjoin(Organisation, Organisation.id == Project.organisation_id)
             .group_by(Organisation.id, Project.id)
         )
