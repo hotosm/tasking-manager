@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
-import { ListIcon, PlayIcon, ClockIcon } from '../svgIcons';
+import { ListIcon, ResumeIcon, ClockIcon } from '../svgIcons';
 import { TaskStatus } from '../taskSelection/taskList';
 import { TaskActivity } from '../taskSelection/taskActivity';
 
@@ -104,7 +104,7 @@ export function TaskCard({
               ) && (
                 <Link to={`/projects/${projectId}/tasks#search=${taskId}`}>
                   <div className={`dn dib-l link pv2 ph3 mh3 mv1 bg-red white f7 fr`}>
-                    <PlayIcon className={`ph1 dib-l dn`} />
+                    <ResumeIcon className={`ph1 dib-l dn`} />
                     <FormattedMessage {...messages.resumeTask} />
                   </div>
                 </Link>
