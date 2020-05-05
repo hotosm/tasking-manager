@@ -133,14 +133,15 @@ export function LockError() {
 export function LockedTaskModalContent({ project, error, close, lockTasks }: Object) {
   const lockedTasks = useGetLockedTasks();
   const action = lockedTasks.get('status') === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
+  const isConflict = ['Conflict', 'CONFLICT', 'conflict'].includes(error);
   return (
     <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
-      {!lockedTasks.get('project') && error === 'CONFLICT' ? (
+      {!lockedTasks.get('project') && isConflict ? (
         <LicenseError id={project.licenseId} close={close} lockTasks={lockTasks} />
       ) : null}
 
       {/* User has not tasks locked, but other error happened */}
-      {!lockedTasks.get('project') && error !== 'CONFLICT' && <LockError />}
+      {!lockedTasks.get('project') && !isConflict && <LockError />}
       {/* User has tasks locked on another project */}
       {lockedTasks.get('project') && lockedTasks.get('project') !== project.projectId && (
         <AnotherProjectLock
