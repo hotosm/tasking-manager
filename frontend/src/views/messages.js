@@ -195,9 +195,13 @@ export default defineMessages({
     defaultMessage:
       'You can start your journey now. You do not have to ask permission before adding or modifying existing data. If you believe that you can improve something, then do it. But always remember, with great power comes great responsibility.',
   },
-  learnTutorialsTitle: {
-    id: 'pages.learn.tutorials.title',
-    defaultMessage: 'tutorials & guides',
+  learnVideosTitle: {
+    id: 'pages.learn.videos.title',
+    defaultMessage: 'Videos',
+  },
+  learnManualsTitle: {
+    id: 'pages.learn.manuals.title',
+    defaultMessage: 'Manuals',
   },
   learnQuickStartTutorialTitle: {
     id: 'pages.learn.tutorials.quick_start.title',
@@ -258,6 +262,30 @@ export default defineMessages({
     id: 'pages.learn.map.steps.map.description',
     defaultMessage:
       'If you are new to mapping we recommend checking the manuals below before you start mapping.',
+  },
+  learnSignUpTitle: {
+    id: 'pages.learn.videos.signup.title',
+    defaultMessage: 'Sign up on Tasking Manager',
+  },
+  learnSignUpDescription: {
+    id: 'pages.learn.videos.signup.description',
+    defaultMessage: 'Learn how to Sign Up on Tasking Manager.',
+  },
+  learnMapRoadsTitle: {
+    id: 'pages.learn.videos.map_roads.title',
+    defaultMessage: 'Mapping roads',
+  },
+  learnMapRoadsDescription: {
+    id: 'pages.learn.videos.map_roads.description',
+    defaultMessage: 'Learn how to map roads on OpenStreetMap.',
+  },
+  learnMapBuildingsTitle: {
+    id: 'pages.learn.videos.map_buildings.title',
+    defaultMessage: 'Select a task & mapping buildings',
+  },
+  learnMapBuildingsDescription: {
+    id: 'pages.learn.videos.map_buildings.description',
+    defaultMessage: 'Learn how to map buildings on OpenStreetMap.',
   },
   learnValidateTitle: {
     id: 'pages.learn.validate_title',
@@ -348,8 +376,7 @@ export default defineMessages({
   },
   quickstartTitle: {
     id: 'pages.quickstart.title',
-    defaultMessage:
-      'Quickstart guide',
+    defaultMessage: 'Quickstart guide',
   },
   quickstartIntro: {
     id: 'pages.quickstart.intro',
@@ -363,8 +390,7 @@ export default defineMessages({
   },
   quickstartStep1Note: {
     id: 'pages.quickstart.quickstartStep1Note',
-    defaultMessage:
-      'Do you have an OpenStreetMap account already? You can skip ahead to step 4.',
+    defaultMessage: 'Do you have an OpenStreetMap account already? You can skip ahead to step 4.',
   },
   quickstartStep2: {
     id: 'pages.quickstart.quickstartStep2',
@@ -378,8 +404,7 @@ export default defineMessages({
   },
   quickstartStep4: {
     id: 'pages.quickstart.quickstartStep4',
-    defaultMessage:
-      'Close the tab and go back to the {tmHomepage}. Click the button to {logIn}.',
+    defaultMessage: 'Close the tab and go back to the {tmHomepage}. Click the button to {logIn}.',
   },
   quickstartStep5: {
     id: 'pages.quickstart.quickstartStep5',
@@ -403,8 +428,7 @@ export default defineMessages({
   },
   quickstartStep8: {
     id: 'pages.quickstart.quickstartStep8',
-    defaultMessage:
-      'This opens the editor; map all the features asked for in the instructions.',
+    defaultMessage: 'This opens the editor; map all the features asked for in the instructions.',
   },
   quickstartStep8Note: {
     id: 'pages.quickstart.quickstartStep8Note',
@@ -413,8 +437,7 @@ export default defineMessages({
   },
   quickstartStep9: {
     id: 'pages.quickstart.quickstartStep9',
-    defaultMessage:
-      'When finished mapping, save your edits and select the button {submitTask}.',
+    defaultMessage: 'When finished mapping, save your edits and select the button {submitTask}.',
   },
   quickstartStep9Note: {
     id: 'pages.quickstart.quickstartStep9Note',
@@ -488,15 +511,18 @@ export default defineMessages({
   },
   updateError: {
     id: 'pages.edit_project.actions.update.error',
-    defaultMessage: 'Saving the project failed because of a Server Error. Please try again later or contact the administrator if problem persists.',
+    defaultMessage:
+      'Saving the project failed because of a Server Error. Please try again later or contact the administrator if problem persists.',
   },
   missingFields: {
     id: 'pages.edit_project.actions.missing_fields',
-    defaultMessage: 'Saving the project failed because you need to provide information for these required fields:',
+    defaultMessage:
+      'Saving the project failed because you need to provide information for these required fields:',
   },
   missingFieldsForLocale: {
     id: 'pages.edit_project.actions.missing_fields_for_locale',
-    defaultMessage: 'Saving the project failed because you need to provide information for these fields in your default language ({locale}):',
+    defaultMessage:
+      'Saving the project failed because you need to provide information for these fields in your default language ({locale}):',
   },
   projectEditSection_description: {
     id: 'pages.edit_project.sections.description',

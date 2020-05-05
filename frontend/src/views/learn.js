@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
+import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { TopBar } from '../components/header/topBar';
+import { PlayIcon, CloseIcon } from '../components/svgIcons';
 
 import CommunityLogo from '../assets/img/icons/community.jpg';
 import EmergencyMappingLogo from '../assets/img/icons/emergency-mapping.jpg';
 import TechnicalLogo from '../assets/img/icons/technical.jpg';
-
 import ValidateStepIdentity from '../assets/img/icons/validate_step_identify.png';
 import ValidateStepBuild from '../assets/img/icons/validate_step_build.png';
 import ValidateStepCollaborate from '../assets/img/icons/validate_step_collaborate.png';
-
 import SelectProject from '../assets/img/icons/map_step_select_project.png';
 import SelectTask from '../assets/img/icons/map_step_select_task.png';
 import MapOSM from '../assets/img/icons/map_step_osm.png';
 import LearnOSMLogo from '../assets/img/learn-osm-logo.svg';
 import QuickstartLogo from '../assets/img/info-logo.svg';
-import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 const LearnNav = ({ sections, section, setSection }) => {
   useSetTitleTag('Learn');
@@ -87,41 +87,113 @@ const Intro = ({ section, messagesObjs }) => {
   );
 };
 
-const Tutorials = ({ tutorials }) => {
+const Videos = ({ contents }) => {
+  const [activeVideo, setActiveVideo] = useState(null);
   return (
     <div className="mv3">
       <h3 className="f2 ttu barlow-condensed fw6">
-        <FormattedMessage {...messages.learnTutorialsTitle} />
+        <FormattedMessage {...messages.learnVideosTitle} />
       </h3>
       <div className="w-100 cf">
-        {tutorials.map((v) => {
+        {contents.map((content) => {
+          return (
+            <div className="w-25-l w-third-m w-100 fl ph2">
+              <div className="shadow-4 pointer" onClick={() => setActiveVideo(content)}>
+                <div
+                  className="bg-tan w-100 tc h5-l h4"
+                  style={{
+                    background: `linear-gradient(rgba(0, 0, 0, 0.3) 100%, rgba(0, 0, 0, 0.3) 100%), url(https://img.youtube.com/vi/${content.youTubeId}/hqdefault.jpg) no-repeat center`,
+                    backgroundSize: 'cover',
+                  }}
+                >
+                  <PlayIcon className="white pv5-l pv0 mv3" height="6rem" />
+                </div>
+                <div className="pa3 db" style={{ height: '8rem' }}>
+                  <p className="fw7 f4 mt0 blue-dark">
+                    <FormattedMessage {...messages[`${content.message}Title`]} />
+                  </p>
+                  <p className="blue-grey lh-title f5 db">
+                    <FormattedMessage {...messages[`${content.message}Description`]} />
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {activeVideo && (
+        <Popup
+          modal
+          open
+          closeOnEscape={true}
+          closeOnDocumentClick={true}
+          onClose={() => setActiveVideo(null)}
+        >
+          {(close) => (
+            <div className="pa3 blue-dark">
+              <CloseIcon
+                className="fr pointer"
+                width="18px"
+                height="18px"
+                onClick={() => close()}
+              />
+              <h3 className="mt0">
+                <FormattedMessage {...messages[`${activeVideo.message}Title`]} />
+              </h3>
+              <div className="tc">
+                <iframe
+                  title="videotutorial"
+                  width="560"
+                  height="315"
+                  src={`https://www.youtube.com/embed/${activeVideo.youTubeId}?autoplay=1`}
+                  frameborder="0"
+                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            </div>
+          )}
+        </Popup>
+      )}
+    </div>
+  );
+};
+
+const Manuals = ({ contents }) => {
+  return (
+    <div className="mv3">
+      <h3 className="f2 ttu barlow-condensed fw6">
+        <FormattedMessage {...messages.learnManualsTitle} />
+      </h3>
+      <div className="w-100 cf">
+        {contents.map((content) => {
           return (
             <div style={{ height: '20rem' }} className="w-25-l w-third-m w-100 fl ph2">
               <div className="shadow-4">
-                <div
-                  className="bg-tan w-100 tc h4"
-                  style={{
-                    background: `#f0efef url(${v.img}) no-repeat center`,
-                    backgroundSize: '55%',
-                  }}
-                  bac
-                ></div>
-                <div className="pa3" style={{ height: '12rem' }}>
-                  <p>
-                    <a
-                      className="blue-dark b"
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      href={v.url}
-                    >
-                      {<FormattedMessage {...messages[`${v.message}Title`]} />}
-                    </a>
-                  </p>
+                <a
+                  className="no-underline"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href={content.url}
+                >
+                  <div
+                    className="bg-tan w-100 tc h4"
+                    style={{
+                      background: `#f0efef url(${content.img}) no-repeat center`,
+                      backgroundSize: '55%',
+                    }}
+                    bac
+                  ></div>
+                  <div className="pa3" style={{ height: '12rem' }}>
+                    <p className="fw7 f4 mt0 blue-dark">
+                      <FormattedMessage {...messages[`${content.message}Title`]} />
+                    </p>
 
-                  <p className="blue-grey lh-title f5">
-                    {<FormattedMessage {...messages[`${v.message}Description`]} />}
-                  </p>
-                </div>
+                    <p className="blue-grey lh-title f5">
+                      <FormattedMessage {...messages[`${content.message}Description`]} />
+                    </p>
+                  </div>
+                </a>
               </div>
             </div>
           );
@@ -178,7 +250,7 @@ const LearnToManage = ({ section }) => {
   return (
     <div className="w-100">
       <LearnStruct section={section} messagesObjs={messagesObjs} items={items} />
-      <Tutorials tutorials={tutorials} />
+      <Manuals contents={tutorials} />
     </div>
   );
 };
@@ -260,11 +332,27 @@ const LearnToMap = ({ section }) => {
     },
   ];
 
+  const videos = [
+    {
+      message: 'learnSignUp',
+      youTubeId: 'wqQdDgjBOvY',
+    },
+    {
+      message: 'learnMapBuildings',
+      youTubeId: 'lSLe6rjtgi0',
+    },
+    {
+      message: 'learnMapRoads',
+      youTubeId: 'NzZWur1YG1k',
+    },
+  ];
+
   return (
-    <div className="w-100">
+    <div className="w-100 cf">
       <Intro section={section} messagesObjs={messagesObjs} />
       <Steps items={items} />
-      <Tutorials tutorials={tutorials} />
+      <Manuals contents={tutorials} />
+      <Videos contents={videos} />
     </div>
   );
 };

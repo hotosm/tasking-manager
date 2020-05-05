@@ -26,6 +26,7 @@ export { GithubIcon } from './github';
 export { RightIcon } from './right';
 export { FlagIcon } from './flag';
 export { PlayIcon } from './play';
+export { ResumeIcon } from './resume';
 export { SettingsIcon } from './settings';
 export { SearchIcon } from './search';
 export { TaskIcon } from './task';
