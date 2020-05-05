@@ -93,24 +93,26 @@ export function ProjectCard({
       <Link className={`no-underline color-inherit `} to={`/projects/${projectId}`}>
         <article className={``}>
           <div className={`${bottomButtonSpacer} ph3 ba br1 b--grey-light bg-white shadow-hover`}>
-            <div className="fr">
-              {['DRAFT', 'ARCHIVED'].includes(status) ? (
-                <ProjectStatusBox status={status} className={'pv1 ph1 dib'} />
-              ) : (
-                <PriorityBox
-                  priority={priority}
-                  extraClasses={'pv1 ph2 dib'}
-                  hideMediumAndLow={!showBottomButtons}
-                  showIcon={priority !== 'URGENT'} // inside the cards, don't show the icon for urgent, due to the space required
+            <div className="cf w-100">
+              <div className="w-40 tr fr">
+                {['DRAFT', 'ARCHIVED'].includes(status) ? (
+                  <ProjectStatusBox status={status} className={'pv1 ph1 dib'} />
+                ) : (
+                  <PriorityBox
+                    priority={priority}
+                    extraClasses={'pv1 ph2 dib'}
+                    hideMediumAndLow={!showBottomButtons}
+                    showIcon={priority !== 'URGENT'} // inside the cards, don't show the icon for urgent, due to the space required
+                  />
+                )}
+              </div>
+              <div className="w-60 cf pr1 red dib">
+                <img
+                  className="h2 pa1"
+                  src={organisationLogo}
+                  alt={organisationLogo ? organisationName : ''}
                 />
-              )}
-            </div>
-            <div className="w-50 cf red dib">
-              <img
-                className="h2 mw4 pa1"
-                src={organisationLogo}
-                alt={organisationLogo ? organisationName : ''}
-              />
+              </div>
             </div>
             <div className="ma1 w-100">
               <div className="f7 blue-grey mt2">#{projectId}</div>
