@@ -15,10 +15,16 @@ export function cancelablePromise(promise: Promise<*>) {
 }
 
 export function handleErrors(response) {
-  if (!response.ok) {
-    throw Error(response.statusText);
+  if (response.ok) {
+    return response;
   }
-  return response;
+
+  let text = response.statusText;
+  if (response.status === 409) {
+    text = 'CONFLICT';
+  }
+
+  throw Error(text);
 }
 
 export function cancelableFetchJSON(url: string) {
