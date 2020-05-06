@@ -16,6 +16,22 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
   }, [windowInit, setEditorRef, editorRef]);
 
   useEffect(() => {
+    return () => {
+      const objs = [
+        '__on',
+        'libpannellum',
+        'pannellum',
+        '__INDIVIDUAL_ONE_VERSION_ev-store_ENFORCE_SINGLETON',
+        '__INDIVIDUAL_ONE_VERSION_ev-store',
+        'Mapillary',
+      ];
+
+      objs.map((o) => delete window[o]);
+      setEditorRef(null);
+    };
+  }, [setEditorRef]);
+
+  useEffect(() => {
     if (session && iD && editorRef) {
       editorRef
         .embed(true)
