@@ -21,11 +21,11 @@ class UpdateEmail extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  onSubmit = e => {
+  onSubmit = (e) => {
     e.preventDefault();
     let userData = this.props.userDetails;
     userData.emailAddress = this.state.email;
-    this.props.updateUserEmail(userData, this.props.token, PROFILE_RELEVANT_FIELDS);
+    this.props.updateUserEmail(userData, this.props.token, PROFILE_RELEVANT_FIELDS.concat(['id']));
     this.setState({
       success: true,
       details: <FormattedMessage {...messages.emailUpdateSuccess} />,
@@ -48,7 +48,7 @@ class UpdateEmail extends Component {
         <form onSubmit={this.onSubmit}>
           <p>
             <FormattedMessage {...messages.emailPlaceholder}>
-              {msg => {
+              {(msg) => {
                 return (
                   <input
                     className="pa2 w-60-l w-100"
@@ -82,7 +82,7 @@ class UpdateEmail extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   userDetails: state.auth.get('userDetails'),
   token: state.auth.get('token'),
 });
@@ -92,9 +92,6 @@ UpdateEmail.propTypes = {
   closeModal: PropTypes.func.isRequired,
 };
 
-UpdateEmail = connect(
-  mapStateToProps,
-  { updateUserEmail },
-)(UpdateEmail);
+UpdateEmail = connect(mapStateToProps, { updateUserEmail })(UpdateEmail);
 
 export { UpdateEmail };
