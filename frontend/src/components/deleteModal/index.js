@@ -22,7 +22,7 @@ export function DeleteModal({ id, name, type, className }: Object) {
       redirectTo(`/manage/${type}/`);
     }
   }, [deleteStatus, type]);
-  const deleteOrg = () => {
+  const deleteEntity = () => {
     setDeleteStatus('started');
     fetchLocalJSONAPI(`${type}/${id}/`, token, 'DELETE')
       .then((success) => setDeleteStatus('success'))
@@ -37,6 +37,10 @@ export function DeleteModal({ id, name, type, className }: Object) {
       trigger={<DeleteButton className={`${className || ''} dib ml3`} />}
       modal
       closeOnDocumentClick
+      onClose={() => {
+        setDeleteStatus(null);
+        setErrorMessage(null);
+      }}
     >
       {(close) => (
         <div
@@ -65,7 +69,7 @@ export function DeleteModal({ id, name, type, className }: Object) {
                   >
                     <FormattedMessage {...messages.cancel} />
                   </Button>
-                  <Button className="bg-red white" onClick={() => deleteOrg()}>
+                  <Button className="bg-red white" onClick={() => deleteEntity()}>
                     <FormattedMessage {...messages.delete} />
                   </Button>
                 </div>
