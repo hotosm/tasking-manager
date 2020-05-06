@@ -209,7 +209,7 @@ class TeamsActionsLeaveAPI(Resource):
         """
         try:
             username = request.get_json(force=True)["username"]
-            request_user = User().get_by_id(tm.authenticated_user_id)
+            request_user = User.get_by_id(tm.authenticated_user_id)
             if (
                 TeamService.user_is_manager(team_id, tm.authenticated_user_id)
                 or request_user.username == username

@@ -77,6 +77,9 @@ class UsersActionsSetUsersAPI(Resource):
                 )
 
             user_dto.validate()
+
+            if tm.authenticated_user_id != user_dto.id:
+                return {"Error": "Unable to authenticate"}, 401
         except ValueError as e:
             return {"Error": str(e)}, 400
         except DataError as e:
