@@ -713,7 +713,7 @@ class Project(db.Model):
             summary.priority = "MEDIUM"
         else:
             summary.priority = "LOW"
-        summary.author = User().get_by_id(self.author_id).username
+        summary.author = User.get_by_id(self.author_id).username
         summary.default_locale = self.default_locale
         summary.country_tag = self.country
         summary.changeset_comment = self.changeset_comment
@@ -899,7 +899,7 @@ class Project(db.Model):
         base_dto.license_id = self.license_id
         base_dto.created = self.created
         base_dto.last_updated = self.last_updated
-        base_dto.author = User().get_by_id(self.author_id).username
+        base_dto.author = User.get_by_id(self.author_id).username
         base_dto.active_mappers = Project.get_active_mappers(self.id)
         base_dto.task_creation_mode = TaskCreationMode(self.task_creation_mode).name
         base_dto.percent_mapped = Project.calculate_tasks_percent(
@@ -987,7 +987,7 @@ class Project(db.Model):
         is_allowed_user = False
         if authenticated_user_id:
             is_team_manager = False
-            user = User().get_by_id(authenticated_user_id)
+            user = User.get_by_id(authenticated_user_id)
             user_orgs = Organisation.get_organisations_managed_by_user(
                 authenticated_user_id
             )
@@ -1022,7 +1022,7 @@ class Project(db.Model):
         if self.private:
             is_allowed_user = False
             if authenticated_user_id:
-                user = User().get_by_id(authenticated_user_id)
+                user = User.get_by_id(authenticated_user_id)
                 if (
                     UserRole(user.role) == UserRole.ADMIN
                     or authenticated_user_id == self.author_id
