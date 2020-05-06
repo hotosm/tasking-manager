@@ -103,7 +103,7 @@ function UserInterestsForm() {
     const postUpdate = (ids) => {
       pushToLocalJSONAPI(
         'users/me/actions/set-interests/',
-        JSON.stringify({ interests: ids }),
+        JSON.stringify({ interests: ids, id: userDetails.id }),
         token,
       )
         .then((res) => {
@@ -146,9 +146,9 @@ function UserInterestsForm() {
 function _UserInformationForm(props) {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
-  const formFields = PROFILE_RELEVANT_FIELDS.concat(['selfDescriptionGender', 'id']);
+  const formFields = PROFILE_RELEVANT_FIELDS.concat(['selfDescriptionGender']);
   const prepareUserDetailsToPush = (values, fields) => {
-    let data = {};
+    let data = { id: props.userDetails.id };
     fields.filter((key) => values.hasOwnProperty(key)).forEach((key) => (data[key] = values[key]));
     return JSON.stringify(data);
   };
@@ -183,7 +183,6 @@ function _UserInformationForm(props) {
                   <FormattedMessage {...messages.name} />
                   <RequiredIndicator />
                 </label>
-                <Field name="id" component="input" type="hidden" />
                 <Field
                   name="name"
                   component="input"
@@ -364,7 +363,7 @@ function _SwitchToggleField(props) {
   }, [value, props.userDetails, props.fieldName]);
 
   const onSwitchChange = () => {
-    let payload = {};
+    let payload = { id: props.userDetails.id };
     payload[props.fieldName] = !value;
     props.pushUserDetails(JSON.stringify(payload), props.token, true);
     setValue(!value);
@@ -390,7 +389,11 @@ function _EditorDropdown(props) {
   const onEditorSelect = (arr) => {
     if (arr.length === 1) {
       setValue(arr[0].value);
-      props.pushUserDetails(JSON.stringify({ defaultEditor: arr[0].value }), props.token, true);
+      props.pushUserDetails(
+        JSON.stringify({ defaultEditor: arr[0].value, id: props.userDetails.id }),
+        props.token,
+        true,
+      );
     } else if (arr.length > 1) {
       throw new Error('filter select array is big');
     }
