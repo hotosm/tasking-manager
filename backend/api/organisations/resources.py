@@ -70,7 +70,7 @@ class OrganisationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        request_user = User().get_by_id(tm.authenticated_user_id)
+        request_user = User.get_by_id(tm.authenticated_user_id)
         if request_user.role != 1:
             return {"Error": "Only admin users can create organisations."}, 403
 

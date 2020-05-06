@@ -81,7 +81,8 @@ class User(db.Model):
     def save(self):
         db.session.commit()
 
-    def get_by_id(self, user_id: int):
+    @staticmethod
+    def get_by_id(user_id: int):
         """ Return the user for the specified id, or None if not found """
         return User.query.get(user_id)
 

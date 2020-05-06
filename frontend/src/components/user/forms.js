@@ -146,7 +146,7 @@ function UserInterestsForm() {
 function _UserInformationForm(props) {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
-  const formFields = PROFILE_RELEVANT_FIELDS.concat(['selfDescriptionGender']);
+  const formFields = PROFILE_RELEVANT_FIELDS.concat(['selfDescriptionGender', 'id']);
   const prepareUserDetailsToPush = (values, fields) => {
     let data = {};
     fields.filter((key) => values.hasOwnProperty(key)).forEach((key) => (data[key] = values[key]));
@@ -183,6 +183,7 @@ function _UserInformationForm(props) {
                   <FormattedMessage {...messages.name} />
                   <RequiredIndicator />
                 </label>
+                <Field name="id" component="input" type="hidden" />
                 <Field
                   name="name"
                   component="input"
