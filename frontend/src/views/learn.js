@@ -89,6 +89,14 @@ const Intro = ({ section, messagesObjs }) => {
 
 const Videos = ({ contents }) => {
   const [activeVideo, setActiveVideo] = useState(null);
+  const iframeStyle = {
+    border: 0,
+    height: '100%',
+    left: 0,
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+  };
   return (
     <div className="mv3">
       <h3 className="f2 ttu barlow-condensed fw6">
@@ -128,6 +136,7 @@ const Videos = ({ contents }) => {
           closeOnEscape={true}
           closeOnDocumentClick={true}
           onClose={() => setActiveVideo(null)}
+          className="video-popup"
         >
           {(close) => (
             <div className="pa3 blue-dark">
@@ -137,18 +146,17 @@ const Videos = ({ contents }) => {
                 height="18px"
                 onClick={() => close()}
               />
-              <h3 className="mt0">
+              <h3 className="mt0 f4">
                 <FormattedMessage {...messages[`${activeVideo.message}Title`]} />
               </h3>
-              <div className="tc">
+              <div className="tc overflow-hidden relative" style={{ paddingTop: '56.25%' }}>
                 <iframe
                   title="videotutorial"
-                  width="560"
-                  height="315"
+                  style={iframeStyle}
                   src={`https://www.youtube.com/embed/${activeVideo.youTubeId}?autoplay=1`}
-                  frameborder="0"
+                  frameBorder="0"
                   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen
+                  allowFullScreen="allowFullScreen"
                 ></iframe>
               </div>
             </div>
