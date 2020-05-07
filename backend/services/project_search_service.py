@@ -285,8 +285,7 @@ class ProjectSearchService:
             )
             orgs_managed = [org.id for org in user_orgs_list]
             org_projects = query.filter(Project.organisation_id.in_(orgs_managed))
-            my_projects = query.filter(Project.author_id == search_dto.managed_by)
-            query = org_projects.union(team_projects).union(my_projects)
+            query = org_projects.union(team_projects)
 
         all_results = query.all()
         paginated_results = query.paginate(search_dto.page, 14, True)
