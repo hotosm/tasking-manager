@@ -16,6 +16,16 @@ it('test if Imagery returns the correct FormattedMessage to TMS', () => {
   expect(testInstance.findByType(FormattedMessage).props.id).toBe('project.imagery.tms');
 });
 
+it('test if Imagery returns the correct FormattedMessage to TMS, even without the zoom level information', () => {
+  const element = createComponentWithIntl(
+    <Imagery
+      value={'tms:https://service.com/earthservice/tms/Layer@EPSG:3857@jpg/{zoom}/{x}/{-y}.jpg'}
+    />,
+  );
+  const testInstance = element.root;
+  expect(testInstance.findByType(FormattedMessage).props.id).toBe('project.imagery.tms');
+});
+
 it('test if Imagery returns the correct FormattedMessage to WMS', () => {
   const element = createComponentWithIntl(
     <Imagery
