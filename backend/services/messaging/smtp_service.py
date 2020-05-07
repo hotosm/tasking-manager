@@ -37,7 +37,7 @@ class SMTPService:
         if email_to is None:
             raise ValueError("variable TM_EMAIL_CONTACT_ADDRESS not set")
 
-        message = """New contact from {name} <{email}>.
+        message = """New contact from {name} - {email}.
             <p>{content}</p>
             """.format(
             name=data.get("name"), email=data.get("email"), content=data.get("content"),
