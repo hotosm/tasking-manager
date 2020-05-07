@@ -90,12 +90,12 @@ export function ProjectEdit({ id }) {
 
   useLayoutEffect(() => {
     async function fetchData() {
-      const res = await fetchLocalJSONAPI(`projects/${id}/`);
+      const res = await fetchLocalJSONAPI(`projects/${id}/`, token, 'GET');
       setProjectInfo(res);
     }
 
     fetchData();
-  }, [id]);
+  }, [id, token]);
 
   if (!token) {
     return <Redirect to={'/login'} noThrow />;
