@@ -128,7 +128,7 @@ function loadTasksBoundaries(project, selectedTasks) {
 function loadImageryonJosm(project) {
   if (project.imagery) {
     const imageryParams = {
-      title: `TM imagery for project #${project.projectId}`,
+      title: project.imagery,
       type: project.imagery.toLowerCase().substring(0, 3),
       url: project.imagery,
     };
