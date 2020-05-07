@@ -14,7 +14,7 @@ entrypoints==0.3
 flake8==3.7.9
 Flask==1.1.2
 Flask-Cors==3.0.8
-Flask-HTTPAuth==3.3.0
+Flask-HTTPAuth==4.0.0
 Flask-Migrate==2.5.3
 Flask-OAuthlib==0.9.4
 Flask-RESTful==0.3.8

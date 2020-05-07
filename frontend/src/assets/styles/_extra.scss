@@ -4,6 +4,9 @@
     max-height: 100vh;
     overflow-y: scroll;
   }
+  .video-popup-content {
+    width: 90% !important;
+  }
   .user-popup-content {
     width: 70% !important;
     left: 15% !important;
@@ -31,6 +34,9 @@
   }
   .popup-content {
     width: 44% !important;
+  }
+  .video-popup-content {
+    width: 66% !important;
   }
   .user-popup-content {
     width: 13% !important;

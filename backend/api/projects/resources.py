@@ -32,6 +32,7 @@ from backend.services.project_admin_service import (
 
 
 class ProjectsRestAPI(Resource):
+    @token_auth.login_required(optional=True)
     def get(self, project_id):
         """
         Get a specified project including it's area
@@ -91,9 +92,9 @@ class ProjectsRestAPI(Resource):
                 request.environ.get("HTTP_ACCEPT_LANGUAGE"),
                 abbreviated,
             )
-            project_dto = project_dto.to_primitive()
 
             if project_dto:
+                project_dto = project_dto.to_primitive()
                 if as_file:
                     return send_file(
                         io.BytesIO(geojson.dumps(project_dto).encode("utf-8")),

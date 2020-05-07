@@ -10,17 +10,17 @@ export function Imagery({ value = '' }: Object) {
   const [isCopied, setCopied] = useCopyClipboard();
 
   const handleClick = () => setCopied(value);
-  let content = <span>{value}</span>;
+  let content = <span title={value}>{value}</span>;
   let copyButton;
   let messageId;
   if (value) {
-    if (value.startsWith('tms[')) {
+    if (value.startsWith('tms')) {
       messageId = 'customTMSLayer';
     }
-    if (value.startsWith('wms[')) {
+    if (value.startsWith('wms')) {
       messageId = 'customWMSLayer';
     }
-    if (value.startsWith('wmts[')) {
+    if (value.startsWith('wmts')) {
       messageId = 'customWMTSLayer';
     }
     if (value.startsWith('http') || value.startsWith('https')) {
@@ -42,7 +42,7 @@ export function Imagery({ value = '' }: Object) {
     content = <FormattedMessage {...messages.noImageryDefined} />;
   }
   return (
-    <p className={`f5 fw6 pt1 ma0 ${value ? 'blue-dark' : 'blue-light'}`}>
+    <p className={`f5 fw6 pt1 pr3 ma0 truncate ${value ? 'blue-dark' : 'blue-light'}`}>
       {content}
       {copyButton}
     </p>

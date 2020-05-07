@@ -244,13 +244,14 @@ class ProjectSearchService:
 
         if search_dto.text_search:
             # We construct an OR search, so any projects that contain or more of the search terms should be returned
-            or_search = search_dto.text_search.replace(" ", " | ")
-
+            or_search = " | ".join(
+                [x for x in search_dto.text_search.split(" ") if x != ""]
+            )
             opts = [
                 ProjectInfo.text_searchable.match(
                     or_search, postgresql_regconfig="english"
                 ),
-                ProjectInfo.name.like(f"%{search_dto.text_search}%"),
+                ProjectInfo.name.like(f"%{or_search}%"),
             ]
             try:
                 opts.append(Project.id == int(search_dto.text_search))
@@ -285,8 +286,7 @@ class ProjectSearchService:
             )
             orgs_managed = [org.id for org in user_orgs_list]
             org_projects = query.filter(Project.organisation_id.in_(orgs_managed))
-            my_projects = query.filter(Project.author_id == search_dto.managed_by)
-            query = org_projects.union(team_projects).union(my_projects)
+            query = org_projects.union(team_projects)
 
         all_results = query.all()
         paginated_results = query.paginate(search_dto.page, 14, True)
