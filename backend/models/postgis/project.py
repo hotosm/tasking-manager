@@ -1023,6 +1023,7 @@ class Project(db.Model):
             is_allowed_user = False
             if authenticated_user_id:
                 user = User.get_by_id(authenticated_user_id)
+
                 if (
                     UserRole(user.role) == UserRole.ADMIN
                     or authenticated_user_id == self.author_id

@@ -387,9 +387,10 @@ class ProjectsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        authenticated_user_id = tm.authenticated_user_id
         try:
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
         except ValueError as e:
             error_msg = f"ProjectsRestAPI PATCH: {str(e)}"
@@ -404,7 +405,7 @@ class ProjectsRestAPI(Resource):
             return {"Error": "Unable to update project"}, 400
 
         try:
-            ProjectAdminService.update_project(project_dto, tm.authenticated_user_id)
+            ProjectAdminService.update_project(project_dto, authenticated_user_id)
             return {"Status": "Updated"}, 200
         except InvalidGeoJson as e:
             return {"Invalid GeoJson": str(e)}, 400
