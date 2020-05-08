@@ -61,8 +61,9 @@ class TeamsActionsJoinAPI(Resource):
             return str(e), 400
 
         try:
-            TeamService.join_team(team_id, tm.authenticated_user_id, username, role)
-            if TeamService.user_is_manager(team_id, tm.authenticated_user_id):
+            authenticated_user_id = tm.authenticated_user_id
+            TeamService.join_team(team_id, authenticated_user_id, username, role)
+            if TeamService.user_is_manager(team_id, authenticated_user_id):
                 return {"Success": "User added to the team"}, 200
             else:
                 return {"Success": "Request to join the team sent successfully."}, 200
@@ -138,10 +139,11 @@ class TeamsActionsJoinAPI(Resource):
             return str(e), 400
 
         try:
+            authenticated_user_id = tm.authenticated_user_id
             if request_type == "join-response":
-                if TeamService.user_is_manager(team_id, tm.authenticated_user_id):
+                if TeamService.user_is_manager(team_id, authenticated_user_id):
                     TeamService.accept_reject_join_request(
-                        team_id, tm.authenticated_user_id, username, role, action
+                        team_id, authenticated_user_id, username, role, action
                     )
                     return {"Success": "True"}, 200
                 else:
@@ -153,7 +155,7 @@ class TeamsActionsJoinAPI(Resource):
                     )
             elif request_type == "invite-response":
                 TeamService.accept_reject_invitation_request(
-                    team_id, tm.authenticated_user_id, username, role, action
+                    team_id, authenticated_user_id, username, role, action
                 )
                 return {"Success": "True"}, 200
         except Exception as e:
@@ -208,10 +210,11 @@ class TeamsActionsLeaveAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = tm.authenticated_user_id
             username = request.get_json(force=True)["username"]
-            request_user = User.get_by_id(tm.authenticated_user_id)
+            request_user = User.get_by_id(authenticated_user_id)
             if (
-                TeamService.user_is_manager(team_id, tm.authenticated_user_id)
+                TeamService.user_is_manager(team_id, authenticated_user_id)
                 or request_user.username == username
             ):
                 TeamService.leave_team(team_id, username)

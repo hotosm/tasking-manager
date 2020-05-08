@@ -72,17 +72,18 @@ class TeamsRestAPI(Resource):
             team_dto.team_id = team_id
             team_dto.validate()
 
+            authenticated_user_id = tm.authenticated_user_id
             team_details_dto = TeamService.get_team_as_dto(
-                team_id, tm.authenticated_user_id
+                team_id, authenticated_user_id
             )
 
             org = TeamService.assert_validate_organisation(team_dto.organisation_id)
             TeamService.assert_validate_members(team_details_dto)
 
             if not TeamService.user_is_manager(
-                team_id, tm.authenticated_user_id
+                team_id, authenticated_user_id
             ) and not OrganisationService.can_user_manage_organisation(
-                org.id, tm.authenticated_user_id
+                org.id, authenticated_user_id
             ):
                 return {"Error": "User is not a admin or a manager for the team"}, 401
         except DataError as e:
@@ -165,10 +166,11 @@ class TeamsRestAPI(Resource):
             team_dto.team_id = team_id
             team_dto.validate()
 
+            authenticated_user_id = tm.authenticated_user_id
             if not TeamService.user_is_manager(
-                team_id, tm.authenticated_user_id
+                team_id, authenticated_user_id
             ) and not OrganisationService.can_user_manage_organisation(
-                team.organisation_id, tm.authenticated_user_id
+                team.organisation_id, authenticated_user_id
             ):
                 return {"Error": "User is not a admin or a manager for the team"}, 401
         except DataError as e:
@@ -213,10 +215,11 @@ class TeamsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            if tm.authenticated_user_id is None:
+            authenticated_user_id = tm.authenticated_user_id
+            if authenticated_user_id is None:
                 user_id = 0
             else:
-                user_id = tm.authenticated_user_id
+                user_id = authenticated_user_id
             team_dto = TeamService.get_team_as_dto(team_id, user_id)
             return team_dto.to_primitive(), 200
         except NotFound:

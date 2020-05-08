@@ -54,8 +54,9 @@ class ProjectsActionsTransferAPI(Resource):
         """
         try:
             username = request.get_json()["username"]
+            authenticated_user_id = tm.authenticated_user_id
             ProjectAdminService.transfer_project_to(
-                project_id, tm.authenticated_user_id, username
+                project_id, authenticated_user_id, username
             )
             return {"Success": "Project Transfered"}, 200
         except ValueError as e:
@@ -114,8 +115,9 @@ class ProjectsActionsMessageContributorsAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = tm.authenticated_user_id
             message_dto = MessageDTO(request.get_json())
-            message_dto.from_user_id = tm.authenticated_user_id
+            message_dto.from_user_id = authenticated_user_id
             message_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
@@ -123,7 +125,7 @@ class ProjectsActionsMessageContributorsAPI(Resource):
 
         try:
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
             threading.Thread(
                 target=MessageService.send_message_to_all_contributors,
@@ -175,15 +177,16 @@ class ProjectsActionsFeatureAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = tm.authenticated_user_id
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
         except ValueError as e:
             error_msg = f"FeaturedProjects POST: {str(e)}"
             return {"Error": error_msg}, 403
 
         try:
-            ProjectService.set_project_as_featured(project_id, tm.authenticated_user_id)
+            ProjectService.set_project_as_featured(project_id, authenticated_user_id)
             return {"Success": True}, 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404

@@ -44,9 +44,10 @@ class CampaignsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            if tm.authenticated_user_id:
+            authenticated_user_id = tm.authenticated_user_id
+            if authenticated_user_id:
                 campaign = CampaignService.get_campaign_as_dto(
-                    campaign_id, tm.authenticated_user_id
+                    campaign_id, authenticated_user_id
                 )
             else:
                 campaign = CampaignService.get_campaign_as_dto(campaign_id, 0)

@@ -85,15 +85,16 @@ class ProjectsFavoritesAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = tm.authenticated_user_id
             favorite_dto = ProjectFavoriteDTO()
             favorite_dto.project_id = project_id
-            favorite_dto.user_id = tm.authenticated_user_id
+            favorite_dto.user_id = authenticated_user_id
             favorite_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
             return str(e), 400
         try:
-            ProjectService.favorite(project_id, tm.authenticated_user_id)
+            ProjectService.favorite(project_id, authenticated_user_id)
         except NotFound:
             return {"Error": "Project Not Found"}, 404
         except ValueError as e:

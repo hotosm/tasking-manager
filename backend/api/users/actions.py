@@ -77,8 +77,8 @@ class UsersActionsSetUsersAPI(Resource):
                 )
 
             user_dto.validate()
-
-            if tm.authenticated_user_id != user_dto.id:
+            authenticated_user_id = tm.authenticated_user_id
+            if authenticated_user_id != user_dto.id:
                 return {"Error": "Unable to authenticate"}, 401
         except ValueError as e:
             return {"Error": str(e)}, 400
@@ -88,7 +88,7 @@ class UsersActionsSetUsersAPI(Resource):
 
         try:
             verification_sent = UserService.update_user_details(
-                tm.authenticated_user_id, user_dto
+                authenticated_user_id, user_dto
             )
             return verification_sent, 200
         except NotFound:

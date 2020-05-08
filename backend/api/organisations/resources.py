@@ -174,10 +174,11 @@ class OrganisationsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            if tm.authenticated_user_id is None:
+            authenticated_user_id = tm.authenticated_user_id
+            if authenticated_user_id is None:
                 user_id = 0
             else:
-                user_id = tm.authenticated_user_id
+                user_id = authenticated_user_id
             organisation_dto = OrganisationService.get_organisation_by_id_as_dto(
                 organisation_id, user_id
             )
@@ -307,6 +308,7 @@ class OrganisationsAllAPI(Resource):
         """
 
         # Restrict some of the parameters to some permissions
+        authenticated_user_id = tm.authenticated_user_id
         try:
             manager_user_id = int(request.args.get("manager_user_id"))
         except Exception:
@@ -321,8 +323,8 @@ class OrganisationsAllAPI(Resource):
 
                 # Check whether user is admin (can do any query) or user is checking for own projects
                 if (
-                    not UserService.is_user_an_admin(tm.authenticated_user_id)
-                    and tm.authenticated_user_id != manager_user_id
+                    not UserService.is_user_an_admin(authenticated_user_id)
+                    and authenticated_user_id != manager_user_id
                 ):
                     raise ValueError
 
@@ -332,7 +334,7 @@ class OrganisationsAllAPI(Resource):
         # Obtain organisations
         try:
             results_dto = OrganisationService.get_organisations_as_dto(
-                manager_user_id, tm.authenticated_user_id
+                manager_user_id, authenticated_user_id
             )
             return results_dto.to_primitive(), 200
         except NotFound:

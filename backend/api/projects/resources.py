@@ -75,6 +75,7 @@ class ProjectsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = tm.authenticated_user_id
             as_file = (
                 strtobool(request.args.get("as_file"))
                 if request.args.get("as_file")
@@ -88,7 +89,7 @@ class ProjectsRestAPI(Resource):
 
             project_dto = ProjectService.get_project_dto_for_mapper(
                 project_id,
-                tm.authenticated_user_id,
+                authenticated_user_id,
                 request.environ.get("HTTP_ACCEPT_LANGUAGE"),
                 abbreviated,
             )
@@ -451,15 +452,16 @@ class ProjectsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = tm.authenticated_user_id
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
         except ValueError as e:
             error_msg = f"ProjectsRestAPI DELETE: {str(e)}"
             return {"Error": error_msg}, 403
 
         try:
-            ProjectAdminService.delete_project(project_id, tm.authenticated_user_id)
+            ProjectAdminService.delete_project(project_id, authenticated_user_id)
             return {"Success": "Project deleted"}, 200
         except ProjectAdminServiceError:
             return {"Error": "Project has some mapping"}, 403
@@ -491,18 +493,18 @@ class ProjectSearchBase(Resource):
         # See https://github.com/hotosm/tasking-manager/pull/922 for more info
         try:
             verify_token(request.environ.get("HTTP_AUTHORIZATION").split(None, 1)[1])
-
+            authenticated_user_id = tm.authenticated_user_id
             if request.args.get("createdByMe") == "true":
-                search_dto.created_by = tm.authenticated_user_id
+                search_dto.created_by = authenticated_user_id
 
             if request.args.get("mappedByMe") == "true":
-                search_dto.mapped_by = tm.authenticated_user_id
+                search_dto.mapped_by = authenticated_user_id
 
             if request.args.get("favoritedByMe") == "true":
-                search_dto.favorited_by = tm.authenticated_user_id
+                search_dto.favorited_by = authenticated_user_id
 
             if request.args.get("managedByMe") == "true":
-                search_dto.managed_by = tm.authenticated_user_id
+                search_dto.managed_by = authenticated_user_id
 
         except Exception:
             pass
@@ -692,8 +694,9 @@ class ProjectsQueriesBboxAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = tm.authenticated_user_id
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                authenticated_user_id
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a project manager")
@@ -712,7 +715,7 @@ class ProjectsQueriesBboxAPI(Resource):
                 else False
             )
             if createdByMe:
-                search_dto.project_author = tm.authenticated_user_id
+                search_dto.project_author = authenticated_user_id
             search_dto.validate()
         except Exception as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
@@ -766,8 +769,9 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = tm.authenticated_user_id
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                authenticated_user_id
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a project manager")
@@ -778,7 +782,7 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
         try:
             search_dto = self.setup_search_dto()
             admin_projects = ProjectAdminService.get_projects_for_admin(
-                tm.authenticated_user_id,
+                authenticated_user_id,
                 request.environ.get("HTTP_ACCEPT_LANGUAGE"),
                 search_dto,
             )
