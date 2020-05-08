@@ -2,7 +2,7 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
 from backend.services.team_service import TeamService, TeamServiceError, NotFound
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 
 
 class ProjectsTeamsAPI(Resource):
@@ -92,7 +92,7 @@ class ProjectsTeamsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not TeamService.user_is_manager(team_id, tm.authenticated_user_id):
+        if not TeamService.user_is_manager(team_id, token_auth.current_user()):
             return {"Error": "User is not an admin or a manager for the team"}, 401
 
         try:
@@ -163,7 +163,7 @@ class ProjectsTeamsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not TeamService.user_is_manager(team_id, tm.authenticated_user_id):
+        if not TeamService.user_is_manager(team_id, token_auth.current_user()):
             return {"Error": "User is not an admin or a manager for the team"}, 401
         try:
             role = request.get_json(force=True)["role"]
@@ -217,7 +217,7 @@ class ProjectsTeamsAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not TeamService.user_is_manager(team_id, tm.authenticated_user_id):
+        if not TeamService.user_is_manager(team_id, token_auth.current_user()):
             return {"Error": "User is not an admin or a manager for the team"}, 401
         try:
             TeamService.delete_team_project(team_id, project_id)

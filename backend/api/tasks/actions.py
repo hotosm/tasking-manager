@@ -78,7 +78,7 @@ class TasksActionsMappingLockAPI(Resource):
         """
         try:
             lock_task_dto = LockTaskDTO()
-            lock_task_dto.user_id = tm.authenticated_user_id
+            lock_task_dto.user_id = token_auth.current_user()
             lock_task_dto.project_id = project_id
             lock_task_dto.task_id = task_id
             lock_task_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
@@ -164,7 +164,7 @@ class TasksActionsMappingStopAPI(Resource):
         """
         try:
             stop_task = StopMappingTaskDTO(request.get_json())
-            stop_task.user_id = tm.authenticated_user_id
+            stop_task.user_id = token_auth.current_user()
             stop_task.task_id = task_id
             stop_task.project_id = project_id
             stop_task.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
@@ -247,8 +247,9 @@ class TasksActionsMappingUnlockAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = token_auth.current_user()
             mapped_task = MappedTaskDTO(request.get_json())
-            mapped_task.user_id = tm.authenticated_user_id
+            mapped_task.user_id = authenticated_user_id
             mapped_task.task_id = task_id
             mapped_task.project_id = project_id
             mapped_task.validate()
@@ -269,7 +270,7 @@ class TasksActionsMappingUnlockAPI(Resource):
             return {"Error": "Task unlock failed"}, 500
         finally:
             # Refresh mapper level after mapping
-            UserService.check_and_update_mapper_level(tm.authenticated_user_id)
+            UserService.check_and_update_mapper_level(authenticated_user_id)
 
 
 class TasksActionsMappingUndoAPI(Resource):
@@ -320,7 +321,7 @@ class TasksActionsMappingUndoAPI(Resource):
         try:
             preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             task = MappingService.undo_mapping(
-                project_id, task_id, tm.authenticated_user_id, preferred_locale
+                project_id, task_id, token_auth.current_user(), preferred_locale
             )
             return task.to_primitive(), 200
         except NotFound:
@@ -393,7 +394,7 @@ class TasksActionsValidationLockAPI(Resource):
         try:
             validator_dto = LockForValidationDTO(request.get_json())
             validator_dto.project_id = project_id
-            validator_dto.user_id = tm.authenticated_user_id
+            validator_dto.user_id = token_auth.current_user()
             validator_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             validator_dto.validate()
         except DataError as e:
@@ -474,7 +475,7 @@ class TasksActionsValidationStopAPI(Resource):
         try:
             validated_dto = StopValidationDTO(request.get_json())
             validated_dto.project_id = project_id
-            validated_dto.user_id = tm.authenticated_user_id
+            validated_dto.user_id = token_auth.current_user()
             validated_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             validated_dto.validate()
         except DataError as e:
@@ -551,7 +552,7 @@ class TasksActionsValidationUnlockAPI(Resource):
         try:
             validated_dto = UnlockAfterValidationDTO(request.get_json())
             validated_dto.project_id = project_id
-            validated_dto.user_id = tm.authenticated_user_id
+            validated_dto.user_id = token_auth.current_user()
             validated_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             validated_dto.validate()
         except DataError as e:
@@ -605,15 +606,16 @@ class TasksActionsMapAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
         except ValueError as e:
             error_msg = f"TasksActionsMapAllAPI POST: {str(e)}"
             return {"Error": error_msg}, 403
 
         try:
-            MappingService.map_all_tasks(project_id, tm.authenticated_user_id)
+            MappingService.map_all_tasks(project_id, authenticated_user_id)
             return {"Success": "All tasks mapped"}, 200
         except Exception as e:
             error_msg = f"TasksActionsMapAllAPI POST - unhandled error: {str(e)}"
@@ -655,15 +657,16 @@ class TasksActionsValidateAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
         except ValueError as e:
             error_msg = f"TasksActionsValidateAllAPI POST: {str(e)}"
             return {"Error": error_msg}, 403
 
         try:
-            ValidatorService.validate_all_tasks(project_id, tm.authenticated_user_id)
+            ValidatorService.validate_all_tasks(project_id, authenticated_user_id)
             return {"Success": "All tasks validated"}, 200
         except Exception as e:
             error_msg = f"TasksActionsValidateAllAPI POST - unhandled error: {str(e)}"
@@ -705,15 +708,16 @@ class TasksActionsInvalidateAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
         except ValueError as e:
             error_msg = f"TasksActionsInvalidateAllAPI POST: {str(e)}"
             return {"Error": error_msg}, 403
 
         try:
-            ValidatorService.invalidate_all_tasks(project_id, tm.authenticated_user_id)
+            ValidatorService.invalidate_all_tasks(project_id, authenticated_user_id)
             return {"Success": "All tasks invalidated"}, 200
         except Exception as e:
             error_msg = f"TasksActionsInvalidateAllAPI POST - unhandled error: {str(e)}"
@@ -755,15 +759,16 @@ class TasksActionsResetBadImageryAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
         except ValueError as e:
             error_msg = f"TasksActionsResetBadImageryAllAPI POST: {str(e)}"
             return {"Error": error_msg}, 403
 
         try:
-            MappingService.reset_all_badimagery(project_id, tm.authenticated_user_id)
+            MappingService.reset_all_badimagery(project_id, authenticated_user_id)
             return {"Success": "All bad imagery tasks marked ready for mapping"}, 200
         except Exception as e:
             error_msg = (
@@ -807,15 +812,16 @@ class TasksActionsResetAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
         except ValueError as e:
             error_msg = f"TasksActionsResetAllAPI POST: {str(e)}"
             return {"Error": error_msg}, 403
 
         try:
-            ProjectAdminService.reset_all_tasks(project_id, tm.authenticated_user_id)
+            ProjectAdminService.reset_all_tasks(project_id, authenticated_user_id)
             return {"Success": "All tasks reset"}, 200
         except Exception as e:
             error_msg = f"TasksActionsResetAllAPI POST - unhandled error: {str(e)}"
@@ -874,7 +880,7 @@ class TasksActionsSplitAPI(Resource):
         """
         try:
             split_task_dto = SplitTaskDTO()
-            split_task_dto.user_id = tm.authenticated_user_id
+            split_task_dto.user_id = token_auth.current_user()
             split_task_dto.project_id = project_id
             split_task_dto.task_id = task_id
             split_task_dto.preferred_locale = request.environ.get(

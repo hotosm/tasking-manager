@@ -2,7 +2,7 @@ from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
 from backend.models.dtos.user_dto import UserSearchQuery
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService, NotFound
 from backend.services.project_service import ProjectService
 
@@ -149,7 +149,7 @@ class UsersQueriesUsernameAPI(Resource):
         """
         try:
             user_dto = UserService.get_user_dto_by_username(
-                username, tm.authenticated_user_id
+                username, token_auth.current_user()
             )
             return user_dto.to_primitive(), 200
         except NotFound:
@@ -242,7 +242,7 @@ class UsersQueriesOwnLockedAPI(Resource):
         """
         try:
             locked_tasks = ProjectService.get_task_for_logged_in_user(
-                tm.authenticated_user_id
+                token_auth.current_user()
             )
             return locked_tasks.to_primitive(), 200
         except Exception as e:
@@ -287,7 +287,7 @@ class UsersQueriesOwnLockedDetailsAPI(Resource):
         try:
             preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             locked_tasks = ProjectService.get_task_details_for_logged_in_user(
-                tm.authenticated_user_id, preferred_locale
+                token_auth.current_user(), preferred_locale
             )
             return locked_tasks.to_primitive(), 200
         except NotFound:
@@ -324,7 +324,7 @@ class UsersQueriesFavoritesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            favs_dto = UserService.get_projects_favorited(tm.authenticated_user_id)
+            favs_dto = UserService.get_projects_favorited(token_auth.current_user())
             return favs_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404

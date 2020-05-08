@@ -22,7 +22,7 @@ from backend.services.project_service import (
 )
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
-from backend.services.users.authentication_service import token_auth, tm, verify_token
+from backend.services.users.authentication_service import token_auth
 from backend.services.project_admin_service import (
     ProjectAdminService,
     ProjectAdminServiceError,
@@ -75,6 +75,7 @@ class ProjectsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = token_auth.current_user()
             as_file = (
                 strtobool(request.args.get("as_file"))
                 if request.args.get("as_file")
@@ -88,7 +89,7 @@ class ProjectsRestAPI(Resource):
 
             project_dto = ProjectService.get_project_dto_for_mapper(
                 project_id,
-                tm.authenticated_user_id,
+                authenticated_user_id,
                 request.environ.get("HTTP_ACCEPT_LANGUAGE"),
                 abbreviated,
             )
@@ -189,7 +190,7 @@ class ProjectsRestAPI(Resource):
         """
         try:
             draft_project_dto = DraftProjectDTO(request.get_json())
-            draft_project_dto.user_id = tm.authenticated_user_id
+            draft_project_dto.user_id = token_auth.current_user()
             draft_project_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
@@ -245,7 +246,7 @@ class ProjectsRestAPI(Resource):
         """
         try:
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                token_auth.current_user(), project_id
             )
         except ValueError as e:
             error_msg = f"ProjectsRestAPI HEAD: {str(e)}"
@@ -387,9 +388,10 @@ class ProjectsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        authenticated_user_id = token_auth.current_user()
         try:
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
         except ValueError as e:
             error_msg = f"ProjectsRestAPI PATCH: {str(e)}"
@@ -404,7 +406,7 @@ class ProjectsRestAPI(Resource):
             return {"Error": "Unable to update project"}, 400
 
         try:
-            ProjectAdminService.update_project(project_dto, tm.authenticated_user_id)
+            ProjectAdminService.update_project(project_dto, authenticated_user_id)
             return {"Status": "Updated"}, 200
         except InvalidGeoJson as e:
             return {"Invalid GeoJson": str(e)}, 400
@@ -450,15 +452,16 @@ class ProjectsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                authenticated_user_id, project_id
             )
         except ValueError as e:
             error_msg = f"ProjectsRestAPI DELETE: {str(e)}"
             return {"Error": error_msg}, 403
 
         try:
-            ProjectAdminService.delete_project(project_id, tm.authenticated_user_id)
+            ProjectAdminService.delete_project(project_id, authenticated_user_id)
             return {"Success": "Project deleted"}, 200
         except ProjectAdminServiceError:
             return {"Error": "Project has some mapping"}, 403
@@ -471,6 +474,7 @@ class ProjectsRestAPI(Resource):
 
 
 class ProjectSearchBase(Resource):
+    @token_auth.login_required(optional=True)
     def setup_search_dto(self):
         search_dto = ProjectSearchDTO()
         search_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
@@ -489,19 +493,18 @@ class ProjectSearchBase(Resource):
 
         # See https://github.com/hotosm/tasking-manager/pull/922 for more info
         try:
-            verify_token(request.environ.get("HTTP_AUTHORIZATION").split(None, 1)[1])
-
+            authenticated_user_id = token_auth.current_user()
             if request.args.get("createdByMe") == "true":
-                search_dto.created_by = tm.authenticated_user_id
+                search_dto.created_by = authenticated_user_id
 
             if request.args.get("mappedByMe") == "true":
-                search_dto.mapped_by = tm.authenticated_user_id
+                search_dto.mapped_by = authenticated_user_id
 
             if request.args.get("favoritedByMe") == "true":
-                search_dto.favorited_by = tm.authenticated_user_id
+                search_dto.favorited_by = authenticated_user_id
 
             if request.args.get("managedByMe") == "true":
-                search_dto.managed_by = tm.authenticated_user_id
+                search_dto.managed_by = authenticated_user_id
 
         except Exception:
             pass
@@ -691,8 +694,9 @@ class ProjectsQueriesBboxAPI(Resource):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = token_auth.current_user()
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                authenticated_user_id
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a project manager")
@@ -711,7 +715,7 @@ class ProjectsQueriesBboxAPI(Resource):
                 else False
             )
             if createdByMe:
-                search_dto.project_author = tm.authenticated_user_id
+                search_dto.project_author = authenticated_user_id
             search_dto.validate()
         except Exception as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
@@ -765,8 +769,9 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
                 description: Internal Server Error
         """
         try:
+            authenticated_user_id = token_auth.current_user()
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                authenticated_user_id
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a project manager")
@@ -777,7 +782,7 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
         try:
             search_dto = self.setup_search_dto()
             admin_projects = ProjectAdminService.get_projects_for_admin(
-                tm.authenticated_user_id,
+                authenticated_user_id,
                 request.environ.get("HTTP_ACCEPT_LANGUAGE"),
                 search_dto,
             )
@@ -988,7 +993,7 @@ class ProjectsQueriesNoTasksAPI(Resource):
         """
         try:
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                token_auth.current_user(), project_id
             )
         except ValueError as e:
             error_msg = f"ProjectsQueriesNoTasksAPI GET: {str(e)}"

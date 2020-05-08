@@ -8,7 +8,7 @@ from schematics.exceptions import DataError
 from backend.services.mapping_service import MappingService, NotFound
 from backend.models.dtos.grid_dto import GridDTO
 
-from backend.services.users.authentication_service import token_auth, tm, verify_token
+from backend.services.users.authentication_service import token_auth, tm
 from backend.services.validator_service import ValidatorService
 
 from backend.services.project_service import ProjectService, ProjectServiceError
@@ -17,6 +17,7 @@ from backend.models.postgis.utils import InvalidGeoJson
 
 
 class TasksRestAPI(Resource):
+    @token_auth.login_required(optional=True)
     def get(self, project_id, task_id):
         """
         Get a task's metadata
@@ -60,13 +61,7 @@ class TasksRestAPI(Resource):
         """
         try:
             preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            token = request.environ.get("HTTP_AUTHORIZATION")
-
-            # Login isn't required here, but if we have a token we can find out if the user can undo the task
-            if token:
-                verify_token(token[6:])
-
-            user_id = tm.authenticated_user_id
+            user_id = token_auth.current_user()
 
             task = MappingService.get_task_as_dto(
                 task_id, project_id, preferred_locale, user_id

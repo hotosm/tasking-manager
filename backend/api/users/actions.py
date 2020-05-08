@@ -77,8 +77,8 @@ class UsersActionsSetUsersAPI(Resource):
                 )
 
             user_dto.validate()
-
-            if tm.authenticated_user_id != user_dto.id:
+            authenticated_user_id = token_auth.current_user()
+            if authenticated_user_id != user_dto.id:
                 return {"Error": "Unable to authenticate"}, 401
         except ValueError as e:
             return {"Error": str(e)}, 400
@@ -88,7 +88,7 @@ class UsersActionsSetUsersAPI(Resource):
 
         try:
             verification_sent = UserService.update_user_details(
-                tm.authenticated_user_id, user_dto
+                authenticated_user_id, user_dto
             )
             return verification_sent, 200
         except NotFound:
@@ -197,7 +197,7 @@ class UsersActionsSetRoleAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            UserService.add_role_to_user(tm.authenticated_user_id, username, role)
+            UserService.add_role_to_user(token_auth.current_user(), username, role)
             return {"Success": "Role Added"}, 200
         except UserServiceError:
             return {"Error": "Not allowed"}, 403
@@ -246,7 +246,7 @@ class UsersActionsSetExpertModeAPI(Resource):
         """
         try:
             UserService.set_user_is_expert(
-                tm.authenticated_user_id, is_expert == "true"
+                token_auth.current_user(), is_expert == "true"
             )
             return {"Success": "Expert mode updated"}, 200
         except UserServiceError:
@@ -284,7 +284,7 @@ class UsersActionsVerifyEmailAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            MessageService.resend_email_validation(tm.authenticated_user_id)
+            MessageService.resend_email_validation(token_auth.current_user())
             return {"Success": "Verification email resent"}, 200
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
@@ -389,7 +389,7 @@ class UsersActionsSetInterestsAPI(Resource):
         try:
             data = request.get_json()
             user_interests = InterestService.create_or_update_user_interests(
-                tm.authenticated_user_id, data["interests"]
+                token_auth.current_user(), data["interests"]
             )
             return user_interests.to_primitive(), 200
         except ValueError as e:

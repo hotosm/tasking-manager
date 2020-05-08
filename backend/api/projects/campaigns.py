@@ -5,7 +5,7 @@ from backend.models.dtos.campaign_dto import CampaignProjectDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.models.postgis.utils import NotFound
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 
 
 class ProjectsCampaignsAPI(Resource):
@@ -51,7 +51,7 @@ class ProjectsCampaignsAPI(Resource):
         """
         try:
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                token_auth.current_user(), project_id
             )
         except ValueError as e:
             error_msg = f"ProjectsCampaignsAPI POST: {str(e)}"
@@ -154,7 +154,7 @@ class ProjectsCampaignsAPI(Resource):
         """
         try:
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                token_auth.current_user(), project_id
             )
         except ValueError as e:
             error_msg = f"ProjectsCampaignsAPI DELETE: {str(e)}"
