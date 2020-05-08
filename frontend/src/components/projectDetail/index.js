@@ -237,11 +237,13 @@ export const ProjectDetail = (props) => {
                 }}
               />
             </p>
-            <img
-              className="w5 mt3 pa1 z-1"
-              src={props.project.organisationLogo}
-              alt={props.project.organisationName}
-            />
+            {props.project.organisationLogo && (
+              <img
+                className="w5 mt3 pa1 z-1"
+                src={props.project.organisationLogo}
+                alt={props.project.organisationName}
+              />
+            )}
           </>
         )}
         {!props.project.organisationName && props.project.author && (
