@@ -184,7 +184,10 @@ export function ProjectEdit({ id }) {
   const saveChanges = () => {
     const updateProject = () => {
       pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')
-        .then((res) => setSuccess(true))
+        .then((res) => {
+          setSuccess(true);
+          setError(null);
+        })
         .catch((e) => setError('SERVER'));
     };
 
