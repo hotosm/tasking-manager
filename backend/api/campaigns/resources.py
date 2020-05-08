@@ -5,7 +5,7 @@ from backend.models.dtos.campaign_dto import CampaignDTO, NewCampaignDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
 from backend.models.postgis.utils import NotFound
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 
 
 class CampaignsRestAPI(Resource):
@@ -44,7 +44,7 @@ class CampaignsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             if authenticated_user_id:
                 campaign = CampaignService.get_campaign_as_dto(
                     campaign_id, authenticated_user_id
@@ -121,7 +121,7 @@ class CampaignsRestAPI(Resource):
         """
         try:
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                token_auth.current_user()
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
@@ -186,7 +186,7 @@ class CampaignsRestAPI(Resource):
         """
         try:
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                token_auth.current_user()
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
@@ -285,7 +285,7 @@ class CampaignsAllAPI(Resource):
         """
         try:
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                token_auth.current_user()
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")

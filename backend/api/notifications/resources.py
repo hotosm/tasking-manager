@@ -43,7 +43,7 @@ class NotificationsRestAPI(Resource):
         """
         try:
             user_message = MessageService.get_message_as_dto(
-                message_id, tm.authenticated_user_id
+                message_id, token_auth.current_user()
             )
             return user_message.to_primitive(), 200
         except MessageServiceError:
@@ -89,7 +89,7 @@ class NotificationsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            MessageService.delete_message(message_id, tm.authenticated_user_id)
+            MessageService.delete_message(message_id, token_auth.current_user())
             return {"Success": "Message deleted"}, 200
         except MessageServiceError:
             return {"Error": "Unable to delete message"}, 403
@@ -171,7 +171,7 @@ class NotificationsAllAPI(Resource):
             project = request.args.get("project", None, int)
             task_id = request.args.get("taskId", None, int)
             user_messages = MessageService.get_all_messages(
-                tm.authenticated_user_id,
+                token_auth.current_user(),
                 preferred_locale,
                 page,
                 page_size,
@@ -215,7 +215,7 @@ class NotificationsQueriesCountUnreadAPI(Resource):
         """
         try:
             unread_count = MessageService.has_user_new_messages(
-                tm.authenticated_user_id
+                token_auth.current_user()
             )
             return unread_count, 200
         except Exception as e:

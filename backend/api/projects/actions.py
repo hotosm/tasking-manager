@@ -7,7 +7,7 @@ from backend.models.dtos.message_dto import MessageDTO
 from backend.services.project_service import ProjectService, NotFound
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.messaging.message_service import MessageService
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 from backend.services.interests_service import InterestService
 
 
@@ -54,7 +54,7 @@ class ProjectsActionsTransferAPI(Resource):
         """
         try:
             username = request.get_json()["username"]
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.transfer_project_to(
                 project_id, authenticated_user_id, username
             )
@@ -115,7 +115,7 @@ class ProjectsActionsMessageContributorsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             message_dto = MessageDTO(request.get_json())
             message_dto.from_user_id = authenticated_user_id
             message_dto.validate()
@@ -177,7 +177,7 @@ class ProjectsActionsFeatureAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             )
@@ -236,7 +236,7 @@ class ProjectsActionsUnFeatureAPI(Resource):
         """
         try:
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                token_auth.current_user(), project_id
             )
         except ValueError as e:
             error_msg = f"FeaturedProjects POST: {str(e)}"
@@ -303,7 +303,7 @@ class ProjectsActionsSetInterestsAPI(Resource):
         """
         try:
             ProjectAdminService.is_user_action_permitted_on_project(
-                tm.authenticated_user_id, project_id
+                token_auth.current_user(), project_id
             )
         except ValueError as e:
             error_msg = f"ProjectsActionsSetInterestsAPI POST: {str(e)}"

@@ -5,7 +5,7 @@ from backend.models.dtos.interests_dto import InterestDTO
 from backend.models.postgis.utils import NotFound
 from backend.services.interests_service import InterestService
 from backend.services.organisation_service import OrganisationService
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 
 from sqlalchemy.exc import IntegrityError
 
@@ -50,7 +50,7 @@ class InterestsAllAPI(Resource):
         """
         try:
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                token_auth.current_user()
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
@@ -145,7 +145,7 @@ class InterestsRestAPI(Resource):
         """
         try:
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                token_auth.current_user()
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
@@ -206,7 +206,7 @@ class InterestsRestAPI(Resource):
         """
         try:
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                token_auth.current_user()
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")
@@ -265,7 +265,7 @@ class InterestsRestAPI(Resource):
         """
         try:
             orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                tm.authenticated_user_id
+                token_auth.current_user()
             )
             if len(orgs_dto.organisations) < 1:
                 raise ValueError("User not a Org Manager")

@@ -78,7 +78,7 @@ class TasksActionsMappingLockAPI(Resource):
         """
         try:
             lock_task_dto = LockTaskDTO()
-            lock_task_dto.user_id = tm.authenticated_user_id
+            lock_task_dto.user_id = token_auth.current_user()
             lock_task_dto.project_id = project_id
             lock_task_dto.task_id = task_id
             lock_task_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
@@ -164,7 +164,7 @@ class TasksActionsMappingStopAPI(Resource):
         """
         try:
             stop_task = StopMappingTaskDTO(request.get_json())
-            stop_task.user_id = tm.authenticated_user_id
+            stop_task.user_id = token_auth.current_user()
             stop_task.task_id = task_id
             stop_task.project_id = project_id
             stop_task.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
@@ -247,7 +247,7 @@ class TasksActionsMappingUnlockAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             mapped_task = MappedTaskDTO(request.get_json())
             mapped_task.user_id = authenticated_user_id
             mapped_task.task_id = task_id
@@ -321,7 +321,7 @@ class TasksActionsMappingUndoAPI(Resource):
         try:
             preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             task = MappingService.undo_mapping(
-                project_id, task_id, tm.authenticated_user_id, preferred_locale
+                project_id, task_id, token_auth.current_user(), preferred_locale
             )
             return task.to_primitive(), 200
         except NotFound:
@@ -394,7 +394,7 @@ class TasksActionsValidationLockAPI(Resource):
         try:
             validator_dto = LockForValidationDTO(request.get_json())
             validator_dto.project_id = project_id
-            validator_dto.user_id = tm.authenticated_user_id
+            validator_dto.user_id = token_auth.current_user()
             validator_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             validator_dto.validate()
         except DataError as e:
@@ -475,7 +475,7 @@ class TasksActionsValidationStopAPI(Resource):
         try:
             validated_dto = StopValidationDTO(request.get_json())
             validated_dto.project_id = project_id
-            validated_dto.user_id = tm.authenticated_user_id
+            validated_dto.user_id = token_auth.current_user()
             validated_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             validated_dto.validate()
         except DataError as e:
@@ -552,7 +552,7 @@ class TasksActionsValidationUnlockAPI(Resource):
         try:
             validated_dto = UnlockAfterValidationDTO(request.get_json())
             validated_dto.project_id = project_id
-            validated_dto.user_id = tm.authenticated_user_id
+            validated_dto.user_id = token_auth.current_user()
             validated_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             validated_dto.validate()
         except DataError as e:
@@ -606,7 +606,7 @@ class TasksActionsMapAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             )
@@ -657,7 +657,7 @@ class TasksActionsValidateAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             )
@@ -708,7 +708,7 @@ class TasksActionsInvalidateAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             )
@@ -759,7 +759,7 @@ class TasksActionsResetBadImageryAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             )
@@ -812,7 +812,7 @@ class TasksActionsResetAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             )
@@ -880,7 +880,7 @@ class TasksActionsSplitAPI(Resource):
         """
         try:
             split_task_dto = SplitTaskDTO()
-            split_task_dto.user_id = tm.authenticated_user_id
+            split_task_dto.user_id = token_auth.current_user()
             split_task_dto.project_id = project_id
             split_task_dto.task_id = task_id
             split_task_dto.preferred_locale = request.environ.get(

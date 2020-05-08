@@ -3,7 +3,7 @@ from schematics.exceptions import DataError
 
 from backend.models.dtos.team_dto import TeamDTO, NewTeamDTO, UpdateTeamDTO
 from backend.services.team_service import TeamService, TeamServiceError, NotFound
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
 
@@ -72,7 +72,7 @@ class TeamsRestAPI(Resource):
             team_dto.team_id = team_id
             team_dto.validate()
 
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             team_details_dto = TeamService.get_team_as_dto(
                 team_id, authenticated_user_id
             )
@@ -166,7 +166,7 @@ class TeamsRestAPI(Resource):
             team_dto.team_id = team_id
             team_dto.validate()
 
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             if not TeamService.user_is_manager(
                 team_id, authenticated_user_id
             ) and not OrganisationService.can_user_manage_organisation(
@@ -215,7 +215,7 @@ class TeamsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             if authenticated_user_id is None:
                 user_id = 0
             else:
@@ -265,7 +265,7 @@ class TeamsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not TeamService.user_is_manager(team_id, tm.authenticated_user_id):
+        if not TeamService.user_is_manager(team_id, token_auth.current_user()):
             return {"Error": "User is not a manager for the team"}, 401
         try:
             TeamService.delete_team(team_id)
@@ -336,7 +336,7 @@ class TeamsAllAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_id = tm.authenticated_user_id
+            user_id = token_auth.current_user()
         except Exception as e:
             error_msg = f"Teams GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -421,7 +421,7 @@ class TeamsAllAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        user_id = tm.authenticated_user_id
+        user_id = token_auth.current_user()
 
         try:
             team_dto = NewTeamDTO(request.get_json())

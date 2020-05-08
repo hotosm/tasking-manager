@@ -37,7 +37,9 @@ def verify_token(token):
     tm.authenticated_user_id = (
         user_id  # Set the user ID on the decorator as a convenience
     )
-    return True  # All tests passed token is good for the requested resource
+    return UserService.get_user_by_id(
+        user_id
+    ).id  # All tests passed token is good for the requested resource
 
 
 class AuthServiceError(Exception):

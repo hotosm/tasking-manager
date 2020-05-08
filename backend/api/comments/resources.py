@@ -52,7 +52,7 @@ class CommentsProjectsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        authenticated_user_id = tm.authenticated_user_id
+        authenticated_user_id = token_auth.current_user()
         if UserService.is_user_blocked(authenticated_user_id):
             return "User is on read only mode", 403
 
@@ -188,7 +188,7 @@ class CommentsTasksRestAPI(Resource):
         """
         try:
             task_comment = TaskCommentDTO(request.get_json())
-            task_comment.user_id = tm.authenticated_user_id
+            task_comment.user_id = token_auth.current_user()
             task_comment.task_id = task_id
             task_comment.project_id = project_id
             task_comment.validate()
@@ -263,7 +263,7 @@ class CommentsTasksRestAPI(Resource):
         """
         try:
             task_comment = TaskCommentDTO(request.get_json())
-            task_comment.user_id = tm.authenticated_user_id
+            task_comment.user_id = token_auth.current_user()
             task_comment.task_id = task_id
             task_comment.project_id = project_id
             task_comment.validate()

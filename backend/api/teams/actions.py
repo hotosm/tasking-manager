@@ -61,7 +61,7 @@ class TeamsActionsJoinAPI(Resource):
             return str(e), 400
 
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             TeamService.join_team(team_id, authenticated_user_id, username, role)
             if TeamService.user_is_manager(team_id, authenticated_user_id):
                 return {"Success": "User added to the team"}, 200
@@ -139,7 +139,7 @@ class TeamsActionsJoinAPI(Resource):
             return str(e), 400
 
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             if request_type == "join-response":
                 if TeamService.user_is_manager(team_id, authenticated_user_id):
                     TeamService.accept_reject_join_request(
@@ -210,7 +210,7 @@ class TeamsActionsLeaveAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             username = request.get_json(force=True)["username"]
             request_user = User.get_by_id(authenticated_user_id)
             if (

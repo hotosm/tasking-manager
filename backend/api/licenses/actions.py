@@ -1,6 +1,6 @@
 from flask_restful import Resource, current_app
 
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService, NotFound
 
 
@@ -38,7 +38,7 @@ class LicensesActionsAcceptAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            UserService.accept_license_terms(tm.authenticated_user_id, license_id)
+            UserService.accept_license_terms(token_auth.current_user(), license_id)
             return {"Success": "Terms Accepted"}, 200
         except NotFound:
             return {"Error": "User or mapping not found"}, 404

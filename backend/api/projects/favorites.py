@@ -4,7 +4,7 @@ from schematics.exceptions import DataError
 from backend.models.postgis.utils import NotFound
 from backend.models.dtos.project_dto import ProjectFavoriteDTO
 from backend.services.project_service import ProjectService
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 
 
 class ProjectsFavoritesAPI(Resource):
@@ -40,7 +40,7 @@ class ProjectsFavoritesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_id = tm.authenticated_user_id
+            user_id = token_auth.current_user()
             favorited = ProjectService.is_favorited(project_id, user_id)
             if favorited is True:
                 return {"favorited": True}, 200
@@ -85,7 +85,7 @@ class ProjectsFavoritesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            authenticated_user_id = tm.authenticated_user_id
+            authenticated_user_id = token_auth.current_user()
             favorite_dto = ProjectFavoriteDTO()
             favorite_dto.project_id = project_id
             favorite_dto.user_id = authenticated_user_id
@@ -138,7 +138,7 @@ class ProjectsFavoritesAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectService.unfavorite(project_id, tm.authenticated_user_id)
+            ProjectService.unfavorite(project_id, token_auth.current_user())
         except NotFound:
             return {"Error": "Project Not Found"}, 404
         except ValueError as e:

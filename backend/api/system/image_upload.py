@@ -4,7 +4,7 @@ import json
 from flask_restful import Resource, request, current_app
 
 from backend.services.organisation_service import OrganisationService
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 
 
 class SystemImageUploadRestAPI(Resource):
@@ -59,7 +59,7 @@ class SystemImageUploadRestAPI(Resource):
             is_org_manager = (
                 len(
                     OrganisationService.get_organisations_managed_by_user(
-                        tm.authenticated_user_id
+                        token_auth.current_user()
                     )
                 )
                 > 0

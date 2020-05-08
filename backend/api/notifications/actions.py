@@ -42,7 +42,7 @@ class NotificationsActionsDeleteMultipleAPI(Resource):
             message_ids = request.get_json()["messageIds"]
             if message_ids:
                 MessageService.delete_multiple_messages(
-                    message_ids, tm.authenticated_user_id
+                    message_ids, token_auth.current_user()
                 )
 
             return {"Success": "Messages deleted"}, 200
