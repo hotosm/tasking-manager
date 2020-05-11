@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { redirectTo } from '@reach/router';
+import { navigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -30,8 +30,8 @@ export function UserPermissionErrorContent({ project, userLevel, close }: Object
       {userPermissionError === 'userIsNotMappingTeamMember' && (
         <div className="pb3">
           {project.teams
-            .filter(team => team.role === 'MAPPER')
-            .map(team => (
+            .filter((team) => team.role === 'MAPPER')
+            .map((team) => (
               <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2" />
             ))}
         </div>
@@ -39,14 +39,14 @@ export function UserPermissionErrorContent({ project, userLevel, close }: Object
       {userPermissionError === 'userIsNotValidationTeamMember' && (
         <div className="pb3">
           {project.teams
-            .filter(team => team.role === 'VALIDATOR')
-            .map(team => (
+            .filter((team) => team.role === 'VALIDATOR')
+            .map((team) => (
               <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2" />
             ))}
         </div>
       )}
       <div className="pa2">
-        <Button className="white bg-red" onClick={() => redirectTo('/explore')}>
+        <Button className="white bg-red" onClick={() => navigate('/explore')}>
           <FormattedMessage {...messages.selectAnotherProject} />
         </Button>
       </div>
