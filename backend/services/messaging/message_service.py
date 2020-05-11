@@ -61,6 +61,8 @@ class MessageService:
         user = UserService.get_user_by_id(mapped_by)
         if user.validation_message is False:
             return  # No need to send validation message
+        if user.projects_notifications is False:
+            return
 
         text_template = get_template(
             "invalidation_message_en.txt"
@@ -160,6 +162,10 @@ class MessageService:
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
 
+                # Validate mention_notification.
+                if user.mentions_notifications is False:
+                    continue
+
                 message = Message()
                 message.message_type = MessageType.MENTION_NOTIFICATION.value
                 message.project_id = project_id
@@ -196,6 +202,9 @@ class MessageService:
                     user = UserService.get_user_dto_by_id(user_id)
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
+
+                if user.comments_notifications is False:
+                    continue
 
                 message = Message()
                 message.message_type = MessageType.TASK_COMMENT_NOTIFICATION.value
@@ -291,6 +300,10 @@ class MessageService:
                 current_app.logger.error(f"Username {username} not found")
                 continue  # If we can't find the user, keep going no need to fail
 
+            # Validate mention_notification.
+            if user.mentions_notifications is False:
+                continue
+
             message = Message()
             message.message_type = MessageType.MENTION_NOTIFICATION.value
             message.project_id = project_id
@@ -318,6 +331,9 @@ class MessageService:
                     user = UserService.get_user_dto_by_id(user_id)
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
+
+                if user.comments_notifications is False:
+                    continue
 
                 message = Message()
                 message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
@@ -353,6 +369,8 @@ class MessageService:
             )
         )
         user = UserService.get_user_dto_by_id(user_id)
+        if user.projects_notifications is False:
+            return
         messages = []
         for project in recently_updated_projects:
             activity_message = []
