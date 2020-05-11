@@ -669,6 +669,7 @@ const Resources = {
             },
             Headers: ['Accept', 'Referer']
           },
+          Compress: true,
           TargetOriginId: cf.join('-', [cf.stackName, 'react-app']),
           ViewerProtocolPolicy: "redirect-to-https"
         },
