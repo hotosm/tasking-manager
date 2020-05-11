@@ -20,7 +20,6 @@ def verify_token(token):
     """ Verify the supplied token and check user role is correct for the requested resource"""
     tm.authenticated_user_id = None
     if not token:
-        current_app.logger.debug(f"Token not supplied {request.base_url}")
         return False
 
     try:
