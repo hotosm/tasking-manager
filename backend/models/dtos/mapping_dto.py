@@ -1,6 +1,6 @@
 from schematics import Model
 from schematics.exceptions import ValidationError
-from schematics.types import StringType, IntType, BooleanType, UTCDateTimeType
+from schematics.types import StringType, IntType, UTCDateTimeType
 from schematics.types.compound import ListType, ModelType
 from backend.models.postgis.statuses import TaskStatus
 from backend.models.dtos.mapping_issues_dto import TaskMappingIssueDTO
@@ -86,7 +86,6 @@ class TaskDTO(Model):
     per_task_instructions = StringType(
         serialized_name="perTaskInstructions", serialize_when_none=False
     )
-    is_undoable = BooleanType(serialized_name="isUndoable", default=False)
     auto_unlock_seconds = IntType(serialized_name="autoUnlockSeconds")
     last_updated = UTCDateTimeType(
         serialized_name="lastUpdated", serialize_when_none=False
