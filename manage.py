@@ -19,7 +19,7 @@ from backend.models.postgis.task import Task, TaskHistory
 
 from sqlalchemy import func
 import atexit
-from apscheduler.scheduler import Scheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 
 
 # Load configuration from file into environment
@@ -54,15 +54,9 @@ manager = Manager(application)
 # Enable db migrations to be run via the command line
 manager.add_command("db", MigrateCommand)
 
-# Setup a background cron job
-cron = Scheduler(daemon=True)
-# Initiate the background thread
-cron.start()
-application.logger.debug("Initiated background thread to auto unlock tasks")
 
 
 # Job runs once every 2 hours
-@cron.interval_schedule(hours=2)
 @manager.command
 def auto_unlock_tasks():
     with application.app_context():
@@ -81,6 +75,13 @@ def auto_unlock_tasks():
             project_id = project[0]
             Task.auto_unlock_tasks(project_id)
 
+
+# Setup a background cron job
+cron = BackgroundScheduler(daemon=True)
+# Initiate the background thread
+cron.add_job(auto_unlock_tasks, "interval", hours=2)
+cron.start()
+application.logger.debug("Initiated background thread to auto unlock tasks")
 
 # Shutdown your cron thread when the application is stopped
 atexit.register(lambda: cron.shutdown(wait=False))
