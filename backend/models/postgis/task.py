@@ -189,7 +189,10 @@ class TaskHistory(db.Model):
     action_text = db.Column(db.String)
     action_date = db.Column(db.DateTime, nullable=False, default=timestamp)
     user_id = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", name="fk_users"), nullable=False
+        db.BigInteger,
+        db.ForeignKey("users.id", name="fk_users"),
+        index=True,
+        nullable=False,
     )
     invalidation_history = db.relationship(
         TaskInvalidationHistory, lazy="dynamic", cascade="all"
@@ -203,6 +206,7 @@ class TaskHistory(db.Model):
             [task_id, project_id], ["tasks.id", "tasks.project_id"], name="fk_tasks"
         ),
         db.Index("idx_task_history_composite", "task_id", "project_id"),
+        db.Index("idx_task_history_project_id_user_id", "user_id", "project_id"),
         {},
     )
 
@@ -494,13 +498,13 @@ class Task(db.Model):
     geometry = db.Column(Geometry("MULTIPOLYGON", srid=4326))
     task_status = db.Column(db.Integer, default=TaskStatus.READY.value)
     locked_by = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", name="fk_users_locked")
+        db.BigInteger, db.ForeignKey("users.id", name="fk_users_locked"), index=True
     )
     mapped_by = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", name="fk_users_mapper")
+        db.BigInteger, db.ForeignKey("users.id", name="fk_users_mapper"), index=True
     )
     validated_by = db.Column(
-        db.BigInteger, db.ForeignKey("users.id", name="fk_users_validator")
+        db.BigInteger, db.ForeignKey("users.id", name="fk_users_validator"), index=True
     )
 
     # Mapped objects
