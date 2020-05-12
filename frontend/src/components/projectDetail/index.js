@@ -27,6 +27,7 @@ import { QuestionsAndComments } from './questionsAndComments';
 import { PermissionBox } from './permissionBox';
 import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
+import { useFetch } from '../../hooks/UseFetch';
 
 /* lazy imports must be last import */
 const TaskLineGraphViz = React.lazy(() => import('./taskLineGraphViz'));
@@ -103,20 +104,20 @@ const ProjectDetailMap = (props) => {
   );
 };
 
-export const ProjectDetailLeft = (props) => {
+export const ProjectDetailLeft = ({ project, contributors, className, type }: Object) => {
   const htmlShortDescription =
-    props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.shortDescription);
+    project.projectInfo && htmlFromMarkdown(project.projectInfo.shortDescription);
 
   return (
-    <div className={`${props.className}`}>
+    <div className={`${className}`}>
       <div className="h-75 z-1">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={3}
           delay={500}
-          ready={typeof props.project.projectId === 'number'}
+          ready={typeof project.projectId === 'number'}
         >
-          <ProjectHeader project={props.project} showEditLink={true} />
+          <ProjectHeader project={project} showEditLink={true} />
           <section className="lh-title h-100 overflow-x-scroll">
             <div className="pr2 markdown-content" dangerouslySetInnerHTML={htmlShortDescription} />
             <div>
@@ -138,36 +139,35 @@ export const ProjectDetailLeft = (props) => {
           showLoadingAnimation={true}
           rows={3}
           delay={500}
-          ready={typeof props.project.projectId === 'number'}
+          ready={typeof project.projectId === 'number'}
         >
           <ProjectDetailTypeBar
-            type={props.type}
-            mappingTypes={props.project.mappingTypes || []}
-            imagery={props.project.imagery}
-            editors={props.project.mappingEditors}
-            defaultUserEditor={props.userPreferences.default_editor}
+            type={type}
+            mappingTypes={project.mappingTypes || []}
+            imagery={project.imagery}
+            editors={project.mappingEditors}
           />
-          <ReactPlaceholder rows={1} ready={typeof props.contributors.length === 'number'}>
+          <ReactPlaceholder rows={1} ready={typeof contributors.length === 'number'}>
             <BigProjectTeaser
               className="pt3"
-              totalContributors={props.contributors.length}
-              lastUpdated={props.project.lastUpdated}
+              totalContributors={contributors.length}
+              lastUpdated={project.lastUpdated}
               littleFont="f5"
               bigFont="f4"
             />
           </ReactPlaceholder>
           <ProjectProgressBar
             className="pb2 bg-white"
-            percentMapped={props.project.percentMapped}
-            percentValidated={props.project.percentValidated}
-            percentBadImagery={props.project.percentBadImagery}
+            percentMapped={project.percentMapped}
+            percentValidated={project.percentValidated}
+            percentBadImagery={project.percentBadImagery}
           />
           <div className="cf pb1 bg-white">
             <MappingLevelMessage
-              level={props.project.mapperLevel}
+              level={project.mapperLevel}
               className="tl f5 mt1 ttc fw5 blue-dark"
             />
-            <DueDateBox dueDate={props.project.dueDate} />
+            <DueDateBox dueDate={project.dueDate} />
           </div>
           <DueDateBox />
         </ReactPlaceholder>
@@ -179,6 +179,16 @@ export const ProjectDetailLeft = (props) => {
 export const ProjectDetail = (props) => {
   useSetProjectPageTitleTag(props.project);
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  /* eslint-disable-next-line */
+  const [visualError, visualLoading, visualData] = useFetch(
+    `projects/${props.project.projectId}/contributions/queries/day/`,
+    props.project && props.project.projectId,
+  );
+  /* eslint-disable-next-line */
+  const [contributorsError, contributorsLoading, contributors] = useFetch(
+    `projects/${props.project.projectId}/contributions/`,
+    props.project && props.project.projectId,
+  );
 
   const htmlDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
@@ -194,7 +204,11 @@ export const ProjectDetail = (props) => {
       <div className="bb b--grey-light">
         <div className="cf">
           <ProjectDetailLeft
-            {...props}
+            project={props.project}
+            contributors={
+              contributors.hasOwnProperty('userContributions') ? contributors.userContributions : []
+            }
+            type="detail"
             className="w-100 w-60-l fl ph4 pv3 bg-white blue-dark vh-minus-200-ns relative"
           />
           <div className="w-100 w-40-l vh-minus-200-ns fl">
@@ -302,14 +316,22 @@ export const ProjectDetail = (props) => {
         <FormattedMessage {...messages.contributors} />
       </h3>
       <div className="cf db mb3 ph4">
-        {props.contributors && (
-          <UserAvatarList
-            size="large"
-            textColor="white"
-            users={props.contributors}
-            maxLength={15}
-          />
-        )}
+        <ReactPlaceholder
+          showLoadingAnimation={true}
+          type={'media'}
+          rows={1}
+          delay={200}
+          ready={contributors && contributors.userContributions}
+        >
+          {contributors && (
+            <UserAvatarList
+              size="large"
+              textColor="white"
+              users={contributors.userContributions}
+              maxLength={15}
+            />
+          )}
+        </ReactPlaceholder>
       </div>
 
       <a href="#contributionTimeline" style={{ visibility: 'hidden' }} name="contributionTimeline">
@@ -324,9 +346,9 @@ export const ProjectDetail = (props) => {
             showLoadingAnimation={true}
             rows={3}
             delay={500}
-            ready={typeof props.percentDoneVisData === 'object'}
+            ready={typeof visualData === 'object'}
           >
-            <TaskLineGraphViz percentDoneVisData={props.percentDoneVisData} />
+            <TaskLineGraphViz percentDoneVisData={visualData} />
           </ReactPlaceholder>
         </React.Suspense>
         <ReactPlaceholder

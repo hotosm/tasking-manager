@@ -5,8 +5,8 @@ import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { useInterval } from './UseInterval';
 
 export const useFetch = (url, trigger = true) => {
-  const token = useSelector(state => state.auth.get('token'));
-  const locale = useSelector(state => state.preferences['locale']);
+  const token = useSelector((state) => state.auth.get('token'));
+  const locale = useSelector((state) => state.preferences['locale']);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
@@ -18,10 +18,11 @@ export const useFetch = (url, trigger = true) => {
           // replace in locale is needed because the backend uses underscore instead of dash
           const response = await fetchLocalJSONAPI(url, token, 'GET', locale.replace('-', '_'));
           setData(response);
+          setLoading(false);
         } catch (e) {
           setError(e);
+          setLoading(false);
         }
-        setLoading(false);
       }
     })();
   }, [url, token, trigger, locale]);
@@ -29,8 +30,8 @@ export const useFetch = (url, trigger = true) => {
 };
 
 export function useFetchIntervaled(url, delay, trigger = true) {
-  const token = useSelector(state => state.auth.get('token'));
-  const locale = useSelector(state => state.preferences['locale']);
+  const token = useSelector((state) => state.auth.get('token'));
+  const locale = useSelector((state) => state.preferences['locale']);
   const [data, setData] = useState();
   const [error, setError] = useState(null);
   useInterval(() => {
