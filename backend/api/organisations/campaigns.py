@@ -4,7 +4,7 @@ from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
 from backend.models.postgis.utils import NotFound
 from backend.models.postgis.campaign import Campaign
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 
 
 class OrganisationsCampaignsAPI(Resource):
@@ -50,7 +50,7 @@ class OrganisationsCampaignsAPI(Resource):
         """
         try:
             if OrganisationService.can_user_manage_organisation(
-                organisation_id, tm.authenticated_user_id
+                organisation_id, token_auth.current_user()
             ):
                 if Campaign.campaign_organisation_exists(campaign_id, organisation_id):
                     message = "Campaign {} is already assigned to organisation {}.".format(
@@ -155,7 +155,7 @@ class OrganisationsCampaignsAPI(Resource):
         """
         try:
             if OrganisationService.can_user_manage_organisation(
-                organisation_id, tm.authenticated_user_id
+                organisation_id, token_auth.current_user()
             ):
                 CampaignService.delete_organisation_campaign(
                     organisation_id, campaign_id

@@ -130,7 +130,10 @@ class ProjectAdminService:
             project = ProjectAdminService._get_project_by_id(project_id)
             project.update(project_dto)
         else:
-            raise ValueError("Project can only be updated by admins or by the owner")
+            raise ValueError(
+                str(project_id)
+                + " :Project can only be updated by admins or by the owner"
+            )
 
         return project
 
@@ -298,31 +301,32 @@ class ProjectAdminService:
             authenticated_user_id, author_id
         )
         is_org_manager = False
-        if hasattr(project, "organisation_id") and project.organisation_id:
-            org_id = project.organisation_id
-            org = OrganisationService.get_organisation_by_id_as_dto(
-                org_id, authenticated_user_id
-            )
-            if org.is_manager:
-                is_org_manager = True
-
-        is_manager_team = None
-        if hasattr(project, "project_teams") and project.project_teams:
-            teams_dto = TeamService.get_project_teams_as_dto(project_id)
-            if teams_dto.teams:
-                teams_allowed = [
-                    team_dto
-                    for team_dto in teams_dto.teams
-                    if team_dto.role in allowed_roles
-                ]
-                user_membership = [
-                    team_dto.team_id
-                    for team_dto in teams_allowed
-                    if TeamService.is_user_member_of_team(
-                        team_dto.team_id, authenticated_user_id
-                    )
-                ]
-                if user_membership:
-                    is_manager_team = True
+        is_manager_team = False
+        if not (is_admin or is_author):
+            if hasattr(project, "organisation_id") and project.organisation_id:
+                org_id = project.organisation_id
+                org = OrganisationService.get_organisation_by_id_as_dto(
+                    org_id, authenticated_user_id
+                )
+                if org.is_manager:
+                    is_org_manager = True
+                else:
+                    if hasattr(project, "project_teams") and project.project_teams:
+                        teams_dto = TeamService.get_project_teams_as_dto(project_id)
+                        if teams_dto.teams:
+                            teams_allowed = [
+                                team_dto
+                                for team_dto in teams_dto.teams
+                                if team_dto.role in allowed_roles
+                            ]
+                            user_membership = [
+                                team_dto.team_id
+                                for team_dto in teams_allowed
+                                if TeamService.is_user_member_of_team(
+                                    team_dto.team_id, authenticated_user_id
+                                )
+                            ]
+                            if user_membership:
+                                is_manager_team = True
 
         return is_admin or is_author or is_org_manager or is_manager_team

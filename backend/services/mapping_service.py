@@ -44,15 +44,11 @@ class MappingService:
 
     @staticmethod
     def get_task_as_dto(
-        task_id: int,
-        project_id: int,
-        preferred_local: str = "en",
-        logged_in_user_id: int = None,
+        task_id: int, project_id: int, preferred_local: str = "en",
     ) -> TaskDTO:
         """ Get task as DTO for transmission over API """
         task = MappingService.get_task(task_id, project_id)
         task_dto = task.as_dto_with_instructions(preferred_local)
-        task_dto.is_undoable = MappingService._is_task_undoable(logged_in_user_id, task)
         return task_dto
 
     @staticmethod

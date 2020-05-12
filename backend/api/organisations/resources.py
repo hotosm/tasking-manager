@@ -13,7 +13,7 @@ from backend.services.organisation_service import (
 )
 
 from backend.services.users.user_service import UserService
-from backend.services.users.authentication_service import token_auth, tm, verify_token
+from backend.services.users.authentication_service import token_auth
 
 
 class OrganisationsRestAPI(Resource):
@@ -70,7 +70,7 @@ class OrganisationsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        request_user = User.get_by_id(tm.authenticated_user_id)
+        request_user = User.get_by_id(token_auth.current_user())
         if request_user.role != 1:
             return {"Error": "Only admin users can create organisations."}, 403
 
@@ -128,7 +128,7 @@ class OrganisationsRestAPI(Resource):
                 description: Internal Server Error
         """
         if not OrganisationService.can_user_manage_organisation(
-            organisation_id, tm.authenticated_user_id
+            organisation_id, token_auth.current_user()
         ):
             return {"Error": "User is not an admin for the org"}, 403
         try:
@@ -174,10 +174,11 @@ class OrganisationsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            if tm.authenticated_user_id is None:
+            authenticated_user_id = token_auth.current_user()
+            if authenticated_user_id is None:
                 user_id = 0
             else:
-                user_id = tm.authenticated_user_id
+                user_id = authenticated_user_id
             organisation_dto = OrganisationService.get_organisation_by_id_as_dto(
                 organisation_id, user_id
             )
@@ -247,7 +248,7 @@ class OrganisationsRestAPI(Resource):
                 description: Internal Server Error
         """
         if not OrganisationService.can_user_manage_organisation(
-            organisation_id, tm.authenticated_user_id
+            organisation_id, token_auth.current_user()
         ):
             return {"Error": "User is not an admin for the org"}, 403
         try:
@@ -272,6 +273,7 @@ class OrganisationsRestAPI(Resource):
 
 
 class OrganisationsAllAPI(Resource):
+    @token_auth.login_required(optional=True)
     def get(self):
         """
         List all organisations
@@ -307,6 +309,7 @@ class OrganisationsAllAPI(Resource):
         """
 
         # Restrict some of the parameters to some permissions
+        authenticated_user_id = token_auth.current_user()
         try:
             manager_user_id = int(request.args.get("manager_user_id"))
         except Exception:
@@ -314,15 +317,10 @@ class OrganisationsAllAPI(Resource):
 
         if manager_user_id is not None:
             try:
-                # Verify login
-                verify_token(
-                    request.environ.get("HTTP_AUTHORIZATION").split(None, 1)[1]
-                )
-
                 # Check whether user is admin (can do any query) or user is checking for own projects
                 if (
-                    not UserService.is_user_an_admin(tm.authenticated_user_id)
-                    and tm.authenticated_user_id != manager_user_id
+                    not UserService.is_user_an_admin(authenticated_user_id)
+                    and authenticated_user_id != manager_user_id
                 ):
                     raise ValueError
 
@@ -332,7 +330,7 @@ class OrganisationsAllAPI(Resource):
         # Obtain organisations
         try:
             results_dto = OrganisationService.get_organisations_as_dto(
-                manager_user_id, tm.authenticated_user_id
+                manager_user_id, authenticated_user_id
             )
             return results_dto.to_primitive(), 200
         except NotFound:

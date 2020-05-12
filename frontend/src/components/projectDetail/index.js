@@ -41,7 +41,7 @@ const ProjectDetailTypeBar = (props) => {
           <MappingTypes types={props.mappingTypes} />
         </div>
       </div>
-      <div className="w-50-n w-30 fl">
+      <div className="w-50-ns w-30 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.imagery} />
         </h3>
@@ -237,11 +237,13 @@ export const ProjectDetail = (props) => {
                 }}
               />
             </p>
-            <img
-              className="w5 mt3 pa1 z-1"
-              src={props.project.organisationLogo}
-              alt={props.project.organisationName}
-            />
+            {props.project.organisationLogo && (
+              <img
+                className="w5 mt3 pa1 z-1"
+                src={props.project.organisationLogo}
+                alt={props.project.organisationName}
+              />
+            )}
           </>
         )}
         {!props.project.organisationName && props.project.author && (

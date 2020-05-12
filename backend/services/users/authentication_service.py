@@ -20,7 +20,6 @@ def verify_token(token):
     """ Verify the supplied token and check user role is correct for the requested resource"""
     tm.authenticated_user_id = None
     if not token:
-        current_app.logger.debug(f"Token not supplied {request.base_url}")
         return False
 
     try:
@@ -37,7 +36,7 @@ def verify_token(token):
     tm.authenticated_user_id = (
         user_id  # Set the user ID on the decorator as a convenience
     )
-    return True  # All tests passed token is good for the requested resource
+    return user_id  # All tests passed token is good for the requested resource
 
 
 class AuthServiceError(Exception):

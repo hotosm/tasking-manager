@@ -52,13 +52,13 @@ class CommentsProjectsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-
-        if UserService.is_user_blocked(tm.authenticated_user_id):
+        authenticated_user_id = token_auth.current_user()
+        if UserService.is_user_blocked(authenticated_user_id):
             return "User is on read only mode", 403
 
         try:
             chat_dto = ChatMessageDTO(request.get_json())
-            chat_dto.user_id = tm.authenticated_user_id
+            chat_dto.user_id = authenticated_user_id
             chat_dto.project_id = project_id
             chat_dto.validate()
         except DataError as e:
@@ -67,7 +67,7 @@ class CommentsProjectsRestAPI(Resource):
 
         try:
             project_messages = ChatService.post_message(
-                chat_dto, project_id, tm.authenticated_user_id
+                chat_dto, project_id, authenticated_user_id
             )
             return project_messages.to_primitive(), 201
         except ValueError as e:
@@ -188,7 +188,7 @@ class CommentsTasksRestAPI(Resource):
         """
         try:
             task_comment = TaskCommentDTO(request.get_json())
-            task_comment.user_id = tm.authenticated_user_id
+            task_comment.user_id = token_auth.current_user()
             task_comment.task_id = task_id
             task_comment.project_id = project_id
             task_comment.validate()
@@ -263,7 +263,7 @@ class CommentsTasksRestAPI(Resource):
         """
         try:
             task_comment = TaskCommentDTO(request.get_json())
-            task_comment.user_id = tm.authenticated_user_id
+            task_comment.user_id = token_auth.current_user()
             task_comment.task_id = task_id
             task_comment.project_id = project_id
             task_comment.validate()

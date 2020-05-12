@@ -1,7 +1,7 @@
 from flask_restful import Resource, current_app
 
 from backend.services.application_service import ApplicationService, NotFound
-from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.authentication_service import token_auth
 
 
 class SystemApplicationsRestAPI(Resource):
@@ -31,7 +31,7 @@ class SystemApplicationsRestAPI(Resource):
         """
         try:
             tokens = ApplicationService.get_all_tokens_for_logged_in_user(
-                tm.authenticated_user_id
+                token_auth.current_user()
             )
             if len(tokens) == 0:
                 return 400
@@ -66,7 +66,7 @@ class SystemApplicationsRestAPI(Resource):
             description: A problem occurred
         """
         try:
-            token = ApplicationService.create_token(tm.authenticated_user_id)
+            token = ApplicationService.create_token(token_auth.current_user())
             return token.to_primitive(), 200
         except Exception as e:
             error_msg = f"Application POST API - unhandled error: {str(e)}"
@@ -141,7 +141,7 @@ class SystemApplicationsRestAPI(Resource):
         """
         try:
             token = ApplicationService.get_token(application_key)
-            if token.user == tm.authenticated_user_id:
+            if token.user == token_auth.current_user():
                 token.delete()
                 return 200
             else:

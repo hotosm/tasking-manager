@@ -8,7 +8,7 @@ from schematics.exceptions import DataError
 from backend.services.mapping_service import MappingService, NotFound
 from backend.models.dtos.grid_dto import GridDTO
 
-from backend.services.users.authentication_service import token_auth, tm, verify_token
+from backend.services.users.authentication_service import token_auth, tm
 from backend.services.validator_service import ValidatorService
 
 from backend.services.project_service import ProjectService, ProjectServiceError
@@ -26,12 +26,6 @@ class TasksRestAPI(Resource):
         produces:
             - application/json
         parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: false
-              type: string
-              default: Token sessionTokenHere==
             - in: header
               name: Accept-Language
               description: Language user is requesting
@@ -60,17 +54,8 @@ class TasksRestAPI(Resource):
         """
         try:
             preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            token = request.environ.get("HTTP_AUTHORIZATION")
 
-            # Login isn't required here, but if we have a token we can find out if the user can undo the task
-            if token:
-                verify_token(token[6:])
-
-            user_id = tm.authenticated_user_id
-
-            task = MappingService.get_task_as_dto(
-                task_id, project_id, preferred_locale, user_id
-            )
+            task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
