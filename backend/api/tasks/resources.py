@@ -17,7 +17,6 @@ from backend.models.postgis.utils import InvalidGeoJson
 
 
 class TasksRestAPI(Resource):
-    @token_auth.login_required(optional=True)
     def get(self, project_id, task_id):
         """
         Get a task's metadata
@@ -27,12 +26,6 @@ class TasksRestAPI(Resource):
         produces:
             - application/json
         parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: false
-              type: string
-              default: Token sessionTokenHere==
             - in: header
               name: Accept-Language
               description: Language user is requesting
@@ -61,11 +54,8 @@ class TasksRestAPI(Resource):
         """
         try:
             preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            user_id = token_auth.current_user()
 
-            task = MappingService.get_task_as_dto(
-                task_id, project_id, preferred_locale, user_id
-            )
+            task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale)
             return task.to_primitive(), 200
         except NotFound:
             return {"Error": "Task Not Found"}, 404
