@@ -60,6 +60,7 @@ cron = Scheduler(daemon=True)
 cron.start()
 application.logger.debug("Initiated background thread to auto unlock tasks")
 
+
 # Job runs once every 2 hours
 @cron.interval_schedule(hours=2)
 @manager.command
