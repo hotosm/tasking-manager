@@ -43,6 +43,12 @@ class ProjectsRestAPI(Resource):
             - application/json
         parameters:
             - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: false
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
               name: Accept-Language
               description: Language user is requesting
               type: string
