@@ -63,7 +63,7 @@ class ValidatorService:
             )
             if not user_can_validate:
                 raise ValidatorServiceError(
-                    f"Tasks cannot be validated by the same user who marked task as mapped or badimagery"
+                    "Tasks cannot be validated by the same user who marked task as mapped or badimagery"
                 )
 
             tasks_to_lock.append(task)

@@ -438,7 +438,7 @@ class Project(db.Model):
                 team = Team.get(team_dto.team_id)
 
                 if team is None:
-                    raise NotFound(f"Team not found")
+                    raise NotFound("Team not found")
 
                 role = TeamRoles[team_dto.role].value
                 ProjectTeams(project=self, team=team, role=role)

@@ -41,18 +41,18 @@ def create_app(env=None):
     )
 
     # Load configuration options from environment
-    app.config.from_object(f"backend.config.EnvironmentConfig")
+    app.config.from_object("backend.config.EnvironmentConfig")
 
     # Enable logging to files
     initialise_logger(app)
-    app.logger.info(f"Starting up a new Tasking Manager application")
+    app.logger.info("Starting up a new Tasking Manager application")
 
     # Connect to database
-    app.logger.debug(f"Connecting to the database")
+    app.logger.debug("Connecting to the database")
     db.init_app(app)
     migrate.init_app(app, db)
 
-    app.logger.debug(f"Initialising frontend routes")
+    app.logger.debug("Initialising frontend routes")
 
     # Main route to frontend
     @app.route("/")
