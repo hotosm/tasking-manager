@@ -55,7 +55,6 @@ manager = Manager(application)
 manager.add_command("db", MigrateCommand)
 
 
-
 # Job runs once every 2 hours
 @manager.command
 def auto_unlock_tasks():
