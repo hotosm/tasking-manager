@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { useSelector } from 'react-redux';
+import ReactPlaceholder from 'react-placeholder';
 
 import { ProjectNav } from '../components/projects/projectNav';
 import { MyProjectNav } from '../components/projects/myProjectNav';
@@ -174,33 +175,23 @@ export const MoreFilters = (props) => {
 };
 
 export const ProjectDetailPage = (props) => {
-  const userPreferences = useSelector((state) => state.preferences);
+  const [error, loading, data] = useFetch(`projects/${props.id}/`, props.id);
 
-  // replace by queries/summary/ soon
-  const [visualError, visualLoading, visualData] = useFetch(
-    `projects/${props.id}/contributions/queries/day/`,
-  );
-  const [error, loading, data] = useFetch(`projects/${props.id}/`);
-  /* eslint-disable-next-line */
-  const [contributorsError, contributorsLoading, contributors] = useFetch(
-    `projects/${props.id}/contributions/`,
-  );
-
-  return error || visualError ? (
-    <NotFound />
-  ) : (
-    <ProjectDetail
-      project={data}
-      projectLoading={loading}
-      userPreferences={userPreferences}
-      percentDoneVisData={visualData}
-      percentDoneVisLoading={visualLoading}
-      tasksError={error}
-      tasks={data.tasks}
-      contributors={contributors.userContributions || []}
-      navigate={props.navigate}
-      type="detail"
-    />
+  return (
+    <ReactPlaceholder showLoadingAnimation={true} rows={3} delay={1000} ready={loading === false}>
+      {!error ? (
+        <ProjectDetail
+          project={data}
+          projectLoading={loading}
+          tasksError={error}
+          tasks={data.tasks}
+          navigate={props.navigate}
+          type="detail"
+        />
+      ) : (
+        <NotFound projectId={props.id} />
+      )}
+    </ReactPlaceholder>
   );
 };
 
