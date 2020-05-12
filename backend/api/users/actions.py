@@ -341,7 +341,7 @@ class UsersActionsRegisterEmailAPI(Resource):
             user_dto = UserRegisterEmailDTO(dict(email=user_dto.email, details=str(e)))
             return user_dto.to_primitive(), 400
         except Exception as e:
-            details_msg = f"User POST - unhandled error: Unknown error"
+            details_msg = "User POST - unhandled error: Unknown error"
             current_app.logger.critical(str(e))
             user_dto = UserRegisterEmailDTO(
                 dict(email=user_dto.email, details=details_msg)

@@ -127,10 +127,10 @@ class AnnotationsRestAPI(Resource):
                     application_token
                 )
             except NotFound:
-                current_app.logger.error(f"Invalid token")
+                current_app.logger.error("Invalid token")
                 return {"Error": "Invalid token"}, 500
         else:
-            current_app.logger.error(f"No token supplied")
+            current_app.logger.error("No token supplied")
             return {"Error": "No token supplied"}, 500
 
         try:

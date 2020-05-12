@@ -564,7 +564,7 @@ class UserService:
         admin_role = UserRole(admin.role)
 
         if admin_role != UserRole.ADMIN and requested_role == UserRole.ADMIN:
-            raise UserServiceError(f"You must be an Admin to assign Admin role")
+            raise UserServiceError("You must be an Admin to assign Admin role")
 
         user = UserService.get_user_by_username(username)
         user.set_user_role(requested_role)
