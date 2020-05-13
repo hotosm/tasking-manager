@@ -113,8 +113,6 @@ const splitTaskGrid = (taskGrid, geom) => {
 };
 
 export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
-  const geom = metadata.geom.features[0];
-
   const splitHandler = useCallback(
     event => {
       const taskGrid = mapObj.map.getSource('grid')._data;
@@ -180,7 +178,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
 
   const smallerSize = useCallback(() => {
     const zoomLevel = metadata.zoomLevel + 1;
-    const squareGrid = makeGrid(geom, zoomLevel, {});
+    const squareGrid = makeGrid(metadata.geom, zoomLevel, {});
     updateMetadata({
       ...metadata,
       zoomLevel: zoomLevel,
@@ -188,11 +186,11 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       taskGrid: squareGrid,
       tasksNo: squareGrid.features.length,
     });
-  }, [metadata, updateMetadata, geom]);
+  }, [metadata, updateMetadata]);
 
   const largerSize = useCallback(() => {
     const zoomLevel = metadata.zoomLevel - 1;
-    const squareGrid = makeGrid(geom, zoomLevel, {});
+    const squareGrid = makeGrid(metadata.geom, zoomLevel, {});
     if (zoomLevel > 0) {
       updateMetadata({
         ...metadata,
@@ -202,14 +200,14 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         tasksNo: squareGrid.features.length,
       });
     }
-  }, [metadata, updateMetadata, geom]);
+  }, [metadata, updateMetadata]);
 
   useLayoutEffect(() => {
     addLayer('grid', metadata.taskGrid, mapObj.map);
     return () => {
       mapObj.map.off('click', 'grid', splitHandler);
     };
-  }, [metadata, mapObj, smallerSize, largerSize, geom, splitHandler]);
+  }, [metadata, mapObj, smallerSize, largerSize, splitHandler]);
 
   const buttonStyle = 'white bg-blue-dark';
 
