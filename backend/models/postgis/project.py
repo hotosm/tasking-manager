@@ -1079,42 +1079,6 @@ class Project(db.Model):
         return tags_dto
 
     @staticmethod
-    def get_all_organisations_tag(preferred_locale="en"):
-        query = (
-            db.session.query(
-                Project.id, Project.organisation_tag, Project.private, Project.status
-            )
-            .join(ProjectInfo)
-            .filter(ProjectInfo.locale.in_([preferred_locale, "en"]))
-            .filter(Project.private is not True)
-            .filter(Project.organisation_tag.isnot(None))
-            .filter(Project.organisation_tag != "")
-        )
-        query = query.distinct(Project.organisation_tag)
-        query = query.order_by(Project.organisation_tag)
-        tags_dto = TagsDTO()
-        tags_dto.tags = [r[1] for r in query]
-        return tags_dto
-
-    @staticmethod
-    def get_all_campaign_tag(preferred_locale="en"):
-        query = (
-            db.session.query(
-                Project.id, Project.campaign_tag, Project.private, Project.status
-            )
-            .join(ProjectInfo)
-            .filter(ProjectInfo.locale.in_([preferred_locale, "en"]))
-            .filter(Project.private is not True)
-            .filter(Project.campaign_tag.isnot(None))
-            .filter(Project.campaign_tag != "")
-        )
-        query = query.distinct(Project.campaign_tag)
-        query = query.order_by(Project.campaign_tag)
-        tags_dto = TagsDTO()
-        tags_dto.tags = [r[1] for r in query]
-        return tags_dto
-
-    @staticmethod
     def calculate_tasks_percent(
         target, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery
     ):
