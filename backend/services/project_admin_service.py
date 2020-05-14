@@ -305,28 +305,12 @@ class ProjectAdminService:
         if not (is_admin or is_author):
             if hasattr(project, "organisation_id") and project.organisation_id:
                 org_id = project.organisation_id
-                org = OrganisationService.get_organisation_by_id_as_dto(
+                is_org_manager = OrganisationService.is_user_an_org_manager(
                     org_id, authenticated_user_id
                 )
-                if org.is_manager:
-                    is_org_manager = True
-                else:
-                    if hasattr(project, "project_teams") and project.project_teams:
-                        teams_dto = TeamService.get_project_teams_as_dto(project_id)
-                        if teams_dto.teams:
-                            teams_allowed = [
-                                team_dto
-                                for team_dto in teams_dto.teams
-                                if team_dto.role in allowed_roles
-                            ]
-                            user_membership = [
-                                team_dto.team_id
-                                for team_dto in teams_allowed
-                                if TeamService.is_user_member_of_team(
-                                    team_dto.team_id, authenticated_user_id
-                                )
-                            ]
-                            if user_membership:
-                                is_manager_team = True
+                if not is_org_manager:
+                    is_manager_team = TeamService.check_team_membership(
+                        project_id, allowed_roles, authenticated_user_id
+                    )
 
         return is_admin or is_author or is_org_manager or is_manager_team

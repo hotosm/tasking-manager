@@ -49,7 +49,7 @@ class TeamService:
         team = TeamService.get_team_by_id(team_id)
         user = UserService.get_user_by_username(username)
 
-        if TeamService.is_user_member_of_team(team.id, user.id):
+        if TeamService.is_user_team_member(team.id, user.id):
             raise TeamJoinNotAllowed(
                 "User is already a member of this team or has already requested to join"
             )
@@ -103,7 +103,7 @@ class TeamService:
             from_user_id, from_user.username, to_user_id, team.name, action
         )
 
-        is_member = TeamService.is_user_member_of_team(team_id, to_user_id)
+        is_member = TeamService.is_user_team_member(team_id, to_user_id)
         if action == "accept":
             if is_member:
                 TeamService.activate_team_member(team_id, to_user_id)
@@ -350,7 +350,7 @@ class TeamService:
 
     @staticmethod
     def get_project_teams_as_dto(project_id: int) -> TeamsListDTO:
-        """ Gets all the campaigns for a specified project """
+        """ Gets all the teams for a specified project """
         project_teams = ProjectTeams.query.filter(
             ProjectTeams.project_id == project_id
         ).all()
@@ -481,9 +481,18 @@ class TeamService:
         member.delete()
 
     @staticmethod
-    def is_user_member_of_team(team_id: int, user_id: int):
+    def is_user_team_member(team_id: int, user_id: int):
         query = TeamMembers.query.filter(
-            TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
+            TeamMembers.team_id == team_id, TeamMembers.user_id == user_id,
+        ).exists()
+        return db.session.query(query).scalar()
+
+    @staticmethod
+    def is_user_an_active_team_member(team_id: int, user_id: int):
+        query = TeamMembers.query.filter(
+            TeamMembers.team_id == team_id,
+            TeamMembers.user_id == user_id,
+            TeamMembers.active.is_(True),
         ).exists()
         return db.session.query(query).scalar()
 
@@ -516,3 +525,17 @@ class TeamService:
             team.delete()
         else:
             raise TeamServiceError("Team has projects, cannot be deleted")
+
+    @staticmethod
+    def check_team_membership(project_id: int, allowed_roles: list, user_id: int):
+        """ Given a project and permitted team roles, check user's membership in the team list """
+        teams_dto = TeamService.get_project_teams_as_dto(project_id)
+        teams_allowed = [
+            team_dto for team_dto in teams_dto.teams if team_dto.role in allowed_roles
+        ]
+        user_membership = [
+            team_dto.team_id
+            for team_dto in teams_allowed
+            if TeamService.is_user_an_active_team_member(team_dto.team_id, user_id)
+        ]
+        return len(user_membership) > 0

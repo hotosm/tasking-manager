@@ -178,7 +178,41 @@ class ProjectService:
         :raises ProjectServiceError, NotFound
         """
         project = ProjectService.get_project_by_id(project_id)
-        return project.as_dto_for_mapping(current_user_id, locale, abbrev)
+        is_allowed_user = True
+        is_manager_permission = ProjectAdminService.is_user_action_permitted_on_project(
+            current_user_id, project_id
+        )
+        # Draft Projects - admins, authors, org admins & team managers permitted
+        if project.status == ProjectStatus.DRAFT.value:
+            if not is_manager_permission:
+                is_allowed_user = False
+                raise ProjectServiceError("Unable to fetch project")
+
+        # Private Projects - allowed_users, admins, org admins &
+        # assigned teams (mappers, validators, project managers), authors permitted
+
+        if project.private and not is_manager_permission:
+            is_allowed_user = (
+                len(
+                    [
+                        user
+                        for user in project.allowed_users
+                        if user.id == current_user_id
+                    ]
+                )
+                > 0
+            )
+
+        if not (is_allowed_user or is_manager_permission):
+            allowed_roles = [TeamRoles.MAPPER.value, TeamRoles.VALIDATOR.value]
+            is_team_member = TeamService.check_team_membership(
+                project_id, allowed_roles, current_user_id
+            )
+
+        if is_allowed_user or is_manager_permission or is_team_member:
+            return project.as_dto_for_mapping(current_user_id, locale, abbrev)
+        else:
+            raise ProjectServiceError("Unable to fetch project")
 
     @staticmethod
     def get_project_tasks(
@@ -231,25 +265,6 @@ class ProjectService:
         return task_dtos
 
     @staticmethod
-    def check_team_membership(
-        project_id: int, allowed_roles: list, user_id: int, action: str
-    ):
-        teams_dto = TeamService.get_project_teams_as_dto(project_id)
-        teams_allowed = [
-            team_dto for team_dto in teams_dto.teams if team_dto.role in allowed_roles
-        ]
-        user_membership = [
-            team_dto.team_id
-            for team_dto in teams_allowed
-            if TeamService.is_user_member_of_team(team_dto.team_id, user_id)
-        ]
-        if len(user_membership) == 0:
-            if action == "MAP":
-                return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
-            elif action == "VALIDATE":
-                return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
-
-    @staticmethod
     def evaluate_mapping_permission(
         project_id: int, user_id: int, mapping_permission: int
     ):
@@ -258,11 +273,14 @@ class ProjectService:
             TeamRoles.VALIDATOR.value,
             TeamRoles.PROJECT_MANAGER.value,
         ]
+        is_team_member = TeamService.check_team_membership(
+            project_id, allowed_roles, user_id
+        )
+
         # mapping_permission = 1(level),2(teams),3(teamsAndLevel)
         if mapping_permission == MappingPermission.TEAMS.value:
-            ProjectService.check_team_membership(
-                project_id, allowed_roles, user_id, "MAP"
-            )
+            if not is_team_member:
+                return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
 
         elif mapping_permission == MappingPermission.LEVEL.value:
             if not ProjectService._is_user_intermediate_or_advanced(user_id):
@@ -271,9 +289,8 @@ class ProjectService:
         elif mapping_permission == MappingPermission.TEAMS_LEVEL.value:
             if not ProjectService._is_user_intermediate_or_advanced(user_id):
                 return False, MappingNotAllowed.USER_NOT_CORRECT_MAPPING_LEVEL
-            ProjectService.check_team_membership(
-                project_id, allowed_roles, user_id, "MAP"
-            )
+            if not is_team_member:
+                return False, MappingNotAllowed.USER_NOT_TEAM_MEMBER
 
     @staticmethod
     def is_user_permitted_to_map(project_id: int, user_id: int):
@@ -337,11 +354,14 @@ class ProjectService:
         project_id: int, user_id: int, validation_permission: int
     ):
         allowed_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
+        is_team_member = TeamService.check_team_membership(
+            project_id, allowed_roles, user_id
+        )
+
         # validation_permission = 1(level),2(teams),3(teamsAndLevel)
         if validation_permission == ValidationPermission.TEAMS.value:
-            ProjectService.check_team_membership(
-                project_id, allowed_roles, user_id, "VALIDATE"
-            )
+            if not is_team_member:
+                return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
         elif validation_permission == ValidationPermission.LEVEL.value:
             if not ProjectService._is_user_intermediate_or_advanced(user_id):
@@ -350,9 +370,8 @@ class ProjectService:
         elif validation_permission == ValidationPermission.TEAMS_LEVEL.value:
             if not ProjectService._is_user_intermediate_or_advanced(user_id):
                 return False, ValidatingNotAllowed.USER_IS_BEGINNER
-            ProjectService.check_team_membership(
-                project_id, allowed_roles, user_id, "VALIDATE"
-            )
+            if not is_team_member:
+                return False, ValidatingNotAllowed.USER_NOT_TEAM_MEMBER
 
     @staticmethod
     def is_user_permitted_to_validate(project_id, user_id):
