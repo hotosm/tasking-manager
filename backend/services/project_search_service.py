@@ -14,6 +14,7 @@ from backend.models.postgis.statuses import (
     MappingLevel,
     MappingTypes,
     ProjectPriority,
+    UserRole,
 )
 from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.organisation import Organisation
@@ -63,7 +64,7 @@ class BBoxTooBigError(Exception):
 
 class ProjectSearchService:
     @staticmethod
-    def create_search_query():
+    def create_search_query(user=None):
         query = (
             db.session.query(
                 Project.id.label("id"),
@@ -83,10 +84,14 @@ class ProjectSearchService:
                 Organisation.name.label("organisation_name"),
                 Organisation.logo.label("organisation_logo"),
             )
-            .filter(Project.private.is_(False))
             .outerjoin(Organisation, Organisation.id == Project.organisation_id)
             .group_by(Organisation.id, Project.id)
         )
+
+        # Remove private projects if user role is not admin.
+        if user is None or user.role != UserRole.ADMIN.value:
+            query = query.filter(Project.private.is_(False))
+
         return query
 
     @staticmethod
@@ -145,10 +150,10 @@ class ProjectSearchService:
 
     @staticmethod
     @cached(search_cache)
-    def search_projects(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
+    def search_projects(search_dto: ProjectSearchDTO, user) -> ProjectSearchResultsDTO:
         """ Searches all projects for matches to the criteria provided by the user """
         all_results, paginated_results = ProjectSearchService._filter_projects(
-            search_dto
+            search_dto, user
         )
         if paginated_results.total == 0:
             raise NotFound()
@@ -182,9 +187,9 @@ class ProjectSearchService:
         return dto
 
     @staticmethod
-    def _filter_projects(search_dto: ProjectSearchDTO):
+    def _filter_projects(search_dto: ProjectSearchDTO, user):
         """ Filters all projects based on criteria provided by user"""
-        query = ProjectSearchService.create_search_query()
+        query = ProjectSearchService.create_search_query(user)
         query = query.join(ProjectInfo).filter(
             ProjectInfo.locale.in_([search_dto.preferred_locale, "en"])
         )

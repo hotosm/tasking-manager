@@ -532,6 +532,7 @@ class ProjectSearchBase(Resource):
 
 
 class ProjectsAllAPI(ProjectSearchBase):
+    @token_auth.login_required(optional=True)
     def get(self):
         """
         List and search for projects
@@ -638,8 +639,12 @@ class ProjectsAllAPI(ProjectSearchBase):
                 description: Internal Server Error
         """
         try:
+            user = None
+            user_id = token_auth.current_user()
+            if user_id:
+                user = UserService.get_user_by_id(user_id)
             search_dto = self.setup_search_dto()
-            results_dto = ProjectSearchService.search_projects(search_dto)
+            results_dto = ProjectSearchService.search_projects(search_dto, user)
             return results_dto.to_primitive(), 200
         except NotFound:
             return {"mapResults": {}, "results": []}, 200
