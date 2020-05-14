@@ -115,8 +115,8 @@ class ProjectsRestAPI(Resource):
                 return {"Error": "Private Project"}, 403
         except NotFound:
             return {"Error": "Project Not Found"}, 404
-        except ProjectServiceError:
-            return {"Error": "Unable to fetch project"}, 403
+        except ProjectServiceError as e:
+            return {"Error": str(e)}, 403
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

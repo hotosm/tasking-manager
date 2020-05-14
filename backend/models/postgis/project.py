@@ -44,8 +44,6 @@ from backend.models.postgis.statuses import (
     TeamRoles,
     MappingPermission,
     ValidationPermission,
-    UserRole,
-    TeamMemberFunctions,
 )
 from backend.models.postgis.task import Task, TaskHistory
 from backend.models.postgis.team import Team
@@ -982,80 +980,29 @@ class Project(db.Model):
 
         return self, base_dto
 
-    def check_draft_project_visibility(self, authenticated_user_id: int):
-        """" Check if a User is allowed to see a Draft Project """
-        is_allowed_user = False
-        if authenticated_user_id:
-            is_team_manager = False
-            user = User.get_by_id(authenticated_user_id)
-            user_orgs = Organisation.get_organisations_managed_by_user(
-                authenticated_user_id
-            )
-            if self.teams:
-                for project_team in self.teams:
-                    team_members = Team.get(project_team.team_id)._get_team_members()
-                    for member in team_members:
-                        if (
-                            user.username == member["username"]
-                            and member["function"] == TeamMemberFunctions.MANAGER.name
-                        ):
-                            is_team_manager = True
-                            break
-            if (
-                UserRole(user.role) == UserRole.ADMIN
-                or authenticated_user_id == self.author_id
-                or self.organisation in user_orgs
-                or is_team_manager
-            ):
-                is_allowed_user = True
-        return is_allowed_user
-
     def as_dto_for_mapping(
         self, authenticated_user_id: int = None, locale: str = "en", abbrev: bool = True
     ) -> Optional[ProjectDTO]:
         """ Creates a Project DTO suitable for transmitting to mapper users """
-        # Check for project visibility settings
-        is_allowed_user = True
-        if self.status == ProjectStatus.DRAFT.value:
-            if not self.check_draft_project_visibility(authenticated_user_id):
-                is_allowed_user = False
-        if self.private:
-            is_allowed_user = False
-            if authenticated_user_id:
-                user = User.get_by_id(authenticated_user_id)
-
-                if (
-                    UserRole(user.role) == UserRole.ADMIN
-                    or authenticated_user_id == self.author_id
-                ):
-                    is_allowed_user = True
-                for user in self.allowed_users:
-                    if user.id == authenticated_user_id:
-                        is_allowed_user = True
-                        break
-
-        if is_allowed_user:
-            project, project_dto = self._get_project_and_base_dto()
-            if abbrev is False:
-                project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(
-                    self.id, None
-                )
-            else:
-                project_dto.tasks = Task.get_tasks_as_geojson_feature_collection_no_geom(
-                    self.id
-                )
-            project_dto.project_info = ProjectInfo.get_dto_for_locale(
-                self.id, locale, project.default_locale
+        project, project_dto = self._get_project_and_base_dto()
+        if abbrev is False:
+            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection(
+                self.id, None
             )
-            if project.organisation_id:
-                project_dto.organisation = project.organisation.id
-                project_dto.organisation_name = project.organisation.name
-                project_dto.organisation_logo = project.organisation.logo
-
-            project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(
+        else:
+            project_dto.tasks = Task.get_tasks_as_geojson_feature_collection_no_geom(
                 self.id
             )
-            return project_dto
+        project_dto.project_info = ProjectInfo.get_dto_for_locale(
+            self.id, locale, project.default_locale
+        )
+        if project.organisation_id:
+            project_dto.organisation = project.organisation.id
+            project_dto.organisation_name = project.organisation.name
+            project_dto.organisation_logo = project.organisation.logo
+
+        project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(self.id)
+        return project_dto
 
     def tasks_as_geojson(
         self, task_ids_str: str, order_by=None, order_by_type="ASC", status=None
