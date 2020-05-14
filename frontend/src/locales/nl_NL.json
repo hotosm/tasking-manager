@@ -259,7 +259,7 @@
   "project.detail.teams_permissions": "Teams & rechten",
   "project.detail.author": "Auteur",
   "project.detail.mapping_permissions": "Wie mogen in kaart brengen?",
-  "project.detail.validation_permissions": "Wie mogen vakideren?",
+  "project.detail.validation_permissions": "Wie mogen valideren?",
   "project.detail.zoomToTasks": "Naar taken zoomen",
   "project.detail.cards.selectATask.title": "1. Een taak selecteren",
   "project.detail.cards.mapthroughosm.title": "2. In kaart brengen met OpenStreetMap",
