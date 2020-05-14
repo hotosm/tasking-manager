@@ -30,7 +30,7 @@ from backend.models.postgis.utils import (
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
-from backend.models.postgis.statuses import TeamRoles
+from backend.models.postgis.statuses import TeamRoles, UserRole
 
 from backend import db
 from flask import current_app
@@ -280,12 +280,11 @@ class ProjectSearchService:
 
         query = query.order_by(order_by).group_by(Project.id)
 
-        if search_dto.managed_by:
+        if search_dto.managed_by and user.role != UserRole.ADMIN.value:
             team_projects = query.join(ProjectTeams).filter(
                 ProjectTeams.role == TeamRoles.PROJECT_MANAGER.value,
                 ProjectTeams.project_id == Project.id,
             )
-            user = UserService.get_user_by_id(search_dto.managed_by)
             user_orgs_list = OrganisationService.get_organisations_managed_by_user(
                 search_dto.managed_by
             )
