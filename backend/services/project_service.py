@@ -178,6 +178,10 @@ class ProjectService:
         :raises ProjectServiceError, NotFound
         """
         project = ProjectService.get_project_by_id(project_id)
+        # if project is public and is not draft, we don't need to check permissions
+        if not project.private and not project.status == ProjectStatus.DRAFT.value:
+            return project.as_dto_for_mapping(current_user_id, locale, abbrev)
+
         is_allowed_user = True
         is_manager_permission = ProjectAdminService.is_user_action_permitted_on_project(
             current_user_id, project_id
