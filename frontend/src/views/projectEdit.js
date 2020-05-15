@@ -107,7 +107,7 @@ export function ProjectEdit({ id }) {
       <div className="cf w-100 pv5">
         <div className="tc">
           <h3 className="f3 fw8 mb4 barlow-condensed">
-            <FormattedMessage {...messages.editNotAllowed} />
+            <FormattedMessage {...messages.projectEditNotAllowed} />
           </h3>
         </div>
       </div>

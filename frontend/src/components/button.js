@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@reach/router';
 
 export function Button({ onClick, children, className, disabled }: Object) {
   return (
@@ -41,5 +42,16 @@ export function CustomButton({ onClick, children, className }: Object) {
     >
       {children}
     </button>
+  );
+}
+
+export function EditButton({ url, children }: Object) {
+  return (
+    <Link
+      to={url}
+      className="pointer no-underline br1 fw6 f7 dib pv2 ph3 ba b--red white bg-red mr3"
+    >
+      {children}
+    </Link>
   );
 }

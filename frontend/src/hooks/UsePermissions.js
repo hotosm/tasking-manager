@@ -25,3 +25,30 @@ export function useEditProjectAllowed(project) {
   }, [pmTeams, userDetails.role, userDetails.username, organisations, project]);
   return [isAllowed];
 }
+
+export function useEditTeamAllowed(team) {
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const organisations = useSelector((state) => state.auth.get('organisations'));
+  const pmTeams = useSelector((state) => state.auth.get('pmTeams'));
+  const [isAllowed, setIsAllowed] = useState(false);
+
+  useEffect(() => {
+    // admin users can edit any team
+    if (userDetails.role === 'ADMIN') setIsAllowed(true);
+    // managers of the organisation related to the team can edit it
+    if (organisations && organisations.includes(team.organisation_id)) setIsAllowed(true);
+    // team managers can edit it
+    // verify from the redux store
+    if (pmTeams && pmTeams.includes(team.teamId)) setIsAllowed(true);
+    // and verify based on the team members list
+    if (team.members) {
+      const managers = team.members
+        .filter((member) => member.active && member.function === 'MANAGER')
+        .map((member) => member.username);
+      if (userDetails.username && managers.includes(userDetails.username)) {
+        setIsAllowed(true);
+      }
+    }
+  }, [pmTeams, userDetails.role, userDetails.username, organisations, team]);
+  return [isAllowed];
+}

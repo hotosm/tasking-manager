@@ -195,11 +195,20 @@ class TeamService:
             orgs_query = query.filter(Team.organisation_id.in_(organisation_filter))
 
         if manager_filter and not (manager_filter == user_id and is_admin):
-            query = query.filter(
+            manager_teams = query.filter(
                 TeamMembers.user_id == manager_filter,
                 TeamMembers.active == True,  # noqa
                 TeamMembers.function == TeamMemberFunctions.MANAGER.value,
             )
+            manager_orgs_teams = query.filter(
+                Team.organisation_id.in_(
+                    [
+                        org.id
+                        for org in OrganisationService.get_organisations(manager_filter)
+                    ]
+                )
+            )
+            query = manager_teams.union(manager_orgs_teams)
 
         if team_name_filter:
             query = query.filter(Team.name.contains(team_name_filter))
@@ -487,6 +496,10 @@ class TeamService:
         for member in managers:
             if member.user_id == user_id:
                 return True
+
+        user_orgs = [org.id for org in OrganisationService.get_organisations(user_id)]
+        if Team.get(team_id).organisation_id in user_orgs:
+            return True
 
         return False
 
