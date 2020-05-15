@@ -1,6 +1,12 @@
+from flask import current_app
+import math
 import geojson
-from cachetools import TTLCache, cached
+from geoalchemy2 import shape
+from sqlalchemy import func, distinct, desc, or_
 from shapely.geometry import Polygon, box
+from cachetools import TTLCache, cached
+
+from backend import db
 from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectSearchResultsDTO,
@@ -15,6 +21,7 @@ from backend.models.postgis.statuses import (
     MappingTypes,
     ProjectPriority,
     UserRole,
+    TeamRoles,
 )
 from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.organisation import Organisation
@@ -26,17 +33,9 @@ from backend.models.postgis.utils import (
     ST_Transform,
     ST_Area,
 )
-
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
-from backend.models.postgis.statuses import TeamRoles, UserRole
-
-from backend import db
-from flask import current_app
-from geoalchemy2 import shape
-from sqlalchemy import func, distinct, desc, or_
-import math
 
 
 search_cache = TTLCache(maxsize=128, ttl=300)
