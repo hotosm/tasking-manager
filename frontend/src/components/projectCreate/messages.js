@@ -91,7 +91,8 @@ export default defineMessages({
   },
   invalidFile: {
     id: 'management.projects.create.errors.invalid',
-    defaultMessage: 'Invalid file',
+    defaultMessage:
+      'It was not possible to read the geometries on the file. Verify it and upload again.',
   },
   unsupportedGeom: {
     id: 'management.projects.create.errors.unsupported_geom',
@@ -107,7 +108,8 @@ export default defineMessages({
   },
   fileSize: {
     id: 'management.projects.create.errors.fileSize',
-    defaultMessage: 'We only accept files up to {fileSize} MB. Please reduce the size of your file and try again.',
+    defaultMessage:
+      'We only accept files up to {fileSize} MB. Please reduce the size of your file and try again.',
   },
   splitTaskDescription: {
     id: 'management.projects.create.split_task.description',

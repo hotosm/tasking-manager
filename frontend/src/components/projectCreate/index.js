@@ -56,7 +56,7 @@ export const addLayer = (layerName, data, map) => {
 const AlertMessage = ({ err }) => {
   if (err.error === true) {
     return (
-      <p className={'w-80 pv2 tc f6 fw6 red'}>
+      <p className={'w-80 pv2 tc f6 fw6 red ba b--red br1 lh-copy'}>
         <span className="ph1">
           <AlertIcon className="red mr2" height="15px" width="15px" />
           {err.message}

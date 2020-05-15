@@ -200,7 +200,7 @@
   "management.projects.create.task_sizes.description": "General task size",
   "management.projects.create.task_sizes.smaller": "Smaller",
   "management.projects.create.task_sizes.larger": "Larger",
-  "management.projects.create.errors.invalid": "Invalid file",
+  "management.projects.create.errors.invalid": "It was not possible to read the geometries on the file. Verify it and upload again.",
   "management.projects.create.errors.unsupported_geom": "Unsupported geometry type {geometry}",
   "management.projects.create.errors.no_featurecollection": "type field is not FeatureCollection",
   "management.projects.create.errors.closed_linestring": "Points do not form a closed linestring",
