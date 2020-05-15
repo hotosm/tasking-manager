@@ -267,4 +267,16 @@ export default defineMessages({
     id: 'projects.data.download.taskGrid',
     defaultMessage: 'Download Tasks Grid',
   },
+  shareMessage: {
+    id: 'project.share.twitter',
+    defaultMessage: 'Contribute mapping the project #{id} on {site}',
+  },
+  postOnFacebook: {
+    id: 'project.share.facebook',
+    defaultMessage: 'Post on Facebook',
+  },
+  shareOnLinkedIn: {
+    id: 'project.share.linkedin',
+    defaultMessage: 'Share on LinkedIn',
+  },
 });

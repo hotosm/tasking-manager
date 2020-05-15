@@ -21,7 +21,7 @@ import { Imagery } from '../taskSelection/imagery';
 import { TeamsBoxList } from '../teamsAndOrgs/teams';
 
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
-import { ProjectDetailFooter } from './projectDetailFooter';
+import { ProjectDetailFooter } from './footer';
 import { BigProjectTeaser } from './bigProjectTeaser';
 import { QuestionsAndComments } from './questionsAndComments';
 import { PermissionBox } from './permissionBox';
