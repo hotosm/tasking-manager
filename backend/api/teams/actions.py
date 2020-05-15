@@ -63,7 +63,7 @@ class TeamsActionsJoinAPI(Resource):
         try:
             authenticated_user_id = token_auth.current_user()
             TeamService.join_team(team_id, authenticated_user_id, username, role)
-            if TeamService.user_is_manager(team_id, authenticated_user_id):
+            if TeamService.is_user_team_manager(team_id, authenticated_user_id):
                 return {"Success": "User added to the team"}, 200
             else:
                 return {"Success": "Request to join the team sent successfully."}, 200
@@ -141,7 +141,7 @@ class TeamsActionsJoinAPI(Resource):
         try:
             authenticated_user_id = token_auth.current_user()
             if request_type == "join-response":
-                if TeamService.user_is_manager(team_id, authenticated_user_id):
+                if TeamService.is_user_team_manager(team_id, authenticated_user_id):
                     TeamService.accept_reject_join_request(
                         team_id, authenticated_user_id, username, role, action
                     )
@@ -214,7 +214,7 @@ class TeamsActionsLeaveAPI(Resource):
             username = request.get_json(force=True)["username"]
             request_user = User.get_by_id(authenticated_user_id)
             if (
-                TeamService.user_is_manager(team_id, authenticated_user_id)
+                TeamService.is_user_team_manager(team_id, authenticated_user_id)
                 or request_user.username == username
             ):
                 TeamService.leave_team(team_id, username)

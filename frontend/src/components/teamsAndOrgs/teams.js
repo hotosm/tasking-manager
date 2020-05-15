@@ -6,11 +6,12 @@ import ReactPlaceholder from 'react-placeholder';
 import { Form, Field } from 'react-final-form';
 
 import messages from './messages';
+import { useEditTeamAllowed } from '../../hooks/UsePermissions';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
 import { SwitchToggle, RadioField, OrganisationSelect } from '../formInputs';
 import { EditModeControl } from './editMode';
-import { Button } from '../button';
+import { Button, EditButton } from '../button';
 
 export function TeamsManagement({
   teams,
@@ -254,12 +255,18 @@ export function TeamForm(props) {
 }
 
 export function TeamSideBar({ team, members, managers, requestedToJoin }: Object) {
+  const [isUserTeamManager] = useEditTeamAllowed(team);
+
   return (
     <ReactPlaceholder
       showLoadingAnimation={true}
       type="media"
       rows={20}
-      ready={typeof team.teamId === 'number'}
+      ready={
+        typeof team.teamId === 'number' &&
+        typeof organisations !== undefined &&
+        typeof pmTeams !== undefined
+      }
     >
       <div className="cf pb2">
         <div className="w-20 pv2 dib fl">
@@ -268,6 +275,11 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
           </span>
         </div>
         <div className="w-80 dib fr tr">
+          {isUserTeamManager && (
+            <EditButton url={`/manage/teams/${team.teamId}`}>
+              <FormattedMessage {...messages.editTeam} />
+            </EditButton>
+          )}
           {team.inviteOnly && <InviteOnlyBox className="pv2 ph3 dib mr2" />}
           <VisibilityBox visibility={team.visibility} extraClasses="pv2 ph3 dib" />
         </div>

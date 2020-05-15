@@ -7,6 +7,7 @@ import messages from './messages';
 import { PriorityBox } from '../projectcard/priorityBox';
 import { translateCountry } from '../../utils/countries';
 import { ProjectStatusBox } from './statusBox';
+import { EditButton } from '../button';
 import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 
 export function HeaderLine({ author, projectId, priority, showEditLink, organisation }: Object) {
@@ -23,12 +24,9 @@ export function HeaderLine({ author, projectId, priority, showEditLink, organisa
       </div>
       <div className="w-30-ns w-100 dib fl tr">
         {showEditLink && (
-          <Link
-            to={`/manage/projects/${projectId}`}
-            className="pointer no-underline br1 fw6 f7 dib pv2 ph3 ba b--red white bg-red mr3"
-          >
+          <EditButton url={`/manage/projects/${projectId}`}>
             <FormattedMessage {...messages.editProject} />
-          </Link>
+          </EditButton>
         )}
         {priority && (
           <div className="mw4 dib">

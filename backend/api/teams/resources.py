@@ -80,7 +80,7 @@ class TeamsRestAPI(Resource):
             org = TeamService.assert_validate_organisation(team_dto.organisation_id)
             TeamService.assert_validate_members(team_details_dto)
 
-            if not TeamService.user_is_manager(
+            if not TeamService.is_user_team_manager(
                 team_id, authenticated_user_id
             ) and not OrganisationService.can_user_manage_organisation(
                 org.id, authenticated_user_id
@@ -167,7 +167,7 @@ class TeamsRestAPI(Resource):
             team_dto.validate()
 
             authenticated_user_id = token_auth.current_user()
-            if not TeamService.user_is_manager(
+            if not TeamService.is_user_team_manager(
                 team_id, authenticated_user_id
             ) and not OrganisationService.can_user_manage_organisation(
                 team.organisation_id, authenticated_user_id
@@ -265,7 +265,7 @@ class TeamsRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        if not TeamService.user_is_manager(team_id, token_auth.current_user()):
+        if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
             return {"Error": "User is not a manager for the team"}, 401
         try:
             TeamService.delete_team(team_id)

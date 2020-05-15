@@ -8,6 +8,7 @@ import { Form } from 'react-final-form';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
+import { useEditTeamAllowed } from '../hooks/UsePermissions';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import {
@@ -228,6 +229,7 @@ export function EditTeam(props) {
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [canUserEditTeam] = useEditTeamAllowed(team);
   useEffect(() => {
     if (!initManagers && team && team.members) {
       setManagers(filterActiveManagers(team.members));
@@ -275,6 +277,18 @@ export function EditTeam(props) {
   const updateTeam = (payload) => {
     pushToLocalJSONAPI(`teams/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
   };
+
+  if (team && team.teamId && !canUserEditTeam) {
+    return (
+      <div className="cf w-100 pv5">
+        <div className="tc">
+          <h3 className="f3 fw8 mb4 barlow-condensed">
+            <FormattedMessage {...messages.teamEditNotAllowed} />
+          </h3>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="cf pb4 bg-tan">

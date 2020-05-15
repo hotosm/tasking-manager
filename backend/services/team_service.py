@@ -45,7 +45,7 @@ class TeamJoinNotAllowed(Exception):
 class TeamService:
     @staticmethod
     def join_team(team_id: int, requesting_user: int, username: str, role: str = None):
-        is_manager = TeamService.user_is_manager(team_id, requesting_user)
+        is_manager = TeamService.is_user_team_manager(team_id, requesting_user)
         team = TeamService.get_team_by_id(team_id)
         user = UserService.get_user_by_username(username)
 
@@ -195,11 +195,20 @@ class TeamService:
             orgs_query = query.filter(Team.organisation_id.in_(organisation_filter))
 
         if manager_filter and not (manager_filter == user_id and is_admin):
-            query = query.filter(
+            manager_teams = query.filter(
                 TeamMembers.user_id == manager_filter,
                 TeamMembers.active == True,  # noqa
                 TeamMembers.function == TeamMemberFunctions.MANAGER.value,
             )
+            manager_orgs_teams = query.filter(
+                Team.organisation_id.in_(
+                    [
+                        org.id
+                        for org in OrganisationService.get_organisations(manager_filter)
+                    ]
+                )
+            )
+            query = manager_teams.union(manager_orgs_teams)
 
         if team_name_filter:
             query = query.filter(Team.name.contains(team_name_filter))
@@ -479,7 +488,8 @@ class TeamService:
         return db.session.query(query).scalar()
 
     @staticmethod
-    def user_is_manager(team_id: int, user_id: int):
+    def is_user_team_manager(team_id: int, user_id: int):
+        # Admin manages all teams
         if UserService.is_user_an_admin(user_id):
             return True
 
@@ -487,6 +497,13 @@ class TeamService:
         for member in managers:
             if member.user_id == user_id:
                 return True
+
+        # Org admin manages teams attached to their org
+        user_managed_orgs = [
+            org.id for org in OrganisationService.get_organisations(user_id)
+        ]
+        if Team.get(team_id).organisation_id in user_managed_orgs:
+            return True
 
         return False
 

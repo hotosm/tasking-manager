@@ -54,6 +54,7 @@ export const ManagementSection = (props) => {
     >
       {isOrgManager ||
       userDetails.role === 'ADMIN' ||
+      props.location.pathname.startsWith('/manage/teams/') ||
       props.location.pathname.startsWith('/manage/projects/') ? (
         <div className="w-100 ph5-l ph2-m cf bg-tan blue-dark">
           {(isOrgManager || userDetails.role === 'ADMIN') && (
