@@ -80,6 +80,11 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.button.cancel',
     defaultMessage: 'Cancel',
   },
+  editOrgNotAllowed: {
+    id: 'teamsAndOrgs.management.organisation.manage.error',
+    defaultMessage:
+      'You are not a manager of this organisation, so you are not allowed to edit it.',
+  },
   manageOrganisation: {
     id: 'teamsAndOrgs.management.organisation.manage',
     defaultMessage: 'Manage organization',
