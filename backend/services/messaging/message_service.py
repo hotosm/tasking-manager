@@ -73,7 +73,6 @@ class MessageService:
             "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
         )
         task_link = MessageService.get_task_link(project_id, task_id)
-
         text_template = text_template.replace("[USERNAME]", user.username)
         text_template = text_template.replace("[TASK_LINK]", task_link)
 
@@ -152,7 +151,6 @@ class MessageService:
         usernames = MessageService._parse_message_for_username(comment)
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
-            # project_title = ProjectService.get_project_title(project_id)
 
             messages = []
             for username in usernames:
@@ -195,7 +193,6 @@ class MessageService:
                 raise ValueError("Username not found")
 
             task_link = MessageService.get_task_link(project_id, task_id)
-            # project_title = ProjectService.get_project_title(project_id)
             messages = []
             for user_id in contributed_users:
                 try:
