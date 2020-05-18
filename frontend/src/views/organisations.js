@@ -8,6 +8,7 @@ import { Form } from 'react-final-form';
 
 import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
+import { useEditOrgAllowed } from '../hooks/UsePermissions';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { Members } from '../components/teamsAndOrgs/members';
 import { Teams } from '../components/teamsAndOrgs/teams';
@@ -151,10 +152,12 @@ export function EditOrganisation(props) {
   const [initManagers, setInitManagers] = useState(false);
   const [managers, setManagers] = useState([]);
   const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);
+  const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(
     `projects/?organisationId=${props.id}`,
     props.id,
   );
+
   useEffect(() => {
     if (!initManagers && organisation && organisation.managers) {
       setManagers(organisation.managers);
@@ -182,43 +185,65 @@ export function EditOrganisation(props) {
   };
 
   return (
-    <div className="cf">
-      <div className="cf pv4">
-        <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib">
-          <FormattedMessage {...messages.manageOrganisation} />
-        </h3>
-        <DeleteModal
-          id={organisation.organisationId}
-          name={organisation.name}
-          type="organisations"
-        />
-      </div>
-      <div className="w-40-l w-100 mt4 fl">
-        <OrganisationForm
-          userDetails={userDetails}
-          organisation={{ name: organisation.name, url: organisation.url, logo: organisation.logo }}
-          updateOrg={updateOrg}
-          disabledForm={error || loading}
-        />
-        <Members
-          addMembers={addManagers}
-          removeMembers={removeManagers}
-          saveMembersFn={updateManagers}
-          members={managers}
-        />
-      </div>
-      <div className="w-60-l w-100 mt4 pl5-l pl0 fr">
-        <Projects
-          projects={!projectsLoading && !projectsError && projects}
-          viewAllQuery={`?organisation=${organisation.name}`}
-          ownerEntity="organisation"
-        />
-        <Teams
-          teams={organisation.teams}
-          viewAllQuery={`?organisationId=${props.id}`}
-          isReady={!error && !loading}
-        />
-      </div>
-    </div>
+    <ReactPlaceholder
+      showLoadingAnimation={true}
+      type={'media'}
+      rows={26}
+      delay={100}
+      ready={!error && loading === false && typeof organisation === 'object'}
+    >
+      {isUserAllowed ? (
+        <div className="cf">
+          <div className="cf pv4">
+            <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib">
+              <FormattedMessage {...messages.manageOrganisation} />
+            </h3>
+            <DeleteModal
+              id={organisation.organisationId}
+              name={organisation.name}
+              type="organisations"
+            />
+          </div>
+          <div className="w-40-l w-100 mt4 fl">
+            <OrganisationForm
+              userDetails={userDetails}
+              organisation={{
+                name: organisation.name,
+                url: organisation.url,
+                logo: organisation.logo,
+              }}
+              updateOrg={updateOrg}
+              disabledForm={error || loading}
+            />
+            <Members
+              addMembers={addManagers}
+              removeMembers={removeManagers}
+              saveMembersFn={updateManagers}
+              members={managers}
+            />
+          </div>
+          <div className="w-60-l w-100 mt4 pl5-l pl0 fr">
+            <Projects
+              projects={!projectsLoading && !projectsError && projects}
+              viewAllQuery={`?organisation=${organisation.name}`}
+              ownerEntity="organisation"
+            />
+            <Teams
+              teams={organisation.teams}
+              viewAllQuery={`?organisationId=${props.id}`}
+              isReady={!error && !loading}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="cf w-100 pv5">
+          <div className="tc">
+            <h3 className="f3 fw8 mb4 barlow-condensed">
+              <FormattedMessage {...messages.editOrgNotAllowed} />
+            </h3>
+          </div>
+        </div>
+      )}
+    </ReactPlaceholder>
   );
 }
