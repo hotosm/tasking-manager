@@ -12,6 +12,7 @@ import { UserAvatar } from '../user/avatar';
 import { DeleteModal } from '../deleteModal';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { navigate } from '@reach/router';
 
 export const rawHtmlNotification = (notificationHtml) => ({
   __html: DOMPurify.sanitize(notificationHtml),
@@ -68,63 +69,77 @@ export function NotificationCard({
     fetchLocalJSONAPI(`notifications/${messageId}/`, token).then(() => retryFn());
   };
 
+  const replacedSubject = subject.replace('task=', 'search=');
+  const Navigate = () => navigate(`/inbox/message/${messageId}`);
+
   return (
-    <Link to={`/inbox/message/${messageId}`} className={`no-underline `}>
-      <article className={`db base-font bg-white w-100 mb1 blue-dark mw8 ${readStyle}`}>
-        <div className="pv3 pr3 ba br1 b--grey-light">
-          <div className={`fl dib w2 h3 mh3`}>
-            <MessageAvatar messageType={messageType} fromUsername={fromUsername} size={'medium'} />
-          </div>
-
-          <strong
-            className={`messageSubjectLinks`}
-            dangerouslySetInnerHTML={rawHtmlNotification(subject)}
-          ></strong>
-
-          <div
-            className={`dib fr w3`}
-            onClick={(e) => {
-              e.persist();
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-          >
-            {!read && (
-              <>
-                <FormattedMessage {...messages.markAsRead}>
-                  {(msg) => (
-                    <EyeIcon
-                      onClick={() => setMessageAsRead(messageId)}
-                      style={{ width: '20px', height: '20px' }}
-                      className={`fl dn dib-ns h1 w1 pr1 nr4 mv1 pv1 hover-red blue-grey`}
-                      data-tip={msg}
-                    />
-                  )}
-                </FormattedMessage>
-                <ReactTooltip />
-              </>
-            )}
-            <DeleteModal
-              className={`fr bg-transparent bw0 w2 h2 lh-copy overflow-hidden`}
-              id={messageId}
-              name={"'" + stripHtmlToText(subject) + "'"}
-              type="notifications"
-            />
-          </div>
-          {messageType !== null ? (
-            <div className={`fr-l di-l dn f7 truncate w4 pa1 ma1`} title={messageType}>
-              <FormattedMessage {...messages[messageType]} />
-            </div>
-          ) : null}
-          {messageType === 'MENTION_NOTIFICATION' && (
-            <div className="dn dib-ns fr ma1 ttu b--red ba red f7 pa1">1 mention</div>
-          )}
-          <div className={`pl5 pt2 blue-grey f6`}>
-            <RelativeTimeWithUnit date={sentDate} />
-          </div>
+    <article
+      onClick={Navigate}
+      className={`pointer db base-font bg-white w-100 mb1 blue-dark mw8 ${readStyle}`}
+    >
+      <div className="pv3 pr3 ba br1 b--grey-light">
+        <div className={`fl dib w2 h3 mh3`}>
+          <MessageAvatar messageType={messageType} fromUsername={fromUsername} size={'medium'} />
         </div>
-      </article>
-    </Link>
+
+        <strong
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (e.target.href === undefined) {
+              Navigate();
+            } else {
+              window.open(e.target.href);
+            }
+          }}
+          className={`messageSubjectLinks`}
+          dangerouslySetInnerHTML={rawHtmlNotification(replacedSubject)}
+        ></strong>
+
+        <div
+          className={`dib fr w3`}
+          onClick={(e) => {
+            e.persist();
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          {!read && (
+            <>
+              <FormattedMessage {...messages.markAsRead}>
+                {(msg) => (
+                  <EyeIcon
+                    onClick={() => setMessageAsRead(messageId)}
+                    style={{ width: '20px', height: '20px' }}
+                    className={`fl dn dib-ns h1 w1 pr1 nr4 mv1 pv1 hover-red blue-grey`}
+                    data-tip={msg}
+                  />
+                )}
+              </FormattedMessage>
+              <ReactTooltip />
+            </>
+          )}
+          <DeleteModal
+            className={`fr bg-transparent bw0 w2 h2 lh-copy overflow-hidden`}
+            id={messageId}
+            name={"'" + stripHtmlToText(subject) + "'"}
+            type="notifications"
+          />
+        </div>
+        {messageType !== null ? (
+          <div className={`fr-l di-l dn f7 truncate w4 pa1 ma1`} title={messageType}>
+            <FormattedMessage {...messages[messageType]} />
+          </div>
+        ) : null}
+        {messageType === 'MENTION_NOTIFICATION' && (
+          <div className="dn dib-ns fr ma1 ttu b--red ba red f7 pa1">1 mention</div>
+        )}
+        <div className={`pl5 pt2 blue-grey f6`}>
+          <RelativeTimeWithUnit date={sentDate} />
+        </div>
+      </div>
+    </article>
   );
 }
 

@@ -15,7 +15,7 @@ import {
 import { CloseIcon } from '../../components/svgIcons';
 import { DeleteModal } from '../deleteModal';
 
-export const NotificationBodyModal = props => {
+export const NotificationBodyModal = (props) => {
   return (
     <div
       style={{
@@ -29,9 +29,13 @@ export const NotificationBodyModal = props => {
     >
       <div
         className={`relative shadow-3`}
-        onClick={e => {
-          e.preventDefault();
+        onClick={(e) => {
           e.stopPropagation();
+          e.preventDefault();
+
+          if (e.target.href !== undefined) {
+            window.open(e.target.href);
+          }
         }}
         style={{
           background: 'rgb(255, 255, 255) none repeat scroll 0% 0%',
@@ -76,6 +80,17 @@ export function NotificationBodyCard({
   const showASendingUser =
     fromUsername || (typesThatUseSystemAvatar.indexOf(messageType) !== -1 && 'System');
 
+  let replacedSubject;
+  let replacedMessage;
+
+  if (subject !== undefined) {
+    replacedSubject = subject.replace('task=', 'search=');
+  }
+
+  if (message !== undefined) {
+    replacedMessage = message.replace('task=', 'search=');
+  }
+
   return (
     <ReactPlaceholder ready={!loading} type="media" rows={6}>
       <article className={`db  base-font mb3 mh2 blue-dark mw8`}>
@@ -92,11 +107,11 @@ export function NotificationBodyCard({
         <div className="pv3 pr3 pl5">
           <strong
             className={`pv3 messageSubjectLinks bodyCard`}
-            dangerouslySetInnerHTML={rawHtmlNotification(subject)}
+            dangerouslySetInnerHTML={rawHtmlNotification(replacedSubject)}
           ></strong>
           <div
             className={`pv3 f6 messageBodyLinks bodyCard`}
-            dangerouslySetInnerHTML={rawHtmlNotification(message)}
+            dangerouslySetInnerHTML={rawHtmlNotification(replacedMessage)}
           />
         </div>
         <DeleteModal

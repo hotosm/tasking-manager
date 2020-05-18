@@ -19,7 +19,8 @@
 
 @media screen and (min-width: 30em) {
   #jumbotron {
-    video, img {
+    video,
+    img {
       object-position: 0 0;
     }
   }
@@ -184,10 +185,10 @@ div.messageSubjectLinks,
 strong.messageSubjectLinks {
   & > a {
     color: $blue-dark;
-    font-weight: 600;
     text-decoration: none;
+    font-weight: 700;
   }
-  &:hover {
+  & > a:hover {
     & > a {
       color: $red;
     }
@@ -201,8 +202,8 @@ strong.messageSubjectLinks {
 
 div.messageBodyLinks {
   & > a {
-    color: $blue-dark;
-    text-decoration: underline;
+    color: $red;
+    text-decoration: none;
     font-weight: 600;
   }
   color: $blue-grey;
