@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
@@ -14,6 +15,7 @@ import { UserAvatar, UserAvatarList } from '../user/avatar';
 
 import { TasksMap } from '../taskSelection/map.js';
 import { ProjectHeader } from './header';
+import { DownloadAOIButton, DownloadTaskGridButton } from './downloadButtons';
 import { MappingTypes } from '../mappingTypes';
 import { Imagery } from '../taskSelection/imagery';
 import { TeamsBoxList } from '../teamsAndOrgs/teams';
@@ -176,6 +178,7 @@ export const ProjectDetailLeft = (props) => {
 
 export const ProjectDetail = (props) => {
   useSetProjectPageTitleTag(props.project);
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
 
   const htmlDescription =
     props.project.projectInfo && htmlFromMarkdown(props.project.projectInfo.description);
@@ -337,6 +340,20 @@ export const ProjectDetail = (props) => {
             project={props.project}
             className="bg-white blue-dark ba b--grey-light pa3"
           />
+          {userDetails && userDetails.isExpert ? (
+            <>
+              <DownloadAOIButton
+                projectId={props.project.projectId}
+                className="bg-white blue-dark ba b--grey-light pa3 mh3"
+              />
+              <DownloadTaskGridButton
+                projectId={props.project.projectId}
+                className="bg-white blue-dark ba b--grey-light pa3"
+              />
+            </>
+          ) : (
+            ''
+          )}
         </ReactPlaceholder>
       </div>
     </div>

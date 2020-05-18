@@ -259,4 +259,12 @@ export default defineMessages({
     id: 'project.permissions.teamsAndLevel',
     defaultMessage: 'Intermediate and advanced {team} members',
   },
+  downloadProjectAOI: {
+    id: 'projects.data.download.aoi',
+    defaultMessage: 'Download AOI',
+  },
+  downloadTaskGrid: {
+    id: 'projects.data.download.taskGrid',
+    defaultMessage: 'Download Tasks Grid',
+  },
 });
