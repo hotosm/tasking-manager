@@ -286,6 +286,8 @@
   "project.permissions.level": "Users with intermediate or advanced level",
   "project.permissions.teams": "{team} members",
   "project.permissions.teamsAndLevel": "Intermediate and advanced {team} members",
+  "projects.data.download.aoi": "Download AOI",
+  "projects.data.download.taskGrid": "Download Tasks Grid",
   "projects.formInputs.privacy.title": "Privacy",
   "projects.formInputs.privacy.description": "Private means that only the users that are project team members can access, map or validate this project. This option overrides the mapping and validation permissions.",
   "projects.formInputs.teams.title": "Teams",
