@@ -1,6 +1,8 @@
 export function userCanMap(user, project, userTeams = [], userOrgs = []) {
   if (user.role === 'READ_ONLY') return false;
   if (user.role === 'ADMIN') return true;
+  // project author can map it
+  if (user.username && user.username === project.author) return true;
   if (project.organisation && userOrgs.includes(project.organisation)) return true;
   const projectTeamsIds = project.teams
     .filter((team) => ['MAPPER', 'VALIDATOR', 'PROJECT_MANAGER'].includes(team.role))
@@ -40,6 +42,8 @@ export function userCanMap(user, project, userTeams = [], userOrgs = []) {
 export function userCanValidate(user, project, userTeams = [], userOrgs = []) {
   if (user.role === 'READ_ONLY') return false;
   if (user.role === 'ADMIN') return true;
+  // project author can validate it
+  if (user.username && user.username === project.author) return true;
   if (project.organisation && userOrgs.includes(project.organisation)) return true;
   const projectTeamsIds = project.teams
     .filter((team) => ['VALIDATOR', 'PROJECT_MANAGER'].includes(team.role))

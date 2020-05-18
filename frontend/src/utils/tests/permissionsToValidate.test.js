@@ -22,6 +22,41 @@ it('READ_ONLY role USER can NOT validate any project', () => {
   expect(userCanValidate(user, project4, userTeams)).toBe(false);
 });
 
+it('project author CAN validate it', () => {
+  const userTeams = [];
+  const user = { username: 'test', mappingLevel: 'BEGINNER', role: 'MAPPER' };
+  const project1 = {
+    author: 'test',
+    validationPermission: 'ANY',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+  };
+  const project2 = {
+    author: 'test',
+    validationPermission: 'TEAMS',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+  };
+  const project3 = {
+    author: 'test',
+    validationPermission: 'LEVEL',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+  };
+  const project4 = {
+    author: 'test',
+    validationPermission: 'TEAMS_LEVEL',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+  };
+  const project5 = {
+    author: 'test_2',
+    validationPermission: 'TEAMS_LEVEL',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+  };
+  expect(userCanValidate(user, project1, userTeams)).toBe(true);
+  expect(userCanValidate(user, project2, userTeams)).toBe(true);
+  expect(userCanValidate(user, project3, userTeams)).toBe(true);
+  expect(userCanValidate(user, project4, userTeams)).toBe(true);
+  expect(userCanValidate(user, project5, userTeams)).toBe(false);
+});
+
 describe('PROJECTS with validationPermission set to any', () => {
   it('CAN be validated by a BEGINNER user that is not on a team', () => {
     const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
