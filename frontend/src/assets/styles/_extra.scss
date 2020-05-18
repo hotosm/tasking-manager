@@ -185,7 +185,8 @@ div.messageSubjectLinks,
 strong.messageSubjectLinks {
   & > a {
     color: $blue-dark;
-    font-weight: 600;
+    text-decoration: none;
+    font-weight: 700;
   }
   & > a:hover {
     & > a {
@@ -201,8 +202,8 @@ strong.messageSubjectLinks {
 
 div.messageBodyLinks {
   & > a {
-    color: $blue-dark;
-    text-decoration: underline;
+    color: $red;
+    text-decoration: none;
     font-weight: 600;
   }
   color: $blue-grey;
