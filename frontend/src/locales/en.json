@@ -767,6 +767,7 @@
   "teamsAndOrgs.management.button.cancel_request": "Cancel request",
   "teamsAndOrgs.management.button.leave_team": "Leave team",
   "teamsAndOrgs.management.button.cancel": "Cancel",
+  "teamsAndOrgs.management.organisation.manage.error": "You are not a manager of this organisation, so you are not allowed to edit it.",
   "teamsAndOrgs.management.organisation.manage": "Manage organization",
   "teamsAndOrgs.management.team.manage": "Manage team",
   "teamsAndOrgs.management.campaign.manage": "Manage campaign",
