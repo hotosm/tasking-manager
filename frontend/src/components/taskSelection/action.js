@@ -137,7 +137,10 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                 organisation={project.organisationName}
               />
               <div className="cf pb3">
-                <h3 className="f2 fw6 mt2 mb1 ttu barlow-condensed blue-dark">
+                <h3
+                  className="f2 fw6 mt2 mb1 ttu barlow-condensed blue-dark"
+                  lang={project.projectInfo && project.projectInfo.locale}
+                >
                   {project.projectInfo && project.projectInfo.name}
                   <span className="pl2">&#183;</span>
                   {tasksIds.map((task, n) => (
