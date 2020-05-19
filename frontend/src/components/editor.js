@@ -10,6 +10,10 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
   const windowInit = typeof window !== undefined;
 
   useEffect(() => {
+    return () => window.iD.coreContext('destroy');
+  }, []);
+
+  useEffect(() => {
     if (windowInit && !editorRef) {
       setEditorRef(window.iD.coreContext());
     }
