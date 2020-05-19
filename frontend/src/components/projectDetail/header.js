@@ -53,7 +53,10 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
       />
       <div className="cf">
         <div>
-          <h3 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark dib">
+          <h3
+            className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark dib"
+            lang={project.projectInfo.locale}
+          >
             {project.projectInfo && project.projectInfo.name}
           </h3>
           {['DRAFT', 'ARCHIVED'].includes(project.status) && (
