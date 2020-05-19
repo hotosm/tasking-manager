@@ -3,7 +3,7 @@ import { Link } from '@reach/router';
 import { useSelector } from 'react-redux';
 import { Button } from '../button';
 
-import { ShareIcon } from '../svgIcons';
+import { ShareButton } from './shareButton';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { AddToFavorites } from './favorites';
@@ -45,9 +45,8 @@ export const ProjectDetailFooter = (props) => {
         <a  className="link" href="#relatedProjects"><FormattedMessage {...messages.relatedProjects} /></a> */}
       </div>
       <div className="w-40-ns w-100 fr">
-        <div className="w-20 fl tc dib pt2 pb3 o-025">
-          <ShareIcon className="pt3 pr2 v-btm" />
-          <FormattedMessage {...messages.share} />
+        <div className="w-20 fl tc dib pt2 pb3">
+          <ShareButton projectId={props.projectId} />
         </div>
         {userIsloggedIn && (
           <div className="w-40 fl tc dib pt2 pb3">

@@ -1024,7 +1024,11 @@ class Task(db.Model):
 
             task_history.append(history)
 
-        task_dto = self.as_dto(task_history)
+        last_updated = None
+        if len(task_history) > 0:
+            last_updated = task_history[0].action_date
+
+        task_dto = self.as_dto(task_history, last_updated=last_updated)
 
         per_task_instructions = self.get_per_task_instructions(preferred_locale)
 

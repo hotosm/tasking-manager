@@ -9,30 +9,34 @@ import { Button } from '../button';
 
 const clipProject = (clip, metadata, map, updateMetadata) => {
   const taskGrid = metadata.tempTaskGrid;
-  let geom = metadata.geom.features[0].geometry;
-  if (geom.type === 'MultiPolygon') {
-    geom = polygon(geom.coordinates[0]);
-  }
+
   let intersect_array = [];
-
-  taskGrid.features.forEach((f) => {
-    let poly = polygon(f.geometry.coordinates[0]);
-    let contains = intersect(geom, poly);
-    if (contains === null) {
-      return;
+  // Evaluate for each polygon in the features array.
+  metadata.geom.features.forEach((g) => {
+    let geom = g.geometry;
+    if (geom.type === 'MultiPolygon') {
+      geom = polygon(geom.coordinates[0]);
     }
 
-    let feature = f;
-    if (clip === true) {
-      if (contains.geometry.type === 'Polygon') {
-        feature = multiPolygon([contains.geometry.coordinates], f.properties);
-      } else {
-        feature = contains;
-        feature.properties = f.properties;
-        feature.properties.isSquare = false;
+    taskGrid.features.forEach((f) => {
+      let poly = polygon(f.geometry.coordinates[0]);
+      let contains = intersect(geom, poly);
+      if (contains === null) {
+        return;
       }
-    }
-    intersect_array.push(feature);
+
+      let feature = f;
+      if (clip === true) {
+        if (contains.geometry.type === 'Polygon') {
+          feature = multiPolygon([contains.geometry.coordinates], f.properties);
+        } else {
+          feature = contains;
+          feature.properties = f.properties;
+          feature.properties.isSquare = false;
+        }
+      }
+      intersect_array.push(feature);
+    });
   });
 
   const grid = featureCollection(intersect_array);

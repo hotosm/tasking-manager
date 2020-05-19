@@ -259,4 +259,24 @@ export default defineMessages({
     id: 'project.permissions.teamsAndLevel',
     defaultMessage: 'Intermediate and advanced {team} members',
   },
+  downloadProjectAOI: {
+    id: 'projects.data.download.aoi',
+    defaultMessage: 'Download AOI',
+  },
+  downloadTaskGrid: {
+    id: 'projects.data.download.taskGrid',
+    defaultMessage: 'Download Tasks Grid',
+  },
+  shareMessage: {
+    id: 'project.share.twitter',
+    defaultMessage: 'Contribute mapping the project #{id} on {site}',
+  },
+  postOnFacebook: {
+    id: 'project.share.facebook',
+    defaultMessage: 'Post on Facebook',
+  },
+  shareOnLinkedIn: {
+    id: 'project.share.linkedin',
+    defaultMessage: 'Share on LinkedIn',
+  },
 });

@@ -1,6 +1,12 @@
+from flask import current_app
+import math
 import geojson
-from cachetools import TTLCache, cached
+from geoalchemy2 import shape
+from sqlalchemy import func, distinct, desc, or_
 from shapely.geometry import Polygon, box
+from cachetools import TTLCache, cached
+
+from backend import db
 from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectSearchResultsDTO,
@@ -14,6 +20,8 @@ from backend.models.postgis.statuses import (
     MappingLevel,
     MappingTypes,
     ProjectPriority,
+    UserRole,
+    TeamRoles,
 )
 from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.organisation import Organisation
@@ -25,17 +33,9 @@ from backend.models.postgis.utils import (
     ST_Transform,
     ST_Area,
 )
-
 from backend.models.postgis.interests import project_interests
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
-from backend.models.postgis.statuses import TeamRoles
-
-from backend import db
-from flask import current_app
-from geoalchemy2 import shape
-from sqlalchemy import func, distinct, desc, or_
-import math
 
 
 search_cache = TTLCache(maxsize=128, ttl=300)
@@ -63,7 +63,7 @@ class BBoxTooBigError(Exception):
 
 class ProjectSearchService:
     @staticmethod
-    def create_search_query():
+    def create_search_query(user=None):
         query = (
             db.session.query(
                 Project.id.label("id"),
@@ -83,10 +83,14 @@ class ProjectSearchService:
                 Organisation.name.label("organisation_name"),
                 Organisation.logo.label("organisation_logo"),
             )
-            .filter(Project.private.is_(False))
             .outerjoin(Organisation, Organisation.id == Project.organisation_id)
             .group_by(Organisation.id, Project.id)
         )
+
+        # Remove private projects if user role is not admin.
+        if user is None or user.role != UserRole.ADMIN.value:
+            query = query.filter(Project.private.is_(False))
+
         return query
 
     @staticmethod
@@ -145,10 +149,10 @@ class ProjectSearchService:
 
     @staticmethod
     @cached(search_cache)
-    def search_projects(search_dto: ProjectSearchDTO) -> ProjectSearchResultsDTO:
+    def search_projects(search_dto: ProjectSearchDTO, user) -> ProjectSearchResultsDTO:
         """ Searches all projects for matches to the criteria provided by the user """
         all_results, paginated_results = ProjectSearchService._filter_projects(
-            search_dto
+            search_dto, user
         )
         if paginated_results.total == 0:
             raise NotFound()
@@ -182,9 +186,9 @@ class ProjectSearchService:
         return dto
 
     @staticmethod
-    def _filter_projects(search_dto: ProjectSearchDTO):
+    def _filter_projects(search_dto: ProjectSearchDTO, user):
         """ Filters all projects based on criteria provided by user"""
-        query = ProjectSearchService.create_search_query()
+        query = ProjectSearchService.create_search_query(user)
         query = query.join(ProjectInfo).filter(
             ProjectInfo.locale.in_([search_dto.preferred_locale, "en"])
         )
@@ -275,12 +279,11 @@ class ProjectSearchService:
 
         query = query.order_by(order_by).group_by(Project.id)
 
-        if search_dto.managed_by:
+        if search_dto.managed_by and user.role != UserRole.ADMIN.value:
             team_projects = query.join(ProjectTeams).filter(
                 ProjectTeams.role == TeamRoles.PROJECT_MANAGER.value,
                 ProjectTeams.project_id == Project.id,
             )
-            user = UserService.get_user_by_id(search_dto.managed_by)
             user_orgs_list = OrganisationService.get_organisations_managed_by_user(
                 search_dto.managed_by
             )

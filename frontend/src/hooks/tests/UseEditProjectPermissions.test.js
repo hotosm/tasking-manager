@@ -19,7 +19,7 @@ describe('test edit project permissions based on role', () => {
   });
 
   it('MAPPER users can NOT edit a project', () => {
-    const userDetails = { role: 'MAPPER' };
+    const userDetails = { username: 'map_user', role: 'MAPPER' };
     act(() => {
       store.dispatch({ type: 'SET_USER_DETAILS', userDetails: userDetails });
     });

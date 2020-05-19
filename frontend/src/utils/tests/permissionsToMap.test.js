@@ -19,6 +19,41 @@ it('READ_ONLY role USER can NOT map any project', () => {
   expect(userCanMap(user, project4, userTeams)).toBe(false);
 });
 
+it('project author CAN map it', () => {
+  const userTeams = [];
+  const user = { username: 'test', mappingLevel: 'BEGINNER', role: 'MAPPER' };
+  const project1 = {
+    author: 'test',
+    mappingPermission: 'ANY',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+  };
+  const project2 = {
+    author: 'test',
+    mappingPermission: 'TEAMS',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+  };
+  const project3 = {
+    author: 'test',
+    mappingPermission: 'LEVEL',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+  };
+  const project4 = {
+    author: 'test',
+    mappingPermission: 'TEAMS_LEVEL',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+  };
+  const project5 = {
+    author: 'test_2',
+    mappingPermission: 'TEAMS_LEVEL',
+    teams: [{ teamId: 7, role: 'MAPPER' }],
+  };
+  expect(userCanMap(user, project1, userTeams)).toBe(true);
+  expect(userCanMap(user, project2, userTeams)).toBe(true);
+  expect(userCanMap(user, project3, userTeams)).toBe(true);
+  expect(userCanMap(user, project4, userTeams)).toBe(true);
+  expect(userCanMap(user, project5, userTeams)).toBe(false);
+});
+
 describe('PROJECTS with mappingPermission set to any', () => {
   it('CAN be mapped by a BEGINNER user that is not on a team', () => {
     const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };

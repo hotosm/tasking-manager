@@ -20,9 +20,13 @@ export default defineMessages({
     id: 'management.forbiddenAccess.title',
     defaultMessage: 'You are not allowed to access the management area.',
   },
-  editNotAllowed: {
-    id: 'management.forbiddenEdit.title',
+  projectEditNotAllowed: {
+    id: 'teamsAndOrgs.management.project.forbidden',
     defaultMessage: 'You are not allowed to edit this project.',
+  },
+  teamEditNotAllowed: {
+    id: 'teamsAndOrgs.management.team.forbidden',
+    defaultMessage: 'You are not allowed to edit this team.',
   },
   loginRequired: {
     id: 'loginPage.title',
@@ -75,6 +79,11 @@ export default defineMessages({
   cancel: {
     id: 'teamsAndOrgs.management.button.cancel',
     defaultMessage: 'Cancel',
+  },
+  editOrgNotAllowed: {
+    id: 'teamsAndOrgs.management.organisation.manage.error',
+    defaultMessage:
+      'You are not a manager of this organisation, so you are not allowed to edit it.',
   },
   manageOrganisation: {
     id: 'teamsAndOrgs.management.organisation.manage',

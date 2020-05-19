@@ -55,7 +55,9 @@ export function OrganisationCard({ details }: Object) {
         </div>
         <div className="w-75 fl pl3">
           <div className="w-100 dib">
-            <h3 className="barlow-condensed ttu f3 mb2 mt2 truncate">{details.name}</h3>
+            <h3 className="barlow-condensed ttu f3 mb2 mt2 truncate" lang="en">
+              {details.name}
+            </h3>
           </div>
           <div className="w-100 dib pt2 fl">
             <h4 className="ttu blue-grey f6">
