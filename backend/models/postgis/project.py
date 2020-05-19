@@ -680,9 +680,27 @@ class Project(db.Model):
                     average_mapping_time = total_mapping_seconds / unique_mappers
                     project_stats.average_mapping_time = average_mapping_time
 
-        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                   WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
-                   and project_id = :project_id;"""
+        # query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
+        #            WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
+        #            and project_id = :project_id;"""
+        query = """with query as (select
+                                   id,
+                                   user_id,
+                                   action,
+                                   action_text,
+                                   (TO_TIMESTAMP(action_text, 'HH24:MI:SS')::time) -
+                                    lag(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::time)
+                                    over (order by id) as time_difference,
+                                    user_id - lag(user_id)
+                                    over (order by id) as user_id_difference,
+                                    id - lag (id)
+                                    over (order by id) as incidence_difference
+                                    from task_history
+                                    WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
+                                    and project_id = :project_id)
+                   select SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) from query
+                   where not (time_difference = '00:00:00' and user_id_difference = 0 and incidence_difference = 1);"""
+
         total_validation_time = db.engine.execute(text(query), project_id=self.id)
         for row in total_validation_time:
             total_validation_time = row[0]
