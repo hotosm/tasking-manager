@@ -78,10 +78,10 @@ const ProjectCreate = (props) => {
 
   const fetchCloneProjectInfo = useCallback(
     async (cloneFromId) => {
-      const res = await fetchLocalJSONAPI(`projects/${cloneFromId}/`);
+      const res = await fetchLocalJSONAPI(`projects/${cloneFromId}/`, token);
       setCloneProjectName(res.projectInfo.name);
     },
-    [setCloneProjectName],
+    [setCloneProjectName, token],
   );
 
   useLayoutEffect(() => {
