@@ -213,7 +213,7 @@ const Resources = {
                   "{",
                   cf.sub("\"file_path\": \"${TaskingManagerLogDirectory}/gunicorn-access.log\","),
                   cf.sub("\"log_group_name\": \"${AWS::StackName}.log\","),
-                  cf.sub("\"log_stream_name\": \"${AWS::StackName}.log\","),
+                  cf.sub("\"log_stream_name\": \"${AWS::StackName}-gunicorn.log\","),
                   "\"timezone\": \"UTC\"",
                   "}]}},",
                   cf.sub("\"log_stream_name\": \"${AWS::StackName}-logs\","),
