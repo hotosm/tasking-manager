@@ -11,7 +11,6 @@ from sqlalchemy.sql.expression import cast
 from sqlalchemy import text, desc, func
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm.session import make_transient
 import requests
 
 from backend import db
@@ -295,76 +294,65 @@ class Project(db.Model):
     def clone(project_id: int, author_id: int):
         """ Clone project """
 
-        cloned_project = Project.get(project_id)
+        orig = Project.get(project_id)
+        if orig is None:
+            raise NotFound()
+
+        # Transform into dictionary.
+        orig_metadata = orig.__dict__.copy()
+
+        # Remove unneeded data.
+        items_to_remove = ["_sa_instance_state", "id", "allowed_users"]
+        [orig_metadata.pop(i, None) for i in items_to_remove]
 
         # Remove clone from session so we can reinsert it as a new object
-        db.session.expunge(cloned_project)
-        make_transient(cloned_project)
-
-        # Re-initialise counters and meta-data
-        cloned_project.total_tasks = 0
-        cloned_project.tasks_mapped = 0
-        cloned_project.tasks_validated = 0
-        cloned_project.tasks_bad_imagery = 0
-        cloned_project.last_updated = timestamp()
-        cloned_project.created = timestamp()
-        cloned_project.author_id = author_id
-        cloned_project.status = ProjectStatus.DRAFT.value
-        cloned_project.id = None  # Reset ID so we get a new ID when inserted
-        cloned_project.geometry = None
-        cloned_project.centroid = None
-
-        db.session.add(cloned_project)
-        db.session.commit()
-
-        # Now add the project info, we have to do it in a two stage commit because we need to know the new project id
-        original_project = Project.get(project_id)
-
-        for info in original_project.project_info:
-            db.session.expunge(info)
-            make_transient(
-                info
-            )  # Must remove the object from the session or it will be updated rather than inserted
-            info.id = None
-            info.project_id_str = str(cloned_project.id)
-            cloned_project.project_info.append(info)
-
-        # Now add allowed users now we know new project id, if there are any
-        for user in original_project.allowed_users:
-            cloned_project.allowed_users.append(user)
-
-        # Add other project metadata
-        cloned_project.priority = original_project.priority
-        cloned_project.default_locale = original_project.default_locale
-        cloned_project.mapper_level = original_project.mapper_level
-        cloned_project.mapping_permission = original_project.mapping_permission
-        cloned_project.validation_permission = original_project.validation_permission
-        cloned_project.enforce_random_task_selection = (
-            original_project.enforce_random_task_selection
+        orig_metadata.update(
+            {
+                "total_tasks": 0,
+                "tasks_mapped": 0,
+                "tasks_validated": 0,
+                "tasks_bad_imagery": 0,
+                "last_updated": timestamp(),
+                "created": timestamp(),
+                "author_id": author_id,
+                "status": ProjectStatus.DRAFT.value,
+                "geometry": None,
+                "centroid": None,
+            }
         )
-        cloned_project.private = original_project.private
-        cloned_project.entities_to_map = original_project.entities_to_map
-        cloned_project.due_date = original_project.due_date
-        cloned_project.imagery = original_project.imagery
-        cloned_project.josm_preset = original_project.josm_preset
-        cloned_project.license_id = original_project.license_id
-        cloned_project.mapping_types = original_project.mapping_types
 
-        # We try to remove the changeset comment referencing the old project. This
-        #  assumes the default changeset comment has not changed between the old
-        #  project and the cloned. This is a best effort basis.
+        new_proj = Project(**orig_metadata)
+        db.session.add(new_proj)
+
+        proj_info = []
+        for info in orig.project_info.all():
+            info_data = info.__dict__.copy()
+            info_data.pop("_sa_instance_state")
+            info_data.update(
+                {"project_id": new_proj.id, "project_id_str": str(new_proj.id)}
+            )
+            proj_info.append(ProjectInfo(**info_data))
+
+        new_proj.project_info = proj_info
+
+        # Replace changeset comment.
         default_comment = current_app.config["DEFAULT_CHANGESET_COMMENT"]
-        changeset_comments = []
-        if original_project.changeset_comment is not None:
-            changeset_comments = original_project.changeset_comment.split(" ")
-        if f"{default_comment}-{original_project.id}" in changeset_comments:
-            changeset_comments.remove(f"{default_comment}-{original_project.id}")
-        cloned_project.changeset_comment = " ".join(changeset_comments)
 
-        db.session.add(cloned_project)
+        if default_comment is not None:
+            orig_changeset = f"{default_comment}-{orig.id}"  # Preserve space
+            new_proj.changeset_comment = orig.changeset_comment.replace(
+                orig_changeset, ""
+            )
+
+        # Copy array relationships.
+        for field in ["interests", "campaign", "teams"]:
+            value = getattr(orig, field)
+            setattr(new_proj, field, value)
+
+        new_proj.custom_editor = orig.custom_editor
         db.session.commit()
 
-        return cloned_project
+        return new_proj
 
     @staticmethod
     def get(project_id: int):
