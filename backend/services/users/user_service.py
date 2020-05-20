@@ -315,9 +315,24 @@ class UserService:
         stats_dto.time_spent_mapping = 0
         stats_dto.time_spent_validating = 0
 
-        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
-                and user_id = :user_id;"""
+        sql = """with query as (select
+                                   id,
+                                   user_id,
+                                   action,
+                                   action_text,
+                                   (TO_TIMESTAMP(action_text, 'HH24:MI:SS')::time) -
+                                    lag(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::time)
+                                    over (order by id) as time_difference,
+                                    user_id - lag(user_id)
+                                    over (order by id) as user_id_difference,
+                                    id - lag (id)
+                                    over (order by id) as incidence_difference
+                                    from task_history
+                                    WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
+                                    and user_id = :user_id)
+                   select SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) from query
+                   where not (time_difference = '00:00:00' and user_id_difference = 0 and incidence_difference = 1);
+                   """
         total_validation_time = db.engine.execute(text(sql), user_id=user.id)
         for time in total_validation_time:
             total_validation_time = time[0]
