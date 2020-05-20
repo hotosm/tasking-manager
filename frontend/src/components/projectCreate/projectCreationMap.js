@@ -87,6 +87,9 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step 
       });
 
       mapObj.map.on('style.load', event => {
+        if (!MAPBOX_TOKEN) {
+          return;
+        }
         const features = mapObj.draw.getAll();
         if (features.features.length === 0) {
           addLayer('aoi', metadata.geom, mapObj.map);
