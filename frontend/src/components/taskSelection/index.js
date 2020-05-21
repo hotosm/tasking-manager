@@ -197,18 +197,30 @@ export function TaskSelection({ project, type, loading }: Object) {
     } else {
       // unselecting tasks
       if (selected.includes(selection)) {
-        setSelectedTasks([]);
-        setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
-      } else {
-        setSelectedTasks([selection]);
-        if (lockedTasks.get('tasks').includes(selection)) {
-          setTaskAction(
-            lockedTasks.get('status') === 'LOCKED_FOR_MAPPING'
-              ? 'resumeMapping'
-              : 'resumeValidation',
-          );
+        // if there is only one task selected, just clear the selection
+        if (selection.length === 1) {
+          setSelectedTasks([]);
+          setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
         } else {
-          setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));
+          // if there are multiple tasks selected, remove the clicked one
+          setSelectedTasks(selected.filter((i) => i !== selection));
+        }
+      } else {
+        // if there is some task selected to validation and the user selects
+        //  another MAPPED task, add the new task to the selected array
+        if (taskAction === 'validateSelectedTask' && status === 'MAPPED') {
+          setSelectedTasks(selected.concat([selection]));
+        } else {
+          setSelectedTasks([selection]);
+          if (lockedTasks.get('tasks').includes(selection)) {
+            setTaskAction(
+              lockedTasks.get('status') === 'LOCKED_FOR_MAPPING'
+                ? 'resumeMapping'
+                : 'resumeValidation',
+            );
+          } else {
+            setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));
+          }
         }
       }
     }
