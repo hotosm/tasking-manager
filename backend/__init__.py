@@ -360,7 +360,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         ProjectsTeamsAPI,
-        "/api/v2/projects/<int:project_id>/teams/<int:team_id>/",
+        format_url("projects/<int:project_id>/teams/<int:team_id>/"),
         methods=["POST", "DELETE", "PATCH"],
     )
     api.add_resource(
@@ -770,5 +770,5 @@ def add_api_endpoints(app):
         methods=["PATCH"],
     )
     api.add_resource(
-        SystemContactAdminRestAPI, "/api/v2/system/contact-admin/", methods=["POST"]
+        SystemContactAdminRestAPI, format_url("system/contact-admin/"), methods=["POST"]
     )
