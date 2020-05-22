@@ -7,6 +7,7 @@ export const BurgerMenu = React.forwardRef((props, ref) => (
     className="blue-dark bg-white br1 f5 bn pointer"
     style={{ padding: '.75rem 1.5rem' }}
     ref={ref}
+    aria-label="Menu"
     {...props}
   >
     {props.open ? (

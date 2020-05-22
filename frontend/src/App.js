@@ -65,7 +65,7 @@ let App = (props) => {
           <Router>
             <Header path="/*" />
           </Router>
-          <div className="cf w-100 base-font">
+          <main className="cf w-100 base-font">
             <QueryParamProvider reachHistory={globalHistory}>
               <Router primary={false}>
                 <Home path="/" />
@@ -126,7 +126,7 @@ let App = (props) => {
                 <NotFound default />
               </Router>
             </QueryParamProvider>
-          </div>
+          </main>
           {MATOMO_ID && <Banner />}
           <Router primary={false}>
             <Footer path="/*" />
