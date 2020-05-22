@@ -6,6 +6,7 @@ import { StateContext, styleClasses, handleCheckButton } from '../../views/proje
 import { ProjectInterests } from './projectInterests';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import Select from 'react-select';
+import { ID_PRESETS } from '../../config/presets';
 
 export const MetadataForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -53,6 +54,25 @@ export const MetadataForm = () => {
     }
   }, [interests.length]);
 
+  // Get id presets members:
+  let idPresetsValue = [];
+  const presets = Object.keys(ID_PRESETS).map((p) => {
+    const categoryLabel = p.split('-')[1];
+
+    const opts = ID_PRESETS[p].members.map((l) => {
+      const obj = { label: l, value: l };
+
+      if (projectInfo.idPresets.includes(l) === true) {
+        idPresetsValue.push(obj);
+      }
+
+      //const presetLabel = l.split('/').slice(1).join('/');
+      return obj;
+    });
+
+    return { label: categoryLabel, options: opts };
+  });
+
   return (
     <div className="w-100">
       <div className={styleClasses.divClass}>
@@ -80,23 +100,50 @@ export const MetadataForm = () => {
           </label>
         ))}
       </div>
-      <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>
-          <FormattedMessage {...messages.mappingTypes} />*
-        </label>
-        {elements.map((elm) => (
-          <label className="db pv2">
-            <input
-              className="mr2 h"
-              name="mapping_types"
-              checked={projectInfo.mappingTypes.includes(elm.item)}
-              onChange={handleMappingTypes}
-              type="checkbox"
-              value={elm.item}
-            />
-            {elm.showItem}
+      <div className={styleClasses.divClass + ' cf'}>
+        <div className="w-50 fl">
+          <label className={styleClasses.labelClass}>
+            <FormattedMessage {...messages.mappingTypes} />*
           </label>
-        ))}
+          {elements.map((elm) => (
+            <label className="db pv2">
+              <input
+                className="mr2 h"
+                name="mapping_types"
+                checked={projectInfo.mappingTypes.includes(elm.item)}
+                onChange={handleMappingTypes}
+                type="checkbox"
+                value={elm.item}
+              />
+              {elm.showItem}
+            </label>
+          ))}
+        </div>
+        <div className="w-50 fl">
+          <label className={styleClasses.labelClass}>
+            <FormattedMessage {...messages.idPresets} />
+          </label>
+          <Select
+            isClearable={true}
+            isMulti={true}
+            options={presets}
+            className="z-9999"
+            onChange={(val) => {
+              if (val === null) {
+                setProjectInfo((p) => {
+                  return { ...p, idPresets: [] };
+                });
+
+                return;
+              }
+              const values = val.map((v) => v.value);
+              setProjectInfo((p) => {
+                return { ...p, idPresets: values };
+              });
+            }}
+            defaultValue={idPresetsValue}
+          />
+        </div>
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>

@@ -385,6 +385,11 @@ export default defineMessages({
     id: 'projects.formInputs.mapping_types',
     defaultMessage: 'Types of mapping',
   },
+  idPresets: {
+    id: 'projects.formInputs.id_presets',
+    defaultMessage: 'Id editor presets',
+  },
+
   userRole: {
     id: 'projects.formInputs.user_role',
     defaultMessage: 'User role',
