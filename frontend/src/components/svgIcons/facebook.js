@@ -3,7 +3,7 @@ import React from 'react';
 export class FacebookIcon extends React.PureComponent {
   render() {
     return (
-      <svg width="15" height="14" viewBox="0 0 15 14" {...this.props}>
+      <svg width="15" height="14" viewBox="0 0 15 14" {...this.props} aria-label="Facebook">
         <g fill="none" fillRule="evenodd">
           <path d="M-13-13h40v40h-40z" />
           <path

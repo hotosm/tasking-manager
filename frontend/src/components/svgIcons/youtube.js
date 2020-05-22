@@ -3,7 +3,7 @@ import React from 'react';
 export class YoutubeIcon extends React.PureComponent {
   render() {
     return (
-      <svg width="20" height="14" viewBox="0 0 20 14" {...this.props}>
+      <svg width="20" height="14" viewBox="0 0 20 14" {...this.props} aria-label="YouTube">
         <g fill="none" fillRule="evenodd">
           <path d="M-10-13h40v40h-40z" />
           <path

@@ -3,7 +3,7 @@ import React from 'react';
 export class GithubIcon extends React.PureComponent {
   render() {
     return (
-      <svg width="16" height="16" viewBox="0 0 16 16" {...this.props}>
+      <svg width="16" height="16" viewBox="0 0 16 16" {...this.props} aria-label="GitHub">
         <g fill="none" fillRule="evenodd">
           <path d="M-12-12h40v40h-40z" />
           <path

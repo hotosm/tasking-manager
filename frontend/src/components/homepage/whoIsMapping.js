@@ -26,12 +26,12 @@ function contactCard() {
 
 export function WhoIsMapping() {
   const organizations = [
-    { url: 'https://www.redcross.org/', name: 'redcross' },
-    { url: 'https://www.redcross.org.uk/', name: 'brc' },
-    { url: 'https://www.msf.org/', name: 'msf' },
-    { url: 'https://www.worldbank.org/', name: 'wb' },
-    { url: 'https://www.usaid.gov/', name: 'usaid' },
-    { url: 'https://www.bing.com/', name: 'bing' },
+    { url: 'https://www.redcross.org/', code: 'redcross', name: 'American Red Cross' },
+    { url: 'https://www.redcross.org.uk/', code: 'brc', name: 'British Red Cross' },
+    { url: 'https://www.msf.org/', code: 'msf', name: 'Medecins Sans Frontieres' },
+    { url: 'https://www.worldbank.org/', code: 'wb', name: 'World Bank' },
+    { url: 'https://www.usaid.gov/', code: 'usaid', name: 'USAID' },
+    { url: 'https://www.bing.com/', code: 'bing', name: 'Bing' },
   ];
   return (
     <div className="cf v-mid bg-split-blue-white">
@@ -49,7 +49,7 @@ export function WhoIsMapping() {
             {organizations.map((org, n) => (
               <div key={n} className="w-50 w-third-l fl pr5 pv4">
                 <a href={org.url}>
-                  <div className={`contain org-${org.name} w-auto h3`}></div>
+                  <div className={`contain org-${org.code} w-auto h3`} aria-label={org.name}></div>
                 </a>
               </div>
             ))}
