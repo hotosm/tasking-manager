@@ -59,6 +59,21 @@ describe('test if getIdUrl', () => {
         '&locale=en',
     );
   });
+
+  it('with a imagery that is not a URL and with multiple tasks returns the correct url', () => {
+    const testProject = {
+      changesetComment: '#hotosm-project-5522',
+      projectId: 1234,
+      imagery: 'Bing',
+    };
+    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1, 2])).toBe(
+      'https://www.openstreetmap.org/edit?editor=id&' +
+        '#map=18/-9.663953/120.25684' +
+        '&comment=%23hotosm-project-5522' +
+        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2' +
+        '&locale=en',
+    );
+  });
 });
 
 it('test if formatCustomUrl returns the url with question mark', () => {
