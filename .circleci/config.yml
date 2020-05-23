@@ -3,16 +3,15 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: circleci/python:3.7-buster-browsers
+    - image: circleci/python:3.7-buster-node
     steps:
     - checkout
     - setup_remote_docker
     - run:
-        name: Install Node and modules
+        name: Install modules
         command: |
           sudo apt-get update
-          curl -sL https://deb.nodesource.com/setup_13.x | sudo bash -
-          sudo apt-get install -y nodejs libgeos-dev # Required for shapely
+          sudo apt-get install -y libgeos-dev # Required for shapely
           sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
           sudo pip3 install awscli --upgrade
     - run:
@@ -24,16 +23,15 @@ jobs:
         keys:
         - cached-dependencies
         paths:
-        - frontend/node_modules
         - env
     - run:
         name: Install requirements
         command: |
           # Install NPM packages and build frontend
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend
-          npm install
+          yarn
           npm rebuild node-sass
-          npm run build
+          yarn build
           cd ${CIRCLE_WORKING_DIRECTORY}
           # Install Python dependencies
           pip install virtualenv
@@ -53,7 +51,7 @@ jobs:
         command: |
           # JS Unit Tests
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend
-          CI=true npm test
+          CI=true yarn test -w 1 --env=jsdom
     - run:
         name: Run backend tests
         command: |
@@ -160,13 +158,13 @@ jobs:
         type: enum
         enum: ["INFO", "DEBUG"]
         default: "INFO"
-      upload_api_url: 
+      upload_api_url:
         type: env_var_name
-      upload_api_key: 
+      upload_api_key:
         type: env_var_name
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: circleci/python:3.7-buster
+    - image: circleci/python:3.7-buster-node
     steps:
     - checkout
     - setup_remote_docker
@@ -175,13 +173,12 @@ jobs:
         command: |
           echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\",\"TaskingManagerLogLevel\":\"<< parameters.log_level >>\",\"TaskingManagerImageUploadAPIURL\":\"${<< parameters.upload_api_url >>}\", \"TaskingManagerImageUploadAPIKey\":\"${<< parameters.upload_api_key >>}\",\"TaskingManagerURL\":\"${<< parameters.app_url >>}\", \"TaskingManagerEmailContactAddress\":\"${<< parameters.email_contact_address >>}\"}'" >> $BASH_ENV
     - run:
-        name: Install Node and modules
+        name: Install modules
         command: |
           sudo apt-get update
-          curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
-          sudo apt-get install -y nodejs libgeos-dev # Required for shapely
+          sudo apt-get install -y libgeos-dev # Required for shapely
           sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
-          npm install
+          yarn
           sudo pip3 install awscli --upgrade
     - run:
         name: Configure AWS Access Key ID
@@ -279,8 +276,8 @@ jobs:
           export TM_APP_API_URL="https://tasking-manager-<< parameters.stack_name >>-api.hotosm.org"
           export TM_IMAGE_UPLOAD_API_URL=${<< parameters.upload_api_url >>}
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
-          npm install
-          npm run build
+          yarn
+          yarn build
           aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-react-app --delete
           export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
           aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
