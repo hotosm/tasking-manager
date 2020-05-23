@@ -81,7 +81,7 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, locale = '
   if (project.changesetComment) {
     url += '&comment=' + encodeURIComponent(project.changesetComment);
   }
-  if (project.imagery) {
+  if (project.imagery && project.imagery.includes('http')) {
     // url is supposed to look like tms[22]:http://hiu...
     let urlForImagery = project.imagery.substring(project.imagery.indexOf('http'));
     urlForImagery = urlForImagery.replace('zoom', 'z');
@@ -126,7 +126,7 @@ function loadTasksBoundaries(project, selectedTasks) {
 }
 
 function loadImageryonJosm(project) {
-  if (project.imagery) {
+  if (project.imagery && project.imagery.includes('http')) {
     const imageryParams = {
       title: project.imagery,
       type: project.imagery.toLowerCase().substring(0, 3),
