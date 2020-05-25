@@ -12,7 +12,7 @@ jobs:
         command: |
           sudo apt-get update
           sudo apt-get install -y libgeos-dev # Required for shapely
-          sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
+          sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
           sudo pip3 install awscli --upgrade
     - run:
         name: Set folder permissions
@@ -23,6 +23,7 @@ jobs:
         keys:
         - cached-dependencies
         paths:
+        - frontend/node_modules
         - env
     - run:
         name: Install requirements
@@ -177,7 +178,7 @@ jobs:
         command: |
           sudo apt-get update
           sudo apt-get install -y libgeos-dev # Required for shapely
-          sudo npm install -g @mapbox/cfn-config @mapbox/cloudfriend
+          sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
           yarn
           sudo pip3 install awscli --upgrade
     - run:
