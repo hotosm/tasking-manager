@@ -9,7 +9,6 @@ export function Imagery({ value = '' }: Object) {
   //eslint-disable-next-line
   const [isCopied, setCopied] = useCopyClipboard();
 
-  const handleClick = () => setCopied(value);
   let content = <span title={value}>{value}</span>;
   let copyButton;
   let messageId;
@@ -34,7 +33,7 @@ export function Imagery({ value = '' }: Object) {
       );
       copyButton = (
         <span className="pointer pl2 blue-light hover-blue-dark" title="Copy imagery URL">
-          <ClipboardIcon width="16px" height="16px" onClick={handleClick} />
+          <ClipboardIcon width="16px" height="16px" onClick={() => setCopied(value)} />
         </span>
       );
     }
