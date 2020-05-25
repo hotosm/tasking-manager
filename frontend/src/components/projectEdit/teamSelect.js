@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { Button } from '../../components/button';
 import { StateContext } from '../../views/projectEdit';
-import { PencilIcon, WasteIcon, LinkIcon } from '../svgIcons';
+import { PencilIcon, WasteIcon, ExternalLinkIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const TeamSelect = () => {
@@ -119,7 +119,7 @@ export const TeamSelect = () => {
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  <LinkIcon />
+                  <ExternalLinkIcon />
                 </a>
               </div>
               <div className="w-30 fl">{getLabel(t.role)}</div>

@@ -10,7 +10,7 @@ export { WasteIcon } from './waste';
 export { LeftIcon } from './left';
 export { BellIcon } from './bell';
 export { ViewIcon } from './view';
-export { LinkIcon } from './link';
+export { ExternalLinkIcon, InternalLinkIcon } from './link';
 export { ChevronUpIcon } from './chevron-up';
 export { ChevronDownIcon } from './chevron-down';
 export { ClipboardIcon } from './clipboard';
