@@ -181,6 +181,7 @@ export function CreateTeam() {
                     addMembers={addManagers}
                     removeMembers={removeManagers}
                     members={managers}
+                    resetMembersFn={setManagers}
                     creationMode={true}
                   />
                 </div>
@@ -189,6 +190,7 @@ export function CreateTeam() {
                     addMembers={addMembers}
                     removeMembers={removeMembers}
                     members={members}
+                    resetMembersFn={setMembers}
                     creationMode={true}
                     type={'members'}
                   />
@@ -317,6 +319,7 @@ export function EditTeam(props) {
           addMembers={addManagers}
           removeMembers={removeManagers}
           saveMembersFn={updateManagers}
+          resetMembersFn={setManagers}
           members={managers}
         />
         <div className="h1"></div>
@@ -324,6 +327,7 @@ export function EditTeam(props) {
           addMembers={addMembers}
           removeMembers={removeMembers}
           saveMembersFn={updateMembers}
+          resetMembersFn={setMembers}
           members={members}
           type="members"
         />
