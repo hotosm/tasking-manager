@@ -6,7 +6,6 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { CloseIcon } from '../svgIcons';
-import { useEditProjectAllowed } from '../../hooks/UsePermissions';
 import { useInterval } from '../../hooks/UseInterval';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
@@ -229,9 +228,9 @@ export const TaskActivity = ({
   bbox,
   close,
   updateActivities,
+  userCanValidate,
 }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
-  const [userCanReset] = useEditProjectAllowed(project);
   // use it to hide the reset task action button
   const [resetSuccess, setResetSuccess] = useState(false);
   const [commentPayload, setCommentPayload] = useState(null);
@@ -283,7 +282,7 @@ export const TaskActivity = ({
             )}
           </div>
           <div className="w-60-l w-100 fl tr pr3 pt2">
-            {userCanReset && (
+            {userCanValidate && (
               <div className="ph1 dib">
                 {['VALIDATED', 'BADIMAGERY'].includes(status) && (
                   <EditorDropdown bbox={bbox} taskId={taskId} project={project} />
@@ -301,7 +300,7 @@ export const TaskActivity = ({
             </div>
           </div>
           <div className="fl tr w-100 pt2 pr3">
-            {userCanReset && ['VALIDATED', 'BADIMAGERY'].includes(status) && !resetSuccess && (
+            {userCanValidate && ['VALIDATED', 'BADIMAGERY'].includes(status) && !resetSuccess && (
               <UndoLastTaskAction resetFn={resetTask} status={status} />
             )}
           </div>
