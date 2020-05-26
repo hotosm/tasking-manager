@@ -116,6 +116,7 @@ export function CreateOrganisation() {
                   addMembers={addManagers}
                   removeMembers={removeManagers}
                   members={managers}
+                  resetMembersFn={setManagers}
                   creationMode={true}
                 />
               </div>
@@ -219,6 +220,7 @@ export function EditOrganisation(props) {
               addMembers={addManagers}
               removeMembers={removeManagers}
               saveMembersFn={updateManagers}
+              resetMembersFn={setManagers}
               members={managers}
             />
           </div>
