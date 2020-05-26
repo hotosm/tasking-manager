@@ -286,6 +286,7 @@ export function TaskList({
           taskId={activeTaskModal}
           setActiveTaskModal={setActiveTaskModal}
           updateActivities={updateActivities}
+          userCanValidate={userCanValidate}
         />
       )}
     </div>
@@ -298,6 +299,7 @@ function TaskActivityModal({
   tasks,
   project,
   updateActivities,
+  userCanValidate,
 }: Object) {
   const [taskData, setActiveTaskData] = useState();
   useEffect(() => {
@@ -316,6 +318,7 @@ function TaskActivityModal({
               bbox={taskData ? bbox(taskData.geometry) : ''}
               close={close}
               updateActivities={updateActivities}
+              userCanValidate={userCanValidate}
             />
           ) : (
             <div className="w-100 pa4 blue-dark bg-white">
