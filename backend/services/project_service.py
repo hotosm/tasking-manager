@@ -215,7 +215,11 @@ class ProjectService:
 
         if not (is_allowed_user or is_manager_permission):
             if current_user_id:
-                allowed_roles = [TeamRoles.MAPPER.value, TeamRoles.VALIDATOR.value]
+                allowed_roles = [
+                    TeamRoles.MAPPER.value,
+                    TeamRoles.VALIDATOR.value,
+                    TeamRoles.PROJECT_MANAGER.value,
+                ]
                 is_team_member = TeamService.check_team_membership(
                     project_id, allowed_roles, current_user_id
                 )
