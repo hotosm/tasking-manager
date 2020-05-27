@@ -148,7 +148,7 @@ function loadOsmDataToTasks(project, bbox, selectedTasks) {
     right: bbox[2],
     top: bbox[3],
     changeset_comment: project.changesetComment,
-    changeset_source: project.changesetSource,
+    changeset_source: project.imagery ? project.imagery : '',
     new_layer: false,
   };
 
