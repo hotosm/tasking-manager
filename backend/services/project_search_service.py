@@ -87,10 +87,22 @@ class ProjectSearchService:
             .group_by(Organisation.id, Project.id)
         )
 
-        # Remove private projects if user role is not admin.
-        if user is None or user.role != UserRole.ADMIN.value:
+        # Get public projects only for anonymous user.
+        if user is None:
             query = query.filter(Project.private.is_(False))
 
+        # Get also private projects of teams that the user is member.
+        if user is not None and user.role != UserRole.ADMIN.value:
+            project_ids = [[p.project_id for p in t.team.projects] for t in user.teams]
+            project_ids = tuple(
+                set([item for sublist in project_ids for item in sublist])
+            )
+
+            query = query.filter(
+                or_(Project.private.is_(False), Project.id.in_(project_ids))
+            )
+
+        # If the user is admin, no filter.
         return query
 
     @staticmethod
