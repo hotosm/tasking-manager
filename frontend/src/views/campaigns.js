@@ -142,7 +142,7 @@ export function EditCampaign(props) {
       <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
         <Projects
           projects={!projectsLoading && !projectsError && projects}
-          viewAllQuery={`?campaign=${campaign.name}`}
+          viewAllEndpoint={`/manage/projects/?campaign=${encodeURIComponent(campaign.name)}`}
           ownerEntity="campaign"
         />
       </div>
