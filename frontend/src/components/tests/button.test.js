@@ -44,6 +44,6 @@ it('children and link props of EditButton', () => {
   expect(buttonInstance.findByType('a').props.href).toBe('/manage/projects/1/');
   expect(buttonInstance.findByType('a').props.children).toEqual('Test it');
   expect(buttonInstance.findByType('a').props.className).toBe(
-    'pointer no-underline br1 fw6 f7 dib pv2 ph3 ba b--red white bg-red mr3',
+    'pointer no-underline br1 fw6 f7 dib pv2 ph3 ba b--red white bg-red mh1 mv1',
   );
 });
