@@ -16,7 +16,12 @@ export const useFetch = (url, trigger = true) => {
         setLoading(true);
         try {
           // replace in locale is needed because the backend uses underscore instead of dash
-          const response = await fetchLocalJSONAPI(url, token, 'GET', locale.replace('-', '_'));
+          const response = await fetchLocalJSONAPI(
+            url,
+            token,
+            'GET',
+            locale ? locale.replace('-', '_') : 'en',
+          );
           setData(response);
           setLoading(false);
         } catch (e) {

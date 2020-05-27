@@ -23,7 +23,7 @@ export function ManagementPageIndex() {
     <>
       <Projects
         projects={!projectsLoading && !projectsError && projects}
-        viewAllQuery="?managedByMe=1"
+        viewAllEndpoint="/manage/projects/?managedByMe=1"
         showAddButton={true}
         ownerEntity="user"
       />

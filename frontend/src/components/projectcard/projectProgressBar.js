@@ -20,10 +20,18 @@ export default function ProjectProgressBar({
           <div
             className="absolute bg-blue-grey br-pill hhalf hide-child"
             style={{ width: `${percentMapped > 100 ? 100 : percentMapped}%` }}
+            role="progressbar"
+            aria-valuenow={percentMapped}
+            aria-valuemin="0"
+            aria-valuemax="100"
           ></div>
           <div
             className="absolute bg-red br-pill hhalf hide-child"
             style={{ width: `${percentValidated > 100 ? 100 : percentValidated}%` }}
+            role="progressbar"
+            aria-valuenow={percentValidated}
+            aria-valuemin="0"
+            aria-valuemax="100"
           ></div>
           <div className={`bg-grey-light br-pill hhalf overflow-y-hidden`}></div>
           {isHovered && (

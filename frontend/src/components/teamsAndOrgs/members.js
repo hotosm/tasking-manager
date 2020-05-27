@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from '@reach/router';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -10,19 +10,36 @@ import { EditModeControl } from './editMode';
 import { Button } from '../button';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
-export function Members({ addMembers, removeMembers, saveMembersFn, members, type }: Object) {
+export function Members({
+  addMembers,
+  removeMembers,
+  saveMembersFn,
+  resetMembersFn,
+  members,
+  type,
+}: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [editMode, setEditMode] = useState(false);
+  const [membersBackup, setMembersBackup] = useState(null);
   const selectPlaceHolder = <FormattedMessage {...messages.searchUsers} />;
   let title = <FormattedMessage {...messages.managers} />;
   if (type === 'members') {
     title = <FormattedMessage {...messages.members} />;
   }
 
+  // store the first array of members in order to restore it if the user cancels an
+  // add and remove members operation
+  useEffect(() => {
+    if (membersBackup === null && editMode) {
+      setMembersBackup(members);
+    }
+  }, [members, editMode, setMembersBackup, membersBackup]);
+
   const submitMembers = () => {
     if (saveMembersFn) {
       saveMembersFn();
     }
+    setMembersBackup(members);
     setEditMode(false);
   };
   const promiseOptions = (inputValue) =>
@@ -73,7 +90,13 @@ export function Members({ addMembers, removeMembers, saveMembersFn, members, typ
       {editMode && (
         <div className="cf pt0">
           <div className="w-70-l w-50 fl tr dib bg-grey-light">
-            <Button className="blue-dark bg-grey-light h3" onClick={() => setEditMode(false)}>
+            <Button
+              className="blue-dark bg-grey-light h3"
+              onClick={() => {
+                resetMembersFn(membersBackup || []);
+                setEditMode(false);
+              }}
+            >
               <FormattedMessage {...messages.cancel} />
             </Button>
           </div>

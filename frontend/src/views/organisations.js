@@ -116,6 +116,7 @@ export function CreateOrganisation() {
                   addMembers={addManagers}
                   removeMembers={removeManagers}
                   members={managers}
+                  resetMembersFn={setManagers}
                   creationMode={true}
                 />
               </div>
@@ -219,13 +220,14 @@ export function EditOrganisation(props) {
               addMembers={addManagers}
               removeMembers={removeManagers}
               saveMembersFn={updateManagers}
+              resetMembersFn={setManagers}
               members={managers}
             />
           </div>
           <div className="w-60-l w-100 mt4 pl5-l pl0 fr">
             <Projects
               projects={!projectsLoading && !projectsError && projects}
-              viewAllQuery={`?organisation=${organisation.name}`}
+              viewAllEndpoint={`/manage/projects/?organisation=${organisation.name}`}
               ownerEntity="organisation"
             />
             <Teams

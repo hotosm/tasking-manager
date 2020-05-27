@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from '@reach/router';
 import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import ReactPlaceholder from 'react-placeholder';
 import bbox from '@turf/bbox';
+import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -11,7 +13,7 @@ import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { TaskActivity } from './taskActivity';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
 import { TASK_COLOURS } from '../../config';
-import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon } from '../svgIcons';
+import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon, InternalLinkIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
 import { Button } from '../button';
@@ -58,6 +60,9 @@ function TaskItem({
   selectTask,
   selected = [],
 }: Object) {
+  const [isCopied, setCopied] = useCopyClipboard();
+  const location = useLocation();
+
   return (
     <div
       className={`cf db ba br1 mt2 ${
@@ -89,23 +94,45 @@ function TaskItem({
           <TaskStatus status={data.taskStatus} />
         </div>
       </div>
-      <div className="w-10-l w-20 pv3 fl dib blue-light">
-        <div className="dib v-mid">
-          <ListIcon
-            width="18px"
-            height="18px"
-            className="pointer hover-blue-grey"
-            onClick={() => setActiveTaskModal(data.taskId)}
-          />
-        </div>
-        <div className="pl2 dib v-mid">
-          <ZoomPlusIcon
-            width="18px"
-            height="18px"
-            className="pointer hover-blue-grey"
-            onClick={() => setZoomedTaskId(data.taskId)}
-          />
-        </div>
+      <div className="w-10-l w-20 pv3 fl dib blue-light truncate overflow-empty">
+        <FormattedMessage {...messages.seeTaskHistory}>
+          {(msg) => (
+            <div className="pr2 dib v-mid" title={msg}>
+              <ListIcon
+                width="18px"
+                height="18px"
+                className="pointer hover-blue-grey"
+                onClick={() => setActiveTaskModal(data.taskId)}
+              />
+            </div>
+          )}
+        </FormattedMessage>
+        <FormattedMessage {...messages.zoomToTask}>
+          {(msg) => (
+            <div className="pl2 pr1 dib v-mid" title={msg}>
+              <ZoomPlusIcon
+                width="18px"
+                height="18px"
+                className="pointer hover-blue-grey"
+                onClick={() => setZoomedTaskId(data.taskId)}
+              />
+            </div>
+          )}
+        </FormattedMessage>
+        <FormattedMessage {...messages[isCopied ? 'taskLinkCopied' : 'copyTaskLink']}>
+          {(msg) => (
+            <div className={`pl2 dib v-mid ${isCopied ? 'grey-light' : ''}`} title={msg}>
+              <InternalLinkIcon
+                width="18px"
+                height="18px"
+                className={`pointer ${isCopied ? '' : 'hover-blue-grey'}`}
+                onClick={() =>
+                  setCopied(`${location.origin}${location.pathname}?search=${data.taskId}`)
+                }
+              />
+            </div>
+          )}
+        </FormattedMessage>
       </div>
     </div>
   );
@@ -155,11 +182,12 @@ export function TaskList({
   selected,
   userContributions,
   updateActivities,
+  textSearch,
+  setTextSearch,
 }: Object) {
   const user = useSelector((state) => state.auth.get('userDetails'));
   const [readyTasks, setTasks] = useState([]);
   const [activeTaskModal, setActiveTaskModal] = useState(null);
-  const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
   const [sortBy, setSortingOption] = useQueryParam('sortBy', StringParam);
   const [statusFilter, setStatusFilter] = useQueryParam('filter', StringParam);
 
@@ -286,6 +314,7 @@ export function TaskList({
           taskId={activeTaskModal}
           setActiveTaskModal={setActiveTaskModal}
           updateActivities={updateActivities}
+          userCanValidate={userCanValidate}
         />
       )}
     </div>
@@ -298,6 +327,7 @@ function TaskActivityModal({
   tasks,
   project,
   updateActivities,
+  userCanValidate,
 }: Object) {
   const [taskData, setActiveTaskData] = useState();
   useEffect(() => {
@@ -316,6 +346,7 @@ function TaskActivityModal({
               bbox={taskData ? bbox(taskData.geometry) : ''}
               close={close}
               updateActivities={updateActivities}
+              userCanValidate={userCanValidate}
             />
           ) : (
             <div className="w-100 pa4 blue-dark bg-white">

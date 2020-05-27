@@ -7,6 +7,7 @@ from backend.services.project_admin_service import ProjectAdminService
 from backend.services.team_service import TeamService
 from backend.services.users.user_service import UserService
 from backend.models.postgis.statuses import TeamRoles
+from backend.models.postgis.project import ProjectStatus
 from backend import db
 
 
@@ -19,16 +20,24 @@ class ChatService:
         current_app.logger.debug("Posting Chat Message")
 
         if UserService.is_user_blocked(authenticated_user_id):
-            return ValueError("User is on read only mode")
+            raise ValueError("User is on read only mode")
 
         project = ProjectService.get_project_by_id(project_id)
         is_allowed_user = True
+        is_manager_permission = ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id, project_id
+        )
+        is_team_member = False
+
+        # Draft (public/private) accessible only for is_manager_permission
+        if (
+            ProjectStatus(project.status) == ProjectStatus.DRAFT
+            and not is_manager_permission
+        ):
+            raise ValueError("User not permitted to post Comment")
 
         if project.private:
             is_allowed_user = False
-            is_manager_permission = ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            )
             if not is_manager_permission:
                 allowed_roles = [
                     TeamRoles.PROJECT_MANAGER.value,

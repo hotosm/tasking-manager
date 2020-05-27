@@ -33,14 +33,14 @@ export function ShareButton({ projectId }: Object) {
           {(msg) => (
             <>
               <div
-                class="link no-underline base-font f6 pointer pv1"
+                className="link no-underline base-font f6 pointer pv1"
                 onClick={() => twitterPopup(msg)}
               >
                 <TwitterIconNoBg style={iconStyle} className="light-blue v-mid pb1 pr2" />
                 Tweet
               </div>
               <div
-                class="link no-underline base-font f6 pointer pv1"
+                className="link no-underline base-font f6 pointer pv1"
                 onClick={() => facebookPopup(msg)}
               >
                 <FacebookIcon style={iconStyle} className="dark-blue v-mid pb1 pr2" />
@@ -49,7 +49,7 @@ export function ShareButton({ projectId }: Object) {
             </>
           )}
         </FormattedMessage>
-        <div class="link no-underline base-font f6 pointer pv1" onClick={() => linkedInPopup()}>
+        <div className="link no-underline base-font f6 pointer pv1" onClick={() => linkedInPopup()}>
           <LinkedinIcon style={iconStyle} className="blue v-mid pb1 pr2" />
           <FormattedMessage {...messages.shareOnLinkedIn} />
         </div>

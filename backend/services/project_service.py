@@ -183,9 +183,13 @@ class ProjectService:
             return project.as_dto_for_mapping(current_user_id, locale, abbrev)
 
         is_allowed_user = True
-        is_manager_permission = ProjectAdminService.is_user_action_permitted_on_project(
-            current_user_id, project_id
-        )
+        is_team_member = None
+        is_manager_permission = False
+
+        if current_user_id:
+            is_manager_permission = ProjectAdminService.is_user_action_permitted_on_project(
+                current_user_id, project_id
+            )
         # Draft Projects - admins, authors, org admins & team managers permitted
         if project.status == ProjectStatus.DRAFT.value:
             if not is_manager_permission:
@@ -196,22 +200,29 @@ class ProjectService:
         # assigned teams (mappers, validators, project managers), authors permitted
 
         if project.private and not is_manager_permission:
-            is_allowed_user = (
-                len(
-                    [
-                        user
-                        for user in project.allowed_users
-                        if user.id == current_user_id
-                    ]
+            is_allowed_user = False
+            if current_user_id:
+                is_allowed_user = (
+                    len(
+                        [
+                            user
+                            for user in project.allowed_users
+                            if user.id == current_user_id
+                        ]
+                    )
+                    > 0
                 )
-                > 0
-            )
 
         if not (is_allowed_user or is_manager_permission):
-            allowed_roles = [TeamRoles.MAPPER.value, TeamRoles.VALIDATOR.value]
-            is_team_member = TeamService.check_team_membership(
-                project_id, allowed_roles, current_user_id
-            )
+            if current_user_id:
+                allowed_roles = [
+                    TeamRoles.MAPPER.value,
+                    TeamRoles.VALIDATOR.value,
+                    TeamRoles.PROJECT_MANAGER.value,
+                ]
+                is_team_member = TeamService.check_team_membership(
+                    project_id, allowed_roles, current_user_id
+                )
 
         if is_allowed_user or is_manager_permission or is_team_member:
             return project.as_dto_for_mapping(current_user_id, locale, abbrev)
@@ -269,6 +280,13 @@ class ProjectService:
         return task_dtos
 
     @staticmethod
+    def is_user_in_the_allowed_list(allowed_users: list, current_user_id: int):
+        """For private projects, check if user is present in the allowed list"""
+        return (
+            len([user.id for user in allowed_users if user.id == current_user_id]) > 0
+        )
+
+    @staticmethod
     def evaluate_mapping_permission(
         project_id: int, user_id: int, mapping_permission: int
     ):
@@ -308,39 +326,44 @@ class ProjectService:
                 return False, MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE
         mapping_permission = project.mapping_permission
 
-        is_manager_permission = False
-        # is_admin or is_author or is_org_manager or is_manager_team
+        is_manager_permission = (
+            False  # is_admin or is_author or is_org_manager or is_manager_team
+        )
         if ProjectAdminService.is_user_action_permitted_on_project(user_id, project_id):
             is_manager_permission = True
 
+        # Draft (public/private) accessible only for is_manager_permission
         if (
-            ProjectStatus(project.status) != ProjectStatus.PUBLISHED
+            ProjectStatus(project.status) == ProjectStatus.DRAFT
             and not is_manager_permission
         ):
             return False, MappingNotAllowed.PROJECT_NOT_PUBLISHED
+
+        is_restriction = None
+        if not is_manager_permission and mapping_permission:
+            is_restriction = ProjectService.evaluate_mapping_permission(
+                project_id, user_id, mapping_permission
+            )
 
         tasks = Task.get_locked_tasks_for_user(user_id)
         if len(tasks.locked_tasks) > 0:
             return False, MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
+        is_allowed_user = None
         if project.private and not is_manager_permission:
-            # Check user is in allowed users
-            try:
-                next(user for user in project.allowed_users if user.id == user_id)
-            except StopIteration:
-                return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
-            is_restriction = ProjectService.evaluate_mapping_permission(
-                project_id, user_id, mapping_permission
+            # Check if user is in allowed user list
+            is_allowed_user = ProjectService.is_user_in_the_allowed_list(
+                project.allowed_users, user_id
             )
-            if is_restriction:
-                return is_restriction
+            if is_allowed_user:
+                return True, "User allowed to map"
 
-        if project.mapping_permission and not is_manager_permission:
-            is_restriction = ProjectService.evaluate_mapping_permission(
-                project_id, user_id, mapping_permission
-            )
-            if is_restriction:
-                return is_restriction
+        if not is_manager_permission and is_restriction:
+            return is_restriction
+        elif project.private and not (
+            is_manager_permission or is_allowed_user or not is_restriction
+        ):
+            return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         return True, "User allowed to map"
 
@@ -361,7 +384,6 @@ class ProjectService:
         is_team_member = TeamService.check_team_membership(
             project_id, allowed_roles, user_id
         )
-
         # validation_permission = 1(level),2(teams),3(teamsAndLevel)
         if validation_permission == ValidationPermission.TEAMS.value:
             if not is_team_member:
@@ -387,44 +409,46 @@ class ProjectService:
         if project.license_id:
             if not UserService.has_user_accepted_license(user_id, project.license_id):
                 return False, ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE
-
         validation_permission = project.validation_permission
 
-        is_manager_permission = False
         # is_admin or is_author or is_org_manager or is_manager_team
+        is_manager_permission = False
         if ProjectAdminService.is_user_action_permitted_on_project(user_id, project_id):
             is_manager_permission = True
 
+        # Draft (public/private) accessible only for is_manager_permission
         if (
-            ProjectStatus(project.status) != ProjectStatus.PUBLISHED
+            ProjectStatus(project.status) == ProjectStatus.DRAFT
             and not is_manager_permission
         ):
             return False, ValidatingNotAllowed.PROJECT_NOT_PUBLISHED
 
-        tasks = Task.get_locked_tasks_for_user(user_id)
+        is_restriction = None
+        if not is_manager_permission and validation_permission:
+            is_restriction = ProjectService.evaluate_validation_permission(
+                project_id, user_id, validation_permission
+            )
 
+        tasks = Task.get_locked_tasks_for_user(user_id)
         if len(tasks.locked_tasks) > 0:
             return False, ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED
 
+        is_allowed_user = None
         if project.private and not is_manager_permission:
-            # Check user is in allowed users
-            try:
-                next(user for user in project.allowed_users if user.id == user_id)
-            except StopIteration:
-                return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
-
-            is_restriction = ProjectService.evaluate_validation_permission(
-                project_id, user_id, validation_permission
+            # Check if user is in allowed user list
+            is_allowed_user = ProjectService.is_user_in_the_allowed_list(
+                project.allowed_users, user_id
             )
-            if is_restriction:
-                return is_restriction
 
-        if project.validation_permission and not is_manager_permission:
-            is_restriction = ProjectService.evaluate_validation_permission(
-                project_id, user_id, validation_permission
-            )
-            if is_restriction:
-                return is_restriction
+            if is_allowed_user:
+                return True, "User allowed to validate"
+
+        if not is_manager_permission and is_restriction:
+            return is_restriction
+        elif project.private and not (
+            is_manager_permission or is_allowed_user or not is_restriction
+        ):
+            return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
         return True, "User allowed to validate"
 

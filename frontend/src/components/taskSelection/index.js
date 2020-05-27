@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useQueryParam, StringParam } from 'use-query-params';
 import Popup from 'reactjs-popup';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
@@ -59,6 +60,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [taskAction, setTaskAction] = useState('mapATask');
   const [activeStatus, setActiveStatus] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
+  const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
   useSetProjectPageTitleTag(project);
 
   const getActivities = useCallback((id) => {
@@ -132,13 +134,13 @@ export function TaskSelection({ project, type, loading }: Object) {
       const currentUserContributions = contributions.userContributions.filter(
         (u) => u.username === user.username,
       );
-      if (user.isExpert && currentUserContributions.length > 0) {
+      if (textSearch || (user.isExpert && currentUserContributions.length > 0)) {
         setActiveSection('tasks');
       } else {
         setActiveSection('instructions');
       }
     }
-  }, [contributions, user.username, user, activeSection]);
+  }, [contributions, user.username, user, activeSection, textSearch]);
 
   useEffect(() => {
     if (project.hasOwnProperty('teams') && userTeams !== undefined) {
@@ -165,8 +167,21 @@ export function TaskSelection({ project, type, loading }: Object) {
         dispatch({ type: 'SET_PROJECT', project: project.projectId });
         dispatch({ type: 'SET_TASKS_STATUS', status: lockedByCurrentUser[0].taskStatus });
       } else {
-        // otherwise we check if the user can map or validate the project
-        setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
+        // select task if the textSearch query param is a valid taskId
+        if (
+          textSearch &&
+          Number(textSearch) &&
+          activities.activity.map((i) => i.taskId).includes(Number(textSearch))
+        ) {
+          setSelectedTasks([Number(textSearch)]);
+          const currentStatus = activities.activity.filter(
+            (i) => i.taskId === Number(textSearch),
+          )[0].taskStatus;
+          setTaskAction(getTaskAction(user, project, currentStatus, userTeams.teams, userOrgs));
+        } else {
+          // otherwise we check if the user can map or validate the project
+          setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
+        }
       }
       setMapInit(true);
     }
@@ -180,6 +195,7 @@ export function TaskSelection({ project, type, loading }: Object) {
     user,
     userTeams.teams,
     userOrgs,
+    textSearch,
   ]);
 
   // chooses a random task to the user
@@ -197,18 +213,30 @@ export function TaskSelection({ project, type, loading }: Object) {
     } else {
       // unselecting tasks
       if (selected.includes(selection)) {
-        setSelectedTasks([]);
-        setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
-      } else {
-        setSelectedTasks([selection]);
-        if (lockedTasks.get('tasks').includes(selection)) {
-          setTaskAction(
-            lockedTasks.get('status') === 'LOCKED_FOR_MAPPING'
-              ? 'resumeMapping'
-              : 'resumeValidation',
-          );
+        // if there is only one task selected, just clear the selection
+        if (selection.length === 1) {
+          setSelectedTasks([]);
+          setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
         } else {
-          setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));
+          // if there are multiple tasks selected, remove the clicked one
+          setSelectedTasks(selected.filter((i) => i !== selection));
+        }
+      } else {
+        // if there is some task selected to validation and the user selects
+        //  another MAPPED task, add the new task to the selected array
+        if (taskAction === 'validateSelectedTask' && status === 'MAPPED') {
+          setSelectedTasks(selected.concat([selection]));
+        } else {
+          setSelectedTasks([selection]);
+          if (lockedTasks.get('tasks').includes(selection)) {
+            setTaskAction(
+              lockedTasks.get('status') === 'LOCKED_FOR_MAPPING'
+                ? 'resumeMapping'
+                : 'resumeValidation',
+            );
+          } else {
+            setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));
+          }
         }
       }
     }
@@ -285,6 +313,8 @@ export function TaskSelection({ project, type, loading }: Object) {
                       updateActivities={getActivities}
                       selectTask={selectTask}
                       selected={selected}
+                      textSearch={textSearch}
+                      setTextSearch={setTextSearch}
                       setZoomedTaskId={setZoomedTaskId}
                       userContributions={contributions && contributions.userContributions}
                     />

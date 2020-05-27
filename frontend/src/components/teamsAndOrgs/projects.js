@@ -7,7 +7,12 @@ import messages from './messages';
 import { ProjectCard } from '../projectcard/projectCard';
 import { AddButton, ViewAllLink } from './management';
 
-export function Projects({ projects, viewAllQuery, ownerEntity, showAddButton = false }: Object) {
+export function Projects({
+  projects,
+  viewAllEndpoint,
+  ownerEntity,
+  showAddButton = false,
+}: Object) {
   return (
     <div className="bg-white b--grey-light ba pa4 mb3">
       <div className="cf db">
@@ -19,7 +24,7 @@ export function Projects({ projects, viewAllQuery, ownerEntity, showAddButton = 
             <AddButton />
           </Link>
         )}
-        <ViewAllLink link={`/manage/projects/${viewAllQuery ? viewAllQuery : ''}`} />
+        <ViewAllLink link={viewAllEndpoint} />
         <div className="cf pt4">
           <ReactPlaceholder
             showLoadingAnimation={true}

@@ -1,5 +1,5 @@
-![TM ERD](https://user-images.githubusercontent.com/12103383/56465906-1aa3fb80-6426-11e9-90e4-bf13e5b1e1ce.png)
+![TM ERD](https://i.ibb.co/HVDJmXM/TM-ERD.png)
 
-_[Collaborate over draw.io](https://www.draw.io/#G17julelLWpYwOptKBFhBJ-Uz4PJdKubzL)_
+_[Collaborate over draw.io](https://drive.google.com/file/d/15ww2DvI1JQfjRBnnqW_Vnha7t5a3FUx-/view?usp=sharing)_
 
 _[Draw.io Source file](./assets/TM%20ERD.drawio)_

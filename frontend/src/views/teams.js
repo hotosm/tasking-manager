@@ -181,6 +181,7 @@ export function CreateTeam() {
                     addMembers={addManagers}
                     removeMembers={removeManagers}
                     members={managers}
+                    resetMembersFn={setManagers}
                     creationMode={true}
                   />
                 </div>
@@ -189,6 +190,7 @@ export function CreateTeam() {
                     addMembers={addMembers}
                     removeMembers={removeMembers}
                     members={members}
+                    resetMembersFn={setMembers}
                     creationMode={true}
                     type={'members'}
                   />
@@ -317,6 +319,7 @@ export function EditTeam(props) {
           addMembers={addManagers}
           removeMembers={removeManagers}
           saveMembersFn={updateManagers}
+          resetMembersFn={setManagers}
           members={managers}
         />
         <div className="h1"></div>
@@ -324,6 +327,7 @@ export function EditTeam(props) {
           addMembers={addMembers}
           removeMembers={removeMembers}
           saveMembersFn={updateMembers}
+          resetMembersFn={setMembers}
           members={members}
           type="members"
         />
@@ -399,7 +403,11 @@ export function TeamDetail(props) {
             />
           </div>
           <div className="w-60-l w-100 mt2 pl5-l pl0 fl">
-            <Projects projects={projects} viewAllQuery={`?team=${props.id}`} ownerEntity="team" />
+            <Projects
+              projects={projects}
+              viewAllEndpoint={`/explore/?team=${props.id}`}
+              ownerEntity="team"
+            />
           </div>
         </div>
         <div className="fixed bottom-0 cf bg-white h3 w-100">

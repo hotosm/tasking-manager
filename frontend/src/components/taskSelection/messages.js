@@ -225,6 +225,22 @@ export default defineMessages({
     id: 'project.tasks.list.lastUpdate',
     defaultMessage: 'Last updated by {user}',
   },
+  seeTaskHistory: {
+    id: 'project.tasks.list.details',
+    defaultMessage: 'See task history',
+  },
+  zoomToTask: {
+    id: 'project.tasks.list.zoom',
+    defaultMessage: 'Zoom map to task',
+  },
+  copyTaskLink: {
+    id: 'project.tasks.list.copyLink',
+    defaultMessage: 'Copy task link',
+  },
+  taskLinkCopied: {
+    id: 'project.tasks.list.linkCopied',
+    defaultMessage: 'Task link copied to the clipboard',
+  },
   taskStatus_PRIORITY_AREAS: {
     id: 'project.tasks.priority_areas',
     defaultMessage: 'Priority areas',

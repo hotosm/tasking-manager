@@ -9,8 +9,8 @@ import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 import useForceUpdate from '../../hooks/UseForceUpdate';
 import { useInboxQueryAPI } from '../../hooks/UseInboxQueryAPI';
 
-export const NotificationBell = props => {
-  const trigger = useSelector(state => state.auth.get('token') !== null);
+export const NotificationBell = (props) => {
+  const trigger = useSelector((state) => state.auth.get('token') !== null);
   const [forceUpdated, forceUpdate] = useForceUpdate();
 
   /* these below make the references stable so hooks doesn't re-request forever */
@@ -60,7 +60,7 @@ export const NotificationBell = props => {
     <span ref={notificationBellRef}>
       <TopNavLink
         to={'inbox/'}
-        onClick={e => {
+        onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           setPopoutFocus(!isPopoutFocus);
@@ -68,7 +68,7 @@ export const NotificationBell = props => {
         isActive={isNotificationBellActive}
       >
         <div className="relative dib">
-          <BellIcon />
+          <BellIcon aria-label="Notifications" />
           {lightTheBell && <div className="redicon"></div>}
         </div>
       </TopNavLink>

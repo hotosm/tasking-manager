@@ -5,7 +5,7 @@ import '@hotosm/id/dist/iD.css';
 
 import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET } from '../config';
 
-export default function Editor({ editorRef, setEditorRef, setDisable }) {
+export default function Editor({ editorRef, setEditorRef, setDisable, comment }) {
   const session = useSelector((state) => state.auth.get('session'));
   const windowInit = typeof window !== undefined;
 
@@ -18,6 +18,12 @@ export default function Editor({ editorRef, setEditorRef, setDisable }) {
       setEditorRef(window.iD.coreContext());
     }
   }, [windowInit, setEditorRef, editorRef]);
+
+  useEffect(() => {
+    if (editorRef && comment) {
+      editorRef.defaultChangesetComment(comment);
+    }
+  }, [comment, editorRef]);
 
   useEffect(() => {
     if (session && iD && editorRef) {

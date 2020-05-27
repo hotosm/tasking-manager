@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 @media screen and (max-width: 30em) {
   .popup-content {
     width: 66% !important;
@@ -238,4 +242,8 @@ div.messageBodyLinks {
   background-color: $white;
   color: $blue-dark;
   border-color: $blue-dark;
+}
+
+.overflow-empty {
+  text-overflow: "";
 }

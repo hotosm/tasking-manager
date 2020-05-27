@@ -15,6 +15,7 @@ const contributionsQueryAllSpecification = {
   text: StringParam,
   maxDate: StringParam,
   projectStatus: StringParam,
+  page: StringParam,
 };
 
 /* This can be passed into project API or used independently */

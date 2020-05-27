@@ -7,7 +7,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { ORG_URL, ORG_NAME } from '../../config';
 import logo from '../../assets/img/main-logo.svg';
-import { LinkIcon } from '../svgIcons';
+import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { LocaleSelector } from '../localeSelect';
 import { Button } from '../button';
@@ -230,7 +230,7 @@ class Header extends React.Component {
           <div className="tr red">
             <a className="link red f6 mr2" href={`http://${ORG_URL}`}>
               {ORG_URL}
-              <LinkIcon className="pl2 v-btm" style={{ height: '15px' }} />
+              <ExternalLinkIcon className="pl2 v-btm" style={{ height: '15px' }} />
             </a>
           </div>
         </div>
