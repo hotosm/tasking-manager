@@ -139,7 +139,7 @@ export const EditInterest = (props) => {
       <div className="w-60-l w-100 mt4 pl5-l pl0 fr">
         <Projects
           projects={!projectsLoading && !projectsError && projects}
-          viewAllQuery={`?interests=${props.id}`}
+          viewAllEndpoint={`/manage/projects/?interests=${props.id}`}
           ownerEntity="category"
         />
       </div>

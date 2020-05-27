@@ -227,7 +227,7 @@ export function EditOrganisation(props) {
           <div className="w-60-l w-100 mt4 pl5-l pl0 fr">
             <Projects
               projects={!projectsLoading && !projectsError && projects}
-              viewAllQuery={`?organisation=${organisation.name}`}
+              viewAllEndpoint={`/manage/projects/?organisation=${organisation.name}`}
               ownerEntity="organisation"
             />
             <Teams

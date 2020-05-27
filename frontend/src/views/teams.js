@@ -403,7 +403,11 @@ export function TeamDetail(props) {
             />
           </div>
           <div className="w-60-l w-100 mt2 pl5-l pl0 fl">
-            <Projects projects={projects} viewAllQuery={`?team=${props.id}`} ownerEntity="team" />
+            <Projects
+              projects={projects}
+              viewAllEndpoint={`/explore/?team=${props.id}`}
+              ownerEntity="team"
+            />
           </div>
         </div>
         <div className="fixed bottom-0 cf bg-white h3 w-100">
