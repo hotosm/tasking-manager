@@ -280,8 +280,8 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
               <FormattedMessage {...messages.editTeam} />
             </EditButton>
           )}
-          {team.inviteOnly && <InviteOnlyBox className="pv2 ph3 dib mr2" />}
-          <VisibilityBox visibility={team.visibility} extraClasses="pv2 ph3 dib" />
+          {team.inviteOnly && <InviteOnlyBox className="pv2 ph3 dib mh1 mv1" />}
+          <VisibilityBox visibility={team.visibility} extraClasses="pv2 ph3 mh1 mv1 dib" />
         </div>
       </div>
       <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">{team.name}</h3>

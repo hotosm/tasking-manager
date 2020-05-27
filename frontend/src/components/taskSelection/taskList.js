@@ -94,7 +94,7 @@ function TaskItem({
           <TaskStatus status={data.taskStatus} />
         </div>
       </div>
-      <div className="w-10-l w-20 pv3 fl dib blue-light">
+      <div className="w-10-l w-20 pv3 fl dib blue-light truncate overflow-empty">
         <FormattedMessage {...messages.seeTaskHistory}>
           {(msg) => (
             <div className="pr2 dib v-mid" title={msg}>
