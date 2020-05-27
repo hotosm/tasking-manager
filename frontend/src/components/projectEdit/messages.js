@@ -387,7 +387,7 @@ export default defineMessages({
   },
   idPresets: {
     id: 'projects.formInputs.id_presets',
-    defaultMessage: 'Id editor presets',
+    defaultMessage: 'iD editor presets',
   },
 
   userRole: {

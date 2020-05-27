@@ -1,6 +1,5 @@
 export const ID_PRESETS = {
-  'category-barrier': {
-    icon: 'maki-roadblock',
+  'category-roads-barrier': {
     name: 'Barrier Features',
     members: [
       'barrier/fence',
@@ -13,7 +12,6 @@ export const ID_PRESETS = {
     ],
   },
   'category-building': {
-    icon: 'maki-building',
     name: 'Building Features',
     members: [
       'building',
@@ -26,25 +24,7 @@ export const ID_PRESETS = {
       'building/residential',
     ],
   },
-  'category-golf': {
-    icon: 'maki-golf',
-    name: 'Golf Features',
-    members: [
-      'golf/fairway',
-      'golf/green',
-      'golf/lateral_water_hazard',
-      'golf/rough',
-      'golf/bunker',
-      'golf/tee',
-      'golf/water_hazard',
-      'golf/driving_range',
-      'golf/hole',
-      'golf/cartpath',
-      'golf/path',
-    ],
-  },
   'category-landuse': {
-    icon: 'maki-landuse',
     name: 'Land Use Features',
     members: [
       'landuse/residential',
@@ -62,7 +42,6 @@ export const ID_PRESETS = {
     ],
   },
   'category-natural': {
-    icon: 'maki-natural',
     name: 'Natural Features',
     members: [
       'natural/water',
@@ -82,8 +61,7 @@ export const ID_PRESETS = {
       'natural/beach',
     ],
   },
-  'category-path': {
-    icon: 'temaki-pedestrian',
+  'category-roads-path': {
     name: 'Paths',
     members: [
       'highway/path',
@@ -96,8 +74,7 @@ export const ID_PRESETS = {
       'highway/pedestrian_line',
     ],
   },
-  'category-rail': {
-    icon: 'iD-railway-rail',
+  'category-other-rail': {
     name: 'Rails',
     members: [
       'railway/rail',
@@ -110,8 +87,7 @@ export const ID_PRESETS = {
       'railway/funicular',
     ],
   },
-  'category-restriction': {
-    icon: 'iD-restriction',
+  'category-roads-restriction': {
     name: 'Restriction Features',
     members: [
       'type/restriction/no_left_turn',
@@ -125,8 +101,7 @@ export const ID_PRESETS = {
       'type/restriction',
     ],
   },
-  'category-road_major': {
-    icon: 'iD-highway-unclassified',
+  'category-roads-major': {
     name: 'Major Roads',
     members: [
       'highway/motorway',
@@ -141,8 +116,7 @@ export const ID_PRESETS = {
       'highway/tertiary_link',
     ],
   },
-  'category-road_minor': {
-    icon: 'iD-highway-unclassified',
+  'category-roads-minor': {
     name: 'Minor Roads',
     members: [
       'highway/unclassified',
@@ -152,8 +126,7 @@ export const ID_PRESETS = {
       'highway/track',
     ],
   },
-  'category-road_service': {
-    icon: 'iD-highway-service',
+  'category-roads-service': {
     name: 'Service Roads',
     members: [
       'highway/service',
@@ -164,8 +137,7 @@ export const ID_PRESETS = {
       'highway/service/drive-through',
     ],
   },
-  'category-route': {
-    icon: 'iD-route',
+  'category-roads-route': {
     name: 'Route Features',
     members: [
       'type/route/road',
@@ -187,13 +159,11 @@ export const ID_PRESETS = {
       'type/route',
     ],
   },
-  'category-utility': {
-    icon: 'iD-power-line',
+  'category-other-utility': {
     name: 'Utility Features',
     members: ['power/line', 'power/minor_line', 'man_made/pipeline', 'power/cable/underground'],
   },
   'category-water': {
-    icon: 'maki-water',
     name: 'Water Bodies',
     members: [
       'natural/water',
@@ -204,7 +174,6 @@ export const ID_PRESETS = {
     ],
   },
   'category-waterway': {
-    icon: 'iD-waterway-stream',
     name: 'Waterways',
     members: [
       'waterway/stream',

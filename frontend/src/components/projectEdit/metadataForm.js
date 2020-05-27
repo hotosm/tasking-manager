@@ -57,16 +57,14 @@ export const MetadataForm = () => {
   // Get id presets members:
   let idPresetsValue = [];
   const presets = Object.keys(ID_PRESETS).map((p) => {
-    const categoryLabel = p.split('-')[1];
+    const categoryLabel = ID_PRESETS[p].name;
 
     const opts = ID_PRESETS[p].members.map((l) => {
       const obj = { label: l, value: l };
 
-      if (projectInfo.idPresets.includes(l) === true) {
+      if (projectInfo.idPresets && projectInfo.idPresets.includes(l) === true) {
         idPresetsValue.push(obj);
       }
-
-      //const presetLabel = l.split('/').slice(1).join('/');
       return obj;
     });
 
