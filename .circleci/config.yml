@@ -21,10 +21,9 @@ jobs:
           chmod -R 755 ${CIRCLE_WORKING_DIRECTORY}
     - restore_cache:
         keys:
-        - cached-dependencies
-        paths:
-        - frontend/node_modules
-        - env
+        - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+        - node-v1-{{ .Branch }}-
+        - node-v1-
     - run:
         name: Install requirements
         command: |
@@ -69,7 +68,7 @@ jobs:
     - store_artifacts:
         path: tests/backend/results
     - save_cache:
-        key: cached-dependencies
+        key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
         paths:
         - frontend/node_modules
         - env
