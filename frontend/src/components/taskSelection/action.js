@@ -265,11 +265,14 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
             </ReactPlaceholder>
           </div>
         ) : (
-          <div className="w-3 cf tc mt3 ph1 pl2 pr1 pointer">
+          <div
+            className="w3 h-100 base-font fr cf tc mt3 ph1 pl2 pr1 pointer"
+            onClick={() => setShowSidebar(true)}
+          >
             <FormattedMessage {...messages.showSidebar}>
               {(msg) => (
                 <div className="db" title={msg}>
-                  <SidebarIcon onClick={() => setShowSidebar(true)} />
+                  <SidebarIcon />
                 </div>
               )}
             </FormattedMessage>
