@@ -7,7 +7,7 @@
     "@formatjs/intl-pluralrules": "^2.2.0",
     "@formatjs/intl-relativetimeformat": "^5.2.0",
     "@formatjs/intl-utils": "^3.1.0",
-    "@formatjs/macro": "^0.2.6",
+    "@formatjs/macro": "^0.2.8",
     "@hotosm/id": "2.18.0-beta-2",
     "@hotosm/iso-countries-languages": "^0.3.1",
     "@lokibai/react-use-copy-clipboard": "^1.0.4",
