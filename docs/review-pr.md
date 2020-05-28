@@ -1,7 +1,7 @@
 
 # Review of Pull Requests
 
-All team members are encouraged to regularly review Pull Requests. Within the team we are open to assign people we feel are the best for a certain topic to be checked. The person who opens a PR should initially assign reviewers. A best practice is to have two reviewers, one that looks more on the code and one that has an overview of behaviour and functionality. 
+All team members are encouraged to regularly review Pull Requests. Within the team we are open to assign people we feel are the best for a certain topic to be checked. The person who opens a PR should initially assign reviewers. A best practice is to have two reviewers, one that looks more on the code and one that has an overview of behaviour and functionality.
 
 ## Pre-review
 
@@ -10,10 +10,10 @@ All team members are encouraged to regularly review Pull Requests. Within the te
    * `feature/ISSUENUMBER-SOME-DESCRIPTION` for all new features
    * `hotfix/ISSUENUMBER-SOME-DESCRIPTION` for urgent bugs
 
-  In case the branch name doesn’t fit. Ask the PR contributor to adjust the naming to our 
+  In case the branch name doesn’t fit. Ask the PR contributor to adjust the naming to our
 git flow model.
 
-  PRs from external people are exempted to this best practice and you can continue with 
+  PRs from external people are exempted to this best practice and you can continue with
 the next step.
 
 2. Check out the pull request
@@ -42,7 +42,7 @@ the next step.
 
 6. Check whether Continuous Integration runs without errors
 
-  Have a look on the CircleCI results. In case they fail, give the PR back to the contributor 
+  Have a look on the CircleCI results. In case they fail, give the PR back to the contributor
 and ask the person to check on the error.
   In case they run through, you are good to go with the next step.
 
@@ -52,8 +52,8 @@ and ask the person to check on the error.
   Install the PR on your local setup, make sure you run
   a. backend dependency installation: `pip install -r requirements.txt`
   b. introduced database migrations: `python manage.py db upgrade`
-  c. frontend dependency installation: `cd frontend && npm install && cd ..`
-  d. rebuild the frontend: `cd frontend && npm run build && cd ..`
+  c. frontend dependency installation: `cd frontend && yarn && cd ..`
+  d. rebuild the frontend: `cd frontend && yarn build && cd ..`
 
   Then test the behaviour of the introduced changes. Try to hack it! Use edge cases and find where the new changes will cause errors.
 
@@ -72,7 +72,7 @@ and ask the person to check on the error.
   c. Delete the merged branch
 
 
-## Some step by step instructions 
+## Some step by step instructions
 
 Assumptions:
 1. You have set all [environment variables](./setup-development.md#configuration) related to database, consumer key, and so forth.
@@ -106,8 +106,8 @@ Rebuild the frontend client:
 
 ```
 cd frontend
-npm install
-npm run build
+yarn
+yarn build
 cd ...
 ```
 
@@ -156,6 +156,6 @@ python manage.py db downgrade
 
 git checkout develop
 cd frontend
-npm run build
+yarn build
 cd ../
 ```
