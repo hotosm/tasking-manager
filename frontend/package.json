@@ -26,7 +26,7 @@
     "@webscopeio/react-textarea-autocomplete": "^4.6.2",
     "axios": "^0.19.0",
     "d3-array": "^2.3.1",
-    "dompurify": "^2.0.8",
+    "dompurify": "^2.0.11",
     "downshift-hooks": "^0.8.1",
     "final-form": "^4.20.0",
     "fromentries": "^1.2.0",
