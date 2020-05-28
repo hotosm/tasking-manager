@@ -1136,10 +1136,10 @@
   dependencies:
     "@formatjs/intl-utils" "^3.1.0"
 
-"@formatjs/intl-relativetimeformat@^5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-5.2.0.tgz#a0e15c380e1c168f41b6dfc8476537ad8f732f72"
-  integrity sha512-01W1HRknzr0eTbgoojf7jfhamH/PZI90Ls1b7ADzUNHIR5S59lX9ySKOK56cnCkWKaZPui5a15GCcaESo3SafQ==
+"@formatjs/intl-relativetimeformat@^5.2.0", "@formatjs/intl-relativetimeformat@^5.2.1":
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-5.2.1.tgz#e639015057f6435341f4bf7b6712babbc7b4ad5f"
+  integrity sha512-OKUdYNtWIpfwPGqadbRnD3Y2mgyEL6GwPyvcLjpfAk5Sd63q4D4FLAwdMdOCGDR+13yQDGRaT/fUKSJxYdgmCQ==
   dependencies:
     "@formatjs/intl-utils" "^3.1.0"
 
