@@ -178,7 +178,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgeos-dev # Required for shapely
           sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-          yarn
           sudo pip3 install awscli --upgrade
     - run:
         name: Configure AWS Access Key ID
@@ -240,7 +239,7 @@ jobs:
     - deploy:
         name: Deploy to << parameters.stack_name >>
         command: |
-          export NODE_PATH=/usr/lib/node_modules
+          export NODE_PATH=/usr/local/share/.config/yarn/global/node_modules/
           validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
           cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
