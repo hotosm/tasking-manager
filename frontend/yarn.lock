@@ -11587,10 +11587,10 @@ short-number@^1.0.7:
   resolved "https://registry.yarnpkg.com/short-number/-/short-number-1.0.7.tgz#5ab8021b86f20a4bdd1bbe01a85c22ff1cd15514"
   integrity sha512-e3cb811QXHiAH2H5rgZwXHsmg2+aG6XK0QyKF/+pyDIZFBSz/G8bkr8avdBrL5PVIfhIq8rlohjFvSB3azzpEQ==
 
-shpjs@^3.4.3:
-  version "3.4.3"
-  resolved "https://registry.yarnpkg.com/shpjs/-/shpjs-3.4.3.tgz#f2c95d41ff193cd722ea21bf4cf5404548ff9c4e"
-  integrity sha512-NZM75+SLgPt9dK91Z92QK+fVd2OR6zswAmkTrkHRc4mnONbAWGo38I+AxCYsKgCNfqF5cZUi2KfO7r2TZ+tHdw==
+shpjs@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/shpjs/-/shpjs-3.5.0.tgz#25f5796b0d236ad48524a0a66dc6c05479995d44"
+  integrity sha512-v21xnhMuvIdU+lcm9rLBZcA/PSwYfv1nfeNcgh6KbGygRnCt0wvyLnm1NbAl0wN45gP+qT7fkM414ukXXReTXQ==
   dependencies:
     jszip "^2.4.0"
     lie "^3.0.1"
