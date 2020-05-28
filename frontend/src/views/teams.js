@@ -407,6 +407,7 @@ export function TeamDetail(props) {
               projects={projects}
               viewAllEndpoint={`/explore/?team=${props.id}`}
               ownerEntity="team"
+              showManageButtons={false}
             />
           </div>
         </div>

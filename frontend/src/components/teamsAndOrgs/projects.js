@@ -12,6 +12,7 @@ export function Projects({
   viewAllEndpoint,
   ownerEntity,
   showAddButton = false,
+  showManageButtons = true,
 }: Object) {
   return (
     <div className="bg-white b--grey-light ba pa4 mb3">
@@ -39,7 +40,12 @@ export function Projects({
               projects.results
                 .slice(0, 6)
                 .map((card, n) => (
-                  <ProjectCard cardWidthClass="w-third-l" {...card} key={n} showBottomButtons />
+                  <ProjectCard
+                    cardWidthClass="w-third-l"
+                    {...card}
+                    key={n}
+                    showBottomButtons={showManageButtons}
+                  />
                 ))}
             {projects && projects.results && projects.results.length === 0 && (
               <span className="blue-grey">
