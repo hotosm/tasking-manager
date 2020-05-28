@@ -717,6 +717,7 @@ class Project(db.Model):
         summary.license_id = self.license_id
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map
+        summary.id_presets = self.id_presets
         summary.imagery = self.imagery
         if self.organisation_id:
             summary.organisation = self.organisation_id
