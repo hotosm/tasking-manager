@@ -389,8 +389,6 @@
   "projects.formInputs.per_task_instructions": "Per task instructions",
   "projects.formInputs.per_task_instructions.descriptions": "Add any information that can be useful to users while mapping a task. \"{x}\", \"{y}\" and \"{z}\" will be replaced by the corresponding parameters for each task. \"{x}\", \"{y}\" and \"{z}\" parameters can only be be used on tasks generated in the Tasking Manager and not on imported tasks.",
   "projects.formInputs.per_task_instructions.example": "Example: This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&amp;url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM.",
-  "projects.formInputs.entitiesToMap": "Entities to map",
-  "projects.formInputs.entitiesToMap.description": "The list of entities that need to be mapped on this project.",
   "projects.formInputs.changesetComment": "Changeset comment",
   "projects.formInputs.changesetComment.example": "Example: #hotosm-project-470 #missingmaps Buildings mapping.",
   "projects.formInputs.changesetComment.description": "Default comments added to uploaded changeset comment field. Users should also be encouraged to add text describing what they mapped. Hashtags are sometimes used for analysis later, but should be human informative and not overused, #group #event for example.",

@@ -7,16 +7,16 @@ import { InputLocale } from './inputLocale';
 
 export const InstructionsForm = ({ languages }) => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
-  const handleChange = event => {
+  const handleChange = (event) => {
     const localesFields = ['instructions', 'perTaskInstructions'];
     if (localesFields.includes(event.target.name)) {
       let localeData = projectInfo.projectInfoLocales.filter(
-        f => f.locale === projectInfo.defaultLocale,
+        (f) => f.locale === projectInfo.defaultLocale,
       )[0];
       localeData[event.target.name] = event.target.value;
       // create element with new locale.
       let newLocales = projectInfo.projectInfoLocales.filter(
-        f => f.locale !== projectInfo.defaultLocale,
+        (f) => f.locale !== projectInfo.defaultLocale,
       );
       newLocales.push(localeData);
       setProjectInfo({ ...projectInfo, projectInfoLocales: newLocales });
@@ -27,21 +27,6 @@ export const InstructionsForm = ({ languages }) => {
 
   return (
     <div className="w-100">
-      <div className={styleClasses.divClass}>
-        <label className={styleClasses.labelClass}>
-          <FormattedMessage {...messages.entitiesToMap} />
-        </label>
-        <p>
-          <FormattedMessage {...messages.entitiesDescription} />
-        </p>
-        <input
-          className={styleClasses.inputClass}
-          type="text"
-          value={projectInfo.entitiesToMap}
-          name="entitiesToMap"
-          onChange={handleChange}
-        />
-      </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.changesetComment} />
