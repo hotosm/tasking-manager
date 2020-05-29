@@ -101,10 +101,12 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, locale = '
 }
 
 export const sendJosmCommands = async (project, tasks, selectedTasks, windowSize, taskBbox) => {
-  const bbox = taskBbox ? taskBbox : getSelectedTasksBBox(tasks, selectedTasks);
   await loadTasksBoundaries(project, selectedTasks);
   await loadImageryonJosm(project);
-  await loadOsmDataToTasks(project, bbox, selectedTasks);
+  await selectedTasks.map(
+    async (task) =>
+      await loadOsmDataToTasks(project, taskBbox ? taskBbox : getSelectedTasksBBox(tasks, [task])),
+  );
   return true;
 };
 
@@ -124,8 +126,8 @@ function loadTasksBoundaries(project, selectedTasks) {
     url: getTaskXmlUrl(project.projectId, selectedTasks).href,
   };
 
-  return fetch(formatJosmUrl('load_data', emptyTaskLayerParams)).then((result) =>
-    fetch(formatJosmUrl('import', tmTaskLayerParams)),
+  return callJosmRemoteControl(formatJosmUrl('load_data', emptyTaskLayerParams)).then((result) =>
+    callJosmRemoteControl(formatJosmUrl('import', tmTaskLayerParams)),
   );
 }
 
@@ -136,11 +138,11 @@ function loadImageryonJosm(project) {
       type: project.imagery.toLowerCase().substring(0, 3),
       url: project.imagery,
     };
-    return fetch(formatJosmUrl('imagery', imageryParams));
+    return callJosmRemoteControl(formatJosmUrl('imagery', imageryParams));
   }
 }
 
-function loadOsmDataToTasks(project, bbox, selectedTasks) {
+function loadOsmDataToTasks(project, bbox) {
   const emptyOSMLayerParams = {
     new_layer: true,
     layer_name: 'OSM Data',
@@ -156,14 +158,8 @@ function loadOsmDataToTasks(project, bbox, selectedTasks) {
     new_layer: false,
   };
 
-  return fetch(formatJosmUrl('load_data', emptyOSMLayerParams)).then((result) => {
-    if (selectedTasks.length === 1) {
-      //load OSM data and zoom to the bbox
-      return fetch(formatJosmUrl('load_and_zoom', loadAndZoomParams));
-    } else {
-      //probably too much OSM data to download, just zoom to the bbox
-      return fetch(formatJosmUrl('zoom', loadAndZoomParams));
-    }
+  return callJosmRemoteControl(formatJosmUrl('load_data', emptyOSMLayerParams)).then((result) => {
+    return callJosmRemoteControl(formatJosmUrl('load_and_zoom', loadAndZoomParams));
   });
 }
 
@@ -186,3 +182,37 @@ export function formatUrlParams(params) {
     .join('&');
   return `?${urlParams}`;
 }
+
+let safariWindowReference = null;
+const callJosmRemoteControl = function (uri) {
+  // Safari won't send AJAX commands to the default (insecure) JOSM port when
+  // on a secure site, and the secure JOSM port uses a self-signed certificate
+  // that requires the user to jump through a bunch of hoops to trust before
+  // communication can proceed. So for Safari only, fall back to sending JOSM
+  // requests via the opening of a separate window instead of AJAX.
+  // Source: https://github.com/osmlab/maproulette3
+  if (window.safari) {
+    return new Promise((resolve, reject) => {
+      if (safariWindowReference && !safariWindowReference.closed) {
+        safariWindowReference.close();
+      }
+
+      safariWindowReference = window.open(uri);
+
+      // Close the window after 1 second and resolve the promise
+      setTimeout(() => {
+        if (safariWindowReference && !safariWindowReference.closed) {
+          safariWindowReference.close();
+        }
+        resolve(true);
+      }, 1000);
+    });
+  }
+
+  return fetch(uri)
+    .then((response) => response.status === 200)
+    .catch((error) => {
+      console.log(error);
+      return false;
+    });
+};

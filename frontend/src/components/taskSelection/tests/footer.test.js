@@ -1,23 +1,13 @@
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
-import { IntlProvider, FormattedMessage } from 'react-intl';
-import { Provider } from 'react-redux';
+import { FormattedMessage } from 'react-intl';
 
 import { Imagery } from '../imagery';
 import { MappingTypes } from '../../mappingTypes';
 import TaskSelectionFooter from '../footer';
 import { Button } from '../../button';
-import { store } from '../../../store';
+import { createComponentWithReduxAndIntl } from '../../../utils/testWithIntl';
 
 describe('test if footer', () => {
-  const createComponentWithReduxAndIntl = (children, props = { locale: 'en' }) => {
-    return TestRenderer.create(
-      <Provider store={store}>
-        <IntlProvider {...props}>{children}</IntlProvider>
-      </Provider>,
-    );
-  };
-
   it('has MappingTypes with ROADS and BUILDINGS', () => {
     const element = createComponentWithReduxAndIntl(
       <TaskSelectionFooter
