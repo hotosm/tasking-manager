@@ -28,7 +28,7 @@ The .tx folder contains the Transifex config file. This is where you can find th
 
 ### Update with latest translations
 
-* Before a release new translations need to be pulled in: ```tx pull -af``` -  Gets all translations from Transifex and puts them into `frontend/locale`.
+* Before a release new translations need to be pulled in: ```tx pull -af --mode translator``` -  Gets all translations from Transifex and puts them into `frontend/locale`.
 
 ### Adding a new language
 
@@ -41,7 +41,7 @@ In this example we are adding support for German.
 ### Pushing translations
 
 You can also translate locally and push the
-Use Transifex's ```tx push -s -t``` to push all local changes to Transifex.
+Use Transifex's ```tx push -s``` to push local changes to Transifex.
 
 * Argument ```-s``` pushes source files (English in our case)
 * Argument ```-t``` pushes all translation files
