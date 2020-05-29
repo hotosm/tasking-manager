@@ -20,6 +20,15 @@ export default defineMessages({
     id: 'project.tasks.unsaved_map_changes.actions.close_modal',
     defaultMessage: 'Close',
   },
+  josmError: {
+    id: 'project.tasks.josm_error',
+    defaultMessage: 'Connection with JOSM failed',
+  },
+  josmErrorDescription: {
+    id: 'project.tasks.josm_error.description',
+    defaultMessage:
+      'Please verify if JOSM is running on your computer and the remote control is enabled.',
+  },
   lockError: {
     id: 'project.tasks.lock_error.generic',
     defaultMessage: "It wasn't possible to lock this task for you...",

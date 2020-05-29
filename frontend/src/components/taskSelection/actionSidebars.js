@@ -247,7 +247,7 @@ export function CompletionTabForValidation({
       }
       pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
-        navigate(`../tasks/`);
+        navigate(`../tasks/?filter=readyToValidate`);
       });
     }
   };

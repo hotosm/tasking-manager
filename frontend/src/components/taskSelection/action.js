@@ -144,7 +144,14 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                   {project.projectInfo && project.projectInfo.name}
                   <span className="pl2">&#183;</span>
                   {tasksIds.map((task, n) => (
-                    <span key={n} className="red ph2">{`#${task}`}</span>
+                    <span key={n}>
+                      <span className="red dib ph2">{`#${task}`}</span>
+                      {tasksIds.length > 1 && n !== tasksIds.length - 1 ? (
+                        <span className="blue-light">&#183;</span>
+                      ) : (
+                        ''
+                      )}
+                    </span>
                   ))}
                 </h3>
                 <DueDateBox dueDate={timer} align="left" intervalMili={60000} />

@@ -73,7 +73,7 @@ export function SameProjectLock({ lockedTasks, action }: Object) {
   );
 }
 
-const LicenseError = ({ id, close, lockTasks }) => {
+export const LicenseError = ({ id, close, lockTasks }) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [license, setLicense] = useState(null);
   useEffect(() => {
@@ -130,18 +130,37 @@ export function LockError() {
   );
 }
 
+export function JosmError({ close }: Object) {
+  return (
+    <>
+      <h3 className="barlow-condensed f3 fw6 mv0">
+        <FormattedMessage {...messages.josmError} />
+      </h3>
+      <div className="mv4 lh-title">
+        <FormattedMessage {...messages.josmErrorDescription} />
+      </div>
+      <div className="w-100 pt3">
+        <Button onClick={() => close()} className="bg-red white mr2">
+          <FormattedMessage {...messages.closeModal} />
+        </Button>
+      </div>
+    </>
+  );
+}
+
 export function LockedTaskModalContent({ project, error, close, lockTasks }: Object) {
   const lockedTasks = useGetLockedTasks();
   const action = lockedTasks.get('status') === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
-  const isConflict = ['Conflict', 'CONFLICT', 'conflict'].includes(error);
+  const licenseError =
+    ['Conflict', 'CONFLICT', 'conflict'].includes(error) && !lockedTasks.get('project');
+  const josmError = error === 'JOSM' && !lockedTasks.get('project');
   return (
     <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
-      {!lockedTasks.get('project') && isConflict ? (
-        <LicenseError id={project.licenseId} close={close} lockTasks={lockTasks} />
-      ) : null}
+      {licenseError && <LicenseError id={project.licenseId} close={close} lockTasks={lockTasks} />}
+      {josmError && <JosmError close={close} />}
 
       {/* User has not tasks locked, but other error happened */}
-      {!lockedTasks.get('project') && !isConflict && <LockError />}
+      {!lockedTasks.get('project') && !licenseError && !josmError && <LockError />}
       {/* User has tasks locked on another project */}
       {lockedTasks.get('project') && lockedTasks.get('project') !== project.projectId && (
         <AnotherProjectLock
