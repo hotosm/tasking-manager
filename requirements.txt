@@ -52,7 +52,7 @@ requests==2.23.0
 requests-oauthlib==1.0.0
 schematics==2.1.0
 Shapely==1.7.0
-six==1.14.0
+six==1.15.0
 SQLAlchemy==1.3.17
 text-unidecode==1.3
 toml==0.10.1
