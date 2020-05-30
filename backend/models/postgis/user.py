@@ -72,7 +72,7 @@ class User(db.Model):
 
     @property
     def osm_profile_url(self):
-        return f"{os.getenv("OSM_SERVER_URL", "https://www.openstreetmap.org")}/user/{self.username}"
+        return f"{os.getenv('OSM_SERVER_URL', 'https://www.openstreetmap.org')}/user/{self.username}"
 
     def create(self):
         """ Creates and saves the current model to the DB """
