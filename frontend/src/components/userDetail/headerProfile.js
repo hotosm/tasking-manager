@@ -8,6 +8,7 @@ import { MappingLevelMessage } from '../mappingLevel';
 import { NextMappingLevel } from '../user/settings';
 import { SectionMenu } from '../menu';
 import OsmLogo from '../../assets/img/osm_logo.png';
+import { OSM_SERVER_URL } from '../config';
 
 const SocialMedia = ({ data }) => {
   const socialMediaItems = ['twitterId', 'facebookId', 'linkedinId'];
@@ -44,7 +45,7 @@ const SocialMedia = ({ data }) => {
         url = 'https://www.linkedin.com/' + value;
         break;
       case 'osm':
-        url = 'https://openstreetmap.org/user/' + value;
+        url = OSM_SERVER_URL + '/user/' + value;
         break;
       default:
         return null;

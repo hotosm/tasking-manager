@@ -1,4 +1,5 @@
 import { defineMessages } from 'react-intl';
+import { OSM_SERVER_NAME, TM_ORG_NAME } from '../config';
 
 /**
  * Internationalized messages for use on header.
@@ -38,16 +39,16 @@ export default defineMessages({
   },
   AuthorizeTitle: {
     id: 'signUp.modal.authorize',
-    defaultMessage: 'Have you finished the registration on OpenStreetMap?',
+    defaultMessage: `Have you finished the registration on ${TM_ORG_NAME}?`,
   },
   AuthorizeMessage: {
     id: 'signUp.authorize.message',
     defaultMessage:
-      'Start mapping now! Just login to the Tasking Manager with your new OpenStreetMap account.',
+      `Start mapping now! Just login to the Tasking Manager with your new ${TM_ORG_NAME} account.`,
   },
   osmRegisterCheck: {
     id: 'signUp.authorize.check',
-    defaultMessage: 'Do you still need an OpenStreetMap account?',
+    defaultMessage: `Do you still need an ${TM_ORG_NAME} account?`,
   },
   signUpTitle: {
     id: 'signUp.modal.title',
@@ -63,20 +64,20 @@ export default defineMessages({
   },
   proceedOSMTitle: {
     id: 'signUp.proceed_osm.osm_title',
-    defaultMessage: 'Do you have an OpenStreetMap account?',
+    defaultMessage: `Do you have an ${TM_ORG_NAME} account?`,
   },
   proceedOSMPart1: {
     id: 'signup.proceed_osm.text1',
     defaultMessage:
-      'The Tasking Manager works with OpenStreetMap, a collaborative, open-source map of the world. Everything you map on the Tasking Manager is going to be available on OpenStreetMap.',
+      `The Tasking Manager works with ${TM_ORG_NAME}, a collaborative, open-source map of the world. Everything you map on the Tasking Manager is going to be available on ${TM_ORG_NAME}.,
   },
   proceedOSMPart2: {
     id: 'signup.proceed_osm.text2',
-    defaultMessage: "First, you'll need an account on OpenStreetMap.org in order to get started.",
+    defaultMessage: `First, you'll need an account on ${OSM_SERVER_NAME} in order to get started.`,
   },
   proceedOSMLogin: {
     id: 'signup.proceed_osm.login',
-    defaultMessage: 'I already have an OpenStreetMap account',
+    defaultMessage: `I already have an ${TM_ORG_NAME} account`,
   },
   emailPlaceholder: {
     id: 'input.placeholder.email_address',
@@ -120,7 +121,7 @@ export default defineMessages({
   },
   submitProceedOSM: {
     id: 'signup.button.submit_osm',
-    defaultMessage: 'Create OpenStreetMap account',
+    defaultMessage: `Create ${TM_ORG_NAME} account`,
   },
   signUpQuestion: {
     id: 'signup.modal.question',
