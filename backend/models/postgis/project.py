@@ -1,3 +1,4 @@
+import os
 import json
 import re
 from typing import Optional
@@ -267,7 +268,8 @@ class Project(db.Model):
             .filter(Project.id == self.id)
             .one()
         )
-        url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={0}&lon={1}".format(
+        url = "{0}/reverse?format=jsonv2&lat={1}&lon={2}".format(
+            os.getenv("OSM_NOMINATIM_SERVER_URL", "https://www.openstreetmap.org"),
             lat, lng
         )
         country_info = requests.get(url)
