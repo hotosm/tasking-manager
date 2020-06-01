@@ -106,13 +106,12 @@ export function getMessageOnValidationContext(mappingIsPossible, taskStatus) {
 
 export function getTaskAction(user, project, taskStatus, userTeams = [], userOrgs = []) {
   // nothing more to do if all tasks are validated or set as BADIMAGERY
-  if (project.percentValidated + project.percentBadImagery >= 100) {
+  if (project.percentValidated >= 100) {
     return 'projectIsComplete';
   }
   const validationIsPossible = userCanValidate(user, project, userTeams, userOrgs);
   const mappingIsPossible =
-    userCanMap(user, project, userTeams, userOrgs) &&
-    project.percentMapped + project.percentBadImagery < 100;
+    userCanMap(user, project, userTeams, userOrgs) && project.percentMapped < 100;
 
   if (validationIsPossible) {
     return getMessageOnValidationContext(mappingIsPossible, taskStatus);
@@ -120,14 +119,14 @@ export function getTaskAction(user, project, taskStatus, userTeams = [], userOrg
   if (mappingIsPossible) {
     return getMessageOnMappingContext(taskStatus);
   }
-  if (project.percentMapped + project.percentBadImagery >= 100) {
+  if (project.percentMapped >= 100) {
     return 'mappingIsComplete';
   }
   return 'selectAnotherProject';
 }
 
 export function getPermissionErrorMessage(project, userLevel) {
-  if (project.percentMapped + project.percentBadImagery < 100) {
+  if (project.percentMapped < 100) {
     if (
       project.mappingPermission === 'LEVEL' ||
       (project.mappingPermission === 'TEAMS_LEVEL' && userLevel === 'BEGINNER')
@@ -141,7 +140,7 @@ export function getPermissionErrorMessage(project, userLevel) {
       return 'userIsNotMappingTeamMember';
     }
   }
-  if (project.percentValidated + project.percentBadImagery < 100) {
+  if (project.percentValidated < 100) {
     if (
       project.validationPermission === 'LEVEL' ||
       (project.validationPermission === 'TEAMS_LEVEL' && userLevel === 'BEGINNER')
