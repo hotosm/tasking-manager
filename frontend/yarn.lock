@@ -10571,10 +10571,10 @@ react-meta-elements@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-meta-elements/-/react-meta-elements-1.0.0.tgz#5da493b158f482f00c03c8ed326db367ffc4d880"
   integrity sha512-+bSTNyhlr5vpDokclaWMxhcsyS9Og17/kmL0DL3P//VA5a8S3cfYxfOPmEjDlTa04CAwHvgApleIM5ZGWfeSaA==
 
-react-placeholder@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/react-placeholder/-/react-placeholder-4.0.1.tgz#2a9d0247ec04ee1895d0cd28dca1190d1e0756ec"
-  integrity sha512-UyFrOMu+O8Yqj1hY/KmOgMRvv41thzv3cUp0Z5s55a4BG4Kyvvz1bhnYnomEusFYa4eESTAqT/B1dRg+R59D5Q==
+react-placeholder@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/react-placeholder/-/react-placeholder-4.0.2.tgz#b1dc0d41ae22df70a96b4e835d51a5101e51869f"
+  integrity sha512-e8bd5LLk54H42/ZlD/0IOzrTh3G7I+QrxSVqTNd3HlpNYPiwhhsw1i99GGxrdz/buqqrB18MY/lJKtCj/RHPAg==
 
 react-redux@^7.2.0:
   version "7.2.0"
