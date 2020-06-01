@@ -192,7 +192,7 @@ class TeamService:
         is_admin = UserService.is_user_an_admin(user_id)
 
         if organisation_filter:
-            orgs_query = query.filter(Team.organisation_id.in_(organisation_filter))
+            orgs_query = query.filter(Team.organisation_id == organisation_filter)
 
         if manager_filter and not (manager_filter == user_id and is_admin):
             manager_teams = query.filter(
