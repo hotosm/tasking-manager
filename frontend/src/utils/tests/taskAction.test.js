@@ -59,8 +59,8 @@ it('when taskStatus is INVALIDATED, returns mapSelectedTask', () => {
 it('READY TASK selected and USER able to map returns mapSelectedTask', () => {
   const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
   const project = {
-    percentMapped: 40,
-    percentBadImagery: 0,
+    percentMapped: 80,
+    percentBadImagery: 20,
     percentValidated: 0,
     mappingPermission: 'ANY',
     validationPermission: 'TEAMS_LEVEL',
@@ -87,7 +87,7 @@ it('READY TASK selected and USER unable to map returns selectAnotherProject', ()
 it('MAPPED TASK selected and USER able to map, but unable to validate, returns mapAnotherTask', () => {
   const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
   const project = {
-    percentMapped: 40,
+    percentMapped: 99,
     percentBadImagery: 0,
     percentValidated: 0,
     mappingPermission: 'ANY',
@@ -102,8 +102,8 @@ it('MAPPED TASK selected and USER able to validate returns validatedSelectedTask
   const user = { mappingLevel: 'BEGINNER', role: 'MAPPER' };
   const project = {
     percentMapped: 100,
-    percentValidated: 50,
-    percentBadImagery: 0,
+    percentValidated: 70,
+    percentBadImagery: 30,
     mappingPermission: 'ANY',
     validationPermission: 'ANY',
     teams: [],
@@ -116,8 +116,8 @@ it('No tasks selected and USER able to validate returns validatedATask', () => {
   const user = { mappingLevel: 'INTERMEDIATE', role: 'MAPPER' };
   const project = {
     percentMapped: 100,
-    percentValidated: 50,
-    percentBadImagery: 0,
+    percentValidated: 70,
+    percentBadImagery: 30,
     mappingPermission: 'LEVEL',
     validationPermission: 'LEVEL',
     teams: [],

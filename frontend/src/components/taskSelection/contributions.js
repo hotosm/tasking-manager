@@ -7,7 +7,7 @@ import messages from './messages.js';
 import { UserAvatar } from '../user/avatar';
 import { CheckCircle } from '../checkCircle';
 import ProjectProgressBar from '../projectcard/projectProgressBar';
-import { computeCompleteness } from '../../utils/projectCompletenessCalc';
+import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 
 const Contributions = (props) => {
@@ -19,7 +19,9 @@ const Contributions = (props) => {
   ];
 
   const [level, setLevel] = useState(mappingLevels[0]);
-  const { percentMapped, percentValidated, percentBadImagery } = computeCompleteness(props.tasks);
+  const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(
+    props.tasks,
+  );
 
   const MappingLevelSelect = () => {
     return (
