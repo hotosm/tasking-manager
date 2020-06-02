@@ -57,7 +57,8 @@ describe('test if getIdUrl', () => {
         '#map=18/-9.663953/120.25684' +
         '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
         '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1' +
-        '&presets=building%2Chighway%2Cnatural%2Fwater' +
+        // iD is not working well with presets URL param yet
+        //'&presets=building%2Chighway%2Cnatural%2Fwater' +
         '&locale=es',
     );
   });
