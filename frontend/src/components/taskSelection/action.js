@@ -95,7 +95,18 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
       <div className="cf vh-minus-122-ns overflow-y-hidden">
         <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
           {editor === 'ID' ? (
-            <React.Suspense fallback={<div className={`w7 h5 center`}>Loading iD...</div>}>
+            <React.Suspense
+              fallback={
+                <div className={`w7 h5 center`}>
+                  <ReactPlaceholder
+                    showLoadingAnimation={true}
+                    type="media"
+                    rows={26}
+                    ready={false}
+                  />
+                </div>
+              }
+            >
               <Editor
                 editorRef={editorRef}
                 setEditorRef={setEditorRef}
