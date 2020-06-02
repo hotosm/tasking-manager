@@ -91,9 +91,10 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, locale = '
   if (project.projectId && selectedTasks) {
     url += '&gpx=' + encodeURIComponent(getTaskGpxUrl(project.projectId, selectedTasks).href);
   }
-  if (project.idPresets && project.idPresets.length > 0) {
-    url += '&presets=' + encodeURIComponent(project.idPresets.join(','));
-  }
+  // iD is not working well with presets yet
+  // if (project.idPresets && project.idPresets.length > 0) {
+  //   url += '&presets=' + encodeURIComponent(project.idPresets.join(','));
+  // }
   // add hardcoded locale while we solve how to load the user locale on iD
   url += '&locale=' + locale;
   return url;
