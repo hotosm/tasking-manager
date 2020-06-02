@@ -81,7 +81,7 @@ const supportedLocales = [
   { value: 'he', label: 'עברית' },
   { value: 'hu', label: 'Magyar' },
   { value: 'id', label: 'Indonesia' },
-  // { value: 'it', label: 'Italiano' },
+  { value: 'it', label: 'Italiano' },
   { value: 'ja', label: '日本語' },
   // { value: 'mg', label: 'Malagasy' },
   // { value: 'ml', label: 'Malayalam' },

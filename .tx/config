@@ -2,7 +2,7 @@
 host = https://www.transifex.com
 
 [tasking-manager.version-4]
-source_file = src/locales/en.json
+source_file = frontend/src/locales/en.json
 source_lang = en
 trans.ar = frontend/src/locales/ar.json
 trans.cs = frontend/src/locales/cs.json
@@ -27,4 +27,3 @@ trans.tr = frontend/src/locales/tr.json
 trans.uk = frontend/src/locales/uk.json
 trans.zh_TW = frontend/src/locales/zh_TW.json
 type = KEYVALUEJSON
-

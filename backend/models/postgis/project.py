@@ -8,7 +8,7 @@ from flask import current_app
 from geoalchemy2 import Geometry
 import sqlalchemy
 from sqlalchemy.sql.expression import cast
-from sqlalchemy import text, desc, func
+from sqlalchemy import text, desc, func, Time
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 import requests
@@ -578,12 +578,21 @@ class Project(db.Model):
                 stats_dto.time_spent_mapping = total_mapping_time.total_seconds()
                 stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
-        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                   WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
-                   and user_id = :user_id and project_id = :project_id;"""
-        total_validation_time = db.engine.execute(
-            text(query), user_id=user_id, project_id=self.id
+        query = (
+            TaskHistory.query.with_entities(
+                func.date_trunc("minute", TaskHistory.action_date).label("trn"),
+                func.max(TaskHistory.action_text).label("tm"),
+            )
+            .filter(TaskHistory.user_id == user_id)
+            .filter(TaskHistory.project_id == self.id)
+            .filter(TaskHistory.action == "LOCKED_FOR_VALIDATION")
+            .group_by("trn")
+            .subquery()
         )
+        total_validation_time = db.session.query(
+            func.sum(cast(func.to_timestamp(query.c.tm, "HH24:MI:SS"), Time))
+        ).all()
+
         for time in total_validation_time:
             total_validation_time = time[0]
             if total_validation_time:
@@ -668,10 +677,20 @@ class Project(db.Model):
                     average_mapping_time = total_mapping_seconds / unique_mappers
                     project_stats.average_mapping_time = average_mapping_time
 
-        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                   WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
-                   and project_id = :project_id;"""
-        total_validation_time = db.engine.execute(text(query), project_id=self.id)
+        query = (
+            TaskHistory.query.with_entities(
+                func.date_trunc("minute", TaskHistory.action_date).label("trn"),
+                func.max(TaskHistory.action_text).label("tm"),
+            )
+            .filter(TaskHistory.project_id == self.id)
+            .filter(TaskHistory.action == "LOCKED_FOR_VALIDATION")
+            .group_by("trn")
+            .subquery()
+        )
+        total_validation_time = db.session.query(
+            func.sum(cast(func.to_timestamp(query.c.tm, "HH24:MI:SS"), Time))
+        ).all()
+
         for row in total_validation_time:
             total_validation_time = row[0]
             if total_validation_time:
@@ -717,6 +736,7 @@ class Project(db.Model):
         summary.license_id = self.license_id
         summary.status = ProjectStatus(self.status).name
         summary.entities_to_map = self.entities_to_map
+        summary.id_presets = self.id_presets
         summary.imagery = self.imagery
         if self.organisation_id:
             summary.organisation = self.organisation_id

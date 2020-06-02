@@ -323,7 +323,7 @@ class TeamsAllAPI(Resource):
             - in: query
               name: organisation
               description: organisation ID to filter teams
-              type: str
+              type: integer
               default: null
         responses:
             201:

@@ -92,15 +92,27 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
 
   return (
     <Portal>
-      <div className="cf vh-minus-122-ns overflow-y-hidden">
+      <div className="cf w-100 vh-minus-122-ns overflow-y-hidden">
         <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
           {editor === 'ID' ? (
-            <React.Suspense fallback={<div className={`w7 h5 center`}>Loading iD...</div>}>
+            <React.Suspense
+              fallback={
+                <div className={`w7 h5 center`}>
+                  <ReactPlaceholder
+                    showLoadingAnimation={true}
+                    type="media"
+                    rows={26}
+                    ready={false}
+                  />
+                </div>
+              }
+            >
               <Editor
                 editorRef={editorRef}
                 setEditorRef={setEditorRef}
                 setDisable={setDisable}
                 comment={project.changesetComment}
+                presets={project.idPresets}
               />
             </React.Suspense>
           ) : (
@@ -144,7 +156,14 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                   {project.projectInfo && project.projectInfo.name}
                   <span className="pl2">&#183;</span>
                   {tasksIds.map((task, n) => (
-                    <span key={n} className="red ph2">{`#${task}`}</span>
+                    <span key={n}>
+                      <span className="red dib ph2">{`#${task}`}</span>
+                      {tasksIds.length > 1 && n !== tasksIds.length - 1 ? (
+                        <span className="blue-light">&#183;</span>
+                      ) : (
+                        ''
+                      )}
+                    </span>
                   ))}
                 </h3>
                 <DueDateBox dueDate={timer} align="left" intervalMili={60000} />

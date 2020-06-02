@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { getEditors } from '../../utils/editorsList';
-import { openEditor } from '../../utils/openEditor';
+import { openEditor, formatJosmUrl } from '../../utils/openEditor';
 import { useFetchLockedTasks } from '../../hooks/UseLockedTasks';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Dropdown } from '../dropdown';
@@ -52,7 +52,15 @@ const TaskSelectionFooter = (props) => {
     dispatch({ type: 'SET_PROJECT', project: project });
     dispatch({ type: 'SET_TASKS_STATUS', status: status });
   };
-  const lockTasks = () => {
+  const lockTasks = async () => {
+    if (editor === 'JOSM' && !window.safari) {
+      try {
+        await fetch(formatJosmUrl('version', { jsonp: 'checkJOSM' }));
+      } catch (e) {
+        setLockError('JOSM');
+        return;
+      }
+    }
     let windowObjectReference;
     if (!['JOSM', 'ID'].includes(editor)) {
       windowObjectReference = window.open(

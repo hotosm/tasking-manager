@@ -8,7 +8,6 @@ frontend/build/
 frontend/public/static/
 frontend/assets/styles/
 frontend/package-lock.json
-frontend/yarn.lock
 frontend/.env
 frontend/coverage/
 

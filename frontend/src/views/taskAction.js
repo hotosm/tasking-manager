@@ -103,15 +103,23 @@ export function TaskActionPossible({ project, tasks, action, editor }) {
     }
   }, [project, tasks]);
   return (
-    <div className="cf">
-      <TaskMapAction
-        project={projectData}
-        projectIsReady={!projectDataError && !projectDataLoading}
-        tasks={tasksGeojson}
-        activeTasks={tasks}
-        action={action}
-        editor={editor}
-      />
+    <div className="cf w-100">
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        type="media"
+        rows={26}
+        delay={10}
+        ready={!projectDataError && !projectDataLoading && tasksGeojson !== null}
+      >
+        <TaskMapAction
+          project={projectData}
+          projectIsReady={!projectDataError && !projectDataLoading}
+          tasks={tasksGeojson}
+          activeTasks={tasks}
+          action={action}
+          editor={editor}
+        />
+      </ReactPlaceholder>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 from cachetools import TTLCache, cached
 from flask import current_app
 import datetime
-from sqlalchemy import text, func, or_, desc, and_, distinct
+from sqlalchemy import text, func, or_, desc, and_, distinct, cast, Time
 from backend import db
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
 from backend.models.dtos.user_dto import (
@@ -315,10 +315,20 @@ class UserService:
         stats_dto.time_spent_mapping = 0
         stats_dto.time_spent_validating = 0
 
-        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
-                and user_id = :user_id;"""
-        total_validation_time = db.engine.execute(text(sql), user_id=user.id)
+        query = (
+            TaskHistory.query.with_entities(
+                func.date_trunc("minute", TaskHistory.action_date).label("trn"),
+                func.max(TaskHistory.action_text).label("tm"),
+            )
+            .filter(TaskHistory.user_id == user.id)
+            .filter(TaskHistory.action == "LOCKED_FOR_VALIDATION")
+            .group_by("trn")
+            .subquery()
+        )
+        total_validation_time = db.session.query(
+            func.sum(cast(func.to_timestamp(query.c.tm, "HH24:MI:SS"), Time))
+        ).all()
+
         for time in total_validation_time:
             total_validation_time = time[0]
             if total_validation_time:
