@@ -51,7 +51,7 @@ jobs:
           # JS Unit Tests
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend
           CI=true yarn test -w 1 --env=jsdom
-          yarn build
+          CI=true GENERATE_SOURCEMAP=false yarn build
     - run:
         name: Run backend tests
         command: |
@@ -276,7 +276,7 @@ jobs:
           export TM_IMAGE_UPLOAD_API_URL=${<< parameters.upload_api_url >>}
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
           yarn
-          yarn build
+          CI=true GENERATE_SOURCEMAP=false yarn build
           aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-react-app --delete
           export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
           aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"

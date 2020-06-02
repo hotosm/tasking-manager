@@ -103,7 +103,7 @@ export function TaskActionPossible({ project, tasks, action, editor }) {
     }
   }, [project, tasks]);
   return (
-    <div className="cf">
+    <div className="cf w-100">
       <ReactPlaceholder
         showLoadingAnimation={true}
         type="media"

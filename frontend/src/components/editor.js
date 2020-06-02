@@ -5,7 +5,7 @@ import '@hotosm/id/dist/iD.css';
 
 import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET } from '../config';
 
-export default function Editor({ editorRef, setEditorRef, setDisable, comment }) {
+export default function Editor({ editorRef, setEditorRef, setDisable, comment, presets }) {
   const session = useSelector((state) => state.auth.get('session'));
   const windowInit = typeof window !== undefined;
 
@@ -27,6 +27,7 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment })
 
   useEffect(() => {
     if (session && iD && editorRef) {
+      window.iD.presetManager.addablePresetIDs(presets);
       editorRef
         .embed(true)
         .assetPath('/static/')
@@ -54,7 +55,7 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment })
         }
       });
     }
-  }, [session, editorRef, setDisable]);
+  }, [session, editorRef, setDisable, presets]);
 
   return <div className="w-100 vh-minus-122-ns" id="id-container"></div>;
 }

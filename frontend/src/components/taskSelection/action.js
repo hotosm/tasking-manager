@@ -92,7 +92,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
 
   return (
     <Portal>
-      <div className="cf vh-minus-122-ns overflow-y-hidden">
+      <div className="cf w-100 vh-minus-122-ns overflow-y-hidden">
         <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
           {editor === 'ID' ? (
             <React.Suspense
@@ -112,6 +112,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                 setEditorRef={setEditorRef}
                 setDisable={setDisable}
                 comment={project.changesetComment}
+                presets={project.idPresets}
               />
             </React.Suspense>
           ) : (
