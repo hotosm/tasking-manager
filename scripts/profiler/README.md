@@ -1,4 +1,4 @@
-@[]()#API PROFILER
+#API PROFILER
 Notebook for API profiler
 ------
 The profilers run the code and give you detailed response time information, allowing you to identify bottlenecks in Tasking Manager.
@@ -14,6 +14,6 @@ In the project directory, you can run:
 
 ##ENDPOINTS
 List of endpoints:
-- Users: 
-- Projects:
-- campaigns: 
+- Users
+- Projects
+- campaigns
