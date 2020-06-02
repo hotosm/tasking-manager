@@ -1197,10 +1197,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@2.18.0-beta-1":
-  version "2.18.0-beta-1"
-  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.18.0-beta-1.tgz#63bd169150babdb630629759c0f1b9f3481b4aea"
-  integrity sha512-2hAaZOVpMygC+Sz2jgXJXk+LPwBZhUH/ICvRZlTdlyezJ7xQG7/4OGfF36yrOCLHb2IY9HFZZfYN/PjfkS75cA==
+"@hotosm/id@2.18.0-beta-3":
+  version "2.18.0-beta-3"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.18.0-beta-3.tgz#521ca1f5eb9ee64fcb7e2a8e72855c1bfd8bd0b9"
+  integrity sha512-jKSeGs8gRxQNPz5EQO3i0pyq5KTdCYbI0cUXcOaZTkmcZtityKVDEdL4xLPTH1Jc/GkmzVOV5wAvXYtg++RFvQ==
   dependencies:
     "@ideditor/country-coder" "^3.2.0"
     "@ideditor/location-conflation" "~0.3.0"
