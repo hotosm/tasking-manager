@@ -6,7 +6,7 @@ import ReactPlaceholder from 'react-placeholder';
 
 import messages from '../components/userDetail/messages';
 import { HeaderProfile } from '../components/userDetail/headerProfile';
-import { ElementsMapped } from '../components/userDetail/elementsMapped';
+import { ElementsMapped, TaskStats } from '../components/userDetail/elementsMapped';
 import { CountriesMapped } from '../components/userDetail/countriesMapped';
 import { TopCauses } from '../components/userDetail/topCauses';
 import { TopProjects } from '../components/userDetail/topProjects';
@@ -108,6 +108,12 @@ export const UserDetail = ({ username, withHeader = true }) => {
               <EditsByNumbers osmStats={osmStats} />
             </div>
           </div>
+        </div>
+        <div className="mv4">
+          <h3 className={titleClass}>
+            <FormattedMessage {...messages.tasksStatisticsTitle} />
+          </h3>
+          <TaskStats userStats={userStats} />
         </div>
         <div className="mt3 pb4">
           <ReactPlaceholder
