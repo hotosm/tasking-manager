@@ -36,6 +36,30 @@ export default defineMessages({
     id: 'users.detail.waterwaysMapped',
     defaultMessage: 'Waterways mapped',
   },
+  tasksStatisticsTitle: {
+    id: 'users.detail.tasksStatisticsTitle',
+    defaultMessage: 'Tasks statistics',
+  },
+  tasksMapped: {
+    id: 'users.detail.tasksMapped',
+    defaultMessage: 'Tasks mapped',
+  },
+  tasksValidated: {
+    id: 'users.detail.tasksValidated',
+    defaultMessage: 'Tasks validated',
+  },
+  tasksInvalidated: {
+    id: 'users.detail.tasksInvalidated',
+    defaultMessage: 'Tasks invalidated',
+  },
+  tasksValidatedByOthers: {
+    id: 'users.detail.tasksValidatedByOthers',
+    defaultMessage: 'Tasks validated by others',
+  },
+  tasksInvalidatedByOthers: {
+    id: 'users.detail.tasksInvalidatedByOthers',
+    defaultMessage: 'Tasks invalidated by others',
+  },
   topProjectsMappedTitle: {
     id: 'users.detail.topProjectsMappedTitle',
     defaultMessage: 'Top 5 projects contributed',
@@ -78,6 +102,7 @@ export default defineMessages({
   },
   delayPopup: {
     id: 'users.detail.delay_popup',
-    defaultMessage: 'These statistics need heavy calculations and changes are showing up with a delay of around one hour.',
+    defaultMessage:
+      'These statistics need heavy calculations and changes are showing up with a delay of around one hour.',
   },
 });

@@ -140,6 +140,9 @@ class UserStatsDTO(Model):
     )
     tasks_mapped = IntType(serialized_name="tasksMapped")
     tasks_validated = IntType(serialized_name="tasksValidated")
+    tasks_invalidated = IntType(serialized_name="tasksInvalidated")
+    tasks_invalidated_by_others = IntType(serialized_name="tasksInvalidatedByOthers")
+    tasks_validated_by_others = IntType(serialized_name="tasksValidatedByOthers")
     contributions_interest = ListType(
         ModelType(InterestDTO), serialized_name="ContributionsByInterest"
     )

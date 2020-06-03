@@ -1,6 +1,7 @@
 from cachetools import TTLCache, cached
 from flask import current_app
 import datetime
+from sqlalchemy.sql.expression import literal
 from sqlalchemy import text, func, or_, desc, and_, distinct, cast, Time
 from backend import db
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
@@ -294,20 +295,84 @@ class UserService:
         user = UserService.get_user_by_username(username)
         stats_dto = UserStatsDTO()
 
-        actions = TaskHistory.query.filter(  # noqa
-            TaskHistory.user_id == user.id, TaskHistory.action_text != ""
-        ).all()
+        actions = [
+            TaskStatus.VALIDATED.name,
+            TaskStatus.INVALIDATED.name,
+            TaskStatus.MAPPED.name,
+        ]
 
-        tasks_mapped = TaskHistory.query.filter(
-            TaskHistory.user_id == user.id, TaskHistory.action_text == "MAPPED"
-        ).count()
-        tasks_validated = TaskHistory.query.filter(
-            TaskHistory.user_id == user.id, TaskHistory.action_text == "VALIDATED"
-        ).count()
+        actions_table = (
+            db.session.query(literal(TaskStatus.VALIDATED.name).label("action_text"))
+            .union(
+                db.session.query(
+                    literal(TaskStatus.INVALIDATED.name).label("action_text")
+                ),
+                db.session.query(literal(TaskStatus.MAPPED.name).label("action_text")),
+            )
+            .subquery()
+            .alias("actions_table")
+        )
+
+        # Get only rows with the given actions.
+        filtered_actions = (
+            TaskHistory.query.with_entities(
+                TaskHistory.user_id,
+                TaskHistory.project_id,
+                TaskHistory.task_id,
+                TaskHistory.action_text,
+            )
+            .filter(TaskHistory.action_text.in_(actions))
+            .subquery()
+            .alias("filtered_actions")
+        )
+
+        user_tasks = (
+            db.session.query(filtered_actions)
+            .filter(filtered_actions.c.user_id == user.id)
+            .subquery()
+            .alias("user_tasks")
+        )
+
+        others_tasks = (
+            db.session.query(filtered_actions)
+            .filter(filtered_actions.c.user_id != user.id)
+            .filter(filtered_actions.c.task_id == user_tasks.c.task_id)
+            .filter(filtered_actions.c.project_id == user_tasks.c.project_id)
+            .filter(filtered_actions.c.action_text != TaskStatus.MAPPED.name)
+            .subquery()
+            .alias("others_tasks")
+        )
+
+        user_stats = (
+            db.session.query(
+                actions_table.c.action_text, func.count(user_tasks.c.action_text)
+            )
+            .outerjoin(
+                user_tasks, actions_table.c.action_text == user_tasks.c.action_text
+            )
+            .group_by(actions_table.c.action_text)
+        )
+
+        others_stats = (
+            db.session.query(
+                func.concat(actions_table.c.action_text, "_BY_OTHERS"),
+                func.count(others_tasks.c.action_text),
+            )
+            .outerjoin(
+                others_tasks, actions_table.c.action_text == others_tasks.c.action_text
+            )
+            .group_by(actions_table.c.action_text)
+        )
+
+        res = user_stats.union(others_stats).all()
+        results = {key: value for key, value in res}
 
         projects_mapped = UserService.get_projects_mapped(user.id)
-        stats_dto.tasks_mapped = tasks_mapped
-        stats_dto.tasks_validated = tasks_validated
+        stats_dto.tasks_mapped = results["MAPPED"]
+        stats_dto.tasks_validated = results["VALIDATED"]
+        stats_dto.tasks_invalidated = results["INVALIDATED"]
+        stats_dto.tasks_validated_by_others = results["VALIDATED_BY_OTHERS"]
+        stats_dto.tasks_invalidated_by_others = results["INVALIDATED_BY_OTHERS"]
         stats_dto.projects_mapped = len(projects_mapped)
         stats_dto.countries_contributed = UserService.get_countries_contributed(user.id)
         stats_dto.contributions_by_day = UserService.get_contributions_by_day(user.id)

@@ -11,10 +11,16 @@ import {
   WavesIcon,
   MarkerIcon,
   QuestionCircleIcon,
+  WorldNodesIcon,
+  ProjectSelectionIcon,
+  AreaIcon,
+  TaskSelectionIcon,
+  HumanProcessingIcon,
 } from '../svgIcons';
 
 const getFieldData = (field) => {
   const iconClass = 'h-50 w-50';
+  const iconClasslg = 'h-80 w-80';
   const iconStyle = { height: '45px' };
   switch (field) {
     case 'time':
@@ -42,6 +48,31 @@ const getFieldData = (field) => {
         icon: <WavesIcon className={iconClass} style={iconStyle} />,
         message: <FormattedMessage {...messages.waterwaysMapped} />,
       };
+    case 'tasksMapped':
+      return {
+        icon: <AreaIcon className={iconClasslg} style={iconStyle} />,
+        message: <FormattedMessage {...messages.tasksMapped} />,
+      };
+    case 'tasksValidated':
+      return {
+        icon: <TaskSelectionIcon className={iconClasslg} style={iconStyle} />,
+        message: <FormattedMessage {...messages.tasksValidated} />,
+      };
+    case 'tasksInvalidated':
+      return {
+        icon: <ProjectSelectionIcon className={iconClasslg} style={iconStyle} />,
+        message: <FormattedMessage {...messages.tasksInvalidated} />,
+      };
+    case 'tasksValidatedByOthers':
+      return {
+        icon: <WorldNodesIcon className={iconClasslg} style={iconStyle} />,
+        message: <FormattedMessage {...messages.tasksValidatedByOthers} />,
+      };
+    case 'tasksInvalidatedByOthers':
+      return {
+        icon: <HumanProcessingIcon className={iconClasslg} style={iconStyle} />,
+        message: <FormattedMessage {...messages.tasksInvalidatedByOthers} />,
+      };
     default:
       return null;
   }
@@ -66,6 +97,18 @@ const Element = ({ field, value }) => {
           </p>
         </div>
       </div>
+    </div>
+  );
+};
+
+export const TaskStats = ({ userStats }) => {
+  return (
+    <div className="cf w-100 relative pr2">
+      <Element field={'tasksMapped'} value={userStats.tasksMapped || 0} />
+      <Element field={'tasksValidated'} value={userStats.tasksValidated || 0} />
+      <Element field={'tasksInvalidated'} value={userStats.tasksInvalidated || 0} />
+      <Element field={'tasksValidatedByOthers'} value={userStats.tasksValidatedByOthers || 0} />
+      <Element field={'tasksInvalidatedByOthers'} value={userStats.tasksInvalidatedByOthers || 0} />
     </div>
   );
 };
