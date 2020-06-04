@@ -4,7 +4,7 @@
   "license": "BSD-2-Clause",
   "private": false,
   "dependencies": {
-    "@formatjs/intl-pluralrules": "^2.2.1",
+    "@formatjs/intl-pluralrules": "^2.2.4",
     "@formatjs/intl-relativetimeformat": "^5.2.1",
     "@formatjs/intl-utils": "^3.1.0",
     "@formatjs/macro": "^0.2.8",
