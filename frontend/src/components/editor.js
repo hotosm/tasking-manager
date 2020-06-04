@@ -27,7 +27,16 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment, p
 
   useEffect(() => {
     if (session && iD && editorRef) {
-      window.iD.presetManager.addablePresetIDs(presets);
+      // if presets is not a populated list we need to set it as null
+      try {
+        if (presets.length) {
+          window.iD.presetManager.addablePresetIDs(presets);
+        } else {
+          window.iD.presetManager.addablePresetIDs(null);
+        }
+      } catch (e) {
+        window.iD.presetManager.addablePresetIDs(null);
+      }
       editorRef
         .embed(true)
         .assetPath('/static/')
