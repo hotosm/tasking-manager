@@ -423,7 +423,11 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-    - build
+    - build:
+      filters:
+        branches:
+          ignore:
+          - /^deployment\/.*/
     - backend_deploy:
         name: staging
         filters:
@@ -761,6 +765,7 @@ workflows:
           branches:
             only:
               - deployment/hot-tasking-manager-frontend
+              - deployment/hot-tasking-manager
         stack_name: "tm4-production"
         environment_name: "production"
         autoscaling_policy: "production"
