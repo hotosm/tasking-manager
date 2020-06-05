@@ -16,6 +16,10 @@ export default defineMessages({
     id: 'users.detail.statsTitle',
     defaultMessage: 'stats',
   },
+  countries: {
+    id: 'users.detail.countries',
+    defaultMessage: 'Countries',
+  },
   timeSpentMapping: {
     id: 'users.detail.timeSpentMapping',
     defaultMessage: 'Time spent mapping',
@@ -35,10 +39,6 @@ export default defineMessages({
   waterwaysMapped: {
     id: 'users.detail.waterwaysMapped',
     defaultMessage: 'Waterways mapped',
-  },
-  tasksStatisticsTitle: {
-    id: 'users.detail.tasksStatisticsTitle',
-    defaultMessage: 'Tasks statistics',
   },
   tasksMapped: {
     id: 'users.detail.tasksMapped',

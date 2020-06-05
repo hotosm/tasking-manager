@@ -18,10 +18,10 @@ try {
 }
 
 const UserCountriesMap = ({ projects }) => {
-  const locale = useSelector(state => state.preferences['locale']);
+  const locale = useSelector((state) => state.preferences['locale']);
   const geojson = {
     type: 'FeatureCollection',
-    features: projects.mappedProjects.map(f => {
+    features: projects.mappedProjects.map((f) => {
       return { type: 'Feature', geometry: f.centroid, properties: { projectId: f.projectId } };
     }),
   };
@@ -52,27 +52,25 @@ const UserCountriesMap = ({ projects }) => {
   useLayoutEffect(() => {
     if (map) {
       map.resize(); //https://docs.mapbox.com/help/troubleshooting/blank-tiles/
-      map.on('load', () => mapboxLayerDefn(map, geojson, id => navigate(`/projects/${id}/`)));
+      map.on('load', () => mapboxLayerDefn(map, geojson, (id) => navigate(`/projects/${id}/`)));
     }
   }, [map, geojson]);
 
-  return (
-    <div id="map" className="w-two-thirds-l w-100 fl" style={{ height: '40vh' }} ref={mapRef}></div>
-  );
+  return <div id="map" className="w-two-thirds-l w-100 h-100 fl" ref={mapRef}></div>;
 };
 
 export const CountriesMapped = ({ projects, userStats }) => {
   const countries = userStats.countriesContributed.countries.slice(0, 5);
-  const tasksNo = countries.map(c => c.total);
+  const tasksNo = countries.map((c) => c.total);
   const maxTaskNo = Math.max(...tasksNo);
 
-  const countriesPercent = countries.map(c => {
+  const countriesPercent = countries.map((c) => {
     return { ...c, percent: c.total / maxTaskNo };
   });
 
   return (
-    <div className="bg-white blue-dark shadow-4 w-100 cf">
-      <div className="w-third-l w-100 fl pb3 pt2 ph3">
+    <div className="bg-white blue-dark shadow-4 w-100 cf" style={{ height: '40vh' }}>
+      <div className="w-third-l w-100 fl pt2 ph3">
         <h3 className="f4 mt0 fw6 pt3">
           <FormattedMessage {...messages.topCountriesTitle} />
         </h3>

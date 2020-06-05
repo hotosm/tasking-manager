@@ -11,16 +11,16 @@ import {
   WavesIcon,
   MarkerIcon,
   QuestionCircleIcon,
-  WorldNodesIcon,
-  ProjectSelectionIcon,
-  AreaIcon,
-  TaskSelectionIcon,
-  HumanProcessingIcon,
+  MappedIcon,
+  ValidatedIcon,
+  UndoIcon,
+  CheckIcon,
+  InvalidatedIcon,
 } from '../svgIcons';
 
 const getFieldData = (field) => {
   const iconClass = 'h-50 w-50';
-  const iconClasslg = 'h-80 w-80';
+  const iconClasslg = 'h-80 w-80 red v-mid';
   const iconStyle = { height: '45px' };
   switch (field) {
     case 'time':
@@ -50,27 +50,27 @@ const getFieldData = (field) => {
       };
     case 'tasksMapped':
       return {
-        icon: <AreaIcon className={iconClasslg} style={iconStyle} />,
+        icon: <MappedIcon className={iconClasslg} style={iconStyle} />,
         message: <FormattedMessage {...messages.tasksMapped} />,
       };
     case 'tasksValidated':
       return {
-        icon: <TaskSelectionIcon className={iconClasslg} style={iconStyle} />,
+        icon: <ValidatedIcon className={iconClasslg} style={iconStyle} />,
         message: <FormattedMessage {...messages.tasksValidated} />,
       };
     case 'tasksInvalidated':
       return {
-        icon: <ProjectSelectionIcon className={iconClasslg} style={iconStyle} />,
+        icon: <UndoIcon className={iconClasslg} style={{ height: '40px' }} />,
         message: <FormattedMessage {...messages.tasksInvalidated} />,
       };
     case 'tasksValidatedByOthers':
       return {
-        icon: <WorldNodesIcon className={iconClasslg} style={iconStyle} />,
+        icon: <CheckIcon className={iconClasslg} style={iconStyle} />,
         message: <FormattedMessage {...messages.tasksValidatedByOthers} />,
       };
     case 'tasksInvalidatedByOthers':
       return {
-        icon: <HumanProcessingIcon className={iconClasslg} style={iconStyle} />,
+        icon: <InvalidatedIcon className={iconClasslg} style={{ height: '33px' }} />,
         message: <FormattedMessage {...messages.tasksInvalidatedByOthers} />,
       };
     default:
@@ -88,8 +88,8 @@ const Element = ({ field, value }) => {
         }`}
       >
         <div className="w-30 w-100-m fl tc">{elements.icon}</div>
-        <div className="w-70 w-100-m fl tc">
-          <p className={`ma0 mb2 barlow-condensed f3 b ${field === 'time' ? null : 'red '}`}>
+        <div className="w-70 w-100-m pt3-m fl tc">
+          <p className={`ma0 mb2 barlow-condensed f2 b ${field === 'time' ? null : 'red '}`}>
             {field === 'time' ? value : Math.trunc(value)}
           </p>
           <p className={`ma0 h2 f7 b ${field === 'time' ? null : 'blue-grey'}`}>
@@ -134,7 +134,9 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
     round: true,
     delimiter: ' ',
     units: ['h', 'm'],
-  });
+  })
+    .replace(' h', 'h')
+    .replace(' m', 'm');
 
   return (
     <div>
