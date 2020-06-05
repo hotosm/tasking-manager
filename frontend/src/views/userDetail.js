@@ -111,11 +111,14 @@ export const UserDetail = ({ username, withHeader = true }) => {
         </div>
         <div className="mv4">
           <h3 className={titleClass}>
-            <FormattedMessage {...messages.tasksStatisticsTitle} />
+            <FormattedMessage {...messages.tasks} />
           </h3>
           <TaskStats userStats={userStats} />
         </div>
-        <div className="mt3 pb4">
+        <div className="mv4">
+          <h3 className={titleClass}>
+            <FormattedMessage {...messages.countries} />
+          </h3>
           <ReactPlaceholder
             type="rect"
             showLoadingAnimation={true}
