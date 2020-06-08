@@ -8,6 +8,10 @@ export default defineMessages({
     id: 'projects.formInputs.privacy.title',
     defaultMessage: 'Privacy',
   },
+  privateProject: {
+    id: 'projects.formInputs.privacy.field',
+    defaultMessage: 'Private project',
+  },
   privacyDescription: {
     id: 'projects.formInputs.privacy.description',
     defaultMessage:

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import area from '@turf/area';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
@@ -8,7 +8,9 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { addLayer } from './index';
 import { Button } from '../button';
+import { SwitchToggle } from '../formInputs';
 import { makeGrid } from './setTaskSizes';
+import { useContainsMultiplePolygons } from '../../hooks/UseGeomContainsMultiplePolygons';
 import { MAX_FILESIZE } from '../../config';
 
 var tj = require('@mapbox/togeojson');
@@ -16,7 +18,7 @@ var osmtogeojson = require('osmtogeojson');
 var shp = require('shpjs');
 
 export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
-  const [arbitraryTasks, setArbitrary] = useState(metadata.arbitraryTasks);
+  const { containsMultiplePolygons } = useContainsMultiplePolygons(metadata.geom);
   const layer_name = 'aoi';
 
   const setDataGeom = (geom, display) => {
@@ -82,7 +84,6 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
   };
 
   const uploadFile = (event) => {
-    setArbitrary(true);
     let files = event.target.files;
     let file = files[0];
     if (!file) {
@@ -165,7 +166,6 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
       mapObj.map.removeSource(layer_name);
     }
     updateMetadata({ ...metadata, area: 0, geom: null });
-    setArbitrary(false);
   };
 
   const drawHandler = () => {
@@ -178,7 +178,6 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
 
       // Validate area first.
       const geom = featureCollection(event.features);
-      setArbitrary(false);
       setDataGeom(geom, false);
     };
 
@@ -211,20 +210,6 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
         <p>
           <FormattedMessage {...messages.importDescription} />
         </p>
-        <div className="pb2">
-          <input
-            type="checkbox"
-            className="v-mid"
-            defaultChecked={metadata.arbitraryTasks}
-            disabled={!arbitraryTasks}
-            onChange={() => {
-              updateMetadata({ ...metadata, arbitraryTasks: !metadata.arbitraryTasks });
-            }}
-          />
-          <span className="pl2 v-mid">
-            <FormattedMessage {...messages.arbitraryTasks} />
-          </span>
-        </div>
         <div className="pt3">
           <label
             for="file-upload"
@@ -235,6 +220,18 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
           </label>
           <input onChange={uploadFile} style={{ display: 'none' }} id="file-upload" type="file" />
         </div>
+      </div>
+      <div className="pb2">
+        {containsMultiplePolygons && (
+          <SwitchToggle
+            label={<FormattedMessage {...messages.arbitraryTasks} />}
+            labelPosition="right"
+            isChecked={metadata.arbitraryTasks}
+            onChange={() =>
+              updateMetadata({ ...metadata, arbitraryTasks: !metadata.arbitraryTasks })
+            }
+          />
+        )}
       </div>
       {metadata.geom && (
         <div className="pt4">

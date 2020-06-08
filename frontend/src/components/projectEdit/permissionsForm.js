@@ -81,7 +81,7 @@ export const PermissionsForm = () => {
           <FormattedMessage {...messages.privacyDescription} />
         </p>
         <SwitchToggle
-          label={'Private project'}
+          label={<FormattedMessage {...messages.privateProject} />}
           labelPosition="right"
           isChecked={projectInfo.private}
           onChange={() => setProjectInfo({ ...projectInfo, private: !projectInfo.private })}
