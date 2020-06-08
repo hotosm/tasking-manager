@@ -166,7 +166,7 @@ export default defineMessages({
   },
   arbitraryTasks: {
     id: 'management.projects.create.arbitrary_tasks',
-    defaultMessage: 'Arbitrary tasks',
+    defaultMessage: 'Set tasks using uploaded polygons',
   },
   drawDescription: {
     id: 'management.projects.create.draw.description',
