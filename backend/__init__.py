@@ -225,7 +225,11 @@ def add_api_endpoints(app):
 
     # Teams API endpoint
     from backend.api.teams.resources import TeamsRestAPI, TeamsAllAPI
-    from backend.api.teams.actions import TeamsActionsJoinAPI, TeamsActionsLeaveAPI
+    from backend.api.teams.actions import (
+        TeamsActionsJoinAPI,
+        TeamsActionsLeaveAPI,
+        TeamsActionsMessageMembersAPI,
+    )
 
     # Notifications API endpoint
     from backend.api.notifications.resources import (
@@ -640,6 +644,10 @@ def add_api_endpoints(app):
         format_url("teams/<int:team_id>/actions/leave/"),
         endpoint="leave_team",
         methods=["POST"],
+    )
+    api.add_resource(
+        TeamsActionsMessageMembersAPI,
+        format_url("teams/<int:team_id>/actions/message-members/"),
     )
 
     # Campaigns REST endpoints
