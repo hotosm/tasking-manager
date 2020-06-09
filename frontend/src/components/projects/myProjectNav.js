@@ -106,6 +106,19 @@ export const MyProjectNav = (props) => {
             >
               <FormattedMessage {...messages.favorited} />
             </FilterButton>
+            <FilterButton
+              query={fullProjectsQuery}
+              newQueryParams={{
+                favoritedByMe: undefined,
+                mappedByMe: undefined,
+                managedByMe: 1,
+                status: 'PUBLISHED',
+              }}
+              setQuery={setQuery}
+              isActive={isActiveButton('managedByMe', fullProjectsQuery)}
+            >
+              <FormattedMessage {...messages.managed} />
+            </FilterButton>
           </>
         )}
         {props.management && (userDetails.role === 'ADMIN' || isOrgManager) && (
