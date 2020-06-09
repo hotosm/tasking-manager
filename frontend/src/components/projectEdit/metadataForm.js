@@ -122,6 +122,7 @@ export const MetadataForm = () => {
             <FormattedMessage {...messages.idPresets} />
           </label>
           <Select
+            classNamePrefix="react-select"
             isClearable={true}
             isMulti={true}
             options={presets}
@@ -151,6 +152,7 @@ export const MetadataForm = () => {
           <FormattedMessage {...messages.organisationDescription} />
         </p>
         <Select
+          classNamePrefix="react-select"
           isClearable={false}
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.organisationId}
@@ -173,6 +175,7 @@ export const MetadataForm = () => {
           <FormattedMessage {...messages.campaign} />
         </label>
         <Select
+          classNamePrefix="react-select"
           isClearable={false}
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.id}

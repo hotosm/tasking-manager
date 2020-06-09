@@ -442,6 +442,7 @@
   "project.nav.contributed": "Contributed",
   "project.nav.allprojects": "All",
   "project.nav.active": "Active",
+  "project.nav.managed": "Managed by me",
   "project.nav.created": "Created by me",
   "project.nav.draft": "Draft",
   "project.nav.archived": "Archived",

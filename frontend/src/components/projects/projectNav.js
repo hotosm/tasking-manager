@@ -8,6 +8,7 @@ import { useExploreProjectsQueryParams, stringify } from '../../hooks/UseProject
 import { MappingLevelMessage } from '../mappingLevel';
 import { Dropdown } from '../dropdown';
 import { ProjectSearchBox } from './projectSearchBox';
+import ClearFilters from './clearFilters';
 import { OrderBySelector } from './orderBy';
 import { SwitchToggle } from '../formInputs';
 
@@ -98,12 +99,12 @@ export const ProjectNav = (props) => {
             >
               <FormattedMessage {...messages.filters} />
             </Link>
-            <OrderBySelector setQuery={setQuery} allQueryParams={fullProjectsQuery} />
-            {!filterIsEmpty && (
-              <Link to="./" className="red link ph3 f6 pv2 mv2 mh1 fr dn dib-l">
-                <FormattedMessage {...messages.clearFilters} />
-              </Link>
-            )}
+            <OrderBySelector
+              setQuery={setQuery}
+              allQueryParams={fullProjectsQuery}
+              className="f6"
+            />
+            {!filterIsEmpty && <ClearFilters url="./" className="mv2 mh1 fr dn dib-l" />}
 
             <ProjectSearchBox
               className="dib fr mh1"

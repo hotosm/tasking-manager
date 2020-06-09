@@ -59,6 +59,7 @@ export function OrganisationSelect({ className }: Object) {
     <Field name="organisation_id" className={className} required>
       {(props) => (
         <Select
+          classNamePrefix="react-select"
           isClearable={false}
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.organisationId}
@@ -94,6 +95,7 @@ export function UserCountrySelect({ className }: Object) {
     <Field name="country" className={className}>
       {(props) => (
         <Select
+          classNamePrefix="react-select"
           isClearable={false}
           options={options}
           placeholder={

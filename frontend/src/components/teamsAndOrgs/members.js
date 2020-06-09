@@ -60,6 +60,7 @@ export function Members({
         <div className="cf mb1">
           {editMode && (
             <AsyncSelect
+              classNamePrefix="react-select"
               isMulti
               cacheOptions
               defaultOptions

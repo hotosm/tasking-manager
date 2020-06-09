@@ -247,3 +247,36 @@ div.messageBodyLinks {
 .overflow-empty {
   text-overflow: "";
 }
+
+.react-select {
+  &__control {
+    border-color: $grey-light !important;
+    min-height: 1.5rem !important;
+    border-radius: .125rem !important;
+
+    &--is-focused {
+      box-shadow: 0 0 1px $grey-light !important;
+    }
+
+    &:hover {
+      border-color: $grey-light !important;
+    }
+  }
+
+  &__placeholder {
+    color: $blue-dark !important;
+  }
+
+  &__option {
+    color: $blue-dark !important;
+
+    &:hover, &:active, &--is-focused {
+      background-color: $tan !important;
+      cursor: pointer;
+    }
+  
+    &--is-selected {
+      background-color: $white !important;
+    }
+  }
+}
