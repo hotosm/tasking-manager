@@ -92,6 +92,10 @@ export default defineMessages({
     id: 'project.nav.active',
     defaultMessage: 'Active',
   },
+  managed: {
+    id: 'project.nav.managed',
+    defaultMessage: 'Managed by me',
+  },
   created: {
     id: 'project.nav.created',
     defaultMessage: 'Created by me',

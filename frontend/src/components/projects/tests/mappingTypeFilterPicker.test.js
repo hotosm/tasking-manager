@@ -1,13 +1,8 @@
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
-import { IntlProvider } from 'react-intl';
 
+import { createComponentWithIntl } from '../../../utils/testWithIntl';
 import { MappingTypeFilterPicker } from '../mappingTypeFilterPicker';
 import { RoadIcon } from '../../svgIcons';
-
-const createComponentWithIntl = (children, props = { locale: 'en' }) => {
-  return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
-};
 
 it('mapping type options show the road icon', () => {
   const filtersForm = createComponentWithIntl(<MappingTypeFilterPicker />);
