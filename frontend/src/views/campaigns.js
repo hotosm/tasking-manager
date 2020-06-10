@@ -18,7 +18,6 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { CheckIcon, CloseIcon } from '../components/svgIcons';
 
 
 export function ListCampaigns() {
