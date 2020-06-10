@@ -135,15 +135,6 @@ export function CreateCampaign() {
   );
 }
 
-const ServerMessage = () => {
-  return (
-    <div className="red ba b--red pa2 br1 dib pa2">
-      <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
-      <FormattedMessage {...messages.updateError} />
-    </div>
-  );
-};
-
 export function EditCampaign(props) {
   useSetTitleTag('Edit campaign');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
