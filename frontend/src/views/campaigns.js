@@ -18,6 +18,8 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { CheckIcon, CloseIcon } from '../components/svgIcons';
+
 
 export function ListCampaigns() {
   useSetTitleTag('Manage campaigns');
@@ -50,6 +52,7 @@ export function ListCampaigns() {
 export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
   const token = useSelector((state) => state.auth.get('token'));
+  const [error, setError] = useState(null);
   const [newCampaignId, setNewCampaignId] = useState(null);
 
   useEffect(() => {
@@ -61,8 +64,18 @@ export function CreateCampaign() {
   const createCampaign = (payload) => {
     pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST').then((result) =>
       setNewCampaignId(result.campaignId),
-    );
+    )
+    .catch(e => {setError(e); console.log(e);});
   };
+
+  if (error) {
+    return (
+      <div className="red ba b--red pa2 br1 dib pa2">
+        <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
+        <FormattedMessage {...messages.duplicateCampaign} />
+      </div>
+    );
+  }
 
   return (
     <Form
@@ -70,6 +83,7 @@ export function CreateCampaign() {
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
+
             <div className="cf vh-100">
               <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
                 <FormattedMessage {...messages.newCampaign} />
@@ -108,6 +122,15 @@ export function CreateCampaign() {
     ></Form>
   );
 }
+
+const ServerMessage = () => {
+  return (
+    <div className="red ba b--red pa2 br1 dib pa2">
+      <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
+      <FormattedMessage {...messages.updateError} />
+    </div>
+  );
+};
 
 export function EditCampaign(props) {
   useSetTitleTag('Edit campaign');

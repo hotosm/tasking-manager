@@ -99,13 +99,16 @@ class CampaignService:
     @staticmethod
     def create_campaign(campaign_dto: NewCampaignDTO):
         campaign = Campaign.from_dto(campaign_dto)
-        campaign.create()
-        if campaign_dto.organisations:
-            for org_id in campaign_dto.organisations:
-                organisation = OrganisationService.get_organisation_by_id(org_id)
-                campaign.organisation.append(organisation)
-            db.session.commit()
-        return campaign
+        try:
+            campaign.create()
+            if campaign_dto.organisations:
+                for org_id in campaign_dto.organisations:
+                    organisation = OrganisationService.get_organisation_by_id(org_id)
+                    campaign.organisation.append(organisation)
+                db.session.commit()
+            return campaign
+        except ValueError:
+            raise ValueError("Campaign name already present")
 
     @staticmethod
     def create_campaign_project(dto: CampaignProjectDTO):

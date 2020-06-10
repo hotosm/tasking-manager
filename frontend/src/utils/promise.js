@@ -21,7 +21,7 @@ export function handleErrors(response) {
 
   let text = response.statusText;
   if (response.status === 409) {
-    text = 'CONFLICT';
+    text = 'Duplicate value creation';
   }
 
   throw Error(text);
