@@ -569,4 +569,8 @@ export default defineMessages({
     id: 'pages.edit_project.sections.custom_editor',
     defaultMessage: 'Custom Editor',
   },
+  duplicateCampaign: {
+    id: 'pages.create_campaign.duplicate',
+    defaultMessage: 'Campaign already exists'
+  }
 });

@@ -18,6 +18,8 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { CloseIcon } from '../components/svgIcons';
+
 
 export function ListCampaigns() {
   useSetTitleTag('Manage campaigns');
@@ -50,6 +52,7 @@ export function ListCampaigns() {
 export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
   const token = useSelector((state) => state.auth.get('token'));
+  const [error, setError] = useState(null);
   const [newCampaignId, setNewCampaignId] = useState(null);
 
   useEffect(() => {
@@ -61,15 +64,37 @@ export function CreateCampaign() {
   const createCampaign = (payload) => {
     pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST').then((result) =>
       setNewCampaignId(result.campaignId),
+    )
+    .catch(e => setError(e));
+  };
+
+
+  const ServerMessage = () => {
+    return (
+      <div className="red ba b--red pa2 br1 dib pa2">
+        <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
+        <FormattedMessage {...messages.duplicateCampaign} />
+      </div>
     );
+  };
+
+  const ErrorMessage = ({ error, success }) => {
+    let message = null;
+    if (error !== null) {
+      message = <ServerMessage />;
+    }
+
+    return <div className="db mt3">{message}</div>;
   };
 
   return (
     <Form
       onSubmit={(values) => createCampaign(values)}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
+
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
+
             <div className="cf vh-100">
               <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
                 <FormattedMessage {...messages.newCampaign} />
@@ -83,6 +108,7 @@ export function CreateCampaign() {
                 </div>
               </div>
               <div className="w-40-l w-100 fl pl5-l pl0 "></div>
+              <ErrorMessage error={error} />
             </div>
             <div className="fixed left-0 bottom-0 cf bg-white h3 w-100">
               <div className="w-80-ns w-60-m w-50 h-100 fl tr">
