@@ -1,4 +1,6 @@
 from backend import db
+from flask import current_app
+from sqlalchemy.exc import IntegrityError
 from backend.models.dtos.campaign_dto import (
     CampaignDTO,
     NewCampaignDTO,
@@ -106,9 +108,11 @@ class CampaignService:
                     organisation = OrganisationService.get_organisation_by_id(org_id)
                     campaign.organisation.append(organisation)
                 db.session.commit()
-            return campaign
-        except ValueError:
-            raise ValueError("Campaign name already present")
+        except IntegrityError as e:
+            current_app.logger.info("Integrity error: {}".format(e.args[0]))
+            raise ValueError()
+
+        return campaign
 
     @staticmethod
     def create_campaign_project(dto: CampaignProjectDTO):

@@ -65,22 +65,33 @@ export function CreateCampaign() {
     pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST').then((result) =>
       setNewCampaignId(result.campaignId),
     )
-    .catch(e => {setError(e); console.log(e);});
+    .catch(e => setError(e));
   };
 
-  if (error) {
+
+  const ServerMessage = () => {
     return (
       <div className="red ba b--red pa2 br1 dib pa2">
         <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
         <FormattedMessage {...messages.duplicateCampaign} />
       </div>
     );
-  }
+  };
+
+  const ErrorMessage = ({ error, success }) => {
+    let message = null;
+    if (error !== null) {
+      message = <ServerMessage />;
+    }
+
+    return <div className="db mt3">{message}</div>;
+  };
 
   return (
     <Form
       onSubmit={(values) => createCampaign(values)}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
+
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
 
@@ -97,6 +108,7 @@ export function CreateCampaign() {
                 </div>
               </div>
               <div className="w-40-l w-100 fl pl5-l pl0 "></div>
+              <ErrorMessage error={error} />
             </div>
             <div className="fixed left-0 bottom-0 cf bg-white h3 w-100">
               <div className="w-80-ns w-60-m w-50 h-100 fl tr">

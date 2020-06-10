@@ -305,8 +305,8 @@ class CampaignsAllAPI(Resource):
         try:
             campaign = CampaignService.create_campaign(campaign_dto)
             return {"campaignId": campaign.id}, 200
-        except ValueError as e:
-            error_msg = f"Campaign POST - {str(e)}"
+        except ValueError:
+            error_msg = "Campaign POST - name already exists"
             return {"Error": error_msg}, 409
         except Exception as e:
             error_msg = f"Campaign POST - unhandled error: {str(e)}"
