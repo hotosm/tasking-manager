@@ -45,7 +45,7 @@ export function OrderBySelector(props) {
       type: 'DESC',
     },
   ];
-  const onSortSelect = arr => {
+  const onSortSelect = (arr) => {
     if (arr.length === 1) {
       props.setQuery(
         {
@@ -68,7 +68,7 @@ export function OrderBySelector(props) {
       value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}` || []}
       options={options}
       display={<FormattedMessage {...messages.sortBy} />}
-      className={`ba b--grey-light bg-white mr1 f6 v-mid pv2 ${props.className || ''}`}
+      className={`ba b--grey-light bg-white mr1 v-mid pv2 ${props.className || ''}`}
     />
   );
 }

@@ -8,7 +8,7 @@ import { Button } from '../button';
 import { useTagAPI } from '../../hooks/UseTagAPI';
 import { useExploreProjectsQueryParams } from '../../hooks/UseProjectsQueryAPI';
 import { MappingTypeFilterPicker } from './mappingTypeFilterPicker';
-import { TagFilterPickerCheckboxes } from './tagFilterPicker';
+import { ProjectFilterSelect } from './filterSelectFields';
 import { CommaArrayParam } from '../../utils/CommaArrayParam';
 import { formatFilterCountriesData } from '../../utils/countries';
 
@@ -62,32 +62,32 @@ export const MoreFiltersForm = (props) => {
         />
       </fieldset>
 
-      <TagFilterPickerCheckboxes
+      <ProjectFilterSelect
         fieldsetName="campaign"
         fieldsetStyle={fieldsetStyle}
         titleStyle={titleStyle}
         selectedTag={campaignInQuery}
-        tagOptionsFromAPI={campaignAPIState}
+        options={campaignAPIState}
         setQueryForChild={setFormQuery}
         allQueryParamsForChild={formQuery}
       />
 
-      <TagFilterPickerCheckboxes
+      <ProjectFilterSelect
         fieldsetName="organisation"
         fieldsetStyle={`${fieldsetStyle} mt3`}
         titleStyle={titleStyle}
         selectedTag={orgInQuery}
-        tagOptionsFromAPI={orgAPIState}
+        options={orgAPIState}
         setQueryForChild={setFormQuery}
         allQueryParamsForChild={formQuery}
       />
 
-      <TagFilterPickerCheckboxes
+      <ProjectFilterSelect
         fieldsetName="location"
         fieldsetStyle={`${fieldsetStyle} mt3`}
         titleStyle={titleStyle}
         selectedTag={countryInQuery}
-        tagOptionsFromAPI={countriesAPIState}
+        options={countriesAPIState}
         setQueryForChild={setFormQuery}
         allQueryParamsForChild={formQuery}
       />

@@ -57,6 +57,7 @@ export const ImageryForm = () => {
           <FormattedMessage {...messages.license} />
         </label>
         <Select
+          classNamePrefix="react-select"
           isClearable={true}
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.licenseId}

@@ -26,6 +26,7 @@ const Contributions = (props) => {
   const MappingLevelSelect = () => {
     return (
       <Select
+        classNamePrefix="react-select"
         isClearable={false}
         options={mappingLevels}
         onChange={(value) => setLevel(value)}
