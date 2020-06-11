@@ -36,6 +36,7 @@ class Organisation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(512), nullable=False, unique=True)
     logo = db.Column(db.String)  # URL of a logo
+    description = db.Column(db.String)
     url = db.Column(db.String)
 
     managers = db.relationship(
@@ -59,6 +60,7 @@ class Organisation(db.Model):
 
         new_org.name = new_organisation_dto.name
         new_org.logo = new_organisation_dto.logo
+        new_org.description = new_organisation_dto.description
         new_org.url = new_organisation_dto.url
 
         for manager in new_organisation_dto.managers:
@@ -160,6 +162,7 @@ class Organisation(db.Model):
         organisation_dto.organisation_id = self.id
         organisation_dto.name = self.name
         organisation_dto.logo = self.logo
+        organisation_dto.description = self.description
         organisation_dto.url = self.url
         organisation_dto.managers = []
         for manager in self.managers:

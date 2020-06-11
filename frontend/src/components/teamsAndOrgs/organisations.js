@@ -193,6 +193,12 @@ export function OrgInformation(props) {
       </div>
       <div className="cf">
         <label className={labelClasses}>
+          <FormattedMessage {...messages.description} />
+        </label>
+        <Field name="description" component="textarea" className={fieldClasses} />
+      </div>
+      <div className="cf">
+        <label className={labelClasses}>
           <FormattedMessage {...messages.image} />
         </label>
         {IMAGE_UPLOAD_SERVICE ? (
