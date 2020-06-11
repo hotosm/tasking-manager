@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from '@reach/router';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
@@ -32,12 +33,11 @@ export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Obj
           }}
         />
       </div>
-      <Button
-        className="bg-red white"
-        onClick={() => navigate(`/projects/${projectId}/${action}/`)}
-      >
-        <FormattedMessage {...messages.goToProject} values={{ project: projectId }} />
-      </Button>
+      <Link to={`/projects/${projectId}/${action}/`}>
+        <Button className="bg-red white">
+          <FormattedMessage {...messages.goToProject} values={{ project: projectId }} />
+        </Button>
+      </Link>
     </>
   );
 }
