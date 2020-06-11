@@ -436,7 +436,7 @@ export default defineMessages({
   },
   taskSplittedDescription: {
     id: 'project.tasks.history.splitted.description',
-    defaultMessage: 'The task {id} was splitted and its history is not available anymore',
+    defaultMessage: 'The task {id} was split and its history is not available anymore',
   },
   taskData: {
     id: 'project.tasks.activity.data.links',
