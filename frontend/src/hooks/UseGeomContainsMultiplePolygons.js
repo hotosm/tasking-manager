@@ -5,7 +5,7 @@ export function useContainsMultiplePolygons(geom) {
   useEffect(() => {
     if (geom && geom.features && geom.features.length) {
       if (geom.features.length > 1) setContainsMultiplePolygons(true);
-      if (geom.features.length === 1 && geom.features[0].type === 'MultiPolygon') {
+      if (geom.features.length === 1 && geom.features[0].geometry.type === 'MultiPolygon') {
         setContainsMultiplePolygons(true);
       }
     }
