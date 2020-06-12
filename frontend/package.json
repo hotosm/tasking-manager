@@ -30,7 +30,7 @@
     "downshift-hooks": "^0.8.1",
     "final-form": "^4.20.0",
     "fromentries": "^1.2.0",
-    "humanize-duration": "^3.23.0",
+    "humanize-duration": "^3.23.1",
     "immutable": "^4.0.0-rc.12",
     "mapbox-gl": "^1.11.0",
     "mapbox-gl-draw-circle": "^1.1.1",
