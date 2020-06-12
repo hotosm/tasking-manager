@@ -571,6 +571,6 @@ export default defineMessages({
   },
   duplicateCampaign: {
     id: 'pages.create_campaign.duplicate',
-    defaultMessage: 'Campaign already exists'
-  }
+    defaultMessage: 'A campaign with the same name already exists',
+  },
 });

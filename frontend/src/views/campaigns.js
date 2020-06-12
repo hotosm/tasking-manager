@@ -20,7 +20,6 @@ import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { CloseIcon } from '../components/svgIcons';
 
-
 export function ListCampaigns() {
   useSetTitleTag('Manage campaigns');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
@@ -62,12 +61,10 @@ export function CreateCampaign() {
   }, [newCampaignId]);
 
   const createCampaign = (payload) => {
-    pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST').then((result) =>
-      setNewCampaignId(result.campaignId),
-    )
-    .catch(e => setError(e));
+    pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
+      .then((result) => setNewCampaignId(result.campaignId))
+      .catch((e) => setError(e));
   };
-
 
   const ServerMessage = () => {
     return (
@@ -91,10 +88,8 @@ export function CreateCampaign() {
     <Form
       onSubmit={(values) => createCampaign(values)}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
-
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
-
             <div className="cf vh-100">
               <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
                 <FormattedMessage {...messages.newCampaign} />
@@ -105,10 +100,9 @@ export function CreateCampaign() {
                     <FormattedMessage {...messages.campaignInfo} />
                   </h3>
                   <CampaignInformation />
+                  <ErrorMessage error={error} />
                 </div>
               </div>
-              <div className="w-40-l w-100 fl pl5-l pl0 "></div>
-              <ErrorMessage error={error} />
             </div>
             <div className="fixed left-0 bottom-0 cf bg-white h3 w-100">
               <div className="w-80-ns w-60-m w-50 h-100 fl tr">
