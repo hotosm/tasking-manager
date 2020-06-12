@@ -8,6 +8,30 @@ import { createProject } from '../../store/actions/project';
 import { store } from '../../store';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
+const removeRepeatedTasks = (grid) => {
+  let uniqueTasks = [];
+
+  grid.features.forEach((f) => {
+    let repeated = false;
+
+    uniqueTasks.forEach((u) => {
+      if (u.properties.x === f.properties.x && u.properties.y === f.properties.y) {
+        repeated = true;
+      }
+    });
+
+    if (repeated === false) {
+      uniqueTasks.push(f);
+    } else {
+      throw new Error('repeated task');
+    }
+  });
+
+  grid.features = uniqueTasks;
+
+  return grid;
+};
+
 const handleCreate = (metadata, updateMetadata, projectName, token, cloneProjectData, setError) => {
   updateMetadata({ ...metadata, projectName: projectName });
   store.dispatch(createProject(metadata));
@@ -15,7 +39,7 @@ const handleCreate = (metadata, updateMetadata, projectName, token, cloneProject
   let projectParams = {
     areaOfInterest: metadata.geom,
     projectName: metadata.projectName,
-    tasks: metadata.taskGrid,
+    tasks: removeRepeatedTasks(metadata.taskGrid),
     arbitraryTasks: metadata.arbitraryTasks,
   };
 
@@ -24,15 +48,15 @@ const handleCreate = (metadata, updateMetadata, projectName, token, cloneProject
     projectParams.cloneFromProjectId = cloneProjectData.id;
   }
   pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
-    .then(res => navigate(`/manage/projects/${res.projectId}`))
-    .catch(e => setError(e));
+    .then((res) => navigate(`/manage/projects/${res.projectId}`))
+    .catch((e) => setError(e));
 };
 
 export default function Review({ metadata, updateMetadata, token, projectId, cloneProjectData }) {
   const [error, setError] = useState(null);
   const projectName = metadata.projectName;
 
-  const setProjectName = event => {
+  const setProjectName = (event) => {
     event.preventDefault();
     updateMetadata({ ...metadata, projectName: event.target.value });
   };
