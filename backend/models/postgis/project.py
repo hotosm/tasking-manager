@@ -14,6 +14,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 import requests
 
 from backend import db
+from backend.models.dtos.campaign_dto import CampaignDTO
 from backend.models.dtos.project_dto import (
     ProjectDTO,
     DraftProjectDTO,
@@ -1063,6 +1064,23 @@ class Project(db.Model):
         objs = [Interest.get_by_id(i) for i in interests_ids]
         self.interests.extend(objs)
         db.session.commit()
+
+    @staticmethod
+    def get_project_campaigns(project_id: int):
+        query = (
+            Campaign.query.join(campaign_projects)
+            .filter(campaign_projects.c.project_id == project_id)
+            .all()
+        )
+        campaign_list = []
+        for campaign in query:
+            campaign_dto = CampaignDTO()
+            campaign_dto.id = campaign.id
+            campaign_dto.name = campaign.name
+
+            campaign_list.append(campaign_dto)
+
+        return campaign_list
 
 
 # Add index on project geometry
