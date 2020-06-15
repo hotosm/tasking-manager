@@ -371,7 +371,7 @@ class ListSearchResultDTO(Model):
     priority = StringType(required=True)
     organisation_name = StringType(serialized_name="organisationName")
     organisation_logo = StringType(serialized_name="organisationLogo")
-    campaign = StringType()
+    campaigns = ListType(ModelType(CampaignDTO), default=[])
     percent_mapped = IntType(serialized_name="percentMapped")
     percent_validated = IntType(serialized_name="percentValidated")
     status = StringType(serialized_name="status")
