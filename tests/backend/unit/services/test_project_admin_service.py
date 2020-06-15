@@ -198,6 +198,8 @@ class TestProjectAdminService(unittest.TestCase):
         info.description = "Test Desc"
         info.short_description = "Short Desc"
         info.instructions = "Instruct"
+        info.metrics = "Test Metrics"
+        info.quality_assurance = "Test quality assurance"
         locales.append(info)
 
         # Act

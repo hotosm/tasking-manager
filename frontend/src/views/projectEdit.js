@@ -9,6 +9,7 @@ import projectEditMessages from '../components/projectEdit/messages';
 import { DescriptionForm } from '../components/projectEdit/descriptionForm';
 import { InstructionsForm } from '../components/projectEdit/instructionsForm';
 import { MetadataForm } from '../components/projectEdit/metadataForm';
+import { MetricsForm } from '../components/projectEdit/metricsForm';
 import { PriorityAreasForm } from '../components/projectEdit/priorityAreasForm';
 import { ImageryForm } from '../components/projectEdit/imageryForm';
 import { PermissionsForm } from '../components/projectEdit/permissionsForm';
@@ -127,6 +128,7 @@ export function ProjectEdit({ id }) {
       { value: 'description', required: true },
       { value: 'instructions', required: true },
       { value: 'metadata', required: true },
+      { value: 'metrics' },
       { value: 'priority_areas' },
       { value: 'imagery' },
       { value: 'permissions' },
@@ -159,6 +161,9 @@ export function ProjectEdit({ id }) {
         return <InstructionsForm languages={languages} />;
       case 'metadata':
         return <MetadataForm />;
+      case 'metrics':
+        // return <DescriptionForm languages={languages} />;
+        return <MetricsForm languages={languages} />;
       case 'imagery':
         return <ImageryForm />;
       case 'permissions':

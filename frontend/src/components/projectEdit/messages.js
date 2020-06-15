@@ -380,6 +380,24 @@ export default defineMessages({
     defaultMessage:
       'Optional id of a saved OSMCha filter to apply when viewing the project in OSMCha, if you desire custom filtering. Note that this replaces all standard filters. Example: 095e8b31-b3cb-4b36-a106-02826fb6a109 (for convenience, you can also paste an OSMCha URL here that uses a saved filter and the filter id will be extracted for you).',
   },
+  qualityAssurance: {
+    id: 'projects.formInputs.qualityAssurance',
+    defaultMessage: 'Quality Assurance',
+  },
+  qualityAssuranceDescription: {
+    id: 'projects.formInputs.qualityAssurance.description',
+    defaultMessage:
+    'Default Quality Assurance Description',
+  },
+  metrics: {
+    id: 'projects.formInputs.metrics',
+    defaultMessage: 'Metrics',
+  },
+  metricsDescription: {
+    id: 'projects.formInputs.metrics.description',
+    defaultMessage: 
+    'Default Metrics Explanation',
+  },
   priorityAreasDescription: {
     id: 'projects.formInputs.priority_areas.description',
     defaultMessage:

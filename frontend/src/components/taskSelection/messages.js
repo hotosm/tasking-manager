@@ -162,6 +162,14 @@ export default defineMessages({
     id: 'project.instructions',
     defaultMessage: 'Instructions',
   },
+  metrics: {
+    id: 'project.metrics',
+    defaultMessage: 'metrics',
+  },
+  qualityAssurance: {
+    id: 'project.qualityAssurance',
+    defaultMessage: 'Quality Assurance',
+  },
   changesetComment: {
     id: 'project.changesetComment',
     defaultMessage: 'Changeset comment',

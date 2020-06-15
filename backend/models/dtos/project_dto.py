@@ -148,6 +148,8 @@ class ProjectInfoDTO(Model):
     per_task_instructions = StringType(
         default="", serialized_name="perTaskInstructions"
     )
+    metrics = StringType(default="")
+    quality_assurance = StringType(default="", serialized_name="qualityAssurance")
 
 
 class CustomEditorDTO(Model):

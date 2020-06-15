@@ -16,6 +16,8 @@ class ProjectInfo(db.Model):
     short_description = db.Column(db.String)
     description = db.Column(db.String)
     instructions = db.Column(db.String)
+    metrics = db.Column(db.String)
+    quality_assurance = db.Column(db.String)
     project_id_str = db.Column(db.String)
     text_searchable = db.Column(
         TSVECTOR
@@ -54,6 +56,8 @@ class ProjectInfo(db.Model):
         self.description = dto.description
         self.instructions = dto.instructions
         self.per_task_instructions = dto.per_task_instructions
+        self.metrics = dto.metrics
+        self.quality_assurance = dto.quality_assurance
 
     @staticmethod
     def get_dto_for_locale(project_id, locale, default_locale="en") -> ProjectInfoDTO:
@@ -114,6 +118,14 @@ class ProjectInfo(db.Model):
             self.per_task_instructions
             if self.per_task_instructions
             else default_locale.per_task_instructions
+        )
+        project_info_dto.metrics = (
+            self.metrics if self.metrics else default_locale.metrics
+        )
+        project_info_dto.quality_assurance = (
+            self.quality_assurance
+            if self.quality_assurance
+            else default_locale.quality_assurance
         )
 
         return project_info_dto

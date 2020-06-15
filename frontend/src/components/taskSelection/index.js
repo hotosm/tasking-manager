@@ -20,6 +20,8 @@ import { TaskList } from './taskList';
 import { TasksMapLegend } from './legend';
 import { ProjectInstructions } from './instructions';
 import { ChangesetCommentTags } from './changesetComment';
+import { ProjectMetrics } from './metrics';
+import { QualityAssurance } from './qualityAssurance';
 import { ProjectHeader } from '../projectDetail/header';
 import Contributions from './contributions';
 import { UserPermissionErrorContent } from './permissionErrorModal';
@@ -294,6 +296,14 @@ export function TaskSelection({ project, type, loading }: Object) {
                   </span>
                   <span
                     className={`mr4 pb2 pointer ${
+                      activeSection === 'metrics' && 'bb b--blue-dark'
+                    }`}
+                    onClick={() => setActiveSection('metrics')}
+                  >
+                    <FormattedMessage {...messages.metrics} />
+                  </span>
+                  <span
+                    className={`mr4 pb2 pointer ${
                       activeSection === 'contributions' && 'bb b--blue-dark'
                     }`}
                     onClick={() => {
@@ -325,6 +335,16 @@ export function TaskSelection({ project, type, loading }: Object) {
                         instructions={project.projectInfo && project.projectInfo.instructions}
                       />
                       <ChangesetCommentTags tags={project.changesetComment} />
+                    </>
+                  ) : null}
+                  {activeSection === 'metrics' ? (
+                    <>
+                      <ProjectMetrics
+                        metrics={project.projectInfo && project.projectInfo.metrics}
+                      />
+                      <QualityAssurance 
+                        qualityAssurance={project.projectInfo.qualityAssurance} 
+                      />
                     </>
                   ) : null}
                   {activeSection === 'contributions' ? (

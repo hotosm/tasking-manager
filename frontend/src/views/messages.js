@@ -545,6 +545,10 @@ export default defineMessages({
     id: 'pages.edit_project.sections.metadata',
     defaultMessage: 'Metadata',
   },
+  projectEditSection_metrics: {
+    id: 'pages.edit_project.sections.metrics',
+    defaultMessage: 'Metrics',
+  },
   projectEditSection_priority_areas: {
     id: 'pages.edit_project.sections.priority_areas',
     defaultMessage: 'Priority areas',
