@@ -1,5 +1,5 @@
 from schematics import Model
-from schematics.types import StringType, IntType, FloatType, BooleanType
+from schematics.types import StringType, IntType, FloatType, BooleanType, DateType
 from schematics.types.compound import ListType, ModelType
 from backend.models.dtos.mapping_dto import TaskHistoryDTO, TaskStatusDTO
 
@@ -15,6 +15,7 @@ class UserContribution(Model):
     total = IntType()
     task_ids = ListType(IntType, serialized_name="taskIds")
     name = StringType()
+    date_registered = DateType(serialized_name="dateRegistered")
 
 
 class ProjectContributionsDTO(Model):

@@ -170,6 +170,10 @@ export default defineMessages({
     id: 'project.contributions',
     defaultMessage: 'contributions',
   },
+  registered: {
+    id: 'project.contributions.registered',
+    defaultMessage: 'Registered on',
+  },
   imagery: {
     id: 'project.imagery',
     defaultMessage: 'Imagery',
@@ -546,6 +550,11 @@ export default defineMessages({
     id: 'project.level.beginner',
     defaultMessage: 'Beginner',
   },
+  mappingLevelNEWUSER: {
+    id: 'project.level.new_users',
+    defaultMessage: 'New users',
+  },
+
   permissionErrorTitle: {
     id: 'project.permissions.error.title',
     defaultMessage: 'You are not ready to work on this project...',
