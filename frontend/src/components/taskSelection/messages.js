@@ -551,8 +551,8 @@ export default defineMessages({
     defaultMessage: 'Beginner',
   },
   mappingLevelNEWUSER: {
-    id: 'project.level.new_user',
-    defaultMessage: 'New user',
+    id: 'project.level.new_users',
+    defaultMessage: 'New users',
   },
 
   permissionErrorTitle: {

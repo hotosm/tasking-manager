@@ -1,19 +1,41 @@
 import React, { useState } from 'react';
 import Select from 'react-select';
 import ReactPlaceholder from 'react-placeholder';
-import { injectIntl } from 'react-intl';
+import { FormattedMessage, injectIntl, useIntl } from 'react-intl';
 
 import messages from './messages.js';
 import { UserAvatar } from '../user/avatar';
 import { CheckCircle } from '../checkCircle';
-import { MappedIcon, ValidatedIcon, AsteriskIcon, StarIcon, FullStarIcon } from '../svgIcons';
+import { MappedIcon, ValidatedIcon, AsteriskIcon, HalfStarIcon, FullStarIcon } from '../svgIcons';
 import ProjectProgressBar from '../projectcard/projectProgressBar';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 import ReactTooltip from 'react-tooltip';
-import { FormattedMessage } from 'react-intl';
+
+export const MappingLevelIcon = ({ mappingLevel }) => {
+  if (['ADVANCED', 'INTERMEDIATE'].includes(mappingLevel)) {
+    return (
+      <>
+        <FormattedMessage {...messages[`mappingLevel${mappingLevel}`]}>
+          {(msg) => (
+            <span className="blue-grey ttl" data-tip={msg}>
+              {mappingLevel === 'ADVANCED' ? (
+                <FullStarIcon className="h1 w1 v-mid pb1" />
+              ) : (
+                <HalfStarIcon className="h1 w1 v-mid pb1" />
+              )}
+            </span>
+          )}
+        </FormattedMessage>
+        <ReactTooltip />
+      </>
+    );
+  }
+  return null;
+};
 
 const Contributions = (props) => {
+  const { formatDate } = useIntl();
   const mappingLevels = [
     { value: 'ALL', label: props.intl.formatMessage(messages.mappingLevelALL) },
     { value: 'ADVANCED', label: props.intl.formatMessage(messages.mappingLevelADVANCED) },
@@ -26,19 +48,6 @@ const Contributions = (props) => {
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(
     props.tasks,
   );
-
-  const MappingLevelSelect = () => {
-    return (
-      <Select
-        classNamePrefix="react-select"
-        isClearable={false}
-        options={mappingLevels}
-        onChange={(value) => setLevel(value)}
-        className="w-30 fr mb3 pointer"
-        value={level}
-      />
-    );
-  };
 
   const checkActiveUserAndStatus = (status, username) =>
     props.activeStatus === status && props.activeUser === username
@@ -82,34 +91,6 @@ const Contributions = (props) => {
       .filter((u) => u.dateObj > monthFiltered);
   }
 
-  const MappingLevelIcon = ({ mappingLevel }) => {
-    let numberofIcons = null;
-    switch (mappingLevel) {
-      case 'BEGINNER':
-        numberofIcons = 1;
-        break;
-      case 'INTERMEDIATE':
-        numberofIcons = 2;
-        break;
-      case 'ADVANCED':
-        numberofIcons = 3;
-        break;
-      default:
-        return null;
-    }
-
-    let icons = [];
-    for (let i = 0; i < numberofIcons; i++) {
-      icons.push(<FullStarIcon className="h1 w1" />);
-    }
-    const emptyIcons = 3 - numberofIcons;
-    for (let i = 0; i < emptyIcons; i++) {
-      icons.push(<StarIcon className="h1 w1" />);
-    }
-
-    return <div>{icons}</div>;
-  };
-
   return (
     <div className="w-100 f5 pr4-l pr2 cf blue-dark bg-white">
       <div className="w-100 fr cf">
@@ -120,7 +101,14 @@ const Contributions = (props) => {
           className="pt1 pb3"
         />
         <OSMChaButton project={props.project} className="bg-white blue-light bn mv2" />
-        <MappingLevelSelect />
+        <Select
+          classNamePrefix="react-select"
+          isClearable={false}
+          options={mappingLevels}
+          onChange={(value) => setLevel(value)}
+          className="w-30 fr mb3 pointer"
+          value={level}
+        />
       </div>
       <div className="w-100 fl cf">
         <ReactPlaceholder
@@ -136,41 +124,34 @@ const Contributions = (props) => {
                   props.activeUser === user.username ? 'b--blue-dark' : 'b--tan'
                 }`}
               >
-                <FormattedMessage {...messages.registered}>
-                  {(msg) => (
-                    <div
-                      className="w-20 fl dib truncate"
-                      data-tip={`${msg} ${user.dateRegistered}`}
-                    >
-                      <UserAvatar
-                        picture={user.pictureUrl}
-                        username={user.username}
-                        colorClasses="white bg-blue-grey"
-                      />
-                      <a
-                        className="blue-dark mr2 link"
-                        rel="noopener noreferrer"
-                        target="_blank"
-                        href={`/users/${user.username}`}
-                      >
-                        {user.username}
-                      </a>
-                    </div>
-                  )}
-                </FormattedMessage>
-                <ReactTooltip />
-                <div className="w-10 fl mt2">
-                  <FormattedMessage {...messages[`mappingLevel${user.mappingLevel}`]}>
+                <div className="w-40 fl dib truncate">
+                  <FormattedMessage {...messages.registered}>
                     {(msg) => (
-                      <span className="blue-grey ttl dib-ns dn" data-tip={msg}>
-                        <MappingLevelIcon mappingLevel={user.mappingLevel} />
-                      </span>
+                      <>
+                        <span data-tip={`${msg} ${formatDate(user.dateRegistered)}`}>
+                          <UserAvatar
+                            picture={user.pictureUrl}
+                            username={user.username}
+                            colorClasses="white bg-blue-grey"
+                          />
+                          <a
+                            className="blue-dark mr2 link"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            href={`/users/${user.username}`}
+                          >
+                            {user.username}
+                          </a>
+                        </span>
+                        <ReactTooltip />
+                      </>
                     )}
                   </FormattedMessage>
-                  <ReactTooltip />
+                  <MappingLevelIcon mappingLevel={user.mappingLevel} />
                 </div>
+
                 <div
-                  className="w-25 fl tr dib pointer pt2 truncate"
+                  className="w-20 fl tr dib pointer pt2 truncate"
                   onClick={() => displayTasks(user.taskIds, 'MAPPED', user.username)}
                 >
                   <MappedIcon className="h1 w1 blue-grey mr2" />
@@ -180,7 +161,7 @@ const Contributions = (props) => {
                   />
                 </div>
                 <div
-                  className="w-25 fl tr dib pointer pt2 truncate"
+                  className="w-20 fl tr dib pointer pt2 truncate"
                   onClick={() => displayTasks(user.taskIds, 'VALIDATED', user.username)}
                 >
                   <ValidatedIcon className="h1 w1 blue-grey mr2" />
