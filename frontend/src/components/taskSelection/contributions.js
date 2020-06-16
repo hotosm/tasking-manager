@@ -10,7 +10,6 @@ import { MappedIcon, ValidatedIcon, AsteriskIcon, HalfStarIcon, FullStarIcon } f
 import ProjectProgressBar from '../projectcard/projectProgressBar';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
-import ReactTooltip from 'react-tooltip';
 
 export const MappingLevelIcon = ({ mappingLevel }) => {
   if (['ADVANCED', 'INTERMEDIATE'].includes(mappingLevel)) {
@@ -18,7 +17,7 @@ export const MappingLevelIcon = ({ mappingLevel }) => {
       <>
         <FormattedMessage {...messages[`mappingLevel${mappingLevel}`]}>
           {(msg) => (
-            <span className="blue-grey ttl" data-tip={msg}>
+            <span className="blue-grey ttl" title={msg}>
               {mappingLevel === 'ADVANCED' ? (
                 <FullStarIcon className="h1 w1 v-mid pb1" />
               ) : (
@@ -27,15 +26,77 @@ export const MappingLevelIcon = ({ mappingLevel }) => {
             </span>
           )}
         </FormattedMessage>
-        <ReactTooltip />
       </>
     );
   }
   return null;
 };
 
-const Contributions = (props) => {
+function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
   const { formatDate } = useIntl();
+  const checkActiveUserAndStatus = (status, username) =>
+    activeStatus === status && activeUser === username ? 'bg-blue-dark' : 'bg-grey-light';
+
+  return (
+    <div
+      className={`w-100 cf pv3 ph3-ns ph1 ba bw1 mb2 ${
+        activeUser === user.username ? 'b--blue-dark' : 'b--tan'
+      }`}
+    >
+      <div className="w-40 fl dib truncate">
+        <FormattedMessage {...messages.registered}>
+          {(msg) => (
+            <>
+              <span title={`${msg} ${formatDate(user.dateRegistered)}`}>
+                <UserAvatar
+                  picture={user.pictureUrl}
+                  username={user.username}
+                  colorClasses="white bg-blue-grey"
+                />
+                <a
+                  className="blue-dark mr2 link"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href={`/users/${user.username}`}
+                >
+                  {user.username}
+                </a>
+              </span>
+            </>
+          )}
+        </FormattedMessage>
+        <MappingLevelIcon mappingLevel={user.mappingLevel} />
+      </div>
+
+      <div
+        className="w-20 fl tr dib pointer pt2 truncate"
+        onClick={() => displayTasks(user.taskIds, 'MAPPED', user.username)}
+      >
+        <MappedIcon className="h1 w1 blue-grey mr2" />
+        <span className="mr1 b self-start">{user.mapped}</span>
+        <CheckCircle className={`${checkActiveUserAndStatus('MAPPED', user.username)} white`} />
+      </div>
+      <div
+        className="w-20 fl tr dib pointer pt2 truncate"
+        onClick={() => displayTasks(user.taskIds, 'VALIDATED', user.username)}
+      >
+        <ValidatedIcon className="h1 w1 blue-grey mr2" />
+        <span className="mr1 b">{user.validated}</span>
+        <CheckCircle className={`${checkActiveUserAndStatus('VALIDATED', user.username)} white`} />
+      </div>
+      <div
+        className="w-20 fl tr dib pointer pt2 truncate"
+        onClick={() => displayTasks(user.taskIds, 'ALL', user.username)}
+      >
+        <AsteriskIcon className="h1 w1 blue-grey mr2" />
+        <span className="mr1 b">{user.total}</span>
+        <CheckCircle className={`${checkActiveUserAndStatus('ALL', user.username)} white`} />
+      </div>
+    </div>
+  );
+}
+
+const Contributions = (props) => {
   const mappingLevels = [
     { value: 'ALL', label: props.intl.formatMessage(messages.mappingLevelALL) },
     { value: 'ADVANCED', label: props.intl.formatMessage(messages.mappingLevelADVANCED) },
@@ -43,16 +104,15 @@ const Contributions = (props) => {
     { value: 'BEGINNER', label: props.intl.formatMessage(messages.mappingLevelBEGINNER) },
     { value: 'NEWUSER', label: props.intl.formatMessage(messages.mappingLevelNEWUSER) },
   ];
-
   const [level, setLevel] = useState(mappingLevels[0]);
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(
     props.tasks,
   );
 
-  const checkActiveUserAndStatus = (status, username) =>
-    props.activeStatus === status && props.activeUser === username
-      ? 'bg-blue-dark'
-      : 'bg-grey-light';
+  let contributionsArray = props.contribsData.userContributions || [];
+  if (level.value !== 'ALL' && level.value !== 'NEWUSER') {
+    contributionsArray = contributionsArray.filter((u) => u.mappingLevel === level.value);
+  }
 
   const displayTasks = (taskIds, status, user) => {
     if (props.activeStatus === status && user === props.activeUser) {
@@ -75,11 +135,6 @@ const Contributions = (props) => {
       props.selectTask(ids, status, user);
     }
   };
-
-  let contributionsArray = props.contribsData.userContributions || [];
-  if (level.value !== 'ALL' && level.value !== 'NEWUSER') {
-    contributionsArray = contributionsArray.filter((u) => u.mappingLevel === level.value);
-  }
 
   if (level.value === 'NEWUSER') {
     const monthFiltered = new Date();
@@ -119,69 +174,12 @@ const Contributions = (props) => {
         >
           {contributionsArray.map((user) => {
             return (
-              <div
-                className={`w-100 cf pv3 ph3-ns ph1 ba bw1 mb2 ${
-                  props.activeUser === user.username ? 'b--blue-dark' : 'b--tan'
-                }`}
-                key={user.username}
-              >
-                <div className="w-40 fl dib truncate">
-                  <FormattedMessage {...messages.registered}>
-                    {(msg) => (
-                      <>
-                        <span data-tip={`${msg} ${formatDate(user.dateRegistered)}`}>
-                          <UserAvatar
-                            picture={user.pictureUrl}
-                            username={user.username}
-                            colorClasses="white bg-blue-grey"
-                          />
-                          <a
-                            className="blue-dark mr2 link"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            href={`/users/${user.username}`}
-                          >
-                            {user.username}
-                          </a>
-                        </span>
-                        <ReactTooltip />
-                      </>
-                    )}
-                  </FormattedMessage>
-                  <MappingLevelIcon mappingLevel={user.mappingLevel} />
-                </div>
-
-                <div
-                  className="w-20 fl tr dib pointer pt2 truncate"
-                  onClick={() => displayTasks(user.taskIds, 'MAPPED', user.username)}
-                >
-                  <MappedIcon className="h1 w1 blue-grey mr2" />
-                  <span className="mr1 b self-start">{user.mapped}</span>
-                  <CheckCircle
-                    className={`${checkActiveUserAndStatus('MAPPED', user.username)} white`}
-                  />
-                </div>
-                <div
-                  className="w-20 fl tr dib pointer pt2 truncate"
-                  onClick={() => displayTasks(user.taskIds, 'VALIDATED', user.username)}
-                >
-                  <ValidatedIcon className="h1 w1 blue-grey mr2" />
-                  <span className="mr1 b">{user.validated}</span>
-                  <CheckCircle
-                    className={`${checkActiveUserAndStatus('VALIDATED', user.username)} white`}
-                  />
-                </div>
-                <div
-                  className="w-20 fl tr dib pointer pt2 truncate"
-                  onClick={() => displayTasks(user.taskIds, 'ALL', user.username)}
-                >
-                  <AsteriskIcon className="h1 w1 blue-grey mr2" />
-                  <span className="mr1 b">{user.total}</span>
-                  <CheckCircle
-                    className={`${checkActiveUserAndStatus('ALL', user.username)} white`}
-                  />
-                </div>
-              </div>
+              <Contributor
+                user={user}
+                activeUser={props.activeUser}
+                activeStatus={props.activeStatus}
+                displayTasks={displayTasks}
+              />
             );
           })}
         </ReactPlaceholder>
