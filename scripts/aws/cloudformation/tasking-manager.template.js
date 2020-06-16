@@ -20,8 +20,7 @@ const Parameters = {
   },
   DatabaseDump: {
     Type: 'String',
-    Description: 'Path to database dump on S3',
-    Default: 's3://example-bucket/tasking-manager.sql'
+    Description: 'Path to database dump on S3; Ex: s3://my-bkt/tm.sql'
   },
   NewRelicLicense: {
     Type: 'String',
@@ -70,8 +69,7 @@ const Parameters = {
   },
   TaskingManagerAppBaseUrl: {
     Type: 'String',
-    Description: 'TM_APP_BASE_URL',
-    Default: 'https://example.hotosm.org'
+    Description: 'TM_APP_BASE_URL; Ex: https://example.hotosm.org'
   },
   TaskingManagerEmailFromAddress: {
     Description: 'TM_EMAIL_FROM_ADDRESS',
@@ -115,9 +113,8 @@ const Parameters = {
     Type: 'String'
   },
   TaskingManagerURL: {
-    Description: 'URL for setting CNAME in Distribution',
-    Type: 'String',
-    Default: 'example.hotosm.org'
+    Description: 'URL for setting CNAME in Distribution; Ex: example.hotosm.org',
+    Type: 'String'
   }
 };
 
