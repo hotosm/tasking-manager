@@ -40,25 +40,29 @@ export default defineMessages({
     id: 'users.detail.waterwaysMapped',
     defaultMessage: 'Waterways mapped',
   },
-  tasksMapped: {
+  userMapped: {
     id: 'users.detail.tasksMapped',
-    defaultMessage: 'Tasks mapped',
+    defaultMessage: '{user} mapped',
   },
-  tasksValidated: {
+  you: {
+    id: 'users.detail.you',
+    defaultMessage: 'You',
+  },
+  userValidated: {
     id: 'users.detail.tasksValidated',
-    defaultMessage: 'Tasks validated',
+    defaultMessage: '{user} validated',
   },
-  tasksInvalidated: {
-    id: 'users.detail.tasksInvalidated',
-    defaultMessage: 'Tasks invalidated',
+  invalidated: {
+    id: 'users.detail.invalidated',
+    defaultMessage: 'Needed more mapping',
   },
-  tasksValidatedByOthers: {
-    id: 'users.detail.tasksValidatedByOthers',
-    defaultMessage: 'Tasks validated by others',
+  validated: {
+    id: 'users.detail.validated',
+    defaultMessage: 'Validated',
   },
-  tasksInvalidatedByOthers: {
-    id: 'users.detail.tasksInvalidatedByOthers',
-    defaultMessage: 'Tasks invalidated by others',
+  finished: {
+    id: 'users.detail.finished',
+    defaultMessage: 'Finished',
   },
   topProjectsMappedTitle: {
     id: 'users.detail.topProjectsMappedTitle',

@@ -3,11 +3,11 @@ import React from 'react';
 export class MappedIcon extends React.PureComponent {
   render() {
     return (
-      <svg viewBox="0 0 60 60" height="60" width="60" {...this.props}>
-        <g fill-rule="evenodd" fill="none" stroke-width="1" stroke="none">
-          <g fill-rule="nonzero" transform="translate(-766,-274)">
+      <svg viewBox="0 0 60 60" {...this.props}>
+        <g fillRule="evenodd" fill="none" strokeWidth="1" stroke="none">
+          <g fillRule="nonzero" transform="translate(-766,-274)">
             <g transform="translate(736,250)">
-              <g fill-opacity="0.25" fill="#929db3">
+              <g fillOpacity="0.25" fill="#929db3">
                 <g />
               </g>
               <g transform="translate(30,24)">
