@@ -359,6 +359,10 @@ export default defineMessages({
     id: 'projects.formInputs.name',
     defaultMessage: 'Name of the project',
   },
+  dueDate: {
+    id: 'projects.formInputs.dueDate',
+    defaultMessage: 'Due Date',
+  },
   description: {
     id: 'projects.formInputs.description',
     defaultMessage: 'Description',
