@@ -20,7 +20,8 @@ const Parameters = {
   },
   DatabaseDump: {
     Type: 'String',
-    Description: 'Path to database dump on S3'
+    Description: 'Path to database dump on S3',
+    Default: 's3://example-bucket/tasking-manager.sql'
   },
   NewRelicLicense: {
     Type: 'String',
@@ -69,7 +70,8 @@ const Parameters = {
   },
   TaskingManagerAppBaseUrl: {
     Type: 'String',
-    Description: 'TM_APP_BASE_URL'
+    Description: 'TM_APP_BASE_URL',
+    Default: 'https://example.hotosm.org'
   },
   TaskingManagerEmailFromAddress: {
     Description: 'TM_EMAIL_FROM_ADDRESS',
@@ -114,7 +116,8 @@ const Parameters = {
   },
   TaskingManagerURL: {
     Description: 'URL for setting CNAME in Distribution',
-    Type: 'String'
+    Type: 'String',
+    Default: 'example.hotosm.org'
   }
 };
 
@@ -548,6 +551,7 @@ const Resources = {
       Port: 8000,
       Protocol: 'HTTP',
       VpcId: cf.importValue(cf.join('-', ['hotosm-network-production', 'default-vpc', cf.region])),
+      Tags: [ "Key": "stack_name", "Value": cf.stackName ],
       Matcher: {
         HttpCode: '200,202,302,304'
       }
@@ -565,7 +569,8 @@ const Resources = {
       }],
       LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
       Port: 443,
-      Protocol: 'HTTPS'
+      Protocol: 'HTTPS',
+      SslPolicy: 'ELBSecurityPolicy-FS-1-2-2019-08'
     }
   },
   TaskingManagerLoadBalancerHTTPListener: {
