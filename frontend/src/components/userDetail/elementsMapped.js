@@ -13,14 +13,10 @@ import {
   QuestionCircleIcon,
   MappedIcon,
   ValidatedIcon,
-  UndoIcon,
-  CheckIcon,
-  InvalidatedIcon,
 } from '../svgIcons';
 
 const getFieldData = (field) => {
   const iconClass = 'h-50 w-50';
-  const iconClasslg = 'h-80 w-80 red v-mid';
   const iconStyle = { height: '45px' };
   switch (field) {
     case 'time':
@@ -47,31 +43,6 @@ const getFieldData = (field) => {
       return {
         icon: <WavesIcon className={iconClass} style={iconStyle} />,
         message: <FormattedMessage {...messages.waterwaysMapped} />,
-      };
-    case 'tasksMapped':
-      return {
-        icon: <MappedIcon className={iconClasslg} style={iconStyle} />,
-        message: <FormattedMessage {...messages.tasksMapped} />,
-      };
-    case 'tasksValidated':
-      return {
-        icon: <ValidatedIcon className={iconClasslg} style={iconStyle} />,
-        message: <FormattedMessage {...messages.tasksValidated} />,
-      };
-    case 'tasksInvalidated':
-      return {
-        icon: <UndoIcon className={iconClasslg} style={{ height: '40px' }} />,
-        message: <FormattedMessage {...messages.tasksInvalidated} />,
-      };
-    case 'tasksValidatedByOthers':
-      return {
-        icon: <CheckIcon className={iconClasslg} style={iconStyle} />,
-        message: <FormattedMessage {...messages.tasksValidatedByOthers} />,
-      };
-    case 'tasksInvalidatedByOthers':
-      return {
-        icon: <InvalidatedIcon className={iconClasslg} style={{ height: '33px' }} />,
-        message: <FormattedMessage {...messages.tasksInvalidatedByOthers} />,
       };
     default:
       return null;
@@ -101,14 +72,89 @@ const Element = ({ field, value }) => {
   );
 };
 
-export const TaskStats = ({ userStats }) => {
+export const TaskStats = ({ userStats, username }) => {
   return (
-    <div className="cf w-100 relative pr2">
-      <Element field={'tasksMapped'} value={userStats.tasksMapped || 0} />
-      <Element field={'tasksValidated'} value={userStats.tasksValidated || 0} />
-      <Element field={'tasksInvalidated'} value={userStats.tasksInvalidated || 0} />
-      <Element field={'tasksValidatedByOthers'} value={userStats.tasksValidatedByOthers || 0} />
-      <Element field={'tasksInvalidatedByOthers'} value={userStats.tasksInvalidatedByOthers || 0} />
+    <div className="cf w-100 relative base-font blue-grey">
+      <div className="w-50-ns w-100 pa2 fl">
+        <div className="cf shadow-4 pv3 ph2 bg-white">
+          <div className="w-25-ns w-100 h-100 pa2 pa0-m fl red tc">
+            <MappedIcon className="v-mid w-50-ns w-25" />
+          </div>
+          <div className="w-75-ns w-100 fl tc f6 b">
+            <div className="cf w-100">
+              <p className="mb1 mt3 mt1-ns f4">
+                <FormattedMessage
+                  {...messages.userMapped}
+                  values={{ user: username ? username : <FormattedMessage {...messages.you} /> }}
+                />
+              </p>
+              <p className="ma0 mb2 barlow-condensed f2 b red">{userStats.tasksMapped}</p>
+              <p className="mv1">
+                <FormattedMessage {...messages.tasks} />
+              </p>
+            </div>
+            <div className="cf w-100 pt4">
+              <div className="cf w-50 fl tc">
+                <span className="ma0 v-mid barlow-condensed f3 b red">
+                  {userStats.tasksValidatedByOthers}
+                </span>
+                <p className="mv1 ttl">
+                  <FormattedMessage {...messages.validated} />
+                </p>
+              </div>
+              <div className="cf w-50 fl tc">
+                <span className="ma0 v-mid barlow-condensed f3 b red">
+                  {userStats.tasksInvalidatedByOthers}
+                </span>
+                <p className="mv1 ttl">
+                  <FormattedMessage {...messages.invalidated} />
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="w-50-ns w-100 pa2 fl">
+        <div className="cf shadow-4 pv3 ph2 bg-white">
+          <div className="w-25-ns w-100 h-100 pa2 pa0-m fl red tc">
+            <ValidatedIcon className="v-mid w-50-ns w-25" />
+          </div>
+          <div className="w-75-ns w-100 fl tc f6 b">
+            <div className="cf w-100">
+              <p className="mb1 mt3 mt1-ns f4">
+                <FormattedMessage
+                  {...messages.userValidated}
+                  values={{ user: username ? username : <FormattedMessage {...messages.you} /> }}
+                />
+              </p>
+              <p className="ma0 mb2 barlow-condensed f2 b red">
+                {userStats.tasksValidated + userStats.tasksInvalidated || 0}
+              </p>
+              <p className="mv1">
+                <FormattedMessage {...messages.tasks} />
+              </p>
+            </div>
+            <div className="cf w-100 pt4">
+              <div className="cf w-50 fl tc">
+                <span className="ma0 v-mid barlow-condensed f3 b red">
+                  {userStats.tasksValidated}
+                </span>
+                <p className="mv1 ttl">
+                  <FormattedMessage {...messages.finished} />
+                </p>
+              </div>
+              <div className="cf w-50 fl tc">
+                <span className="ma0 v-mid barlow-condensed f3 b red">
+                  {userStats.tasksInvalidated}
+                </span>
+                <p className="mv1 ttl">
+                  <FormattedMessage {...messages.invalidated} />
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

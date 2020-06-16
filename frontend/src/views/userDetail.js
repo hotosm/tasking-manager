@@ -20,6 +20,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 export const UserDetail = ({ username, withHeader = true }) => {
   useSetTitleTag(username);
   const token = useSelector((state) => state.auth.get('token'));
+  const currentUser = useSelector((state) => state.auth.get('userDetails'));
   const [osmStats, setOsmStats] = useState({});
   const [errorDetails, loadingDetails, userDetails] = useFetch(
     `users/queries/${username}/`,
@@ -113,7 +114,10 @@ export const UserDetail = ({ username, withHeader = true }) => {
           <h3 className={titleClass}>
             <FormattedMessage {...messages.tasks} />
           </h3>
-          <TaskStats userStats={userStats} />
+          <TaskStats
+            userStats={userStats}
+            username={currentUser.username !== username ? username : null}
+          />
         </div>
         <div className="mv4">
           <h3 className={titleClass}>

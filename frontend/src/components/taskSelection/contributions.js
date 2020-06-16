@@ -123,6 +123,7 @@ const Contributions = (props) => {
                 className={`w-100 cf pv3 ph3-ns ph1 ba bw1 mb2 ${
                   props.activeUser === user.username ? 'b--blue-dark' : 'b--tan'
                 }`}
+                key={user.username}
               >
                 <div className="w-40 fl dib truncate">
                   <FormattedMessage {...messages.registered}>
