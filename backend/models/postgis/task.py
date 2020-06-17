@@ -695,11 +695,13 @@ class Task(db.Model):
         self.update()
 
     def reset_task(self, user_id: int):
+        expiry_delta = Task.auto_unlock_delta()
+        lock_duration = (datetime.datetime.min + expiry_delta).time().isoformat()
         if TaskStatus(self.task_status) in [
             TaskStatus.LOCKED_FOR_MAPPING,
             TaskStatus.LOCKED_FOR_VALIDATION,
         ]:
-            self.record_auto_unlock()
+            self.record_auto_unlock(lock_duration)
 
         self.set_task_history(TaskAction.STATE_CHANGE, user_id, None, TaskStatus.READY)
         self.mapped_by = None
