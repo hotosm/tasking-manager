@@ -424,10 +424,10 @@ workflows:
   build-deploy:
     jobs:
     - build:
-      filters:
-        branches:
-          ignore:
-          - /^deployment\/.*/
+        filters:
+          branches:
+            ignore:
+            - /^deployment\/.*/
     - backend_deploy:
         name: staging
         filters:
