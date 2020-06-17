@@ -548,7 +548,7 @@ const Resources = {
       Port: 8000,
       Protocol: 'HTTP',
       VpcId: cf.importValue(cf.join('-', ['hotosm-network-production', 'default-vpc', cf.region])),
-      Tags: [ "Key": "stack_name", "Value": cf.stackName ],
+      Tags: [ { "Key": "stack_name", "Value": cf.stackName } ],
       Matcher: {
         HttpCode: '200,202,302,304'
       }
