@@ -6,7 +6,7 @@ import ReactPlaceholder from 'react-placeholder';
 
 import messages from '../components/userDetail/messages';
 import { HeaderProfile } from '../components/userDetail/headerProfile';
-import { ElementsMapped } from '../components/userDetail/elementsMapped';
+import { ElementsMapped, TaskStats } from '../components/userDetail/elementsMapped';
 import { CountriesMapped } from '../components/userDetail/countriesMapped';
 import { TopCauses } from '../components/userDetail/topCauses';
 import { TopProjects } from '../components/userDetail/topProjects';
@@ -20,6 +20,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 export const UserDetail = ({ username, withHeader = true }) => {
   useSetTitleTag(username);
   const token = useSelector((state) => state.auth.get('token'));
+  const currentUser = useSelector((state) => state.auth.get('userDetails'));
   const [osmStats, setOsmStats] = useState({});
   const [errorDetails, loadingDetails, userDetails] = useFetch(
     `users/queries/${username}/`,
@@ -109,7 +110,19 @@ export const UserDetail = ({ username, withHeader = true }) => {
             </div>
           </div>
         </div>
-        <div className="mt3 pb4">
+        <div className="mv4">
+          <h3 className={titleClass}>
+            <FormattedMessage {...messages.tasks} />
+          </h3>
+          <TaskStats
+            userStats={userStats}
+            username={currentUser.username !== username ? username : null}
+          />
+        </div>
+        <div className="mv4">
+          <h3 className={titleClass}>
+            <FormattedMessage {...messages.countries} />
+          </h3>
           <ReactPlaceholder
             type="rect"
             showLoadingAnimation={true}

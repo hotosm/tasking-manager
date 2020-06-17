@@ -70,10 +70,10 @@ function TaskItem({
       }`}
     >
       <div
-        className="w-90-l w-80 pv3 fl cf pointer"
+        className="w-80 pv3 fl cf pointer"
         onClick={() => selectTask(data.taskId, data.taskStatus)}
       >
-        <div className="w-75-l w-40 fl dib truncate">
+        <div className="w-70-l w-40 fl dib truncate">
           <span className="pl3 b">
             <FormattedMessage {...messages.taskId} values={{ id: data.taskId }} />
           </span>
@@ -90,11 +90,11 @@ function TaskItem({
             </div>
           )}
         </div>
-        <div className="w-25-l w-60 fl blue-grey dib truncate">
+        <div className="w-30-l w-60 fl blue-grey dib truncate">
           <TaskStatus status={data.taskStatus} />
         </div>
       </div>
-      <div className="w-10-l w-20 pv3 fl dib blue-light truncate overflow-empty">
+      <div className="w-20 pv3 fr tr dib blue-light truncate overflow-empty">
         <FormattedMessage {...messages.seeTaskHistory}>
           {(msg) => (
             <div className="pr2 dib v-mid" title={msg}>
@@ -121,7 +121,7 @@ function TaskItem({
         </FormattedMessage>
         <FormattedMessage {...messages[isCopied ? 'taskLinkCopied' : 'copyTaskLink']}>
           {(msg) => (
-            <div className={`pl2 dib v-mid ${isCopied ? 'grey-light' : ''}`} title={msg}>
+            <div className={`ph2 dib v-mid ${isCopied ? 'grey-light' : ''}`} title={msg}>
               <InternalLinkIcon
                 width="18px"
                 height="18px"

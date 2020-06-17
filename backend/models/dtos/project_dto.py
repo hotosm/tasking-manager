@@ -209,7 +209,6 @@ class ProjectDTO(Model):
     )
 
     private = BooleanType(required=True)
-    entities_to_map = StringType(serialized_name="entitiesToMap")
     changeset_comment = StringType(serialized_name="changesetComment")
     osmcha_filter_id = StringType(serialized_name="osmchaFilterId")
     due_date = UTCDateTimeType(serialized_name="dueDate")
@@ -372,7 +371,7 @@ class ListSearchResultDTO(Model):
     priority = StringType(required=True)
     organisation_name = StringType(serialized_name="organisationName")
     organisation_logo = StringType(serialized_name="organisationLogo")
-    campaign = StringType()
+    campaigns = ListType(ModelType(CampaignDTO), default=[])
     percent_mapped = IntType(serialized_name="percentMapped")
     percent_validated = IntType(serialized_name="percentValidated")
     status = StringType(serialized_name="status")
@@ -462,7 +461,6 @@ class ProjectSummary(Model):
     organisation_logo = StringType(serialized_name="organisationLogo")
     country_tag = ListType(StringType, serialized_name="countryTag")
     osmcha_filter_id = StringType(serialized_name="osmchaFilterId")
-    entities_to_map = StringType(serialized_name="entitiesToMap")
     mapping_types = ListType(
         StringType, serialized_name="mappingTypes", validators=[is_known_mapping_type]
     )

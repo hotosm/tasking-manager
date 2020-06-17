@@ -8,6 +8,10 @@ export default defineMessages({
     id: 'projects.formInputs.privacy.title',
     defaultMessage: 'Privacy',
   },
+  privateProject: {
+    id: 'projects.formInputs.privacy.field',
+    defaultMessage: 'Private project',
+  },
   privacyDescription: {
     id: 'projects.formInputs.privacy.description',
     defaultMessage:
@@ -415,14 +419,6 @@ export default defineMessages({
     id: 'projects.formInputs.per_task_instructions.example',
     defaultMessage:
       'Example: This task involves loading extra data. Click [here](http://localhost:8111/import?new_layer=true&amp;url=http://www.domain.com/data/{x}/{y}/{z}/routes_2009.osm) to load the data into JOSM.',
-  },
-  entitiesToMap: {
-    id: 'projects.formInputs.entitiesToMap',
-    defaultMessage: 'Entities to map',
-  },
-  entitiesDescription: {
-    id: 'projects.formInputs.entitiesToMap.description',
-    defaultMessage: 'The list of entities that need to be mapped on this project.',
   },
   changesetComment: {
     id: 'projects.formInputs.changesetComment',

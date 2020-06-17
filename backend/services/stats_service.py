@@ -265,6 +265,7 @@ class StatsService:
                 User.name,
                 User.mapping_level,
                 User.picture_url,
+                User.date_registered,
                 coalesce(mapped_stmt.c.count, 0).label("mapped"),
                 coalesce(validated_stmt.c.count, 0).label("validated"),
                 (
@@ -293,6 +294,7 @@ class StatsService:
                     validated=r.validated,
                     total=r.total,
                     task_ids=r.task_ids,
+                    date_registered=r.date_registered.date(),
                 )
             )
             for r in results

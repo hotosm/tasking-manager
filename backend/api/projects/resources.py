@@ -320,9 +320,6 @@ class ProjectsRestAPI(Resource):
                     changesetComment:
                         type: string
                         default: hotosm-project-1
-                    entitiesToMap:
-                        type: string
-                        default: Buildings only
                     dueDate:
                         type: date
                         default: "2017-04-11T12:38:49"

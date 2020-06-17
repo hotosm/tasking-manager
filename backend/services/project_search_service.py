@@ -139,6 +139,7 @@ class ProjectSearchService:
         list_dto.country = project.country
         list_dto.organisation_name = project.organisation_name
         list_dto.organisation_logo = project.organisation_logo
+        list_dto.campaigns = Project.get_project_campaigns(project.id)
 
         return list_dto
 

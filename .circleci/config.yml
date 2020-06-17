@@ -72,7 +72,7 @@ jobs:
         paths:
         - frontend/node_modules
         - env
-  deploy:
+  backend_deploy:
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
@@ -243,6 +243,145 @@ jobs:
           validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
           cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
+        name: Cleanup
+        when: always
+        command: |
+          DESCRIBE_SNAPSHOT=$(aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-${NONCE} --db-instance-identifier ${RDS_ID} --output text)
+          # Copy old snapshot to temporary
+          if [ -z "$DESCRIBE_SNAPSHOT" ]
+          then
+            echo "temporary snapshot doesn't exist, nothing to cleanup."
+          else
+            aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-${NONCE}
+          fi
+          # Delete manual snapshot if database ID changed
+          RDS_ID_NEW=$(./.circleci/rdsid.sh '{"aws:cloudformation:stack-name": "tasking-manager-<< parameters.stack_name >>"}')
+          if [ "$RDS_ID" != "$RDS_ID_NEW" ]
+          then
+            aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest
+          fi
+  frontend_deploy:
+    parameters:
+      stack_name:
+        description: "the name of the stack for cfn-config"
+        type: string
+      environment_name:
+        description: "The environment (staging or production) on AWS"
+        type: enum
+        enum: ["staging", "production"]
+      autoscaling_policy:
+        description: "Setting autoscaling parameters"
+        type: enum
+        enum: ['development', 'demo', 'production']
+      new_relic_license:
+        type: env_var_name
+        default: NEW_RELIC_LICENSE
+      postgres_db:
+        type: env_var_name
+      postgres_password:
+        type: env_var_name
+      postgres_user:
+        type: env_var_name
+      base_url:
+        type: env_var_name
+      app_url:
+        type: env_var_name
+      api_version:
+        type: env_var_name
+      consumer_key:
+        type: env_var_name
+      consumer_secret:
+        type: env_var_name
+      tm_secret:
+        type: env_var_name
+      tm_default_changeset_comment:
+        type: env_var_name
+      email_from_address:
+        type: env_var_name
+      email_contact_address:
+        type: env_var_name
+      smtp_host:
+        type: env_var_name
+      smtp_password:
+        type: env_var_name
+      smtp_user:
+        type: env_var_name
+      smtp_port:
+        type: env_var_name
+      log_dir:
+        type: env_var_name
+      db_size:
+        type: env_var_name
+      elb_subnets:
+        type: env_var_name
+      ssl_cert:
+        type: env_var_name
+      matomo_site_id:
+        type: env_var_name
+      matomo_endpoint:
+        type: env_var_name
+      mapbox_token:
+        type: env_var_name
+      org_name:
+        type: env_var_name
+      org_code:
+        type: env_var_name
+      org_url:
+        type: env_var_name
+      org_privacy_policy:
+        type: env_var_name
+      org_twitter:
+        type: env_var_name
+      org_fb:
+        type: env_var_name
+      org_instagram:
+        type: env_var_name
+      org_youtube:
+        type: env_var_name
+      org_github:
+        type: env_var_name
+      org_homepage_video_url:
+        type: env_var_name
+      log_level:
+        type: enum
+        enum: ["INFO", "DEBUG"]
+        default: "INFO"
+      upload_api_url:
+        type: env_var_name
+      upload_api_key:
+        type: env_var_name
+    working_directory: /home/circleci/tasking-manager
+    docker:
+    - image: circleci/python:3.7-buster-node
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Set Environment Variables
+        command: |
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\",\"TaskingManagerLogLevel\":\"<< parameters.log_level >>\",\"TaskingManagerImageUploadAPIURL\":\"${<< parameters.upload_api_url >>}\", \"TaskingManagerImageUploadAPIKey\":\"${<< parameters.upload_api_key >>}\",\"TaskingManagerURL\":\"${<< parameters.app_url >>}\", \"TaskingManagerEmailContactAddress\":\"${<< parameters.email_contact_address >>}\"}'" >> $BASH_ENV
+    - run:
+        name: Install modules
+        command: |
+          sudo pip3 install awscli --upgrade
+    - run:
+        name: Configure AWS Access Key ID
+        command: |
+          aws configure set aws_access_key_id \
+          $AWS_ACCESS_KEY_ID \
+          --profile default
+    - run:
+        name: Configure AWS Secret Access Key
+        command: |
+          aws configure set aws_secret_access_key \
+          $AWS_SECRET_ACCESS_KEY \
+          --profile default
+    - run:
+        name: Configure AWS default region
+        command: |
+          aws configure set region $AWS_REGION \
+          --profile default
+    - run:
         name: Deploy Frontend to S3
         command: |
           export TM_APP_BASE_URL=${<< parameters.base_url >>}
@@ -280,37 +419,23 @@ jobs:
           aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-react-app --delete
           export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
           aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
-    - run:
-        name: Cleanup
-        when: always
-        command: |
-          DESCRIBE_SNAPSHOT=$(aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-${NONCE} --db-instance-identifier ${RDS_ID} --output text)
-          # Copy old snapshot to temporary
-          if [ -z "$DESCRIBE_SNAPSHOT" ]
-          then
-            echo "temporary snapshot doesn't exist, nothing to cleanup."
-          else
-            aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-${NONCE}
-          fi
-          # Delete manual snapshot if database ID changed
-          RDS_ID_NEW=$(./.circleci/rdsid.sh '{"aws:cloudformation:stack-name": "tasking-manager-<< parameters.stack_name >>"}')
-          if [ "$RDS_ID" != "$RDS_ID_NEW" ]
-          then
-            aws rds delete-db-snapshot --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest
-          fi
 workflows:
   version: 2
   build-deploy:
     jobs:
-    - build
-    - deploy:
+    - build:
+      filters:
+        branches:
+          ignore:
+          - /^deployment\/.*/
+    - backend_deploy:
         name: staging
         filters:
           branches:
             only:
             - develop
         requires:
-        - build
+          - build
         stack_name: "staging"
         environment_name: "staging"
         autoscaling_policy: "development"
@@ -350,7 +475,54 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL #=https://cdn.hotosm.org/tasking-manager/mapping.mp4
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
-    - deploy:
+    - frontend_deploy:
+        name: staging
+        filters:
+          branches:
+            only:
+            - develop
+        requires:
+          - build
+        stack_name: "staging"
+        environment_name: "staging"
+        autoscaling_policy: "development"
+        postgres_db: POSTGRES_DB_STAGING
+        postgres_password: POSTGRES_PASSWORD_STAGING
+        postgres_user: POSTGRES_USER_STAGING
+        base_url: TM_APP_BASE_URL_STAGING
+        app_url: TM_APP_URL_STAGING
+        api_version: TM_APP_API_VERSION_STAGING
+        consumer_key: TM_CONSUMER_KEY_STAGING
+        consumer_secret: TM_CONSUMER_SECRET_STAGING
+        tm_secret: TM_SECRET_STAGING
+        email_from_address: TM_EMAIL_FROM_ADDRESS_STAGING
+        email_contact_address: TM_EMAIL_CONTACT_ADDRESS_STAGING
+        log_level: "INFO"
+        smtp_host: TM_SMTP_HOST_STAGING
+        smtp_password: TM_SMTP_PASSWORD_STAGING
+        smtp_user: TM_SMTP_USER_STAGING
+        smtp_port: TM_SMTP_PORT_STAGING
+        log_dir: TM_LOG_DIR_STAGING
+        db_size: DATABASE_SIZE_STAGING
+        elb_subnets: ELB_SUBNETS_STAGING
+        ssl_cert: SSL_CERTIFICATE_ID_STAGING
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_STAGING
+        matomo_site_id: MATOMO_SITE_ID_STAGING
+        matomo_endpoint: MATOMO_ENDPOINT_STAGING
+        mapbox_token: MAPBOX_TOKEN
+        org_name: TM_ORG_NAME                       #='Humanitarian OpenStreetMap Team'
+        org_code: TM_ORG_CODE                       #=HOT
+        org_url: TM_ORG_URL                         #='hotosm.org' # Don't use http or https
+        org_privacy_policy: TM_ORG_PRIVACY_POLICY   #='hotosm.org/privacy'
+        org_twitter: TM_ORG_TWITTER                 #=http://twitter.com/hotosm/
+        org_fb: TM_ORG_FB                           #=https://www.facebook.com/hotosm
+        org_instagram: TM_ORG_INSTAGRAM             #=https://www.instagram.com/hot.osm/
+        org_youtube: TM_ORG_YOUTUBE                 #=https://www.youtube.com/user/hotosm
+        org_github: TM_ORG_GITHUB                   #=https://github.com/hotosm/
+        org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL #=https://cdn.hotosm.org/tasking-manager/mapping.mp4
+        upload_api_url: TM_IMAGE_UPLOAD_API_URL
+        upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+    - backend_deploy:
         name: teachosm
         filters:
           branches:
@@ -397,7 +569,54 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
-    - deploy:
+    - frontend_deploy:
+        name: teachosm
+        filters:
+          branches:
+            only:
+              - deployment/teachosm-tasking-manager
+        requires:
+          - build
+        stack_name: "teachosm"
+        environment_name: "production"
+        autoscaling_policy: "demo"
+        postgres_db: POSTGRES_DB_TEACHOSM
+        postgres_password: POSTGRES_PASSWORD_TEACHOSM
+        postgres_user: POSTGRES_USER_TEACHOSM
+        base_url: TM_APP_BASE_URL_TEACHOSM
+        app_url: TM_APP_URL_TEACHOSM
+        api_version: TM_APP_API_VERSION_TEACHOSM
+        consumer_key: TM_CONSUMER_KEY_TEACHOSM
+        consumer_secret: TM_CONSUMER_SECRET_TEACHOSM
+        tm_secret: TM_SECRET_TEACHOSM
+        email_from_address: TM_EMAIL_FROM_ADDRESS_TEACHOSM
+        email_contact_address: TM_EMAIL_CONTACT_ADDRESS_TEACHOSM
+        log_level: "INFO"
+        smtp_host: TM_SMTP_HOST_TEACHOSM
+        smtp_password: TM_SMTP_PASSWORD_TEACHOSM
+        smtp_user: TM_SMTP_USER_TEACHOSM
+        smtp_port: TM_SMTP_PORT_TEACHOSM
+        log_dir: TM_LOG_DIR_TEACHOSM
+        db_size: DATABASE_SIZE_TEACHOSM
+        elb_subnets: ELB_SUBNETS_TEACHOSM
+        ssl_cert: SSL_CERTIFICATE_ID_TEACHOSM
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_TEACHOSM
+        matomo_site_id: MATOMO_SITE_ID_TEACHOSM
+        matomo_endpoint: MATOMO_ENDPOINT_TEACHOSM
+        mapbox_token: MAPBOX_TOKEN
+        org_name: TM_ORG_NAME
+        org_code: TM_ORG_CODE
+        org_url: TM_ORG_URL
+        org_privacy_policy: TM_ORG_PRIVACY_POLICY
+        org_twitter: TM_ORG_TWITTER
+        org_fb: TM_ORG_FB
+        org_instagram: TM_ORG_INSTAGRAM
+        org_youtube: TM_ORG_YOUTUBE
+        org_github: TM_ORG_GITHUB
+        org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
+        upload_api_url: TM_IMAGE_UPLOAD_API_URL
+        upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+    - backend_deploy:
         name: assisted
         filters:
           branches:
@@ -444,13 +663,108 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
-  deploy-production:
+    - frontend_deploy:
+        name: assisted
+        filters:
+          branches:
+            only:
+              - deployment/assisted-tasking-manager
+        requires:
+          - build
+        stack_name: "assisted"
+        environment_name: "staging"
+        autoscaling_policy: "demo"
+        postgres_db: POSTGRES_DB_ASSISTED
+        postgres_password: POSTGRES_PASSWORD_ASSISTED
+        postgres_user: POSTGRES_USER_ASSISTED
+        base_url: TM_APP_BASE_URL_ASSISTED
+        app_url: TM_APP_URL_ASSISTED
+        api_version: TM_APP_API_VERSION_ASSISTED
+        consumer_key: TM_CONSUMER_KEY_ASSISTED
+        consumer_secret: TM_CONSUMER_SECRET_ASSISTED
+        tm_secret: TM_SECRET_ASSISTED
+        email_from_address: TM_EMAIL_FROM_ADDRESS_ASSISTED
+        email_contact_address: TM_EMAIL_CONTACT_ADDRESS_ASSISTED
+        log_level: "INFO"
+        smtp_host: TM_SMTP_HOST_ASSISTED
+        smtp_password: TM_SMTP_PASSWORD_ASSISTED
+        smtp_user: TM_SMTP_USER_ASSISTED
+        smtp_port: TM_SMTP_PORT_ASSISTED
+        log_dir: TM_LOG_DIR_ASSISTED
+        db_size: DATABASE_SIZE_ASSISTED
+        elb_subnets: ELB_SUBNETS_ASSISTED
+        ssl_cert: SSL_CERTIFICATE_ID_ASSISTED
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_ASSISTED
+        matomo_site_id: MATOMO_SITE_ID_ASSISTED
+        matomo_endpoint: MATOMO_ENDPOINT_ASSISTED
+        mapbox_token: MAPBOX_TOKEN
+        org_name: TM_ORG_NAME
+        org_code: TM_ORG_CODE
+        org_url: TM_ORG_URL
+        org_privacy_policy: TM_ORG_PRIVACY_POLICY
+        org_twitter: TM_ORG_TWITTER
+        org_fb: TM_ORG_FB
+        org_instagram: TM_ORG_INSTAGRAM
+        org_youtube: TM_ORG_YOUTUBE
+        org_github: TM_ORG_GITHUB
+        org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
+        upload_api_url: TM_IMAGE_UPLOAD_API_URL
+        upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+  backend-production:
     jobs:
-    - deploy:
+    - backend_deploy:
         name: production
         filters:
           branches:
             only:
+              - deployment/hot-tasking-manager
+        stack_name: "tm4-production"
+        environment_name: "production"
+        autoscaling_policy: "production"
+        postgres_db: POSTGRES_DB_PRODUCTION
+        postgres_password: POSTGRES_PASSWORD_PRODUCTION
+        postgres_user: POSTGRES_USER_PRODUCTION
+        base_url: TM_APP_BASE_URL_PRODUCTION
+        app_url: TM_APP_URL_PRODUCTION
+        api_version: TM_APP_API_VERSION_PRODUCTION
+        consumer_key: TM_CONSUMER_KEY_PRODUCTION
+        consumer_secret: TM_CONSUMER_SECRET_PRODUCTION
+        tm_secret: TM_SECRET_PRODUCTION
+        email_from_address: TM_EMAIL_FROM_ADDRESS_PRODUCTION
+        email_contact_address: TM_EMAIL_CONTACT_ADDRESS_PRODUCTION
+        log_level: "INFO"
+        smtp_host: TM_SMTP_HOST_PRODUCTION
+        smtp_password: TM_SMTP_PASSWORD_PRODUCTION
+        smtp_user: TM_SMTP_USER_PRODUCTION
+        smtp_port: TM_SMTP_PORT_PRODUCTION
+        log_dir: TM_LOG_DIR_PRODUCTION
+        db_size: DATABASE_SIZE_PRODUCTION
+        elb_subnets: ELB_SUBNETS_PRODUCTION
+        ssl_cert: SSL_CERTIFICATE_ID_PRODUCTION
+        tm_default_changeset_comment: TM_DEFAULT_CHANGESET_COMMENT_PRODUCTION
+        matomo_site_id: MATOMO_SITE_ID_PRODUCTION
+        matomo_endpoint: MATOMO_ENDPOINT_PRODUCTION
+        mapbox_token: MAPBOX_TOKEN
+        org_name: TM_ORG_NAME
+        org_code: TM_ORG_CODE
+        org_url: TM_ORG_URL
+        org_privacy_policy: TM_ORG_PRIVACY_POLICY
+        org_twitter: TM_ORG_TWITTER
+        org_fb: TM_ORG_FB
+        org_instagram: TM_ORG_INSTAGRAM
+        org_youtube: TM_ORG_YOUTUBE
+        org_github: TM_ORG_GITHUB
+        org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
+        upload_api_url: TM_IMAGE_UPLOAD_API_URL
+        upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+  frontend-production:
+    jobs:
+    - frontend_deploy:
+        name: production
+        filters:
+          branches:
+            only:
+              - deployment/hot-tasking-manager-frontend
               - deployment/hot-tasking-manager
         stack_name: "tm4-production"
         environment_name: "production"

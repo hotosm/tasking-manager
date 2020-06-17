@@ -16,6 +16,10 @@ export default defineMessages({
     id: 'users.detail.statsTitle',
     defaultMessage: 'stats',
   },
+  countries: {
+    id: 'users.detail.countries',
+    defaultMessage: 'Countries',
+  },
   timeSpentMapping: {
     id: 'users.detail.timeSpentMapping',
     defaultMessage: 'Time spent mapping',
@@ -35,6 +39,30 @@ export default defineMessages({
   waterwaysMapped: {
     id: 'users.detail.waterwaysMapped',
     defaultMessage: 'Waterways mapped',
+  },
+  userMapped: {
+    id: 'users.detail.tasksMapped',
+    defaultMessage: '{user} mapped',
+  },
+  you: {
+    id: 'users.detail.you',
+    defaultMessage: 'You',
+  },
+  userValidated: {
+    id: 'users.detail.tasksValidated',
+    defaultMessage: '{user} validated',
+  },
+  invalidated: {
+    id: 'users.detail.invalidated',
+    defaultMessage: 'Needed more mapping',
+  },
+  validated: {
+    id: 'users.detail.validated',
+    defaultMessage: 'Validated',
+  },
+  finished: {
+    id: 'users.detail.finished',
+    defaultMessage: 'Finished',
   },
   topProjectsMappedTitle: {
     id: 'users.detail.topProjectsMappedTitle',
@@ -78,6 +106,7 @@ export default defineMessages({
   },
   delayPopup: {
     id: 'users.detail.delay_popup',
-    defaultMessage: 'These statistics need heavy calculations and changes are showing up with a delay of around one hour.',
+    defaultMessage:
+      'These statistics need heavy calculations and changes are showing up with a delay of around one hour.',
   },
 });

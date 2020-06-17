@@ -142,6 +142,7 @@ export const TeamSelect = () => {
         })}
       </div>
       <Select
+        classNamePrefix="react-select"
         isClearable={true}
         getOptionLabel={(option) => option.name}
         getOptionValue={(option) => option.organisationId}
@@ -153,6 +154,7 @@ export const TeamSelect = () => {
       />
       <div className="cf pb3 flex justify-between">
         <Select
+          classNamePrefix="react-select"
           getOptionLabel={(option) => option.name}
           getOptionValue={(option) => option.teamId}
           options={filteredTeams}
@@ -163,6 +165,7 @@ export const TeamSelect = () => {
           isDisabled={teamSelect.edit}
         />
         <Select
+          classNamePrefix="react-select"
           getOptionLabel={(option) => option.label}
           getOptionValue={(option) => option.value}
           options={teamRoles}

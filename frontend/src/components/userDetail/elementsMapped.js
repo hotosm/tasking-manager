@@ -11,6 +11,8 @@ import {
   WavesIcon,
   MarkerIcon,
   QuestionCircleIcon,
+  MappedIcon,
+  ValidatedIcon,
 } from '../svgIcons';
 
 const getFieldData = (field) => {
@@ -57,13 +59,100 @@ const Element = ({ field, value }) => {
         }`}
       >
         <div className="w-30 w-100-m fl tc">{elements.icon}</div>
-        <div className="w-70 w-100-m fl tc">
-          <p className={`ma0 mb2 barlow-condensed f3 b ${field === 'time' ? null : 'red '}`}>
+        <div className="w-70 w-100-m pt3-m fl tc">
+          <p className={`ma0 mb2 barlow-condensed f2 b ${field === 'time' ? null : 'red '}`}>
             {field === 'time' ? value : Math.trunc(value)}
           </p>
           <p className={`ma0 h2 f7 b ${field === 'time' ? null : 'blue-grey'}`}>
             {elements.message}
           </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const TaskStats = ({ userStats, username }) => {
+  return (
+    <div className="cf w-100 relative base-font blue-grey">
+      <div className="w-50-ns w-100 pa2 fl">
+        <div className="cf shadow-4 pv3 ph2 bg-white">
+          <div className="w-25-ns w-100 h-100 pa2 pa0-m fl red tc">
+            <MappedIcon className="v-mid w-50-ns w-25" />
+          </div>
+          <div className="w-75-ns w-100 fl tc f6 b">
+            <div className="cf w-100">
+              <p className="mb1 mt3 mt1-ns f4">
+                <FormattedMessage
+                  {...messages.userMapped}
+                  values={{ user: username ? username : <FormattedMessage {...messages.you} /> }}
+                />
+              </p>
+              <p className="ma0 mb2 barlow-condensed f2 b red">{userStats.tasksMapped}</p>
+              <p className="mv1">
+                <FormattedMessage {...messages.tasks} />
+              </p>
+            </div>
+            <div className="cf w-100 pt4">
+              <div className="cf w-50 fl tc">
+                <span className="ma0 v-mid barlow-condensed f3 b red">
+                  {userStats.tasksValidatedByOthers}
+                </span>
+                <p className="mv1 ttl">
+                  <FormattedMessage {...messages.validated} />
+                </p>
+              </div>
+              <div className="cf w-50 fl tc">
+                <span className="ma0 v-mid barlow-condensed f3 b red">
+                  {userStats.tasksInvalidatedByOthers}
+                </span>
+                <p className="mv1 ttl">
+                  <FormattedMessage {...messages.invalidated} />
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="w-50-ns w-100 pa2 fl">
+        <div className="cf shadow-4 pv3 ph2 bg-white">
+          <div className="w-25-ns w-100 h-100 pa2 pa0-m fl red tc">
+            <ValidatedIcon className="v-mid w-50-ns w-25" />
+          </div>
+          <div className="w-75-ns w-100 fl tc f6 b">
+            <div className="cf w-100">
+              <p className="mb1 mt3 mt1-ns f4">
+                <FormattedMessage
+                  {...messages.userValidated}
+                  values={{ user: username ? username : <FormattedMessage {...messages.you} /> }}
+                />
+              </p>
+              <p className="ma0 mb2 barlow-condensed f2 b red">
+                {userStats.tasksValidated + userStats.tasksInvalidated || 0}
+              </p>
+              <p className="mv1">
+                <FormattedMessage {...messages.tasks} />
+              </p>
+            </div>
+            <div className="cf w-100 pt4">
+              <div className="cf w-50 fl tc">
+                <span className="ma0 v-mid barlow-condensed f3 b red">
+                  {userStats.tasksValidated}
+                </span>
+                <p className="mv1 ttl">
+                  <FormattedMessage {...messages.finished} />
+                </p>
+              </div>
+              <div className="cf w-50 fl tc">
+                <span className="ma0 v-mid barlow-condensed f3 b red">
+                  {userStats.tasksInvalidated}
+                </span>
+                <p className="mv1 ttl">
+                  <FormattedMessage {...messages.invalidated} />
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -91,7 +180,9 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
     round: true,
     delimiter: ' ',
     units: ['h', 'm'],
-  });
+  })
+    .replace(' h', 'h')
+    .replace(' m', 'm');
 
   return (
     <div>

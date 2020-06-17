@@ -28,6 +28,7 @@ import { PermissionBox } from './permissionBox';
 import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
+import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 
 /* lazy imports must be last import */
 const TaskLineGraphViz = React.lazy(() => import('./taskLineGraphViz'));
@@ -105,6 +106,9 @@ const ProjectDetailMap = (props) => {
 };
 
 export const ProjectDetailLeft = ({ project, contributors, className, type }: Object) => {
+  const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(
+    project.tasks,
+  );
   const htmlShortDescription =
     project.projectInfo && htmlFromMarkdown(project.projectInfo.shortDescription);
 
@@ -158,9 +162,9 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
           </ReactPlaceholder>
           <ProjectProgressBar
             className="pb2 bg-white"
-            percentMapped={project.percentMapped}
-            percentValidated={project.percentValidated}
-            percentBadImagery={project.percentBadImagery}
+            percentMapped={percentMapped}
+            percentValidated={percentValidated}
+            percentBadImagery={percentBadImagery}
           />
           <div className="cf pb1 bg-white">
             <MappingLevelMessage

@@ -14,6 +14,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 import requests
 
 from backend import db
+from backend.models.dtos.campaign_dto import CampaignDTO
 from backend.models.dtos.project_dto import (
     ProjectDTO,
     DraftProjectDTO,
@@ -140,7 +141,6 @@ class Project(db.Model):
     featured = db.Column(
         db.Boolean, default=False
     )  # Only PMs can set a project as featured
-    entities_to_map = db.Column(db.String)
     changeset_comment = db.Column(db.String)
     osmcha_filter_id = db.Column(
         db.String
@@ -371,7 +371,6 @@ class Project(db.Model):
         self.enforce_random_task_selection = project_dto.enforce_random_task_selection
         self.private = project_dto.private
         self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
-        self.entities_to_map = project_dto.entities_to_map
         self.changeset_comment = project_dto.changeset_comment
         self.due_date = project_dto.due_date
         self.imagery = project_dto.imagery
@@ -735,7 +734,6 @@ class Project(db.Model):
         summary.private = self.private
         summary.license_id = self.license_id
         summary.status = ProjectStatus(self.status).name
-        summary.entities_to_map = self.entities_to_map
         summary.id_presets = self.id_presets
         summary.imagery = self.imagery
         if self.organisation_id:
@@ -893,7 +891,6 @@ class Project(db.Model):
         base_dto.enforce_random_task_selection = self.enforce_random_task_selection
         base_dto.private = self.private
         base_dto.mapper_level = MappingLevel(self.mapper_level).name
-        base_dto.entities_to_map = self.entities_to_map
         base_dto.changeset_comment = self.changeset_comment
         base_dto.osmcha_filter_id = self.osmcha_filter_id
         base_dto.due_date = self.due_date
@@ -1067,6 +1064,23 @@ class Project(db.Model):
         objs = [Interest.get_by_id(i) for i in interests_ids]
         self.interests.extend(objs)
         db.session.commit()
+
+    @staticmethod
+    def get_project_campaigns(project_id: int):
+        query = (
+            Campaign.query.join(campaign_projects)
+            .filter(campaign_projects.c.project_id == project_id)
+            .all()
+        )
+        campaign_list = []
+        for campaign in query:
+            campaign_dto = CampaignDTO()
+            campaign_dto.id = campaign.id
+            campaign_dto.name = campaign.name
+
+            campaign_list.append(campaign_dto)
+
+        return campaign_list
 
 
 # Add index on project geometry

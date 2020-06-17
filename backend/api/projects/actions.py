@@ -189,7 +189,7 @@ class ProjectsActionsFeatureAPI(Resource):
             return {"Error": error_msg}, 403
 
         try:
-            ProjectService.set_project_as_featured(project_id, authenticated_user_id)
+            ProjectService.set_project_as_featured(project_id)
             return {"Success": True}, 200
         except NotFound:
             return {"Error": "Project Not Found"}, 404
