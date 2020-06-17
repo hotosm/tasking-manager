@@ -10,6 +10,7 @@ import { Button } from '../button';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import '@webscopeio/react-textarea-autocomplete/style.css';
 
 const formatUserNamesToLink = (text) => {
   const regex = /@\[([^\]]+)\]/gi;
@@ -52,19 +53,20 @@ export const UserFetchTextarea = ({ value, setValueFn, token }) => {
   };
 
   const Item = ({ entity: { name } }) => (
-    <div className="w-100 f6 pv2 ph3 f5 tc bg-tan blue-grey hover-bg-blue-grey hover-white pointer">
+    <div className="w-100 pv2 ph3 tc bg-tan blue-grey hover-bg-blue-grey hover-white pointer">
       {`${name}`}
     </div>
   );
 
   return (
-    <div className="relative">
+    <div>
       <ReactTextareaAutocomplete
         value={value}
-        listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey w-40 overflow-auto absolute bottom--1"
+        listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey w4 overflow-scroll h5 barlow-condensed f5"
         onChange={setValueFn}
         className="w-100 f5 pa2"
-        loadingComponent={() => <span>Loading</span>}
+        loadingComponent={() => <span></span>}
+        renderToBody={true}
         rows={3}
         trigger={{
           '@': {
