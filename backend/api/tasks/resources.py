@@ -9,10 +9,12 @@ from backend.services.mapping_service import MappingService, NotFound
 from backend.models.dtos.grid_dto import GridDTO
 
 from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.user_service import UserService
 from backend.services.validator_service import ValidatorService
 
 from backend.services.project_service import ProjectService, ProjectServiceError
 from backend.services.grid.grid_service import GridService
+from backend.models.postgis.statuses import UserRole
 from backend.models.postgis.utils import InvalidGeoJson
 
 
@@ -128,6 +130,60 @@ class TasksQueriesJsonAPI(Resource):
         except Exception as e:
             current_app.logger.critical(e)
             return {"Error": "Unable to fetch task JSON"}, 500
+
+    @token_auth.login_required
+    def delete(self, project_id):
+        """
+        Deletes all tasks from a project
+        ---
+        tags:
+            - tasks
+        produces:
+            - application/json
+        parameters:
+            - name: project_id
+              in: path
+              description: Project ID the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - in: query
+              name: tasks
+              type: string
+              description: List of tasks;
+              default: 1,2
+        responses:
+            200:
+                description: Project found
+            400:
+                description: Bad request
+            403:
+                description: Forbidden
+            404:
+                description: Project not found
+            500:
+                description: Internal Server Error
+        """
+        user_id = token_auth.current_user()
+        user = UserService.get_user_by_id(user_id)
+        if user.role != UserRole.ADMIN.value:
+            return {"Error": "User is not admin"}, 403
+
+        tasks_ids = request.args.get("tasks")
+        if tasks_ids is None:
+            return {"Error": "Tasks ids not provided"}, 400
+
+        try:
+            tasks_ids = [int(t) for t in tasks_ids.split(",")]
+            ProjectService.delete_tasks(project_id, tasks_ids)
+            return {"Success": "Task(s) deleted"}, 200
+        except NotFound as e:
+            return {"Error": f"Project or Task Not Found: {e}"}, 404
+        except ProjectServiceError as e:
+            return {"Error": str(e)}, 403
+        except Exception as e:
+            current_app.logger.critical(e)
+            return {"Error": "Unable to delete tasks"}, 500
 
 
 class TasksQueriesXmlAPI(Resource):

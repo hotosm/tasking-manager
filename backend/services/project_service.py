@@ -68,6 +68,23 @@ class ProjectService:
         Task.auto_unlock_tasks(project_id)
 
     @staticmethod
+    def delete_tasks(project_id: int, tasks_ids):
+        # Validate project exists.
+        project = Project.get(project_id)
+        if project is None:
+            raise NotFound({"project": project_id})
+
+        tasks = [{"id": i, "obj": Task.get(i, project_id)} for i in tasks_ids]
+
+        # In case a task is not found.
+        not_found = [t["id"] for t in tasks if t["obj"] is None]
+        if len(not_found) > 0:
+            raise NotFound({"tasks": not_found})
+
+        # Delete task one by one.
+        [t["obj"].delete() for t in tasks]
+
+    @staticmethod
     def get_contribs_by_day(project_id: int) -> ProjectContribsDTO:
         # Validate that project exists
         project = ProjectService.get_project_by_id(project_id)
