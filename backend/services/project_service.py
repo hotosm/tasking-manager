@@ -83,6 +83,7 @@ class ProjectService:
 
         # Delete task one by one.
         [t["obj"].delete() for t in tasks]
+        StatsService.update_stats_after_task_deletion(project, len(tasks))
 
     @staticmethod
     def get_contribs_by_day(project_id: int) -> ProjectContribsDTO:

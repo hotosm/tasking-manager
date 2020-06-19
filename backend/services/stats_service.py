@@ -110,6 +110,12 @@ class StatsService:
         return project, user
 
     @staticmethod
+    def update_stats_after_task_deletion(project_id: Project, reduce_count: int):
+        print(reduce_count)
+        project.total_tasks -= reduce_count
+        project.update(project_dto)
+
+    @staticmethod
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
         """ Gets all the activity on a project """
 
