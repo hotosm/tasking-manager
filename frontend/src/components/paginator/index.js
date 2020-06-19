@@ -1,9 +1,5 @@
 import React from 'react';
 
-const pagerStyle = `f5 br2 base-font button-reset justify-center inline-flex items-center w2 h2 ba ma1 border-box pointer`;
-const activeStyle = 'bg-blue-dark white';
-const inactiveStyle = 'bg-white blue-grey';
-
 export function listPageOptions(page, lastPage) {
   let pageOptions = [1];
   if (lastPage === 0) {
@@ -50,8 +46,10 @@ export function howManyPages(numberOfItems, pageSize) {
   }
 }
 
-export const PageButton = props => {
-  const currentStyle = props.label === props.activePage ? activeStyle : inactiveStyle;
+export const PageButton = (props) => {
+  const pagerStyle = `f5 br2 base-font button-reset justify-center pv1 ph2 ba ma1 border-box pointer`;
+  const currentStyle =
+    props.label === props.activePage ? 'bg-blue-dark white' : 'bg-white blue-grey';
   if (props.label === '...') {
     return <span className="f5 blue-grey">...</span>;
   } else {
