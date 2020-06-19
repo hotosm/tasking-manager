@@ -62,18 +62,13 @@ class CampaignService:
                 logged_in = False
 
             organisation_dto = OrganisationDTO()
-            organisation_dto.projects = []
 
             organisation_dto.organisation_id = org.id
             organisation_dto.name = org.name
             organisation_dto.logo = org.logo
             organisation_dto.url = org.url
             organisation_dto.is_manager = logged_in
-            projects = OrganisationService.get_projects_by_organisation_id(org.id)
-            for project in projects:
-                organisation_dto.projects.append(project.name)
 
-            campaign_dto.organisations.append(organisation_dto)
         return campaign_dto
 
     @staticmethod
