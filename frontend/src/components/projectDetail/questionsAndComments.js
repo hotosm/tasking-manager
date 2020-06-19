@@ -35,11 +35,17 @@ const formatUserNamesToLink = (text) => {
   return text;
 };
 
+const Item = ({ entity: { name } }) => (
+  <div className="w-100 pv2 ph3 tc bg-tan hover-bg-blue-grey blue-grey hover-white pointer">
+    {`${name}`}
+  </div>
+);
+
 export const UserFetchTextarea = ({ value, setValueFn, token }) => {
   const fetchUsers = async (user) => {
     const url = `users/queries/filter/${user}/`;
-
     let userItems;
+
     try {
       const res = await fetchLocalJSONAPI(url, token);
       userItems = res.usernames.map((u) => {
@@ -52,31 +58,23 @@ export const UserFetchTextarea = ({ value, setValueFn, token }) => {
     return userItems;
   };
 
-  const Item = ({ entity: { name } }) => (
-    <div className="w-100 pv2 ph3 tc bg-tan blue-grey hover-bg-blue-grey hover-white pointer">
-      {`${name}`}
-    </div>
-  );
-
   return (
-    <div>
-      <ReactTextareaAutocomplete
-        value={value}
-        listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey w4 overflow-scroll h5 barlow-condensed f5"
-        onChange={setValueFn}
-        className="w-100 f5 pa2"
-        loadingComponent={() => <span></span>}
-        renderToBody={true}
-        rows={3}
-        trigger={{
-          '@': {
-            dataProvider: fetchUsers,
-            component: Item,
-            output: (item, trigger) => '@[' + item.name + ']',
-          },
-        }}
-      />
-    </div>
+    <ReactTextareaAutocomplete
+      value={value}
+      listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey overflow-y-scroll base-font f5 relative z-5"
+      listStyle={{ maxHeight: '16rem' }}
+      onChange={setValueFn}
+      className="w-100 f5 pa2"
+      loadingComponent={() => <span></span>}
+      rows={3}
+      trigger={{
+        '@': {
+          dataProvider: fetchUsers,
+          component: Item,
+          output: (item, trigger) => '@[' + item.name + ']',
+        },
+      }}
+    />
   );
 };
 
@@ -160,8 +158,12 @@ export const QuestionsAndComments = ({ projectId }) => {
             className="tr w-90 center pv3"
           />
         )}
-        {token !== null && (
+        {token ? (
           <PostProjectComment projectId={projectId} token={token} setStat={setStat} />
+        ) : (
+          <div>
+            <p>You need to log in to be able to post comments.</p>
+          </div>
         )}
       </div>
     </div>
