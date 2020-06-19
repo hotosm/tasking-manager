@@ -77,14 +77,14 @@ it('test if PaginatorLine returns the correct number of active and inactive butt
   expect(
     testInstance.findAllByProps({
       className:
-        'bg-white blue-grey f5 br2 base-font button-reset justify-center inline-flex items-center w2 h2 ba ma1 border-box pointer',
+        'bg-white blue-grey f5 br2 base-font button-reset justify-center pv1 ph2 ba ma1 border-box pointer',
     }).length,
   ).toBe(3);
   // active page buttons should be 1
   expect(
     testInstance.findAllByProps({
       className:
-        'bg-blue-dark white f5 br2 base-font button-reset justify-center inline-flex items-center w2 h2 ba ma1 border-box pointer',
+        'bg-blue-dark white f5 br2 base-font button-reset justify-center pv1 ph2 ba ma1 border-box pointer',
     }).length,
   ).toBe(1);
 });
