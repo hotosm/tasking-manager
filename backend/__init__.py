@@ -446,7 +446,9 @@ def add_api_endpoints(app):
 
     # Tasks queries endoints (TODO: Refactor them into the REST endpoints)
     api.add_resource(
-        TasksQueriesJsonAPI, format_url("projects/<int:project_id>/tasks/")
+        TasksQueriesJsonAPI,
+        format_url("projects/<int:project_id>/tasks/"),
+        methods=["GET", "DELETE"],
     )
     api.add_resource(
         TasksQueriesXmlAPI, format_url("projects/<int:project_id>/tasks/queries/xml/")
