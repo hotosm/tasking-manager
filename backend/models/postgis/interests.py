@@ -1,5 +1,5 @@
 from backend import db
-from backend.models.dtos.interests_dto import InterestDTO
+from backend.models.dtos.interests_dto import InterestDTO, InterestsListDTO
 from backend.models.postgis.utils import NotFound
 
 # Secondary table defining many-to-many join for interests of a user.
@@ -71,3 +71,12 @@ class Interest(db.Model):
         dto.name = self.name
 
         return dto
+
+    @staticmethod
+    def get_all_interests():
+        """Get all interests"""
+        query = Interest.query.all()
+        interest_list_dto = InterestsListDTO()
+        interest_list_dto.interests = [interest.as_dto() for interest in query]
+
+        return interest_list_dto

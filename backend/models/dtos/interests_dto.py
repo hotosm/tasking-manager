@@ -13,8 +13,8 @@ class InterestDTO(Model):
     count_users = IntType(serialize_when_none=False, serialized_name="countUsers")
 
 
-class InterestsDTO(Model):
-    """ DTO for all user contributons on a project """
+class InterestsListDTO(Model):
+    """ DTO for all interests """
 
     def __init__(self):
         super().__init__()
