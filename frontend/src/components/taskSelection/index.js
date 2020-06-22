@@ -51,7 +51,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [tasks, setTasks] = useState();
   const [activities, setActivities] = useState();
   const [contributions, setContributions] = useState();
-  const [isValidationAllowed, setIsValidationAllowed] = useState(false);
+  const [isValidationAllowed, setIsValidationAllowed] = useState(undefined);
   const [zoomedTaskId, setZoomedTaskId] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
   const [selected, setSelectedTasks] = useState([]);
@@ -62,6 +62,12 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [activeUser, setActiveUser] = useState(null);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
   useSetProjectPageTitleTag(project);
+
+  // get teams the user is part of
+  const [userTeamsError, userTeamsLoading, userTeams] = useFetch(
+    `teams/?member=${user.id}`,
+    user.id !== undefined,
+  );
 
   const getActivities = useCallback((id) => {
     if (id) {
@@ -91,13 +97,6 @@ export function TaskSelection({ project, type, loading }: Object) {
       getContributions(project.projectId);
     }
   }, 60000);
-
-  // get teams the user is part of
-  /* eslint-disable-next-line */
-  const [userTeamsError, userTeamsLoading, userTeams] = useFetch(
-    `teams/?member=${user.id}`,
-    user.id !== undefined,
-  );
 
   const latestTasks = useRef(tasks);
   // it's needed to avoid the following useEffect to be triggered every time the tasks change
@@ -143,15 +142,20 @@ export function TaskSelection({ project, type, loading }: Object) {
   }, [contributions, user.username, user, activeSection, textSearch]);
 
   useEffect(() => {
-    if (project.hasOwnProperty('teams') && userTeams !== undefined) {
+    if (
+      project.hasOwnProperty('teams') &&
+      !userTeamsError &&
+      !userTeamsLoading &&
+      userTeams !== undefined
+    ) {
       setIsValidationAllowed(userCanValidate(user, project, userTeams.teams));
     }
-  }, [userTeams, project, user]);
+  }, [userTeams, userTeamsError, userTeamsLoading, project, user]);
 
   useEffect(() => {
     // run it only when the component is initialized
     // it checks if the user has tasks locked on the project and suggests to resume them
-    if (!mapInit && activities && activities.activity && user.username) {
+    if (!mapInit && activities && activities.activity && user.username && !userTeamsLoading) {
       const lockedByCurrentUser = activities.activity
         .filter((i) => i.taskStatus.startsWith('LOCKED_FOR_'))
         .filter((i) => i.actionBy === user.username);
@@ -194,6 +198,7 @@ export function TaskSelection({ project, type, loading }: Object) {
     project,
     user,
     userTeams.teams,
+    userTeamsLoading,
     userOrgs,
     textSearch,
   ]);
@@ -257,7 +262,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   return (
     <div>
       <div className="cf vh-minus-200-ns">
-        {['mappingIsComplete', 'selectAnotherProject'].includes(taskAction) && (
+        {!userTeamsLoading && ['mappingIsComplete', 'selectAnotherProject'].includes(taskAction) && (
           <Popup modal open closeOnEscape={true} closeOnDocumentClick={true}>
             {(close) => (
               <UserPermissionErrorContent
