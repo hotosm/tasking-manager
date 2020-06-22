@@ -158,5 +158,10 @@ class CampaignService:
         campaign = Campaign.query.get(campaign_id)
         if not campaign:
             raise NotFound(f"Campaign id {campaign_id} not found")
-        campaign.update(campaign_dto)
+        try:
+            campaign.update(campaign_dto)
+        except IntegrityError as e:
+            current_app.logger.info("Integrity error: {}".format(e.args[0]))
+            raise ValueError()
+
         return campaign
