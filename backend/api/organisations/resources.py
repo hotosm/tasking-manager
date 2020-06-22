@@ -14,6 +14,7 @@ from backend.services.organisation_service import (
 
 from backend.services.users.user_service import UserService
 from backend.services.users.authentication_service import token_auth
+from distutils.util import strtobool
 
 
 class OrganisationsRestAPI(Resource):
@@ -163,6 +164,11 @@ class OrganisationsRestAPI(Resource):
               required: true
               type: integer
               default: 1
+            - in: query
+              name: abbreviated
+              type: boolean
+              description: Set to true if members are not needed.
+              default: False
         responses:
             200:
                 description: Organisation found
@@ -179,8 +185,10 @@ class OrganisationsRestAPI(Resource):
                 user_id = 0
             else:
                 user_id = authenticated_user_id
+            # Validate abbreviated.
+            abbreviated = strtobool(request.args.get("abbreviated", "false"))
             organisation_dto = OrganisationService.get_organisation_by_id_as_dto(
-                organisation_id, user_id
+                organisation_id, user_id, abbreviated
             )
             return organisation_dto.to_primitive(), 200
         except NotFound:
@@ -293,6 +301,11 @@ class OrganisationsAllAPI(Resource):
               description: Filter projects on managers with this user_id
               required: false
               type: integer
+            - in: query
+              name: omitManagerList
+              type: boolean
+              description: Set to true if members are not needed.
+              default: False
         responses:
             200:
                 description: Organisations found
@@ -327,10 +340,12 @@ class OrganisationsAllAPI(Resource):
             except Exception:
                 return {"Error": "Unauthorized - Not allowed"}, 403
 
+        # Validate abbreviated.
+        omit_managers = strtobool(request.args.get("omitManagerList", "false"))
         # Obtain organisations
         try:
             results_dto = OrganisationService.get_organisations_as_dto(
-                manager_user_id, authenticated_user_id
+                manager_user_id, authenticated_user_id, omit_managers
             )
             return results_dto.to_primitive(), 200
         except NotFound:

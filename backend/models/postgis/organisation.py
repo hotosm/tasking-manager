@@ -154,7 +154,7 @@ class Organisation(db.Model):
         )
         return query_results
 
-    def as_dto(self):
+    def as_dto(self, omit_managers):
         """ Returns a dto for an organisation """
         organisation_dto = OrganisationDTO()
         organisation_dto.organisation_id = self.id
@@ -162,6 +162,10 @@ class Organisation(db.Model):
         organisation_dto.logo = self.logo
         organisation_dto.url = self.url
         organisation_dto.managers = []
+
+        if omit_managers:
+            return organisation_dto
+
         for manager in self.managers:
             org_manager_dto = OrganisationManagerDTO()
             org_manager_dto.username = manager.username
