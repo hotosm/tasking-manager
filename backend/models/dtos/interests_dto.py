@@ -4,6 +4,8 @@ from schematics.types.compound import ListType, ModelType
 
 
 class InterestDTO(Model):
+    """ DTO for a interest."""
+
     id = IntType()
     name = StringType()
     user_selected = BooleanType(
@@ -13,8 +15,8 @@ class InterestDTO(Model):
     count_users = IntType(serialize_when_none=False, serialized_name="countUsers")
 
 
-class InterestsDTO(Model):
-    """ DTO for all user contributons on a project """
+class InterestsListDTO(Model):
+    """ DTO for a list of interests."""
 
     def __init__(self):
         super().__init__()
@@ -23,16 +25,18 @@ class InterestsDTO(Model):
     interests = ListType(ModelType(InterestDTO))
 
 
-class InterestrateDTO(Model):
+class InterestRateDTO(Model):
+    """DTO for a interest rate."""
+
     name = StringType()
     rate = FloatType()
 
 
-class InterestratesDTO(Model):
-    """ DTO for all user contributons on a project """
+class InterestRateListDTO(Model):
+    """DTO for a list of interests rates."""
 
     def __init__(self):
         super().__init__()
         self.interests = []
 
-    rates = ListType(ModelType(InterestrateDTO))
+    rates = ListType(ModelType(InterestRateDTO))
