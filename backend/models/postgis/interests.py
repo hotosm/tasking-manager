@@ -65,7 +65,7 @@ class Interest(db.Model):
         db.session.commit()
 
     def as_dto(self) -> InterestDTO:
-        """ Get the license from the DB """
+        """ Get the interest from the DB """
         dto = InterestDTO()
         dto.id = self.id
         dto.name = self.name

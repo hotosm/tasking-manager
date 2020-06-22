@@ -3,8 +3,8 @@ from backend import db
 from sqlalchemy import func
 
 from backend.models.dtos.interests_dto import (
-    InterestrateDTO,
-    InterestratesDTO,
+    InterestRateDTO,
+    InterestRateListDTO,
     InterestsListDTO,
 )
 from backend.models.postgis.task import TaskHistory
@@ -96,8 +96,8 @@ class InterestService:
             .join(Interest, Interest.id == project_interests.c.interest_id)
         )
 
-        rates = [InterestrateDTO({"name": r[0], "rate": r[1]}) for r in res.all()]
-        results = InterestratesDTO()
+        rates = [InterestRateDTO({"name": r[0], "rate": r[1]}) for r in res.all()]
+        results = InterestRateListDTO()
         results.rates = rates
 
         return results
