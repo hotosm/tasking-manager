@@ -55,9 +55,6 @@ class UserDTO(Model):
         serialized_name="mappingLevel", validators=[is_known_mapping_level]
     )
     date_registered = UTCDateTimeType(serialized_name="dateRegistered")
-    tasks_mapped = IntType(serialized_name="tasksMapped")
-    tasks_validated = IntType(serialized_name="tasksValidated")
-    tasks_invalidated = IntType(serialized_name="tasksInvalidated")
     email_address = EmailType(serialized_name="emailAddress")
     is_email_verified = EmailType(
         serialized_name="isEmailVerified", serialize_when_none=False
