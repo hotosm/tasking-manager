@@ -2380,10 +2380,10 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
-"@webscopeio/react-textarea-autocomplete@^4.6.2":
-  version "4.6.3"
-  resolved "https://registry.yarnpkg.com/@webscopeio/react-textarea-autocomplete/-/react-textarea-autocomplete-4.6.3.tgz#4abc9a36006e6c52321f3d43c10711432fa10afe"
-  integrity sha512-09aVXwhxIcfpU3Qyx5zxAec73BDE/32BGTWZkXDCB5yZEzU5Qnw++68Lvv/Z/oB+ifqFsG9JOoXf2S0lz6mwcg==
+"@webscopeio/react-textarea-autocomplete@^4.7.0":
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@webscopeio/react-textarea-autocomplete/-/react-textarea-autocomplete-4.7.0.tgz#3e733cd792b7f19d4e3b9135476b1c5c300db3e8"
+  integrity sha512-uzH7PUlXQk6jCTh1eGZdXjvjxveZpznhQywX5I5ojsXgre+XSzlK66chdDdfi+lQABC3N3TzfSq6Hlxa8hlrLA==
   dependencies:
     custom-event "^1.0.1"
     textarea-caret "3.0.2"
