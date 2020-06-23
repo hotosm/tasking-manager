@@ -170,6 +170,20 @@ class ProjectSearchService:
         if paginated_results.total == 0:
             raise NotFound()
 
+        dto = ProjectSearchResultsDTO()
+        dto.results = [
+            ProjectSearchService.create_result_dto(
+                p,
+                search_dto.preferred_locale,
+                Project.get_project_total_contributions(p[0]),
+            )
+            for p in paginated_results.items
+        ]
+        dto.pagination = Pagination(paginated_results)
+
+        if search_dto.omit_map_results:
+            return dto
+
         features = []
         for project in all_results:
             # This loop creates a geojson feature collection so you can see all active projects on the map
@@ -183,18 +197,7 @@ class ProjectSearchService:
             )
             features.append(feature)
         feature_collection = geojson.FeatureCollection(features)
-        dto = ProjectSearchResultsDTO()
         dto.map_results = feature_collection
-
-        dto.results = [
-            ProjectSearchService.create_result_dto(
-                p,
-                search_dto.preferred_locale,
-                Project.get_project_total_contributions(p[0]),
-            )
-            for p in paginated_results.items
-        ]
-        dto.pagination = Pagination(paginated_results)
 
         return dto
 
@@ -304,7 +307,9 @@ class ProjectSearchService:
             org_projects = query.filter(Project.organisation_id.in_(orgs_managed))
             query = org_projects.union(team_projects)
 
-        all_results = query.all()
+        all_results = []
+        if not search_dto.omit_map_results:
+            all_results = query.all()
         paginated_results = query.paginate(search_dto.page, 14, True)
 
         return all_results, paginated_results

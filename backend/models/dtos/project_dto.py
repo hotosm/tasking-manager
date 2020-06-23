@@ -309,6 +309,7 @@ class ProjectSearchDTO(Model):
     mapped_by = IntType(required=False)
     favorited_by = IntType(required=False)
     managed_by = IntType(required=False)
+    omit_map_results = BooleanType(required=False)
 
     def __hash__(self):
         """ Make object hashable so we can cache user searches"""
