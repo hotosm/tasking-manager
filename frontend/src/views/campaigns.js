@@ -115,7 +115,7 @@ export function EditCampaign(props) {
   const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`, props.id);
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?campaign=${encodeURIComponent(campaign.name)}`,
+    `projects/?campaign=${encodeURIComponent(campaign.name)}&omitMapResults=true`,
     campaign.name !== undefined,
   );
 

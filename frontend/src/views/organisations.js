@@ -155,7 +155,7 @@ export function EditOrganisation(props) {
   const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?organisationId=${props.id}`,
+    `projects/?organisationId=${props.id}&omitMapResults=true`,
     props.id,
   );
 

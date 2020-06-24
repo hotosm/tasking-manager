@@ -13,7 +13,9 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 export function ManagementPageIndex() {
   useSetTitleTag('Manage');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const [projectsError, projectsLoading, projects] = useFetch(`projects/?managedByMe=true`);
+  const [projectsError, projectsLoading, projects] = useFetch(
+    `projects/?managedByMe=true&omitMapResults=true`,
+  );
   const [teamsError, teamsLoading, teams] = useFetch(
     `teams/?manager=${userDetails.id}`,
     userDetails.id !== undefined,
