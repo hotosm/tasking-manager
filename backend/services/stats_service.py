@@ -272,7 +272,8 @@ class StatsService:
                     coalesce(mapped_stmt.c.count, 0)
                     + coalesce(validated_stmt.c.count, 0)
                 ).label("total"),
-                (mapped_stmt.c.task_ids + validated_stmt.c.task_ids).label("task_ids"),
+                mapped_stmt.c.task_ids.label("mapped_tasks"),
+                validated_stmt.c.task_ids.label("validated_tasks"),
             )
             .outerjoin(
                 validated_stmt,
@@ -301,7 +302,8 @@ class StatsService:
                     mapped=r.mapped,
                     validated=r.validated,
                     total=r.total,
-                    task_ids=r.task_ids,
+                    mapped_tasks=r.mapped_tasks,
+                    validated_tasks=r.validated_tasks,
                     date_registered=r.date_registered.date(),
                 )
             )
