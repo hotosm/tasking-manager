@@ -114,8 +114,8 @@ export function ProjectCard({
             </div>
           </div>
           <div className="ma1 w-100">
-            <div className="f7 blue-grey mt2">#{projectId}</div>
-            <h3 title={name} className="pb2 mt2 f5 fw6 h3 lh-title overflow-y-hidden">
+            <div className="f5 blue-grey mt1 lh-title">#{projectId}</div>
+            <h3 title={name} className="pb2 mt1 f5 fw6 h3 lh-title overflow-y-hidden">
               {name}
             </h3>
             <div className="tc f6">
