@@ -302,8 +302,8 @@ class StatsService:
                     mapped=r.mapped,
                     validated=r.validated,
                     total=r.total,
-                    mapped_tasks=r.mapped_tasks,
-                    validated_tasks=r.validated_tasks,
+                    mapped_tasks=r.mapped_tasks if r.mapped_tasks is not None else [],
+                    validated_tasks=r.validated_tasks  if r.validated_tasks is not None else [],
                     date_registered=r.date_registered.date(),
                 )
             )
