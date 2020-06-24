@@ -630,6 +630,10 @@ class ProjectsAllAPI(ProjectSearchBase):
               type: string
               description: Filter by team on project
               default: null
+              name: omitMapResults
+              type: boolean
+              description: If true, it will not return the project centroid's geometries.
+              default: false
         responses:
             200:
                 description: Projects found
