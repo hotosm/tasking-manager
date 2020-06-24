@@ -275,9 +275,17 @@ class StatsService:
                 (mapped_stmt.c.task_ids + validated_stmt.c.task_ids).label("task_ids"),
             )
             .outerjoin(
-                validated_stmt, mapped_stmt.c.mapped_by == validated_stmt.c.validated_by
+                validated_stmt,
+                mapped_stmt.c.mapped_by == validated_stmt.c.validated_by,
+                full=True,
             )
-            .join(User, User.id == mapped_stmt.c.mapped_by)
+            .join(
+                User,
+                or_(
+                    User.id == mapped_stmt.c.mapped_by,
+                    User.id == validated_stmt.c.validated_by,
+                ),
+            )
             .order_by(desc("total"))
             .all()
         )
