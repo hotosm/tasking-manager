@@ -135,6 +135,7 @@ export const UserProjectsPage = (props) => {
           retryFn={forceUpdate}
           className={`${searchResultWidth} fl`}
           showBottomButtons={props.location && props.location.pathname.startsWith('/manage/')}
+          management={props.management}
         />
         {isMapShown && (
           <ProjectsMap

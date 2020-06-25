@@ -3,6 +3,7 @@ import { types } from '../actions/userPreferences';
 const initialState = {
   locale: null,
   mapShown: false,
+  projectListView: false,
 };
 
 export function preferencesReducer(state = initialState, action) {
@@ -17,6 +18,18 @@ export function preferencesReducer(state = initialState, action) {
       return {
         ...state,
         mapShown: !state.mapShown,
+      };
+    }
+    case types.TOGGLE_LIST_VIEW: {
+      return {
+        ...state,
+        projectListView: true,
+      };
+    }
+    case types.TOGGLE_CARD_VIEW: {
+      return {
+        ...state,
+        projectListView: false,
       };
     }
     default:

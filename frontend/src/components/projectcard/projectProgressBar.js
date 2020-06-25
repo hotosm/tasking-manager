@@ -40,17 +40,23 @@ export default function ProjectProgressBar({
               style={{ left: position.x - 70 }}
             >
               <p className="f6 lh-copy ma0 white f7 fw4">
-                <span className="fw8">{percentMapped}%</span>&nbsp;
-                <FormattedMessage {...messages['percentMapped']} />
+                <FormattedMessage
+                  {...messages['percentMapped']}
+                  values={{ n: <span className="fw8">{percentMapped}</span> }}
+                />
               </p>
               <p className="f6 lh-copy ma0 white f7 fw4">
-                <span className="fw8">{percentValidated}%</span>&nbsp;
-                <FormattedMessage {...messages['percentValidated']} />
+                <FormattedMessage
+                  {...messages['percentValidated']}
+                  values={{ n: <span className="fw8">{percentValidated}</span> }}
+                />
               </p>
               {![null, undefined].includes(percentBadImagery) && (
                 <p className="f6 lh-copy ma0 white f7 fw4">
-                  <span className="fw8">{percentBadImagery}%</span>&nbsp;
-                  <FormattedMessage {...messages['percentBadImagery']} />
+                  <FormattedMessage
+                    {...messages['percentBadImagery']}
+                    values={{ n: <span className="fw8">{percentBadImagery}</span> }}
+                  />
                 </p>
               )}
               <span className="absolute top-0 left-2 nt2 w1 h1 bg-blue-dark bl bt b--blue-dark rotate-45"></span>
