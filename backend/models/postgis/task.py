@@ -845,14 +845,12 @@ class Task(db.Model):
         filters = [Task.project_id == project_id]
 
         if task_ids_str:
-            tasks_filters = []
             task_ids = map(int, task_ids_str.split(","))
             tasks = Task.get_tasks(project_id, task_ids)
             if not tasks or len(tasks) == 0:
                 raise NotFound()
             else:
-                for task in tasks:
-                    tasks_filters.append(task.id)
+                tasks_filters = [task.id for task in tasks]
             filters = [Task.project_id == project_id, Task.id.in_(tasks_filters)]
         else:
             tasks = Task.get_all_tasks(project_id)
@@ -1008,8 +1006,7 @@ class Task(db.Model):
         task_dto.task_status = TaskStatus(self.task_status).name
         task_dto.lock_holder = self.lock_holder.username if self.lock_holder else None
         task_dto.task_history = task_history
-        if last_updated:
-            task_dto.last_updated = last_updated
+        task_dto.last_updated = last_updated if last_updated else None
         task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
         return task_dto
 
