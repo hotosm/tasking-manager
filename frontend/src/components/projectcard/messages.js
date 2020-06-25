@@ -14,15 +14,15 @@ export default defineMessages({
   },
   percentMapped: {
     id: 'project.card.percentMapped',
-    defaultMessage: 'Mapped',
+    defaultMessage: '{n}% mapped',
   },
   percentValidated: {
     id: 'project.card.percentValidated',
-    defaultMessage: 'Validated',
+    defaultMessage: '{n}% validated',
   },
   percentBadImagery: {
     id: 'project.card.percentBadImagery',
-    defaultMessage: 'Bad imagery',
+    defaultMessage: '{n}% bad imagery',
   },
   projectPriorityURGENT: {
     id: 'project.card.projectPriorityUrgent',
