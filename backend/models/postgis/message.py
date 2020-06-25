@@ -1,4 +1,3 @@
-from sqlalchemy import text
 from sqlalchemy.sql.expression import false
 
 from backend import db
@@ -106,11 +105,17 @@ class Message(db.Model):
     @staticmethod
     def get_all_contributors(project_id: int):
         """ Get all contributors to a project """
-        query = """SELECT mapped_by as contributors from tasks where project_id = :project_id and mapped_by is not null
-                   UNION
-                   SELECT validated_by from tasks where tasks.project_id = :project_id and validated_by is not null"""
 
-        contributors = db.engine.execute(text(query), project_id=project_id)
+        contributors = (
+            db.session.query(Task.mapped_by)
+            .filter(Task.project_id == project_id)
+            .filter(Task.mapped_by.isnot(None))
+            .union(
+                db.session.query(Task.validated_by)
+                .filter(Task.project_id == project_id)
+                .filter(Task.validated_by.isnot(None))
+            )
+        )
         return contributors
 
     def mark_as_read(self):

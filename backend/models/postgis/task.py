@@ -5,7 +5,7 @@ import json
 from enum import Enum
 from flask import current_app
 from sqlalchemy.types import Float, Text
-from sqlalchemy import text, desc, cast
+from sqlalchemy import desc, cast, func, distinct
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.orm.session import make_transient
 from geoalchemy2 import Geometry
@@ -603,22 +603,21 @@ class Task(db.Model):
         expiry_delta = Task.auto_unlock_delta()
         lock_duration = (datetime.datetime.min + expiry_delta).time().isoformat()
         expiry_date = datetime.datetime.utcnow() - expiry_delta
-        old_locks_query = """SELECT t.id
-            FROM tasks t, task_history th
-            WHERE t.id = th.task_id
-            AND t.project_id = th.project_id
-            AND t.task_status IN (1,3)
-            AND th.action IN ( 'LOCKED_FOR_VALIDATION','LOCKED_FOR_MAPPING' )
-            AND th.action_text IS NULL
-            AND t.project_id = :project_id
-            AND th.action_date <= :expiry_date
-            """
 
-        old_tasks = db.engine.execute(
-            text(old_locks_query), project_id=project_id, expiry_date=str(expiry_date)
+        old_tasks = (
+            db.session.query(Task.id)
+            .filter(Task.id == TaskHistory.task_id)
+            .filter(Task.project_id == TaskHistory.project_id)
+            .filter(Task.task_status.in_([1, 3]))
+            .filter(
+                TaskHistory.action.in_(["LOCKED_FOR_VALIDATION", "LOCKED_FOR_MAPPING"])
+            )
+            .filter(TaskHistory.action_text.is_(None))
+            .filter(Task.project_id == project_id)
+            .filter(TaskHistory.action_date <= str(expiry_date))
         )
 
-        if old_tasks.rowcount == 0:
+        if old_tasks.count() == 0:
             # no tasks older than the delta found, return without further processing
             return
 
@@ -696,11 +695,13 @@ class Task(db.Model):
         self.update()
 
     def reset_task(self, user_id: int):
+        expiry_delta = Task.auto_unlock_delta()
+        lock_duration = (datetime.datetime.min + expiry_delta).time().isoformat()
         if TaskStatus(self.task_status) in [
             TaskStatus.LOCKED_FOR_MAPPING,
             TaskStatus.LOCKED_FOR_VALIDATION,
         ]:
-            self.record_auto_unlock()
+            self.record_auto_unlock(lock_duration)
 
         self.set_task_history(TaskAction.STATE_CHANGE, user_id, None, TaskStatus.READY)
         self.mapped_by = None
@@ -943,22 +944,29 @@ class Task(db.Model):
     @staticmethod
     def get_mapped_tasks_by_user(project_id: int):
         """ Gets all mapped tasks for supplied project grouped by user"""
-
-        # Raw SQL is easier to understand that SQL alchemy here :)
-        sql = """select u.username, u.mapping_level, count(distinct(t.id)), json_agg(distinct(t.id)),
-                            max(th.action_date) last_seen, u.date_registered, u.last_validation_date
-                      from tasks t,
-                           task_history th,
-                           users u
-                     where t.project_id = th.project_id
-                       and t.id = th.task_id
-                       and t.mapped_by = u.id
-                       and t.project_id = :project_id
-                       and t.task_status = 2
-                       and th.action_text = 'MAPPED'
-                     group by u.username, u.mapping_level, u.date_registered, u.last_validation_date"""
-
-        results = db.engine.execute(text(sql), project_id=project_id)
+        results = (
+            db.session.query(
+                User.username,
+                User.mapping_level,
+                func.count(distinct(Task.id)),
+                func.json_agg(distinct(Task.id)),
+                func.max(TaskHistory.action_date),
+                User.date_registered,
+                User.last_validation_date,
+            )
+            .filter(Task.project_id == TaskHistory.project_id)
+            .filter(Task.id == TaskHistory.task_id)
+            .filter(Task.mapped_by == User.id)
+            .filter(Task.project_id == project_id)
+            .filter(Task.task_status == 2)
+            .filter(TaskHistory.action_text == "MAPPED")
+            .group_by(
+                User.username,
+                User.mapping_level,
+                User.date_registered,
+                User.last_validation_date,
+            )
+        )
 
         mapped_tasks_dto = MappedTasks()
         for row in results:
@@ -978,9 +986,12 @@ class Task(db.Model):
     @staticmethod
     def get_max_task_id_for_project(project_id: int):
         """Gets the nights task id currently in use on a project"""
-        sql = """select max(id) from tasks where project_id = :project_id GROUP BY project_id"""
-        result = db.engine.execute(text(sql), project_id=project_id)
-        if result.rowcount == 0:
+        result = (
+            db.session.query(func.max(Task.id))
+            .filter(Task.project_id == project_id)
+            .group_by(Task.project_id)
+        )
+        if result.count() == 0:
             raise NotFound()
         for row in result:
             return row[0]
