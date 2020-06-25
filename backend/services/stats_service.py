@@ -272,12 +272,21 @@ class StatsService:
                     coalesce(mapped_stmt.c.count, 0)
                     + coalesce(validated_stmt.c.count, 0)
                 ).label("total"),
-                (mapped_stmt.c.task_ids + validated_stmt.c.task_ids).label("task_ids"),
+                mapped_stmt.c.task_ids.label("mapped_tasks"),
+                validated_stmt.c.task_ids.label("validated_tasks"),
             )
             .outerjoin(
-                validated_stmt, mapped_stmt.c.mapped_by == validated_stmt.c.validated_by
+                validated_stmt,
+                mapped_stmt.c.mapped_by == validated_stmt.c.validated_by,
+                full=True,
             )
-            .join(User, User.id == mapped_stmt.c.mapped_by)
+            .join(
+                User,
+                or_(
+                    User.id == mapped_stmt.c.mapped_by,
+                    User.id == validated_stmt.c.validated_by,
+                ),
+            )
             .order_by(desc("total"))
             .all()
         )
@@ -293,7 +302,10 @@ class StatsService:
                     mapped=r.mapped,
                     validated=r.validated,
                     total=r.total,
-                    task_ids=r.task_ids,
+                    mapped_tasks=r.mapped_tasks if r.mapped_tasks is not None else [],
+                    validated_tasks=r.validated_tasks
+                    if r.validated_tasks is not None
+                    else [],
                     date_registered=r.date_registered.date(),
                 )
             )
