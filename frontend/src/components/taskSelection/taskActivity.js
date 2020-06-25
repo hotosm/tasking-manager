@@ -40,11 +40,11 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
 
   return (
     <>
-      <div className="w-100 pt3 h4">
-        <div className="fl w-10 pr2 pl4">
-          <CurrentUserAvatar className="h2 w2 br-100" />
+      <div className="w-100 pt3 ph3-ns ph1 h4">
+        <div className="fl w-10-ns w-20">
+          <CurrentUserAvatar className="h2 w2 fr mr2 br-100" />
         </div>
-        <div className="fl w-90 h-100 pr3">
+        <div className="fl w-90-ns w-80 h-100 f6">
           <UserFetchTextarea
             value={comment}
             setValueFn={(e) => setComment(e.target.value)}
@@ -52,7 +52,7 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
           />
         </div>
       </div>
-      <div className="w-100 pb3 tr pr3">
+      <div className="w-100 pb3 pt2 tr pr3">
         <Button onClick={() => saveComment()} className="bg-red white f6">
           <FormattedMessage {...messages.comment} />
         </Button>

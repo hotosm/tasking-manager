@@ -65,6 +65,7 @@ export const UserFetchTextarea = ({ value, setValueFn, token }) => {
       listStyle={{ maxHeight: '16rem' }}
       onChange={setValueFn}
       className="w-100 f5 pa2"
+      style={{ fontSize: '1rem' }}
       loadingComponent={() => <span></span>}
       rows={3}
       trigger={{
@@ -96,17 +97,17 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
 
   return (
     <div className="w-90-ns w-100 cf pv4 bg-white center">
-      <div className="fl w-10 ph2 tc pt2">
-        <CurrentUserAvatar className="w3 h3 br-100" />
+      <div className="fl w-10-ns w-20 pt2">
+        <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
       </div>
-      <div className="fl w-70 h-100">
+      <div className="fl w-70-ns w-80 ph1 h-100">
         <UserFetchTextarea
           value={comment}
           setValueFn={(e) => setComment(e.target.value)}
           token={token}
         />
       </div>
-      <div className="fl w-20 tc pt3">
+      <div className="fl w-20-ns w-100 tc-ns tr pt3 pr0-ns pr1">
         <Button onClick={saveComment} className="bg-red white f5" disabled={comment === ''}>
           <FormattedMessage {...messages.post} />
         </Button>
@@ -141,7 +142,7 @@ export const QuestionsAndComments = ({ projectId }) => {
 
   return (
     <div className="bg-tan">
-      <div className="ph6-l ph4 pb3 w-100 w-70-l">
+      <div className="ph6-l ph4-m ph2 pb3 w-100 w-70-l">
         {response && response.chat.length ? (
           <CommentList comments={response.chat} />
         ) : (
