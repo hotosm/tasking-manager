@@ -16,6 +16,7 @@ import { openEditor } from '../../utils/openEditor';
 import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
+import { useFetch } from '../../hooks/UseFetch';
 import DueDateBox from '../projectcard/dueDateBox';
 import {
   CompletionTabForMapping,
@@ -42,6 +43,11 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const activeTask = activeTasks && activeTasks[0];
   const timer = new Date(activeTask.lastUpdated);
   timer.setSeconds(timer.getSeconds() + activeTask.autoUnlockSeconds);
+  //eslint-disable-next-line
+  const [taskHistoryError, taskHistoryLoading, taskHistory] = useFetch(
+    `projects/${project.projectId}/tasks/${tasksIds[0]}/`,
+    project.projectId && tasksIds && tasksIds.length === 1,
+  );
 
   useEffect(() => {
     if (!editor && projectIsReady && userDetails.defaultEditor && tasks && tasksIds) {
@@ -194,6 +200,16 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       onClick={() => setActiveSection('history')}
                     >
                       <FormattedMessage {...messages.history} />
+                      {taskHistory &&
+                        taskHistory.taskHistory &&
+                        taskHistory.taskHistory.length > 1 && (
+                          <div
+                            className="bg-red white dib br-100 tc f6 ml1 mb1 v-mid"
+                            style={{ height: '1.125rem', width: '1.125rem' }}
+                          >
+                            {taskHistory.taskHistory.length}
+                          </div>
+                        )}
                     </span>
                   )}
                 </div>
@@ -278,7 +294,11 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                   </>
                 )}
                 {activeSection === 'history' && (
-                  <TaskHistory projectId={project.projectId} taskId={tasksIds[0]} />
+                  <TaskHistory
+                    projectId={project.projectId}
+                    taskId={tasksIds[0]}
+                    commentPayload={taskHistory}
+                  />
                 )}
               </div>
             </ReactPlaceholder>
