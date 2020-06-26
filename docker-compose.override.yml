@@ -1,18 +1,35 @@
 # To use this file, run `docker-compose up`.
-version: '3'
+version: '3.4'
+
+x-backend-config: &backend
+  build:
+    context: "./scripts/docker"
+    dockerfile: "Dockerfile.backend"
 
 services:
-
   # Main application
-  app:
-    build: ./scripts/docker/tasking-manager
+  backend:
+    <<: *backend
     volumes:
       - .:/usr/src/app
-    ports:
-      - "3000:3000"
 
   # Migration service
   migration:
-    build: ./scripts/docker/tasking-manager
+    <<: *backend
     volumes:
       - .:/usr/src/app
+
+  frontend:
+    build:
+      context: "."
+      dockerfile: "./scripts/docker/Dockerfile.frontend"
+      args:
+        - TM_APP_API_URL=http://localhost/api
+    # stdin_open: true
+    # volumes:
+    #   - "./frontend/src:/usr/src/app/src"
+    # environment:
+    #   - REACT_APP_API_URL=http://localhost/api
+    labels:
+      - traefik.http.routers.frontend.rule=Host(`localhost`)
+      - traefik.http.services.frontend.loadbalancer.server.port=80
