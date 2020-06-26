@@ -13,6 +13,8 @@ build:
 	docker-compose build --no-cache app
 
 up:
+	docker network inspect tm-web >/dev/null 2>&1 || \
+		docker network create tm-web
 	docker-compose up -d
 
 down:
