@@ -400,6 +400,11 @@ class ProjectSearchResultsDTO(Model):
 class LockedTasksForUser(Model):
     """ Describes all tasks locked by an individual user"""
 
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.locked_tasks = []
+
     locked_tasks = ListType(IntType, serialized_name="lockedTasks")
     project = IntType(serialized_name="projectId")
     task_status = StringType(serialized_name="taskStatus")

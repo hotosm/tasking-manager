@@ -851,8 +851,7 @@ class Task(db.Model):
             if not tasks or len(tasks) == 0:
                 raise NotFound()
             else:
-                for task in tasks:
-                    tasks_filters.append(task.id)
+                tasks_filters = [task.id for task in tasks]
             filters = [Task.project_id == project_id, Task.id.in_(tasks_filters)]
         else:
             tasks = Task.get_all_tasks(project_id)
@@ -1105,7 +1104,6 @@ class Task(db.Model):
         """ Gets tasks on project owned by specified user id"""
         tasks = Task.query.filter_by(locked_by=user_id)
         tasks_dto = LockedTasksForUser()
-        tasks_dto.locked_tasks = []
         for task in tasks:
             tasks_dto.locked_tasks.append(task.id)
             tasks_dto.project = task.project_id
@@ -1116,9 +1114,6 @@ class Task(db.Model):
     def get_locked_tasks_details_for_user(user_id: int):
         """ Gets tasks on project owned by specified user id"""
         tasks = Task.query.filter_by(locked_by=user_id)
-
-        locked_tasks = []
-        for task in tasks:
-            locked_tasks.append(task)
+        locked_tasks = [task for task in tasks]
 
         return locked_tasks
