@@ -1,6 +1,7 @@
 from schematics import Model
 from schematics.types import StringType, IntType
 from schematics.types.compound import ListType, ModelType
+from schematics.transforms import whitelist
 
 
 class LicenseDTO(Model):
@@ -11,6 +12,12 @@ class LicenseDTO(Model):
     description = StringType(required=True)
     plain_text = StringType(required=True, serialized_name="plainText")
 
+    class Options:
+        roles = {
+            'report': whitelist(
+                'name', 'description'
+            )
+        }
 
 class LicenseListDTO(Model):
     """ DTO for all mapping licenses """

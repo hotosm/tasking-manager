@@ -25,6 +25,8 @@ from backend.models.postgis.statuses import (
     ValidationPermission,
 )
 from backend.models.dtos.campaign_dto import CampaignDTO
+from schematics.transforms import whitelist
+
 
 ORDER_BY_OPTIONS = (
     "id",
@@ -149,6 +151,14 @@ class ProjectInfoDTO(Model):
         default="", serialized_name="perTaskInstructions"
     )
 
+    class Options:
+        roles = {
+            'report': whitelist(
+                'name', 'short_description',
+                'instructions', 'per_task_instructions'
+            )
+        }    
+
 
 class CustomEditorDTO(Model):
     """ DTO to define a custom editor """
@@ -265,12 +275,53 @@ class ProjectDTO(Model):
     )
     interests = ListType(ModelType(InterestDTO))
 
+    class Options:
+        roles = {
+            'report': whitelist(
+                'project_id', 'project_status', 'project_info',
+                'changeset_comment', 'imagery', 'organisation',
+                'license_id', 'created', 'author'
+            )
+        }
+
 
 class ProjectFavoriteDTO(Model):
     """ DTO used to favorite a project """
 
     project_id = IntType(required=True)
     user_id = IntType(required=True)
+
+
+class ProjectUser(Model):
+    """ Describes an individual user comment on a project task """
+
+    user_id = StringType(serialized_name="userId")
+    user_name = StringType(serialized_name="userName")
+
+    class Options:
+        roles = {
+            'report': whitelist(
+                'user_id', 'user_name'
+            )
+        }
+
+
+class ProjectUsersDTO(Model):
+    """ Contains all users on a project """
+
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.users = []
+
+    users = ListType(ModelType(ProjectUser))
+
+    class Options:
+        roles = {
+            'report': whitelist(
+                'users'
+            )
+        }
 
 
 class ProjectFavoritesDTO(Model):

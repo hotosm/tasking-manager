@@ -9,6 +9,7 @@ from backend.models.dtos.project_dto import (
     ProjectCommentsDTO,
     ProjectSearchDTO,
 )
+from backend.services.osm_report_service import OsmReportService
 from backend.models.postgis.project import Project, Task, ProjectStatus
 from backend.models.postgis.statuses import TaskCreationMode, TeamRoles
 from backend.models.postgis.task import TaskHistory, TaskStatus, TaskAction
@@ -114,6 +115,9 @@ class ProjectAdminService:
 
     @staticmethod
     def update_project(project_dto: ProjectDTO, authenticated_user_id: int):
+        # Here
+        osm_report = OsmReportService()
+        osm_report.report_data_to_osm(project_dto)
         project_id = project_dto.project_id
 
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:

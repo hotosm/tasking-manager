@@ -409,6 +409,7 @@ class ProjectsRestAPI(Resource):
             return {"Error": "Unable to update project"}, 400
 
         try:
+            # Here
             ProjectAdminService.update_project(project_dto, authenticated_user_id)
             return {"Status": "Updated"}, 200
         except InvalidGeoJson as e:

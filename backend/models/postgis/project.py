@@ -24,6 +24,8 @@ from backend.models.dtos.project_dto import (
     ProjectUserStatsDTO,
     ProjectSearchDTO,
     ProjectTeamDTO,
+    ProjectUser,
+    ProjectUsersDTO
 )
 from backend.models.dtos.interests_dto import InterestDTO
 
@@ -855,6 +857,27 @@ class Project(db.Model):
             )
 
         return project_teams
+
+    @staticmethod
+    def get_users_project(project_id: int) -> list:
+
+        projects = (
+            db.session.query(
+                User.id,
+                User.username
+            )
+            .filter(User.projects_mapped.any(project_id))
+            .all()
+        )
+        
+        projects_dto = ProjectUsersDTO()
+        for project in projects:
+            dto = ProjectUser()
+            dto.user_id = project.id
+            dto.user_name = project.username
+            projects_dto.users.append(dto)
+
+        return projects_dto
 
     @staticmethod
     @cached(active_mappers_cache)
