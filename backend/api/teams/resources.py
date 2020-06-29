@@ -206,9 +206,9 @@ class TeamsRestAPI(Resource):
               type: integer
               default: 1
             - in: query
-              name: abbreviated
+              name: omitMemberList
               type: boolean
-              description: Set to true if only state information is desired
+              description: Set it to true if you don't want the members list on the response.
               default: False
         responses:
             200:
@@ -222,12 +222,12 @@ class TeamsRestAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            abbreviated = strtobool(request.args.get("abbreviated", "false"))
+            omit_members = strtobool(request.args.get("omitMemberList", "false"))
             if authenticated_user_id is None:
                 user_id = 0
             else:
                 user_id = authenticated_user_id
-            team_dto = TeamService.get_team_as_dto(team_id, user_id, abbreviated)
+            team_dto = TeamService.get_team_as_dto(team_id, user_id, omit_members)
             return team_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Team Not Found"}, 404
@@ -335,7 +335,7 @@ class TeamsAllAPI(Resource):
             - in: query
               name: omitMemberList
               type: boolean
-              description: Set to true if only state information is desired
+              description: Set it to true if you don't want the members list on the response.
               default: False
         responses:
             201:

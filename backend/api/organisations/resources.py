@@ -165,9 +165,9 @@ class OrganisationsRestAPI(Resource):
               type: integer
               default: 1
             - in: query
-              name: abbreviated
+              name: omitManagerList
               type: boolean
-              description: Set to true if members are not needed.
+              description: Set it to true if you don't want the managers list on the response.
               default: False
         responses:
             200:
@@ -186,9 +186,9 @@ class OrganisationsRestAPI(Resource):
             else:
                 user_id = authenticated_user_id
             # Validate abbreviated.
-            abbreviated = strtobool(request.args.get("abbreviated", "false"))
+            omit_managers = strtobool(request.args.get("omitManagerList", "false"))
             organisation_dto = OrganisationService.get_organisation_by_id_as_dto(
-                organisation_id, user_id, abbreviated
+                organisation_id, user_id, omit_managers
             )
             return organisation_dto.to_primitive(), 200
         except NotFound:
@@ -304,7 +304,7 @@ class OrganisationsAllAPI(Resource):
             - in: query
               name: omitManagerList
               type: boolean
-              description: Set to true if members are not needed.
+              description: Set it to true if you don't want the managers list on the response.
               default: False
         responses:
             200:
