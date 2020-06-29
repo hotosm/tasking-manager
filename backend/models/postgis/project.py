@@ -8,7 +8,7 @@ from flask import current_app
 from geoalchemy2 import Geometry
 import sqlalchemy
 from sqlalchemy.sql.expression import cast, or_
-from sqlalchemy import text, desc, func, Time
+from sqlalchemy import text, desc, func, Time, orm
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 import requests
@@ -294,7 +294,7 @@ class Project(db.Model):
     def clone(project_id: int, author_id: int):
         """ Clone project """
 
-        orig = Project.get(project_id)
+        orig = Project.query.get(project_id)
         if orig is None:
             raise NotFound()
 
@@ -361,7 +361,9 @@ class Project(db.Model):
         :param project_id: project ID in scope
         :return: Project if found otherwise None
         """
-        return Project.query.get(project_id)
+        return Project.query.options(
+            orm.noload("tasks"), orm.noload("messages"), orm.noload("project_chat")
+        ).get(project_id)
 
     def update(self, project_dto: ProjectDTO):
         """ Updates project from DTO """
