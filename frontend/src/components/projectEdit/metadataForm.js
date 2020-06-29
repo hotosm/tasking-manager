@@ -18,8 +18,8 @@ export const MetadataForm = () => {
 
   useEffect(() => {
     if (userDetails && userDetails.id) {
-      const query = userDetails.role === 'ADMIN' ? '' : `?manager_user_id=${userDetails.id}`;
-      fetchLocalJSONAPI(`organisations/${query}`, token)
+      const query = userDetails.role === 'ADMIN' ? '' : `&manager_user_id=${userDetails.id}`;
+      fetchLocalJSONAPI(`organisations/?omitManagerList=true${query}`, token)
         .then((result) => setOrganisations(result.organisations))
         .catch((e) => console.log(e));
     }

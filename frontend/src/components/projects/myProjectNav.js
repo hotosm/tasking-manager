@@ -169,7 +169,9 @@ function ManagerFilters({ query, setQuery }: Object) {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const [campaignsError, campaignsLoading, campaigns] = useFetch('campaigns/');
   const [orgsError, orgsLoading, organisations] = useFetch(
-    `organisations/${userDetails.role === 'ADMIN' ? '' : `?manager_user_id=${userDetails.id}`}`,
+    `organisations/?omitManagerList=true${
+      userDetails.role === 'ADMIN' ? '' : `&manager_user_id=${userDetails.id}`
+    }`,
     userDetails && userDetails.id,
   );
   const { campaign: campaignInQuery, organisation: orgInQuery } = query;

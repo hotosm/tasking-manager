@@ -34,15 +34,15 @@ class OrganisationService:
         return org
 
     @staticmethod
-    def get_organisation_by_id_as_dto(organisation_id: int, user_id: int):
+    def get_organisation_by_id_as_dto(
+        organisation_id: int, user_id: int, abbreviated: bool
+    ):
         org = Organisation.get(organisation_id)
 
         if org is None:
             raise NotFound()
 
-        organisation_dto = org.as_dto()
-
-        organisation_dto.projects = []
+        organisation_dto = org.as_dto(abbreviated)
         organisation_dto.teams = []
 
         if user_id != 0:
@@ -52,13 +52,12 @@ class OrganisationService:
         else:
             organisation_dto.is_manager = False
 
+        if abbreviated:
+            return organisation_dto
+
         teams = OrganisationService.get_teams_by_organisation_id(organisation_id)
         for team in teams:
             organisation_dto.teams.append(team.as_dto_inside_org())
-
-        projects = OrganisationService.get_projects_by_organisation_id(organisation_id)
-        for project in projects:
-            organisation_dto.projects.append([project.id, project.name])
 
         return organisation_dto
 
@@ -126,12 +125,14 @@ class OrganisationService:
             return Organisation.get_organisations_managed_by_user(manager_user_id)
 
     @staticmethod
-    def get_organisations_as_dto(manager_user_id: int, authenticated_user_id: int):
+    def get_organisations_as_dto(
+        manager_user_id: int, authenticated_user_id: int, omit_managers: bool
+    ):
         orgs = OrganisationService.get_organisations(manager_user_id)
         orgs_dto = ListOrganisationsDTO()
         orgs_dto.organisations = []
         for org in orgs:
-            org_dto = org.as_dto()
+            org_dto = org.as_dto(omit_managers)
             if not authenticated_user_id:
                 del org_dto.managers
             orgs_dto.organisations.append(org_dto)

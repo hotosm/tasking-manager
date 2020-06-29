@@ -33,7 +33,9 @@ export function ListOrganisations() {
   const [userOrgsOnly, setUserOrgsOnly] = useState(true);
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
-      const queryParam = userOrgsOnly ? `?manager_user_id=${userDetails.id}` : '';
+      const queryParam = `?omitManagerList=true${
+        userOrgsOnly ? `&manager_user_id=${userDetails.id}` : ''
+      }`;
       fetchLocalJSONAPI(`organisations/${queryParam}`, token).then((orgs) =>
         setOrganisations(orgs.organisations),
       );

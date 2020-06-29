@@ -24,8 +24,10 @@ export const TeamSelect = () => {
   const [org, setOrg] = useState(null);
 
   useEffect(() => {
-    fetchLocalJSONAPI('organisations/', token).then((r) => setOrgs(r.organisations));
-    fetchLocalJSONAPI('teams/', token).then((t) => setTeams(t.teams));
+    fetchLocalJSONAPI('organisations/?omitManagerList=true', token).then((r) =>
+      setOrgs(r.organisations),
+    );
+    fetchLocalJSONAPI('teams/?omitMemberList=true', token).then((t) => setTeams(t.teams));
   }, [token]);
 
   const teamRoles = [
