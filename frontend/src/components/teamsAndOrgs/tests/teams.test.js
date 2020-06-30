@@ -7,12 +7,43 @@ import { TeamBox, TeamsBoxList } from '../teams';
 
 describe('test TeamBox', () => {
   const element = TestRenderer.create(
-    <TeamBox team={{ teamId: 1, name: 'Contributors', role: 'VALIDATOR' }} className="dib" />,
+    <TeamBox
+      team={{ teamId: 1, name: 'Contributors', role: 'VALIDATOR' }}
+      className="tc f6 ba dib"
+    />,
   );
   const testInstance = element.root;
-  it('test if props are correctly set', () => {
-    expect(testInstance.findByType('div').props.className).toBe('tc br1 f6 ba dib');
+  it('props are correctly set', () => {
+    expect(testInstance.findByType('div').props.className).toBe('br1 tc f6 ba dib');
     expect(testInstance.findByType('div').children).toEqual(['Contributors']);
+  });
+  it('does not have img', () => {
+    expect(() =>
+      testInstance
+        .findAllByType('img')
+        .toThrow(new Error('No instances found with node type: "img"')),
+    );
+  });
+});
+
+describe('test TeamBox with img', () => {
+  const element = TestRenderer.create(
+    <TeamBox
+      team={{
+        teamId: 1,
+        name: 'Contributors',
+        role: 'VALIDATOR',
+        organisation: 'My Org',
+        logo: 'http://i.co/1.jpg',
+      }}
+      className="tc f6 ba dib"
+    />,
+  );
+  const testInstance = element.root;
+  it('img exists and is correctly formatted', () => {
+    expect(testInstance.findByType('img').props.src).toBe('http://i.co/1.jpg');
+    expect(testInstance.findByType('img').props.alt).toBe('My Org');
+    expect(testInstance.findByType('img').props.className).toBe('object-fit-contain h2 pr2 v-mid');
   });
 });
 
@@ -38,11 +69,11 @@ describe('test TeamBoxList', () => {
   });
   it('TeamBox are present and with the correct props', () => {
     expect(testInstance.findAllByType(TeamBox).length).toBe(2);
-    expect(testInstance.findAllByProps({ className: 'tc br1 f6 ba dib pv2 ph3 mt2' }).length).toBe(
+    expect(testInstance.findAllByProps({ className: 'br1 dib pv2 ph3 mt2 ba f6 tc' }).length).toBe(
       2,
     );
     expect(
-      testInstance.findAllByProps({ className: 'tc br1 f6 ba dib pv2 ph3 mt2' })[0].children,
+      testInstance.findAllByProps({ className: 'br1 dib pv2 ph3 mt2 ba f6 tc' })[0].children,
     ).toEqual(['Private Team']);
   });
 });

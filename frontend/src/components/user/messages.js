@@ -16,6 +16,11 @@ export default defineMessages({
     id: 'user.name',
     defaultMessage: 'Name',
   },
+  organisations: {
+    id: 'user.organisations',
+    defaultMessage: 'Organizations',
+  },
+
   city: {
     id: 'user.city',
     defaultMessage: 'City',
