@@ -142,7 +142,8 @@ export function EditCampaign(props) {
 
   const updateCampaign = (payload) => {
     pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
-    .catch((e) => setNameError(e));
+      .then((res) => setNameError(null))
+      .catch((e) => setNameError(e));
   };
 
   const ServerMessage = () => {
@@ -178,10 +179,11 @@ export function EditCampaign(props) {
           campaign={{ name: campaign.name }}
           updateCampaign={updateCampaign}
           disabledForm={error || loading}
+          saveError={nameError}
         />
-         <ErrorMessage nameError={nameError} />
+        <ErrorMessage nameError={nameError} />
       </div>
-     
+
       <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
         <Projects
           projects={!projectsLoading && !projectsError && projects}
