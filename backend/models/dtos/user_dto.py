@@ -6,7 +6,6 @@ from schematics.types import (
     EmailType,
     LongType,
     BooleanType,
-    UTCDateTimeType,
 )
 from schematics.types.compound import ListType, ModelType, BaseType
 from backend.models.dtos.stats_dto import Pagination
@@ -54,8 +53,9 @@ class UserDTO(Model):
     mapping_level = StringType(
         serialized_name="mappingLevel", validators=[is_known_mapping_level]
     )
-    date_registered = UTCDateTimeType(serialized_name="dateRegistered")
+    projects_mapped = IntType(serialized_name="projectsMapped")
     email_address = EmailType(serialized_name="emailAddress")
+
     is_email_verified = EmailType(
         serialized_name="isEmailVerified", serialize_when_none=False
     )

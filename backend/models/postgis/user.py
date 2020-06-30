@@ -319,11 +319,11 @@ class User(db.Model):
         user_dto.username = self.username
         user_dto.role = UserRole(self.role).name
         user_dto.mapping_level = MappingLevel(self.mapping_level).name
+        user_dto.projects_mapped = (
+            len(self.projects_mapped) if self.projects_mapped else None
+        )
         user_dto.is_expert = self.is_expert or False
         user_dto.date_registered = self.date_registered
-        user_dto.tasks_mapped = self.tasks_mapped
-        user_dto.tasks_validated = self.tasks_validated
-        user_dto.tasks_invalidated = self.tasks_invalidated
         user_dto.twitter_id = self.twitter_id
         user_dto.linkedin_id = self.linkedin_id
         user_dto.facebook_id = self.facebook_id
