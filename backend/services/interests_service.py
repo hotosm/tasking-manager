@@ -1,18 +1,16 @@
 from backend import db
 
-from sqlalchemy import func, distinct
+from sqlalchemy import func
 
 from backend.models.dtos.interests_dto import (
-    InterestsDTO,
-    InterestrateDTO,
-    InterestratesDTO,
-    InterestDTO,
+    InterestRateDTO,
+    InterestRateListDTO,
+    InterestsListDTO,
 )
 from backend.models.postgis.task import TaskHistory
 from backend.models.postgis.interests import (
     Interest,
     project_interests,
-    user_interests,
 )
 from backend.services.project_service import ProjectService
 from backend.services.users.user_service import UserService
@@ -47,38 +45,8 @@ class InterestService:
         return interest.as_dto()
 
     @staticmethod
-    def get_all_interests():
-        interests = (
-            Interest.query.with_entities(
-                Interest.id,
-                Interest.name,
-                func.count(distinct(user_interests.c.user_id)).label("count_users"),
-                func.count(distinct(project_interests.c.project_id)).label(
-                    "count_projects"
-                ),
-            )
-            .outerjoin(user_interests, Interest.id == user_interests.c.interest_id)
-            .outerjoin(
-                project_interests, Interest.id == project_interests.c.interest_id
-            )
-            .group_by(Interest.id)
-            .order_by(Interest.id)
-            .all()
-        )
-        dto = InterestsDTO()
-        dto.interests = [
-            InterestDTO(
-                dict(
-                    id=i.id,
-                    name=i.name,
-                    count_projects=i.count_projects,
-                    count_users=i.count_users,
-                )
-            )
-            for i in interests
-        ]
-
-        return dto
+    def get_all_interests() -> InterestsListDTO:
+        return Interest.get_all_interests()
 
     @staticmethod
     def delete(interest_id):
@@ -91,7 +59,7 @@ class InterestService:
         project.create_or_update_interests(interests)
 
         # Return DTO.
-        dto = InterestsDTO()
+        dto = InterestsListDTO()
         dto.interests = [i.as_dto() for i in project.interests]
 
         return dto
@@ -102,7 +70,7 @@ class InterestService:
         user.create_or_update_interests(interests)
 
         # Return DTO.
-        dto = InterestsDTO()
+        dto = InterestsListDTO()
         dto.interests = [i.as_dto() for i in user.interests]
 
         return dto
@@ -128,8 +96,8 @@ class InterestService:
             .join(Interest, Interest.id == project_interests.c.interest_id)
         )
 
-        rates = [InterestrateDTO({"name": r[0], "rate": r[1]}) for r in res.all()]
-        results = InterestratesDTO()
+        rates = [InterestRateDTO({"name": r[0], "rate": r[1]}) for r in res.all()]
+        results = InterestRateListDTO()
         results.rates = rates
 
         return results

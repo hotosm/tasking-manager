@@ -11,6 +11,7 @@ import { ProjectSearchBox } from './projectSearchBox';
 import ClearFilters from './clearFilters';
 import { OrderBySelector } from './orderBy';
 import { SwitchToggle } from '../formInputs';
+import { GripIcon, ListIcon } from '../svgIcons';
 
 export const ShowMapToggle = (props) => {
   const dispatch = useDispatch();
@@ -21,6 +22,27 @@ export const ShowMapToggle = (props) => {
         onChange={() => dispatch({ type: 'TOGGLE_MAP' })}
         isChecked={isMapShown}
         label={<FormattedMessage {...messages.showMapToggle} />}
+      />
+    </div>
+  );
+};
+
+export const ProjetListViewToggle = (props) => {
+  const dispatch = useDispatch();
+  const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
+  return (
+    <div className="fr pv2 dib-ns dn ">
+      <ListIcon
+        height="25"
+        width="25"
+        className={`dib pointer v-mid ph1 ${listViewIsActive ? 'blue-grey' : 'blue-light'}`}
+        onClick={() => dispatch({ type: 'TOGGLE_LIST_VIEW' })}
+      />
+      <GripIcon
+        height="20"
+        width="20"
+        className={`dib pointer v-mid ph1 ${!listViewIsActive ? 'blue-grey' : 'blue-light'}`}
+        onClick={() => dispatch({ type: 'TOGGLE_CARD_VIEW' })}
       />
     </div>
   );

@@ -225,7 +225,7 @@ class MessageService:
         message.from_user_id = from_user
         message.to_user_id = to_user
         message.subject = "Request to join team"
-        message.message = f'<a href="{base_url}/user/{from_username}">{from_username}\
+        message.message = f'<a href="{base_url}/users/{from_username}">{from_username}\
             </a> has requested to join the {team_name} team'
         message.add_message()
         message.save()
@@ -234,12 +234,13 @@ class MessageService:
     def accept_reject_request_to_join_team(
         from_user: int, from_username: str, to_user: int, team_name: str, response: str
     ) -> Message:
+        base_url = current_app.config["APP_BASE_URL"]
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
         message.subject = "Request to join team"
-        message.message = f'<a href="http://127.0.0.1:5000/user/{from_username}">{from_username}\
+        message.message = f'<a href="{base_url}/users/{from_username}">{from_username}\
             </a> has {response}ed your request to join the {team_name} team'
         message.add_message()
         message.save()
@@ -253,12 +254,13 @@ class MessageService:
         team_name: str,
         response: str,
     ) -> Message:
+        base_url = current_app.config["APP_BASE_URL"]
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
         message.subject = "Request to join team"
-        message.message = f'<a href="http://127.0.0.1:5000/user/{from_username}">{from_username}\
+        message.message = f'<a href="{base_url}/users/{from_username}">{from_username}\
             </a> has {response}ed {sending_member}\'s invitation to join the {team_name} team'
         message.add_message()
         message.save()
@@ -267,12 +269,13 @@ class MessageService:
     def send_invite_to_join_team(
         from_user: int, from_username: str, to_user: int, team_name: str
     ) -> Message:
+        base_url = current_app.config["APP_BASE_URL"]
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
         message.subject = "Invitation to join the team"
-        message.message = f'<a href="http://127.0.0.1:5000/user/{from_username}">{from_username}\
+        message.message = f'<a href="{base_url}/users/{from_username}">{from_username}\
             </a> has invited you to join the {team_name} team'
         message.add_message()
         message.save()

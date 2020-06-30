@@ -34,9 +34,10 @@ class OrganisationDTO(Model):
     managers = ListType(ModelType(OrganisationManagerDTO), min_size=1, required=True)
     name = StringType(required=True)
     logo = StringType()
+    description = StringType()
     url = StringType()
     is_manager = BooleanType(serialized_name="isManager")
-    projects = ListType(StringType)
+    projects = ListType(StringType, serialize_when_none=False)
     teams = ListType(ModelType(OrganisationTeamsDTO))
     campaigns = ListType(ListType(StringType))
 
@@ -52,6 +53,7 @@ class NewOrganisationDTO(Model):
     managers = ListType(StringType(), required=True)
     name = StringType(required=True)
     logo = StringType()
+    description = StringType()
     url = StringType()
 
 

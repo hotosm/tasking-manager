@@ -1,49 +1,59 @@
 # To use this file, run `docker-compose up`.
-version: '3'
+version: "3.4"
+
+x-backend-config: &backend
+  image: hotosm-tasking-manager:backend
+  env_file: ${ENV_FILE:-tasking-manager.env}
+  depends_on:
+    - postgresql
+  links:
+    - postgresql
+  networks:
+    - tm-web
 
 services:
   # Main application
-  app:
-    image: hotosm/tasking-manager
-    container_name: app
-    env_file: tasking-manager.env
-    environment:
-      - POSTGRES_ENDPOINT=postgresql
-    depends_on:
-      - postgresql
-    expose:
-      - "5000"
-    ports:
-      - "5000:5000"
-    links:
-      - postgresql
-    volumes:
-      - node_modules:/usr/src/app/frontend/node_modules
+  backend:
+    <<: *backend
+    container_name: backend
+    labels:
+      - traefik.http.routers.backend.rule=Host(`localhost`)
+      - traefik.http.routers.backend.rule=PathPrefix(`/api/`)
+      - traefik.http.services.backend.loadbalancer.server.port=5000
 
-  # Migration service
   migration:
-    image: hotosm/tasking-manager
-    env_file: tasking-manager.env
+    <<: *backend
+    container_name: migration
     restart: on-failure
-    environment:
-      - POSTGRES_ENDPOINT=postgresql
-    depends_on:
-      - postgresql
-    links:
-      - postgresql
     command: python manage.py db upgrade
 
-  # Database
+  frontend:
+    image: hotosm-tasking-manager:frontend
+    networks:
+      - tm-web
+    labels:
+      - traefik.http.routers.frontend.rule=Host(`localhost`)
+      - traefik.http.services.frontend.loadbalancer.server.port=80
+
   postgresql:
     image: mdillon/postgis:11
     container_name: postgresql
-    env_file: tasking-manager.env
-    # logging:
-    #   driver: none
-    ports:
-      - "5433:5432"
-    expose:
-      - "5432"
+    env_file: ${ENV_FILE:-tasking-manager.env}
+    networks:
+      - tm-web
 
-volumes:
-  node_modules:
+  traefik:
+    image: traefik
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - --entrypoints.web.address=:80
+      - --providers.docker=true
+    networks:
+      - tm-web
+
+networks:
+  tm-web:
+    external: true

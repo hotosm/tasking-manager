@@ -493,6 +493,9 @@ class ProjectSearchBase(Resource):
             int(request.args.get("page")) if request.args.get("page") else 1
         )
         search_dto.text_search = request.args.get("textSearch")
+        search_dto.omit_map_results = strtobool(
+            request.args.get("omitMapResults", "false")
+        )
 
         # See https://github.com/hotosm/tasking-manager/pull/922 for more info
         try:
@@ -627,6 +630,10 @@ class ProjectsAllAPI(ProjectSearchBase):
               type: string
               description: Filter by team on project
               default: null
+              name: omitMapResults
+              type: boolean
+              description: If true, it will not return the project centroid's geometries.
+              default: false
         responses:
             200:
                 description: Projects found

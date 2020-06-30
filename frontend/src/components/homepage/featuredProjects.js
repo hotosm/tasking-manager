@@ -1,11 +1,11 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
-import { nCardPlaceholders } from '../projectcard/nCardPlaceholder';
+import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
 import { RightIcon, LeftIcon } from '../svgIcons';
-import { ProjectCard } from '../../components/projectcard/projectCard';
+import { ProjectCard } from '../../components/projectCard/projectCard';
 
 import messages from './messages';
 
@@ -39,7 +39,7 @@ function FeaturedProjectPaginateArrows({ pages, activeProjectCardPage, mobile, d
   );
 }
 
-const chunkArray = chunkSize => array => {
+const chunkArray = (chunkSize) => (array) => {
   return array.reduce((acc, each, index, src) => {
     if (!(index % chunkSize)) {
       return [...acc, src.slice(index, index + chunkSize)];

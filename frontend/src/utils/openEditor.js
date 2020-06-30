@@ -100,8 +100,12 @@ export const sendJosmCommands = async (project, tasks, selectedTasks, windowSize
   await loadTasksBoundaries(project, selectedTasks);
   await loadImageryonJosm(project);
   await selectedTasks.map(
-    async (task) =>
-      await loadOsmDataToTasks(project, taskBbox ? taskBbox : getSelectedTasksBBox(tasks, [task])),
+    async (task, n) =>
+      await loadOsmDataToTasks(
+        project,
+        taskBbox ? taskBbox : getSelectedTasksBBox(tasks, [task]),
+        n === 0 ? true : false,
+      ),
   );
   return true;
 };
@@ -138,9 +142,9 @@ function loadImageryonJosm(project) {
   }
 }
 
-function loadOsmDataToTasks(project, bbox) {
+function loadOsmDataToTasks(project, bbox, newLayer) {
   const emptyOSMLayerParams = {
-    new_layer: true,
+    new_layer: newLayer,
     layer_name: 'OSM Data',
     data: '<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>',
   };

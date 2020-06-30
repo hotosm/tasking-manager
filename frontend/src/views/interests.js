@@ -112,7 +112,7 @@ export const EditInterest = (props) => {
   const [error, loading, interest] = useFetch(`interests/${props.id}/`);
 
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?interests=${props.id}`,
+    `projects/?interests=${props.id}&omitMapResults=true`,
     props.id,
   );
 

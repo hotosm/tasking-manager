@@ -7,8 +7,8 @@ import geojson
 from flask import current_app
 from geoalchemy2 import Geometry
 import sqlalchemy
-from sqlalchemy.sql.expression import cast
-from sqlalchemy import text, desc, func, Time
+from sqlalchemy.sql.expression import cast, or_
+from sqlalchemy import text, desc, func, Time, orm
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 import requests
@@ -294,7 +294,7 @@ class Project(db.Model):
     def clone(project_id: int, author_id: int):
         """ Clone project """
 
-        orig = Project.get(project_id)
+        orig = Project.query.get(project_id)
         if orig is None:
             raise NotFound()
 
@@ -361,7 +361,9 @@ class Project(db.Model):
         :param project_id: project ID in scope
         :return: Project if found otherwise None
         """
-        return Project.query.get(project_id)
+        return Project.query.options(
+            orm.noload("tasks"), orm.noload("messages"), orm.noload("project_chat")
+        ).get(project_id)
 
     def update(self, project_dto: ProjectDTO):
         """ Updates project from DTO """
@@ -565,11 +567,20 @@ class Project(db.Model):
         stats_dto.time_spent_validating = 0
         stats_dto.total_time_spent = 0
 
-        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                   WHERE (action='LOCKED_FOR_MAPPING' or action='AUTO_UNLOCKED_FOR_MAPPING')
-                   and user_id = :user_id and project_id = :project_id;"""
-        total_mapping_time = db.engine.execute(
-            text(query), user_id=user_id, project_id=self.id
+        total_mapping_time = (
+            db.session.query(
+                func.sum(
+                    cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
+                )
+            )
+            .filter(
+                or_(
+                    TaskHistory.action == "LOCKED_FOR_MAPPING",
+                    TaskHistory.action == "AUTO_UNLOCKED_FOR_MAPPING",
+                )
+            )
+            .filter(TaskHistory.user_id == user_id)
+            .filter(TaskHistory.project_id == self.id)
         )
         for time in total_mapping_time:
             total_mapping_time = time[0]
@@ -662,10 +673,20 @@ class Project(db.Model):
         project_stats.average_mapping_time = 0
         project_stats.average_validation_time = 0
 
-        query = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                   WHERE (action='LOCKED_FOR_MAPPING' or action='AUTO_UNLOCKED_FOR_MAPPING')
-                   and project_id = :project_id;"""
-        total_mapping_time = db.engine.execute(text(query), project_id=self.id)
+        total_mapping_time = (
+            db.session.query(
+                func.sum(
+                    cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
+                )
+            )
+            .filter(
+                or_(
+                    TaskHistory.action == "LOCKED_FOR_MAPPING",
+                    TaskHistory.action == "AUTO_UNLOCKED_FOR_MAPPING",
+                )
+            )
+            .filter(TaskHistory.project_id == self.id)
+        )
         for row in total_mapping_time:
             total_mapping_time = row[0]
             if total_mapping_time:

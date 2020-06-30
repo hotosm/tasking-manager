@@ -17,7 +17,7 @@ from backend.models.dtos.user_dto import (
     UserCountryContributed,
     UserCountriesContributed,
 )
-from backend.models.dtos.interests_dto import InterestsDTO, InterestDTO
+from backend.models.dtos.interests_dto import InterestsListDTO, InterestDTO
 from backend.models.postgis.interests import Interest, project_interests
 from backend.models.postgis.message import Message
 from backend.models.postgis.project import Project
@@ -777,8 +777,8 @@ class UserService:
         return user
 
     @staticmethod
-    def get_interests(user: User) -> InterestsDTO:
-        dto = InterestsDTO()
+    def get_interests(user: User) -> InterestsListDTO:
+        dto = InterestsListDTO()
         dto.interests = []
         for interest in Interest.query.all():
             int_dto = interest.as_dto()

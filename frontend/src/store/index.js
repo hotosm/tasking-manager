@@ -19,6 +19,7 @@ const persistedState = {
   preferences: {
     locale: safeStorage.getItem('locale'),
     mapShown: 'true' === safeStorage.getItem('mapShown'),
+    projectListView: 'true' === safeStorage.getItem('projectListView'),
   },
 };
 
@@ -34,6 +35,7 @@ const store = createStore(reducers, persistedState, composedEnhancers);
 
 store.subscribe(() => {
   safeStorage.setItem('mapShown', store.getState().preferences['mapShown']);
+  safeStorage.setItem('projectListView', store.getState().preferences['projectListView']);
 });
 
 export { store };

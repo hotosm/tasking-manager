@@ -9,10 +9,12 @@ from backend.services.mapping_service import MappingService, NotFound
 from backend.models.dtos.grid_dto import GridDTO
 
 from backend.services.users.authentication_service import token_auth, tm
+from backend.services.users.user_service import UserService
 from backend.services.validator_service import ValidatorService
 
 from backend.services.project_service import ProjectService, ProjectServiceError
 from backend.services.grid.grid_service import GridService
+from backend.models.postgis.statuses import UserRole
 from backend.models.postgis.utils import InvalidGeoJson
 
 
@@ -128,6 +130,73 @@ class TasksQueriesJsonAPI(Resource):
         except Exception as e:
             current_app.logger.critical(e)
             return {"Error": "Unable to fetch task JSON"}, 500
+
+    @token_auth.login_required
+    def delete(self, project_id):
+        """
+        Delete a list of tasks from a project
+        ---
+        tags:
+            - tasks
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: project_id
+              in: path
+              description: Project ID the task is associated with
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object with a list of tasks to delete
+              schema:
+                  properties:
+                      tasks:
+                          type: array
+                          items:
+                              type: integer
+                          default: [ 1, 2 ]
+        responses:
+            200:
+                description: Task(s) deleted
+            400:
+                description: Bad request
+            403:
+                description: Forbidden
+            404:
+                description: Project or Task Not Found
+            500:
+                description: Internal Server Error
+        """
+        user_id = token_auth.current_user()
+        user = UserService.get_user_by_id(user_id)
+        if user.role != UserRole.ADMIN.value:
+            return {"Error": "This endpoint action is restricted to ADMIN users."}, 403
+
+        tasks_ids = request.get_json().get("tasks")
+        if tasks_ids is None:
+            return {"Error": "Tasks ids not provided"}, 400
+        if type(tasks_ids) != list:
+            return {"Error": "Tasks were not provided as a list"}, 400
+
+        try:
+            ProjectService.delete_tasks(project_id, tasks_ids)
+            return {"Success": "Task(s) deleted"}, 200
+        except NotFound as e:
+            return {"Error": f"Project or Task Not Found: {e}"}, 404
+        except ProjectServiceError as e:
+            return {"Error": str(e)}, 403
+        except Exception as e:
+            current_app.logger.critical(e)
+            return {"Error": "Unable to delete tasks"}, 500
 
 
 class TasksQueriesXmlAPI(Resource):

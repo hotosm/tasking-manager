@@ -3,6 +3,8 @@ import * as safeStorage from '../../utils/safe_storage';
 export const types = {
   SET_LOCALE: 'SET_LOCALE',
   TOGGLE_MAP: 'TOGGLE_MAP',
+  TOGGLE_LIST_VIEW: 'TOGGLE_LIST_VIEW',
+  TOGGLE_CARD_VIEW: 'TOGGLE_CARD_VIEW',
 };
 
 export function updateLocale(locale) {
@@ -12,7 +14,7 @@ export function updateLocale(locale) {
   };
 }
 
-export const setLocale = locale => dispatch => {
+export const setLocale = (locale) => (dispatch) => {
   safeStorage.setItem('locale', locale);
   dispatch(updateLocale(locale));
 };

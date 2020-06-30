@@ -309,6 +309,7 @@ class ProjectSearchDTO(Model):
     mapped_by = IntType(required=False)
     favorited_by = IntType(required=False)
     managed_by = IntType(required=False)
+    omit_map_results = BooleanType(required=False)
 
     def __hash__(self):
         """ Make object hashable so we can cache user searches"""
@@ -398,6 +399,11 @@ class ProjectSearchResultsDTO(Model):
 
 class LockedTasksForUser(Model):
     """ Describes all tasks locked by an individual user"""
+
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.locked_tasks = []
 
     locked_tasks = ListType(IntType, serialized_name="lockedTasks")
     project = IntType(serialized_name="projectId")

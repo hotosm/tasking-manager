@@ -10,6 +10,7 @@ import { Button } from '../button';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import '@webscopeio/react-textarea-autocomplete/style.css';
 
 const formatUserNamesToLink = (text) => {
   const regex = /@\[([^\]]+)\]/gi;
@@ -34,11 +35,17 @@ const formatUserNamesToLink = (text) => {
   return text;
 };
 
+const Item = ({ entity: { name } }) => (
+  <div className="w-100 pv2 ph3 tc bg-tan hover-bg-blue-grey blue-grey hover-white pointer">
+    {`${name}`}
+  </div>
+);
+
 export const UserFetchTextarea = ({ value, setValueFn, token }) => {
   const fetchUsers = async (user) => {
     const url = `users/queries/filter/${user}/`;
-
     let userItems;
+
     try {
       const res = await fetchLocalJSONAPI(url, token);
       userItems = res.usernames.map((u) => {
@@ -51,30 +58,24 @@ export const UserFetchTextarea = ({ value, setValueFn, token }) => {
     return userItems;
   };
 
-  const Item = ({ entity: { name } }) => (
-    <div className="w-100 f6 pv2 ph3 f5 tc bg-tan blue-grey hover-bg-blue-grey hover-white pointer">
-      {`${name}`}
-    </div>
-  );
-
   return (
-    <div className="relative">
-      <ReactTextareaAutocomplete
-        value={value}
-        listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey w-40 overflow-auto absolute bottom--1"
-        onChange={setValueFn}
-        className="w-100 f5 pa2"
-        loadingComponent={() => <span>Loading</span>}
-        rows={3}
-        trigger={{
-          '@': {
-            dataProvider: fetchUsers,
-            component: Item,
-            output: (item, trigger) => '@[' + item.name + ']',
-          },
-        }}
-      />
-    </div>
+    <ReactTextareaAutocomplete
+      value={value}
+      listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey overflow-y-scroll base-font f5 relative z-5"
+      listStyle={{ maxHeight: '16rem' }}
+      onChange={setValueFn}
+      className="w-100 f5 pa2"
+      style={{ fontSize: '1rem' }}
+      loadingComponent={() => <span></span>}
+      rows={3}
+      trigger={{
+        '@': {
+          dataProvider: fetchUsers,
+          component: Item,
+          output: (item, trigger) => '@[' + item.name + ']',
+        },
+      }}
+    />
   );
 };
 
@@ -96,17 +97,17 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
 
   return (
     <div className="w-90-ns w-100 cf pv4 bg-white center">
-      <div className="fl w-10 ph2 tc pt2">
-        <CurrentUserAvatar className="w3 h3 br-100" />
+      <div className="fl w-10-ns w-20 pt2">
+        <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
       </div>
-      <div className="fl w-70 h-100">
+      <div className="fl w-70-ns w-80 ph1 h-100">
         <UserFetchTextarea
           value={comment}
           setValueFn={(e) => setComment(e.target.value)}
           token={token}
         />
       </div>
-      <div className="fl w-20 tc pt3">
+      <div className="fl w-20-ns w-100 tc-ns tr pt3 pr0-ns pr1">
         <Button onClick={saveComment} className="bg-red white f5" disabled={comment === ''}>
           <FormattedMessage {...messages.post} />
         </Button>
@@ -141,7 +142,7 @@ export const QuestionsAndComments = ({ projectId }) => {
 
   return (
     <div className="bg-tan">
-      <div className="ph6-l ph4 pb3 w-100 w-70-l">
+      <div className="ph6-l ph4-m ph2 pb3 w-100 w-70-l">
         {response && response.chat.length ? (
           <CommentList comments={response.chat} />
         ) : (
@@ -158,8 +159,12 @@ export const QuestionsAndComments = ({ projectId }) => {
             className="tr w-90 center pv3"
           />
         )}
-        {token !== null && (
+        {token ? (
           <PostProjectComment projectId={projectId} token={token} setStat={setStat} />
+        ) : (
+          <div>
+            <p>You need to log in to be able to post comments.</p>
+          </div>
         )}
       </div>
     </div>

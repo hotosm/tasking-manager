@@ -1,4 +1,6 @@
 from backend import db
+from flask import current_app
+from sqlalchemy.exc import IntegrityError
 from backend.models.dtos.campaign_dto import (
     CampaignDTO,
     NewCampaignDTO,
@@ -62,18 +64,13 @@ class CampaignService:
                 logged_in = False
 
             organisation_dto = OrganisationDTO()
-            organisation_dto.projects = []
 
             organisation_dto.organisation_id = org.id
             organisation_dto.name = org.name
             organisation_dto.logo = org.logo
             organisation_dto.url = org.url
             organisation_dto.is_manager = logged_in
-            projects = OrganisationService.get_projects_by_organisation_id(org.id)
-            for project in projects:
-                organisation_dto.projects.append(project.name)
 
-            campaign_dto.organisations.append(organisation_dto)
         return campaign_dto
 
     @staticmethod
@@ -99,12 +96,17 @@ class CampaignService:
     @staticmethod
     def create_campaign(campaign_dto: NewCampaignDTO):
         campaign = Campaign.from_dto(campaign_dto)
-        campaign.create()
-        if campaign_dto.organisations:
-            for org_id in campaign_dto.organisations:
-                organisation = OrganisationService.get_organisation_by_id(org_id)
-                campaign.organisation.append(organisation)
-            db.session.commit()
+        try:
+            campaign.create()
+            if campaign_dto.organisations:
+                for org_id in campaign_dto.organisations:
+                    organisation = OrganisationService.get_organisation_by_id(org_id)
+                    campaign.organisation.append(organisation)
+                db.session.commit()
+        except IntegrityError as e:
+            current_app.logger.info("Integrity error: {}".format(e.args[0]))
+            raise ValueError()
+
         return campaign
 
     @staticmethod
@@ -156,5 +158,10 @@ class CampaignService:
         campaign = Campaign.query.get(campaign_id)
         if not campaign:
             raise NotFound(f"Campaign id {campaign_id} not found")
-        campaign.update(campaign_dto)
+        try:
+            campaign.update(campaign_dto)
+        except IntegrityError as e:
+            current_app.logger.info("Integrity error: {}".format(e.args[0]))
+            raise ValueError()
+
         return campaign

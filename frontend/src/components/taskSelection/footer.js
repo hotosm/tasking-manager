@@ -52,7 +52,15 @@ const TaskSelectionFooter = (props) => {
     dispatch({ type: 'SET_PROJECT', project: project });
     dispatch({ type: 'SET_TASKS_STATUS', status: status });
   };
+
   const lockTasks = async () => {
+    // if user can not map or validate the project, lead him to the explore projects page
+    if (
+      ['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(props.taskAction)
+    ) {
+      navigate(`/explore/`);
+    }
+    // then pass to the JOSM check and validate/map checks
     if (editor === 'JOSM' && !window.safari) {
       try {
         await fetch(formatJosmUrl('version', { jsonp: 'checkJOSM' }));
@@ -104,12 +112,6 @@ const TaskSelectionFooter = (props) => {
       );
       const endpoint = props.taskAction === 'resumeMapping' ? 'map' : 'validate';
       navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}`);
-    }
-    // if user can not map or validate the project, lead him to the explore projects page
-    if (
-      ['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(props.taskAction)
-    ) {
-      navigate(`/explore/`);
     }
   };
 

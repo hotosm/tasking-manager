@@ -33,7 +33,9 @@ export function ListOrganisations() {
   const [userOrgsOnly, setUserOrgsOnly] = useState(true);
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
-      const queryParam = userOrgsOnly ? `?manager_user_id=${userDetails.id}` : '';
+      const queryParam = `?omitManagerList=true${
+        userOrgsOnly ? `&manager_user_id=${userDetails.id}` : ''
+      }`;
       fetchLocalJSONAPI(`organisations/${queryParam}`, token).then((orgs) =>
         setOrganisations(orgs.organisations),
       );
@@ -155,7 +157,7 @@ export function EditOrganisation(props) {
   const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?organisationId=${props.id}`,
+    `projects/?organisationId=${props.id}&omitMapResults=true`,
     props.id,
   );
 
@@ -212,6 +214,7 @@ export function EditOrganisation(props) {
                 name: organisation.name,
                 url: organisation.url,
                 logo: organisation.logo,
+                description: organisation.description,
               }}
               updateOrg={updateOrg}
               disabledForm={error || loading}

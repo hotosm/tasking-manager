@@ -7,8 +7,8 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 
-import ProjectProgressBar from '../projectcard/projectProgressBar';
-import DueDateBox from '../projectcard/dueDateBox';
+import ProjectProgressBar from '../projectCard/projectProgressBar';
+import DueDateBox from '../projectCard/dueDateBox';
 
 import { MappingLevelMessage } from '../mappingLevel';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
