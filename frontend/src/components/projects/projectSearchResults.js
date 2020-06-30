@@ -4,9 +4,9 @@ import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
+import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
+import { ProjectCard } from '../projectCard/projectCard';
 import messages from './messages';
-import { nCardPlaceholders } from '../projectcard/nCardPlaceholder';
-import { ProjectCard } from '../projectcard/projectCard';
 import { ProjectListItem } from './list';
 
 export const ProjectSearchResults = (props) => {

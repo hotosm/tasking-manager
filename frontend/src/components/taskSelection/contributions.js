@@ -7,7 +7,7 @@ import messages from './messages.js';
 import { UserAvatar } from '../user/avatar';
 import { CheckCircle } from '../checkCircle';
 import { MappedIcon, ValidatedIcon, AsteriskIcon, HalfStarIcon, FullStarIcon } from '../svgIcons';
-import ProjectProgressBar from '../projectcard/projectProgressBar';
+import ProjectProgressBar from '../projectCard/projectProgressBar';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 

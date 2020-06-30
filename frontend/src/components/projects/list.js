@@ -3,10 +3,10 @@ import { Link } from '@reach/router';
 import ReactTooltip from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
 
-import messages from '../projectcard/messages';
+import messages from '../projectCard/messages';
 import { MapIcon, MappedIcon, ValidatedIcon, GearIcon, UserIcon } from '../svgIcons';
 import { ProjectStatusBox } from '../projectDetail/statusBox';
-import { PriorityBox } from '../projectcard/priorityBox';
+import { PriorityBox } from '../projectCard/priorityBox';
 
 export function ProjectListItem({ project }: Object) {
   return (

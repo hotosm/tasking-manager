@@ -4,7 +4,7 @@ import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { PriorityBox } from '../projectcard/priorityBox';
+import { PriorityBox } from '../projectCard/priorityBox';
 import { translateCountry } from '../../utils/countries';
 import { ProjectStatusBox } from './statusBox';
 import { EditButton } from '../button';

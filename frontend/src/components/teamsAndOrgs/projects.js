@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
-import { ProjectCard } from '../projectcard/projectCard';
+import { ProjectCard } from '../projectCard/projectCard';
 import { AddButton, ViewAllLink } from './management';
 
 export function Projects({
