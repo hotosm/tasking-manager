@@ -895,5 +895,6 @@
   "pages.edit_project.sections.permissions": "Permissions",
   "pages.edit_project.sections.settings": "Settings",
   "pages.edit_project.sections.actions": "Actions",
-  "pages.edit_project.sections.custom_editor": "Custom Editor"
+  "pages.edit_project.sections.custom_editor": "Custom Editor",
+  "pages.create_campaign.duplicate": "A campaign with the same name already exists"
 }

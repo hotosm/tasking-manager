@@ -156,7 +156,7 @@ class Organisation(db.Model):
         )
         return query_results
 
-    def as_dto(self, omit_managers):
+    def as_dto(self, omit_managers=False):
         """ Returns a dto for an organisation """
         organisation_dto = OrganisationDTO()
         organisation_dto.organisation_id = self.id

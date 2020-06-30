@@ -1,4 +1,6 @@
 from backend import db
+from flask import current_app
+from sqlalchemy.exc import IntegrityError
 from backend.models.dtos.campaign_dto import (
     CampaignDTO,
     NewCampaignDTO,
@@ -94,12 +96,17 @@ class CampaignService:
     @staticmethod
     def create_campaign(campaign_dto: NewCampaignDTO):
         campaign = Campaign.from_dto(campaign_dto)
-        campaign.create()
-        if campaign_dto.organisations:
-            for org_id in campaign_dto.organisations:
-                organisation = OrganisationService.get_organisation_by_id(org_id)
-                campaign.organisation.append(organisation)
-            db.session.commit()
+        try:
+            campaign.create()
+            if campaign_dto.organisations:
+                for org_id in campaign_dto.organisations:
+                    organisation = OrganisationService.get_organisation_by_id(org_id)
+                    campaign.organisation.append(organisation)
+                db.session.commit()
+        except IntegrityError as e:
+            current_app.logger.info("Integrity error: {}".format(e.args[0]))
+            raise ValueError()
+
         return campaign
 
     @staticmethod
@@ -151,5 +158,10 @@ class CampaignService:
         campaign = Campaign.query.get(campaign_id)
         if not campaign:
             raise NotFound(f"Campaign id {campaign_id} not found")
-        campaign.update(campaign_dto)
+        try:
+            campaign.update(campaign_dto)
+        except IntegrityError as e:
+            current_app.logger.info("Integrity error: {}".format(e.args[0]))
+            raise ValueError()
+
         return campaign

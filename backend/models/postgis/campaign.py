@@ -26,7 +26,7 @@ class Campaign(db.Model):
     __tablename__ = "campaigns"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, unique=True)
     logo = db.Column(db.String)
     url = db.Column(db.String)
     description = db.Column(db.String)
