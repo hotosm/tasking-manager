@@ -230,7 +230,7 @@ class SplitService:
             raise
 
         # update project task counts
-        project = Project.get(split_task_dto.project_id)
+        project = Project.query.get(split_task_dto.project_id)
         project.total_tasks = project.tasks.count()
         # update bad imagery because we may have split a bad imagery tile
         project.tasks_bad_imagery = project.tasks.filter(
