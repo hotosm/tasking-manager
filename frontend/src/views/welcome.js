@@ -77,8 +77,8 @@ export function Welcome() {
       <div className="pull-center">
         {completeness <= 0.5 ? (
           <IncompleteProfile />
-        ) : userDetails.tasksMapped ? (
-          <Redirect to={'/contributions/projects'} noThrow />
+        ) : userDetails.projectsMapped ? (
+          <Redirect to={'/contributions/projects/?mappedByMe=1'} noThrow />
         ) : (
           <NewContributor username={userDetails.username} userIsloggedIn={userIsloggedIn} />
         )}
