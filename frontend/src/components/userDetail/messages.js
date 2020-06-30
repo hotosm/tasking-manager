@@ -109,4 +109,8 @@ export default defineMessages({
     defaultMessage:
       'These statistics need heavy calculations and changes are showing up with a delay of around one hour.',
   },
+  teams: {
+    id: 'users.detail.teams',
+    defaultMessage: 'Teams',
+  },
 });
