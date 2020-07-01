@@ -65,7 +65,7 @@ export function TaskSelection({ project, type, loading }: Object) {
 
   // get teams the user is part of
   const [userTeamsError, userTeamsLoading, userTeams] = useFetch(
-    `teams/?omitMemberList=true&member=${user.id}`,
+    `teams/?member=${user.id}`,
     user.id !== undefined,
   );
   //eslint-disable-next-line
