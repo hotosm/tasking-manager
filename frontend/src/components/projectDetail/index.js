@@ -122,7 +122,7 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
           ready={typeof project.projectId === 'number'}
         >
           <ProjectHeader project={project} showEditLink={true} />
-          <section className="lh-title h-100 overflow-x-scroll">
+          <section className="lh-title h-100-ns h5 overflow-x-scroll">
             <div className="pr2 markdown-content" dangerouslySetInnerHTML={htmlShortDescription} />
             <div>
               <a href="#description" className="link base-font bg-white f6 bn pn red pointer">
@@ -136,7 +136,7 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
       </div>
 
       <div
-        className="cf ph4 pb3 w-100 h-25 z-2 absolute bottom-0 left-0 bg-white"
+        className="cf ph4-l ph2 pb3 w-100 h-25 z-2 absolute bottom-0 left-0 bg-white"
         style={{ minHeight: '10rem' }}
       >
         <ReactPlaceholder
@@ -213,7 +213,7 @@ export const ProjectDetail = (props) => {
               contributors.hasOwnProperty('userContributions') ? contributors.userContributions : []
             }
             type="detail"
-            className="w-100 w-60-l fl ph4 pv3 bg-white blue-dark vh-minus-200-ns relative"
+            className="w-100 w-60-l fl ph4-l ph2 pv3 bg-white blue-dark vh-minus-200-ns relative"
           />
           <div className="w-100 w-40-l vh-minus-200-ns fl">
             <ReactPlaceholder
