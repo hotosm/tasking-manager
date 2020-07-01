@@ -1,13 +1,16 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
-import { nCardPlaceholders } from '../projectcard/nCardPlaceholder';
-import { ProjectCard } from '../projectcard/projectCard';
+import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
+import { ProjectCard } from '../projectCard/projectCard';
 import messages from './messages';
+import { ProjectListItem } from './list';
 
 export const ProjectSearchResults = (props) => {
+  const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
   const state = props.state;
   const cardWidthClass = 'w-third-l';
 
@@ -45,16 +48,29 @@ export const ProjectSearchResults = (props) => {
         </div>
       ) : null}
       <div className="cf db">
-        <ReactPlaceholder
-          customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
-          ready={!state.isLoading}
-        >
-          <ExploreProjectCards
-            pageOfCards={state.projects}
-            cardWidthClass={cardWidthClass}
-            showBottomButtons={props.showBottomButtons}
-          />
-        </ReactPlaceholder>
+        {props.management && listViewIsActive ? (
+          <ReactPlaceholder
+            showLoadingAnimation={true}
+            rows={15}
+            delay={50}
+            ready={!state.isLoading}
+          >
+            <div className="mh2">
+              <ExploreProjectList pageOfCards={state.projects} cardWidthClass={cardWidthClass} />
+            </div>
+          </ReactPlaceholder>
+        ) : (
+          <ReactPlaceholder
+            customPlaceholder={nCardPlaceholders(5, cardWidthClass)}
+            ready={!state.isLoading}
+          >
+            <ExploreProjectCards
+              pageOfCards={state.projects}
+              cardWidthClass={cardWidthClass}
+              showBottomButtons={props.showBottomButtons}
+            />
+          </ReactPlaceholder>
+        )}
       </div>
     </div>
   );
@@ -73,4 +89,12 @@ const ExploreProjectCards = (props) => {
       showBottomButtons={props.showBottomButtons}
     />
   ));
+};
+
+const ExploreProjectList = (props) => {
+  if (props.pageOfCards && props.pageOfCards.length === 0) {
+    return null;
+  }
+  /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */
+  return props.pageOfCards.map((project, n) => <ProjectListItem project={project} key={n} />);
 };

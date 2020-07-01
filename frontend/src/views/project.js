@@ -44,14 +44,13 @@ export const ProjectsPage = (props) => {
   const [fullProjectsQuery, setProjectQuery] = useExploreProjectsQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
   const [state] = useProjectsQueryAPI(initialData, fullProjectsQuery, forceUpdated);
-  const [orgAPIState] = useTagAPI([], 'organisations');
 
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
   const searchResultWidth = isMapShown ? 'w-60-l w-100' : 'w-100';
 
   return (
     <div className="pull-center">
-      <ProjectNav location={props.location} orgAPIState={orgAPIState}>
+      <ProjectNav location={props.location}>
         {
           props.children
           /* This is where the MoreFilters component is rendered
@@ -135,6 +134,7 @@ export const UserProjectsPage = (props) => {
           retryFn={forceUpdate}
           className={`${searchResultWidth} fl`}
           showBottomButtons={props.location && props.location.pathname.startsWith('/manage/')}
+          management={props.management}
         />
         {isMapShown && (
           <ProjectsMap

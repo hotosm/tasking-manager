@@ -37,7 +37,7 @@ class OrganisationDTO(Model):
     description = StringType()
     url = StringType()
     is_manager = BooleanType(serialized_name="isManager")
-    projects = ListType(StringType)
+    projects = ListType(StringType, serialize_when_none=False)
     teams = ListType(ModelType(OrganisationTeamsDTO))
     campaigns = ListType(ListType(StringType))
 

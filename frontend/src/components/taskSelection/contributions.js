@@ -7,7 +7,7 @@ import messages from './messages.js';
 import { UserAvatar } from '../user/avatar';
 import { CheckCircle } from '../checkCircle';
 import { MappedIcon, ValidatedIcon, AsteriskIcon, HalfStarIcon, FullStarIcon } from '../svgIcons';
-import ProjectProgressBar from '../projectcard/projectProgressBar';
+import ProjectProgressBar from '../projectCard/projectProgressBar';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 
@@ -70,7 +70,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
 
       <div
         className="w-20 fl tr dib pointer pt2 truncate"
-        onClick={() => displayTasks(user.taskIds, 'MAPPED', user.username)}
+        onClick={() => displayTasks(user.mappedTasks, 'MAPPED', user.username)}
       >
         <MappedIcon className="h1 w1 blue-grey mr2" />
         <span className="mr1 b self-start">{user.mapped}</span>
@@ -78,7 +78,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
       </div>
       <div
         className="w-20 fl tr dib pointer pt2 truncate"
-        onClick={() => displayTasks(user.taskIds, 'VALIDATED', user.username)}
+        onClick={() => displayTasks(user.validatedTasks, 'VALIDATED', user.username)}
       >
         <ValidatedIcon className="h1 w1 blue-grey mr2" />
         <span className="mr1 b">{user.validated}</span>
@@ -86,7 +86,9 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
       </div>
       <div
         className="w-20 fl tr dib pointer pt2 truncate"
-        onClick={() => displayTasks(user.taskIds, 'ALL', user.username)}
+        onClick={() =>
+          displayTasks([...user.mappedTasks, ...user.validatedTasks], 'ALL', user.username)
+        }
       >
         <AsteriskIcon className="h1 w1 blue-grey mr2" />
         <span className="mr1 b">{user.total}</span>
@@ -117,23 +119,10 @@ const Contributions = (props) => {
   const displayTasks = (taskIds, status, user) => {
     if (props.activeStatus === status && user === props.activeUser) {
       props.selectTask([]);
-    } else {
-      let filteredTasksByStatus = props.tasks.features;
-      if (status === 'MAPPED') {
-        filteredTasksByStatus = filteredTasksByStatus.filter(
-          (task) => task.properties.taskStatus === 'MAPPED',
-        );
-      }
-      if (status === 'VALIDATED') {
-        filteredTasksByStatus = filteredTasksByStatus.filter(
-          (task) => task.properties.taskStatus === 'VALIDATED',
-        );
-      }
-      const ids = filteredTasksByStatus
-        .filter((t) => taskIds.includes(t.properties.taskId))
-        .map((f) => f.properties.taskId);
-      props.selectTask(ids, status, user);
+      return;
     }
+
+    props.selectTask(taskIds, status, user);
   };
 
   if (level.value === 'NEWUSER') {

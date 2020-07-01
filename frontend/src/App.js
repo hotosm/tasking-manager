@@ -73,15 +73,25 @@ let App = (props) => {
                   <ProjectsPageIndex path="/" />
                   <MoreFilters path="/filters/*" />
                 </ProjectsPage>
+                <ProjectDetailPage path="projects/:id" />
+                <SelectTask path="projects/:id/tasks" />
+                <MapTask path="projects/:id/map" />
+                <ValidateTask path="projects/:id/validate" />
                 <LearnPage path="learn" />
                 <QuickstartPage path="learn/quickstart" />
+                <AboutPage path="about" />
+                <ContactPage path="contact/" />
                 <ContributionsPageIndex path="contributions">
                   <UserStats path="/" />
                   <ContributionsPage path="tasks/*" />
                   <UserProjectsPage path="projects/*" />
                   <MyTeams path="teams/*" />
                 </ContributionsPageIndex>
-                <AboutPage path="about" />
+                <UserDetail path="users/:username" />
+                <NotificationsPage path="inbox">
+                  <NotificationPageIndex path="/" />
+                  <NotificationDetail path="message/:id" />
+                </NotificationsPage>
                 <Authorized path="authorized" />
                 <Login path="login" />
                 <Welcome path="welcome" />
@@ -110,16 +120,6 @@ let App = (props) => {
                   <EditLicense path="licenses/:id" />
                 </ManagementSection>
                 <TeamDetail path="teams/:id/membership" />
-                <SelectTask path="projects/:id/tasks" />
-                <MapTask path="projects/:id/map" />
-                <UserDetail path="users/:username" />
-                <ValidateTask path="projects/:id/validate" />
-                <NotificationsPage path="inbox">
-                  <NotificationPageIndex path="/" />
-                  <NotificationDetail path="message/:id" />
-                </NotificationsPage>
-                <ProjectDetailPage path="projects/:id" />
-                <ContactPage path="contact/" />
                 <SwaggerView path="/api-docs/" />
                 <Redirect from="project/:id" to="/projects/:id" noThrow />
                 <Redirect from="contribute/" to="/explore" noThrow />

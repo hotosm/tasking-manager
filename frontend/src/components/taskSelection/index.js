@@ -65,8 +65,13 @@ export function TaskSelection({ project, type, loading }: Object) {
 
   // get teams the user is part of
   const [userTeamsError, userTeamsLoading, userTeams] = useFetch(
-    `teams/?member=${user.id}`,
+    `teams/?omitMemberList=true&member=${user.id}`,
     user.id !== undefined,
+  );
+  //eslint-disable-next-line
+  const [priorityAreasError, priorityAreasLoading, priorityAreas] = useFetch(
+    `/api/v2/projects/${project.projectId}/queries/priority-areas/`,
+    project.projectId,
   );
 
   const getActivities = useCallback((id) => {
@@ -353,7 +358,12 @@ export function TaskSelection({ project, type, loading }: Object) {
             type={'media'}
             rows={26}
             delay={200}
-            ready={typeof project === 'object' && typeof tasks === 'object' && mapInit}
+            ready={
+              typeof project === 'object' &&
+              typeof tasks === 'object' &&
+              mapInit &&
+              !priorityAreasLoading
+            }
           >
             <TasksMap
               mapResults={tasks}
@@ -365,7 +375,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               selectTask={selectTask}
               selected={selected}
               taskBordersOnly={false}
-              priorityAreas={project.priorityAreas}
+              priorityAreas={priorityAreas}
               animateZoom={false}
             />
             <TasksMapLegend />

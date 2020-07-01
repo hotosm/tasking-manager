@@ -116,6 +116,8 @@ class CampaignsRestAPI(Resource):
                 description: Unauthorized - Invalid credentials
             403:
                 description: Forbidden
+            409:
+                description: Resource duplication
             500:
                 description: Internal Server Error
         """
@@ -141,8 +143,11 @@ class CampaignsRestAPI(Resource):
             return {"Success": "Campaign {} updated".format(campaign.id)}, 200
         except NotFound:
             return {"Error": "Campaign not found"}, 404
+        except ValueError:
+            error_msg = "Campaign PATCH - name already exists"
+            return {"Error": error_msg}, 409
         except Exception as e:
-            error_msg = f"Campaign PUT - unhandled error: {str(e)}"
+            error_msg = f"Campaign PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
 
@@ -280,6 +285,8 @@ class CampaignsAllAPI(Resource):
                 description: Unauthorized - Invalid credentials
             403:
                 description: Forbidden
+            409:
+                description: Resource duplication
             500:
                 description: Internal Server Error
         """
@@ -303,6 +310,9 @@ class CampaignsAllAPI(Resource):
         try:
             campaign = CampaignService.create_campaign(campaign_dto)
             return {"campaignId": campaign.id}, 200
+        except ValueError:
+            error_msg = "Campaign POST - name already exists"
+            return {"Error": error_msg}, 409
         except Exception as e:
             error_msg = f"Campaign POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

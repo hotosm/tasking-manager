@@ -13,7 +13,8 @@ class UserContribution(Model):
     mapped = IntType()
     validated = IntType()
     total = IntType()
-    task_ids = ListType(IntType, serialized_name="taskIds")
+    mapped_tasks = ListType(IntType, serialized_name="mappedTasks")
+    validated_tasks = ListType(IntType, serialized_name="validatedTasks")
     name = StringType()
     date_registered = DateType(serialized_name="dateRegistered")
 

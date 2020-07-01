@@ -46,12 +46,15 @@ export const useTagAPI = (initialData, tagType, processDataFn) => {
        make sure to consider how to monitor if form is unloaded */
 
     const fetchData = async () => {
+      const queryParams = {
+        organisations: '?omitManagerList=true',
+      };
       dispatch({ type: 'FETCH_INIT' });
       try {
         let result;
         if (token) {
           result = await axios({
-            url: `${API_URL}${tagType}/`,
+            url: `${API_URL}${tagType}/${queryParams[tagType] ? queryParams[tagType] : ''}`,
             method: 'GET',
             headers: { Authorization: `Token ${token}` },
           });

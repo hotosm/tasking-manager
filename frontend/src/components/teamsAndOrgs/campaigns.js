@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
@@ -67,6 +67,10 @@ export function CampaignInformation(props) {
 
 export function CampaignForm(props) {
   const [editMode, setEditMode] = useState(false);
+
+  useEffect(() => {
+    if (props.saveError) setEditMode(true);
+  }, [props.saveError]);
 
   return (
     <Form

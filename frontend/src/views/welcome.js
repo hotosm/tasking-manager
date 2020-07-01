@@ -9,8 +9,8 @@ import { HelpCard, FirstProjectBanner } from '../components/user/content';
 import { calculateCompleteness } from '../components/user/completeness';
 import { UserInformationForm } from '../components/user/forms';
 import { WelcomeCard } from '../components/user/content';
-import { ProjectCard } from '../components/projectcard/projectCard';
-import { nCardPlaceholders } from '../components/projectcard/nCardPlaceholder';
+import { ProjectCard } from '../components/projectCard/projectCard';
+import { nCardPlaceholders } from '../components/projectCard/nCardPlaceholder';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
@@ -77,8 +77,8 @@ export function Welcome() {
       <div className="pull-center">
         {completeness <= 0.5 ? (
           <IncompleteProfile />
-        ) : userDetails.tasksMapped ? (
-          <Redirect to={'/contributions/projects'} noThrow />
+        ) : userDetails.projectsMapped ? (
+          <Redirect to={'/contributions/projects/?mappedByMe=1'} noThrow />
         ) : (
           <NewContributor username={userDetails.username} userIsloggedIn={userIsloggedIn} />
         )}

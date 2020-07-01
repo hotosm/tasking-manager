@@ -6,6 +6,7 @@ from backend.services.team_service import TeamService, TeamServiceError, NotFoun
 from backend.services.users.authentication_service import token_auth
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
+from distutils.util import strtobool
 
 
 class TeamsRestAPI(Resource):
@@ -204,6 +205,11 @@ class TeamsRestAPI(Resource):
               required: true
               type: integer
               default: 1
+            - in: query
+              name: omitMemberList
+              type: boolean
+              description: Set it to true if you don't want the members list on the response.
+              default: False
         responses:
             200:
                 description: Team found
@@ -216,11 +222,12 @@ class TeamsRestAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
+            omit_members = strtobool(request.args.get("omitMemberList", "false"))
             if authenticated_user_id is None:
                 user_id = 0
             else:
                 user_id = authenticated_user_id
-            team_dto = TeamService.get_team_as_dto(team_id, user_id)
+            team_dto = TeamService.get_team_as_dto(team_id, user_id, omit_members)
             return team_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "Team Not Found"}, 404
@@ -325,6 +332,11 @@ class TeamsAllAPI(Resource):
               description: organisation ID to filter teams
               type: integer
               default: null
+            - in: query
+              name: omitMemberList
+              type: boolean
+              description: Set it to true if you don't want the members list on the response.
+              default: False
         responses:
             201:
                 description: Team list returned successfully
@@ -346,6 +358,10 @@ class TeamsAllAPI(Resource):
 
         filters["user_id"] = user_id
         filters["team_name_filter"] = request.args.get("team_name")
+
+        omit_members = strtobool(request.args.get("omitMemberList", "false"))
+        filters["omit_members"] = omit_members
+
         try:
             member_filter = request.args.get("member")
             filters["member_filter"] = int(member_filter) if member_filter else None

@@ -184,6 +184,7 @@ class TeamService:
         member_request_filter: int = None,
         manager_filter: int = None,
         organisation_filter: int = None,
+        omit_members: bool = False,
     ) -> TeamsListDTO:
 
         query = db.session.query(Team).outerjoin(TeamMembers).outerjoin(ProjectTeams)
@@ -251,6 +252,9 @@ class TeamService:
             is_team_manager = False
             is_team_member = False
             for member in team_members:
+                # Skip if members are not included.
+                if omit_members:
+                    continue
                 user = UserService.get_user_by_id(member.user_id)
                 member_dto = TeamMembersDTO()
                 member_dto.username = user.username
@@ -272,7 +276,7 @@ class TeamService:
         return teams_list_dto
 
     @staticmethod
-    def get_team_as_dto(team_id: int, user_id: int) -> TeamDTO:
+    def get_team_as_dto(team_id: int, user_id: int, abbreviated: bool) -> TeamDTO:
         team = TeamService.get_team_by_id(team_id)
 
         if team is None:
@@ -299,6 +303,9 @@ class TeamService:
         else:
             team_dto.is_general_admin = False
             team_dto.is_org_admin = False
+
+        if abbreviated:
+            return team_dto
 
         team_members = TeamService._get_team_members(team_id)
         for member in team_members:

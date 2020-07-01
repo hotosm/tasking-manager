@@ -122,7 +122,8 @@ class TestProjectSearchService(unittest.TestCase):
         )
 
         # assert
-        self.assertEqual(expected, polygon.bounds)
+        for expected_val, actual_val in zip(expected, polygon.bounds):
+            self.assertAlmostEqual(expected_val, actual_val, places=10)
 
     def test_get_area_from_3857_bbox(self):
 
@@ -147,4 +148,4 @@ class TestProjectSearchService(unittest.TestCase):
         expected = ProjectSearchService._get_area_sqm(polygon)
 
         # assert
-        self.assertEqual(expected, 28276407740.2797)
+        self.assertAlmostEqual(expected, 28276407740.2797, places=3)
