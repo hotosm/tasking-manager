@@ -239,8 +239,6 @@ class TeamService:
 
         for team in query.all():
             team_dto = TeamDTO()
-        for team in query.all():
-            team_dto = TeamDTO()
             team_dto.team_id = team.id
             team_dto.name = team.name
             team_dto.invite_only = team.invite_only
