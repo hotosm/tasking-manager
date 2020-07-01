@@ -239,6 +239,8 @@ class TeamService:
 
         for team in query.all():
             team_dto = TeamDTO()
+        for team in query.all():
+            team_dto = TeamDTO()
             team_dto.team_id = team.id
             team_dto.name = team.name
             team_dto.invite_only = team.invite_only
@@ -252,27 +254,25 @@ class TeamService:
             is_team_manager = False
             is_team_member = False
             for member in team_members:
-                # Skip if members are not included.
+                user = UserService.get_user_by_id(member.user_id)
+                member_function = TeamMemberFunctions(member.function).name
+                is_team_member = True if member.user_id == user_id else False
+                is_team_manager = True if member_function == "MANAGER" else False
+                # Skip if members are not included
                 if omit_members:
                     continue
-                user = UserService.get_user_by_id(member.user_id)
                 member_dto = TeamMembersDTO()
                 member_dto.username = user.username
-                member_dto.function = TeamMemberFunctions(member.function).name
-                if member.user_id == user_id:
-                    is_team_member = True
-                    if member_dto.function == "MANAGER":
-                        is_team_manager = True
+                member_dto.function = member_function
                 member_dto.picture_url = user.picture_url
                 member_dto.active = member.active
-
                 team_dto.members.append(member_dto)
+
             if team_dto.visibility == "PRIVATE" and not is_admin:
                 if is_team_manager or is_team_member:
                     teams_list_dto.teams.append(team_dto)
             else:
                 teams_list_dto.teams.append(team_dto)
-
         return teams_list_dto
 
     @staticmethod
