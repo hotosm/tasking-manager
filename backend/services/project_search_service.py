@@ -185,7 +185,6 @@ class ProjectSearchService:
             for p in paginated_results.items
         ]
         dto.pagination = Pagination(paginated_results)
-
         if search_dto.omit_map_results:
             return dto
 
@@ -298,7 +297,7 @@ class ProjectSearchService:
         if search_dto.order_by_type == "DESC":
             order_by = desc(search_dto.order_by)
 
-        query = query.order_by(order_by).group_by(Project.id)
+        query = query.order_by(order_by).distinct(search_dto.order_by, Project.id)
 
         if search_dto.managed_by and user.role != UserRole.ADMIN.value:
             # Get all the projects associated with the user and team.
