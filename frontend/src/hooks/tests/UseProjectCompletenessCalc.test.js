@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks';
 
 import { useComputeCompleteness } from '../UseProjectCompletenessCalc';
-import { tasksGeojson } from '../../utils/tests/snippets/tasksGeometry';
+import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 
 describe('', () => {
   it('computeCompleteness', () => {

@@ -1,5 +1,5 @@
 import { getCentroidAndZoomFromSelectedTasks } from '../tasksGeometry';
-import { tasksGeojson } from './snippets/tasksGeometry';
+import tasksGeojson from './snippets/tasksGeometry';
 
 it('test if centroid and zoom level of multiple selected tasks are correct', () => {
   expect(getCentroidAndZoomFromSelectedTasks(tasksGeojson, [1, 2], [1920, 1080])).toStrictEqual({
