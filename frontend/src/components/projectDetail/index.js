@@ -6,54 +6,22 @@ import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-
-import ProjectProgressBar from '../projectCard/projectProgressBar';
-import DueDateBox from '../projectCard/dueDateBox';
-
-import { MappingLevelMessage } from '../mappingLevel';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
-
 import { TasksMap } from '../taskSelection/map.js';
 import { ProjectHeader } from './header';
 import { DownloadAOIButton, DownloadTaskGridButton } from './downloadButtons';
-import { MappingTypes } from '../mappingTypes';
-import { Imagery } from '../taskSelection/imagery';
 import { TeamsBoxList } from '../teamsAndOrgs/teams';
-
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { ProjectDetailFooter } from './footer';
-import { BigProjectTeaser } from './bigProjectTeaser';
 import { QuestionsAndComments } from './questionsAndComments';
 import { PermissionBox } from './permissionBox';
+import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
-import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 
 /* lazy imports must be last import */
 const TaskLineGraphViz = React.lazy(() => import('./taskLineGraphViz'));
-
-const ProjectDetailTypeBar = (props) => {
-  const titleClasses = 'db ttu f6 blue-light mb2';
-  return (
-    <div className="cf">
-      <div className="w-50-ns w-70 fl">
-        <h3 className={titleClasses}>
-          <FormattedMessage {...messages.typesOfMapping} />
-        </h3>
-        <div className="db fl pt1">
-          <MappingTypes types={props.mappingTypes} />
-        </div>
-      </div>
-      <div className="w-50-ns w-30 fl">
-        <h3 className={titleClasses}>
-          <FormattedMessage {...messages.imagery} />
-        </h3>
-        <Imagery value={props.imagery} />
-      </div>
-    </div>
-  );
-};
 
 const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
@@ -106,9 +74,6 @@ const ProjectDetailMap = (props) => {
 };
 
 export const ProjectDetailLeft = ({ project, contributors, className, type }: Object) => {
-  const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(
-    project.tasks,
-  );
   const htmlShortDescription =
     project.projectInfo && htmlFromMarkdown(project.projectInfo.shortDescription);
 
@@ -139,42 +104,12 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
         className="cf ph4 pb3 w-100 h-25 z-2 absolute bottom-0 left-0 bg-white"
         style={{ minHeight: '10rem' }}
       >
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          rows={3}
-          delay={500}
-          ready={typeof project.projectId === 'number'}
-        >
-          <ProjectDetailTypeBar
-            type={type}
-            mappingTypes={project.mappingTypes || []}
-            imagery={project.imagery}
-            editors={project.mappingEditors}
-          />
-          <ReactPlaceholder rows={1} ready={typeof contributors.length === 'number'}>
-            <BigProjectTeaser
-              className="pt3"
-              totalContributors={contributors.length}
-              lastUpdated={project.lastUpdated}
-              littleFont="f5"
-              bigFont="f4"
-            />
-          </ReactPlaceholder>
-          <ProjectProgressBar
-            className="pb2 bg-white"
-            percentMapped={percentMapped}
-            percentValidated={percentValidated}
-            percentBadImagery={percentBadImagery}
-          />
-          <div className="cf pb1 bg-white">
-            <MappingLevelMessage
-              level={project.mapperLevel}
-              className="tl f5 mt1 ttc fw5 blue-dark"
-            />
-            <DueDateBox dueDate={project.dueDate} />
-          </div>
-          <DueDateBox />
-        </ReactPlaceholder>
+        <ProjectInfoPanel
+          project={project}
+          tasks={project.tasks}
+          contributors={contributors}
+          type={type}
+        />
       </div>
     </div>
   );
