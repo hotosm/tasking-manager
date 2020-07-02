@@ -96,7 +96,7 @@ export function TeamCard({ team, managementView }: Object) {
     >
       <article className="fl w-30-l base-font w-50-m w-100 mb3 pr3 blue-dark mw5">
         <div className="bg-white ph3 pb3 ba br1 b--grey-light shadow-hover">
-          <h3 className="fw6 f4 fw6 h3 lh-title mt3 mb2 overflow-y-hidden" title={team.name}>
+          <h3 className="f4 fw6 h3 lh-title mt3 mb2 overflow-y-hidden" title={team.name}>
             {team.name}
           </h3>
           <div className="db h2" title={team.organisation}>
@@ -351,7 +351,7 @@ export function TeamsBoxList({ teams }: Object) {
           </h4>
           <div>
             {mappingTeams.map((team) => (
-              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2" />
+              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2 ba f6 tc" />
             ))}
           </div>
         </>
@@ -363,7 +363,7 @@ export function TeamsBoxList({ teams }: Object) {
           </h4>
           <div>
             {validationTeams.map((team) => (
-              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2" />
+              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2 ba f6 tc" />
             ))}
           </div>
         </>
@@ -374,6 +374,11 @@ export function TeamsBoxList({ teams }: Object) {
 
 export const TeamBox = ({ team, className }: Object) => (
   <Link className="link blue-grey mr2" to={`/teams/${team.teamId}/membership/`}>
-    <div className={`tc br1 f6 ba ${className}`}>{team.name}</div>
+    <div className={`br1 ${className}`}>
+      {team.logo && (
+        <img alt={team.organisation} src={team.logo} className="object-fit-contain h2 pr2 v-mid" />
+      )}
+      {team.name}
+    </div>
   </Link>
 );

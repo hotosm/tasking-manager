@@ -7,6 +7,7 @@ import ReactPlaceholder from 'react-placeholder';
 import messages from '../components/userDetail/messages';
 import { HeaderProfile } from '../components/userDetail/headerProfile';
 import { ElementsMapped, TaskStats } from '../components/userDetail/elementsMapped';
+import { UserTeams } from '../components/userDetail/userTeamsOrgs';
 import { CountriesMapped } from '../components/userDetail/countriesMapped';
 import { TopCauses } from '../components/userDetail/topCauses';
 import { TopProjects } from '../components/userDetail/topProjects';
@@ -132,6 +133,21 @@ export const UserDetail = ({ username, withHeader = true }) => {
             <CountriesMapped projects={userProjects} userStats={userStats} />
           </ReactPlaceholder>
         </div>
+        {currentUser.username !== username && (
+          <div className="mv4">
+            <h3 className={titleClass}>
+              <FormattedMessage {...messages.teams} />
+            </h3>
+            <ReactPlaceholder
+              type="rect"
+              showLoadingAnimation={true}
+              style={{ height: '10em' }}
+              ready={!errorStats && !loadingStats}
+            >
+              <UserTeams userId={userDetails.id} />
+            </ReactPlaceholder>
+          </div>
+        )}
       </div>
     </div>
   );

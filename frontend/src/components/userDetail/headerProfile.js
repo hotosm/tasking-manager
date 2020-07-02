@@ -6,6 +6,7 @@ import messages from '../user/messages';
 import { TwitterIconNoBg, FacebookIcon, LinkedinIcon, ProfilePictureIcon } from '../svgIcons';
 import { MappingLevelMessage } from '../mappingLevel';
 import { NextMappingLevel } from '../user/settings';
+import { UserOrganisations } from './userTeamsOrgs';
 import { SectionMenu } from '../menu';
 import OsmLogo from '../../assets/img/osm_logo.png';
 
@@ -58,7 +59,7 @@ const SocialMedia = ({ data }) => {
   };
 
   return (
-    <ul className="list pa0">
+    <ul className="list pa0 ma0 mt3">
       <li className="dib mr4-ns mr2 cf f7">
         <div className="mr2 h2">
           <img className="h1 v-mid" src={OsmLogo} alt="OpenStreetMap" />{' '}
@@ -119,7 +120,7 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
   return (
     <>
       <div className="w-100 h-100 cf pv3 ph6-l ph4-m ph2 bg-white blue-dark">
-        <div className="fl dib mr3">
+        <div className="fl dib pr3">
           {user.pictureUrl ? (
             <img
               className="h4 w4 br-100 pa1 ba b--grey-light bw3 red"
@@ -130,15 +131,18 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
             <ProfilePictureIcon className="red" />
           )}
         </div>
-        <div className="pl2 dib">
-          <div className="mb4">
+        <div className="w-70-ns w-100 fl dib">
+          <div className="pl2 dib w-50-l fl w-100">
             <p className="barlow-condensed f2 ttu b ma0 mb2">{user.name || user.username}</p>
             <p className="f4 ma0 mb2">
               <MappingLevelMessage level={user.mappingLevel} />
             </p>
             <NextMappingLevel changesetsCount={changesets} />
+            <SocialMedia data={user} />
           </div>
-          <SocialMedia data={user} />
+          <div className="pt1 dib fl w-50-l w-100 v-btm">
+            <UserOrganisations userId={user.id} />
+          </div>
         </div>
       </div>
       {user.username === authDetails.username && <MyContributionsNav username={user.username} />}

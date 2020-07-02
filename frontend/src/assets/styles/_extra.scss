@@ -238,6 +238,10 @@ div.messageBodyLinks {
   object-fit: cover;
 }
 
+.object-fit-contain {
+  object-fit: contain;
+}
+
 #shareProject {
   background-color: $white;
   color: $blue-dark;
@@ -274,7 +278,7 @@ div.messageBodyLinks {
       background-color: $tan !important;
       cursor: pointer;
     }
-  
+
     &--is-selected {
       background-color: $white !important;
     }
