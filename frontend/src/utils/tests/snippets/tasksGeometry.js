@@ -1,4 +1,4 @@
-export const tasksGeojson = {
+const tasksGeojson = {
   features: [
     {
       geometry: {
@@ -403,3 +403,5 @@ export const tasksGeojson = {
   ],
   type: 'FeatureCollection',
 };
+
+export default tasksGeojson;

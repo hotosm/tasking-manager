@@ -50,7 +50,7 @@ jobs:
         command: |
           # JS Unit Tests
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend
-          CI=true yarn test -w 1 --env=jsdom
+          CI=true yarn test -w 1
           CI=true GENERATE_SOURCEMAP=false yarn build
     - run:
         name: Run backend tests
