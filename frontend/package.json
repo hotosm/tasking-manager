@@ -44,7 +44,7 @@
     "react-click-outside": "^3.0.1",
     "react-dom": "^16.13.1",
     "react-final-form": "^6.5.0",
-    "react-intl": "^4.7.5",
+    "react-intl": "^4.7.6",
     "react-meta-elements": "^1.0.0",
     "react-placeholder": "^4.0.3",
     "react-redux": "^7.2.0",
