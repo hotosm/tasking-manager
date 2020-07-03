@@ -3,11 +3,11 @@ import { FormattedMessage, FormattedNumber } from 'react-intl';
 import shortNumber from 'short-number';
 
 import messages from './messages';
-import { EDITS_API_URL } from '../../config';
+import { HOMEPAGE_STATS_API_URL } from '../../config';
 import { cancelablePromise } from '../../utils/promise';
 import { fetchLocalJSONAPI, fetchExternalJSONAPI } from '../../network/genericJSONRequest';
 
-export const StatsNumber = props => {
+export const StatsNumber = (props) => {
   const value = shortNumber(props.value);
   if (typeof value === 'number') {
     return <FormattedNumber value={value} />;
@@ -44,29 +44,29 @@ export class StatsSection extends React.Component {
     this.editsStatsPromise && this.editsStatsPromise.cancel();
   }
 
-  getTMStats = event => {
+  getTMStats = (event) => {
     this.tmStatsPromise = cancelablePromise(fetchLocalJSONAPI('system/statistics/'));
     this.tmStatsPromise.promise
-      .then(r => {
+      .then((r) => {
         this.setState({
           mappersOnline: r.mappersOnline,
           communityMappers: r.totalMappers,
         });
       })
-      .catch(e => console.log(e));
+      .catch((e) => console.log(e));
   };
 
-  getEditsStats = event => {
-    this.editsStatsPromise = cancelablePromise(fetchExternalJSONAPI(EDITS_API_URL));
+  getEditsStats = (event) => {
+    this.editsStatsPromise = cancelablePromise(fetchExternalJSONAPI(HOMEPAGE_STATS_API_URL));
     this.editsStatsPromise.promise
-      .then(r => {
+      .then((r) => {
         this.setState({
           edits: r.edits,
-          buildings: r.buildings,
-          roads: r.roads,
+          buildings: r.building_count_add,
+          roads: r.road_km_add,
         });
       })
-      .catch(e => console.log(e));
+      .catch((e) => console.log(e));
   };
 
   renderStatsCol(label, value, priority = false) {

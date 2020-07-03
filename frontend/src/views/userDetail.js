@@ -14,7 +14,8 @@ import { TopProjects } from '../components/userDetail/topProjects';
 import { EditsByNumbers } from '../components/userDetail/editsByNumbers';
 import ContributionTimeline from '../components/userDetail/contributionTimeline';
 import { NotFound } from './notFound';
-import { fetchOSMStatsAPI } from '../network/genericJSONRequest';
+import { USER_STATS_API_URL } from '../config';
+import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
@@ -38,7 +39,9 @@ export const UserDetail = ({ username, withHeader = true }) => {
 
   useEffect(() => {
     if (token && username) {
-      fetchOSMStatsAPI(`users/${username}`, token).then((res) => setOsmStats(res));
+      fetchExternalJSONAPI(`${USER_STATS_API_URL}${username}`, token).then((res) =>
+        setOsmStats(res),
+      );
     }
   }, [token, username]);
 
