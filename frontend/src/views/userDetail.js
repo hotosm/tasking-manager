@@ -46,7 +46,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
     return <Redirect to={'/login'} noThrow />;
   }
 
-  const blockClass = 'w-33-l w-50-m w-100 fl pa2';
+  const blockClass = 'w-third-l w-50-m w-100 fl pa2';
   const titleClass = 'f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mb3';
   return errorDetails ? (
     <NotFound />
@@ -64,7 +64,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
           </ReactPlaceholder>
         </div>
       )}
-      <div className={withHeader ? 'w-100 ph6-l ph4-m ph2 cf pb3' : ''}>
+      <div className={withHeader ? 'w-100 ph4-l ph2 cf pb3' : ''}>
         <div className="mv4">
           <ElementsMapped userStats={userStats} osmStats={osmStats} />
         </div>
@@ -83,10 +83,10 @@ export const UserDetail = ({ username, withHeader = true }) => {
         </div>
         <div className="mv4">
           <h3 className={titleClass}>
-            <FormattedMessage {...messages.statsTitle} />
+            <FormattedMessage {...messages.projectsTitle} />
           </h3>
           <div className="w-100 cf">
-            <div className="w-33-l w-100 fl pa2">
+            <div className="w-third-l w-100 fl pa2">
               <ReactPlaceholder
                 type="rect"
                 showLoadingAnimation={true}

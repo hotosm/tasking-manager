@@ -1,4 +1,9 @@
-import { formatChartData, formatTimelineData } from '../formatChartJSData';
+import {
+  formatChartData,
+  formatTimelineData,
+  formatTimelineTooltip,
+  formatTooltip,
+} from '../formatChartJSData';
 import { CHART_COLOURS } from '../../config';
 import { projectContributionsByDay } from '../../network/tests/mockData/contributions';
 
@@ -59,5 +64,96 @@ describe('formatTimelineData', () => {
       ],
       labels: ['2020-05-19', '2020-06-01', '2020-06-26'],
     });
+  });
+});
+
+describe('formatTimelineTooltip', () => {
+  const tooltipItem = {
+    xLabel: '2020-06-26',
+    yLabel: 18,
+    label: '2020-06-26',
+    value: '18',
+    index: 2,
+    datasetIndex: 1,
+    x: 1074.8309643713924,
+    y: 78.45394354462593,
+  };
+  const data = {
+    datasets: [
+      {
+        data: [0, 6, 19],
+        backgroundColor: '#092',
+        borderColor: '#092',
+        fill: false,
+        label: 'Validated tasks',
+      },
+      {
+        data: [6, 13, 31],
+        backgroundColor: '#fff',
+        borderColor: '#fff',
+        fill: false,
+        label: 'Mapped tasks',
+      },
+    ],
+    labels: ['2020-05-19', '2020-06-01', '2020-06-26'],
+  };
+  it('returns correct information', () => {
+    expect(formatTimelineTooltip(tooltipItem, data)).toBe('Mapped tasks: 31%');
+  });
+  it('returns correct information', () => {
+    const tooltipItem2 = {
+      xLabel: '2020-06-26',
+      yLabel: 18,
+      label: '2020-06-26',
+      value: '18',
+      index: 0,
+      datasetIndex: 0,
+      x: 1074.8309643713924,
+      y: 78.45394354462593,
+    };
+    expect(formatTimelineTooltip(tooltipItem2, data)).toBe('Validated tasks: 0%');
+  });
+});
+
+describe('formatTooltip', () => {
+  const tooltipItem = {
+    xLabel: '',
+    yLabel: '',
+    label: '',
+    value: '',
+    index: 1,
+    datasetIndex: 0,
+    x: 173.3499984741211,
+    y: 124,
+  };
+  const data = {
+    datasets: [
+      {
+        data: [20, 30, 9, 42],
+        backgroundColor: [
+          CHART_COLOURS.red,
+          CHART_COLOURS.green,
+          CHART_COLOURS.orange,
+          CHART_COLOURS.blue,
+        ],
+      },
+    ],
+    labels: ['Building', 'Roads', 'Points of interests', 'Waterways'],
+  };
+  it('returns correct text with 30 percent', () => {
+    expect(formatTooltip(tooltipItem, data)).toBe('Roads: 30%');
+  });
+  it('returns correct text with 30 percent', () => {
+    const tooltipItem = {
+      xLabel: '',
+      yLabel: '',
+      label: '',
+      value: '',
+      index: 3,
+      datasetIndex: 0,
+      x: 173.3499984741211,
+      y: 124,
+    };
+    expect(formatTooltip(tooltipItem, data)).toBe('Waterways: 42%');
   });
 });
