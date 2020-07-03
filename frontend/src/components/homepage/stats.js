@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
+import axios from 'axios';
 import shortNumber from 'short-number';
 
 import messages from './messages';
@@ -37,17 +38,21 @@ export const StatsSection = () => {
   const [tmStatsError, tmStatsLoading, tmStats] = useFetch('system/statistics/');
   const [stats, setStats] = useState({ edits: 0, buildings: 0, roads: 0 });
   const url = HOMEPAGE_STATS_API_URL;
+  const getStats = async (url) => {
+    try {
+      const response = await axios.get(url);
+      setStats({
+        edits: response.data.edits,
+        buildings: response.data.building_count_add,
+        roads: response.data.road_km_add,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    fetch(url)
-      .then((r) => r.json())
-      .then((r) => console.log(r))
-      .then((r) =>
-        setStats({
-          edits: r.edits,
-          buildings: r.building_count_add,
-          roads: r.road_km_add,
-        }),
-      );
+    getStats(url);
   }, [url]);
 
   return (
