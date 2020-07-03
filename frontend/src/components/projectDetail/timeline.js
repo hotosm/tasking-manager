@@ -9,7 +9,7 @@ export default function ProjectTimeline({ tasksByDay }: Object) {
     <Line
       data={formatTimelineData(tasksByDay, CHART_COLOURS.orange, CHART_COLOURS.red)}
       options={{
-        legend: { position: 'bottom' },
+        legend: { position: 'top', align: 'end', labels: { boxWidth: 12 } },
         tooltips: { callbacks: { label: (tooltip, data) => formatTimelineTooltip(tooltip, data) } },
       }}
     />

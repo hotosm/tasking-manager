@@ -39,7 +39,7 @@ export const TopCauses = ({ userStats }) => {
       <Doughnut
         data={data}
         options={{
-          legend: { position: 'bottom' },
+          legend: { position: 'right', labels: { boxWidth: 12 } },
           tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
         }}
       />
