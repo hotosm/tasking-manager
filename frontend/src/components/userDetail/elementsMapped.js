@@ -186,7 +186,7 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
 
   return (
     <div>
-      <div className="cf w-100 relative pr2">
+      <div className="cf w-100 relative">
         <Element field={'time'} value={duration} />
         <Element field={'buildings'} value={osmStats.total_building_count_add || 0} />
         <Element field={'road'} value={osmStats.total_road_km_add || 0} />

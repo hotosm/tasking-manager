@@ -12,9 +12,9 @@ export default defineMessages({
     id: 'users.detail.contributionTimelineTitle',
     defaultMessage: 'Contribution Timeline',
   },
-  statsTitle: {
-    id: 'users.detail.statsTitle',
-    defaultMessage: 'stats',
+  projectsTitle: {
+    id: 'users.detail.projectsTitle',
+    defaultMessage: 'Projects',
   },
   countries: {
     id: 'users.detail.countries',

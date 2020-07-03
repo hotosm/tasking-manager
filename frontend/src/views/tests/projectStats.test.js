@@ -18,7 +18,6 @@ describe('ProjectStats dashboard', () => {
     );
 
     await waitFor(() => screen.getByText('#1'));
-    await waitFor(() => screen.getByText('Percent of Tasks (before any splits)'));
     await waitFor(() => container.querySelector('[aria-valuenow="28"]'));
 
     expect(screen.getByText('#1')).toBeInTheDocument();

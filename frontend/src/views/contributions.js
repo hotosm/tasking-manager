@@ -62,7 +62,7 @@ export const ContributionsPageIndex = (props) => {
       <div className="w-100 cf pb3">
         <HeaderProfile selfProfile={true} />
       </div>
-      <div className="w-100 ph6-l ph4-m ph2 cf pb3">{props.children}</div>
+      <div className="w-100 ph5-l ph2 cf pb3">{props.children}</div>
     </div>
   );
 };

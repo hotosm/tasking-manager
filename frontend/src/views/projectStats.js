@@ -5,7 +5,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { ProjectHeader } from '../components/projectDetail/header';
 import { ProjectInfoPanel } from '../components/projectDetail/infoPanel';
 
-const TaskLineGraphViz = React.lazy(() => import('../components/projectDetail/taskLineGraphViz'));
+const ProjectTimeline = React.lazy(() => import('../components/projectDetail/timeline'));
 
 export function ProjectStats({ id }: Object) {
   const [error, loading, project] = useFetch(`projects/${id}/queries/summary/`, id);
@@ -47,7 +47,7 @@ export function ProjectStats({ id }: Object) {
               delay={500}
               ready={!visualError && !visualLoading}
             >
-              <TaskLineGraphViz percentDoneVisData={visualData} />
+              <ProjectTimeline tasksByDay={visualData.stats} />
             </ReactPlaceholder>
           </React.Suspense>
         </div>
