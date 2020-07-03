@@ -95,7 +95,7 @@ const MyContributionsNav = ({ username, authUser }) => {
   ];
 
   return (
-    <div className="fl ph6-l ph4-m ph2">
+    <div className="fl ph5-l ph2">
       <SectionMenu items={items} />
     </div>
   );
@@ -119,7 +119,7 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
 
   return (
     <>
-      <div className="w-100 h-100 cf pv3 ph6-l ph4-m ph2 bg-white blue-dark">
+      <div className="w-100 h-100 cf pv3 pl5-l ph2 bg-white blue-dark">
         <div className="fl dib pr3">
           {user.pictureUrl ? (
             <img

@@ -1,3 +1,4 @@
+import 'jest-canvas-mock';
 import { server } from './network/tests/server.js';
 
 beforeAll(() => server.listen());

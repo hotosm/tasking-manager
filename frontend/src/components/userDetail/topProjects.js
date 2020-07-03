@@ -19,7 +19,7 @@ const ProgressBar = ({ percent }) => {
 
 export const ListElements = ({ data, valueField, nameField, linkBase, linkField }) => {
   return (
-    <ol className="pa0 pb1">
+    <ol className="pa0 mt1 mb0">
       {data.map((p, i) => {
         return (
           <li key={i} className="w-100 flex pv3">
@@ -62,7 +62,7 @@ export const TopProjects = ({ projects }) => {
   };
 
   const data = projects.mappedProjects
-    .map(p => {
+    .map((p) => {
       return {
         id: p.projectId,
         name: p.name,
@@ -74,16 +74,16 @@ export const TopProjects = ({ projects }) => {
     .sort(compare)
     .slice(0, 5);
 
-  const tasksNo = data.map(d => d.total);
+  const tasksNo = data.map((d) => d.total);
   const maxTaskNo = Math.max(...tasksNo);
 
-  const tasksPercent = data.map(d => {
+  const tasksPercent = data.map((d) => {
     return { ...d, percent: d.total / maxTaskNo };
   });
 
   return (
-    <div className="pb3 ph3 pt2 bg-white blue-dark shadow-4">
-      <h3 className="f4 mt0 fw6 pt3">
+    <div className="pv2 ph3 bg-white blue-dark shadow-4">
+      <h3 className="f4 mv0 fw6 pt3">
         <FormattedMessage {...messages.topProjectsMappedTitle} />
       </h3>
       <ListElements

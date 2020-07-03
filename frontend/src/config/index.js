@@ -49,6 +49,13 @@ export const TASK_COLOURS = {
   PRIORITY_AREAS: '#efd1d1',
 };
 
+export const CHART_COLOURS = {
+  red: '#d73f3f',
+  green: '#3e9c67',
+  blue: '#1757c4',
+  orange: '#f09733',
+};
+
 const fallbackRasterStyle = {
   version: 8,
   // "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
