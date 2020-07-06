@@ -69,7 +69,7 @@ export const CountriesMapped = ({ projects, userStats }) => {
   });
 
   return (
-    <div className="bg-white blue-dark shadow-4 w-100 cf" style={{ height: '40vh' }}>
+    <div className="bg-white blue-dark shadow-4 w-100 cf" style={{ height: '23rem' }}>
       <div className="w-third-l w-100 fl pt2 ph3">
         <h3 className="f4 mt0 fw6 pt3">
           <FormattedMessage {...messages.topCountriesTitle} />

@@ -21,7 +21,7 @@ import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
 
 /* lazy imports must be last import */
-const TaskLineGraphViz = React.lazy(() => import('./taskLineGraphViz'));
+const ProjectTimeline = React.lazy(() => import('./timeline'));
 
 const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
@@ -279,15 +279,17 @@ export const ProjectDetail = (props) => {
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.contributionsTimeline} />
       </h3>
-      <div className="mb5 ph4">
+      <div className="mb5 ph4 w-100 w-60-l">
         <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
           <ReactPlaceholder
             showLoadingAnimation={true}
             rows={3}
             delay={500}
-            ready={typeof visualData === 'object'}
+            ready={typeof visualData === 'object' && visualData.stats !== undefined}
           >
-            <TaskLineGraphViz percentDoneVisData={visualData} />
+            <div className="pt2 pb4">
+              <ProjectTimeline tasksByDay={visualData.stats} />
+            </div>
           </ReactPlaceholder>
         </React.Suspense>
         <ReactPlaceholder
