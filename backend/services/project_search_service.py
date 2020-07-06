@@ -196,7 +196,6 @@ class ProjectSearchService:
                 "projectId": project.id,
                 "priority": ProjectPriority(project.priority).name,
             }
-            # centroid = project.centroid
             feature = geojson.Feature(
                 geometry=geojson.loads(project.centroid), properties=properties
             )
@@ -215,8 +214,10 @@ class ProjectSearchService:
         )
         project_status_array = []
         if search_dto.project_statuses:
-            for project_status in search_dto.project_statuses:
-                project_status_array.append(ProjectStatus[project_status].value)
+            project_status_array = [
+                ProjectStatus[project_status].value
+                for project_status in search_dto.project_statuses
+            ]
             query = query.filter(Project.status.in_(project_status_array))
         else:
             if not search_dto.created_by:
@@ -254,17 +255,16 @@ class ProjectSearchService:
             ).filter(ProjectTeams.team_id == search_dto.team_id)
 
         if search_dto.campaign:
-            query = query.join(Campaign, Project.campaign).group_by(
-                Project.id, Campaign.name
-            )
+            query = query.join(Campaign, Project.campaign).group_by(Campaign.name)
+
             query = query.filter(Campaign.name == search_dto.campaign)
 
         if search_dto.mapping_types:
             # Construct array of mapping types for query
-            mapping_type_array = []
-            for mapping_type in search_dto.mapping_types:
-                mapping_type_array.append(MappingTypes[mapping_type].value)
-
+            mapping_type_array = [
+                MappingTypes[mapping_type].value
+                for mapping_type in search_dto.mapping_types
+            ]
             query = query.filter(Project.mapping_types.contains(mapping_type_array))
 
         if search_dto.text_search:
@@ -298,7 +298,7 @@ class ProjectSearchService:
         if search_dto.order_by_type == "DESC":
             order_by = desc(search_dto.order_by)
 
-        query = query.order_by(order_by).group_by(Project.id)
+        query = query.order_by(order_by)
 
         if search_dto.managed_by and user.role != UserRole.ADMIN.value:
             # Get all the projects associated with the user and team.
@@ -325,7 +325,13 @@ class ProjectSearchService:
 
         all_results = []
         if not search_dto.omit_map_results:
-            all_results = query.all()
+            query_result = query
+            query_result.column_descriptions.clear()
+            query_result.add_column(Project.id)
+            query_result.add_column(Project.centroid.ST_AsGeoJSON().label("centroid"))
+            query_result.add_column(Project.priority)
+            all_results = query_result.all()
+
         paginated_results = query.paginate(search_dto.page, 14, True)
 
         return all_results, paginated_results
