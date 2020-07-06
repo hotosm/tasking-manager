@@ -1,6 +1,6 @@
 import geojson
 from backend import db
-from sqlalchemy import desc, text, func
+from sqlalchemy import desc, func
 from geoalchemy2 import functions
 from backend.models.dtos.user_dto import (
     UserDTO,
@@ -214,17 +214,16 @@ class User(db.Model):
     @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):
         """ Adds projects to mapped_projects if it doesn't exist """
-        sql = "select * from users where id = :user_id and projects_mapped @> '{{:project_id}}'"
-        result = db.engine.execute(text(sql), user_id=user_id, project_id=project_id)
-
-        if result.rowcount > 0:
+        query = User.query.filter_by(id=user_id)
+        result = query.filter(
+            User.projects_mapped.op("@>")("{}".format("{" + str(project_id) + "}"))
+        ).count()
+        if result > 0:
             return  # User has previously mapped this project so return
 
-        sql = """update users
-                    set projects_mapped = array_append(projects_mapped, :project_id)
-                  where id = :user_id"""
-
-        db.engine.execute(text(sql), project_id=project_id, user_id=user_id)
+        user = query.one_or_none()
+        user.projects_mapped.append(project_id)
+        db.session.commit()
 
     @staticmethod
     def get_mapped_projects(
