@@ -8,7 +8,7 @@ from flask import current_app
 from geoalchemy2 import Geometry
 import sqlalchemy
 from sqlalchemy.sql.expression import cast, or_
-from sqlalchemy import text, desc, func, Time, orm
+from sqlalchemy import text, desc, func, Time, orm, literal
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 import requests
@@ -483,6 +483,12 @@ class Project(db.Model):
         """ Deletes the current model from the DB """
         db.session.delete(self)
         db.session.commit()
+
+    @staticmethod
+    def exists(project_id):
+        query = Project.query.filter(Project.id == project_id).exists()
+
+        return db.session.query(literal(True)).filter(query).scalar()
 
     def is_favorited(self, user_id: int) -> bool:
         user = User.query.get(user_id)
