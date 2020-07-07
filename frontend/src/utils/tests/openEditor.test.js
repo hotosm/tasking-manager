@@ -7,6 +7,7 @@ import {
   getPotlatch2Url,
   formatJosmUrl,
   formatCustomUrl,
+  getImageryInfo,
 } from '../openEditor';
 
 describe('test if getIdUrl', () => {
@@ -133,12 +134,50 @@ describe('test if formatJosmUrl', () => {
         title: 'osm',
         type: 'tms',
         url: 'http://tile.openstreetmap.org/{zoom}/{x}/{y}.png',
+        min_zoom: 1,
+        max_zoom: 20,
       }).href,
     ).toBe(
       new URL(
-        '?title=osm&type=tms&url=http%3A%2F%2Ftile.openstreetmap.org%2F%7Bzoom%7D%2F%7Bx%7D%2F%7By%7D.png',
+        '?title=osm&type=tms&url=http%3A%2F%2Ftile.openstreetmap.org%2F%7Bzoom%7D%2F%7Bx%7D%2F%7By%7D.png&min_zoom=1&max_zoom=20',
         'http://127.0.0.1:8111/imagery',
       ).href,
     );
+  });
+});
+
+describe('test get imagery type from URL', () => {
+  it('without prefix', () => {
+    const imagery = 'http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(imagery)).toStrictEqual(['tms', null, null]);
+  });
+  it('with tms prefix', () => {
+    const tms = 'tms:http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(tms)).toStrictEqual(['tms', null, null]);
+
+    const tmsWithZoom = 'tms[0:22]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(tmsWithZoom)).toStrictEqual(['tms', 0, 22]);
+
+    const tmsWithMinZoom = 'tms[0:]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(tmsWithMinZoom)).toStrictEqual(['tms', 0, null]);
+
+    const tmsWithInvalidZoom = 'tms[:]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(tmsWithInvalidZoom)).toStrictEqual(['tms', null, null]);
+
+    const tmsWithMaxZoom = 'tms[:22]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(tmsWithMaxZoom)).toStrictEqual(['tms', null, 22]);
+  });
+  it('with wms prefix', () => {
+    const wms = 'wms:http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(wms)).toStrictEqual(['wms', null, null]);
+
+    const wmsWithZoom = 'wms[0:22]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(wmsWithZoom)).toStrictEqual(['wms', 0, 22]);
+
+    const wmsWithMinZoom = 'wms[0:]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(wmsWithMinZoom)).toStrictEqual(['wms', 0, null]);
+
+    const wmsWithMaxZoom = 'wms[:22]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(wmsWithMaxZoom)).toStrictEqual(['wms', null, 22]);
   });
 });
