@@ -131,13 +131,28 @@ function loadTasksBoundaries(project, selectedTasks) {
   );
 }
 
+export function getImageryInfo(url) {
+  const type = url.toLowerCase().substr(0, 3) === 'wms' ? 'wms' : 'tms';
+  const zoom = url.split('http')[0].substr(3).replace('[', '').replace(']', '');
+  const [minZoom, maxZoom] = zoom.length ? zoom.split(':') : [null, null];
+  return [
+    type,
+    minZoom !== '' && minZoom !== null ? Number(minZoom) : null,
+    maxZoom !== '' && maxZoom !== null ? Number(maxZoom) : null,
+  ];
+}
+
 function loadImageryonJosm(project) {
   if (project.imagery && project.imagery.includes('http')) {
+    const [type, minZoom, maxZoom] = getImageryInfo(project.imagery);
     const imageryParams = {
       title: project.imagery,
-      type: project.imagery.toLowerCase().substring(0, 3),
-      url: project.imagery,
+      type: type,
+      url: project.imagery.substr(project.imagery.indexOf('http')),
     };
+    if (minZoom) imageryParams.min_zoom = minZoom;
+    if (maxZoom) imageryParams.max_zoom = maxZoom;
+
     return callJosmRemoteControl(formatJosmUrl('imagery', imageryParams));
   }
 }
