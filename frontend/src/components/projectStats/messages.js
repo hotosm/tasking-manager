@@ -3,7 +3,7 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   projectStatsTitle: {
     id: 'projects.stats.title',
-    defaultMessage: 'Project statistics',
+    defaultMessage: 'Time statistics',
   },
   averageMappingTime: {
     id: 'projects.stats.average_mapping_time',

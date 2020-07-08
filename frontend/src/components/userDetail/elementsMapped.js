@@ -180,9 +180,8 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
     round: true,
     delimiter: ' ',
     units: ['h', 'm'],
-  })
-    .replace(' h', 'h')
-    .replace(' m', 'm');
+    spacer: '',
+  });
 
   return (
     <div>

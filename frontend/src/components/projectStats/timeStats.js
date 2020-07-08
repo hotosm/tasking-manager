@@ -17,22 +17,23 @@ const StatsRow = ({ stats }) => {
   const options = {
     units: ['h', 'm', 's'],
     round: true,
+    spacer: '',
   };
 
   return (
-    <div className="cf w-90 center">
-      {fields.map((t) => {
-        return (
-          <div className="bg-white pa3 tc w-20 fl mh3 shadow-2">
-            <div className="f2 b mb3 red  barlow-condensed">
-              {shortEnglishHumanizer(stats[t] * 1000, options)}
+    <div className="cf center">
+      {fields.map((t, n) => (
+        <div key={n} className="ph2 w-25-l w-50-m w-100 fl">
+          <div className="tc pa3 bg-white shadow-4">
+            <div className="f2 b red barlow-condensed">
+              {shortEnglishHumanizer(stats[t] * 1000, options).replaceAll(',', '')}
             </div>
             <div className="f6 b blue-grey">
               <FormattedMessage {...messages[t]} />
             </div>
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 };
@@ -54,15 +55,13 @@ export const TimeStats = ({ id }) => {
   const [error, loading, stats] = useFetch(`projects/${id}/statistics/`, id);
 
   return (
-    <div>
-      <ReactPlaceholder
-        showLoadingAnimation={true}
-        rows={26}
-        ready={!error && !loading}
-        className="pr3"
-      >
-        <StatsCards stats={stats} />
-      </ReactPlaceholder>
-    </div>
+    <ReactPlaceholder
+      showLoadingAnimation={true}
+      rows={26}
+      ready={!error && !loading}
+      className="pr3"
+    >
+      <StatsCards stats={stats} />
+    </ReactPlaceholder>
   );
 };
