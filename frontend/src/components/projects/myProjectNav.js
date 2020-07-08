@@ -143,7 +143,7 @@ export const MyProjectNav = (props) => {
             )}
           </div>
         </div>
-        <div className="w-10-ns w-100 fr">
+        <div className="w-10-ns w-100 fr tr">
           <ShowMapToggle />
           {props.management && <ProjetListViewToggle />}
         </div>
