@@ -508,7 +508,9 @@ class Task(db.Model):
     )
 
     # Mapped objects
-    task_history = db.relationship(TaskHistory, cascade="all")
+    task_history = db.relationship(
+        TaskHistory, cascade="all", order_by=desc(TaskHistory.id)
+    )
     task_annotations = db.relationship(TaskAnnotation, cascade="all")
     lock_holder = db.relationship(User, foreign_keys=[locked_by])
     mapper = db.relationship(User, foreign_keys=[mapped_by])
@@ -1013,7 +1015,7 @@ class Task(db.Model):
     def as_dto_with_instructions(self, preferred_locale: str = "en") -> TaskDTO:
         """Get dto with any task instructions"""
         task_history = []
-        for action in reversed(self.task_history):
+        for action in self.task_history:
             history = TaskHistoryDTO()
             history.history_id = action.id
             history.action = action.action
