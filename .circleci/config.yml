@@ -350,6 +350,10 @@ jobs:
         type: env_var_name
       upload_api_key:
         type: env_var_name
+      user_stats_api_url:
+        type: env_var_name
+      homepage_stats_api_url:
+        type: env_var_name
     working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3.7-buster-node
@@ -413,6 +417,8 @@ jobs:
           export TM_HOMEPAGE_VIDEO_URL=${<< parameters.org_homepage_video_url >>}
           export TM_APP_API_URL="https://tasking-manager-<< parameters.stack_name >>-api.hotosm.org"
           export TM_IMAGE_UPLOAD_API_URL=${<< parameters.upload_api_url >>}
+          export TM_USER_STATS_API_URL=${<< parameters.user_stats_api_url >>}
+          export TM_HOMEPAGE_STATS_API_URL=${<< parameters.homepage_stats_api_url >>}
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
           yarn
           CI=true GENERATE_SOURCEMAP=false yarn build
@@ -522,6 +528,8 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL #=https://cdn.hotosm.org/tasking-manager/mapping.mp4
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+        user_stats_api_url: TM_USER_STATS_API_URL
+        homepage_stats_api_url: TM_HOMEPAGE_STATS_API_URL
     - backend_deploy:
         name: teachosm
         filters:
@@ -616,6 +624,8 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+        user_stats_api_url: TM_USER_STATS_API_URL
+        homepage_stats_api_url: TM_HOMEPAGE_STATS_API_URL
     - backend_deploy:
         name: assisted
         filters:
@@ -710,6 +720,8 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+        user_stats_api_url: TM_USER_STATS_API_URL
+        homepage_stats_api_url: TM_HOMEPAGE_STATS_API_URL
   backend-production:
     jobs:
     - backend_deploy:
@@ -805,3 +817,5 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+        user_stats_api_url: TM_USER_STATS_API_URL
+        homepage_stats_api_url: TM_HOMEPAGE_STATS_API_URL

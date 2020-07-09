@@ -1,5 +1,5 @@
 import { handleErrors } from '../utils/promise';
-import { API_URL, EDITS_API_URL } from '../config';
+import { API_URL } from '../config';
 
 export function fetchExternalJSONAPI(url): Promise<*> {
   return fetch(url, {
@@ -9,7 +9,7 @@ export function fetchExternalJSONAPI(url): Promise<*> {
     },
   })
     .then(handleErrors)
-    .then(res => {
+    .then((res) => {
       return res.json();
     });
 }
@@ -18,11 +18,11 @@ export function wrapPromise(promise) {
   let status = 'pending';
   let result = '';
   let suspender = promise.then(
-    r => {
+    (r) => {
       status = 'success';
       result = r;
     },
-    e => {
+    (e) => {
       status = 'error';
       result = e;
     },
@@ -41,12 +41,6 @@ export function wrapPromise(promise) {
   };
 }
 
-export const fetchOSMStatsAPI = path => {
-  const url = new URL(path, new URL(EDITS_API_URL).origin);
-
-  return fetch(url).then(x => x.json());
-};
-
 export function fetchLocalJSONAPI(endpoint, token, method = 'GET', language = 'en'): Promise<*> {
   const url = new URL(endpoint, API_URL);
   let headers = {
@@ -61,7 +55,7 @@ export function fetchLocalJSONAPI(endpoint, token, method = 'GET', language = 'e
     headers: headers,
   })
     .then(handleErrors)
-    .then(res => {
+    .then((res) => {
       return res.json();
     });
 }
@@ -84,7 +78,7 @@ export function pushToLocalJSONAPI(
     body: payload,
   })
     .then(handleErrors)
-    .then(res => {
+    .then((res) => {
       return res.json();
     });
 }
