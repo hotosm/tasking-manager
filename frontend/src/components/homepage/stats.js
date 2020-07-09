@@ -62,7 +62,7 @@ export const StatsSection = () => {
       <StatsColumn label={messages.editsStats} value={stats.edits} />
       <StatsColumn
         label={messages.communityStats}
-        value={tmStats.communityMappers || 0}
+        value={tmStats.totalMappers || 0}
         priority={true}
       />
       <StatsColumn
