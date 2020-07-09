@@ -142,6 +142,7 @@ class AnnotationsRestAPI(Resource):
             ProjectService.exists(project_id)
         except NotFound as e:
             current_app.logger.error(f"Error validating project: {str(e)}")
+            return {"Error": "Project not found"}, 404
 
         task_ids = [t["taskId"] for t in annotations["tasks"]]
 
