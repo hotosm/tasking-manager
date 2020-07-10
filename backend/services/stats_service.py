@@ -319,18 +319,20 @@ class StatsService:
     @cached(homepage_stats_cache)
     def get_homepage_stats(abbrev=True) -> HomePageStatsDTO:
         """ Get overall TM stats to give community a feel for progress that's being made """
-        dto = HomePageStatsDTO()
 
-        dto.total_projects = Project.query.count()
-        dto.mappers_online = (
-            Task.query.filter(Task.locked_by is not None)
-            .distinct(Task.locked_by)
-            .count()
+        dto = HomePageStatsDTO()
+        total_projects_sql = "select count(*) from projects"
+        dto.total_projects = db.engine.execute(text(total_projects_sql)).fetchone()[0]
+        total_mappers_online_sql = (
+            "select count(distinct locked_by ) from tasks where locked_by is not null"
         )
-        dto.total_mappers = User.query.count()
-        dto.tasks_mapped = Task.query.filter(
-            Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))
-        ).count()
+        dto.mappers_online = db.engine.execute(
+            text(total_mappers_online_sql)
+        ).fetchone()[0]
+        total_mappers_sql = "select count(*) from users"
+        dto.total_mappers = db.engine.execute(text(total_mappers_sql)).fetchone()[0]
+        tasks_mapped_sql = "select count(*) from tasks where task_status in (2,4)"
+        dto.tasks_mapped = db.engine.execute(text(tasks_mapped_sql)).fetchone()[0]
 
         if not abbrev:
             dto.total_validators = (
