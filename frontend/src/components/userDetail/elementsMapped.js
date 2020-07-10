@@ -14,6 +14,7 @@ import {
   MappedIcon,
   ValidatedIcon,
 } from '../svgIcons';
+import { StatsCardContent } from '../statsCardContent';
 
 const getFieldData = (field) => {
   const iconClass = 'h-50 w-50';
@@ -54,19 +55,17 @@ const Element = ({ field, value }) => {
   return (
     <div className={`w-20-ns w-100 ph2-ns fl`}>
       <div
-        className={`cf shadow-4 pt3 pb2 pb3-m ph2 ${
+        className={`cf shadow-4 pt3 pb3 ph2 ${
           field === 'time' ? 'bg-red white' : 'bg-white blue-dark'
         }`}
       >
         <div className="w-30 w-100-m fl tc">{elements.icon}</div>
-        <div className="w-70 w-100-m pt3-m fl tc">
-          <p className={`ma0 mb2 barlow-condensed f2 b ${field === 'time' ? null : 'red '}`}>
-            {field === 'time' ? value : Math.trunc(value)}
-          </p>
-          <p className={`ma0 h2 f7 b ${field === 'time' ? null : 'blue-grey'}`}>
-            {elements.message}
-          </p>
-        </div>
+        <StatsCardContent
+          value={field === 'time' ? value : Math.trunc(value)}
+          label={elements.message}
+          className="w-70 w-100-m pt3-m mb1 fl tc"
+          invertColors={field === 'time'}
+        />
       </div>
     </div>
   );

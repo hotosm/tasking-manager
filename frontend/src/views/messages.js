@@ -16,6 +16,10 @@ export default defineMessages({
     id: 'notFound.lead',
     defaultMessage: 'Check the URL or report this error.',
   },
+  projectTimeline: {
+    id: 'project.stats.timeline',
+    defaultMessage: 'Project timeline',
+  },
   sectionNotAllowed: {
     id: 'management.forbiddenAccess.title',
     defaultMessage: 'You are not allowed to access the management area.',
@@ -181,7 +185,6 @@ export default defineMessages({
     defaultMessage:
       'Every day, a global community works tirelessly behind the scenes to literally put people on the map. They contribute to the online Open Data map of the world. Universal access to geospatial information is heavily changing how people use maps and what they build with them.',
   },
-
   learn: {
     id: 'pages.learn.title',
     defaultMessage: 'Learn',

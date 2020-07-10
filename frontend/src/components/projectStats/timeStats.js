@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactPlaceholder from 'react-placeholder';
-import { useFetch } from '../../hooks/UseFetch';
-
 import { FormattedMessage } from 'react-intl';
+
 import messages from './messages';
+import { useFetch } from '../../hooks/UseFetch';
 import { shortEnglishHumanizer } from '../userDetail/elementsMapped';
 
 const StatsRow = ({ stats }) => {
@@ -40,13 +40,11 @@ const StatsRow = ({ stats }) => {
 
 const StatsCards = ({ stats }) => {
   return (
-    <div className="bg-tan w-100">
-      <div className="ph2 ph4-ns pv3 pt3 pb4">
-        <h3 className="f2 ttu barlow-condensed pv3 ma0">
-          <FormattedMessage {...messages.projectStatsTitle} />
-        </h3>
-        <StatsRow stats={stats} />
-      </div>
+    <div className="ph2 ph4-ns pv3 pt3 pb4">
+      <h3 className="f3 ttu barlow-condensed pv3 ma0">
+        <FormattedMessage {...messages.projectStatsTitle} />
+      </h3>
+      <StatsRow stats={stats} />
     </div>
   );
 };

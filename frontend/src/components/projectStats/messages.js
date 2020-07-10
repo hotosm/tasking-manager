@@ -21,4 +21,16 @@ export default defineMessages({
     id: 'projects.stats.time_finish_validating',
     defaultMessage: 'Time to finish validating',
   },
+  status: {
+    id: 'project.stats.tasks.tatus',
+    defaultMessage: 'Tasks by status',
+  },
+  tasksToMap: {
+    id: 'project.stats.tasks.needs_mapping',
+    defaultMessage: 'Tasks to map',
+  },
+  tasksToValidate: {
+    id: 'project.stats.tasks.needs_validation',
+    defaultMessage: 'Tasks to validate',
+  },
 });
