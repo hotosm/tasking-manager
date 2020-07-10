@@ -27,7 +27,7 @@ export const TeamSelect = () => {
     fetchLocalJSONAPI('organisations/?omitManagerList=true', token).then((r) =>
       setOrgs(r.organisations),
     );
-    fetchLocalJSONAPI('teams/', token).then((t) => setTeams(t.teams));
+    fetchLocalJSONAPI('teams/?omitMemberList=true', token).then((t) => setTeams(t.teams));
   }, [token]);
 
   const teamRoles = [
