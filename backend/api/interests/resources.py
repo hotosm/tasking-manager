@@ -86,13 +86,6 @@ class InterestsAllAPI(Resource):
             - interests
         produces:
             - application/json
-        parameters:
-            - in: header
-              name: Authorization
-              description: Base64 encoded session token
-              required: true
-              type: string
-              default: Token sessionTokenHere==
         responses:
             200:
                 description: List of interests
