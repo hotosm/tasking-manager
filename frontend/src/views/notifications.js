@@ -97,7 +97,6 @@ export const NotificationDetail = (props) => {
   /* Inside, this loads a NotificationBodyCard */
   return (
     <NotificationBodyModal
-      navigate={props.navigate}
       thisNotificationError={thisNotificationError}
       thisNotificationLoading={thisNotificationLoading}
       thisNotification={thisNotification}

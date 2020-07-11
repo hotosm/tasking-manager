@@ -12,7 +12,7 @@ import { UserAvatar } from '../user/avatar';
 import { DeleteModal } from '../deleteModal';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { navigate } from '@reach/router';
+import { navigate, useLocation } from '@reach/router';
 
 export const rawHtmlNotification = (notificationHtml) => ({
   __html: DOMPurify.sanitize(notificationHtml),
@@ -65,12 +65,13 @@ export function NotificationCard({
 }: Object) {
   const readStyle = read ? '' : 'bl bw2 br2 b2 b--red ';
   const token = useSelector((state) => state.auth.get('token'));
+  const location = useLocation();
   const setMessageAsRead = (messageId) => {
     fetchLocalJSONAPI(`notifications/${messageId}/`, token).then(() => retryFn());
   };
 
   const replacedSubject = subject.replace('task=', 'search=');
-  const Navigate = () => navigate(`/inbox/message/${messageId}`);
+  const Navigate = () => navigate(`/inbox/message/${messageId}/${location.search}`);
 
   return (
     <article
