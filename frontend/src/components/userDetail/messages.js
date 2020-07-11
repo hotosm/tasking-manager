@@ -68,13 +68,26 @@ export default defineMessages({
     id: 'users.detail.topProjectsMappedTitle',
     defaultMessage: 'Top 5 projects contributed',
   },
+  noTopProjectsData: {
+    id: 'users.detail.topProjectsMapped.error',
+    defaultMessage: 'No projects mapped until now.',
+  },
   topCausesTitle: {
     id: 'users.detail.topCausesTitle',
     defaultMessage: 'Top causes contributed to',
   },
+  noProjectsData: {
+    id: 'users.detail.projects.noData',
+    defaultMessage: 'Information is not available because no projects were mapped until now.',
+  },
   editsTitle: {
     id: 'users.detail.editsTitle',
     defaultMessage: 'Edits by numbers',
+  },
+  noEditsData: {
+    id: 'users.detail.edits.error',
+    defaultMessage:
+      'No data to show yet. OpenStreetMap edits stats are updated with a delay of one hour.',
   },
   topCountriesTitle: {
     id: 'users.detail.topCountriesTitle',

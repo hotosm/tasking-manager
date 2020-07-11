@@ -33,16 +33,22 @@ export const TopCauses = ({ userStats }) => {
 
   return (
     <div className="pb3 ph3 pt2 bg-white blue-dark shadow-4">
-      <h3 className="f4 mt0 fw6 pt3">
+      <h3 className="f4 mv3 fw6">
         <FormattedMessage {...messages.topCausesTitle} />
       </h3>
-      <Doughnut
-        data={data}
-        options={{
-          legend: { position: 'right', labels: { boxWidth: 12 } },
-          tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
-        }}
-      />
+      {userStats.projectsMapped ? (
+        <Doughnut
+          data={data}
+          options={{
+            legend: { position: 'right', labels: { boxWidth: 12 } },
+            tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
+          }}
+        />
+      ) : (
+        <div className="h-100 tc pv5 blue-grey">
+          <FormattedMessage {...messages.noProjectsData} />
+        </div>
+      )}
     </div>
   );
 };
