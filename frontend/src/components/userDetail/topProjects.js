@@ -1,54 +1,8 @@
 import React from 'react';
-import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-
-const ProgressBar = ({ percent }) => {
-  const barHeight = '0.5em';
-
-  return (
-    <div className="w-100 relative mt2">
-      <div
-        style={{ height: barHeight, width: `${percent * 100}%` }}
-        className="bg-red br-pill absolute"
-      ></div>
-    </div>
-  );
-};
-
-export const ListElements = ({ data, valueField, nameField, linkBase, linkField }) => {
-  return (
-    <ol className="pa0 mt1 mb0">
-      {data.map((p, i) => {
-        return (
-          <li key={i} className="w-100 flex pv3">
-            <div className="w-100 mr4">
-              <p className="ma0 f7 b">
-                {linkBase ? (
-                  <Link className="link blue-dark" to={`${linkBase}${p[linkField]}`}>
-                    {p[nameField]}
-                  </Link>
-                ) : (
-                  p[nameField]
-                )}
-              </p>
-              <ProgressBar percent={p.percent} />
-            </div>
-            <div className="w-30 tl self-end">
-              <p className="ma0 f7">
-                <span className="b mr1">{p[valueField]}</span>
-                <span className="blue-grey">
-                  <FormattedMessage {...messages.tasks} />
-                </span>
-              </p>
-            </div>
-          </li>
-        );
-      })}
-    </ol>
-  );
-};
+import { BarListChart } from './barListChart';
 
 export const TopProjects = ({ projects }) => {
   const compare = (a, b) => {
@@ -86,13 +40,19 @@ export const TopProjects = ({ projects }) => {
       <h3 className="f4 mv0 fw6 pt3">
         <FormattedMessage {...messages.topProjectsMappedTitle} />
       </h3>
-      <ListElements
-        data={tasksPercent}
-        valueField={'total'}
-        nameField={'name'}
-        linkBase={'/projects/'}
-        linkField={'id'}
-      />
+      {data.length > 0 ? (
+        <BarListChart
+          data={tasksPercent}
+          valueField={'total'}
+          nameField={'name'}
+          linkBase={'/projects/'}
+          linkField={'id'}
+        />
+      ) : (
+        <div className="h-100 tc pv5 mt3 blue-grey">
+          <FormattedMessage {...messages.noTopProjectsData} />
+        </div>
+      )}
     </div>
   );
 };
