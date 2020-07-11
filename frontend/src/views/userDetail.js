@@ -39,7 +39,9 @@ export const UserDetail = ({ username, withHeader = true }) => {
 
   useEffect(() => {
     if (token && username) {
-      fetchExternalJSONAPI(`${USER_STATS_API_URL}${username}`).then((res) => setOsmStats(res));
+      fetchExternalJSONAPI(`${USER_STATS_API_URL}${username}`)
+        .then((res) => setOsmStats(res))
+        .catch((e) => console.log(e));
     }
   }, [token, username]);
 

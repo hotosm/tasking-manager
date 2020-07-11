@@ -8,7 +8,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import { mapboxLayerDefn } from '../projects/projectsMap';
-import { ListElements } from './topProjects';
+import { BarListChart } from './barListChart';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -27,7 +27,6 @@ const UserCountriesMap = ({ projects }) => {
   };
 
   const [map, setMap] = useState(null);
-
   const mapRef = React.createRef();
 
   useLayoutEffect(() => {
@@ -74,13 +73,19 @@ export const CountriesMapped = ({ projects, userStats }) => {
         <h3 className="f4 mt0 fw6 pt3">
           <FormattedMessage {...messages.topCountriesTitle} />
         </h3>
-        <ListElements
-          data={countriesPercent}
-          valueField={'total'}
-          nameField={'name'}
-          linkBase={'/explore/?location='}
-          linkField={'name'}
-        />
+        {countriesPercent.length > 0 ? (
+          <BarListChart
+            data={countriesPercent}
+            valueField={'total'}
+            nameField={'name'}
+            linkBase={'/explore/?location='}
+            linkField={'name'}
+          />
+        ) : (
+          <div className="h-100 tc pv5 blue-grey">
+            <FormattedMessage {...messages.noProjectsData} />
+          </div>
+        )}
       </div>
       <UserCountriesMap projects={projects} />
     </div>
