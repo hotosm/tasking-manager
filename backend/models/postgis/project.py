@@ -804,7 +804,7 @@ class Project(db.Model):
         ) * project_stats.average_mapping_time
         project_stats.time_to_finish_mapping = time_to_finish_mapping
         project_stats.time_to_finish_validating = (
-            self.total_tasks - self.tasks_validated
+            self.total_tasks - (self.tasks_validated + self.tasks_bad_imagery)
         ) * project_stats.average_validation_time + time_to_finish_mapping
 
         return project_stats
