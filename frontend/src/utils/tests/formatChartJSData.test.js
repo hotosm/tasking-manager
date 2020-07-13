@@ -9,7 +9,12 @@ import { projectContributionsByDay } from '../../network/tests/mockData/contribu
 
 describe('formatChartData', () => {
   let reference = [
-    { label: 'Building', field: 'total_building_count_add', backgroundColor: CHART_COLOURS.red },
+    {
+      label: 'Building',
+      field: 'total_building_count_add',
+      backgroundColor: CHART_COLOURS.red,
+      borderColor: '#000',
+    },
     { label: 'Roads', field: 'total_road_km_add', backgroundColor: CHART_COLOURS.green },
     {
       label: 'Points of interests',
@@ -36,6 +41,7 @@ describe('formatChartData', () => {
             CHART_COLOURS.orange,
             CHART_COLOURS.blue,
           ],
+          borderColor: ['#000', undefined, undefined, undefined],
         },
       ],
       labels: ['Building', 'Roads', 'Points of interests', 'Waterways'],
@@ -97,10 +103,10 @@ describe('formatTimelineTooltip', () => {
     ],
     labels: ['2020-05-19', '2020-06-01', '2020-06-26'],
   };
-  it('returns correct information', () => {
+  it('returns correct information for Mapped tasks', () => {
     expect(formatTimelineTooltip(tooltipItem, data)).toBe('Mapped tasks: 31%');
   });
-  it('returns correct information', () => {
+  it('returns correct information for Validated tasks', () => {
     const tooltipItem2 = {
       xLabel: '2020-06-26',
       yLabel: 18,
@@ -143,7 +149,7 @@ describe('formatTooltip', () => {
   it('returns correct text with 30 percent', () => {
     expect(formatTooltip(tooltipItem, data)).toBe('Roads: 30%');
   });
-  it('returns correct text with 30 percent', () => {
+  it('returns correct text with 42 percent', () => {
     const tooltipItem = {
       xLabel: '',
       yLabel: '',
