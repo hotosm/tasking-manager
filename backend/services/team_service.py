@@ -82,7 +82,7 @@ class TeamService:
                 team_managers = TeamService._get_team_managers(team_id)
                 for member in team_managers:
                     MessageService.send_request_to_join_team(
-                        user.id, user.username, member.user_id, team.name
+                        user.id, user.username, member.user_id, team.name, team_id
                     )
 
     @staticmethod
@@ -91,7 +91,7 @@ class TeamService:
         from_user = UserService.get_user_by_id(from_user_id)
         team = TeamService.get_team_by_id(team_id)
         MessageService.send_invite_to_join_team(
-            from_user_id, from_user.username, to_user.id, team.name
+            from_user_id, from_user.username, to_user.id, team.name, team_id
         )
 
     @staticmethod
@@ -100,7 +100,7 @@ class TeamService:
         to_user_id = UserService.get_user_by_username(username).id
         team = TeamService.get_team_by_id(team_id)
         MessageService.accept_reject_request_to_join_team(
-            from_user_id, from_user.username, to_user_id, team.name, action
+            from_user_id, from_user.username, to_user_id, team.name, team_id, action
         )
 
         is_member = TeamService.is_user_team_member(team_id, to_user_id)
@@ -136,6 +136,7 @@ class TeamService:
                 member.user_id,
                 to_user.username,
                 team.name,
+                team_id,
                 action,
             )
         if action == "accept":
