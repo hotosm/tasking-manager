@@ -12604,10 +12604,10 @@ url@^0.11.0:
     punycode "1.3.2"
     querystring "0.2.0"
 
-use-query-params@^1.1.5:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/use-query-params/-/use-query-params-1.1.5.tgz#43b3362357495d4996f54ae9b5c687279d9ebf03"
-  integrity sha512-rk1NP2MHxpzSB65/wMB2i+P1BHoMovN80nQcOy5MwO+jYMRoDFxwK/iVTYkW+AfUcNlSEm+XhQYp8HUokj85uQ==
+use-query-params@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/use-query-params/-/use-query-params-1.1.6.tgz#3e36cb45f22c4eea90c6cdc604e115af2fe4a950"
+  integrity sha512-zd58jSb0Yb6Io+hg47gXH0z1Zh8gp2CDRCw4ZzwlPBnODBO1CegX2c38Tca+RtZbjJsTtzWA+098uxDtLMEpYA==
   dependencies:
     serialize-query-params "^1.2.1"
 
