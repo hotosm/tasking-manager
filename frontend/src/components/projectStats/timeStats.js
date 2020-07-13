@@ -26,7 +26,7 @@ const StatsRow = ({ stats }) => {
         <div key={n} className="ph2 w-25-l w-50-m w-100 fl">
           <div className="tc pa3 bg-white shadow-4">
             <div className="f2 b red barlow-condensed">
-              {shortEnglishHumanizer(stats[t] * 1000, options).replaceAll(',', '')}
+              {shortEnglishHumanizer(stats[t] * 1000, options).replace(/,/g, '')}
             </div>
             <div className="f6 b blue-grey">
               <FormattedMessage {...messages[t]} />
