@@ -532,6 +532,7 @@ class ProjectService:
         return project.get_project_title(preferred_locale)
 
     @staticmethod
+    @cached(TTLCache(maxsize=1024, ttl=600))
     def get_project_stats(project_id: int) -> ProjectStatsDTO:
         """ Gets the project stats DTO """
         project = ProjectService.get_project_by_id(project_id)
