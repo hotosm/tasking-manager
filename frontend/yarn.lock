@@ -1152,12 +1152,12 @@
   dependencies:
     "@formatjs/intl-utils" "^3.6.0"
 
-"@formatjs/intl-relativetimeformat@^6.0.2":
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-6.0.2.tgz#a9c15a4c5fe1cbe77770a549ba6391d4927b9fa4"
-  integrity sha512-HjNQwA9mqVYLOWm/0Xg+S/VHdCxcqUB6nG1MVGd0yvLaIaHIQCnIx9KnX/ywsHsqGg32W85jU+ELt+dl5LrEMQ==
+"@formatjs/intl-relativetimeformat@^6.0.2", "@formatjs/intl-relativetimeformat@^6.2.1":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-6.2.1.tgz#a817a8895d6042fcc79eaa39e1a42cb3c5718580"
+  integrity sha512-XIVGsDzQSwK5NktzNBjxskhFdM6T1+5IFWKZqzeMxtl2GNcPwATH/2kimVgZtft1NxwbUuSDgjWabUqObPEVaA==
   dependencies:
-    "@formatjs/intl-utils" "^3.6.0"
+    "@formatjs/intl-utils" "^3.8.0"
 
 "@formatjs/intl-unified-numberformat@^3.2.0":
   version "3.3.2"
@@ -1171,10 +1171,10 @@
   resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-2.2.1.tgz#0eeefe92d317acfcd179c14826e719b3b130d82a"
   integrity sha512-WF3oU6l2WqJjN4OWvnjF9AHyQjHpjcfpyuckM7euFeX6ZGRPpPj+ZCqzf41g81MSksf9aZI4fFCZXWTBusgcWA==
 
-"@formatjs/intl-utils@^3.6.0":
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-3.6.0.tgz#25c11a099c01ac9b7b904dda84cb840417893fa3"
-  integrity sha512-KojfGYH3b0HbyN8H+HRHxEYOctC9tOne8jU1MNw7O+g8QyIPK9y0y1cyXlj6FoLsHRi26u9jR1CJg5XrRfArug==
+"@formatjs/intl-utils@^3.6.0", "@formatjs/intl-utils@^3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-3.8.0.tgz#148f5b6fdef6565f16b1e533e2cb2a68803072ef"
+  integrity sha512-ZesVf+Z6Cm0bDzzkl5ihx/spwJCpPmP3iXK1RryCSJQcEENUcLCAjUu7GSPRVpDS2ZWa3RGSImSYH8DA9bDySA==
   dependencies:
     emojis-list "^3.0.0"
 
