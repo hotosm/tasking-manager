@@ -222,6 +222,9 @@ class User(db.Model):
             return  # User has previously mapped this project so return
 
         user = query.one_or_none()
+        # Fix for new mappers.
+        if user.projects_mapped is None:
+            user.projects_mapped = []
         user.projects_mapped.append(project_id)
         db.session.commit()
 
