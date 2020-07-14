@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 
 import { store } from '../../../store';
 import { ConnectedIntl } from '../../../utils/internationalization';
-import { EditsByNumbers } from '../editsByNumbers';
+import EditsByNumbers from '../editsByNumbers';
 
 describe('EditsByNumbers card', () => {
   it('renders a message if the user has not stats yet', () => {

@@ -1,21 +1,34 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 
 import messages from './messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 
-export const EditsByNumbers = ({ osmStats }) => {
+const EditsByNumbers = (props) => {
+  const { osmStats, intl } = props;
   let reference = [
-    { label: 'Building', field: 'total_building_count_add', backgroundColor: CHART_COLOURS.red },
-    { label: 'Roads', field: 'total_road_km_add', backgroundColor: CHART_COLOURS.green },
     {
-      label: 'Points of interests',
+      label: intl.formatMessage(messages.buildings),
+      field: 'total_building_count_add',
+      backgroundColor: CHART_COLOURS.red,
+    },
+    {
+      label: intl.formatMessage(messages.roads),
+      field: 'total_road_km_add',
+      backgroundColor: CHART_COLOURS.green,
+    },
+    {
+      label: intl.formatMessage(messages.pois),
       field: 'total_poi_count_add',
       backgroundColor: CHART_COLOURS.orange,
     },
-    { label: 'Waterways', field: 'total_waterway_count_add', backgroundColor: CHART_COLOURS.blue },
+    {
+      label: intl.formatMessage(messages.waterways),
+      field: 'total_waterway_count_add',
+      backgroundColor: CHART_COLOURS.blue,
+    },
   ];
 
   const data = formatChartData(reference, osmStats);
@@ -41,3 +54,5 @@ export const EditsByNumbers = ({ osmStats }) => {
     </div>
   );
 };
+
+export default injectIntl(EditsByNumbers);

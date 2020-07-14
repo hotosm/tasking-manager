@@ -4,7 +4,7 @@ import ReactTooltip from 'react-tooltip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import messages from './messages';
 
-const ContributionTimeline = props => {
+const ContributionTimeline = (props) => {
   const { intl } = props;
 
   const today = new Date();
@@ -15,7 +15,7 @@ const ContributionTimeline = props => {
     return newDate;
   };
 
-  const countValues = props.userStats.contributionsByDay.map(r => {
+  const countValues = props.userStats.contributionsByDay.map((r) => {
     return r.count;
   });
   const maxValue = Math.max(...countValues);
@@ -30,7 +30,7 @@ const ContributionTimeline = props => {
           <FormattedMessage {...messages.heatmapLegendLess} />
         </span>
         <div className={`dib h1 w1 bg-tan`}></div>
-        {indexes.map(i => {
+        {indexes.map((i) => {
           return <div key={i} className={`dib h1 w1 bg-red o-${i}`}></div>;
         })}
         <span className={legendFontStyle}>
@@ -40,7 +40,7 @@ const ContributionTimeline = props => {
     );
   };
 
-  const getHeatmapClass = v => {
+  const getHeatmapClass = (v) => {
     const rate = v.count / maxValue;
 
     if (0.0 <= rate && rate < 0.25) {
@@ -60,6 +60,30 @@ const ContributionTimeline = props => {
     }
   };
 
+  const monthLabels = [
+    intl.formatMessage(messages.jan),
+    intl.formatMessage(messages.feb),
+    intl.formatMessage(messages.mar),
+    intl.formatMessage(messages.apr),
+    intl.formatMessage(messages.jun),
+    intl.formatMessage(messages.jul),
+    intl.formatMessage(messages.aug),
+    intl.formatMessage(messages.sep),
+    intl.formatMessage(messages.oct),
+    intl.formatMessage(messages.nov),
+    intl.formatMessage(messages.dec),
+  ];
+
+  const weekdayLabels = [
+    intl.formatMessage(messages.sun),
+    intl.formatMessage(messages.mon),
+    intl.formatMessage(messages.tue),
+    intl.formatMessage(messages.wed),
+    intl.formatMessage(messages.thu),
+    intl.formatMessage(messages.fri),
+    intl.formatMessage(messages.sat),
+  ];
+
   return (
     <div className="w-100 cf bg-white pv3 pr3 shadow-4">
       <div className="w-100 fl cf center">
@@ -67,14 +91,16 @@ const ContributionTimeline = props => {
           startDate={shiftDate(today, -365)}
           endDate={today}
           values={props.userStats.contributionsByDay}
-          classForValue={value => {
+          monthLabels={monthLabels}
+          weekdayLabels={weekdayLabels}
+          classForValue={(value) => {
             if (!value) {
               return 'fill-tan';
             }
             return getHeatmapClass(value);
           }}
           showWeekdayLabels={true}
-          tooltipDataAttrs={value => {
+          tooltipDataAttrs={(value) => {
             let val = intl.formatMessage(messages.heatmapNoContribution);
             if (value.count !== null) {
               val = `${value.count} ${

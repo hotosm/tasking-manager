@@ -48,6 +48,94 @@ export default defineMessages({
     id: 'users.detail.you',
     defaultMessage: 'You',
   },
+  roads: {
+    id: 'users.charts.roads',
+    defaultMessage: 'Roads',
+  },
+  buildings: {
+    id: 'users.charts.buildings',
+    defaultMessage: 'Buildings',
+  },
+  pois: {
+    id: 'users.charts.pois',
+    defaultMessage: 'Points of interests',
+  },
+  waterways: {
+    id: 'users.charts.waterways',
+    defaultMessage: 'Waterways',
+  },
+  jan: {
+    id: 'users.calendar.jan',
+    defaultMessage: 'Jan',
+  },
+  feb: {
+    id: 'users.calendar.feb',
+    defaultMessage: 'Feb',
+  },
+  mar: {
+    id: 'users.calendar.mar',
+    defaultMessage: 'Mar',
+  },
+  apr: {
+    id: 'users.calendar.apr',
+    defaultMessage: 'Apr',
+  },
+  jun: {
+    id: 'users.calendar.jun',
+    defaultMessage: 'Jun',
+  },
+  jul: {
+    id: 'users.calendar.jul',
+    defaultMessage: 'Jul',
+  },
+  aug: {
+    id: 'users.calendar.aug',
+    defaultMessage: 'Aug',
+  },
+  sep: {
+    id: 'users.calendar.sep',
+    defaultMessage: 'Sep',
+  },
+  oct: {
+    id: 'users.calendar.oct',
+    defaultMessage: 'Oct',
+  },
+  nov: {
+    id: 'users.calendar.nov',
+    defaultMessage: 'Nov',
+  },
+  dec: {
+    id: 'users.calendar.dec',
+    defaultMessage: 'Dec',
+  },
+  sun: {
+    id: 'users.calendar.sun',
+    defaultMessage: 'Sun',
+  },
+  mon: {
+    id: 'users.calendar.mon',
+    defaultMessage: 'Mon',
+  },
+  tue: {
+    id: 'users.calendar.tue',
+    defaultMessage: 'Tue',
+  },
+  wed: {
+    id: 'users.calendar.wed',
+    defaultMessage: 'Wed',
+  },
+  thu: {
+    id: 'users.calendar.thu',
+    defaultMessage: 'Thu',
+  },
+  fri: {
+    id: 'users.calendar.fri',
+    defaultMessage: 'Fri',
+  },
+  sat: {
+    id: 'users.calendar.sat',
+    defaultMessage: 'Sat',
+  },
   userValidated: {
     id: 'users.detail.tasksValidated',
     defaultMessage: '{user} validated',

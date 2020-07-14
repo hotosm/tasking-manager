@@ -11,7 +11,7 @@ import { UserTeams } from '../components/userDetail/userTeamsOrgs';
 import { CountriesMapped } from '../components/userDetail/countriesMapped';
 import { TopCauses } from '../components/userDetail/topCauses';
 import { TopProjects } from '../components/userDetail/topProjects';
-import { EditsByNumbers } from '../components/userDetail/editsByNumbers';
+import EditsByNumbers from '../components/userDetail/editsByNumbers';
 import ContributionTimeline from '../components/userDetail/contributionTimeline';
 import { NotFound } from './notFound';
 import { USER_STATS_API_URL } from '../config';
