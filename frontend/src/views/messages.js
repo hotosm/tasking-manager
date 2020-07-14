@@ -513,9 +513,21 @@ export default defineMessages({
     id: 'pages.edit_project.buttons.save',
     defaultMessage: 'Save',
   },
-  goToProjectPage: {
-    id: 'pages.edit_project.buttons.go_to_project',
-    defaultMessage: 'Go to project page',
+  accessProject: {
+    id: 'pages.edit_project.buttons.access_project',
+    defaultMessage: 'Access project',
+  },
+  projectPage: {
+    id: 'pages.edit_project.buttons.project_page',
+    defaultMessage: 'Project page',
+  },
+  tasksPage: {
+    id: 'pages.edit_project.buttons.task_selection_page',
+    defaultMessage: 'Task selection page',
+  },
+  projectStats: {
+    id: 'pages.edit_project.buttons.project_stats',
+    defaultMessage: 'Project statistics',
   },
   updateSuccess: {
     id: 'pages.edit_project.actions.update.success',
