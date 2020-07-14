@@ -5,6 +5,8 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { useFetch } from '../../hooks/UseFetch';
 import { shortEnglishHumanizer } from '../userDetail/elementsMapped';
+import { StatsCardContent } from '../statsCardContent';
+import { MappedIcon, ValidatedIcon } from '../svgIcons';
 
 const StatsRow = ({ stats }) => {
   const fields = [
@@ -24,12 +26,20 @@ const StatsRow = ({ stats }) => {
     <div className="cf center">
       {fields.map((t, n) => (
         <div key={n} className="ph2 w-25-l w-50-m w-100 fl">
-          <div className="tc pa3 bg-white shadow-4">
-            <div className="f2 b red barlow-condensed">
-              {shortEnglishHumanizer(stats[t] * 1000, options).replace(/,/g, '')}
+          <div className="cf pa3 bg-white shadow-4">
+            <div className="w-30 fl red">
+              {t.indexOf('Mapping') !== -1 ? (
+                <MappedIcon className="v-mid w-50-ns w-25" />
+              ) : (
+                <ValidatedIcon className="v-mid w-50-ns w-25" />
+              )}
             </div>
-            <div className="f6 b blue-grey">
-              <FormattedMessage {...messages[t]} />
+            <div className="w-70 fl">
+              <StatsCardContent
+                className="tc"
+                value={shortEnglishHumanizer(stats[t] * 1000, options).replace(/,/g, '')}
+                label={<FormattedMessage {...messages[t]} />}
+              />
             </div>
           </div>
         </div>
