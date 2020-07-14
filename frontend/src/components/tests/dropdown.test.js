@@ -5,7 +5,7 @@ import { CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { CheckIcon } from '../svgIcons';
 
-export const createTestDropdown = options => {
+export const createTestDropdown = (options) => {
   const testElement = TestRenderer.create(
     <Dropdown
       value={'English'}
@@ -17,12 +17,12 @@ export const createTestDropdown = options => {
   return testElement.root;
 };
 
-it('dropdown svg icon exists and height is 15px', () => {
+test('dropdown svg icon exists and height is 15px', () => {
   let elementInstance = createTestDropdown([{ label: 'English' }, { label: 'Português' }]);
   expect(elementInstance.findByType('svg').props.height).toBe('15px');
 });
 
-it('dropdown-content is not rendered before the user clicks on the button', () => {
+test('dropdown-content is not rendered before the user clicks on the button', () => {
   let elementInstance = createTestDropdown([{ label: 'English' }, { label: 'Português' }]);
   expect(elementInstance.findByType('div').props.className).toBe('dib pointer relative');
   expect(() =>
@@ -36,7 +36,7 @@ it('dropdown-content is not rendered before the user clicks on the button', () =
   );
 });
 
-it('dropdown-content show/hide with clicks', () => {
+test('dropdown-content show/hide with clicks', () => {
   let elementInstance = createTestDropdown([{ label: 'English' }, { label: 'Português' }]);
   // CheckIcon is not present because dropdown-content is not rendered
   expect(() => elementInstance.findByType(CheckIcon)).toThrow(
@@ -63,7 +63,7 @@ it('dropdown-content show/hide with clicks', () => {
   );
 });
 
-it('dropdown-content disappear after click on option', () => {
+test('dropdown-content disappear after click on option', () => {
   const elementInstance = createTestDropdown([{ label: 'English' }, { label: 'Portuguese (pt)' }]);
   elementInstance.findByType(CustomButton).props.onClick();
   elementInstance
@@ -81,7 +81,7 @@ it('dropdown-content disappear after click on option', () => {
   );
 });
 
-it('dropdown behaviour with href props', () => {
+test('dropdown behaviour with href props', () => {
   const elementInstance = createTestDropdown([
     { label: 'A', href: 'http://a.co' },
     { label: 'B', href: 'http://b.co' },
@@ -111,7 +111,7 @@ it('dropdown behaviour with href props', () => {
   ).toBe('http://a.co');
 });
 
-it('dropdown behaviour with multi enabled', () => {
+test('dropdown behaviour with multi enabled', () => {
   const testElement = TestRenderer.create(
     <Dropdown
       value={'A'}
@@ -141,7 +141,7 @@ it('dropdown behaviour with multi enabled', () => {
   ).toBe('input');
 });
 
-it('dropdown with toTop enabled should have bottom-3 class', () => {
+test('dropdown with toTop enabled should have bottom-3 class', () => {
   const testElement = TestRenderer.create(
     <Dropdown
       value={'A'}
@@ -162,7 +162,7 @@ it('dropdown with toTop enabled should have bottom-3 class', () => {
   ).toBe('div');
 });
 
-it('dropdown with more than 9 options has "h5 overflow-y-scroll" classes', () => {
+test('dropdown with more than 9 options has "h5 overflow-y-scroll" classes', () => {
   const twelveOptions = [
     { label: 'A' },
     { label: 'B' },

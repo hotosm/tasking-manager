@@ -255,6 +255,10 @@ export default defineMessages({
     id: 'projects.data.download.taskGrid',
     defaultMessage: 'Download Tasks Grid',
   },
+  moreStats: {
+    id: 'projects.link.stats',
+    defaultMessage: 'More statistics',
+  },
   shareMessage: {
     id: 'project.share.twitter',
     defaultMessage: 'Contribute mapping the project #{id} on {site}',

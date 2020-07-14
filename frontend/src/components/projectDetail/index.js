@@ -15,6 +15,7 @@ import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { ProjectDetailFooter } from './footer';
 import { QuestionsAndComments } from './questionsAndComments';
 import { PermissionBox } from './permissionBox';
+import { CustomButton } from '../button';
 import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
@@ -299,15 +300,22 @@ export const ProjectDetail = (props) => {
           style={{ width: 150, height: 30 }}
           ready={typeof props.project === 'object'}
         >
-          <OSMChaButton
-            project={props.project}
-            className="bg-white blue-dark ba b--grey-light pa3"
-          />
+          <Link to={`/projects/${props.project.projectId}/stats`} className="link pr2">
+            <CustomButton className="bg-red white bn pa3">
+              <FormattedMessage {...messages.moreStats} />
+            </CustomButton>
+          </Link>
+          <span className="ph2">
+            <OSMChaButton
+              project={props.project}
+              className="bg-white blue-dark ba b--grey-light pa3"
+            />
+          </span>
           {userDetails && userDetails.isExpert ? (
             <>
               <DownloadAOIButton
                 projectId={props.project.projectId}
-                className="bg-white blue-dark ba b--grey-light pa3 mh3"
+                className="bg-white blue-dark ba b--grey-light pa3"
               />
               <DownloadTaskGridButton
                 projectId={props.project.projectId}
