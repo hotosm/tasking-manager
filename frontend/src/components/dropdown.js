@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@reach/router';
 import onClickOutside from 'react-click-outside';
 
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
@@ -69,16 +70,23 @@ class DropdownContent extends React.PureComponent {
               />
             )}
             {i.href ? (
-              <a
-                target={'_blank'}
-                href={i.href}
-                onClick={this.props.toggleDropdown}
-                rel="noopener noreferrer"
-                className="link blue-grey"
-              >
-                {i.label}
-                {this.isActive(i) && <CheckIcon className="red pl4" />}
-              </a>
+              i.internalLink ? (
+                <Link to={i.href} className="link blue-grey">
+                  {i.label}
+                  {this.isActive(i) && <CheckIcon className="red pl4" />}
+                </Link>
+              ) : (
+                <a
+                  target={'_blank'}
+                  href={i.href}
+                  onClick={this.props.toggleDropdown}
+                  rel="noopener noreferrer"
+                  className="link blue-grey"
+                >
+                  {i.label}
+                  {this.isActive(i) && <CheckIcon className="red pl4" />}
+                </a>
+              )
             ) : (
               <span onClick={this.props.toggleDropdown}>
                 {i.label}
@@ -91,7 +99,7 @@ class DropdownContent extends React.PureComponent {
             )}
             {this.props.deletable && (
               <span
-                onClick={e => {
+                onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   this.props.toggleDropdown();
@@ -121,6 +129,7 @@ export class _Dropdown extends React.PureComponent {
     deletable?: (value: string) => any,
     multi: boolean,
     toTop: boolean,
+    internalLink: boolean,
   };
 
   state = {
@@ -147,7 +156,7 @@ export class _Dropdown extends React.PureComponent {
   };
   getActiveOrDisplay() {
     const activeItems = this.props.options.filter(
-      item => item.label === this.props.value || item.value === this.props.value,
+      (item) => item.label === this.props.value || item.value === this.props.value,
     );
     return activeItems.length === 0 || activeItems.length > 1
       ? this.props.display
