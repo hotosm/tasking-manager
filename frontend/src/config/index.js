@@ -3,9 +3,12 @@ export const API_VERSION = process.env.REACT_APP_API_VERSION || 'v2';
 export const API_URL = process.env.REACT_APP_API_URL
   ? new URL('/api/' + API_VERSION + '/', process.env.REACT_APP_API_URL)
   : 'http://127.0.0.1:5000/api/' + API_VERSION + '/';
-export const EDITS_API_URL =
-  process.env.REACT_APP_EDITS_API_URL ||
-  'https://osm-stats-production-api.azurewebsites.net/stats/hotosm';
+export const HOMEPAGE_STATS_API_URL =
+  process.env.REACT_APP_HOMEPAGE_STATS_API_URL ||
+  'https://osmstats-api.hotosm.org/wildcard/?key=hotosm-project-*';
+export const USER_STATS_API_URL =
+  process.env.REACT_APP_USER_STATS_API_URL ||
+  'https://osm-stats-production-api.azurewebsites.net/users/';
 
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
@@ -47,6 +50,13 @@ export const TASK_COLOURS = {
   INVALIDATED: '#fceca4',
   BADIMAGERY: '#d8dae4',
   PRIORITY_AREAS: '#efd1d1',
+};
+
+export const CHART_COLOURS = {
+  red: '#d73f3f',
+  green: '#3e9c67',
+  blue: '#1757c4',
+  orange: '#f09733',
 };
 
 const fallbackRasterStyle = {

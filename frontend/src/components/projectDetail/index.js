@@ -6,54 +6,23 @@ import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-
-import ProjectProgressBar from '../projectCard/projectProgressBar';
-import DueDateBox from '../projectCard/dueDateBox';
-
-import { MappingLevelMessage } from '../mappingLevel';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
-
 import { TasksMap } from '../taskSelection/map.js';
 import { ProjectHeader } from './header';
 import { DownloadAOIButton, DownloadTaskGridButton } from './downloadButtons';
-import { MappingTypes } from '../mappingTypes';
-import { Imagery } from '../taskSelection/imagery';
 import { TeamsBoxList } from '../teamsAndOrgs/teams';
-
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { ProjectDetailFooter } from './footer';
-import { BigProjectTeaser } from './bigProjectTeaser';
 import { QuestionsAndComments } from './questionsAndComments';
 import { PermissionBox } from './permissionBox';
+import { CustomButton } from '../button';
+import { ProjectInfoPanel } from './infoPanel';
 import { OSMChaButton } from './osmchaButton';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
-import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 
 /* lazy imports must be last import */
-const TaskLineGraphViz = React.lazy(() => import('./taskLineGraphViz'));
-
-const ProjectDetailTypeBar = (props) => {
-  const titleClasses = 'db ttu f6 blue-light mb2';
-  return (
-    <div className="cf">
-      <div className="w-50-ns w-70 fl">
-        <h3 className={titleClasses}>
-          <FormattedMessage {...messages.typesOfMapping} />
-        </h3>
-        <div className="db fl pt1">
-          <MappingTypes types={props.mappingTypes} />
-        </div>
-      </div>
-      <div className="w-50-ns w-30 fl">
-        <h3 className={titleClasses}>
-          <FormattedMessage {...messages.imagery} />
-        </h3>
-        <Imagery value={props.imagery} />
-      </div>
-    </div>
-  );
-};
+const ProjectTimeline = React.lazy(() => import('./timeline'));
 
 const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
@@ -106,9 +75,6 @@ const ProjectDetailMap = (props) => {
 };
 
 export const ProjectDetailLeft = ({ project, contributors, className, type }: Object) => {
-  const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(
-    project.tasks,
-  );
   const htmlShortDescription =
     project.projectInfo && htmlFromMarkdown(project.projectInfo.shortDescription);
 
@@ -122,7 +88,7 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
           ready={typeof project.projectId === 'number'}
         >
           <ProjectHeader project={project} showEditLink={true} />
-          <section className="lh-title h-100 overflow-x-scroll">
+          <section className="lh-title h-100-ns h5 overflow-x-scroll">
             <div className="pr2 markdown-content" dangerouslySetInnerHTML={htmlShortDescription} />
             <div>
               <a href="#description" className="link base-font bg-white f6 bn pn red pointer">
@@ -136,45 +102,15 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
       </div>
 
       <div
-        className="cf ph4 pb3 w-100 h-25 z-2 absolute bottom-0 left-0 bg-white"
+        className="cf ph4-l ph2 pb3 w-100 h-25 z-2 absolute bottom-0 left-0 bg-white"
         style={{ minHeight: '10rem' }}
       >
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          rows={3}
-          delay={500}
-          ready={typeof project.projectId === 'number'}
-        >
-          <ProjectDetailTypeBar
-            type={type}
-            mappingTypes={project.mappingTypes || []}
-            imagery={project.imagery}
-            editors={project.mappingEditors}
-          />
-          <ReactPlaceholder rows={1} ready={typeof contributors.length === 'number'}>
-            <BigProjectTeaser
-              className="pt3"
-              totalContributors={contributors.length}
-              lastUpdated={project.lastUpdated}
-              littleFont="f5"
-              bigFont="f4"
-            />
-          </ReactPlaceholder>
-          <ProjectProgressBar
-            className="pb2 bg-white"
-            percentMapped={percentMapped}
-            percentValidated={percentValidated}
-            percentBadImagery={percentBadImagery}
-          />
-          <div className="cf pb1 bg-white">
-            <MappingLevelMessage
-              level={project.mapperLevel}
-              className="tl f5 mt1 ttc fw5 blue-dark"
-            />
-            <DueDateBox dueDate={project.dueDate} />
-          </div>
-          <DueDateBox />
-        </ReactPlaceholder>
+        <ProjectInfoPanel
+          project={project}
+          tasks={project.tasks}
+          contributors={contributors}
+          type={type}
+        />
       </div>
     </div>
   );
@@ -213,7 +149,7 @@ export const ProjectDetail = (props) => {
               contributors.hasOwnProperty('userContributions') ? contributors.userContributions : []
             }
             type="detail"
-            className="w-100 w-60-l fl ph4 pv3 bg-white blue-dark vh-minus-200-ns relative"
+            className="w-100 w-60-l fl ph4-l ph2 pv3 bg-white blue-dark vh-minus-200-ns relative"
           />
           <div className="w-100 w-40-l vh-minus-200-ns fl">
             <ReactPlaceholder
@@ -344,15 +280,17 @@ export const ProjectDetail = (props) => {
       <h3 className={`${h2Classes}`}>
         <FormattedMessage {...messages.contributionsTimeline} />
       </h3>
-      <div className="mb5 ph4">
+      <div className="mb5 ph4 w-100 w-60-l">
         <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
           <ReactPlaceholder
             showLoadingAnimation={true}
             rows={3}
             delay={500}
-            ready={typeof visualData === 'object'}
+            ready={typeof visualData === 'object' && visualData.stats !== undefined}
           >
-            <TaskLineGraphViz percentDoneVisData={visualData} />
+            <div className="pt2 pb4">
+              <ProjectTimeline tasksByDay={visualData.stats} />
+            </div>
           </ReactPlaceholder>
         </React.Suspense>
         <ReactPlaceholder
@@ -362,15 +300,22 @@ export const ProjectDetail = (props) => {
           style={{ width: 150, height: 30 }}
           ready={typeof props.project === 'object'}
         >
-          <OSMChaButton
-            project={props.project}
-            className="bg-white blue-dark ba b--grey-light pa3"
-          />
+          <Link to={`/projects/${props.project.projectId}/stats`} className="link pr2">
+            <CustomButton className="bg-red white bn pa3">
+              <FormattedMessage {...messages.moreStats} />
+            </CustomButton>
+          </Link>
+          <span className="ph2">
+            <OSMChaButton
+              project={props.project}
+              className="bg-white blue-dark ba b--grey-light pa3"
+            />
+          </span>
           {userDetails && userDetails.isExpert ? (
             <>
               <DownloadAOIButton
                 projectId={props.project.projectId}
-                className="bg-white blue-dark ba b--grey-light pa3 mh3"
+                className="bg-white blue-dark ba b--grey-light pa3"
               />
               <DownloadTaskGridButton
                 projectId={props.project.projectId}

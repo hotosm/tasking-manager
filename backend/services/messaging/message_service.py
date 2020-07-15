@@ -215,33 +215,59 @@ class MessageService:
             MessageService._push_messages(messages)
 
     @staticmethod
-    def send_request_to_join_team(
-        from_user: int, from_username: str, to_user: int, team_name: str
-    ) -> Message:
-
+    def get_user_link(username: str):
         base_url = current_app.config["APP_BASE_URL"]
+        return f'<a href="{base_url}/users/{username}">{username}</a>'
+
+    @staticmethod
+    def get_team_link(team_name: str, team_id: int, management: bool):
+        base_url = current_app.config["APP_BASE_URL"]
+        if management is True:
+            return f'<a href="{base_url}/manage/teams/{team_id}/">{team_name}</a>'
+        else:
+            return f'<a href="{base_url}/teams/{team_id}/membership/">{team_name}</a>'
+
+    @staticmethod
+    def send_request_to_join_team(
+        from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
+    ) -> Message:
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
-        message.subject = "Request to join team"
-        message.message = f'<a href="{base_url}/users/{from_username}">{from_username}\
-            </a> has requested to join the {team_name} team'
+        message.subject = "{} requested to join {}".format(
+            MessageService.get_user_link(from_username),
+            MessageService.get_team_link(team_name, team_id, True),
+        )
+        message.message = "{} has requested to join the {} team.\
+            Access the team management page to accept or reject that request.".format(
+            MessageService.get_user_link(from_username),
+            MessageService.get_team_link(team_name, team_id, True),
+        )
         message.add_message()
         message.save()
 
     @staticmethod
     def accept_reject_request_to_join_team(
-        from_user: int, from_username: str, to_user: int, team_name: str, response: str
+        from_user: int,
+        from_username: str,
+        to_user: int,
+        team_name: str,
+        team_id: int,
+        response: str,
     ) -> Message:
-        base_url = current_app.config["APP_BASE_URL"]
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
-        message.subject = "Request to join team"
-        message.message = f'<a href="{base_url}/users/{from_username}">{from_username}\
-            </a> has {response}ed your request to join the {team_name} team'
+        message.subject = "Request to join {} was {}ed".format(
+            MessageService.get_team_link(team_name, team_id, False), response
+        )
+        message.message = "{} has {}ed your request to join the {} team.".format(
+            MessageService.get_user_link(from_username),
+            response,
+            MessageService.get_team_link(team_name, team_id, False),
+        )
         message.add_message()
         message.save()
 
@@ -252,31 +278,44 @@ class MessageService:
         to_user: int,
         sending_member: str,
         team_name: str,
+        team_id: int,
         response: str,
     ) -> Message:
-        base_url = current_app.config["APP_BASE_URL"]
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
-        message.subject = "Request to join team"
-        message.message = f'<a href="{base_url}/users/{from_username}">{from_username}\
-            </a> has {response}ed {sending_member}\'s invitation to join the {team_name} team'
+        message.subject = "{} {}ed to join {}".format(
+            MessageService.get_user_link(from_username),
+            response,
+            MessageService.get_team_link(team_name, team_id, True),
+        )
+        message.message = "{} has {}ed {}'s invitation to join the {} team.".format(
+            MessageService.get_user_link(from_username),
+            response,
+            sending_member,
+            MessageService.get_team_link(team_name, team_id, True),
+        )
         message.add_message()
         message.save()
 
     @staticmethod
     def send_invite_to_join_team(
-        from_user: int, from_username: str, to_user: int, team_name: str
+        from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
     ) -> Message:
-        base_url = current_app.config["APP_BASE_URL"]
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
-        message.subject = "Invitation to join the team"
-        message.message = f'<a href="{base_url}/users/{from_username}">{from_username}\
-            </a> has invited you to join the {team_name} team'
+        message.subject = "Invitation to join {}".format(
+            MessageService.get_team_link(team_name, team_id, False)
+        )
+        message.message = "{} has invited you to join the {} team.\
+            Access the {}'s page to accept or reject that invitation.".format(
+            MessageService.get_user_link(from_username),
+            MessageService.get_team_link(team_name, team_id, False),
+            MessageService.get_team_link(team_name, team_id, False),
+        )
         message.add_message()
         message.save()
 

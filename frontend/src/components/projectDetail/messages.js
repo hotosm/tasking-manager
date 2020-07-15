@@ -219,18 +219,6 @@ export default defineMessages({
     id: 'project.detail.sections.contributions.timelineError',
     defaultMessage: 'A timeline is going to be available after the first task has been mapped.',
   },
-  date: {
-    id: 'project.detail.visualisation.date',
-    defaultMessage: 'Date',
-  },
-  validated: {
-    id: 'project.detail.visualisation.validated',
-    defaultMessage: 'Validated',
-  },
-  mapped: {
-    id: 'project.detail.visualisation.mapped',
-    defaultMessage: 'Mapped',
-  },
   status_DRAFT: {
     id: 'project.status.draft',
     defaultMessage: 'Draft',
@@ -266,6 +254,10 @@ export default defineMessages({
   downloadTaskGrid: {
     id: 'projects.data.download.taskGrid',
     defaultMessage: 'Download Tasks Grid',
+  },
+  moreStats: {
+    id: 'projects.link.stats',
+    defaultMessage: 'More statistics',
   },
   shareMessage: {
     id: 'project.share.twitter',

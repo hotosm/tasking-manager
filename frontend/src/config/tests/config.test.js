@@ -7,8 +7,11 @@ it('exports API_URL', () => {
 it('exports API_VERSION', () => {
   expect(['object', 'string']).toContain(typeof config.API_VERSION);
 });
-it('exports EDITS_API_URL', () => {
-  expect(typeof config.EDITS_API_URL).toBe('string');
+it('exports HOMEPAGE_STATS_API_URL', () => {
+  expect(typeof config.HOMEPAGE_STATS_API_URL).toBe('string');
+});
+it('exports USER_STATS_API_URL', () => {
+  expect(typeof config.USER_STATS_API_URL).toBe('string');
 });
 it('exports ORG_URL', () => {
   expect(typeof config.ORG_URL).toBe('string');
@@ -63,6 +66,14 @@ it('exports ADVANCED_LEVEL_COUNT', () => {
 });
 it('exports MAX_FILESIZE', () => {
   expect(typeof config.MAX_FILESIZE).toBe('number');
+});
+it('exports TASK_COLOURS', () => {
+  expect(typeof config.TASK_COLOURS).toBe('object');
+  expect(typeof config.TASK_COLOURS.READY).toBe('string');
+});
+it('exports CHART_COLOURS', () => {
+  expect(typeof config.CHART_COLOURS).toBe('object');
+  expect(typeof config.CHART_COLOURS.red).toBe('string');
 });
 it('exports MAP_STYLE and type is object or string', () => {
   expect(config.MAP_STYLE).toBeTruthy();

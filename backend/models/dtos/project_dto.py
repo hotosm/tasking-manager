@@ -572,6 +572,8 @@ class ProjectStatsDTO(Model):
     percent_validated = IntType(serialized_name="percentValidated")
     percent_bad_imagery = IntType(serialized_name="percentBadImagery")
     aoi_centroid = BaseType(serialized_name="aoiCentroid")
+    time_to_finish_mapping = IntType(serialized_name="timeToFinishMapping")
+    time_to_finish_validating = IntType(serialized_name="timeToFinishValidating")
 
 
 class ProjectUserStatsDTO(Model):

@@ -1,6 +1,7 @@
 import geojson
 from backend import db
-from sqlalchemy import desc, text
+from sqlalchemy import desc, func
+from geoalchemy2 import functions
 from backend.models.dtos.user_dto import (
     UserDTO,
     UserMappedProjectsDTO,
@@ -143,18 +144,16 @@ class User(db.Model):
         # Add filter to query as required
         if query.mapping_level:
             mapping_levels = query.mapping_level.split(",")
-            mapping_level_array = []
-            for mapping_level in mapping_levels:
-                mapping_level_array.append(MappingLevel[mapping_level].value)
+            mapping_level_array = [
+                MappingLevel[mapping_level].value for mapping_level in mapping_levels
+            ]
             base = base.filter(User.mapping_level.in_(mapping_level_array))
         if query.username:
             base = base.filter(User.username.ilike(query.username.lower() + "%"))
 
         if query.role:
             roles = query.role.split(",")
-            role_array = []
-            for role in roles:
-                role_array.append(UserRole[role].value)
+            role_array = [UserRole[role].value for role in roles]
             base = base.filter(User.role.in_(role_array))
 
         results = base.order_by(User.username).paginate(query.page, 20, True)
@@ -215,17 +214,19 @@ class User(db.Model):
     @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):
         """ Adds projects to mapped_projects if it doesn't exist """
-        sql = "select * from users where id = :user_id and projects_mapped @> '{{:project_id}}'"
-        result = db.engine.execute(text(sql), user_id=user_id, project_id=project_id)
-
-        if result.rowcount > 0:
+        query = User.query.filter_by(id=user_id)
+        result = query.filter(
+            User.projects_mapped.op("@>")("{}".format("{" + str(project_id) + "}"))
+        ).count()
+        if result > 0:
             return  # User has previously mapped this project so return
 
-        sql = """update users
-                    set projects_mapped = array_append(projects_mapped, :project_id)
-                  where id = :user_id"""
-
-        db.engine.execute(text(sql), project_id=project_id, user_id=user_id)
+        user = query.one_or_none()
+        # Fix for new mappers.
+        if user.projects_mapped is None:
+            user.projects_mapped = []
+        user.projects_mapped.append(project_id)
+        db.session.commit()
 
     @staticmethod
     def get_mapped_projects(
@@ -233,36 +234,63 @@ class User(db.Model):
     ) -> UserMappedProjectsDTO:
         """ Get all projects a user has mapped on """
 
-        # This query looks scary, but we're really just creating an outer join between the query that gets the
-        # counts of all mapped tasks and the query that gets counts of all validated tasks.  This is necessary to
-        # handle cases where users have only validated tasks on a project, or only mapped on a project.
-        sql = """SELECT p.id,
-                        p.status,
-                        p.default_locale,
-                        c.mapped,
-                        c.validated,
-                        st_asgeojson(p.centroid)
-                   FROM projects p,
-                        (SELECT coalesce(v.project_id, m.project_id) project_id,
-                                coalesce(v.validated, 0) validated,
-                                coalesce(m.mapped, 0) mapped
-                          FROM (SELECT t.project_id,
-                                       count (t.validated_by) validated
-                                  FROM tasks t
-                                 WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = :user_id)
-                                   AND t.validated_by = :user_id
-                                 GROUP BY t.project_id, t.validated_by) v
-                         FULL OUTER JOIN
-                        (SELECT t.project_id,
-                                count(t.mapped_by) mapped
-                           FROM tasks t
-                          WHERE t.project_id IN (SELECT unnest(projects_mapped) FROM users WHERE id = :user_id)
-                            AND t.mapped_by = :user_id
-                          GROUP BY t.project_id, t.mapped_by) m
-                         ON v.project_id = m.project_id) c
-                   WHERE p.id = c.project_id ORDER BY p.id DESC"""
+        from backend.models.postgis.task import Task
+        from backend.models.postgis.project import Project
 
-        results = db.engine.execute(text(sql), user_id=user_id)
+        query = db.session.query(func.unnest(User.projects_mapped)).filter_by(
+            id=user_id
+        )
+        query_validated = (
+            db.session.query(
+                Task.project_id.label("project_id"),
+                func.count(Task.validated_by).label("validated"),
+            )
+            .filter(Task.project_id.in_(query))
+            .filter_by(validated_by=user_id)
+            .group_by(Task.project_id, Task.validated_by)
+            .subquery()
+        )
+
+        query_mapped = (
+            db.session.query(
+                Task.project_id.label("project_id"),
+                func.count(Task.mapped_by).label("mapped"),
+            )
+            .filter(Task.project_id.in_(query))
+            .filter_by(mapped_by=user_id)
+            .group_by(Task.project_id, Task.mapped_by)
+            .subquery()
+        )
+
+        query_union = (
+            db.session.query(
+                func.coalesce(
+                    query_validated.c.project_id, query_mapped.c.project_id
+                ).label("project_id"),
+                func.coalesce(query_validated.c.validated, 0).label("validated"),
+                func.coalesce(query_mapped.c.mapped, 0).label("mapped"),
+            )
+            .join(
+                query_mapped,
+                query_validated.c.project_id == query_mapped.c.project_id,
+                full=True,
+            )
+            .subquery()
+        )
+
+        results = (
+            db.session.query(
+                Project.id,
+                Project.status,
+                Project.default_locale,
+                query_union.c.mapped,
+                query_union.c.validated,
+                functions.ST_AsGeoJSON(Project.centroid),
+            )
+            .filter(Project.id == query_union.c.project_id)
+            .order_by(desc(Project.id))
+            .all()
+        )
 
         mapped_projects_dto = UserMappedProjectsDTO()
         for row in results:

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@reach/router';
+import { Link, useLocation, navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 import { selectUnit } from '@formatjs/intl-utils';
@@ -16,6 +16,8 @@ import { CloseIcon } from '../../components/svgIcons';
 import { DeleteModal } from '../deleteModal';
 
 export const NotificationBodyModal = (props) => {
+  const location = useLocation();
+
   return (
     <div
       style={{
@@ -24,7 +26,7 @@ export const NotificationBodyModal = (props) => {
         display: 'flex',
         'z-index': '999',
       }}
-      onClick={() => props.navigate('../../')}
+      onClick={() => navigate(`../../${location.search}`)}
       className="fixed top-0 left-0 right-0 bottom-0"
     >
       <div
@@ -47,7 +49,7 @@ export const NotificationBodyModal = (props) => {
       >
         <div className={`di fl tl pa3 mb3 w-100 fw5 bb b--tan`}>
           <FormattedMessage {...messages.message} />
-          <Link className={`fr ml4 blue-dark`} to={`../../`}>
+          <Link className={`fr ml4 blue-dark`} to={`../../${location.search}`}>
             <CloseIcon className={`h1 w1 blue-dark`} />
           </Link>
         </div>

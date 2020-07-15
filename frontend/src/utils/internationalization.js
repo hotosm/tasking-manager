@@ -57,16 +57,11 @@ const translatedMessages = {
 
 /* Safari 12- and IE */
 if (!Intl.PluralRules) {
-  require('@formatjs/intl-pluralrules/polyfill');
-  require('@formatjs/intl-pluralrules/dist/locale-data/pt'); // Add locale data for de
-  require('@formatjs/intl-pluralrules/dist/locale-data/en');
+  require('@formatjs/intl-pluralrules/polyfill-locales');
 }
-
 /* Safari 13- and IE */
 if (!Intl.RelativeTimeFormat) {
-  require('@formatjs/intl-relativetimeformat/polyfill');
-  require('@formatjs/intl-relativetimeformat/dist/locale-data/pt'); // Add locale data for de
-  require('@formatjs/intl-relativetimeformat/dist/locale-data/en');
+  require('@formatjs/intl-relativetimeformat/polyfill-locales');
 }
 
 // commented out the languages that we are not supporting on the first production release of TM4

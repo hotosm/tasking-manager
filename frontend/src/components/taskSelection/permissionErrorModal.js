@@ -32,7 +32,7 @@ export function UserPermissionErrorContent({ project, userLevel, close }: Object
           {project.teams
             .filter((team) => team.role === 'MAPPER')
             .map((team) => (
-              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2" />
+              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2 ba f6 tc" />
             ))}
         </div>
       )}
@@ -41,7 +41,7 @@ export function UserPermissionErrorContent({ project, userLevel, close }: Object
           {project.teams
             .filter((team) => team.role === 'VALIDATOR')
             .map((team) => (
-              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2" />
+              <TeamBox key={team.teamId} team={team} className="dib pv2 ph3 mt2 ba f6 tc" />
             ))}
         </div>
       )}

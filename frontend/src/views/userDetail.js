@@ -7,13 +7,15 @@ import ReactPlaceholder from 'react-placeholder';
 import messages from '../components/userDetail/messages';
 import { HeaderProfile } from '../components/userDetail/headerProfile';
 import { ElementsMapped, TaskStats } from '../components/userDetail/elementsMapped';
+import { UserTeams } from '../components/userDetail/userTeamsOrgs';
 import { CountriesMapped } from '../components/userDetail/countriesMapped';
 import { TopCauses } from '../components/userDetail/topCauses';
 import { TopProjects } from '../components/userDetail/topProjects';
 import { EditsByNumbers } from '../components/userDetail/editsByNumbers';
 import ContributionTimeline from '../components/userDetail/contributionTimeline';
 import { NotFound } from './notFound';
-import { fetchOSMStatsAPI } from '../network/genericJSONRequest';
+import { USER_STATS_API_URL } from '../config';
+import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
@@ -37,7 +39,9 @@ export const UserDetail = ({ username, withHeader = true }) => {
 
   useEffect(() => {
     if (token && username) {
-      fetchOSMStatsAPI(`users/${username}`, token).then((res) => setOsmStats(res));
+      fetchExternalJSONAPI(`${USER_STATS_API_URL}${username}`)
+        .then((res) => setOsmStats(res))
+        .catch((e) => console.log(e));
     }
   }, [token, username]);
 
@@ -45,7 +49,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
     return <Redirect to={'/login'} noThrow />;
   }
 
-  const blockClass = 'w-33-l w-50-m w-100 fl pa2';
+  const blockClass = 'w-third-l w-50-m w-100 fl pa2';
   const titleClass = 'f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mb3';
   return errorDetails ? (
     <NotFound />
@@ -63,7 +67,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
           </ReactPlaceholder>
         </div>
       )}
-      <div className={withHeader ? 'w-100 ph6-l ph4-m ph2 cf pb3' : ''}>
+      <div className={withHeader ? 'w-100 ph4-l ph2 cf pb3' : ''}>
         <div className="mv4">
           <ElementsMapped userStats={userStats} osmStats={osmStats} />
         </div>
@@ -82,10 +86,10 @@ export const UserDetail = ({ username, withHeader = true }) => {
         </div>
         <div className="mv4">
           <h3 className={titleClass}>
-            <FormattedMessage {...messages.statsTitle} />
+            <FormattedMessage {...messages.projectsTitle} />
           </h3>
           <div className="w-100 cf">
-            <div className="w-33-l w-100 fl pa2">
+            <div className="w-third-l w-100 fl pa2">
               <ReactPlaceholder
                 type="rect"
                 showLoadingAnimation={true}
@@ -132,6 +136,21 @@ export const UserDetail = ({ username, withHeader = true }) => {
             <CountriesMapped projects={userProjects} userStats={userStats} />
           </ReactPlaceholder>
         </div>
+        {currentUser.username !== username && (
+          <div className="mv4">
+            <h3 className={titleClass}>
+              <FormattedMessage {...messages.teams} />
+            </h3>
+            <ReactPlaceholder
+              type="rect"
+              showLoadingAnimation={true}
+              style={{ height: '10em' }}
+              ready={!errorStats && !loadingStats}
+            >
+              <UserTeams userId={userDetails.id} />
+            </ReactPlaceholder>
+          </div>
+        )}
       </div>
     </div>
   );

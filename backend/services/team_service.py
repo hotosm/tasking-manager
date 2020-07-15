@@ -82,7 +82,7 @@ class TeamService:
                 team_managers = TeamService._get_team_managers(team_id)
                 for member in team_managers:
                     MessageService.send_request_to_join_team(
-                        user.id, user.username, member.user_id, team.name
+                        user.id, user.username, member.user_id, team.name, team_id
                     )
 
     @staticmethod
@@ -91,7 +91,7 @@ class TeamService:
         from_user = UserService.get_user_by_id(from_user_id)
         team = TeamService.get_team_by_id(team_id)
         MessageService.send_invite_to_join_team(
-            from_user_id, from_user.username, to_user.id, team.name
+            from_user_id, from_user.username, to_user.id, team.name, team_id
         )
 
     @staticmethod
@@ -100,7 +100,7 @@ class TeamService:
         to_user_id = UserService.get_user_by_username(username).id
         team = TeamService.get_team_by_id(team_id)
         MessageService.accept_reject_request_to_join_team(
-            from_user_id, from_user.username, to_user_id, team.name, action
+            from_user_id, from_user.username, to_user_id, team.name, team_id, action
         )
 
         is_member = TeamService.is_user_team_member(team_id, to_user_id)
@@ -136,6 +136,7 @@ class TeamService:
                 member.user_id,
                 to_user.username,
                 team.name,
+                team_id,
                 action,
             )
         if action == "accept":
@@ -252,27 +253,25 @@ class TeamService:
             is_team_manager = False
             is_team_member = False
             for member in team_members:
-                # Skip if members are not included.
+                user = UserService.get_user_by_id(member.user_id)
+                member_function = TeamMemberFunctions(member.function).name
+                is_team_member = True if member.user_id == user_id else False
+                is_team_manager = True if member_function == "MANAGER" else False
+                # Skip if members are not included
                 if omit_members:
                     continue
-                user = UserService.get_user_by_id(member.user_id)
                 member_dto = TeamMembersDTO()
                 member_dto.username = user.username
-                member_dto.function = TeamMemberFunctions(member.function).name
-                if member.user_id == user_id:
-                    is_team_member = True
-                    if member_dto.function == "MANAGER":
-                        is_team_manager = True
+                member_dto.function = member_function
                 member_dto.picture_url = user.picture_url
                 member_dto.active = member.active
-
                 team_dto.members.append(member_dto)
+
             if team_dto.visibility == "PRIVATE" and not is_admin:
                 if is_team_manager or is_team_member:
                     teams_list_dto.teams.append(team_dto)
             else:
                 teams_list_dto.teams.append(team_dto)
-
         return teams_list_dto
 
     @staticmethod

@@ -39,6 +39,7 @@ import { SelectTask } from './views/taskSelection';
 import { MapTask, ValidateTask } from './views/taskAction';
 import { EmailVerification } from './views/verifyEmail';
 import { ProjectEdit } from './views/projectEdit';
+import { ProjectStats } from './views/projectStats';
 import { ContactPage } from './views/contact';
 import { SwaggerView } from './views/swagger';
 import { ContributionsPage, ContributionsPageIndex, UserStats } from './views/contributions';
@@ -75,6 +76,7 @@ let App = (props) => {
                 </ProjectsPage>
                 <ProjectDetailPage path="projects/:id" />
                 <SelectTask path="projects/:id/tasks" />
+                <ProjectStats path="projects/:id/stats" />
                 <MapTask path="projects/:id/map" />
                 <ValidateTask path="projects/:id/validate" />
                 <LearnPage path="learn" />

@@ -16,7 +16,6 @@ from backend.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.license_service import LicenseService
 from backend.services.users.user_service import UserService
-from backend.services.project_search_service import ProjectSearchService
 from backend.services.organisation_service import OrganisationService
 from backend.services.team_service import TeamService
 
@@ -264,7 +263,6 @@ class ProjectAdminService:
         admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO
     ):
         """ Get all projects for provided admin """
-        ProjectSearchService.create_search_query()
         return Project.get_projects_for_admin(admin_id, preferred_locale, search_dto)
 
     @staticmethod

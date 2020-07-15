@@ -16,6 +16,10 @@ export default defineMessages({
     id: 'notFound.lead',
     defaultMessage: 'Check the URL or report this error.',
   },
+  projectTimeline: {
+    id: 'project.stats.timeline',
+    defaultMessage: 'Project timeline',
+  },
   sectionNotAllowed: {
     id: 'management.forbiddenAccess.title',
     defaultMessage: 'You are not allowed to access the management area.',
@@ -181,7 +185,6 @@ export default defineMessages({
     defaultMessage:
       'Every day, a global community works tirelessly behind the scenes to literally put people on the map. They contribute to the online Open Data map of the world. Universal access to geospatial information is heavily changing how people use maps and what they build with them.',
   },
-
   learn: {
     id: 'pages.learn.title',
     defaultMessage: 'Learn',
@@ -510,9 +513,21 @@ export default defineMessages({
     id: 'pages.edit_project.buttons.save',
     defaultMessage: 'Save',
   },
-  goToProjectPage: {
-    id: 'pages.edit_project.buttons.go_to_project',
-    defaultMessage: 'Go to project page',
+  accessProject: {
+    id: 'pages.edit_project.buttons.access_project',
+    defaultMessage: 'Access project',
+  },
+  projectPage: {
+    id: 'pages.edit_project.buttons.project_page',
+    defaultMessage: 'Project page',
+  },
+  tasksPage: {
+    id: 'pages.edit_project.buttons.task_selection_page',
+    defaultMessage: 'Task selection page',
+  },
+  projectStats: {
+    id: 'pages.edit_project.buttons.project_stats',
+    defaultMessage: 'Project statistics',
   },
   updateSuccess: {
     id: 'pages.edit_project.actions.update.success',

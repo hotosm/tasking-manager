@@ -36,7 +36,7 @@ class AnnotationsRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectService.get_project_by_id(project_id)
+            ProjectService.exists(project_id)
         except NotFound as e:
             current_app.logger.error(f"Error validating project: {str(e)}")
             return {"Error": "Project not found"}, 404
@@ -139,9 +139,10 @@ class AnnotationsRestAPI(Resource):
             current_app.logger.error(f"Error validating request: {str(e)}")
 
         try:
-            ProjectService.get_project_by_id(project_id)
+            ProjectService.exists(project_id)
         except NotFound as e:
             current_app.logger.error(f"Error validating project: {str(e)}")
+            return {"Error": "Project not found"}, 404
 
         task_ids = [t["taskId"] for t in annotations["tasks"]]
 

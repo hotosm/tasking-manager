@@ -4,11 +4,12 @@ from typing import Optional
 from cachetools import TTLCache, cached
 
 import geojson
+import datetime
 from flask import current_app
 from geoalchemy2 import Geometry
 import sqlalchemy
 from sqlalchemy.sql.expression import cast, or_
-from sqlalchemy import text, desc, func, Time, orm
+from sqlalchemy import text, desc, func, Time, orm, literal
 from shapely.geometry import shape
 from sqlalchemy.dialects.postgresql import ARRAY
 import requests
@@ -484,6 +485,12 @@ class Project(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    @staticmethod
+    def exists(project_id):
+        query = Project.query.filter(Project.id == project_id).exists()
+
+        return db.session.query(literal(True)).filter(query).scalar()
+
     def is_favorited(self, user_id: int) -> bool:
         user = User.query.get(user_id)
         if user not in self.favorited:
@@ -651,33 +658,18 @@ class Project(db.Model):
         )
         centroid_geojson = db.session.scalar(self.centroid.ST_AsGeoJSON())
         project_stats.aoi_centroid = geojson.loads(centroid_geojson)
-        unique_mappers = (
-            TaskHistory.query.filter(
-                TaskHistory.action == "LOCKED_FOR_MAPPING",
-                TaskHistory.project_id == self.id,
-            )
-            .distinct(TaskHistory.user_id)
-            .count()
-        )
-        unique_validators = (
-            TaskHistory.query.filter(
-                TaskHistory.action == "LOCKED_FOR_VALIDATION",
-                TaskHistory.project_id == self.id,
-            )
-            .distinct(TaskHistory.user_id)
-            .count()
-        )
         project_stats.total_time_spent = 0
         project_stats.total_mapping_time = 0
         project_stats.total_validation_time = 0
         project_stats.average_mapping_time = 0
         project_stats.average_validation_time = 0
 
-        total_mapping_time = (
+        total_mapping_time, total_mapping_tasks = (
             db.session.query(
                 func.sum(
                     cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
-                )
+                ),
+                func.count(TaskHistory.action),
             )
             .filter(
                 or_(
@@ -686,42 +678,119 @@ class Project(db.Model):
                 )
             )
             .filter(TaskHistory.project_id == self.id)
+            .one()
         )
-        for row in total_mapping_time:
-            total_mapping_time = row[0]
-            if total_mapping_time:
-                total_mapping_seconds = total_mapping_time.total_seconds()
-                project_stats.total_mapping_time = total_mapping_seconds
-                project_stats.total_time_spent += project_stats.total_mapping_time
-                if unique_mappers:
-                    average_mapping_time = total_mapping_seconds / unique_mappers
-                    project_stats.average_mapping_time = average_mapping_time
 
-        query = (
-            TaskHistory.query.with_entities(
-                func.date_trunc("minute", TaskHistory.action_date).label("trn"),
-                func.max(TaskHistory.action_text).label("tm"),
+        if total_mapping_tasks > 0:
+            total_mapping_time = total_mapping_time.total_seconds()
+            project_stats.total_mapping_time = total_mapping_time
+            project_stats.average_mapping_time = (
+                total_mapping_time / total_mapping_tasks
+            )
+            project_stats.total_time_spent += total_mapping_time
+
+        total_validation_time, total_validation_tasks = (
+            db.session.query(
+                func.sum(
+                    cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
+                ),
+                func.count(TaskHistory.action),
+            )
+            .filter(
+                or_(
+                    TaskHistory.action == "LOCKED_FOR_VALIDATION",
+                    TaskHistory.action == "AUTO_UNLOCKED_FOR_VALIDATION",
+                )
             )
             .filter(TaskHistory.project_id == self.id)
-            .filter(TaskHistory.action == "LOCKED_FOR_VALIDATION")
-            .group_by("trn")
+            .one()
+        )
+
+        if total_validation_tasks > 0:
+            total_validation_time = total_validation_time.total_seconds()
+            project_stats.total_validation_time = total_validation_time
+            project_stats.average_validation_time = (
+                total_validation_time / total_validation_tasks
+            )
+            project_stats.total_time_spent += total_validation_time
+
+        actions = []
+        if project_stats.average_mapping_time <= 0:
+            actions.append(TaskStatus.LOCKED_FOR_MAPPING.name)
+        if project_stats.average_validation_time <= 0:
+            actions.append(TaskStatus.LOCKED_FOR_VALIDATION.name)
+
+        zoom_levels = []
+        # Check that averages are non-zero.
+        if len(actions) != 0:
+            zoom_levels = (
+                Task.query.with_entities(Task.zoom.distinct())
+                .filter(Task.project_id == self.id)
+                .all()
+            )
+            zoom_levels = [z[0] for z in zoom_levels]
+
+        # Validate project has arbitrary tasks.
+        is_square = True
+        if None in zoom_levels:
+            is_square = False
+        sq = (
+            TaskHistory.query.with_entities(
+                Task.zoom,
+                TaskHistory.action,
+                (
+                    cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
+                ).label("ts"),
+            )
+            .filter(Task.is_square == is_square)
+            .filter(TaskHistory.project_id == Task.project_id)
+            .filter(TaskHistory.task_id == Task.id)
+            .filter(TaskHistory.action.in_(actions))
+        )
+        if is_square is True:
+            sq = sq.filter(Task.zoom.in_(zoom_levels))
+
+        sq = sq.subquery()
+
+        nz = (
+            db.session.query(sq.c.zoom, sq.c.action, sq.c.ts)
+            .filter(sq.c.ts > datetime.time(0))
+            .limit(10000)
             .subquery()
         )
-        total_validation_time = db.session.query(
-            func.sum(cast(func.to_timestamp(query.c.tm, "HH24:MI:SS"), Time))
-        ).all()
 
-        for row in total_validation_time:
-            total_validation_time = row[0]
-            if total_validation_time:
-                total_validation_seconds = total_validation_time.total_seconds()
-                project_stats.total_validation_time = total_validation_seconds
-                project_stats.total_time_spent += project_stats.total_validation_time
-                if unique_validators:
-                    average_validation_time = (
-                        total_validation_seconds / unique_validators
-                    )
-                    project_stats.average_validation_time = average_validation_time
+        if project_stats.average_mapping_time <= 0:
+            mapped_avg = (
+                db.session.query(nz.c.zoom, (func.avg(nz.c.ts)).label("avg"))
+                .filter(nz.c.action == TaskStatus.LOCKED_FOR_MAPPING.name)
+                .group_by(nz.c.zoom)
+                .all()
+            )
+            mapping_time = sum([t.avg.total_seconds() for t in mapped_avg]) / len(
+                mapped_avg
+            )
+            project_stats.average_mapping_time = mapping_time
+
+        if project_stats.average_validation_time <= 0:
+            val_avg = (
+                db.session.query(nz.c.zoom, (func.avg(nz.c.ts)).label("avg"))
+                .filter(nz.c.action == TaskStatus.LOCKED_FOR_VALIDATION.name)
+                .group_by(nz.c.zoom)
+                .all()
+            )
+            validation_time = sum([t.avg.total_seconds() for t in val_avg]) / len(
+                val_avg
+            )
+            project_stats.average_validation_time = validation_time
+
+        time_to_finish_mapping = (
+            self.total_tasks
+            - (self.tasks_mapped + self.tasks_bad_imagery + self.tasks_validated)
+        ) * project_stats.average_mapping_time
+        project_stats.time_to_finish_mapping = time_to_finish_mapping
+        project_stats.time_to_finish_validating = (
+            self.total_tasks - (self.tasks_validated + self.tasks_bad_imagery)
+        ) * project_stats.average_validation_time + time_to_finish_mapping
 
         return project_stats
 

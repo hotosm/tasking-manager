@@ -153,8 +153,8 @@ class TestMappingService(unittest.TestCase):
         test_task = MappingService.unlock_task_after_mapping(self.mapped_task_dto)
 
         # Assert
-        self.assertEqual(TaskAction.COMMENT.name, test_task.task_history[-1].action)
-        self.assertEqual(test_task.task_history[-1].action_text, "Test comment")
+        self.assertEqual(TaskAction.COMMENT.name, test_task.task_history[0].action)
+        self.assertEqual(test_task.task_history[0].action_text, "Test comment")
 
     @patch.object(Task, "get_per_task_instructions")
     @patch.object(StatsService, "update_stats_after_task_state_change")

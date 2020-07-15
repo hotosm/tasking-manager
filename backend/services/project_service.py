@@ -1,6 +1,5 @@
 from cachetools import TTLCache, cached
 from flask import current_app
-from backend import db
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.project_dto import (
     ProjectDTO,
@@ -52,8 +51,10 @@ class ProjectService:
 
     @staticmethod
     def exists(project_id: int) -> bool:
-        query = Project.query.filter_by(id=project_id).exists()
-        return db.session.query(query).scalar()
+        project = Project.exists(project_id)
+        if project is None:
+            raise NotFound()
+        return True
 
     @staticmethod
     def get_project_by_name(project_id: int) -> Project:
@@ -531,6 +532,7 @@ class ProjectService:
         return project.get_project_title(preferred_locale)
 
     @staticmethod
+    @cached(TTLCache(maxsize=1024, ttl=600))
     def get_project_stats(project_id: int) -> ProjectStatsDTO:
         """ Gets the project stats DTO """
         project = ProjectService.get_project_by_id(project_id)

@@ -1,4 +1,4 @@
-export const tasksGeojson = {
+const tasksGeojson = {
   features: [
     {
       geometry: {
@@ -143,7 +143,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 6,
         taskIsSquare: true,
-        taskStatus: 'READY',
+        taskStatus: 'LOCKED_FOR_MAPPING',
         taskX: 39209,
         taskY: 22237,
         taskZoom: 16,
@@ -168,7 +168,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 7,
         taskIsSquare: true,
-        taskStatus: 'READY',
+        taskStatus: 'INVALIDATED',
         taskX: 39209,
         taskY: 22238,
         taskZoom: 16,
@@ -193,7 +193,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 8,
         taskIsSquare: true,
-        taskStatus: 'READY',
+        taskStatus: 'LOCKED_FOR_MAPPING',
         taskX: 39209,
         taskY: 22239,
         taskZoom: 16,
@@ -218,7 +218,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 9,
         taskIsSquare: true,
-        taskStatus: 'READY',
+        taskStatus: 'INVALIDATED',
         taskX: 39210,
         taskY: 22236,
         taskZoom: 16,
@@ -243,7 +243,7 @@ export const tasksGeojson = {
       properties: {
         taskId: 10,
         taskIsSquare: true,
-        taskStatus: 'MAPPED',
+        taskStatus: 'LOCKED_FOR_VALIDATION',
         taskX: 39210,
         taskY: 22237,
         taskZoom: 16,
@@ -403,3 +403,5 @@ export const tasksGeojson = {
   ],
   type: 'FeatureCollection',
 };
+
+export default tasksGeojson;

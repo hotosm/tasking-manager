@@ -81,7 +81,7 @@ def create_app(env=None):
     # Add basic oauth setup
     app.secret_key = app.config[
         "SECRET_KEY"
-    ]  # Required by itsdangeroud, Flask-OAuthlib for creating entropy
+    ]  # Required by itsdangerous, Flask-OAuthlib for creating entropy
     oauth.init_app(app)
 
     return app
