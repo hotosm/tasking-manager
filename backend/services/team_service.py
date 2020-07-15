@@ -249,26 +249,22 @@ class TeamService:
             team_dto.organisation = team.organisation.name
             team_dto.organisation_id = team.organisation.id
             team_dto.members = []
-            team_members = TeamService._get_team_members(team.id)
-            is_team_manager = False
-            is_team_member = False
-            for member in team_members:
-                user = UserService.get_user_by_id(member.user_id)
-                member_function = TeamMemberFunctions(member.function).name
-                is_team_member = True if member.user_id == user_id else False
-                is_team_manager = True if member_function == "MANAGER" else False
-                # Skip if members are not included
-                if omit_members:
-                    continue
-                member_dto = TeamMembersDTO()
-                member_dto.username = user.username
-                member_dto.function = member_function
-                member_dto.picture_url = user.picture_url
-                member_dto.active = member.active
-                team_dto.members.append(member_dto)
+            is_team_member = TeamService.is_user_an_active_team_member(team.id, user_id)
+            # Skip if members are not included
+            if not omit_members:
+                team_members = TeamService._get_team_members(team.id)
+                for member in team_members:
+                    user = UserService.get_user_by_id(member.user_id)
+                    member_function = TeamMemberFunctions(member.function).name
+                    member_dto = TeamMembersDTO()
+                    member_dto.username = user.username
+                    member_dto.function = member_function
+                    member_dto.picture_url = user.picture_url
+                    member_dto.active = member.active
+                    team_dto.members.append(member_dto)
 
             if team_dto.visibility == "PRIVATE" and not is_admin:
-                if is_team_manager or is_team_member:
+                if is_team_member:
                     teams_list_dto.teams.append(team_dto)
             else:
                 teams_list_dto.teams.append(team_dto)
