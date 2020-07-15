@@ -250,13 +250,12 @@ class TeamService:
             team_dto.organisation_id = team.organisation.id
             team_dto.members = []
             team_members = TeamService._get_team_members(team.id)
-            is_team_manager = False
             is_team_member = False
             for member in team_members:
                 user = UserService.get_user_by_id(member.user_id)
                 member_function = TeamMemberFunctions(member.function).name
-                is_team_member = True if member.user_id == user_id else False
-                is_team_manager = True if member_function == "MANAGER" else False
+                if not (is_team_member):
+                    is_team_member = True if member.user_id == user_id else False
                 # Skip if members are not included
                 if omit_members:
                     continue
@@ -268,7 +267,7 @@ class TeamService:
                 team_dto.members.append(member_dto)
 
             if team_dto.visibility == "PRIVATE" and not is_admin:
-                if is_team_manager or is_team_member:
+                if is_team_member:
                     teams_list_dto.teams.append(team_dto)
             else:
                 teams_list_dto.teams.append(team_dto)
