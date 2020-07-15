@@ -19,6 +19,9 @@ export const MyProjectNav = (props) => {
   const isOrgManager = useSelector(
     (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
   );
+  const isPMTeamMember = useSelector(
+    (state) => state.auth.get('pmTeams') && state.auth.get('pmTeams').length > 0,
+  );
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
   const notAnyFilter = !stringify(fullProjectsQuery);
 
@@ -100,6 +103,30 @@ export const MyProjectNav = (props) => {
                   isActive={isActiveButton('favoritedByMe', fullProjectsQuery)}
                 >
                   <FormattedMessage {...messages.favorited} />
+                </FilterButton>
+                {(isPMTeamMember || isOrgManager) && (
+                  <FilterButton
+                    query={fullProjectsQuery}
+                    newQueryParams={{
+                      favoritedByMe: undefined,
+                      mappedByMe: undefined,
+                      status: undefined,
+                      createdByMe: undefined,
+                      managedByMe: 1,
+                    }}
+                    setQuery={setQuery}
+                    isActive={fullProjectsQuery.managedByMe}
+                  >
+                    <FormattedMessage {...messages.managed} />
+                  </FilterButton>
+                )}
+                <FilterButton
+                  query={fullProjectsQuery}
+                  newQueryParams={{ status: undefined, managedByMe: undefined, createdByMe: 1 }}
+                  setQuery={setQuery}
+                  isActive={isActiveButton('createdByMe', fullProjectsQuery)}
+                >
+                  <FormattedMessage {...messages.created} />
                 </FilterButton>
               </>
             )}
