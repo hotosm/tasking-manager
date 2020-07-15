@@ -130,10 +130,7 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             )
-            threading.Thread(
-                target=MessageService.send_message_to_all_contributors,
-                args=(project_id, message_dto),
-            ).start()
+            MessageService.send_message_to_all_contributors(project_id, message_dto)
 
             return {"Success": "Messages started"}, 200
         except ValueError as e:

@@ -2,12 +2,14 @@ import re
 import time
 import datetime
 
+
 from cachetools import TTLCache, cached
 from typing import List
 from flask import current_app
 from sqlalchemy import text, func
 
 from backend import create_app, db
+from backend.api.utils import TMAPIDecorators
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType, NotFound
@@ -18,8 +20,8 @@ from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import get_template, get_profile_url
 from backend.services.users.user_service import UserService, User
 
-
 message_cache = TTLCache(maxsize=512, ttl=30)
+tm = TMAPIDecorators()
 
 
 class MessageServiceError(Exception):
@@ -32,73 +34,81 @@ class MessageServiceError(Exception):
 
 class MessageService:
     @staticmethod
+    @tm.asynchronous()
     def send_welcome_message(user: User):
         """ Sends welcome message to all new users at Sign up"""
-        text_template = get_template("welcome_message_en.txt")
+        app = create_app()
 
-        text_template = text_template.replace("[USERNAME]", user.username)
-        text_template = text_template.replace(
-            "[PROFILE_LINK]", get_profile_url(user.username)
-        )
+        with app.app_context():
+            text_template = get_template("welcome_message_en.txt")
 
-        welcome_message = Message()
-        welcome_message.message_type = MessageType.SYSTEM.value
-        welcome_message.to_user_id = user.id
-        welcome_message.subject = "Welcome to the HOT Tasking Manager"
-        welcome_message.message = text_template
-        welcome_message.save()
+            text_template = text_template.replace("[USERNAME]", user.username)
+            text_template = text_template.replace(
+                "[PROFILE_LINK]", get_profile_url(user.username)
+            )
 
-        return welcome_message.id
+            welcome_message = Message()
+            welcome_message.message_type = MessageType.SYSTEM.value
+            welcome_message.to_user_id = user.id
+            welcome_message.subject = "Welcome to the HOT Tasking Manager"
+            welcome_message.message = text_template
+            welcome_message.save()
+
+            return welcome_message.id
 
     @staticmethod
+    @tm.asynchronous()
     def send_message_after_validation(
         status: int, validated_by: int, mapped_by: int, task_id: int, project_id: int
     ):
         """ Sends mapper a notification after their task has been marked valid or invalid """
-        if validated_by == mapped_by:
-            return  # No need to send a message to yourself
+        app = create_app()
 
-        user = UserService.get_user_by_id(mapped_by)
-        if user.validation_message is False:
-            return  # No need to send validation message
-        if user.projects_notifications is False:
-            return
+        with app.app_context():
+            if validated_by == mapped_by:
+                return  # No need to send a message to yourself
 
-        text_template = get_template(
-            "invalidation_message_en.txt"
-            if status == TaskStatus.INVALIDATED
-            else "validation_message_en.txt"
-        )
-        status_text = (
-            "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
-        )
-        task_link = MessageService.get_task_link(project_id, task_id)
-        text_template = text_template.replace("[USERNAME]", user.username)
-        text_template = text_template.replace("[TASK_LINK]", task_link)
+            user = UserService.get_user_by_id(mapped_by)
+            if user.validation_message is False:
+                return  # No need to send validation message
+            if user.projects_notifications is False:
+                return
 
-        validation_message = Message()
-        validation_message.message_type = (
-            MessageType.INVALIDATION_NOTIFICATION.value
-            if status == TaskStatus.INVALIDATED
-            else MessageType.VALIDATION_NOTIFICATION.value
-        )
-        validation_message.project_id = project_id
-        validation_message.task_id = task_id
-        validation_message.from_user_id = validated_by
-        validation_message.to_user_id = mapped_by
-        validation_message.subject = f"Your mapping in Project {project_id} on {task_link} has just been {status_text}"
-        validation_message.message = text_template
-        validation_message.add_message()
+            text_template = get_template(
+                "invalidation_message_en.txt"
+                if status == TaskStatus.INVALIDATED
+                else "validation_message_en.txt"
+            )
+            status_text = (
+                "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
+            )
+            task_link = MessageService.get_task_link(project_id, task_id)
+            text_template = text_template.replace("[USERNAME]", user.username)
+            text_template = text_template.replace("[TASK_LINK]", task_link)
 
-        SMTPService.send_email_alert(
-            user.email_address, user.username, validation_message.id
-        )
+            validation_message = Message()
+            validation_message.message_type = (
+                MessageType.INVALIDATION_NOTIFICATION.value
+                if status == TaskStatus.INVALIDATED
+                else MessageType.VALIDATION_NOTIFICATION.value
+            )
+            validation_message.project_id = project_id
+            validation_message.task_id = task_id
+            validation_message.from_user_id = validated_by
+            validation_message.to_user_id = mapped_by
+            validation_message.subject = f"Your mapping in Project {project_id} on {task_link} has just been {status_text}"
+            validation_message.message = text_template
+            validation_message.add_message()
+
+            SMTPService.send_email_alert(
+                user.email_address, user.username, validation_message.id
+            )
 
     @staticmethod
+    @tm.asynchronous()
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
         """  Sends supplied message to all contributors on specified project.  Message all contributors can take
              over a minute to run, so this method is expected to be called on its own thread """
-
         app = (
             create_app()
         )  # Because message-all run on background thread it needs it's own app context
@@ -144,6 +154,7 @@ class MessageService:
         db.session.commit()
 
     @staticmethod
+    @tm.asynchronous()
     def send_message_after_comment(
         comment_from: int, comment: str, task_id: int, project_id: int
     ):
@@ -230,7 +241,7 @@ class MessageService:
     @staticmethod
     def send_request_to_join_team(
         from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
@@ -255,7 +266,7 @@ class MessageService:
         team_name: str,
         team_id: int,
         response: str,
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
@@ -280,7 +291,7 @@ class MessageService:
         team_name: str,
         team_id: int,
         response: str,
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
@@ -302,7 +313,7 @@ class MessageService:
     @staticmethod
     def send_invite_to_join_team(
         from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
@@ -320,128 +331,138 @@ class MessageService:
         message.save()
 
     @staticmethod
+    @tm.asynchronous()
     def send_message_after_chat(chat_from: int, chat: str, project_id: int):
         """ Send alert to user if they were @'d in a chat message """
         current_app.logger.debug("Sending Message After Chat")
-        usernames = MessageService._parse_message_for_username(chat)
+        app = (
+            create_app()
+        )  # Because message-all run on background thread it needs it's own app context
 
-        if len(usernames) == 0:
-            return  # Nobody @'d so return
+        with app.app_context():
+            usernames = MessageService._parse_message_for_username(chat)
 
-        link = MessageService.get_project_link(project_id)
+            if len(usernames) == 0:
+                return  # Nobody @'d so return
 
-        messages = []
-        for username in usernames:
-            current_app.logger.debug(f"Searching for {username}")
-            try:
-                user = UserService.get_user_by_username(username)
-            except NotFound:
-                current_app.logger.error(f"Username {username} not found")
-                continue  # If we can't find the user, keep going no need to fail
+            link = MessageService.get_project_link(project_id)
 
-            # Validate mention_notification.
-            if user.mentions_notifications is False:
-                continue
-
-            message = Message()
-            message.message_type = MessageType.MENTION_NOTIFICATION.value
-            message.project_id = project_id
-            message.from_user_id = chat_from
-            message.to_user_id = user.id
-            message.subject = f"You were mentioned in Project Chat on {link}"
-            message.message = chat
-            messages.append(dict(message=message, user=user))
-
-        MessageService._push_messages(messages)
-
-        query = (
-            """ select user_id from project_favorites where project_id = :project_id"""
-        )
-        result = db.engine.execute(text(query), project_id=project_id)
-        favorited_users = [r[0] for r in result]
-
-        if len(favorited_users) != 0:
-            project_link = MessageService.get_project_link(project_id)
-            # project_title = ProjectService.get_project_title(project_id)
             messages = []
-            for user_id in favorited_users:
-
+            for username in usernames:
+                current_app.logger.debug(f"Searching for {username}")
                 try:
-                    user = UserService.get_user_dto_by_id(user_id)
+                    user = UserService.get_user_by_username(username)
                 except NotFound:
+                    current_app.logger.error(f"Username {username} not found")
                     continue  # If we can't find the user, keep going no need to fail
 
-                if user.comments_notifications is False:
+                # Validate mention_notification.
+                if user.mentions_notifications is False:
                     continue
 
                 message = Message()
-                message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
+                message.message_type = MessageType.MENTION_NOTIFICATION.value
                 message.project_id = project_id
+                message.from_user_id = chat_from
                 message.to_user_id = user.id
-                message.subject = (
-                    f"{chat_from} left a comment in Project {project_link}"
-                )
+                message.subject = f"You were mentioned in Project Chat on {link}"
                 message.message = chat
                 messages.append(dict(message=message, user=user))
 
-        MessageService._push_messages(messages)
+            MessageService._push_messages(messages)
+
+            query = """ select user_id from project_favorites where project_id = :project_id"""
+            result = db.engine.execute(text(query), project_id=project_id)
+            favorited_users = [r[0] for r in result]
+
+            if len(favorited_users) != 0:
+                project_link = MessageService.get_project_link(project_id)
+                # project_title = ProjectService.get_project_title(project_id)
+                messages = []
+                for user_id in favorited_users:
+
+                    try:
+                        user = UserService.get_user_dto_by_id(user_id)
+                    except NotFound:
+                        continue  # If we can't find the user, keep going no need to fail
+
+                    if user.comments_notifications is False:
+                        continue
+
+                    message = Message()
+                    message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
+                    message.project_id = project_id
+                    message.to_user_id = user.id
+                    message.subject = (
+                        f"{chat_from} left a comment in Project {project_link}"
+                    )
+                    message.message = chat
+                    messages.append(dict(message=message, user=user))
+
+            MessageService._push_messages(messages)
 
     @staticmethod
+    @tm.asynchronous()
     def send_favorite_project_activities(user_id: int):
-        current_app.logger.debug("Sending Favorite Project Activities")
-        favorited_projects = UserService.get_projects_favorited(user_id)
-        contributed_projects = UserService.get_projects_mapped(user_id)
-        if contributed_projects is None:
-            contributed_projects = []
+        app = (
+            create_app()
+        )  # Because message-all run on background thread it needs it's own app context
 
-        for favorited_project in favorited_projects.favorited_projects:
-            contributed_projects.append(favorited_project.project_id)
+        with app.app_context():
+            current_app.logger.debug("Sending Favorite Project Activities")
+            favorited_projects = UserService.get_projects_favorited(user_id)
+            contributed_projects = UserService.get_projects_mapped(user_id)
+            if contributed_projects is None:
+                contributed_projects = []
 
-        recently_updated_projects = (
-            Project.query.with_entities(
-                Project.id, func.DATE(Project.last_updated).label("last_updated")
-            )
-            .filter(Project.id.in_(contributed_projects))
-            .filter(
-                func.DATE(Project.last_updated)
-                > datetime.date.today() - datetime.timedelta(days=300)
-            )
-        )
-        user = UserService.get_user_dto_by_id(user_id)
-        if user.projects_notifications is False:
-            return
-        messages = []
-        for project in recently_updated_projects:
-            activity_message = []
-            query_last_active_users = """ select distinct(user_id) from
-                                        (select user_id from task_history where project_id = :project_id
-                                        order by action_date desc limit 15 ) t """
-            last_active_users = db.engine.execute(
-                text(query_last_active_users), project_id=project.id
-            )
+            for favorited_project in favorited_projects.favorited_projects:
+                contributed_projects.append(favorited_project.project_id)
 
-            for recent_user_id in last_active_users:
-                recent_user_details = UserService.get_user_by_id(recent_user_id)
-                user_profile_link = MessageService.get_user_profile_link(
-                    recent_user_details.username
+            recently_updated_projects = (
+                Project.query.with_entities(
+                    Project.id, func.DATE(Project.last_updated).label("last_updated")
                 )
-                activity_message.append(user_profile_link)
-
-            activity_message = str(activity_message)[1:-1]
-            project_link = MessageService.get_project_link(project.id)
-            message = Message()
-            message.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
-            message.project_id = project.id
-            message.to_user_id = user.id
-            message.subject = (
-                "Recent activities from your contributed/favorited Projects"
+                .filter(Project.id.in_(contributed_projects))
+                .filter(
+                    func.DATE(Project.last_updated)
+                    > datetime.date.today() - datetime.timedelta(days=300)
+                )
             )
-            message.message = (
-                f"{activity_message} contributed to Project {project_link} recently"
-            )
-            messages.append(dict(message=message, user=user))
+            user = UserService.get_user_dto_by_id(user_id)
+            if user.projects_notifications is False:
+                return
+            messages = []
+            for project in recently_updated_projects:
+                activity_message = []
+                query_last_active_users = """ select distinct(user_id) from
+                                            (select user_id from task_history where project_id = :project_id
+                                            order by action_date desc limit 15 ) t """
+                last_active_users = db.engine.execute(
+                    text(query_last_active_users), project_id=project.id
+                )
 
-        MessageService._push_messages(messages)
+                for recent_user_id in last_active_users:
+                    recent_user_details = UserService.get_user_by_id(recent_user_id)
+                    user_profile_link = MessageService.get_user_profile_link(
+                        recent_user_details.username
+                    )
+                    activity_message.append(user_profile_link)
+
+                activity_message = str(activity_message)[1:-1]
+                project_link = MessageService.get_project_link(project.id)
+                message = Message()
+                message.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
+                message.project_id = project.id
+                message.to_user_id = user.id
+                message.subject = (
+                    "Recent activities from your contributed/favorited Projects"
+                )
+                message.message = (
+                    f"{activity_message} contributed to Project {project_link} recently"
+                )
+                messages.append(dict(message=message, user=user))
+
+            MessageService._push_messages(messages)
 
     @staticmethod
     def resend_email_validation(user_id: int):
