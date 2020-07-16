@@ -9,9 +9,13 @@ import { store } from '../../store';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 const handleCreate = (metadata, updateMetadata, projectName, token, cloneProjectData, setError) => {
+  if (!metadata.geom) {
+    setError('Area of interest not provided');
+    return;
+  }
+
   updateMetadata({ ...metadata, projectName: projectName });
   store.dispatch(createProject(metadata));
-
   let projectParams = {
     areaOfInterest: metadata.geom,
     projectName: metadata.projectName,
@@ -24,15 +28,15 @@ const handleCreate = (metadata, updateMetadata, projectName, token, cloneProject
     projectParams.cloneFromProjectId = cloneProjectData.id;
   }
   pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
-    .then(res => navigate(`/manage/projects/${res.projectId}`))
-    .catch(e => setError(e));
+    .then((res) => navigate(`/manage/projects/${res.projectId}`))
+    .catch((e) => setError(e));
 };
 
 export default function Review({ metadata, updateMetadata, token, projectId, cloneProjectData }) {
   const [error, setError] = useState(null);
   const projectName = metadata.projectName;
 
-  const setProjectName = event => {
+  const setProjectName = (event) => {
     event.preventDefault();
     updateMetadata({ ...metadata, projectName: event.target.value });
   };
