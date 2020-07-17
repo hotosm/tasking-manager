@@ -299,6 +299,14 @@ export default defineMessages({
     id: 'pages.learn.videos.map_buildings.description',
     defaultMessage: 'Learn how to map buildings on OpenStreetMap.',
   },
+  learnValidateHowToVideoTitle: {
+    id: 'pages.learn.validate.video.title',
+    defaultMessage: 'How to validate',
+  },
+  learnValidateHowToVideoDescription: {
+    id: 'pages.learn.validate.video.description',
+    defaultMessage: 'Learn how to start validating projects on Tasking Manager.',
+  },
   learnValidateTitle: {
     id: 'pages.learn.validate_title',
     defaultMessage: 'Learn to validate',

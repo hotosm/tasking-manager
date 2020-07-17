@@ -300,12 +300,20 @@ const LearnToValidate = ({ section }) => {
     },
   ];
 
+  const videos = [
+    {
+      message: 'learnValidateHowToVideo',
+      youTubeId: 'frVwlJn4tdI',
+    },
+  ];
+
   return (
     <div className="w-100">
       <LearnStruct section={section} messagesObjs={messagesObjs} items={items} />
       <p className="w-60 lh-copy f5 left mb5">
         {<FormattedMessage {...messages.learnValidateNote} />}
       </p>
+      <Videos contents={videos} />
     </div>
   );
 };
