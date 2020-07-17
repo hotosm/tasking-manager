@@ -188,7 +188,7 @@ class TeamService:
         omit_members: bool = False,
     ) -> TeamsListDTO:
 
-        query = db.session.query(Team).outerjoin(TeamMembers).outerjoin(ProjectTeams)
+        query = db.session.query(Team)
 
         orgs_query = None
         is_admin = UserService.is_user_an_admin(user_id)
@@ -218,21 +218,35 @@ class TeamService:
         if team_role_filter:
             try:
                 role = TeamRoles[team_role_filter.upper()].value
-                query = query.filter(ProjectTeams.role == role)
+                project_teams = (
+                    db.session.query(ProjectTeams)
+                    .filter(ProjectTeams.role == role)
+                    .subquery()
+                )
+                query = query.outerjoin(project_teams)
             except KeyError:
                 pass
 
         if member_filter:
-            query = query.filter(
-                TeamMembers.user_id == member_filter, TeamMembers.active == True  # noqa
+            team_member = (
+                db.session.query(TeamMembers)
+                .filter(
+                    TeamMembers.user_id == member_filter, TeamMembers.active.is_(True)
+                )
+                .subquery()
             )
+            query = query.outerjoin(team_member)
 
         if member_request_filter:
-            query = query.filter(
-                TeamMembers.user_id == member_request_filter,
-                TeamMembers.active == False,  # noqa
+            team_member = (
+                db.session.query(TeamMembers)
+                .filter(
+                    TeamMembers.user_id == member_request_filter,
+                    TeamMembers.active.is_(False),
+                )
+                .subquery()
             )
-
+            query = query.outerjoin(team_member)
         if orgs_query:
             query = query.union(orgs_query)
 
@@ -253,15 +267,11 @@ class TeamService:
             # Skip if members are not included
             if not omit_members:
                 team_members = TeamService._get_team_members(team.id)
-                for member in team_members:
-                    user = UserService.get_user_by_id(member.user_id)
-                    member_function = TeamMemberFunctions(member.function).name
-                    member_dto = TeamMembersDTO()
-                    member_dto.username = user.username
-                    member_dto.function = member_function
-                    member_dto.picture_url = user.picture_url
-                    member_dto.active = member.active
-                    team_dto.members.append(member_dto)
+
+                team_dto.members = [
+                    TeamService.get_team_member_as_dto(member)
+                    for member in team_members
+                ]
 
             if team_dto.visibility == "PRIVATE" and not is_admin:
                 if is_team_member:
@@ -303,16 +313,9 @@ class TeamService:
             return team_dto
 
         team_members = TeamService._get_team_members(team_id)
-        for member in team_members:
-            user = UserService.get_user_by_id(member.user_id)
-            member_dto = TeamMembersDTO()
-            member_dto.username = user.username
-            member_dto.pictureUrl = user.picture_url
-            member_dto.function = TeamMemberFunctions(member.function).name
-            member_dto.picture_url = user.picture_url
-            member_dto.active = member.active
-
-            team_dto.members.append(member_dto)
+        team_dto.members = [
+            TeamService.get_team_member_as_dto(member) for member in team_members
+        ]
 
         team_projects = TeamService.get_projects_by_team_id(team.id)
         for team_project in team_projects:
@@ -368,6 +371,17 @@ class TeamService:
             teams_list_dto.teams.append(team_dto)
 
         return teams_list_dto
+
+    @staticmethod
+    def get_team_member_as_dto(member: TeamMembers) -> TeamMembersDTO:
+        member_dto = TeamMembersDTO()
+        user = UserService.get_user_by_id(member.user_id)
+        member_function = TeamMemberFunctions(member.function).name
+        member_dto.username = user.username
+        member_dto.function = member_function
+        member_dto.picture_url = user.picture_url
+        member_dto.active = member.active
+        return member_dto
 
     @staticmethod
     def change_team_role(team_id: int, project_id: int, role: str):
