@@ -230,7 +230,7 @@ class MessageService:
     @staticmethod
     def send_request_to_join_team(
         from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
@@ -255,7 +255,7 @@ class MessageService:
         team_name: str,
         team_id: int,
         response: str,
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
@@ -280,7 +280,7 @@ class MessageService:
         team_name: str,
         team_id: int,
         response: str,
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
@@ -302,7 +302,7 @@ class MessageService:
     @staticmethod
     def send_invite_to_join_team(
         from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
