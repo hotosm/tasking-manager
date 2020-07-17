@@ -207,6 +207,10 @@ export default defineMessages({
     id: 'project.detail.sections.contributions.osmcha',
     defaultMessage: 'Changesets in OSMCha',
   },
+  changesets: {
+    id: 'project.detail.sections.contributions.changesets',
+    defaultMessage: 'Changesets',
+  },
   contributors: {
     id: 'project.detail.sections.contributors',
     defaultMessage: 'Contributors',
