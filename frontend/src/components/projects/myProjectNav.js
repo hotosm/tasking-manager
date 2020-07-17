@@ -84,6 +84,7 @@ export const MyProjectNav = (props) => {
                     favoritedByMe: undefined,
                     mappedByMe: 1,
                     managedByMe: undefined,
+                    createdByMe: undefined,
                     status: undefined,
                   }}
                   setQuery={setQuery}
@@ -97,6 +98,7 @@ export const MyProjectNav = (props) => {
                     favoritedByMe: 1,
                     mappedByMe: undefined,
                     managedByMe: undefined,
+                    createdByMe: undefined,
                     status: undefined,
                   }}
                   setQuery={setQuery}
@@ -110,9 +112,9 @@ export const MyProjectNav = (props) => {
                     newQueryParams={{
                       favoritedByMe: undefined,
                       mappedByMe: undefined,
-                      status: undefined,
                       createdByMe: undefined,
                       managedByMe: 1,
+                      status: undefined,
                     }}
                     setQuery={setQuery}
                     isActive={fullProjectsQuery.managedByMe}
@@ -122,7 +124,13 @@ export const MyProjectNav = (props) => {
                 )}
                 <FilterButton
                   query={fullProjectsQuery}
-                  newQueryParams={{ status: undefined, managedByMe: undefined, createdByMe: 1 }}
+                  newQueryParams={{
+                    favoritedByMe: undefined,
+                    mappedByMe: undefined,
+                    managedByMe: undefined,
+                    createdByMe: 1,
+                    status: undefined,
+                  }}
                   setQuery={setQuery}
                   isActive={isActiveButton('createdByMe', fullProjectsQuery)}
                 >
