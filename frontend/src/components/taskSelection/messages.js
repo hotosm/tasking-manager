@@ -554,7 +554,10 @@ export default defineMessages({
     id: 'project.level.new_users',
     defaultMessage: 'New users',
   },
-
+  statistics: {
+    id: 'project.contributions.stats',
+    defaultMessage: 'Statistics',
+  },
   permissionErrorTitle: {
     id: 'project.permissions.error.title',
     defaultMessage: 'You are not ready to work on this project...',
