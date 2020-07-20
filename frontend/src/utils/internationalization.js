@@ -19,6 +19,7 @@ import ml from '../locales/ml.json';
 import nl_NL from '../locales/nl_NL.json';
 import pt from '../locales/pt.json';
 import pt_BR from '../locales/pt_BR.json';
+import ru from '../locales/ru.json';
 import sv from '../locales/sv.json';
 import sw from '../locales/sw.json';
 import tl from '../locales/tl.json';
@@ -35,7 +36,7 @@ const translatedMessages = {
   de: de,
   en: en,
   es: es,
-  fa: fa_IR,
+  'fa-IR': fa_IR,
   fr: fr,
   he: he,
   hu: hu,
@@ -47,6 +48,7 @@ const translatedMessages = {
   nl: nl_NL,
   pt: pt,
   'pt-BR': pt_BR,
+  ru: ru,
   sv: sv,
   sw: sw,
   tl: tl,
@@ -71,7 +73,7 @@ const supportedLocales = [
   { value: 'de', label: 'Deutsch' },
   { value: 'en', label: 'English' },
   { value: 'es', label: 'Español' },
-  // { value: 'fa-IR', label: 'فارسی' },
+  { value: 'fa-IR', label: 'فارسی' },
   { value: 'fr', label: 'Français' },
   { value: 'he', label: 'עברית' },
   { value: 'hu', label: 'Magyar' },
@@ -83,6 +85,7 @@ const supportedLocales = [
   { value: 'nl', label: 'Nederlands' },
   { value: 'pt', label: 'Português' },
   { value: 'pt-BR', label: 'Português (Brasil)' },
+  // { value: 'ru', label: 'Русский язык' },
   { value: 'sv', label: 'Svenska' },
   { value: 'sw', label: 'Kiswahili' },
   // { value: 'tl', label: 'Filipino (Tagalog)' },
