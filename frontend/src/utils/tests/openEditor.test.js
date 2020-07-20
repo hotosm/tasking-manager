@@ -133,13 +133,13 @@ describe('test if formatJosmUrl', () => {
       formatJosmUrl('imagery', {
         title: 'osm',
         type: 'tms',
-        url: 'http://tile.openstreetmap.org/{zoom}/{x}/{y}.png',
         min_zoom: 1,
         max_zoom: 20,
+        url: 'http://tile.openstreetmap.org/{zoom}/{x}/{y}.png',
       }).href,
     ).toBe(
       new URL(
-        '?title=osm&type=tms&url=http%3A%2F%2Ftile.openstreetmap.org%2F%7Bzoom%7D%2F%7Bx%7D%2F%7By%7D.png&min_zoom=1&max_zoom=20',
+        '?title=osm&type=tms&min_zoom=1&max_zoom=20&url=http%3A%2F%2Ftile.openstreetmap.org%2F%7Bzoom%7D%2F%7Bx%7D%2F%7By%7D.png',
         'http://127.0.0.1:8111/imagery',
       ).href,
     );
@@ -158,6 +158,9 @@ describe('test get imagery type from URL', () => {
     const tmsWithZoom = 'tms[0:22]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
     expect(getImageryInfo(tmsWithZoom)).toStrictEqual(['tms', 0, 22]);
 
+    const tmsWithOneZoom = 'tms[22]:http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(tmsWithOneZoom)).toStrictEqual(['tms', null, 22]);
+
     const tmsWithMinZoom = 'tms[0:]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
     expect(getImageryInfo(tmsWithMinZoom)).toStrictEqual(['tms', 0, null]);
 
@@ -173,6 +176,9 @@ describe('test get imagery type from URL', () => {
 
     const wmsWithZoom = 'wms[0:22]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
     expect(getImageryInfo(wmsWithZoom)).toStrictEqual(['wms', 0, 22]);
+
+    const wmsWithOneZoom = 'wms[22]:http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
+    expect(getImageryInfo(wmsWithOneZoom)).toStrictEqual(['wms', null, 22]);
 
     const wmsWithMinZoom = 'wms[0:]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
     expect(getImageryInfo(wmsWithMinZoom)).toStrictEqual(['wms', 0, null]);

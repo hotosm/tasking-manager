@@ -133,8 +133,12 @@ function loadTasksBoundaries(project, selectedTasks) {
 
 export function getImageryInfo(url) {
   const type = url.toLowerCase().substr(0, 3) === 'wms' ? 'wms' : 'tms';
-  const zoom = url.split('http')[0].substr(3).replace('[', '').replace(']', '');
-  const [minZoom, maxZoom] = zoom.length ? zoom.split(':') : [null, null];
+  const zoom = url.substr(url.indexOf('[') + 1, url.indexOf(']') - url.indexOf('[') - 1);
+  const [minZoom, maxZoom] = zoom.length
+    ? zoom.indexOf(':') !== -1
+      ? zoom.split(':')
+      : [null, zoom]
+    : [null, null];
   return [
     type,
     minZoom !== '' && minZoom !== null ? Number(minZoom) : null,
@@ -148,10 +152,10 @@ function loadImageryonJosm(project) {
     const imageryParams = {
       title: project.imagery,
       type: type,
-      url: project.imagery.substr(project.imagery.indexOf('http')),
     };
     if (minZoom) imageryParams.min_zoom = minZoom;
     if (maxZoom) imageryParams.max_zoom = maxZoom;
+    imageryParams.url = project.imagery.substr(project.imagery.indexOf('http'));
 
     return callJosmRemoteControl(formatJosmUrl('imagery', imageryParams));
   }

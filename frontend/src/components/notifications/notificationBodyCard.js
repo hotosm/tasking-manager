@@ -112,7 +112,7 @@ export function NotificationBodyCard({
             dangerouslySetInnerHTML={rawHtmlNotification(replacedSubject)}
           ></strong>
           <div
-            className={`pv3 f6 messageBodyLinks bodyCard`}
+            className={`pv3 f6 lh-title messageBodyLinks bodyCard`}
             dangerouslySetInnerHTML={rawHtmlNotification(replacedMessage)}
           />
         </div>
