@@ -209,14 +209,18 @@ class ProjectSearchService:
     @staticmethod
     def _filter_projects(search_dto: ProjectSearchDTO, user):
         """ Filters all projects based on criteria provided by user"""
+
         query = ProjectSearchService.create_search_query(user)
+
         query = query.join(ProjectInfo).filter(
             ProjectInfo.locale.in_([search_dto.preferred_locale, "en"])
         )
         project_status_array = []
         if search_dto.project_statuses:
-            for project_status in search_dto.project_statuses:
-                project_status_array.append(ProjectStatus[project_status].value)
+            project_status_array = [
+                ProjectStatus[project_status].value
+                for project_status in search_dto.project_statuses
+            ]
             query = query.filter(Project.status.in_(project_status_array))
         else:
             if not search_dto.created_by:
@@ -232,7 +236,6 @@ class ProjectSearchService:
             projects_mapped = UserService.get_projects_mapped(search_dto.mapped_by)
             query = query.filter(Project.id.in_(projects_mapped))
         if search_dto.favorited_by:
-            user = UserService.get_user_by_id(search_dto.favorited_by)
             projects_favorited = user.favorites
             query = query.filter(
                 Project.id.in_([project.id for project in projects_favorited])
@@ -254,16 +257,16 @@ class ProjectSearchService:
             ).filter(ProjectTeams.team_id == search_dto.team_id)
 
         if search_dto.campaign:
-            query = query.join(Campaign, Project.campaign).group_by(
-                Project.id, Campaign.name
-            )
+            query = query.join(Campaign, Project.campaign).group_by(Campaign.name)
             query = query.filter(Campaign.name == search_dto.campaign)
 
         if search_dto.mapping_types:
             # Construct array of mapping types for query
             mapping_type_array = []
-            for mapping_type in search_dto.mapping_types:
-                mapping_type_array.append(MappingTypes[mapping_type].value)
+            mapping_type_array = [
+                MappingTypes[mapping_type].value
+                for mapping_type in search_dto.mapping_types
+            ]
 
             query = query.filter(Project.mapping_types.contains(mapping_type_array))
 
@@ -325,7 +328,13 @@ class ProjectSearchService:
 
         all_results = []
         if not search_dto.omit_map_results:
-            all_results = query.all()
+            query_result = query
+            query_result.column_descriptions.clear()
+            query_result.add_column(Project.id)
+            query_result.add_column(Project.centroid.ST_AsGeoJSON().label("centroid"))
+            query_result.add_column(Project.priority)
+            all_results = query_result.all()
+
         paginated_results = query.paginate(search_dto.page, 14, True)
 
         return all_results, paginated_results
