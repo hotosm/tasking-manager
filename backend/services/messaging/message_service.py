@@ -125,20 +125,31 @@ class MessageService:
             MessageService._push_messages(messages)
 
     @staticmethod
-    def _push_messages(messages, mention=True):
+    def _push_messages(messages):
         if len(messages) == 0:
             return
 
-        # Flush messages to get the id
-        db.session.add_all([m["message"] for m in messages])
-        db.session.flush()
-
-        if mention is False:
-            db.session.commit()
-            return
-
+        messages_objs = []
         for i, message in enumerate(messages):
             user = message.get("user")
+            obj = message.get("message")
+            # Store message in the database only if mentions option are disabled.
+            if (
+                user.mentions_notifications is False
+                and obj.message_type == MessageType.MENTION_NOTIFICATION.value
+            ):
+                messages_objs.append(obj)
+                continue
+            if (
+                user.projects_notifications is False
+                and obj.message_type == MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
+            ):
+                continue
+            if user.comments_notifications is False and obj.message_type in (
+                MessageType.TASK_COMMENT_NOTIFICATION.value,
+                MessageType.PROJECT_CHAT_NOTIFICATION.value,
+            ):
+                continue
             SMTPService.send_email_alert(
                 user.email_address, user.username, message["message"].id
             )
@@ -146,7 +157,11 @@ class MessageService:
             if i + 1 % 10 == 0:
                 time.sleep(0.5)
 
-        db.session.commit()
+        # Flush messages to the database.
+        if len(messages_objs) > 0:
+            db.session.add_all(messages_objs)
+            db.session.flush()
+            db.session.commit()
 
     @staticmethod
     def send_message_after_comment(
@@ -175,7 +190,7 @@ class MessageService:
                 message.message = comment
                 messages.append(dict(message=message, user=user))
 
-            MessageService._push_messages(messages, user.mentions_notifications)
+            MessageService._push_messages(messages)
 
         # Notify all contributors except the user that created the comment.
         results = (
@@ -200,9 +215,6 @@ class MessageService:
                     user = UserService.get_user_dto_by_id(user_id)
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
-
-                if user.comments_notifications is False:
-                    continue
 
                 message = Message()
                 message.message_type = MessageType.TASK_COMMENT_NOTIFICATION.value
@@ -349,7 +361,7 @@ class MessageService:
             message.message = chat
             messages.append(dict(message=message, user=user))
 
-        MessageService._push_messages(messages, user.mentions_notifications)
+        MessageService._push_messages(messages)
 
         query = (
             """ select user_id from project_favorites where project_id = :project_id"""
@@ -367,9 +379,6 @@ class MessageService:
                     user = UserService.get_user_dto_by_id(user_id)
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
-
-                if user.comments_notifications is False:
-                    continue
 
                 message = Message()
                 message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
@@ -405,8 +414,6 @@ class MessageService:
             )
         )
         user = UserService.get_user_dto_by_id(user_id)
-        if user.projects_notifications is False:
-            return
         messages = []
         for project in recently_updated_projects:
             activity_message = []
