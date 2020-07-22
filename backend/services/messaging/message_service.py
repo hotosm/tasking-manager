@@ -124,13 +124,17 @@ class MessageService:
             MessageService._push_messages(messages)
 
     @staticmethod
-    def _push_messages(messages):
+    def _push_messages(messages, mention=True):
         if len(messages) == 0:
             return
 
         # Flush messages to get the id
         db.session.add_all([m["message"] for m in messages])
         db.session.flush()
+
+        if mention is False:
+            db.session.commit()
+            return
 
         for i, message in enumerate(messages):
             user = message.get("user")
@@ -160,10 +164,6 @@ class MessageService:
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
 
-                # Validate mention_notification.
-                if user.mentions_notifications is False:
-                    continue
-
                 message = Message()
                 message.message_type = MessageType.MENTION_NOTIFICATION.value
                 message.project_id = project_id
@@ -174,7 +174,7 @@ class MessageService:
                 message.message = comment
                 messages.append(dict(message=message, user=user))
 
-            MessageService._push_messages(messages)
+            MessageService._push_messages(messages, user.mentions_notifications)
 
         # Notify all contributors except the user that created the comment.
         results = (
@@ -339,10 +339,6 @@ class MessageService:
                 current_app.logger.error(f"Username {username} not found")
                 continue  # If we can't find the user, keep going no need to fail
 
-            # Validate mention_notification.
-            if user.mentions_notifications is False:
-                continue
-
             message = Message()
             message.message_type = MessageType.MENTION_NOTIFICATION.value
             message.project_id = project_id
@@ -352,7 +348,7 @@ class MessageService:
             message.message = chat
             messages.append(dict(message=message, user=user))
 
-        MessageService._push_messages(messages)
+        MessageService._push_messages(messages, user.mentions_notifications)
 
         query = (
             """ select user_id from project_favorites where project_id = :project_id"""
