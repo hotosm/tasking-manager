@@ -20,7 +20,6 @@ export default defineMessages({
     id: 'user.organisations',
     defaultMessage: 'Organizations',
   },
-
   city: {
     id: 'user.city',
     defaultMessage: 'City',
@@ -111,11 +110,11 @@ export default defineMessages({
   },
   mentions: {
     id: 'user.notifications.mentions',
-    defaultMessage: 'Mentions',
+    defaultMessage: 'Mentions emails',
   },
   mentionsDescription: {
     id: 'user.notifications.mentions.description',
-    defaultMessage: "Every time you're mentioned on a comment, you get a notification.",
+    defaultMessage: 'Receive an email every time your username is mentioned on a comment.',
   },
   projectUpdates: {
     id: 'user.notifications.projects',
@@ -136,7 +135,7 @@ export default defineMessages({
   commentsDescription: {
     id: 'user.notifications.comments.description',
     defaultMessage:
-      "You get a notification every time someone comments on the project you've contributed to.",
+      'Receive a notification every time someone posts a comment on projects or tasks you have contributed to.',
   },
   learnHow: {
     id: 'user.settings.become_validator.button',
