@@ -8,7 +8,6 @@ export function openEditor(
   selectedTasks,
   windowSize,
   windowObjectReference,
-  locale,
 ) {
   if (editor === 'JOSM') {
     sendJosmCommands(project, tasks, selectedTasks, windowSize);
@@ -16,7 +15,7 @@ export function openEditor(
   }
   const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
   if (editor === 'ID') {
-    return getIdUrl(project, center, zoom, selectedTasks, locale, '?editor=ID');
+    return getIdUrl(project, center, zoom, selectedTasks, '?editor=ID');
   }
   if (windowObjectReference == null || windowObjectReference.closed) {
     windowObjectReference = window.open('', `iD-${project}-${selectedTasks}`);
@@ -31,14 +30,7 @@ export function openEditor(
   }
   if (editor === 'CUSTOM') {
     const customUrl = project.customEditor.url;
-    windowObjectReference.location.href = getIdUrl(
-      project,
-      center,
-      zoom,
-      selectedTasks,
-      locale,
-      customUrl,
-    );
+    windowObjectReference.location.href = getIdUrl(project, center, zoom, selectedTasks, customUrl);
     return '?editor=CUSTOM';
   }
 }
@@ -73,7 +65,7 @@ export function getPotlatch2Url(centroid, zoomLevel) {
   ].join('/')}`;
 }
 
-export function getIdUrl(project, centroid, zoomLevel, selectedTasks, locale = 'en', customUrl) {
+export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl) {
   const base = customUrl
     ? formatCustomUrl(customUrl)
     : 'https://www.openstreetmap.org/edit?editor=id&';
@@ -91,8 +83,6 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, locale = '
   if (project.projectId && selectedTasks) {
     url += '&gpx=' + encodeURIComponent(getTaskGpxUrl(project.projectId, selectedTasks).href);
   }
-  // add hardcoded locale while we solve how to load the user locale on iD
-  url += '&locale=' + locale;
   return url;
 }
 

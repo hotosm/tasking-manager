@@ -7,6 +7,7 @@ import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET } from '../config';
 
 export default function Editor({ editorRef, setEditorRef, setDisable, comment, presets }) {
   const session = useSelector((state) => state.auth.get('session'));
+  const locale = useSelector((state) => state.preferences.locale);
   const windowInit = typeof window !== undefined;
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment, p
   }, [comment, editorRef]);
 
   useEffect(() => {
-    if (session && iD && editorRef) {
+    if (session && locale && iD && editorRef) {
       // if presets is not a populated list we need to set it as null
       try {
         if (presets.length) {
@@ -40,6 +41,8 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment, p
       editorRef
         .embed(true)
         .assetPath('/static/')
+        .locale(locale)
+        .setsDocumentTitle(false)
         .containerNode(document.getElementById('id-container'));
       editorRef.init();
 
@@ -64,7 +67,7 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment, p
         }
       });
     }
-  }, [session, editorRef, setDisable, presets]);
+  }, [session, editorRef, setDisable, presets, locale]);
 
   return <div className="w-100 vh-minus-122-ns" id="id-container"></div>;
 }
