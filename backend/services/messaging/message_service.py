@@ -212,7 +212,7 @@ class MessageService:
                 message.message = comment
                 messages.append(dict(message=message, user=user))
 
-            MessageService._push_messages(messages)
+            MessageService._push_messages(messages, user.projects_notifications)
 
     @staticmethod
     def get_user_link(username: str):
@@ -380,7 +380,7 @@ class MessageService:
                 message.message = chat
                 messages.append(dict(message=message, user=user))
 
-        MessageService._push_messages(messages)
+        MessageService._push_messages(messages, user.projects_notifications)
 
     @staticmethod
     def send_favorite_project_activities(user_id: int):
@@ -404,8 +404,6 @@ class MessageService:
             )
         )
         user = UserService.get_user_dto_by_id(user_id)
-        if user.projects_notifications is False:
-            return
         messages = []
         for project in recently_updated_projects:
             activity_message = []
@@ -437,7 +435,7 @@ class MessageService:
             )
             messages.append(dict(message=message, user=user))
 
-        MessageService._push_messages(messages)
+        MessageService._push_messages(messages, user.projects_notifications)
 
     @staticmethod
     def resend_email_validation(user_id: int):
