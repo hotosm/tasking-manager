@@ -266,7 +266,7 @@ class TeamService:
             is_team_member = TeamService.is_user_an_active_team_member(team.id, user_id)
             # Skip if members are not included
             if not omit_members:
-                team_members = TeamService._get_team_members(team.id)
+                team_members = team.members
 
                 team_dto.members = [
                     TeamService.get_team_member_as_dto(member)
@@ -281,7 +281,9 @@ class TeamService:
         return teams_list_dto
 
     @staticmethod
-    def get_team_as_dto(team_id: int, user_id: int, abbreviated: bool) -> TeamDTO:
+    def get_team_as_dto(
+        team_id: int, user_id: int, abbreviated: bool
+    ) -> TeamDetailsDTO:
         team = TeamService.get_team_by_id(team_id)
 
         if team is None:
@@ -312,9 +314,8 @@ class TeamService:
         if abbreviated:
             return team_dto
 
-        team_members = TeamService._get_team_members(team_id)
         team_dto.members = [
-            TeamService.get_team_member_as_dto(member) for member in team_members
+            TeamService.get_team_member_as_dto(member) for member in team.members
         ]
 
         team_projects = TeamService.get_projects_by_team_id(team.id)
@@ -326,14 +327,11 @@ class TeamService:
 
             team_dto.team_projects.append(project_team_dto)
 
-        org_projects = OrganisationService.get_projects_by_organisation_id(
-            team.organisation.id
-        )
-        for org_project in org_projects:
-            org_project_dto = OrganisationProjectsDTO()
-            org_project_dto.project_id = org_project.id
-            org_project_dto.project_name = org_project.name
-            team_dto.organisation_projects.append(org_project_dto)
+        org_project_dto = OrganisationProjectsDTO()
+        org_project_dto.project_id = team.organisation.id
+        org_project_dto.project_name = team.organisation.name
+
+        team_dto.organisation_projects.append(org_project_dto)
 
         return team_dto
 
@@ -419,7 +417,7 @@ class TeamService:
     def create_team(new_team_dto: NewTeamDTO) -> int:
         """
         Creates a new team using a team dto
-        :param team_dto: Team DTO
+        :param new_team_dto: Team DTO
         :returns: ID of new Team
         """
         TeamService.assert_validate_organisation(new_team_dto.organisation_id)

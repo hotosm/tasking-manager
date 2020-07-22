@@ -108,11 +108,11 @@ class ProjectService:
             )
             .group_by("action_text", "day", "task_id")
             .order_by("day")
-        )
+        ).all()
 
         contribs_dto = ProjectContribsDTO()
         # Filter and store unique dates
-        dates = list(set(r[1] for r in stats))
+        dates = [r[1] for r in stats]
         dates.sort(
             reverse=False
         )  # Why was this reversed? To have the dates in ascending order
