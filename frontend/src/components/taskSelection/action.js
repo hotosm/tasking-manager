@@ -30,7 +30,6 @@ const Editor = React.lazy(() => import('../editor'));
 export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
   useSetProjectPageTitleTag(project);
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const locale = useSelector((state) => state.preferences.locale);
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -68,7 +67,6 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
         tasksIds,
         [window.innerWidth, window.innerHeight],
         null,
-        locale,
       );
       if (url) {
         navigate(`./${url}`);
@@ -76,7 +74,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
         navigate(`./?editor=${editorToUse[0]}`);
       }
     }
-  }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds, locale]);
+  }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds]);
 
   const callEditor = (arr) => {
     setActiveEditor(arr[0].value);
@@ -87,7 +85,6 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
       tasksIds,
       [window.innerWidth, window.innerHeight],
       null,
-      locale,
     );
     if (url) {
       navigate(`./${url}`);
