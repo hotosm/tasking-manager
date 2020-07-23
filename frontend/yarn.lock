@@ -1244,10 +1244,10 @@
     string.fromcodepoint "1.0.0"
     which-polygon "2.2.0"
 
-"@hotosm/iso-countries-languages@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@hotosm/iso-countries-languages/-/iso-countries-languages-0.3.1.tgz#f567bff36a94fdcc68104e45a342882d13005105"
-  integrity sha512-y1KoOFsrBO/DWMec9ibvkyqU3Bz7Qq5000/OY+VdRoJOBKkj8SKafDVaAilfGTxIcwneLC8o2UE+ik0qqvEZ/w==
+"@hotosm/iso-countries-languages@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@hotosm/iso-countries-languages/-/iso-countries-languages-0.3.2.tgz#e6386129e4bf6997d139285c8024fc379948683c"
+  integrity sha512-o+eWAci6TwFOJ4xx4WGYiKqQeZVKWnrF/5tS2wP8boqQlU7nPaxOWahcEZC2KGX1keW0VR5FPtWG5VoPo6AdNg==
 
 "@ideditor/country-coder@^3.1.0", "@ideditor/country-coder@^3.2.0":
   version "3.2.0"
