@@ -56,10 +56,6 @@ export default defineMessages({
     id: 'mytasks.pagination.count',
     defaultMessage: 'Showing {number} of {total}',
   },
-  xNew: {
-    id: 'mytasks.nav.xNew',
-    defaultMessage: '{xNew} New',
-  },
   lastUpdatedByUser: {
     id: 'mytasks.nav.lastUpdatedBy',
     defaultMessage: 'Last updated {time}',

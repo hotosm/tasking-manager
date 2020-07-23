@@ -176,7 +176,7 @@ export default defineMessages({
   },
   validateAllError: {
     id: 'projects.actions.validate_all_tasks.error',
-    defaultMessage: 'Invalidating all the tasks failed for an unknown reason.',
+    defaultMessage: 'Validating all the tasks failed for an unknown reason.',
   },
   resetBadImagery: {
     id: 'projects.actions.reset_bad_imagery_tasks.title',
