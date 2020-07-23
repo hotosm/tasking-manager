@@ -232,6 +232,7 @@ def add_api_endpoints(app):
         NotificationsRestAPI,
         NotificationsAllAPI,
         NotificationsQueriesCountUnreadAPI,
+        NotificationsQueriesPostUnreadAPI,
     )
     from backend.api.notifications.actions import NotificationsActionsDeleteMultipleAPI
 
@@ -669,7 +670,11 @@ def add_api_endpoints(app):
         NotificationsQueriesCountUnreadAPI,
         format_url("notifications/queries/own/count-unread/"),
     )
-
+    api.add_resource(
+        NotificationsQueriesPostUnreadAPI,
+        format_url("notifications/queries/own/post-unread/"),
+        methods=["POST"],
+    )
     # Notifications Actions endpoints
     api.add_resource(
         NotificationsActionsDeleteMultipleAPI,

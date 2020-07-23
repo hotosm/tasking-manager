@@ -8,14 +8,17 @@ import { useFetch, useFetchIntervaled } from '../../hooks/UseFetch';
 import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 import useForceUpdate from '../../hooks/UseForceUpdate';
 import { useInboxQueryAPI } from '../../hooks/UseInboxQueryAPI';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const NotificationBell = (props) => {
-  const trigger = useSelector((state) => state.auth.get('token') !== null);
+  const token = useSelector((state) => state.auth.get('token'));
+  const trigger = token !== null;
   const [forceUpdated, forceUpdate] = useForceUpdate();
 
   /* these below make the references stable so hooks doesn't re-request forever */
   const notificationBellRef = useRef(null);
   const sortByRead = useRef({ sortBy: 'read' });
+  const readNotifications = useRef(false);
   const [notificationState] = useInboxQueryAPI(
     notificationBellRef.current,
     sortByRead.current,
@@ -43,7 +46,7 @@ export const NotificationBell = (props) => {
       : { className: `link barlow-condensed blue-dark f4 ttu v-mid pt1` };
   };
 
-  const lightTheBell =
+  let lightTheBell =
     (!unreadNotifsStartLoading &&
       !unreadNotifsStartError &&
       unreadNotifsStart &&
@@ -55,6 +58,25 @@ export const NotificationBell = (props) => {
       !unreadNotifsStartError &&
       unreadNotifsStart &&
       unreadNotifsStart.unread);
+
+  // When user clicks on the bell. Update notifications model in the backend.
+  if (isPopoutFocus === true) {
+    pushToLocalJSONAPI(`/api/v2/notifications/queries/own/post-unread/`, null, token);
+    readNotifications.current = true;
+  }
+
+  // Do not light the bell when user has pressed the button previously and there is no notifications update.
+  if (
+    readNotifications.current === true &&
+    unreadNotifsRepeat &&
+    unreadNotifsRepeat.newMessages === true
+  ) {
+    readNotifications.current = false;
+  }
+
+  if (readNotifications.current === true) {
+    lightTheBell = false;
+  }
 
   return (
     <span ref={notificationBellRef}>

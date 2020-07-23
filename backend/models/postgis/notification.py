@@ -1,8 +1,9 @@
 from backend import db
-from flask import current_app
 from backend.models.postgis.user import User
+from backend.models.postgis.message import Message
 from backend.models.postgis.utils import timestamp
 from backend.models.dtos.notification_dto import NotificationDTO
+from datetime import datetime, timedelta
 
 
 class Notification(db.Model):
@@ -29,9 +30,12 @@ class Notification(db.Model):
 
         return dto
 
-    def update_notification_count(self):
-        current_app.logger.debug("Updating notification count")
+    def save(self):
         db.session.add(self)
+        db.session.commit()
+
+    def update(self):
+        self.date = timestamp()
         db.session.commit()
 
     @staticmethod
@@ -41,8 +45,20 @@ class Notification(db.Model):
             Notification.user_id == user_id
         ).first()
 
-        count = 0
-        if notifications is not None:
-            count = notifications.unread_count
+        # Create if does not exist.
+        if notifications is None:
+            # In case users are new but have not logged in previously.
+            date_value = datetime.today() - timedelta(days=30)
+            notifications = Notification(
+                user_id=user_id, unread_count=0, date=date_value
+            )
+            notifications.save()
+
+        # Count messages that the user has received after last check.
+        count = (
+            Message.query.filter(Message.to_user_id == user_id)
+            .filter(Message.date > notifications.date)
+            .count()
+        )
 
         return count
