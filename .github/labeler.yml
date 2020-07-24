@@ -1,0 +1,14 @@
+"Component: Frontend":
+  - frontend/**/*
+"Component: Backend":
+  - server/**/*
+  - tests/**/*
+  - migrations/**/*
+  - ./manage.py
+  - ./requirements.txt
+"Component: Infrastructure":
+  - .circleci/*
+  - .github/**/*
+  - scripts/aws/**/*
+  - scripts/docker/**/*
+  - scripts/install/**/*
