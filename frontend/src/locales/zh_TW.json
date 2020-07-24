@@ -17,7 +17,6 @@
   "mytasks.filter.clear": "清除過濾條件",
   "mytasks.navFilters.error": "載入任務時的錯誤",
   "mytasks.pagination.count": "顯示 {total} 的  {number}",
-  "mytasks.nav.xNew": "{xNew} 新的",
   "mytasks.nav.lastUpdatedBy": "上次更新時間 {time}",
   "mytasks.nav.viewAll": "檢視全部",
   "mytasks.nav.delete.button": "刪除",

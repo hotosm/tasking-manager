@@ -5,6 +5,7 @@ import { IntlProvider } from 'react-intl';
 import ar from '../locales/ar.json';
 import cs from '../locales/cs.json';
 import de from '../locales/de.json';
+import el from '../locales/el.json';
 import en from '../locales/en.json';
 import es from '../locales/es.json';
 import fa_IR from '../locales/fa_IR.json';
@@ -30,10 +31,20 @@ import zh_TW from '../locales/zh_TW.json';
 import { setLocale } from '../store/actions/userPreferences';
 import * as config from '../config';
 
+/* Safari 12- and IE */
+if (!Intl.PluralRules) {
+  require('@formatjs/intl-pluralrules/polyfill-locales');
+}
+/* Safari 13- and IE */
+if (!Intl.RelativeTimeFormat) {
+  require('@formatjs/intl-relativetimeformat/polyfill-locales');
+}
+
 const translatedMessages = {
   ar: ar,
   cs: cs,
   de: de,
+  el: el,
   en: en,
   es: es,
   'fa-IR': fa_IR,
@@ -57,20 +68,12 @@ const translatedMessages = {
   zh: zh_TW,
 };
 
-/* Safari 12- and IE */
-if (!Intl.PluralRules) {
-  require('@formatjs/intl-pluralrules/polyfill-locales');
-}
-/* Safari 13- and IE */
-if (!Intl.RelativeTimeFormat) {
-  require('@formatjs/intl-relativetimeformat/polyfill-locales');
-}
-
-// commented out the languages that we are not supporting on the first production release of TM4
+// commented values doesn't have a good amount of strings translated
 const supportedLocales = [
   // { value: 'ar', label: 'عربى' },
   { value: 'cs', label: 'Česky' },
   { value: 'de', label: 'Deutsch' },
+  { value: 'el', label: 'Ελληνικά' },
   { value: 'en', label: 'English' },
   { value: 'es', label: 'Español' },
   { value: 'fa-IR', label: 'فارسی' },

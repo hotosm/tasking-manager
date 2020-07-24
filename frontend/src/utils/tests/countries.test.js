@@ -51,7 +51,7 @@ describe('translate a country name from English to', () => {
     expect(translateCountry('Unexistent country', 'pt-BR')).toBe('Unexistent country');
   });
   it('Arabic', () => {
-    expect(translateCountry('Saudi Arabia', 'ar')).toBe('المملكة العربية السعودية');
+    expect(translateCountry('Saudi Arabia', 'ar')).toBe('السعودية');
   });
 });
 
