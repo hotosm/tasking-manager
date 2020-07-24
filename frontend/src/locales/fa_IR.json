@@ -17,7 +17,6 @@
   "mytasks.filter.clear": "پاک کردن فیلتر ها",
   "mytasks.navFilters.error": "",
   "mytasks.pagination.count": "در حال نمایش {number} از {total}",
-  "mytasks.nav.xNew": "{xNew} جدید",
   "mytasks.nav.lastUpdatedBy": "",
   "mytasks.nav.viewAll": "دیدن همه",
   "mytasks.nav.delete.button": "حذف",
