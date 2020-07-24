@@ -68,7 +68,7 @@ const translatedMessages = {
   zh: zh_TW,
 };
 
-// commented out the languages that we are not supporting on the first production release of TM4
+// commented values doesn't have a good amount of strings translated
 const supportedLocales = [
   // { value: 'ar', label: 'عربى' },
   { value: 'cs', label: 'Česky' },

@@ -1244,10 +1244,10 @@
     string.fromcodepoint "1.0.0"
     which-polygon "2.2.0"
 
-"@hotosm/iso-countries-languages@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@hotosm/iso-countries-languages/-/iso-countries-languages-1.0.0.tgz#0f7c8f7f7d29824f49eb2f1eb94b496715e401cc"
-  integrity sha512-8/GwTwNSj1yh3/lmu+Wxc3PjPpTjiGMUwnz8s2rPsJxOu2bvLC5HkxzvOGtnWzJzdfxh0Ta8xdlqFCeOgDWNbQ==
+"@hotosm/iso-countries-languages@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@hotosm/iso-countries-languages/-/iso-countries-languages-1.0.1.tgz#d27b2a6c0691c8f46ce9ccc305804e072b151501"
+  integrity sha512-QK5rwmxgsYVXH9s391YEALKxG2fdFx1aNJWPysXWmlVcgtCa/aGUa3GQpIJNXhhBgUZhCw/ssUz6+P/nQ5fHaQ==
   dependencies:
     prettier "^2.0.5"
 
