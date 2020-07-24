@@ -1216,10 +1216,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@2.18.2":
-  version "2.18.2"
-  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.18.2.tgz#9a64e124b844f271ffab3e7784fc8d6cbd7b0dc8"
-  integrity sha512-Ilgf0Dbg35IK5AW0kXLePL51xiZCc1lfBKFrNcFdhmm1PHu89bmVl6RoAVw6HyAMHOWHPRTd+jpcjTNmFkmOag==
+"@hotosm/id@^2.18.3":
+  version "2.18.3"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.18.3.tgz#c3d0bc4eedc9259e4e14ffb6c1db22f2497c3fe8"
+  integrity sha512-sFh5/kQM78S5JfJ0oIIG0+DvtzE/yUev4LMsmeyN7rEDDcrR/yKtEunWXxr8ctd0tG2gG6G2tpIAhtv2kmB8Rw==
   dependencies:
     "@ideditor/country-coder" "^3.2.0"
     "@ideditor/location-conflation" "~0.3.0"
