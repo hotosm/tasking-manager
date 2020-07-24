@@ -18,6 +18,7 @@ import {
 } from '../svgIcons';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
+import { getPastMonths } from '../../utils/date';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 
 export const MappingLevelIcon = ({ mappingLevel }) => {
@@ -135,8 +136,7 @@ const Contributions = (props) => {
   };
 
   if (level.value === 'NEWUSER') {
-    const monthFiltered = new Date();
-    monthFiltered.setMonth(monthFiltered.getMonth() - 1);
+    const monthFiltered = getPastMonths(1);
     contributionsArray = contributionsArray
       .map((u) => {
         return { ...u, dateObj: new Date(u.dateRegistered) };

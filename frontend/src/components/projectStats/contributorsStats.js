@@ -6,44 +6,14 @@ import messages from './messages';
 import userMessages from '../user/messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
+import { useContributorStats } from '../../hooks/UseContributorStats';
 import { StatsCardContent } from '../statsCardContent';
 
-function getPastMonths(months) {
-  let today = new Date();
-  return today.setMonth(today.getMonth() - months);
-}
-
 function ContributorsStats(props) {
+  const stats = useContributorStats(props.contributors.userContributions);
   const getUserLevelLabel = (level) =>
     props.intl.formatMessage(userMessages[`mapperLevel${level}`]);
   const getUserExpLabel = (id) => props.intl.formatMessage(messages[`${id}`]);
-  const data = {
-    validators: props.contributors.userContributions.filter((i) => i.validated > 0).length,
-    mappers: props.contributors.userContributions.filter((i) => i.mapped > 0).length,
-    beginnerUsers: props.contributors.userContributions.filter((i) => i.mappingLevel === 'BEGINNER')
-      .length,
-    intermediateUsers: props.contributors.userContributions.filter(
-      (i) => i.mappingLevel === 'INTERMEDIATE',
-    ).length,
-    advancedUsers: props.contributors.userContributions.filter((i) => i.mappingLevel === 'ADVANCED')
-      .length,
-  };
-  [
-    [0, 1],
-    [1, 3],
-    [3, 6],
-    [6, 12],
-  ].map(
-    (months) =>
-      (data[`lessThan${months[1]}MonthExp`] = props.contributors.userContributions.filter(
-        (i) =>
-          new Date(i.dateRegistered) > getPastMonths(months[1]) &&
-          new Date(i.dateRegistered) <= getPastMonths(months[0]),
-      ).length),
-  );
-  data.moreThan1YearExp = props.contributors.userContributions.filter(
-    (i) => new Date(i.dateRegistered) <= getPastMonths(12),
-  ).length;
 
   let userLevelsReference = [
     {
@@ -98,14 +68,14 @@ function ContributorsStats(props) {
       <div className="cf w-third-l w-100 fl tc">
         <div className="mb3 ph2">
           <StatsCardContent
-            value={props.contributors.userContributions.filter((i) => i.mapped > 0).length}
+            value={stats.mappers}
             label={<FormattedMessage {...messages.mappers} />}
             className="pv3-l pv2 shadow-1"
           />
         </div>
         <div className="mv3 ph2">
           <StatsCardContent
-            value={props.contributors.userContributions.filter((i) => i.validated > 0).length}
+            value={stats.validators}
             label={<FormattedMessage {...messages.validators} />}
             className="pv3-l pv2 shadow-1"
           />
@@ -123,7 +93,7 @@ function ContributorsStats(props) {
           <FormattedMessage {...messages.usersExperience} />
         </h3>
         <Bar
-          data={formatChartData(userExperienceReference, data)}
+          data={formatChartData(userExperienceReference, stats)}
           options={{
             legend: { display: false },
             tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
@@ -135,7 +105,7 @@ function ContributorsStats(props) {
           <FormattedMessage {...messages.usersLevel} />
         </h3>
         <Doughnut
-          data={formatChartData(userLevelsReference, data)}
+          data={formatChartData(userLevelsReference, stats)}
           options={{
             legend: { position: 'right', labels: { boxWidth: 12 } },
             tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
