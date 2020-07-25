@@ -10482,10 +10482,10 @@ react-input-autosize@^2.2.2:
   dependencies:
     prop-types "^15.5.8"
 
-react-intl@^5.4.1:
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-5.4.1.tgz#8e019c02a5edec08460501c5ac6da8b6b6203822"
-  integrity sha512-JZ9ic5qay5RFXiWyDUrXFFHvUVynRkbDqtMH43J2eWtVskfSDeoUQn4uiMz3ytmfaboXm+Dv9mEU5yLKC70fcw==
+react-intl@^5.4.2:
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-5.4.2.tgz#d3a61e86b83f891c24ec9bae23c7c49c412ddc79"
+  integrity sha512-qDKq+kl1DY4WxYn28/jvC1QckIpvT9YJ4OzE4mRqhl4Ip1mibBUhB9kH9fgNuV+/yNwZOwFh/4/1/TmqLpo7KQ==
   dependencies:
     "@formatjs/intl-datetimeformat" "^2.2.1"
     "@formatjs/intl-displaynames" "^3.1.6"
