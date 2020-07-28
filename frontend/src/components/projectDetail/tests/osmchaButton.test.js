@@ -1,10 +1,8 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { store } from '../../../store';
-import { ConnectedIntl } from '../../../utils/internationalization';
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { formatOSMChaLink } from '../../../utils/osmchaLink';
 import { OSMChaButton } from '../osmchaButton';
 
@@ -16,11 +14,9 @@ test('OSMChaButton with compact False', () => {
     created: '2019-08-27T12:20:42.460024Z',
   };
   const { container } = render(
-    <Provider store={store}>
-      <ConnectedIntl>
-        <OSMChaButton project={project} className="pl2 ba b--red" />
-      </ConnectedIntl>
-    </Provider>,
+    <ReduxIntlProviders>
+      <OSMChaButton project={project} className="pl2 ba b--red" />
+    </ReduxIntlProviders>,
   );
   expect(screen.getByText('Changesets in OSMCha').className).toBe('pl2 ba b--red br1 f5 pointer');
   expect(container.querySelector('a').href).toBe(formatOSMChaLink(project));
@@ -36,11 +32,9 @@ test('OSMChaButton with compact True', () => {
     created: '2019-08-27T12:20:42.460024Z',
   };
   const { container } = render(
-    <Provider store={store}>
-      <ConnectedIntl>
-        <OSMChaButton project={project} className="pl3" compact={true} />
-      </ConnectedIntl>
-    </Provider>,
+    <ReduxIntlProviders>
+      <OSMChaButton project={project} className="pl3" compact={true} />
+    </ReduxIntlProviders>,
   );
   expect(screen.getByText('Changesets').className).toBe('pl3 br1 f5 pointer');
   expect(screen.queryByText('Changesets in OSMCha')).not.toBeInTheDocument();

@@ -1,24 +1,20 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { store } from '../../../store';
-import { ConnectedIntl } from '../../../utils/internationalization';
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { BarListChart, BarChartItem } from '../barListChart';
 
 test('BarChartItem with link address', () => {
   const { container } = render(
-    <Provider store={store}>
-      <ConnectedIntl>
-        <BarChartItem
-          name={'Test project'}
-          link={'/projects/1/'}
-          percentValue={0.54}
-          tasksNumber={10}
-        />
-      </ConnectedIntl>
-    </Provider>,
+    <ReduxIntlProviders>
+      <BarChartItem
+        name={'Test project'}
+        link={'/projects/1/'}
+        percentValue={0.54}
+        tasksNumber={10}
+      />
+    </ReduxIntlProviders>,
   );
   const linkElement = screen.getByText('Test project');
   expect(linkElement.className).toBe('link blue-dark');
@@ -32,11 +28,9 @@ test('BarChartItem with link address', () => {
 
 test('BarChartItem without link address', () => {
   const { container } = render(
-    <Provider store={store}>
-      <ConnectedIntl>
-        <BarChartItem name={'Test project'} percentValue={0.65} tasksNumber={23} />
-      </ConnectedIntl>
-    </Provider>,
+    <ReduxIntlProviders>
+      <BarChartItem name={'Test project'} percentValue={0.65} tasksNumber={23} />
+    </ReduxIntlProviders>,
   );
 
   expect(screen.getByText('Test project').className).toBe('ma0 f7 b');
@@ -55,17 +49,15 @@ test('BarListChart renders correct elements', () => {
     { id: 6, name: 'Disaster response', mapped: 91, validated: 93, total: 184, percent: 0.09 },
   ];
   const { container } = render(
-    <Provider store={store}>
-      <ConnectedIntl>
-        <BarListChart
-          data={data}
-          linkBase="/projects/"
-          linkField="id"
-          nameField="name"
-          valueField="total"
-        />
-      </ConnectedIntl>
-    </Provider>,
+    <ReduxIntlProviders>
+      <BarListChart
+        data={data}
+        linkBase="/projects/"
+        linkField="id"
+        nameField="name"
+        valueField="total"
+      />
+    </ReduxIntlProviders>,
   );
   expect(container.querySelector('ol').className).toBe('pa0 mt1 mb0');
   expect(container.querySelectorAll('li').length).toBe(3);

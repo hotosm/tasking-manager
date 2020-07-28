@@ -16,3 +16,9 @@ export const createComponentWithReduxAndIntl = (children, props = { locale: 'en'
     </Provider>,
   );
 };
+
+export const ReduxIntlProviders = ({ children, props = { locale: 'en' } }: Object) => (
+  <Provider store={store}>
+    <IntlProvider {...props}>{children}</IntlProvider>
+  </Provider>
+);

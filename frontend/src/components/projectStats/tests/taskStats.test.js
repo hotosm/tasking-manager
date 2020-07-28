@@ -1,10 +1,8 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { store } from '../../../store';
-import { ConnectedIntl } from '../../../utils/internationalization';
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import TasksByStatus from '../taskStatus';
 
 describe('', () => {
@@ -19,11 +17,9 @@ describe('', () => {
     totalTasks: 213,
   };
   const { container } = render(
-    <Provider store={store}>
-      <ConnectedIntl>
-        <TasksByStatus stats={stats} />
-      </ConnectedIntl>
-    </Provider>,
+    <ReduxIntlProviders>
+      <TasksByStatus stats={stats} />
+    </ReduxIntlProviders>,
   );
   it('', () => {
     expect(screen.getByText('Tasks by status').className).toBe('barlow-condensed ttu f3');

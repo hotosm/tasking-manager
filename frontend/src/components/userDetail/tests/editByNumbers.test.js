@@ -1,20 +1,16 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { store } from '../../../store';
-import { ConnectedIntl } from '../../../utils/internationalization';
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { EditsByNumbers } from '../editsByNumbers';
 
 describe('EditsByNumbers card', () => {
   it('renders a message if the user has not stats yet', () => {
     render(
-      <Provider store={store}>
-        <ConnectedIntl>
-          <EditsByNumbers osmStats={{}} />
-        </ConnectedIntl>
-      </Provider>,
+      <ReduxIntlProviders>
+        <EditsByNumbers osmStats={{}} />
+      </ReduxIntlProviders>,
     );
 
     expect(screen.getByText('Edits by numbers').className).toBe('f4 mv3 fw6');
@@ -38,11 +34,9 @@ describe('EditsByNumbers card', () => {
       total_road_count_mod: 51730,
     };
     const { container } = render(
-      <Provider store={store}>
-        <ConnectedIntl>
-          <EditsByNumbers osmStats={stats} />
-        </ConnectedIntl>
-      </Provider>,
+      <ReduxIntlProviders>
+        <EditsByNumbers osmStats={stats} />
+      </ReduxIntlProviders>,
     );
 
     expect(screen.getByText('Edits by numbers').className).toBe('f4 mv3 fw6');

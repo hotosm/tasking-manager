@@ -1,10 +1,8 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { store } from '../../../store';
-import { ConnectedIntl } from '../../../utils/internationalization';
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { TopCauses } from '../topCauses';
 
 describe('TopCauses card', () => {
@@ -17,11 +15,9 @@ describe('TopCauses card', () => {
       projectsMapped: 0,
     };
     render(
-      <Provider store={store}>
-        <ConnectedIntl>
-          <TopCauses userStats={stats} />
-        </ConnectedIntl>
-      </Provider>,
+      <ReduxIntlProviders>
+        <TopCauses userStats={stats} />
+      </ReduxIntlProviders>,
     );
 
     expect(screen.getByText('Top causes contributed to').className).toBe('f4 mv3 fw6');
@@ -41,11 +37,9 @@ describe('TopCauses card', () => {
       projectsMapped: 7,
     };
     const { container } = render(
-      <Provider store={store}>
-        <ConnectedIntl>
-          <TopCauses userStats={stats} />
-        </ConnectedIntl>
-      </Provider>,
+      <ReduxIntlProviders>
+        <TopCauses userStats={stats} />
+      </ReduxIntlProviders>,
     );
 
     expect(screen.getByText('Top causes contributed to').className).toBe('f4 mv3 fw6');

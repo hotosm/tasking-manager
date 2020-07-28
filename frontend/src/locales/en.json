@@ -269,6 +269,8 @@
   "project.detail.sections.overview": "Overview",
   "project.detail.sections.description": "Description",
   "project.detail.sections.questionsAndComments": "Questions and comments",
+  "project.detail.sections.questionsAndComments.help.managers": "Add \"{hashtag}\" to notify the project managers about your comment.",
+  "project.detail.sections.questionsAndComments.help.author": "Add \"{hashtag}\" to notify the project author about your comment.",
   "project.detail.sections.contributions": "Contributions",
   "project.detail.sections.contributionsTimeline": "Contributions timeline",
   "project.detail.sections.contributions.osmcha": "Changesets in OSMCha",
