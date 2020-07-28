@@ -214,7 +214,10 @@ const TaskSelectionFooter = (props) => {
             ) ? (
               <FormattedMessage {...messages.selectAnotherProject} />
             ) : (
-              <FormattedMessage {...messages[props.taskAction]} />
+              <FormattedMessage
+                {...messages[props.taskAction]}
+                values={{ number: props.selectedTasks ? props.selectedTasks.length : 0 }}
+              />
             )}
           </Button>
         </div>

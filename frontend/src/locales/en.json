@@ -532,7 +532,7 @@
   "project.selectTask.footer.button.mapSelectedTask": "Map selected task",
   "project.selectTask.footer.button.mapAnotherTask": "Map another task",
   "project.selectTask.footer.button.validateRandomTask": "Validate a task",
-  "project.selectTask.footer.button.validateSelectedTask": "Validate selected task",
+  "project.selectTask.footer.button.validateSelectedTask": "{number, plural, one {Validate selected task} other {Validate # selected tasks}}",
   "project.selectTask.footer.button.validateAnotherTask": "Validate another task",
   "project.selectTask.footer.button.selectAnotherProject": "Select another project",
   "project.selectTask.footer.button.resumeMapping": "Resume mapping",
