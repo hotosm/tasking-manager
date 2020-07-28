@@ -16,6 +16,7 @@ import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSON
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { UserFetchTextarea } from '../projectDetail/questionsAndComments';
+import { HashtagPaste } from '../projectDetail/hashtagPaste';
 
 const PostComment = ({ projectId, taskId, setCommentPayload }) => {
   const token = useSelector((state) => state.auth.get('token'));
@@ -50,6 +51,13 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
             setValueFn={(e) => setComment(e.target.value)}
             token={token}
           />
+          {comment && (
+            <span className="blue-grey f6 pt2">
+              <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
+              <span>, </span>
+              <HashtagPaste text={comment} setFn={setComment} hashtag="#author" />
+            </span>
+          )}
         </div>
       </div>
       <div className="w-100 pb3 pt2 tr pr3">

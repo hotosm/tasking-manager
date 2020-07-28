@@ -195,6 +195,14 @@ export default defineMessages({
     id: 'project.detail.sections.questionsAndComments',
     defaultMessage: 'Questions and comments',
   },
+  managersHashtagTip: {
+    id: 'project.detail.sections.questionsAndComments.help.managers',
+    defaultMessage: 'Add "{hashtag}" to notify the project managers about your comment.',
+  },
+  authorHashtagTip: {
+    id: 'project.detail.sections.questionsAndComments.help.author',
+    defaultMessage: 'Add "{hashtag}" to notify the project author about your comment.',
+  },
   contributions: {
     id: 'project.detail.sections.contributions',
     defaultMessage: 'Contributions',
