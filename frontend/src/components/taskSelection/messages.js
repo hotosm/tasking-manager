@@ -196,7 +196,8 @@ export default defineMessages({
   },
   validateSelectedTask: {
     id: 'project.selectTask.footer.button.validateSelectedTask',
-    defaultMessage: 'Validate selected task',
+    defaultMessage:
+      '{number, plural, one {Validate selected task} other {Validate # selected tasks}}',
   },
   validateAnotherTask: {
     id: 'project.selectTask.footer.button.validateAnotherTask',
