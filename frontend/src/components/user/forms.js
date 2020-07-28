@@ -454,6 +454,9 @@ function UserNotificationsForm(props) {
         <CustomField labelId="mentions" descriptionId="mentionsDescription">
           <SwitchToggleField fieldName="mentionsNotifications" />
         </CustomField>
+        <CustomField labelId="taskUpdates" descriptionId="taskUpdatesDescription">
+          <SwitchToggleField fieldName="tasksNotifications" />
+        </CustomField>
         <CustomField labelId="projectUpdates" descriptionId="projectUpdatesDescription">
           <SwitchToggleField fieldName="projectsNotifications" />
         </CustomField>
