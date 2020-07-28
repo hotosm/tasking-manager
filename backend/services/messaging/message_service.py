@@ -140,9 +140,9 @@ class MessageService:
             ):
                 messages_objs.append(obj)
                 continue
-            if (
-                user.projects_notifications is False
-                and obj.message_type == MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
+            if user.projects_notifications is False and obj.message_type in (
+                MessageType.PROJECT_ACTIVITY_NOTIFICATION.value,
+                MessageType.BROADCAST.value,
             ):
                 continue
             if user.comments_notifications is False and obj.message_type in (
