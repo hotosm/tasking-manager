@@ -7,6 +7,7 @@ source_lang = en
 trans.ar = frontend/src/locales/ar.json
 trans.cs = frontend/src/locales/cs.json
 trans.de = frontend/src/locales/de.json
+trans.el = frontend/src/locales/el.json
 trans.es = frontend/src/locales/es.json
 trans.fa_IR = frontend/src/locales/fa_IR.json
 trans.fr = frontend/src/locales/fr.json
