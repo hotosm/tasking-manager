@@ -23,15 +23,17 @@ export const AddButton = () => (
   </CustomButton>
 );
 
-export const DeleteButton = ({ className, onClick }: Object) => (
+export const DeleteButton = ({ className, onClick, showText = true }: Object) => (
   <CustomButton
     className={`red bg-transparent ba b--red barlow-condensed pv1 ${className}`}
     onClick={onClick}
   >
     <WasteIcon height="20px" width="20px" className="v-mid" />
-    <span className="v-mid f3 ttu pl2">
-      <FormattedMessage {...messages.delete} />
-    </span>
+    {showText && (
+      <span className="v-mid f3 ttu pl2">
+        <FormattedMessage {...messages.delete} />
+      </span>
+    )}
   </CustomButton>
 );
 
