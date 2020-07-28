@@ -1,20 +1,16 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { store } from '../../../store';
-import { ConnectedIntl } from '../../../utils/internationalization';
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { TopProjects } from '../topProjects';
 
 describe('TopProjects card', () => {
   it('renders a message if the user has not stats yet', () => {
     render(
-      <Provider store={store}>
-        <ConnectedIntl>
-          <TopProjects projects={{ mappedProjects: [] }} />
-        </ConnectedIntl>
-      </Provider>,
+      <ReduxIntlProviders>
+        <TopProjects projects={{ mappedProjects: [] }} />
+      </ReduxIntlProviders>,
     );
 
     expect(screen.getByText('Top 5 projects contributed').className).toBe('f4 mv0 fw6 pt3');
@@ -42,11 +38,9 @@ describe('TopProjects card', () => {
       ],
     };
     const { container } = render(
-      <Provider store={store}>
-        <ConnectedIntl>
-          <TopProjects projects={projects} />
-        </ConnectedIntl>
-      </Provider>,
+      <ReduxIntlProviders>
+        <TopProjects projects={projects} />
+      </ReduxIntlProviders>,
     );
 
     expect(screen.getByText('Top 5 projects contributed').className).toBe('f4 mv0 fw6 pt3');

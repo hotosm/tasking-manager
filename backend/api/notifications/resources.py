@@ -4,6 +4,7 @@ from backend.services.messaging.message_service import (
     NotFound,
     MessageServiceError,
 )
+from backend.services.notification_service import NotificationService
 from backend.services.users.authentication_service import token_auth, tm
 
 
@@ -217,6 +218,42 @@ class NotificationsQueriesCountUnreadAPI(Resource):
             unread_count = MessageService.has_user_new_messages(
                 token_auth.current_user()
             )
+            return unread_count, 200
+        except Exception as e:
+            error_msg = f"User GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": "Unable to fetch messages count"}, 500
+
+
+class NotificationsQueriesPostUnreadAPI(Resource):
+    @tm.pm_only(False)
+    @token_auth.login_required
+    def post(self):
+        """
+        Updates notification datetime for user
+        ---
+        tags:
+          - notifications
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+        responses:
+            404:
+                description: Notification not found.
+            200:
+                description: Message info
+            500:
+                description: Internal Server Error
+        """
+        try:
+            user_id = token_auth.current_user()
+            unread_count = NotificationService.update(user_id)
             return unread_count, 200
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"

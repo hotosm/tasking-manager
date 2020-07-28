@@ -1,10 +1,8 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { store } from '../../../store';
-import { ConnectedIntl } from '../../../utils/internationalization';
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { CompletionStats } from '../completion';
 
 describe('', () => {
@@ -20,11 +18,9 @@ describe('', () => {
       totalTasks: 213,
     };
     const { container } = render(
-      <Provider store={store}>
-        <ConnectedIntl>
-          <CompletionStats tasksByStatus={stats} />
-        </ConnectedIntl>
-      </Provider>,
+      <ReduxIntlProviders>
+        <CompletionStats tasksByStatus={stats} />
+      </ReduxIntlProviders>,
     );
     expect(screen.getByText('Tasks to map').className).toBe('ma0 h2 f4 fw6 blue-grey ttl');
     expect(screen.getByText('177').className).toBe('ma0 mb2 barlow-condensed f1 b red');

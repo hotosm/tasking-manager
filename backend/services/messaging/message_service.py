@@ -14,6 +14,7 @@ from backend.models.postgis.message import Message, MessageType, NotFound
 from backend.models.postgis.notification import Notification
 from backend.models.postgis.project import Project
 from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
+from backend.models.postgis.statuses import TeamRoles
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import get_template, get_profile_url
 from backend.services.users.user_service import UserService, User
@@ -128,12 +129,27 @@ class MessageService:
         if len(messages) == 0:
             return
 
-        # Flush messages to get the id
-        db.session.add_all([m["message"] for m in messages])
-        db.session.flush()
-
+        messages_objs = []
         for i, message in enumerate(messages):
             user = message.get("user")
+            obj = message.get("message")
+            # Store message in the database only if mentions option are disabled.
+            if (
+                user.mentions_notifications is False
+                and obj.message_type == MessageType.MENTION_NOTIFICATION.value
+            ):
+                messages_objs.append(obj)
+                continue
+            if (
+                user.projects_notifications is False
+                and obj.message_type == MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
+            ):
+                continue
+            if user.comments_notifications is False and obj.message_type in (
+                MessageType.TASK_COMMENT_NOTIFICATION.value,
+                MessageType.PROJECT_CHAT_NOTIFICATION.value,
+            ):
+                continue
             SMTPService.send_email_alert(
                 user.email_address, user.username, message["message"].id
             )
@@ -141,14 +157,18 @@ class MessageService:
             if i + 1 % 10 == 0:
                 time.sleep(0.5)
 
-        db.session.commit()
+        # Flush messages to the database.
+        if len(messages_objs) > 0:
+            db.session.add_all(messages_objs)
+            db.session.flush()
+            db.session.commit()
 
     @staticmethod
     def send_message_after_comment(
         comment_from: int, comment: str, task_id: int, project_id: int
     ):
         """ Will send a canned message to anyone @'d in a comment """
-        usernames = MessageService._parse_message_for_username(comment)
+        usernames = MessageService._parse_message_for_username(comment, project_id)
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
 
@@ -159,10 +179,6 @@ class MessageService:
                     user = UserService.get_user_by_username(username)
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
-
-                # Validate mention_notification.
-                if user.mentions_notifications is False:
-                    continue
 
                 message = Message()
                 message.message_type = MessageType.MENTION_NOTIFICATION.value
@@ -200,9 +216,6 @@ class MessageService:
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
 
-                if user.comments_notifications is False:
-                    continue
-
                 message = Message()
                 message.message_type = MessageType.TASK_COMMENT_NOTIFICATION.value
                 message.project_id = project_id
@@ -230,7 +243,7 @@ class MessageService:
     @staticmethod
     def send_request_to_join_team(
         from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
@@ -255,7 +268,7 @@ class MessageService:
         team_name: str,
         team_id: int,
         response: str,
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
@@ -280,7 +293,7 @@ class MessageService:
         team_name: str,
         team_id: int,
         response: str,
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
@@ -302,7 +315,7 @@ class MessageService:
     @staticmethod
     def send_invite_to_join_team(
         from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
-    ) -> Message:
+    ):
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
@@ -323,7 +336,7 @@ class MessageService:
     def send_message_after_chat(chat_from: int, chat: str, project_id: int):
         """ Send alert to user if they were @'d in a chat message """
         current_app.logger.debug("Sending Message After Chat")
-        usernames = MessageService._parse_message_for_username(chat)
+        usernames = MessageService._parse_message_for_username(chat, project_id)
 
         if len(usernames) == 0:
             return  # Nobody @'d so return
@@ -338,10 +351,6 @@ class MessageService:
             except NotFound:
                 current_app.logger.error(f"Username {username} not found")
                 continue  # If we can't find the user, keep going no need to fail
-
-            # Validate mention_notification.
-            if user.mentions_notifications is False:
-                continue
 
             message = Message()
             message.message_type = MessageType.MENTION_NOTIFICATION.value
@@ -370,9 +379,6 @@ class MessageService:
                     user = UserService.get_user_dto_by_id(user_id)
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
-
-                if user.comments_notifications is False:
-                    continue
 
                 message = Message()
                 message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
@@ -408,8 +414,6 @@ class MessageService:
             )
         )
         user = UserService.get_user_dto_by_id(user_id)
-        if user.projects_notifications is False:
-            return
         messages = []
         for project in recently_updated_projects:
             activity_message = []
@@ -450,7 +454,40 @@ class MessageService:
         SMTPService.send_verification_email(user.email_address, user.username)
 
     @staticmethod
-    def _parse_message_for_username(message: str) -> List[str]:
+    def _get_managers(message: str, project_id: int) -> List[str]:
+        parser = re.compile(r"((?<=#)\w+|\[.+?\])")
+        parsed = parser.findall(message)
+
+        project = None
+        if "author" in parsed or "managers" in parsed:
+            project = Project.query.get(project_id)
+
+        if project is None:
+            return []
+
+        project_managers = [project.author.username]
+
+        if "managers" not in parsed:
+            return project_managers
+
+        teams = [t for t in project.teams if t.role == TeamRoles.PROJECT_MANAGER.value]
+        team_members = [
+            [u.member.username for u in t.team.members if u.active is True]
+            for t in teams
+        ]
+
+        team_members = [item for sublist in team_members for item in sublist]
+        project_managers.extend(team_members)
+
+        # Add organization managers.
+        if project.organisation is not None:
+            org_usernames = [u.username for u in project.organisation.managers]
+            project_managers.extend(org_usernames)
+
+        return project_managers
+
+    @staticmethod
+    def _parse_message_for_username(message: str, project_id: int) -> List[str]:
         """ Extracts all usernames from a comment looks for format @[user name] """
 
         parser = re.compile(r"((?<=@)\w+|\[.+?\])")
@@ -462,6 +499,9 @@ class MessageService:
             username = username.replace("]", "", index)
             usernames.append(username)
 
+        usernames.extend(MessageService._get_managers(message, project_id))
+
+        usernames = list(set(usernames))
         return usernames
 
     @staticmethod

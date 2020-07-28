@@ -7,6 +7,7 @@ import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { PaginatorLine } from '../paginator';
 import { Button } from '../button';
+import { HashtagPaste } from './hashtagPaste';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -106,6 +107,13 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
           setValueFn={(e) => setComment(e.target.value)}
           token={token}
         />
+        {comment && (
+          <span className="blue-grey f6 pt2">
+            <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
+            <span>, </span>
+            <HashtagPaste text={comment} setFn={setComment} hashtag="#author" />
+          </span>
+        )}
       </div>
       <div className="fl w-20-ns w-100 tc-ns tr pt3 pr0-ns pr1">
         <Button onClick={saveComment} className="bg-red white f5" disabled={comment === ''}>

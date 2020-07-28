@@ -12,7 +12,7 @@ export function countriesList() {
 
 export function getCountryCode(name) {
   const data = countriesList();
-  var newData = Object.keys(data).reduce(function (obj, key) {
+  var newData = Object.keys(data).reduce((obj, key) => {
     obj[data[key]] = key;
     return obj;
   }, {});

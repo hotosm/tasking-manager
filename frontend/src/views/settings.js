@@ -36,6 +36,6 @@ export function Settings() {
       </div>
     );
   } else {
-    return <Redirect from={'settings'} to={'login'} noThrow />;
+    return <Redirect from={'settings'} to={'/login'} noThrow />;
   }
 }
