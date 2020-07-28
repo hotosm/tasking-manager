@@ -140,15 +140,21 @@ class MessageService:
             ):
                 messages_objs.append(obj)
                 continue
-            if (
-                user.projects_notifications is False
-                and obj.message_type == MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
+            if user.projects_notifications is False and obj.message_type in (
+                MessageType.PROJECT_ACTIVITY_NOTIFICATION.value,
+                MessageType.BROADCAST.value,
             ):
                 continue
             if user.comments_notifications is False and obj.message_type in (
                 MessageType.TASK_COMMENT_NOTIFICATION.value,
                 MessageType.PROJECT_CHAT_NOTIFICATION.value,
             ):
+                continue
+            if user.tasks_notifications is False and obj.message_type in (
+                MessageType.VALIDATION_NOTIFICATION.value,
+                MessageType.INVALIDATION_NOTIFICATION.value,
+            ):
+                messages_objs.append(obj)
                 continue
             SMTPService.send_email_alert(
                 user.email_address, user.username, message["message"].id

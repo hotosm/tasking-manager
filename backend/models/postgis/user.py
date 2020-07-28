@@ -58,6 +58,7 @@ class User(db.Model):
     mentions_notifications = db.Column(db.Boolean, default=True, nullable=False)
     comments_notifications = db.Column(db.Boolean, default=False, nullable=False)
     projects_notifications = db.Column(db.Boolean, default=True, nullable=False)
+    tasks_notifications = db.Column(db.Boolean, default=True, nullable=False)
     date_registered = db.Column(db.DateTime, default=timestamp)
     # Represents the date the user last had one of their tasks validated
     last_validation_date = db.Column(db.DateTime, default=timestamp)
@@ -368,6 +369,7 @@ class User(db.Model):
         user_dto.mentions_notifications = self.mentions_notifications
         user_dto.projects_notifications = self.projects_notifications
         user_dto.comments_notifications = self.comments_notifications
+        user_dto.tasks_notifications = self.tasks_notifications
         user_dto.validation_message = self.validation_message
         gender = None
         if self.gender is not None:
