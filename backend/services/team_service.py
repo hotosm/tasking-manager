@@ -6,12 +6,9 @@ from backend.models.dtos.team_dto import (
     TeamDTO,
     NewTeamDTO,
     TeamsListDTO,
-    TeamMembersDTO,
     ProjectTeamDTO,
-    TeamProjectDTO,
     TeamDetailsDTO,
 )
-from backend.models.dtos.organisation_dto import OrganisationProjectsDTO
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.project import ProjectTeams
 from backend.models.postgis.project_info import ProjectInfo
@@ -269,8 +266,7 @@ class TeamService:
                 team_members = team.members
 
                 team_dto.members = [
-                    TeamService.get_team_member_as_dto(member)
-                    for member in team_members
+                    team.as_dto_team_member(member) for member in team_members
                 ]
 
             if team_dto.visibility == "PRIVATE" and not is_admin:
@@ -314,29 +310,18 @@ class TeamService:
         if abbreviated:
             return team_dto
 
-        team_dto.members = [
-            TeamService.get_team_member_as_dto(member) for member in team.members
-        ]
+        team_dto.members = [team.as_dto_team_member(member) for member in team.members]
 
         team_projects = TeamService.get_projects_by_team_id(team.id)
-        for team_project in team_projects:
-            project_team_dto = TeamProjectDTO()
-            project_team_dto.project_name = team_project.name
-            project_team_dto.project_id = team_project.project_id
-            project_team_dto.role = TeamRoles(team_project.role).name
 
-            team_dto.team_projects.append(project_team_dto)
-
-        org_project_dto = OrganisationProjectsDTO()
-        org_project_dto.project_id = team.organisation.id
-        org_project_dto.project_name = team.organisation.name
-
-        team_dto.organisation_projects.append(org_project_dto)
+        team_dto.team_projects = [
+            team.as_dto_team_project(project) for project in team_projects
+        ]
 
         return team_dto
 
     @staticmethod
-    def get_projects_by_team_id(team_id: int) -> ProjectInfo:
+    def get_projects_by_team_id(team_id: int):
         projects = (
             db.session.query(
                 ProjectInfo.name, ProjectTeams.project_id, ProjectTeams.role
@@ -369,17 +354,6 @@ class TeamService:
             teams_list_dto.teams.append(team_dto)
 
         return teams_list_dto
-
-    @staticmethod
-    def get_team_member_as_dto(member: TeamMembers) -> TeamMembersDTO:
-        member_dto = TeamMembersDTO()
-        user = UserService.get_user_by_id(member.user_id)
-        member_function = TeamMemberFunctions(member.function).name
-        member_dto.username = user.username
-        member_dto.function = member_function
-        member_dto.picture_url = user.picture_url
-        member_dto.active = member.active
-        return member_dto
 
     @staticmethod
     def change_team_role(team_id: int, project_id: int, role: str):

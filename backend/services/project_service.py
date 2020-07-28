@@ -112,7 +112,7 @@ class ProjectService:
 
         contribs_dto = ProjectContribsDTO()
         # Filter and store unique dates
-        dates = [r[1] for r in stats]
+        dates = list(set(r[1] for r in stats))
         dates.sort(
             reverse=False
         )  # Why was this reversed? To have the dates in ascending order
