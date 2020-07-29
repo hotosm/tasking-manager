@@ -50,7 +50,9 @@ def upgrade():
     )
     op.add_column(
         "users",
-        sa.Column("expert_mode", sa.Boolean(), server_default=sa.false(), nullable=False),
+        sa.Column(
+            "expert_mode", sa.Boolean(), server_default=sa.false(), nullable=False
+        ),
     )
 
 
