@@ -85,7 +85,6 @@ class MessageService:
         validation_message.to_user_id = mapped_by
         validation_message.subject = f"Your mapping in Project {project_id} on {task_link} has just been {status_text}"
         validation_message.message = text_template
-        validation_message.add_message()
         validation_message.save()
         messages.append(dict(message=validation_message, user=user))
 
@@ -128,7 +127,6 @@ class MessageService:
 
         messages_objs = []
         for i, message in enumerate(messages):
-            print(message)
             user = message.get("user")
             obj = message.get("message")
             # Store message in the database only if mentions option are disabled.
@@ -136,7 +134,6 @@ class MessageService:
                 user.mentions_notifications is False
                 and obj.message_type == MessageType.MENTION_NOTIFICATION.value
             ):
-                messages_objs.append(obj)
                 continue
             if (
                 user.projects_notifications is False
@@ -147,7 +144,6 @@ class MessageService:
                 user.projects_notifications is False
                 and obj.message_type == MessageType.BROADCAST.value
             ):
-                messages_objs.append(obj)
                 continue
             if user.comments_notifications is False and obj.message_type in (
                 MessageType.TASK_COMMENT_NOTIFICATION.value,
@@ -197,6 +193,7 @@ class MessageService:
                 message.to_user_id = user.id
                 message.subject = f"You were mentioned in a comment in Project {project_id} on {task_link}"
                 message.message = comment
+                message.save()
                 messages.append(dict(message=message, user=user))
 
             MessageService._push_messages(messages)
@@ -232,6 +229,7 @@ class MessageService:
                 message.to_user_id = user.id
                 message.subject = f"{user_from.username} left a comment in Project {project_id} on {task_link}"
                 message.message = comment
+                message.save()
                 messages.append(dict(message=message, user=user))
 
             MessageService._push_messages(messages)
