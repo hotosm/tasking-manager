@@ -90,10 +90,10 @@ class MessageService:
         validation_message.subject = f"Your mapping in Project {project_id} on {task_link} has just been {status_text}"
         validation_message.message = text_template
         validation_message.add_message()
+        validation_message.save()
 
-        SMTPService.send_email_alert(
-            user.email_address, user.username, validation_message.id
-        )
+        # For email alerts
+        MessageService._push_messages(validation_message)
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
@@ -160,7 +160,6 @@ class MessageService:
                 MessageType.VALIDATION_NOTIFICATION.value,
                 MessageType.INVALIDATION_NOTIFICATION.value,
             ):
-                messages_objs.append(obj)
                 continue
             SMTPService.send_email_alert(
                 user.email_address, user.username, message["message"].id
