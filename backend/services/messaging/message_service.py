@@ -60,11 +60,6 @@ class MessageService:
             return  # No need to send a message to yourself
 
         user = UserService.get_user_by_id(mapped_by)
-        if user.validation_message is False:
-            return  # No need to send validation message
-        if user.projects_notifications is False:
-            return
-
         text_template = get_template(
             "invalidation_message_en.txt"
             if status == TaskStatus.INVALIDATED
@@ -77,6 +72,7 @@ class MessageService:
         text_template = text_template.replace("[USERNAME]", user.username)
         text_template = text_template.replace("[TASK_LINK]", task_link)
 
+        messages = []
         validation_message = Message()
         validation_message.message_type = (
             MessageType.INVALIDATION_NOTIFICATION.value
@@ -91,9 +87,10 @@ class MessageService:
         validation_message.message = text_template
         validation_message.add_message()
         validation_message.save()
+        messages.append(dict(message=validation_message, user=user))
 
         # For email alerts
-        MessageService._push_messages(validation_message)
+        MessageService._push_messages(messages)
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
@@ -131,6 +128,7 @@ class MessageService:
 
         messages_objs = []
         for i, message in enumerate(messages):
+            print(message)
             user = message.get("user")
             obj = message.get("message")
             # Store message in the database only if mentions option are disabled.

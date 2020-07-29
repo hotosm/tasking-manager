@@ -46,7 +46,6 @@ def is_known_role(value):
 class UserDTO(Model):
     """ DTO for User """
 
-    validation_message = BooleanType(default=True)
     id = LongType()
     username = StringType()
     role = StringType()

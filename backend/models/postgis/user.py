@@ -31,7 +31,6 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.BigInteger, primary_key=True, index=True)
-    validation_message = db.Column(db.Boolean, default=True, nullable=False)
     username = db.Column(db.String, unique=True)
     role = db.Column(db.Integer, default=0, nullable=False)
     mapping_level = db.Column(db.Integer, default=1, nullable=False)
@@ -370,7 +369,6 @@ class User(db.Model):
         user_dto.projects_notifications = self.projects_notifications
         user_dto.comments_notifications = self.comments_notifications
         user_dto.tasks_notifications = self.tasks_notifications
-        user_dto.validation_message = self.validation_message
         gender = None
         if self.gender is not None:
             gender = UserGender(self.gender).name
