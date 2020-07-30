@@ -30,6 +30,13 @@ class OrganisationTeamsDTO(Model):
 class OrganisationDTO(Model):
     """ Describes JSON model for an organisation """
 
+    def __init__(self):
+        super().__init__()
+        self.managers = []
+        self.projects = []
+        self.teams = []
+        self.campaigns = []
+
     organisation_id = IntType(serialized_name="organisationId")
     managers = ListType(ModelType(OrganisationManagerDTO), min_size=1, required=True)
     name = StringType(required=True)
@@ -43,11 +50,19 @@ class OrganisationDTO(Model):
 
 
 class ListOrganisationsDTO(Model):
+    def __init__(self):
+        super().__init__()
+        self.organisations = []
+
     organisations = ListType(ModelType(OrganisationDTO))
 
 
 class NewOrganisationDTO(Model):
     """ Describes a JSON model to create a new organisation """
+
+    def __init__(self):
+        super().__init__()
+        self.managers = []
 
     organisation_id = IntType(serialized_name="organisationId", required=False)
     managers = ListType(StringType(), required=True)
@@ -58,5 +73,9 @@ class NewOrganisationDTO(Model):
 
 
 class UpdateOrganisationDTO(OrganisationDTO):
+    def __init__(self):
+        super().__init__()
+        self.managers = []
+
     managers = ListType(StringType())
     name = StringType()
