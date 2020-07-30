@@ -10,7 +10,6 @@ from backend.models.dtos.organisation_dto import (
 )
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectInfo
-from backend.models.postgis.team import Team
 from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
 
@@ -163,15 +162,6 @@ class OrganisationService:
             raise NotFound()
 
         return projects
-
-    @staticmethod
-    def get_teams_by_organisation_id(organisation_id: int) -> Organisation:
-        teams = Team.query.filter(Team.organisation_id == organisation_id).all()
-
-        if teams is None:
-            raise NotFound()
-
-        return teams
 
     @staticmethod
     def assert_validate_name(org: Organisation, name: str):
