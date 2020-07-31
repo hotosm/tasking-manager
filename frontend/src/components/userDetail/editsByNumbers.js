@@ -1,21 +1,35 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
+import typesMessages from '../messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 
 export const EditsByNumbers = ({ osmStats }) => {
+  const intl = useIntl();
   let reference = [
-    { label: 'Building', field: 'total_building_count_add', backgroundColor: CHART_COLOURS.red },
-    { label: 'Roads', field: 'total_road_km_add', backgroundColor: CHART_COLOURS.green },
     {
-      label: 'Points of interests',
+      label: intl.formatMessage(typesMessages.buildings),
+      field: 'total_building_count_add',
+      backgroundColor: CHART_COLOURS.red,
+    },
+    {
+      label: intl.formatMessage(typesMessages.roads),
+      field: 'total_road_km_add',
+      backgroundColor: CHART_COLOURS.green,
+    },
+    {
+      label: intl.formatMessage(typesMessages.pointsOfInterest),
       field: 'total_poi_count_add',
       backgroundColor: CHART_COLOURS.orange,
     },
-    { label: 'Waterways', field: 'total_waterway_count_add', backgroundColor: CHART_COLOURS.blue },
+    {
+      label: intl.formatMessage(typesMessages.waterways),
+      field: 'total_waterway_count_add',
+      backgroundColor: CHART_COLOURS.blue,
+    },
   ];
 
   const data = formatChartData(reference, osmStats);
