@@ -317,8 +317,6 @@ class Project(db.Model):
                 "created": timestamp(),
                 "author_id": author_id,
                 "status": ProjectStatus.DRAFT.value,
-                "geometry": None,
-                "centroid": None,
             }
         )
 
@@ -351,7 +349,6 @@ class Project(db.Model):
             setattr(new_proj, field, value)
 
         new_proj.custom_editor = orig.custom_editor
-        db.session.commit()
 
         return new_proj
 
