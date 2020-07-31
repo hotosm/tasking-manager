@@ -2,7 +2,7 @@ from cachetools import TTLCache, cached
 from flask import current_app
 import datetime
 from sqlalchemy.sql.expression import literal
-from sqlalchemy import text, func, or_, desc, and_, distinct, cast, Time
+from sqlalchemy import func, or_, desc, and_, distinct, cast, Time
 from backend import db
 from backend.models.dtos.project_dto import ProjectFavoritesDTO, ProjectSearchResultsDTO
 from backend.models.dtos.user_dto import (
@@ -204,7 +204,7 @@ class UserService:
                     "count_projects"
                 ),
             )
-            .outerjoin(
+            .join(
                 project_interests,
                 and_(
                     Interest.id == project_interests.c.interest_id,
@@ -395,23 +395,31 @@ class UserService:
         )
         total_validation_time = db.session.query(
             func.sum(cast(func.to_timestamp(query.c.tm, "HH24:MI:SS"), Time))
-        ).all()
+        ).scalar()
 
-        for time in total_validation_time:
-            total_validation_time = time[0]
-            if total_validation_time:
-                stats_dto.time_spent_validating = total_validation_time.total_seconds()
-                stats_dto.total_time_spent += stats_dto.time_spent_validating
+        if total_validation_time:
+            stats_dto.time_spent_validating = total_validation_time.total_seconds()
+            stats_dto.total_time_spent += stats_dto.time_spent_validating
 
-        sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE (action='LOCKED_FOR_MAPPING' or action='AUTO_UNLOCKED_FOR_MAPPING')
-                and user_id = :user_id;"""
-        total_mapping_time = db.engine.execute(text(sql), user_id=user.id)
-        for time in total_mapping_time:
-            total_mapping_time = time[0]
-            if total_mapping_time:
-                stats_dto.time_spent_mapping = total_mapping_time.total_seconds()
-                stats_dto.total_time_spent += stats_dto.time_spent_mapping
+        total_mapping_time = (
+            db.session.query(
+                func.sum(
+                    cast(func.to_timestamp(TaskHistory.action_text, "HH24:MI:SS"), Time)
+                )
+            )
+            .filter(
+                or_(
+                    TaskHistory.action == TaskAction.LOCKED_FOR_MAPPING.name,
+                    TaskHistory.action == TaskAction.AUTO_UNLOCKED_FOR_MAPPING.name,
+                )
+            )
+            .filter(TaskHistory.user_id == user.id)
+            .scalar()
+        )
+
+        if total_mapping_time:
+            stats_dto.time_spent_mapping = total_mapping_time.total_seconds()
+            stats_dto.total_time_spent += stats_dto.time_spent_mapping
 
         stats_dto.contributions_interest = UserService.get_interests_stats(user.id)
 
@@ -731,7 +739,6 @@ class UserService:
             return
 
         user.save()
-        return user
 
     @staticmethod
     def notify_level_upgrade(user_id: int, username: str, level: str):
@@ -784,7 +791,6 @@ class UserService:
     @staticmethod
     def get_interests(user: User) -> InterestsListDTO:
         dto = InterestsListDTO()
-        dto.interests = []
         for interest in Interest.query.all():
             int_dto = interest.as_dto()
             if interest in user.interests:
