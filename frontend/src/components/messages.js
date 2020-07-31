@@ -23,7 +23,8 @@ export default defineMessages({
   },
   credits: {
     id: 'footer.credits',
-    defaultMessage: 'Free and Open Source Software brought to you by the Humanitarian OpenStreetMap Team.',
+    defaultMessage:
+      'Free and Open Source Software brought to you by the Humanitarian OpenStreetMap Team.',
   },
   learn: {
     id: 'footer.learn',
@@ -48,5 +49,29 @@ export default defineMessages({
   mappingLevelBEGINNER: {
     id: 'mapping.level.beginner',
     defaultMessage: 'Beginner mapper',
+  },
+  roads: {
+    id: 'project.typesOfMapping.roads',
+    defaultMessage: 'Roads',
+  },
+  buildings: {
+    id: 'project.typesOfMapping.buildings',
+    defaultMessage: 'Buildings',
+  },
+  landUse: {
+    id: 'project.typesOfMapping.landUse',
+    defaultMessage: 'Land use',
+  },
+  waterways: {
+    id: 'project.typesOfMapping.waterways',
+    defaultMessage: 'Waterways',
+  },
+  other: {
+    id: 'project.typesOfMapping.other',
+    defaultMessage: 'Other',
+  },
+  pointsOfInterest: {
+    id: 'project.typesOfMapping.pointsOfInterest',
+    defaultMessage: 'Points of interest',
   },
 });

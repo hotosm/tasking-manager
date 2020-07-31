@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
+import Select from 'react-select';
+import { FormattedMessage } from 'react-intl';
+
 import messages from './messages';
+import typesMessages from '../messages';
 import { StateContext, styleClasses, handleCheckButton } from '../../views/projectEdit';
 import { ProjectInterests } from './projectInterests';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import Select from 'react-select';
 import { ID_PRESETS } from '../../config/presets';
 
 export const MetadataForm = () => {
@@ -30,11 +32,11 @@ export const MetadataForm = () => {
   }, [userDetails, token]);
 
   const elements = [
-    { item: 'ROADS', showItem: 'Roads' },
-    { item: 'BUILDINGS', showItem: 'Buildings' },
-    { item: 'WATERWAYS', showItem: 'Waterways' },
-    { item: 'LAND_USE', showItem: 'Landuse' },
-    { item: 'OTHER', showItem: 'Other' },
+    { item: 'ROADS', messageId: 'roads' },
+    { item: 'BUILDINGS', messageId: 'buildings' },
+    { item: 'WATERWAYS', messageId: 'waterways' },
+    { item: 'LAND_USE', messageId: 'landUse' },
+    { item: 'OTHER', messageId: 'other' },
   ];
 
   const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
@@ -113,7 +115,7 @@ export const MetadataForm = () => {
                 type="checkbox"
                 value={elm.item}
               />
-              {elm.showItem}
+              <FormattedMessage {...typesMessages[elm.messageId]} />
             </label>
           ))}
         </div>
