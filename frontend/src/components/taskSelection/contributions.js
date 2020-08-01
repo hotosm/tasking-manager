@@ -63,14 +63,9 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
                   username={user.username}
                   colorClasses="white bg-blue-grey"
                 />
-                <a
-                  className="blue-dark mr2 link"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  href={`/users/${user.username}`}
-                >
+                <Link className="blue-dark mr2 link" to={`/users/${user.username}`}>
                   {user.username}
-                </a>
+                </Link>
               </span>
             </>
           )}
