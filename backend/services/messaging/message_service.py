@@ -63,8 +63,8 @@ class MessageService:
         status: int, validated_by: int, mapped_by: int, task_id: int, project_id: int
     ):
         """ Sends mapper a notification after their task has been marked valid or invalid """
-        # if validated_by == mapped_by:
-        #     return  # No need to send a message to yourself
+        if validated_by == mapped_by:
+            return  # No need to send a message to yourself
 
         user = UserService.get_user_by_id(mapped_by)
         text_template = get_template(
