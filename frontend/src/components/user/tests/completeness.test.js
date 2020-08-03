@@ -9,7 +9,6 @@ const createComponentWithIntl = (children, props = { locale: 'en' }) => {
 };
 
 const user0Percent = {
-  validation_message: true,
   id: 1,
   username: 'user1',
   role: 'ADMIN',
@@ -40,7 +39,6 @@ const user0Percent = {
 };
 
 const incompleteProfile = {
-  validation_message: true,
   id: 1,
   username: 'user1',
   role: 'ADMIN',
@@ -72,7 +70,6 @@ const incompleteProfile = {
 };
 
 const user100Percent = {
-  validation_message: true,
   id: 1,
   username: 'user1',
   role: 'ADMIN',

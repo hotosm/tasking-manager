@@ -192,3 +192,8 @@ class Team(db.Model):
             )
 
         return members
+
+    def get_team_managers(self):
+        return TeamMembers.query.filter_by(
+            team_id=self.id, function=TeamMemberFunctions.MANAGER.value, active=True
+        ).all()

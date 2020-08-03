@@ -21,7 +21,10 @@ def upgrade():
     op.add_column(
         "projects",
         sa.Column(
-            "allow_non_beginners", sa.Boolean(), nullable=True, server_default="FALSE"
+            "allow_non_beginners",
+            sa.Boolean(),
+            nullable=True,
+            server_default=sa.false(),
         ),
     )
     # ### end Alembic commands ###

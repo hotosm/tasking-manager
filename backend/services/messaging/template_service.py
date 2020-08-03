@@ -1,5 +1,5 @@
 import os
-import urllib.parse
+import re
 from flask import current_app
 
 
@@ -20,7 +20,14 @@ def get_template(template_name: str) -> str:
         raise ValueError("Unable open file {0}".format(template_location))
 
 
-def get_profile_url(username: str):
-    """ Helper function returns the URL of the supplied users profile """
-    base_url = current_app.config["APP_BASE_URL"]
-    return f"{base_url}/user/{urllib.parse.quote(username)}"
+def template_var_replacing(content: str, replace_list: list) -> str:
+    """Receives a content string and executes a replace operation to each item on the list. """
+    for term in replace_list:
+        content = content.replace(term[0], term[1])
+    return content
+
+
+def clean_html(raw_html):
+    cleanr = re.compile("<.*?>")
+    clean_text = re.sub(cleanr, "", raw_html)
+    return clean_text

@@ -46,7 +46,6 @@ def is_known_role(value):
 class UserDTO(Model):
     """ DTO for User """
 
-    validation_message = BooleanType(default=True)
     id = LongType()
     username = StringType()
     role = StringType()
@@ -74,6 +73,7 @@ class UserDTO(Model):
     mentions_notifications = BooleanType(serialized_name="mentionsNotifications")
     comments_notifications = BooleanType(serialized_name="commentsNotifications")
     projects_notifications = BooleanType(serialized_name="projectsNotifications")
+    tasks_notifications = BooleanType(serialized_name="tasksNotifications")
 
     # these are read only
     missing_maps_profile = StringType(serialized_name="missingMapsProfile")

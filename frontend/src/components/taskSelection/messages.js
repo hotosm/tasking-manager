@@ -98,26 +98,6 @@ export default defineMessages({
     id: 'project.typesOfMapping',
     defaultMessage: 'Types of Mapping',
   },
-  roads: {
-    id: 'project.typesOfMapping.roads',
-    defaultMessage: 'Roads',
-  },
-  buildings: {
-    id: 'project.typesOfMapping.buildings',
-    defaultMessage: 'Buildings',
-  },
-  landUse: {
-    id: 'project.typesOfMapping.landUse',
-    defaultMessage: 'Land use',
-  },
-  waterways: {
-    id: 'project.typesOfMapping.waterways',
-    defaultMessage: 'Waterways',
-  },
-  other: {
-    id: 'project.typesOfMapping.other',
-    defaultMessage: 'Other',
-  },
   editor: {
     id: 'project.editor',
     defaultMessage: 'Editor',

@@ -120,6 +120,10 @@ export default defineMessages({
     id: 'user.notifications.projects',
     defaultMessage: 'Project updates',
   },
+  taskUpdates: {
+    id: 'user.notifications.tasks',
+    defaultMessage: 'Tasks validation emails',
+  },
   required: {
     id: 'user.settings.required',
     defaultMessage: 'Required fields',
@@ -127,6 +131,10 @@ export default defineMessages({
   projectUpdatesDescription: {
     id: 'user.notifications.projects.description',
     defaultMessage: 'You get a notification when a project you have contributed to makes progress.',
+  },
+  taskUpdatesDescription: {
+    id: 'user.notifications.task.description',
+    defaultMessage: 'Receive an email when a task you have contributed to is validated.',
   },
   comments: {
     id: 'user.notifications.comments',

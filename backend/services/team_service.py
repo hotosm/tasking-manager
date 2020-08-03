@@ -79,7 +79,7 @@ class TeamService:
             TeamService.add_team_member(team_id, user.id, role, active)
 
             if team.invite_only:
-                team_managers = TeamService._get_team_managers(team_id)
+                team_managers = team.get_team_managers()
                 for member in team_managers:
                     MessageService.send_request_to_join_team(
                         user.id, user.username, member.user_id, team.name, team_id
@@ -127,7 +127,7 @@ class TeamService:
         from_user = UserService.get_user_by_id(from_user_id)
         to_user = UserService.get_user_by_username(username)
         team = TeamService.get_team_by_id(team_id)
-        team_members = TeamService._get_team_managers(team_id)
+        team_members = team.get_team_managers()
 
         for member in team_members:
             MessageService.accept_reject_invitation_request_for_team(
@@ -457,12 +457,6 @@ class TeamService:
             team_dto.members = members
 
     @staticmethod
-    def _get_team_managers(team_id: int):
-        return TeamMembers.query.filter_by(
-            team_id=team_id, function=TeamMemberFunctions.MANAGER.value, active=True
-        ).all()
-
-    @staticmethod
     def _get_team_members(team_id: int):
         return TeamMembers.query.filter_by(team_id=team_id).all()
 
@@ -501,10 +495,11 @@ class TeamService:
     @staticmethod
     def is_user_team_manager(team_id: int, user_id: int):
         # Admin manages all teams
+        team = Team.get(team_id)
         if UserService.is_user_an_admin(user_id):
             return True
 
-        managers = TeamService._get_team_managers(team_id)
+        managers = team.get_team_managers(team_id)
         for member in managers:
             if member.user_id == user_id:
                 return True
@@ -513,7 +508,7 @@ class TeamService:
         user_managed_orgs = [
             org.id for org in OrganisationService.get_organisations(user_id)
         ]
-        if Team.get(team_id).organisation_id in user_managed_orgs:
+        if team.organisation_id in user_managed_orgs:
             return True
 
         return False

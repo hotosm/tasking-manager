@@ -16,7 +16,11 @@ from backend.models.postgis.project import Project
 from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
 from backend.models.postgis.statuses import TeamRoles
 from backend.services.messaging.smtp_service import SMTPService
-from backend.services.messaging.template_service import get_template, get_profile_url
+from backend.services.messaging.template_service import (
+    get_template,
+    template_var_replacing,
+    clean_html,
+)
 from backend.services.users.user_service import UserService, User
 
 
@@ -35,17 +39,20 @@ class MessageService:
     @staticmethod
     def send_welcome_message(user: User):
         """ Sends welcome message to all new users at Sign up"""
+        org_code = current_app.config["ORG_CODE"]
         text_template = get_template("welcome_message_en.txt")
-
-        text_template = text_template.replace("[USERNAME]", user.username)
-        text_template = text_template.replace(
-            "[PROFILE_LINK]", get_profile_url(user.username)
-        )
+        replace_list = [
+            ["[USERNAME]", user.username],
+            ["[ORG_CODE]", org_code],
+            ["[ORG_NAME]", current_app.config["ORG_NAME"]],
+            ["[SETTINGS_LINK]", MessageService.get_user_settings_link()],
+        ]
+        text_template = template_var_replacing(text_template, replace_list)
 
         welcome_message = Message()
         welcome_message.message_type = MessageType.SYSTEM.value
         welcome_message.to_user_id = user.id
-        welcome_message.subject = "Welcome to the HOT Tasking Manager"
+        welcome_message.subject = "Welcome to the {} Tasking Manager".format(org_code)
         welcome_message.message = text_template
         welcome_message.save()
 
@@ -60,11 +67,6 @@ class MessageService:
             return  # No need to send a message to yourself
 
         user = UserService.get_user_by_id(mapped_by)
-        if user.validation_message is False:
-            return  # No need to send validation message
-        if user.projects_notifications is False:
-            return
-
         text_template = get_template(
             "invalidation_message_en.txt"
             if status == TaskStatus.INVALIDATED
@@ -74,9 +76,14 @@ class MessageService:
             "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
         )
         task_link = MessageService.get_task_link(project_id, task_id)
-        text_template = text_template.replace("[USERNAME]", user.username)
-        text_template = text_template.replace("[TASK_LINK]", task_link)
+        replace_list = [
+            ["[USERNAME]", user.username],
+            ["[TASK_LINK]", task_link],
+            ["[ORG_NAME]", current_app.config["ORG_NAME"]],
+        ]
+        text_template = template_var_replacing(text_template, replace_list)
 
+        messages = []
         validation_message = Message()
         validation_message.message_type = (
             MessageType.INVALIDATION_NOTIFICATION.value
@@ -87,13 +94,14 @@ class MessageService:
         validation_message.task_id = task_id
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
-        validation_message.subject = f"Your mapping in Project {project_id} on {task_link} has just been {status_text}"
-        validation_message.message = text_template
-        validation_message.add_message()
-
-        SMTPService.send_email_alert(
-            user.email_address, user.username, validation_message.id
+        validation_message.subject = (
+            f"{task_link} mapped by you in Project {project_id} has been {status_text}"
         )
+        validation_message.message = text_template
+        messages.append(dict(message=validation_message, user=user))
+
+        # For email alerts
+        MessageService._push_messages(messages)
 
     @staticmethod
     def send_message_to_all_contributors(project_id: int, message_dto: MessageDTO):
@@ -118,7 +126,6 @@ class MessageService:
                 message = Message.from_dto(contributor[0], message_dto)
                 message.message_type = MessageType.BROADCAST.value
                 message.project_id = project_id
-                message.save()
                 user = UserService.get_user_by_id(contributor[0])
                 messages.append(dict(message=message, user=user))
 
@@ -145,13 +152,30 @@ class MessageService:
                 and obj.message_type == MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
             ):
                 continue
+            if (
+                user.projects_notifications is False
+                and obj.message_type == MessageType.BROADCAST.value
+            ):
+                continue
             if user.comments_notifications is False and obj.message_type in (
                 MessageType.TASK_COMMENT_NOTIFICATION.value,
                 MessageType.PROJECT_CHAT_NOTIFICATION.value,
             ):
                 continue
+            if user.tasks_notifications is False and obj.message_type in (
+                MessageType.VALIDATION_NOTIFICATION.value,
+                MessageType.INVALIDATION_NOTIFICATION.value,
+            ):
+                messages_objs.append(obj)
+                continue
+            messages_objs.append(obj)
+
             SMTPService.send_email_alert(
-                user.email_address, user.username, message["message"].id
+                user.email_address,
+                user.username,
+                message["message"].id,
+                clean_html(message["message"].subject),
+                message["message"].message,
             )
 
             if i + 1 % 10 == 0:
@@ -186,7 +210,7 @@ class MessageService:
                 message.task_id = task_id
                 message.from_user_id = comment_from
                 message.to_user_id = user.id
-                message.subject = f"You were mentioned in a comment in Project {project_id} on {task_link}"
+                message.subject = f"You were mentioned in a comment in {task_link} of Project {project_id}"
                 message.message = comment
                 messages.append(dict(message=message, user=user))
 
@@ -221,7 +245,7 @@ class MessageService:
                 message.project_id = project_id
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = f"{user_from.username} left a comment in Project {project_id} on {task_link}"
+                message.subject = f"{user_from.username} left a comment in {task_link} of Project {project_id}"
                 message.message = comment
                 messages.append(dict(message=message, user=user))
 
@@ -357,7 +381,7 @@ class MessageService:
             message.project_id = project_id
             message.from_user_id = chat_from
             message.to_user_id = user.id
-            message.subject = f"You were mentioned in Project Chat on {link}"
+            message.subject = f"You were mentioned in {link} chat"
             message.message = chat
             messages.append(dict(message=message, user=user))
 
@@ -384,9 +408,7 @@ class MessageService:
                 message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
                 message.project_id = project_id
                 message.to_user_id = user.id
-                message.subject = (
-                    f"{chat_from} left a comment in Project {project_link}"
-                )
+                message.subject = f"{chat_from} left a comment in {project_link}"
                 message.message = chat
                 messages.append(dict(message=message, user=user))
 
@@ -441,7 +463,7 @@ class MessageService:
                 "Recent activities from your contributed/favorited Projects"
             )
             message.message = (
-                f"{activity_message} contributed to Project {project_link} recently"
+                f"{activity_message} contributed to {project_link} recently"
             )
             messages.append(dict(message=message, user=user))
 
@@ -616,8 +638,7 @@ class MessageService:
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
-        link = f'<a href="{base_url}/projects/{project_id}/tasks/?search={task_id}">Task {task_id}</a>'
-        return link
+        return f'<a href="{base_url}/projects/{project_id}/tasks/?search={task_id}">Task {task_id}</a>'
 
     @staticmethod
     def get_project_link(project_id: int, base_url=None) -> str:
@@ -625,8 +646,7 @@ class MessageService:
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
-        link = f'<a href="{base_url}/projects/{project_id}#questionsAndComments">Project {project_id}</a>'
-        return link
+        return f'<a href="{base_url}/projects/{project_id}#questionsAndComments">Project {project_id}</a>'
 
     @staticmethod
     def get_user_profile_link(user_name: str, base_url=None) -> str:
@@ -634,5 +654,12 @@ class MessageService:
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
-        link = f'<a href="{base_url}/users/{user_name}>{user_name}</a>'
-        return link
+        return f'<a href="{base_url}/users/{user_name}">{user_name}</a>'
+
+    @staticmethod
+    def get_user_settings_link(section=None, base_url=None) -> str:
+        """ Helper method to generate a link to a user profile"""
+        if not base_url:
+            base_url = current_app.config["APP_BASE_URL"]
+
+        return f'<a href="{base_url}/settings#{section}">User Settings</a>'
