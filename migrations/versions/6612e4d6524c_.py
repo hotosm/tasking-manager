@@ -26,7 +26,7 @@ def upgrade():
         sa.Column(
             "mentions_notifications",
             sa.Boolean(),
-            server_default="TRUE",
+            server_default=sa.true(),
             nullable=False,
         ),
     )
@@ -35,7 +35,7 @@ def upgrade():
         sa.Column(
             "comments_notifications",
             sa.Boolean(),
-            server_default="FALSE",
+            server_default=sa.false(),
             nullable=False,
         ),
     )
@@ -44,13 +44,15 @@ def upgrade():
         sa.Column(
             "projects_notifications",
             sa.Boolean(),
-            server_default="TRUE",
+            server_default=sa.true(),
             nullable=False,
         ),
     )
     op.add_column(
         "users",
-        sa.Column("expert_mode", sa.Boolean(), server_default="FALSE", nullable=False),
+        sa.Column(
+            "expert_mode", sa.Boolean(), server_default=sa.false(), nullable=False
+        ),
     )
 
 

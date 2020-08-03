@@ -29,7 +29,10 @@ from backend.models.postgis.statuses import TaskStatus, ProjectStatus
 from backend.models.postgis.utils import NotFound
 from backend.services.users.osm_service import OSMService, OSMServiceError
 from backend.services.messaging.smtp_service import SMTPService
-from backend.services.messaging.template_service import get_template
+from backend.services.messaging.template_service import (
+    get_template,
+    template_var_replacing,
+)
 
 
 user_filter_cache = TTLCache(maxsize=1024, ttl=600)
@@ -733,14 +736,16 @@ class UserService:
     @staticmethod
     def notify_level_upgrade(user_id: int, username: str, level: str):
         text_template = get_template("level_upgrade_message_en.txt")
+        replace_list = [
+            ["[USERNAME]", username],
+            ["[LEVEL]", level],
+            ["[ORG_CODE]", current_app.config["ORG_CODE"]],
+        ]
+        text_template = template_var_replacing(text_template, replace_list)
 
-        if username is not None:
-            text_template = text_template.replace("[USERNAME]", username)
-
-        text_template = text_template.replace("[LEVEL]", level)
         level_upgrade_message = Message()
         level_upgrade_message.to_user_id = user_id
-        level_upgrade_message.subject = "Mapper Level Upgrade "
+        level_upgrade_message.subject = "Mapper level upgrade"
         level_upgrade_message.message = text_template
         level_upgrade_message.save()
 

@@ -1,10 +1,4 @@
-Hi [USERNAME]
+[CONTENT]
 
-You have a new message on the HOT Tasking Manager.  Click the link below to view it.
-
-[PROFILE_LINK]
-
-Please note: You can now opt-out of all automated validation messages by visiting your User Profile Settings and choosing which notifications you want to receive.
-
-Many thanks,
-Humanitarian OpenStreetMap Team
+Access your inbox to read all your messages on the [ORG_CODE] Tasking Manager: [PROFILE_LINK]
+You can opt-out of these emails by visiting your user settings page and adjusting your notification preferences: [SETTINGS_LINK]

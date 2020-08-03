@@ -1,10 +1,10 @@
 Hi [USERNAME]
 
-Thank you for supply your email address, please click the link below to verify you own this address
+Thank you for supply your email address to the [ORG_CODE] Tasking Manager, please click the link below to verify you own this address
 
-[VEFIFICATION_LINK]
+[VERIFICATION_LINK]
 
 Please ignore this email if you have received it by mistake.
 
-Many thanks
-HOT Mapping Team
+Many thanks,
+[ORG_NAME]

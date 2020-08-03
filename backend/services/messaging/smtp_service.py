@@ -4,14 +4,17 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
-from backend.services.messaging.template_service import get_template
+from backend.services.messaging.template_service import (
+    get_template,
+    template_var_replacing,
+)
 
 
 class SMTPService:
     @staticmethod
     def send_verification_email(to_address: str, username: str):
         """ Sends a verification email with a unique token so we can verify user owns this email address """
-
+        org_code = current_app.config["ORG_CODE"]
         # TODO these could be localised if needed, in the future
         html_template = get_template("email_verification_en.html")
         text_template = get_template("email_verification_en.txt")
@@ -19,14 +22,16 @@ class SMTPService:
         verification_url = SMTPService._generate_email_verification_url(
             to_address, username
         )
+        replace_list = [
+            ["[USERNAME]", username],
+            ["[VERIFICATION_LINK]", verification_url],
+            ["[ORG_CODE]", org_code],
+            ["[ORG_NAME]", current_app.config["ORG_NAME"]],
+        ]
+        html_template = template_var_replacing(html_template, replace_list)
+        text_template = template_var_replacing(text_template, replace_list)
 
-        html_template = html_template.replace("[USERNAME]", username)
-        html_template = html_template.replace("[VEFIFICATION_LINK]", verification_url)
-
-        text_template = text_template.replace("[USERNAME]", username)
-        text_template = text_template.replace("[VEFIFICATION_LINK]", verification_url)
-
-        subject = "HOT Tasking Manager - Email Verification"
+        subject = "{} Tasking Manager - Email Verification".format(org_code)
         SMTPService._send_message(to_address, subject, html_template, text_template)
 
         return True
@@ -47,9 +52,16 @@ class SMTPService:
         SMTPService._send_message(email_to, subject, message, message)
 
     @staticmethod
-    def send_email_alert(to_address: str, username: str, message_id: int = None):
-        """ Send an email to user to alert them they have a new message"""
+    def send_email_alert(
+        to_address: str, username: str, message_id: int, subject: str, content: str
+    ):
+        """Send an email to user to alert that they have a new message"""
         current_app.logger.debug(f"Test if email required {to_address}")
+        org_code = current_app.config["ORG_CODE"]
+        settings_url = "{}/settings#notifications".format(
+            current_app.config["APP_BASE_URL"]
+        )
+
         if not to_address:
             return False  # Many users will not have supplied email address so return
         message_path = ""
@@ -60,14 +72,15 @@ class SMTPService:
         html_template = get_template("message_alert_en.html")
         text_template = get_template("message_alert_en.txt")
         inbox_url = f"{current_app.config['APP_BASE_URL']}/inbox{message_path}"
+        replace_list = [
+            ["[ORG_CODE]", org_code],
+            ["[PROFILE_LINK]", inbox_url],
+            ["[SETTINGS_LINK]", settings_url],
+            ["[CONTENT]", content],
+        ]
+        html_template = template_var_replacing(html_template, replace_list)
+        text_template = template_var_replacing(text_template, replace_list)
 
-        html_template = html_template.replace("[USERNAME]", username)
-        html_template = html_template.replace("[PROFILE_LINK]", inbox_url)
-
-        text_template = text_template.replace("[USERNAME]", username)
-        text_template = text_template.replace("[PROFILE_LINK]", inbox_url)
-
-        subject = "You have a new message on the HOT Tasking Manager"
         SMTPService._send_message(to_address, subject, html_template, text_template)
 
         return True
