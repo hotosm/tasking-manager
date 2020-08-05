@@ -9,7 +9,6 @@ from schematics.types import (
     ModelType,
 )
 from backend.models.postgis.statuses import TeamMemberFunctions, TeamVisibility
-from backend.models.dtos.organisation_dto import OrganisationProjectsDTO
 
 
 def validate_team_visibility(value):
@@ -67,7 +66,6 @@ class TeamDetailsDTO(Model):
         super().__init__()
         self.members = []
         self.team_projects = []
-        self.organisation_projects = []
 
     """ Describes JSON model for a team """
     team_id = IntType(serialized_name="teamId")
@@ -86,7 +84,6 @@ class TeamDetailsDTO(Model):
     is_general_admin = BooleanType(default=False)
     members = ListType(ModelType(TeamMembersDTO))
     team_projects = ListType(ModelType(ProjectTeamDTO))
-    organisation_projects = ListType(ModelType(OrganisationProjectsDTO))
 
 
 class TeamDTO(Model):

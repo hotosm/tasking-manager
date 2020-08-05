@@ -60,10 +60,3 @@ class NewOrganisationDTO(Model):
 class UpdateOrganisationDTO(OrganisationDTO):
     managers = ListType(StringType())
     name = StringType()
-
-
-class OrganisationProjectsDTO(Model):
-    """ Describes a JSON model to create a project team """
-
-    project_name = StringType(serialize_when_none=False)
-    project_id = IntType(serialize_when_none=False)
