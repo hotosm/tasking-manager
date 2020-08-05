@@ -287,26 +287,31 @@ class MessageService:
             return f'<a href="{base_url}/teams/{team_id}/membership/">{team_name}</a>'
 
     @staticmethod
+    @tm.asynchronous()
     def send_request_to_join_team(
         from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
     ):
-        message = Message()
-        message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
-        message.from_user_id = from_user
-        message.to_user_id = to_user
-        message.subject = "{} requested to join {}".format(
-            MessageService.get_user_link(from_username),
-            MessageService.get_team_link(team_name, team_id, True),
-        )
-        message.message = "{} has requested to join the {} team.\
-            Access the team management page to accept or reject that request.".format(
-            MessageService.get_user_link(from_username),
-            MessageService.get_team_link(team_name, team_id, True),
-        )
-        message.add_message()
-        message.save()
+        app = create_app()
+
+        with app.app_context():
+            message = Message()
+            message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
+            message.from_user_id = from_user
+            message.to_user_id = to_user
+            message.subject = "{} requested to join {}".format(
+                MessageService.get_user_link(from_username),
+                MessageService.get_team_link(team_name, team_id, True),
+            )
+            message.message = "{} has requested to join the {} team.\
+                Access the team management page to accept or reject that request.".format(
+                MessageService.get_user_link(from_username),
+                MessageService.get_team_link(team_name, team_id, True),
+            )
+            message.add_message()
+            message.save()
 
     @staticmethod
+    @tm.asynchronous()
     def accept_reject_request_to_join_team(
         from_user: int,
         from_username: str,
@@ -315,20 +320,23 @@ class MessageService:
         team_id: int,
         response: str,
     ):
-        message = Message()
-        message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
-        message.from_user_id = from_user
-        message.to_user_id = to_user
-        message.subject = "Request to join {} was {}ed".format(
-            MessageService.get_team_link(team_name, team_id, False), response
-        )
-        message.message = "{} has {}ed your request to join the {} team.".format(
-            MessageService.get_user_link(from_username),
-            response,
-            MessageService.get_team_link(team_name, team_id, False),
-        )
-        message.add_message()
-        message.save()
+        app = create_app()
+
+        with app.app_context():
+            message = Message()
+            message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
+            message.from_user_id = from_user
+            message.to_user_id = to_user
+            message.subject = "Request to join {} was {}ed".format(
+                MessageService.get_team_link(team_name, team_id, False), response
+            )
+            message.message = "{} has {}ed your request to join the {} team.".format(
+                MessageService.get_user_link(from_username),
+                response,
+                MessageService.get_team_link(team_name, team_id, False),
+            )
+            message.add_message()
+            message.save()
 
     @staticmethod
     def accept_reject_invitation_request_for_team(
@@ -359,24 +367,28 @@ class MessageService:
         message.save()
 
     @staticmethod
+    @tm.asynchronous()
     def send_invite_to_join_team(
         from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
     ):
-        message = Message()
-        message.message_type = MessageType.INVITATION_NOTIFICATION.value
-        message.from_user_id = from_user
-        message.to_user_id = to_user
-        message.subject = "Invitation to join {}".format(
-            MessageService.get_team_link(team_name, team_id, False)
-        )
-        message.message = "{} has invited you to join the {} team.\
-            Access the {}'s page to accept or reject that invitation.".format(
-            MessageService.get_user_link(from_username),
-            MessageService.get_team_link(team_name, team_id, False),
-            MessageService.get_team_link(team_name, team_id, False),
-        )
-        message.add_message()
-        message.save()
+        app = create_app()
+
+        with app.app_context():
+            message = Message()
+            message.message_type = MessageType.INVITATION_NOTIFICATION.value
+            message.from_user_id = from_user
+            message.to_user_id = to_user
+            message.subject = "Invitation to join {}".format(
+                MessageService.get_team_link(team_name, team_id, False)
+            )
+            message.message = "{} has invited you to join the {} team.\
+                Access the {}'s page to accept or reject that invitation.".format(
+                MessageService.get_user_link(from_username),
+                MessageService.get_team_link(team_name, team_id, False),
+                MessageService.get_team_link(team_name, team_id, False),
+            )
+            message.add_message()
+            message.save()
 
     @staticmethod
     def send_message_after_chat(chat_from: int, chat: str, project_id: int):
