@@ -8431,10 +8431,10 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-msw@^0.20.1:
-  version "0.20.1"
-  resolved "https://registry.yarnpkg.com/msw/-/msw-0.20.1.tgz#34804ab934905b54a2c5189d360c44faf6801945"
-  integrity sha512-mrQb4LFmZ6KrADb1Hl2T4yQhxwCkhDz/HRRRLl+RgguUBJ+8aqDtXxGo23Eagw+Q4zrWIyJ//fENv4H6GBeTig==
+msw@^0.20.2:
+  version "0.20.2"
+  resolved "https://registry.yarnpkg.com/msw/-/msw-0.20.2.tgz#063d7b7e5ce97ef7e7dfb22b1ed3dfc6ad5d2946"
+  integrity sha512-loFNV0tis8Z8opK7L8nPq0U3o9jyJVFzMTiKidDydBYLsiFtoSuxSaQMFWJORKBO6yGMtDrTN7ADohq9SAfKKQ==
   dependencies:
     "@open-draft/until" "^1.0.3"
     "@types/cookie" "^0.4.0"
