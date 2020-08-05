@@ -1,7 +1,7 @@
 "Component: Frontend":
   - frontend/**/*
 "Component: Backend":
-  - server/**/*
+  - backend/**/*
   - tests/**/*
   - migrations/**/*
   - ./manage.py
@@ -12,3 +12,4 @@
   - scripts/aws/**/*
   - scripts/docker/**/*
   - scripts/install/**/*
+  - docker-*.yml
