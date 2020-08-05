@@ -9,7 +9,7 @@ import messages from './messages';
 import systemAvatar from '../../assets/img/hot-system-avatar-square-opaque.png';
 import { EyeIcon } from '../svgIcons';
 import { UserAvatar } from '../user/avatar';
-import { DeleteModal } from '../deleteModal';
+import { DeleteButton } from '../teamsAndOrgs/management';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { navigate, useLocation } from '@reach/router';
@@ -69,6 +69,13 @@ export function NotificationCard({
   const setMessageAsRead = (messageId) => {
     fetchLocalJSONAPI(`notifications/${messageId}/`, token).then(() => retryFn());
   };
+  const deleteNotification = (id) => {
+    fetchLocalJSONAPI(`notifications/${id}/`, token, 'DELETE')
+      .then((success) => retryFn())
+      .catch((e) => {
+        console.log(e.message);
+      });
+  };
 
   const replacedSubject = subject.replace('task=', 'search=');
   const Navigate = () => navigate(`/inbox/message/${messageId}/${location.search}`);
@@ -121,11 +128,10 @@ export function NotificationCard({
               <ReactTooltip />
             </>
           )}
-          <DeleteModal
+          <DeleteButton
             className={`fr bg-transparent bw0 w2 h2 lh-copy overflow-hidden`}
-            id={messageId}
-            name={"'" + stripHtmlToText(subject) + "'"}
-            type="notifications"
+            showText={false}
+            onClick={() => deleteNotification(messageId)}
           />
         </div>
         {messageType !== null ? (
