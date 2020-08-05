@@ -10,7 +10,6 @@ from backend.models.dtos.organisation_dto import (
 )
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectInfo
-from backend.models.postgis.team import Team
 from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
 
@@ -43,7 +42,6 @@ class OrganisationService:
             raise NotFound()
 
         organisation_dto = org.as_dto(abbreviated)
-        organisation_dto.teams = []
 
         if user_id != 0:
             organisation_dto.is_manager = OrganisationService.can_user_manage_organisation(
@@ -55,9 +53,7 @@ class OrganisationService:
         if abbreviated:
             return organisation_dto
 
-        teams = OrganisationService.get_teams_by_organisation_id(organisation_id)
-        for team in teams:
-            organisation_dto.teams.append(team.as_dto_inside_org())
+        organisation_dto.teams = [team.as_dto_inside_org() for team in org.teams]
 
         return organisation_dto
 
@@ -130,7 +126,6 @@ class OrganisationService:
     ):
         orgs = OrganisationService.get_organisations(manager_user_id)
         orgs_dto = ListOrganisationsDTO()
-        orgs_dto.organisations = []
         for org in orgs:
             org_dto = org.as_dto(omit_managers)
             if not authenticated_user_id:
@@ -151,10 +146,7 @@ class OrganisationService:
     def get_organisations_managed_by_user_as_dto(user_id: int):
         orgs = OrganisationService.get_organisations_managed_by_user(user_id)
         orgs_dto = ListOrganisationsDTO()
-        orgs_dto.organisations = []
-        for org in orgs:
-            orgs_dto.organisations.append(org.as_dto())
-
+        orgs_dto.organisations = [org.as_dto() for org in orgs]
         return orgs_dto
 
     @staticmethod
@@ -170,15 +162,6 @@ class OrganisationService:
             raise NotFound()
 
         return projects
-
-    @staticmethod
-    def get_teams_by_organisation_id(organisation_id: int) -> Organisation:
-        teams = Team.query.filter(Team.organisation_id == organisation_id).all()
-
-        if teams is None:
-            raise NotFound()
-
-        return teams
 
     @staticmethod
     def assert_validate_name(org: Organisation, name: str):
