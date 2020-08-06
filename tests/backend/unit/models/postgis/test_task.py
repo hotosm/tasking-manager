@@ -1,6 +1,4 @@
 import geojson
-import unittest
-from backend import create_app
 from backend.models.postgis.task import (
     InvalidGeoJson,
     InvalidData,
@@ -11,16 +9,10 @@ from backend.models.postgis.task import (
 from backend.models.postgis.statuses import TaskStatus
 from unittest.mock import patch, MagicMock
 
+from tests.backend.base import BaseTestCase
 
-class TestTask(unittest.TestCase):
-    def setUp(self):
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
 
-    def tearDown(self):
-        self.ctx.pop()
-
+class TestTask(BaseTestCase):
     @patch.object(Task, "update")
     @patch.object(Task, "set_task_history")
     def test_reset_task_sets_to_ready_status(self, mock_set_task_history, mock_update):

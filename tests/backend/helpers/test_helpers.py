@@ -69,7 +69,6 @@ def get_canned_simplified_osm_user_details():
 def create_canned_user() -> User:
     """ Generate a canned user in the DB """
     test_user = User()
-    test_user.id = TEST_USER_ID
     test_user.username = "Thinkwhere TEST"
     test_user.mapping_level = 1
     test_user.create()

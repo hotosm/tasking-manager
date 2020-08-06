@@ -1,9 +1,6 @@
-import os
-import unittest
 from unittest.mock import patch
 
-
-from backend import create_app
+from tests.backend.base import BaseTestCase
 from backend.services.users.user_service import (
     UserService,
     MappingLevel,
@@ -11,45 +8,13 @@ from backend.services.users.user_service import (
     OSMService,
     UserOSMDTO,
 )
-from tests.backend.helpers.test_helpers import create_canned_project
+from tests.backend.helpers.test_helpers import create_canned_user
 from backend.models.postgis.message import Message
 
 
-class TestAuthenticationService(unittest.TestCase):
-    skip_tests = False
-    test_user = None
-    test_project = None
-
-    @classmethod
-    def setUpClass(cls):
-        env = os.getenv("CI", "false")
-
-        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == "true":
-            cls.skip_tests = True
-
-    def setUp(self):
-        if self.skip_tests:
-            return
-
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
-        self.test_project, self.test_user = create_canned_project()
-
-    def tearDown(self):
-        if self.skip_tests:
-            return
-
-        self.test_project.delete()
-        self.test_user.delete()
-        self.ctx.pop()
-
+class TestAuthenticationService(BaseTestCase):
     def test_upsert_inserts_project_if_not_exists(self):
-        if self.skip_tests:
-            return
-
+        self.test_user = create_canned_user()
         # Arrange
         UserService.upsert_mapped_projects(self.test_user.id, self.test_project.id)
 
@@ -63,6 +28,7 @@ class TestAuthenticationService(unittest.TestCase):
         )  # We should find we've mapped the test project
 
     def test_set_level_adds_level_to_user(self):
+        self.test_user = create_canned_user()
         if self.skip_tests:
             return
 

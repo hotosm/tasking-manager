@@ -1,8 +1,7 @@
 import copy
-import os
-import unittest
 import geojson
-from backend import create_app
+
+from tests.backend.base import BaseTestCase
 from backend.models.postgis.project import (
     Task,
     ProjectDTO,
@@ -14,53 +13,16 @@ from backend.models.postgis.project_info import ProjectInfoDTO
 from tests.backend.helpers.test_helpers import create_canned_project
 
 
-class TestProject(unittest.TestCase):
-    skip_tests = False
-    test_project = None
-    test_user = None
-
-    @classmethod
-    def setUpClass(cls):
-        env = os.getenv("CI", "false")
-
-        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == "true":
-            cls.skip_tests = True
-
-    def setUp(self):
-        """
-        Setup test context so we can connect to database
-        """
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
-        if self.skip_tests:
-            return
-
-        self.test_project, self.test_user = create_canned_project()
-
-    def tearDown(self):
-        if self.skip_tests:
-            return
-
-        self.test_project.delete()
-        self.test_user.delete()
-        self.ctx.pop()
-
+class TestProject(BaseTestCase):
     def test_project_can_be_persisted_to_db(self):
-        if self.skip_tests:
-            return
-
+        self.test_project, self.test_user = create_canned_project()
         # Checks that code we ran in setUp actually created a project in the DB
         self.assertIsNotNone(
             self.test_project.id, "ID should be set if project successfully persisted"
         )
 
     def test_task_can_generate_valid_feature_collection(self):
-        if self.skip_tests:
-            return
-
+        self.test_project, self.test_user = create_canned_project()
         # Act
         feature_collection = Task.get_tasks_as_geojson_feature_collection(
             self.test_project.id, "1"
@@ -75,9 +37,7 @@ class TestProject(unittest.TestCase):
         self.assertEqual(2, len(feature_collection.features))
 
     def test_project_can_be_generated_as_dto(self):
-        if self.skip_tests:
-            return
-
+        self.test_project, self.test_user = create_canned_project()
         # Arrange
         self.update_project_with_info()
 
@@ -92,9 +52,7 @@ class TestProject(unittest.TestCase):
         self.assertEqual(project_dto.project_id, self.test_project.id)
 
     def test_update_project_adds_project_info(self):
-        if self.skip_tests:
-            return
-
+        self.test_project, self.test_user = create_canned_project()
         # Act
         self.update_project_with_info()
 
@@ -105,9 +63,7 @@ class TestProject(unittest.TestCase):
         self.assertEqual(self.test_project.project_info[0].name, "Thinkwhere Test")
 
     def test_partial_translation_uses_default_trans_for_empty_fields(self):
-        if self.skip_tests:
-            return
-
+        self.test_project, self.test_user = create_canned_project()
         # Arrange
         self.update_project_with_info()
 
@@ -138,10 +94,7 @@ class TestProject(unittest.TestCase):
         )
 
     def test_project_can_be_cloned(self):
-
-        if self.skip_tests:
-            return
-
+        self.test_project, self.test_user = create_canned_project()
         # Arrange
         self.update_project_with_info()
 
@@ -160,7 +113,7 @@ class TestProject(unittest.TestCase):
         original_project.delete()
 
     def update_project_with_info(self):
-
+        self.test_project, self.test_user = create_canned_project()
         locales = []
         test_info = ProjectInfoDTO()
         test_info.locale = "en"
