@@ -96,7 +96,9 @@ class SMTPService:
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
-        msg["From"] = from_address
+        msg["From"] = "{} Tasking Manager <{}>".format(
+            current_app.config["ORG_CODE"], from_address
+        )
         msg["To"] = to_address
 
         # Record the MIME types of both parts - text/plain and text/html.
