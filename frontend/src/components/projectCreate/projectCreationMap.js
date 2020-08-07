@@ -17,12 +17,12 @@ const BasemapMenu = ({ map }) => {
   // Remove elements that require mapbox token;
   let styles = BASEMAP_OPTIONS;
   if (!MAPBOX_TOKEN) {
-    styles = BASEMAP_OPTIONS.filter(s => typeof s.value === 'object');
+    styles = BASEMAP_OPTIONS.filter((s) => typeof s.value === 'object');
   }
 
   const [basemap, setBasemap] = useState(styles[0].label);
 
-  const handleClick = style => {
+  const handleClick = (style) => {
     let styleValue = style.value;
 
     if (typeof style.value === 'string') {
@@ -34,7 +34,7 @@ const BasemapMenu = ({ map }) => {
 
   return (
     <div className="bg-white blue-dark flex mt2 ml2 f7 br1 shadow-1">
-      {styles.map(style => {
+      {styles.map((style) => {
         return (
           <div
             onClick={() => handleClick(style)}
@@ -52,7 +52,7 @@ const BasemapMenu = ({ map }) => {
 
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step }) => {
   const mapRef = React.createRef();
-  const locale = useSelector(state => state.preferences['locale']);
+  const locale = useSelector((state) => state.preferences['locale']);
 
   useLayoutEffect(() => {
     setMapObj({
@@ -65,7 +65,8 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step 
         attributionControl: false,
       })
         .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
+        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
+        .addControl(new mapboxgl.ScaleControl({ unit: 'metric' })),
     });
 
     return () => {
@@ -82,11 +83,11 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step 
       });
 
       // Remove area and geometry when aoi is deleted.
-      mapObj.map.on('draw.delete', event => {
+      mapObj.map.on('draw.delete', (event) => {
         updateMetadata({ ...metadata, geom: null, area: 0 });
       });
 
-      mapObj.map.on('style.load', event => {
+      mapObj.map.on('style.load', (event) => {
         if (!MAPBOX_TOKEN) {
           return;
         }
