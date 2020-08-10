@@ -8,13 +8,17 @@ from backend.services.users.user_service import (
     OSMService,
     UserOSMDTO,
 )
-from tests.backend.helpers.test_helpers import create_canned_user
+from tests.backend.helpers.test_helpers import (
+    create_canned_user,
+    create_canned_project,
+    get_canned_user,
+)
 from backend.models.postgis.message import Message
 
 
 class TestAuthenticationService(BaseTestCase):
     def test_upsert_inserts_project_if_not_exists(self):
-        self.test_user = create_canned_user()
+        self.test_project, self.test_user = create_canned_project()
         # Arrange
         UserService.upsert_mapped_projects(self.test_user.id, self.test_project.id)
 
@@ -28,9 +32,10 @@ class TestAuthenticationService(BaseTestCase):
         )  # We should find we've mapped the test project
 
     def test_set_level_adds_level_to_user(self):
-        self.test_user = create_canned_user()
-        if self.skip_tests:
-            return
+
+        self.test_user = get_canned_user("Thinkwhere TEST")
+        if self.test_user is None:
+            self.test_user = create_canned_user()
 
         # Act
         user = UserService.set_user_mapping_level(

@@ -1,37 +1,32 @@
-import os
-import unittest
-from backend import create_app
 from backend.services.license_service import LicenseService, LicenseDTO, NotFound
+from tests.backend.base import BaseTestCase
 
 
-class TestLicenseService(unittest.TestCase):
-    skip_tests = False
+class TestLicenseService(BaseTestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        env = os.getenv("CI", "false")
+    # @classmethod
+    # def setUpClass(cls):
+    #     env = os.getenv("CI", "false")
+    #
+    #     # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
+    #     if env == "true":
+    #         cls.skip_tests = True
+    #
+    # def setUp(self):
+    #     if self.skip_tests:
+    #         return
+    #
+    #     self.app = create_app()
+    #     self.ctx = self.app.app_context()
+    #     self.ctx.push()
 
-        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == "true":
-            cls.skip_tests = True
-
-    def setUp(self):
-        if self.skip_tests:
-            return
-
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
-    def tearDown(self):
-        if self.skip_tests:
-            return
-
-        self.ctx.pop()
+    # def tearDown(self):
+    #     if self.skip_tests:
+    #         return
+    #
+    #     self.ctx.pop()
 
     def test_license_crud_works_as_expected(self):
-        if self.skip_tests:
-            return
 
         # Arrange
         license_dto = LicenseDTO()

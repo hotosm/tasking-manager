@@ -1,7 +1,4 @@
-import os
 import json
-import unittest
-from backend import create_app
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
 from backend.models.postgis.project import ProjectInfo, Project
@@ -9,35 +6,11 @@ from shapely.geometry import Polygon
 from unittest.mock import patch
 from backend.models.dtos.project_dto import ProjectSearchBBoxDTO
 from backend.models.postgis.user import User
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import get_canned_json
 
 
-class TestProjectSearchService(unittest.TestCase):
-    skip_tests = False
-
-    @classmethod
-    def setUpClass(cls):
-
-        env = os.getenv("CI", "false")
-
-        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == "true":
-            cls.skip_tests = True
-
-    def setUp(self):
-        if self.skip_tests:
-            return
-
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
-    def tearDown(self):
-        if self.skip_tests:
-            return
-
-        self.ctx.pop()
-
+class TestProjectSearchService(BaseTestCase):
     @patch.object(ProjectSearchService, "_make_4326_polygon_from_bbox")
     @patch.object(ProjectSearchService, "validate_bbox_area")
     @patch.object(UserService, "get_user_by_username")
@@ -51,9 +24,6 @@ class TestProjectSearchService(unittest.TestCase):
         validate_bbox_area,
         _make_4326_polygon_from_bbox,
     ):
-        if self.skip_tests:
-            return
-
         # arrange _make_4326_polygon_from_bbox mock
         _make_4326_polygon_from_bbox.return_value = Polygon(
             [
@@ -99,9 +69,6 @@ class TestProjectSearchService(unittest.TestCase):
 
     def test_make_polygon_from_3857_bbox(self):
 
-        if self.skip_tests:
-            return
-
         # arrange
         expected = (
             32.50198296132938,
@@ -126,12 +93,6 @@ class TestProjectSearchService(unittest.TestCase):
             self.assertAlmostEqual(expected_val, actual_val, places=10)
 
     def test_get_area_from_3857_bbox(self):
-
-        if self.skip_tests:
-            return
-
-        # arrange
-
         # polygon = ProjectSearchService._make_4326_polygon_from_bbox(
         #   [3618104.193026841, -1413969.7644834695, 3861479.691086842, -1297785.4814900015], 3857)
         polygon = Polygon(

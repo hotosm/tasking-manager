@@ -1,4 +1,3 @@
-import unittest
 from backend.services.mapping_service import (
     MappingService,
     Task,
@@ -14,9 +13,10 @@ from backend.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from backend.models.postgis.task import TaskHistory, TaskAction, User
 from unittest.mock import patch, MagicMock
 from backend import create_app
+from tests.backend.base import BaseTestCase
 
 
-class TestMappingService(unittest.TestCase):
+class TestMappingService(BaseTestCase):
     task_stub = Task
     lock_task_dto = LockTaskDTO
     mapped_task_dto = MappedTaskDTO

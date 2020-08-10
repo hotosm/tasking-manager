@@ -55,7 +55,6 @@ class TestTask(BaseTestCase):
             Task.from_geojson_feature(1, invalid_feature)
 
     def test_cant_add_task_if_feature_has_missing_properties(self):
-        # Arrange
         # Missing zoom
         invalid_properties = geojson.loads(
             '{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],'

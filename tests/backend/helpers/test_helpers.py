@@ -76,6 +76,11 @@ def create_canned_user() -> User:
     return test_user
 
 
+def get_canned_user(username: str) -> User:
+    test_user = User().get_by_username(username)
+    return test_user
+
+
 def create_canned_project() -> Tuple[Project, User]:
     """ Generates a canned project in the DB to help with integration tests """
     test_aoi_geojson = geojson.loads(json.dumps(get_canned_json("test_aoi.json")))
@@ -84,8 +89,9 @@ def create_canned_project() -> Tuple[Project, User]:
     task_non_square_feature = geojson.loads(
         json.dumps(get_canned_json("non_square_task.json"))
     )
-
-    test_user = create_canned_user()
+    test_user = get_canned_user("Thinkwhere TEST")
+    if test_user is None:
+        test_user = create_canned_user()
 
     test_project_dto = DraftProjectDTO()
     test_project_dto.project_name = "Test"

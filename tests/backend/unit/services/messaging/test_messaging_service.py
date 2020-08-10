@@ -1,9 +1,8 @@
-import unittest
-
 from backend.services.messaging.message_service import MessageService
+from tests.backend.base import BaseTestCase
 
 
-class TestMessagingService(unittest.TestCase):
+class TestMessagingService(BaseTestCase):
     # outdated test
     # def test_message_service_identifies_all_users(self):
     #     # Act

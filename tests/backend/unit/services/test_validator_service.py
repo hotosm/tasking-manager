@@ -1,7 +1,5 @@
-import unittest
 from unittest.mock import patch
 
-from backend import create_app
 from backend.models.dtos.validator_dto import ValidatedTask
 from backend.services.users.user_service import UserService
 from backend.services.validator_service import (
@@ -16,22 +14,17 @@ from backend.services.validator_service import (
     ValidatingNotAllowed,
     UserLicenseError,
 )
+from tests.backend.base import BaseTestCase
 
 
-class TestValidatorService(unittest.TestCase):
+class TestValidatorService(BaseTestCase):
     unlock_task_stub = Task
 
     def setUp(self):
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
+        super().setUp()
         self.unlock_task_stub = Task()
         self.unlock_task_stub.task_status = TaskStatus.MAPPED.value
         self.unlock_task_stub.lock_holder_id = 123456
-
-    def tearDown(self):
-        self.ctx.pop()
 
     @patch.object(Task, "get")
     def test_lock_tasks_for_validation_raises_error_if_task_not_found(self, mock_task):
