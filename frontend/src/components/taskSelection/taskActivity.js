@@ -8,6 +8,7 @@ import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { CloseIcon } from '../svgIcons';
 import { useInterval } from '../../hooks/UseInterval';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
+import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
 import { compareHistoryLastUpdate } from '../../utils/sorting';
@@ -164,7 +165,12 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
             {getTaskActionMessage(t.action, t.actionText)}{' '}
             <RelativeTimeWithUnit date={t.actionDate} />
           </p>
-          {t.action === 'COMMENT' ? <p className="i ma0 mt2 blue-grey">{t.actionText}</p> : null}
+          {t.action === 'COMMENT' ? (
+            <p
+              className="ma0 mt2 blue-grey markdown-content"
+              dangerouslySetInnerHTML={htmlFromMarkdown(t.actionText)}
+            ></p>
+          ) : null}
         </div>
       </div>
     ));
