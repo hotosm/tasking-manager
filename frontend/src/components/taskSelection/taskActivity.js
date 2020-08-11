@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+
 import { viewport } from '@mapbox/geo-viewport';
 import { FormattedMessage } from 'react-intl';
 
@@ -8,7 +9,7 @@ import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { CloseIcon } from '../svgIcons';
 import { useInterval } from '../../hooks/UseInterval';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
-import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
+import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
 import { compareHistoryLastUpdate } from '../../utils/sorting';
@@ -16,8 +17,7 @@ import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
-import { UserFetchTextarea } from '../projectDetail/questionsAndComments';
-import { HashtagPaste } from '../projectDetail/hashtagPaste';
+import { CommentInputField } from '../comments/commentInput';
 
 const PostComment = ({ projectId, taskId, setCommentPayload }) => {
   const token = useSelector((state) => state.auth.get('token'));
@@ -47,18 +47,7 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
           <CurrentUserAvatar className="h2 w2 fr mr2 br-100" />
         </div>
         <div className="fl w-90-ns w-80 h-100 f6">
-          <UserFetchTextarea
-            value={comment}
-            setValueFn={(e) => setComment(e.target.value)}
-            token={token}
-          />
-          {comment && (
-            <span className="blue-grey f6 pt2">
-              <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
-              <span>, </span>
-              <HashtagPaste text={comment} setFn={setComment} hashtag="#author" />
-            </span>
-          )}
+          <CommentInputField comment={comment} setComment={setComment} />
         </div>
       </div>
       <div className="w-100 pb3 pt2 tr pr3">
@@ -168,7 +157,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
           {t.action === 'COMMENT' ? (
             <p
               className="ma0 mt2 blue-grey markdown-content"
-              dangerouslySetInnerHTML={htmlFromMarkdown(t.actionText)}
+              dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(t.actionText))}
             ></p>
           ) : null}
         </div>
