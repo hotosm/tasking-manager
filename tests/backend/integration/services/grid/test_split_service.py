@@ -25,9 +25,9 @@ class TestSplitService(BaseTestCase):
     def test_split_geom_returns_split_geometries(self):
 
         # arrange
-        x = 1010
-        y = 1399
-        zoom = 11
+        x = 2021
+        y = 2798
+        zoom = 12
         task_stub = Task()
         task_stub.is_square = True
 
