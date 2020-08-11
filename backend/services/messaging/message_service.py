@@ -412,7 +412,8 @@ class MessageService:
                 message.message = chat
                 messages.append(dict(message=message, user=user))
 
-        MessageService._push_messages(messages)
+            # it's important to keep that line inside the if to avoid duplicated emails
+            MessageService._push_messages(messages)
 
     @staticmethod
     def send_favorite_project_activities(user_id: int):
