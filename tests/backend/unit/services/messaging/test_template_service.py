@@ -6,6 +6,7 @@ from backend.services.messaging.template_service import (
     clean_html,
     format_username_link,
 )
+from flask import current_app
 
 
 class TestTemplateService(unittest.TestCase):
@@ -39,9 +40,10 @@ class TestTemplateService(unittest.TestCase):
         )
 
     def test_format_username_link(self):
+        base_url = current_app.config["APP_BASE_URL"]
         self.assertEqual(
-            format_username_link("testing @[name] @[user_2]! [test](http://link.com)"),
-            'testing <a href="/users/name/">@name</a> <a href="/users/user_2/">@user_2</a>! [test](http://a.com)',
+            format_username_link("try @[yo] @[us2]! [t](http://a.c)"),
+            f'try <a href="{base_url}/users/yo/">@yo</a> <a href="{base_url}/users/us2/">@us2</a>! [t](http://a.c)',
         )
         self.assertEqual(
             format_username_link(
