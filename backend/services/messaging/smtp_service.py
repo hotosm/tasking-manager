@@ -7,6 +7,7 @@ from flask import current_app
 from backend.services.messaging.template_service import (
     get_template,
     template_var_replacing,
+    format_username_link,
 )
 
 
@@ -76,9 +77,12 @@ class SMTPService:
             ["[ORG_CODE]", org_code],
             ["[PROFILE_LINK]", inbox_url],
             ["[SETTINGS_LINK]", settings_url],
-            ["[CONTENT]", content],
         ]
-        html_template = template_var_replacing(html_template, replace_list)
+        html_replace_list = replace_list + [
+            ["[CONTENT]", format_username_link(content)]
+        ]
+        html_template = template_var_replacing(html_template, html_replace_list)
+        replace_list += [["[CONTENT]", content]]
         text_template = template_var_replacing(text_template, replace_list)
 
         SMTPService._send_message(to_address, subject, html_template, text_template)
