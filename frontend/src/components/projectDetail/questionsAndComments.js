@@ -1,84 +1,16 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import ReactTextareaAutocomplete from '@webscopeio/react-textarea-autocomplete';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { PaginatorLine } from '../paginator';
 import { Button } from '../button';
-import { HashtagPaste } from './hashtagPaste';
+import { CommentInputField } from '../comments/commentInput';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
-import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
+import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import '@webscopeio/react-textarea-autocomplete/style.css';
-
-const formatUserNamesToLink = (text) => {
-  const regex = /@\[([^\]]+)\]/gi;
-  // Find usernames with a regular expression. They all start with '[@' and end with ']'
-  const usernames = text && text.match(regex);
-  if (usernames) {
-    for (let i = 0; i < usernames.length; i++) {
-      // Strip off the first two characters: '@['
-      let username = usernames[i].substring(2, usernames[i].length);
-      // Strip off the last character
-      username = username.substring(0, username.length - 1);
-      text = text.replace(
-        usernames[i],
-        '<a class="pointer blue-grey b underline" href="/users/' +
-          username +
-          '">' +
-          username +
-          '</a>',
-      );
-    }
-  }
-  return text;
-};
-
-const Item = ({ entity: { name } }) => (
-  <div className="w-100 pv2 ph3 tc bg-tan hover-bg-blue-grey blue-grey hover-white pointer">
-    {`${name}`}
-  </div>
-);
-
-export const UserFetchTextarea = ({ value, setValueFn, token }) => {
-  const fetchUsers = async (user) => {
-    const url = `users/queries/filter/${user}/`;
-    let userItems;
-
-    try {
-      const res = await fetchLocalJSONAPI(url, token);
-      userItems = res.usernames.map((u) => {
-        return { name: u };
-      });
-    } catch (e) {
-      userItems = [];
-    }
-
-    return userItems;
-  };
-
-  return (
-    <ReactTextareaAutocomplete
-      value={value}
-      listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey overflow-y-scroll base-font f5 relative z-5"
-      listStyle={{ maxHeight: '16rem' }}
-      onChange={setValueFn}
-      className="w-100 f5 pa2"
-      style={{ fontSize: '1rem' }}
-      loadingComponent={() => <span></span>}
-      rows={3}
-      trigger={{
-        '@': {
-          dataProvider: fetchUsers,
-          component: Item,
-          output: (item, trigger) => '@[' + item.name + ']',
-        },
-      }}
-    />
-  );
-};
 
 const PostProjectComment = ({ token, projectId, setStat }) => {
   const [comment, setComment] = useState('');
@@ -102,18 +34,7 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
         <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
       </div>
       <div className="fl w-70-ns w-80 ph1 h-100">
-        <UserFetchTextarea
-          value={comment}
-          setValueFn={(e) => setComment(e.target.value)}
-          token={token}
-        />
-        {comment && (
-          <span className="blue-grey f6 pt2">
-            <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
-            <span>, </span>
-            <HashtagPaste text={comment} setFn={setComment} hashtag="#author" />
-          </span>
-        )}
+        <CommentInputField comment={comment} setComment={setComment} />
       </div>
       <div className="fl w-20-ns w-100 tc-ns tr pt3 pr0-ns pr1">
         <Button onClick={saveComment} className="bg-red white f5" disabled={comment === ''}>
