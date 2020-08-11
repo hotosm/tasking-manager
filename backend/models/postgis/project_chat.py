@@ -1,4 +1,5 @@
 import bleach
+from markdown import markdown
 from flask import current_app
 from backend import db
 from backend.models.postgis.user import User
@@ -30,7 +31,31 @@ class ProjectChat(db.Model):
         new_message.user_id = dto.user_id
 
         # Use bleach to remove any potential mischief
-        clean_message = bleach.clean(dto.message)
+        allowed_tags = [
+            "a",
+            "b",
+            "blockquote",
+            "br",
+            "code",
+            "em",
+            "h1",
+            "h2",
+            "h3",
+            "img",
+            "i",
+            "li",
+            "ol",
+            "p",
+            "pre",
+            "strong",
+            "ul",
+        ]
+        allowed_atrributes = {"a": ["href", "rel"], "img": ["src", "alt"]}
+        clean_message = bleach.clean(
+            markdown(dto.message, output_format="html"),
+            tags=allowed_tags,
+            attributes=allowed_atrributes,
+        )
         clean_message = bleach.linkify(clean_message)
         new_message.message = clean_message
 
