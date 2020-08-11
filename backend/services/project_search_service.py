@@ -279,7 +279,7 @@ class ProjectSearchService:
                 ProjectInfo.text_searchable.match(
                     or_search, postgresql_regconfig="english"
                 ),
-                ProjectInfo.name.like(f"%{or_search}%"),
+                ProjectInfo.name.ilike(f"%{or_search}%"),
             ]
             try:
                 opts.append(Project.id == int(search_dto.text_search))
