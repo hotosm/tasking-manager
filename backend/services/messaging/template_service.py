@@ -1,5 +1,6 @@
 import os
 import re
+
 from flask import current_app
 
 
@@ -31,3 +32,15 @@ def clean_html(raw_html):
     cleanr = re.compile("<.*?>")
     clean_text = re.sub(cleanr, "", raw_html)
     return clean_text
+
+
+def format_username_link(content):
+    expression = re.compile("@\\[.*?\\]")
+    names = expression.findall(content)
+    for name in names:
+        username = name[2:-1]
+        content = content.replace(
+            name,
+            f'<a href="{current_app.config["APP_BASE_URL"]}/users/{username}/">@{username}</a>',
+        )
+    return content

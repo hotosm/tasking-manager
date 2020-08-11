@@ -43,6 +43,10 @@ class OrganisationDTO(Model):
 
 
 class ListOrganisationsDTO(Model):
+    def __init__(self):
+        super().__init__()
+        self.organisations = []
+
     organisations = ListType(ModelType(OrganisationDTO))
 
 
@@ -58,12 +62,10 @@ class NewOrganisationDTO(Model):
 
 
 class UpdateOrganisationDTO(OrganisationDTO):
+
+    organisation_id = IntType(serialized_name="organisationId", required=False)
     managers = ListType(StringType())
     name = StringType()
-
-
-class OrganisationProjectsDTO(Model):
-    """ Describes a JSON model to create a project team """
-
-    project_name = StringType(serialize_when_none=False)
-    project_id = IntType(serialize_when_none=False)
+    logo = StringType()
+    description = StringType()
+    url = StringType()

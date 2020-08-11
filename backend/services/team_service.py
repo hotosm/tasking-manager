@@ -6,12 +6,9 @@ from backend.models.dtos.team_dto import (
     TeamDTO,
     NewTeamDTO,
     TeamsListDTO,
-    TeamMembersDTO,
     ProjectTeamDTO,
-    TeamProjectDTO,
     TeamDetailsDTO,
 )
-from backend.models.dtos.organisation_dto import OrganisationProjectsDTO
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.project import ProjectTeams
 from backend.models.postgis.project_info import ProjectInfo
@@ -188,7 +185,7 @@ class TeamService:
         omit_members: bool = False,
     ) -> TeamsListDTO:
 
-        query = db.session.query(Team).outerjoin(TeamMembers).outerjoin(ProjectTeams)
+        query = db.session.query(Team)
 
         orgs_query = None
         is_admin = UserService.is_user_an_admin(user_id)
@@ -218,21 +215,35 @@ class TeamService:
         if team_role_filter:
             try:
                 role = TeamRoles[team_role_filter.upper()].value
-                query = query.filter(ProjectTeams.role == role)
+                project_teams = (
+                    db.session.query(ProjectTeams)
+                    .filter(ProjectTeams.role == role)
+                    .subquery()
+                )
+                query = query.outerjoin(project_teams)
             except KeyError:
                 pass
 
         if member_filter:
-            query = query.filter(
-                TeamMembers.user_id == member_filter, TeamMembers.active == True  # noqa
+            team_member = (
+                db.session.query(TeamMembers)
+                .filter(
+                    TeamMembers.user_id == member_filter, TeamMembers.active.is_(True)
+                )
+                .subquery()
             )
+            query = query.outerjoin(team_member)
 
         if member_request_filter:
-            query = query.filter(
-                TeamMembers.user_id == member_request_filter,
-                TeamMembers.active == False,  # noqa
+            team_member = (
+                db.session.query(TeamMembers)
+                .filter(
+                    TeamMembers.user_id == member_request_filter,
+                    TeamMembers.active.is_(False),
+                )
+                .subquery()
             )
-
+            query = query.outerjoin(team_member)
         if orgs_query:
             query = query.union(orgs_query)
 
@@ -252,16 +263,11 @@ class TeamService:
             is_team_member = TeamService.is_user_an_active_team_member(team.id, user_id)
             # Skip if members are not included
             if not omit_members:
-                team_members = TeamService._get_team_members(team.id)
-                for member in team_members:
-                    user = UserService.get_user_by_id(member.user_id)
-                    member_function = TeamMemberFunctions(member.function).name
-                    member_dto = TeamMembersDTO()
-                    member_dto.username = user.username
-                    member_dto.function = member_function
-                    member_dto.picture_url = user.picture_url
-                    member_dto.active = member.active
-                    team_dto.members.append(member_dto)
+                team_members = team.members
+
+                team_dto.members = [
+                    team.as_dto_team_member(member) for member in team_members
+                ]
 
             if team_dto.visibility == "PRIVATE" and not is_admin:
                 if is_team_member:
@@ -271,7 +277,9 @@ class TeamService:
         return teams_list_dto
 
     @staticmethod
-    def get_team_as_dto(team_id: int, user_id: int, abbreviated: bool) -> TeamDTO:
+    def get_team_as_dto(
+        team_id: int, user_id: int, abbreviated: bool
+    ) -> TeamDetailsDTO:
         team = TeamService.get_team_by_id(team_id)
 
         if team is None:
@@ -302,40 +310,18 @@ class TeamService:
         if abbreviated:
             return team_dto
 
-        team_members = TeamService._get_team_members(team_id)
-        for member in team_members:
-            user = UserService.get_user_by_id(member.user_id)
-            member_dto = TeamMembersDTO()
-            member_dto.username = user.username
-            member_dto.pictureUrl = user.picture_url
-            member_dto.function = TeamMemberFunctions(member.function).name
-            member_dto.picture_url = user.picture_url
-            member_dto.active = member.active
-
-            team_dto.members.append(member_dto)
+        team_dto.members = [team.as_dto_team_member(member) for member in team.members]
 
         team_projects = TeamService.get_projects_by_team_id(team.id)
-        for team_project in team_projects:
-            project_team_dto = TeamProjectDTO()
-            project_team_dto.project_name = team_project.name
-            project_team_dto.project_id = team_project.project_id
-            project_team_dto.role = TeamRoles(team_project.role).name
 
-            team_dto.team_projects.append(project_team_dto)
-
-        org_projects = OrganisationService.get_projects_by_organisation_id(
-            team.organisation.id
-        )
-        for org_project in org_projects:
-            org_project_dto = OrganisationProjectsDTO()
-            org_project_dto.project_id = org_project.id
-            org_project_dto.project_name = org_project.name
-            team_dto.organisation_projects.append(org_project_dto)
+        team_dto.team_projects = [
+            team.as_dto_team_project(project) for project in team_projects
+        ]
 
         return team_dto
 
     @staticmethod
-    def get_projects_by_team_id(team_id: int) -> ProjectInfo:
+    def get_projects_by_team_id(team_id: int):
         projects = (
             db.session.query(
                 ProjectInfo.name, ProjectTeams.project_id, ProjectTeams.role
@@ -405,7 +391,7 @@ class TeamService:
     def create_team(new_team_dto: NewTeamDTO) -> int:
         """
         Creates a new team using a team dto
-        :param team_dto: Team DTO
+        :param new_team_dto: Team DTO
         :returns: ID of new Team
         """
         TeamService.assert_validate_organisation(new_team_dto.organisation_id)

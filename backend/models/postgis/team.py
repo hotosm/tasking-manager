@@ -1,8 +1,17 @@
 from backend import db
-from backend.models.dtos.team_dto import TeamDTO, NewTeamDTO
+from backend.models.dtos.team_dto import (
+    TeamDTO,
+    NewTeamDTO,
+    TeamMembersDTO,
+    TeamProjectDTO,
+)
 from backend.models.dtos.organisation_dto import OrganisationTeamsDTO
 from backend.models.postgis.organisation import Organisation
-from backend.models.postgis.statuses import TeamVisibility, TeamMemberFunctions
+from backend.models.postgis.statuses import (
+    TeamVisibility,
+    TeamMemberFunctions,
+    TeamRoles,
+)
 from backend.models.postgis.user import User
 from backend.models.postgis.utils import NotFound
 
@@ -148,7 +157,7 @@ class Team(db.Model):
     def get_team_by_name(team_name: str):
         """
         Gets specified team by name
-        :param team_id: team name in scope
+        :param team_name: team name in scope
         :return: Team if found otherwise None
         """
         return Team.query.filter_by(name=team_name).one_or_none()
@@ -177,6 +186,25 @@ class Team(db.Model):
         team_dto.members = self._get_team_members()
         team_dto.visibility = TeamVisibility(self.visibility).name
         return team_dto
+
+    def as_dto_team_member(self, member) -> TeamMembersDTO:
+        """ Returns a dto for the team  member"""
+        member_dto = TeamMembersDTO()
+        user = User.get_by_id(member.user_id)
+        member_function = TeamMemberFunctions(member.function).name
+        member_dto.username = user.username
+        member_dto.function = member_function
+        member_dto.picture_url = user.picture_url
+        member_dto.active = member.active
+        return member_dto
+
+    def as_dto_team_project(self, project) -> TeamProjectDTO:
+        """ Returns a dto for the team project """
+        project_team_dto = TeamProjectDTO()
+        project_team_dto.project_name = project.name
+        project_team_dto.project_id = project.project_id
+        project_team_dto.role = TeamRoles(project.role).name
+        return project_team_dto
 
     def _get_team_members(self):
         """ Helper to get JSON serialized members """

@@ -36,7 +36,7 @@ export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || 'https://www
 export const ORG_YOUTUBE = process.env.REACT_APP_ORG_YOUTUBE || 'https://www.youtube.com';
 export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.com/';
 export const MATOMO_ID = process.env.REACT_APP_MATOMO_ID || '';
-export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL !== undefined;
+export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL || '';
 export const HOMEPAGE_VIDEO_URL = process.env.REACT_APP_HOMEPAGE_VIDEO_URL || '';
 
 export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 1000000; // bytes

@@ -195,7 +195,7 @@ const ProjectCreate = (props) => {
           setMapObj={setMapObj}
           step={step}
         />
-        <div className="cf left-1 bottom-2 absolute">
+        <div className="cf absolute" style={{ bottom: '3.5rem', left: '0.6rem' }}>
           <p
             className={`fl mr2 pa1 f7-ns white ${
               metadata.area > MAP_MAX_AREA || metadata.area === 0 ? 'bg-red' : 'bg-green'

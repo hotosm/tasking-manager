@@ -108,7 +108,7 @@ class ProjectService:
             )
             .group_by("action_text", "day", "task_id")
             .order_by("day")
-        )
+        ).all()
 
         contribs_dto = ProjectContribsDTO()
         # Filter and store unique dates

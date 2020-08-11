@@ -19,7 +19,7 @@ import {
 import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { UserFetchTextarea } from '../projectDetail/questionsAndComments';
+import { CommentInputField } from '../comments/commentInput';
 import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedTasks';
 
 export function CompletionTabForMapping({
@@ -167,11 +167,7 @@ export function CompletionTabForMapping({
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>
-          <UserFetchTextarea
-            value={taskComment}
-            setValueFn={(e) => setTaskComment(e.target.value)}
-            token={token}
-          />
+          <CommentInputField comment={taskComment} setComment={setTaskComment} />
         </p>
       </div>
       <div className="cf mv2">
@@ -305,11 +301,7 @@ export function CompletionTabForValidation({
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>
-          <UserFetchTextarea
-            value={taskComment}
-            setValueFn={(e) => setTaskComment(e.target.value)}
-            token={token}
-          />
+          <CommentInputField comment={taskComment} setComment={setTaskComment} />
         </p>
       </div>
       <div className="cf mb3">
