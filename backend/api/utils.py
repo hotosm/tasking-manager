@@ -1,5 +1,4 @@
 from functools import wraps
-from threading import Thread
 
 
 class TMAPIDecorators:
@@ -25,13 +24,3 @@ class TMAPIDecorators:
             return decorated_function
 
         return pm_only_decorator
-
-    def asynchronous(self):
-        def asynchronous_decorator(func):
-            def wrapper(*args, **kwargs):
-                async_thread = Thread(target=func, args=args, kwargs=kwargs)
-                async_thread.start()
-
-            return wrapper
-
-        return asynchronous_decorator
