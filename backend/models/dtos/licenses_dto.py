@@ -13,11 +13,8 @@ class LicenseDTO(Model):
     plain_text = StringType(required=True, serialized_name="plainText")
 
     class Options:
-        roles = {
-            'report': whitelist(
-                'name', 'description'
-            )
-        }
+        roles = {"report": whitelist("name", "description")}
+
 
 class LicenseListDTO(Model):
     """ DTO for all mapping licenses """

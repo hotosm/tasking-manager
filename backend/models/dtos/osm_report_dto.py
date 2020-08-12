@@ -6,7 +6,7 @@ from schematics.types import (
     URLType,
     ModelType,
     ListType,
-    UTCDateTimeType
+    UTCDateTimeType,
 )
 from backend.models.dtos.project_dto import ProjectUser
 from backend.models.dtos.organisation_dto import OrganisationDTO
@@ -24,9 +24,8 @@ class ExternalSourceReportDTO(Model):
 
     class Options:
         roles = {
-            'report': whitelist(
-                'imagery', 'project_license',
-                'instructions', 'per_task_instructions'
+            "report": whitelist(
+                "imagery", "project_license", "instructions", "per_task_instructions"
             )
         }
 
@@ -34,9 +33,7 @@ class ExternalSourceReportDTO(Model):
 class ProjectReportDTO(Model):
     project_id = StringType(serialized_name="projectId")
     project_status = StringType(
-        required=True,
-        serialized_name="status",
-        serialize_when_none=False,
+        required=True, serialized_name="status", serialize_when_none=False,
     )
     project_name = StringType(serialized_name="name")
     short_description = StringType(serialized_name="shortDescription", default="")
@@ -45,18 +42,23 @@ class ProjectReportDTO(Model):
     author = StringType()
     url = URLType()
     external_source = ModelType(
-        ExternalSourceReportDTO,
-        serialized_name="externalSource"
+        ExternalSourceReportDTO, serialized_name="externalSource"
     )
     users = ListType(ModelType(ProjectUser))
 
     class Options:
         roles = {
-            'report': whitelist(
-                'project_id', 'project_status',
-                'project_name', 'short_description',
-                'changeset_comment', 'created', 'author',
-                'url', 'external_source', 'users'
+            "report": whitelist(
+                "project_id",
+                "project_status",
+                "project_name",
+                "short_description",
+                "changeset_comment",
+                "created",
+                "author",
+                "url",
+                "external_source",
+                "users",
             )
         }
 
@@ -67,12 +69,7 @@ class OrganisationReportDTO(Model):
     description = StringType()
 
     class Options:
-        roles = {
-            'report': whitelist(
-                'name', 'url',
-                'description'
-            )
-        }
+        roles = {"report": whitelist("name", "url", "description")}
 
 
 class PlatformReportDTO(Model):
@@ -80,11 +77,7 @@ class PlatformReportDTO(Model):
     url = URLType()
 
     class Options:
-        roles = {
-            'report': whitelist(
-                'name', 'url'
-            )
-        }
+        roles = {"report": whitelist("name", "url")}
 
 
 class OsmReportDTO(Model):
@@ -93,9 +86,4 @@ class OsmReportDTO(Model):
     platform = ModelType(PlatformReportDTO)
 
     class Options:
-        roles = {
-            'report': whitelist(
-                'project', 'organisation',
-                'platform'
-            )
-        }
+        roles = {"report": whitelist("project", "organisation", "platform")}

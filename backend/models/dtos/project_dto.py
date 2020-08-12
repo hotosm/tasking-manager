@@ -153,11 +153,10 @@ class ProjectInfoDTO(Model):
 
     class Options:
         roles = {
-            'report': whitelist(
-                'name', 'short_description',
-                'instructions', 'per_task_instructions'
+            "report": whitelist(
+                "name", "short_description", "instructions", "per_task_instructions"
             )
-        }    
+        }
 
 
 class CustomEditorDTO(Model):
@@ -277,10 +276,16 @@ class ProjectDTO(Model):
 
     class Options:
         roles = {
-            'report': whitelist(
-                'project_id', 'project_status', 'project_info',
-                'changeset_comment', 'imagery', 'organisation',
-                'license_id', 'created', 'author'
+            "report": whitelist(
+                "project_id",
+                "project_status",
+                "project_info",
+                "changeset_comment",
+                "imagery",
+                "organisation",
+                "license_id",
+                "created",
+                "author",
             )
         }
 
@@ -299,11 +304,7 @@ class ProjectUser(Model):
     user_name = StringType(serialized_name="userName")
 
     class Options:
-        roles = {
-            'report': whitelist(
-                'user_id', 'user_name'
-            )
-        }
+        roles = {"report": whitelist("user_id", "user_name")}
 
 
 class ProjectUsersDTO(Model):
@@ -317,11 +318,7 @@ class ProjectUsersDTO(Model):
     users = ListType(ModelType(ProjectUser))
 
     class Options:
-        roles = {
-            'report': whitelist(
-                'users'
-            )
-        }
+        roles = {"report": whitelist("users")}
 
 
 class ProjectFavoritesDTO(Model):

@@ -25,7 +25,7 @@ from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectTeamDTO,
     ProjectUser,
-    ProjectUsersDTO
+    ProjectUsersDTO,
 )
 from backend.models.dtos.interests_dto import InterestDTO
 
@@ -862,14 +862,11 @@ class Project(db.Model):
     def get_users_project(project_id: int) -> list:
 
         projects = (
-            db.session.query(
-                User.id,
-                User.username
-            )
+            db.session.query(User.id, User.username)
             .filter(User.projects_mapped.any(project_id))
             .all()
         )
-        
+
         projects_dto = ProjectUsersDTO()
         for project in projects:
             dto = ProjectUser()
@@ -1031,6 +1028,21 @@ class Project(db.Model):
 
         project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(self.id)
         return project_dto
+
+    def as_dto_for_report(self, locale: str = "en"):
+        project_report_dto = ProjectDTO()
+        project_report_dto.project_id = self.id
+        project_report_dto.project_status = ProjectStatus(self.status).name
+        project_report_dto.changeset_comment = self.changeset_comment
+        project_report_dto.created = self.created
+        project_report_dto.imagery = self.imagery
+        project_report_dto.organisation = self.organisation_id
+        project_report_dto.license_id = self.license_id
+        project_report_dto.author = User.get_by_id(self.author_id).username
+        project_report_dto.project_info = ProjectInfo.get_dto_for_locale(
+            self.id, locale, self.default_locale
+        )
+        return project_report_dto
 
     def tasks_as_geojson(
         self, task_ids_str: str, order_by=None, order_by_type="ASC", status=None

@@ -115,9 +115,6 @@ class ProjectAdminService:
 
     @staticmethod
     def update_project(project_dto: ProjectDTO, authenticated_user_id: int):
-        # Here
-        osm_report = OsmReportService()
-        osm_report.report_data_to_osm(project_dto)
         project_id = project_dto.project_id
 
         if project_dto.project_status == ProjectStatus.PUBLISHED.name:
@@ -133,6 +130,10 @@ class ProjectAdminService:
         ):
             project = ProjectAdminService._get_project_by_id(project_id)
             project.update(project_dto)
+
+            if project_dto.project_status == ProjectStatus.PUBLISHED.name:
+                osm_report = OsmReportService()
+                osm_report.report_data_to_osm(project_id)
         else:
             raise ValueError(
                 str(project_id)
