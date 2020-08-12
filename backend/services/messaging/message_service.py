@@ -48,17 +48,19 @@ class MessageService:
             org_code = current_app.config["ORG_CODE"]
             text_template = get_template("welcome_message_en.txt")
             replace_list = [
-                        ["[USERNAME]", user.username],
-                        ["[ORG_CODE]", org_code],
-                        ["[ORG_NAME]", current_app.config["ORG_NAME"]],
-                        ["[SETTINGS_LINK]", MessageService.get_user_settings_link()],
-                    ]
+                ["[USERNAME]", user.username],
+                ["[ORG_CODE]", org_code],
+                ["[ORG_NAME]", current_app.config["ORG_NAME"]],
+                ["[SETTINGS_LINK]", MessageService.get_user_settings_link()],
+            ]
             text_template = template_var_replacing(text_template, replace_list)
 
             welcome_message = Message()
             welcome_message.message_type = MessageType.SYSTEM.value
             welcome_message.to_user_id = user.id
-            welcome_message.subject = "Welcome to the {} Tasking Manager".format(org_code)
+            welcome_message.subject = "Welcome to the {} Tasking Manager".format(
+                org_code
+            )
             welcome_message.message = text_template
             welcome_message.save()
 
@@ -77,18 +79,18 @@ class MessageService:
 
             user = UserService.get_user_by_id(mapped_by)
             text_template = get_template(
-            "invalidation_message_en.txt"
-            if status == TaskStatus.INVALIDATED
-            else "validation_message_en.txt"
+                "invalidation_message_en.txt"
+                if status == TaskStatus.INVALIDATED
+                else "validation_message_en.txt"
             )
             status_text = (
-            "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
+                "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
             )
             task_link = MessageService.get_task_link(project_id, task_id)
             replace_list = [
-            ["[USERNAME]", user.username],
-            ["[TASK_LINK]", task_link],
-            ["[ORG_NAME]", current_app.config["ORG_NAME"]],
+                ["[USERNAME]", user.username],
+                ["[TASK_LINK]", task_link],
+                ["[ORG_NAME]", current_app.config["ORG_NAME"]],
             ]
             text_template = template_var_replacing(text_template, replace_list)
 
@@ -103,15 +105,12 @@ class MessageService:
             validation_message.task_id = task_id
             validation_message.from_user_id = validated_by
             validation_message.to_user_id = mapped_by
-            validation_message.subject = (
-            f"{task_link} mapped by you in Project {project_id} has been {status_text}"
-            )
+            validation_message.subject = f"{task_link} mapped by you in Project {project_id} has been {status_text}"
             validation_message.message = text_template
             messages.append(dict(message=validation_message, user=user))
 
             # For email alerts
             MessageService._push_messages(messages)
-
 
     @staticmethod
     @tm.asynchronous()
@@ -222,7 +221,6 @@ class MessageService:
                     except NotFound:
                         continue  # If we can't find the user, keep going no need to fail
 
-
                     message = Message()
                     message.message_type = MessageType.MENTION_NOTIFICATION.value
                     message.project_id = project_id
@@ -234,7 +232,7 @@ class MessageService:
                     messages.append(dict(message=message, user=user))
 
                 MessageService._push_messages(messages)
-            
+
             # Notify all contributors except the user that created the comment.
             results = (
                 TaskHistory.query.with_entities(TaskHistory.user_id.distinct())
@@ -423,9 +421,7 @@ class MessageService:
 
             MessageService._push_messages(messages)
 
-            query = (
-                """ select user_id from project_favorites where project_id = :project_id"""
-            )
+            query = """ select user_id from project_favorites where project_id = :project_id"""
             result = db.engine.execute(text(query), project_id=project_id)
             favorited_users = [r[0] for r in result]
 
@@ -457,36 +453,14 @@ class MessageService:
         app = create_app()
 
         with app.app_context():
+
             favorited_projects = UserService.get_projects_favorited(user_id)
             contributed_projects = UserService.get_projects_mapped(user_id)
             if contributed_projects is None:
                 contributed_projects = []
 
-<<<<<<< HEAD
-        recently_updated_projects = (
-            Project.query.with_entities(
-                Project.id, func.DATE(Project.last_updated).label("last_updated")
-            )
-            .filter(Project.id.in_(contributed_projects))
-            .filter(
-                func.DATE(Project.last_updated)
-                > datetime.date.today() - datetime.timedelta(days=300)
-            )
-        )
-        user = UserService.get_user_dto_by_id(user_id)
-        messages = []
-        for project in recently_updated_projects:
-            activity_message = []
-            query_last_active_users = """ select distinct(user_id) from
-                                        (select user_id from task_history where project_id = :project_id
-                                        order by action_date desc limit 15 ) t """
-            last_active_users = db.engine.execute(
-                text(query_last_active_users), project_id=project.id
-            )
-=======
             for favorited_project in favorited_projects.favorited_projects:
                 contributed_projects.append(favorited_project.project_id)
->>>>>>> Asynchronous sending messages
 
             recently_updated_projects = (
                 Project.query.with_entities(
@@ -497,26 +471,8 @@ class MessageService:
                     func.DATE(Project.last_updated)
                     > datetime.date.today() - datetime.timedelta(days=300)
                 )
-<<<<<<< HEAD
-                activity_message.append(user_profile_link)
-
-            activity_message = str(activity_message)[1:-1]
-            project_link = MessageService.get_project_link(project.id)
-            message = Message()
-            message.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
-            message.project_id = project.id
-            message.to_user_id = user.id
-            message.subject = (
-                "Recent activities from your contributed/favorited Projects"
-            )
-            message.message = (
-                f"{activity_message} contributed to {project_link} recently"
-=======
->>>>>>> Asynchronous sending messages
             )
             user = UserService.get_user_dto_by_id(user_id)
-            if user.projects_notifications is False:
-                return
             messages = []
             for project in recently_updated_projects:
                 activity_message = []
@@ -544,7 +500,7 @@ class MessageService:
                     "Recent activities from your contributed/favorited Projects"
                 )
                 message.message = (
-                    f"{activity_message} contributed to Project {project_link} recently"
+                    f"{activity_message} contributed to {project_link} recently"
                 )
                 messages.append(dict(message=message, user=user))
 
