@@ -8045,10 +8045,10 @@ mapbox-gl-draw-rectangle-mode@^1.0.4:
   resolved "https://registry.yarnpkg.com/mapbox-gl-draw-rectangle-mode/-/mapbox-gl-draw-rectangle-mode-1.0.4.tgz#42987d68872a5fb5cc5d76d3375ee20cd8bab8f7"
   integrity sha512-BdF6nwEK2p8n9LQoMPzBO8LhddW1fe+d5vK8HQIei+4VcRnUbKNsEj7Z15FsJxCHzsc2BQKXbESx5GaE8x0imQ==
 
-mapbox-gl@^1.11.1:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-1.11.1.tgz#063e72b591d506b6b1f483df563e3e48cd0a971b"
-  integrity sha512-UjXpPUTUzHTLfhl5dLefwV3Jgu7DN9phpn8RnnkQVe1sOXfVYMS5Vhjn225krhzRc7xnKIBHxLyu0rHZGyeXuQ==
+mapbox-gl@^1.12.0:
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-1.12.0.tgz#7d1c73b1153d7ee219d30d80728d7df079bc7c05"
+  integrity sha512-B3URR4qY9R/Bx+DKqP8qmGCai8IOZYMSZF7ZSvcCZaYTaOYhQQi8ErTEDZtFMOR0ZPj7HFWOkkhl5SqvDfpJpA==
   dependencies:
     "@mapbox/geojson-rewind" "^0.5.0"
     "@mapbox/geojson-types" "^1.0.2"
