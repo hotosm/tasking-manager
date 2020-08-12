@@ -3,7 +3,6 @@ import json
 
 from flask_restful import Resource, request, current_app
 
-from backend.services.organisation_service import OrganisationService
 from backend.services.users.authentication_service import token_auth
 
 
@@ -56,42 +55,36 @@ class SystemImageUploadRestAPI(Resource):
             return {"Error": "Image upload service not defined"}, 500
 
         try:
-            is_org_manager = (
-                len(
-                    OrganisationService.get_organisations_managed_by_user(
-                        token_auth.current_user()
-                    )
-                )
-                > 0
-            )
             data = request.get_json()
-            if is_org_manager:
-                if data.get("filename") is None:
-                    return {"Error": "Missing filename parameter"}, 400
-                if data.get("mime") in ["image/png", "image/jpeg", "image/webp"]:
-                    headers = {
-                        "x-api-key": current_app.config["IMAGE_UPLOAD_API_KEY"],
-                        "Content-Type": "application/json",
-                    }
-                    url = "{}?filename={}".format(
-                        current_app.config["IMAGE_UPLOAD_API_URL"], data.get("filename")
-                    )
-                    result = requests.post(
-                        url, headers=headers, data=json.dumps({"image": data})
-                    )
-                    if result.ok:
-                        return result.json(), 201
-                    else:
-                        return result.json(), 400
+            if data.get("filename") is None:
+                return {"Error": "Missing filename parameter"}, 400
+            if data.get("mime") in [
+                "image/png",
+                "image/jpeg",
+                "image/webp",
+                "image/gif",
+            ]:
+                headers = {
+                    "x-api-key": current_app.config["IMAGE_UPLOAD_API_KEY"],
+                    "Content-Type": "application/json",
+                }
+                url = "{}?filename={}".format(
+                    current_app.config["IMAGE_UPLOAD_API_URL"], data.get("filename")
+                )
+                result = requests.post(
+                    url, headers=headers, data=json.dumps({"image": data})
+                )
+                if result.ok:
+                    return result.json(), 201
                 else:
-                    return (
-                        {
-                            "Error": "Mimetype is not allowed. Use are 'image/png', 'image/jpeg', 'image/webp'"
-                        },
-                        400,
-                    )
+                    return result.json(), 400
             else:
-                return {"Error": "User is not admin or organisation manager"}, 403
+                return (
+                    {
+                        "Error": "Mimetype is not allowed. The supported formats are: png, jpeg, webp and gif."
+                    },
+                    400,
+                )
         except Exception as e:
             error_msg = f"Image upload POST API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
