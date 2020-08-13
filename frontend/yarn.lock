@@ -1153,10 +1153,10 @@
     "@formatjs/intl-getcanonicallocales" "^1.3.1"
     "@formatjs/intl-utils" "^3.8.2"
 
-"@formatjs/intl-relativetimeformat@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-7.0.0.tgz#8dc5c1b76bb9a8903e38da5aa765984ab084b8ef"
-  integrity sha512-QQpQezSY8Q5H/PZVvPAs8SFhoUVXM52le+UgKAYTyAkeC4lr+DkX4ZP7Msateu81K1jFB8jhxcSOUEzGie7g2w==
+"@formatjs/intl-relativetimeformat@^7.0.0", "@formatjs/intl-relativetimeformat@^7.1.0":
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-7.1.0.tgz#0e701481b6bd158fef59ea726c0a4e98c783b884"
+  integrity sha512-hU2+hEuC2bIPfmByxFPMZ9ZJUd3fYxfmAmmmbGt6ILes9ZLwWoTXFANEQ7YNwnOv1w/fAfhQsSqg6RgJSxtGYA==
   dependencies:
     "@formatjs/intl-utils" "^3.8.2"
 
