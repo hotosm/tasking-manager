@@ -129,7 +129,8 @@ class StatsService:
             )
             .join(User)
             .filter(
-                TaskHistory.project_id == project_id, TaskHistory.action != "COMMENT"
+                TaskHistory.project_id == project_id,
+                TaskHistory.action != TaskAction.COMMENT.name,
             )
             .order_by(TaskHistory.action_date.desc())
             .paginate(page, 10, True)
@@ -152,16 +153,16 @@ class StatsService:
     @staticmethod
     def get_popular_projects() -> ProjectSearchResultsDTO:
         """ Get all projects ordered by task_history """
+
         rate_func = func.count(TaskHistory.user_id) / extract(
             "epoch", func.sum(cast(TaskHistory.action_date, Time))
         )
 
-        query = TaskHistory.query.with_entities(
-            TaskHistory.project_id.label("id"), rate_func.label("rate")
-        )
-        # Implement filters.
         query = (
-            query.filter(TaskHistory.action_date >= date.today() - timedelta(days=90))
+            TaskHistory.query.with_entities(
+                TaskHistory.project_id.label("id"), rate_func.label("rate")
+            )
+            .filter(TaskHistory.action_date >= date.today() - timedelta(days=90))
             .filter(
                 or_(
                     TaskHistory.action == TaskAction.LOCKED_FOR_MAPPING.name,
@@ -170,17 +171,14 @@ class StatsService:
             )
             .filter(TaskHistory.action_text is not None)
             .filter(TaskHistory.action_text != "")
-        )
-        # Group by and order by.
-        sq = (
-            query.group_by(TaskHistory.project_id)
+            .group_by(TaskHistory.project_id)
             .order_by(desc("rate"))
             .limit(10)
             .subquery()
         )
-        projects_query = ProjectSearchService.create_search_query()
-        projects = projects_query.filter(Project.id == sq.c.id)
 
+        projects_query = ProjectSearchService.create_search_query()
+        projects = projects_query.filter(Project.id == query.c.id).all()
         # Get total contributors.
         contrib_counts = ProjectSearchService.get_total_contributions(projects)
         zip_items = zip(projects, contrib_counts)
@@ -222,7 +220,7 @@ class StatsService:
                 .filter(
                     TaskHistory.task_id == item.id,
                     TaskHistory.project_id == project_id,
-                    TaskHistory.action != "COMMENT",
+                    TaskHistory.action != TaskAction.COMMENT.name,
                     User.id == TaskHistory.user_id,
                 )
                 .order_by(TaskHistory.id.desc())
