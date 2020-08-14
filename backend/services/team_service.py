@@ -198,7 +198,9 @@ class TeamService:
                 TeamMembers.user_id == manager_filter,
                 TeamMembers.active == True,  # noqa
                 TeamMembers.function == TeamMemberFunctions.MANAGER.value,
+                Team.id == TeamMembers.team_id,
             )
+
             manager_orgs_teams = query.filter(
                 Team.organisation_id.in_(
                     [
@@ -207,10 +209,11 @@ class TeamService:
                     ]
                 )
             )
+
             query = manager_teams.union(manager_orgs_teams)
 
         if team_name_filter:
-            query = query.filter(Team.name.contains(team_name_filter))
+            query = query.filter(Team.name.ilike("%" + team_name_filter + "%"),)
 
         if team_role_filter:
             try:
@@ -220,7 +223,7 @@ class TeamService:
                     .filter(ProjectTeams.role == role)
                     .subquery()
                 )
-                query = query.outerjoin(project_teams)
+                query = query.join(project_teams)
             except KeyError:
                 pass
 
@@ -232,7 +235,7 @@ class TeamService:
                 )
                 .subquery()
             )
-            query = query.outerjoin(team_member)
+            query = query.join(team_member)
 
         if member_request_filter:
             team_member = (
@@ -243,7 +246,7 @@ class TeamService:
                 )
                 .subquery()
             )
-            query = query.outerjoin(team_member)
+            query = query.join(team_member)
         if orgs_query:
             query = query.union(orgs_query)
 
