@@ -1112,6 +1112,7 @@ class Project(db.Model):
             db.session.query(func.unnest(Project.country).label("country"))
             .distinct()
             .order_by("country")
+            .all()
         )
         tags_dto = TagsDTO()
         tags_dto.tags = [r[0] for r in query]
