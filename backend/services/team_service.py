@@ -488,7 +488,7 @@ class TeamService:
         if UserService.is_user_an_admin(user_id):
             return True
 
-        managers = team.get_team_managers(team_id)
+        managers = team.get_team_managers()
         for member in managers:
             if member.user_id == user_id:
                 return True
