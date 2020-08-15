@@ -35,6 +35,7 @@ class OrganisationDTO(Model):
     name = StringType(required=True)
     logo = StringType()
     description = StringType()
+    enabled_oeg_report = BooleanType(default=False, serialized_name="enabledOegReport")
     url = StringType()
     is_manager = BooleanType(serialized_name="isManager")
     projects = ListType(StringType, serialize_when_none=False)
@@ -58,6 +59,7 @@ class NewOrganisationDTO(Model):
     name = StringType(required=True)
     logo = StringType()
     description = StringType()
+    enabled_oeg_report = BooleanType(default=False, serialized_name="enabledOegReport")
     url = StringType()
 
 

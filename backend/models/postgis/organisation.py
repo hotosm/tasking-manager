@@ -37,6 +37,7 @@ class Organisation(db.Model):
     name = db.Column(db.String(512), nullable=False, unique=True)
     logo = db.Column(db.String)  # URL of a logo
     description = db.Column(db.String)
+    enabled_oeg_report = db.Column(db.Boolean, default=False, nullable=False)
     url = db.Column(db.String)
 
     managers = db.relationship(
@@ -61,6 +62,7 @@ class Organisation(db.Model):
         new_org.name = new_organisation_dto.name
         new_org.logo = new_organisation_dto.logo
         new_org.description = new_organisation_dto.description
+        new_org.enabled_oeg_report = new_organisation_dto.enabled_oeg_report
         new_org.url = new_organisation_dto.url
 
         for manager in new_organisation_dto.managers:
@@ -163,6 +165,7 @@ class Organisation(db.Model):
         organisation_dto.name = self.name
         organisation_dto.logo = self.logo
         organisation_dto.description = self.description
+        organisation_dto.enabled_oeg_report = self.enabled_oeg_report
         organisation_dto.url = self.url
         organisation_dto.managers = []
 

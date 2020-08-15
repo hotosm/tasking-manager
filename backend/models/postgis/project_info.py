@@ -17,6 +17,9 @@ class ProjectInfo(db.Model):
     description = db.Column(db.String)
     instructions = db.Column(db.String)
     project_id_str = db.Column(db.String)
+    reported = db.Column(
+        db.Boolean, default=False, nullable=False
+    )  # Project is not reported by default
     text_searchable = db.Column(
         TSVECTOR
     )  # This contains searchable text and is populated by a DB Trigger
@@ -54,6 +57,7 @@ class ProjectInfo(db.Model):
         self.description = dto.description
         self.instructions = dto.instructions
         self.per_task_instructions = dto.per_task_instructions
+        self.reported = dto.reported
 
     @staticmethod
     def get_dto_for_locale(project_id, locale, default_locale="en") -> ProjectInfoDTO:
@@ -115,8 +119,24 @@ class ProjectInfo(db.Model):
             if self.per_task_instructions
             else default_locale.per_task_instructions
         )
+        project_info_dto.reported = (
+            self.reported if self.reported else default_locale.reported
+        )
 
         return project_info_dto
+
+    @staticmethod
+    def get(project_id: int):
+        """
+        Gets specified organisation by id
+        :param organisation_id: organisation ID in scope
+        :return: Organisation if found otherwise None
+        """
+        return ProjectInfo.query.filter_by(project_id=project_id).one_or_none()
+
+    def save(self):
+        """ Save changes to db"""
+        db.session.commit()
 
     @staticmethod
     def get_dto_for_all_locales(project_id) -> List[ProjectInfoDTO]:
