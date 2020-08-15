@@ -154,6 +154,7 @@ class ProjectInfoDTO(Model):
     )  # Project is not reported by default
 
     class Options:
+        # Skip unnecessary fields in the OEG Report.
         roles = {
             "report": whitelist(
                 "name", "short_description", "instructions", "per_task_instructions"
@@ -277,6 +278,7 @@ class ProjectDTO(Model):
     interests = ListType(ModelType(InterestDTO))
 
     class Options:
+        # Skip unnecessary fields in the OEG Report.
         roles = {
             "report": whitelist(
                 "project_id",
@@ -318,6 +320,7 @@ class ProjectUser(Model):
     user_name = StringType(serialized_name="userName")
 
     class Options:
+        # Skip unnecessary fields in the OEG Report.
         roles = {"report": whitelist("user_id", "user_name")}
 
 
@@ -332,6 +335,7 @@ class ProjectUsersDTO(Model):
     users = ListType(ModelType(ProjectUser))
 
     class Options:
+        # Skip unnecessary fields in the OEG Report.
         roles = {"report": whitelist("users")}
 
 

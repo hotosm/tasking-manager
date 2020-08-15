@@ -25,6 +25,8 @@ from backend.models.dtos.project_dto import (
     ProjectUserStatsDTO,
     ProjectSearchDTO,
     ProjectTeamDTO,
+    ProjectUser,
+    ProjectUsersDTO,
 )
 from backend.models.dtos.interests_dto import InterestDTO
 
@@ -959,6 +961,23 @@ class Project(db.Model):
         return project_teams
 
     @staticmethod
+    def get_users_project(project_id: int) -> list:
+        projects = (
+            db.session.query(User.id, User.username)
+            .filter(User.projects_mapped.any(project_id))
+            .all()
+        )
+
+        projects_dto = ProjectUsersDTO()
+        for project in projects:
+            dto = ProjectUser()
+            dto.user_id = project.id
+            dto.user_name = project.username
+            projects_dto.users.append(dto)
+
+        return projects_dto
+
+    @staticmethod
     @cached(active_mappers_cache)
     def get_active_mappers(project_id) -> int:
         """ Get count of Locked tasks as a proxy for users who are currently active on the project """
@@ -1086,6 +1105,21 @@ class Project(db.Model):
         ]
 
         return self, base_dto
+
+    def as_dto_for_report(self, locale: str = "en"):
+        project_report_dto = ProjectDTO()
+        project_report_dto.project_id = self.id
+        project_report_dto.project_status = ProjectStatus(self.status).name
+        project_report_dto.changeset_comment = self.changeset_comment
+        project_report_dto.created = self.created
+        project_report_dto.imagery = self.imagery
+        project_report_dto.organisation = self.organisation_id
+        project_report_dto.license_id = self.license_id
+        project_report_dto.author = User.get_by_id(self.author_id).username
+        project_report_dto.project_info = ProjectInfo.get_dto_for_locale(
+            self.id, locale, self.default_locale
+        )
+        return project_report_dto
 
     def as_dto_for_mapping(
         self, authenticated_user_id: int = None, locale: str = "en", abbrev: bool = True
