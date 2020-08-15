@@ -1109,10 +1109,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
   integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
 
-"@formatjs/intl-datetimeformat@^2.4.2":
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-datetimeformat/-/intl-datetimeformat-2.4.2.tgz#8c3b1766eb0879fac977c22da8592d3181f08c38"
-  integrity sha512-4yn4srUNdD0Umu1EzfozKef4S/AeHvtZxkxudn3dKhU/hiZ329AUYXehnalLN8yGeTzeQrDU6KvhnYCyHh8QFQ==
+"@formatjs/intl-datetimeformat@^2.4.3":
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-datetimeformat/-/intl-datetimeformat-2.4.3.tgz#5cbc9321dc8972a8f8d00a6292421721b7162aa4"
+  integrity sha512-HxnHqESADIG5kwUK0DsPC8mKN9VQFgb1Mklus6cVvzgK4lNXDWlw6tI3tj3Z7k3HAAsEy+q7A6stBfKwrDlROA==
   dependencies:
     "@formatjs/intl-getcanonicallocales" "^1.3.2"
     "@formatjs/intl-utils" "^3.8.3"
@@ -10464,12 +10464,12 @@ react-input-autosize@^2.2.2:
   dependencies:
     prop-types "^15.5.8"
 
-react-intl@^5.6.1:
-  version "5.6.1"
-  resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-5.6.1.tgz#06eb944fda6e502c136ec501cf5b28fca0cbd0f2"
-  integrity sha512-om+9QvEWiEMmM5E/0lq2EhsXgwj3+Ceb8X8eU+2B3UHD70NlDJP0GGsH2d6BF594pIbS0TG6YdQ32e8RvMEzig==
+react-intl@^5.6.2:
+  version "5.6.2"
+  resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-5.6.2.tgz#9053ce9b40d8a761031d441bf91379cfba0d6e13"
+  integrity sha512-ldnd3o3jE3XR4oLsrP4B+eyOrd6JTNJolTODy3GXrXtWSXyUeAMvg9gE2V8eJykV081fav5PC2YTZLuRIz48CQ==
   dependencies:
-    "@formatjs/intl-datetimeformat" "^2.4.2"
+    "@formatjs/intl-datetimeformat" "^2.4.3"
     "@formatjs/intl-displaynames" "^3.2.1"
     "@formatjs/intl-listformat" "^4.1.1"
     "@formatjs/intl-numberformat" "^5.4.1"
