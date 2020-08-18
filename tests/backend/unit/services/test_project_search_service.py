@@ -1,20 +1,10 @@
-import unittest
-
-from backend import create_app
 from backend.models.dtos.project_dto import ProjectSearchDTO
 from backend.models.postgis.user import User
 from backend.services.project_search_service import ProjectSearchService
+from tests.backend.base import BaseTestCase
 
 
-class TestProjectService(unittest.TestCase):
-    def setUp(self):
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
-    def tearDown(self):
-        self.ctx.pop()
-
+class TestProjectService(BaseTestCase):
     def test_project_search(self):
 
         user = User(id=3488526)

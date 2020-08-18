@@ -12,7 +12,6 @@ from backend.services.mapping_service import (
 from backend.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from backend.models.postgis.task import TaskHistory, TaskAction, User
 from unittest.mock import patch, MagicMock
-from backend import create_app
 from tests.backend.base import BaseTestCase
 
 
@@ -23,9 +22,7 @@ class TestMappingService(BaseTestCase):
     mapping_service = None
 
     def setUp(self):
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
+        super().setUp()
 
         test_user = User()
         test_user.id = 123456
@@ -44,9 +41,6 @@ class TestMappingService(BaseTestCase):
         self.mapped_task_dto = MappedTaskDTO()
         self.mapped_task_dto.status = TaskStatus.MAPPED.name
         self.mapped_task_dto.user_id = 123456
-
-    def tearDown(self):
-        self.ctx.pop()
 
     @patch.object(Task, "get")
     def test_get_task_raises_error_if_task_not_found(self, mock_task):
