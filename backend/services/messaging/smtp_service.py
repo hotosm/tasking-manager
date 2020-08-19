@@ -57,12 +57,10 @@ class SMTPService:
         to_address: str, username: str, from_user_name: str, message_id: str, subject: str, content: str
     ):
         """Send an email to user to alert that they have a new message"""
-        current_app.logger.debug(f"Test if email required {to_address}")# , {username} , {from_user_name} ,{message_id},{subject} , {content}")
+        current_app.logger.debug(f"Test if email required {to_address}")
         org_code = current_app.config["ORG_CODE"]
-        # 
         from_user_link=f"{current_app.config['APP_BASE_URL']}/users/{from_user_name}"
         project_link=f"{current_app.config['APP_BASE_URL']}/projects/{message_id}"
-        # 
         settings_url = "{}/settings#notifications".format(
             current_app.config["APP_BASE_URL"]
         )
@@ -154,3 +152,4 @@ class SMTPService:
         )
 
         return verification_url
+    
