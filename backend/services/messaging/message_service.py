@@ -173,7 +173,8 @@ class MessageService:
             SMTPService.send_email_alert(
                 user.email_address,
                 user.username,
-                message["message"].id,
+                UserService.get_user_by_id(message["message"].from_user_id).username,
+                str(message["message"].project_id),
                 clean_html(message["message"].subject),
                 message["message"].message,
             )
@@ -243,6 +244,7 @@ class MessageService:
                 message = Message()
                 message.message_type = MessageType.TASK_COMMENT_NOTIFICATION.value
                 message.project_id = project_id
+                message.from_user_id=comment_from
                 message.task_id = task_id
                 message.to_user_id = user.id
                 message.subject = f"{user_from.username} left a comment in {task_link} of Project {project_id}"
