@@ -2,34 +2,22 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import ReactTextareaAutocomplete from '@webscopeio/react-textarea-autocomplete';
 import { useDropzone } from 'react-dropzone';
-import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
 import { useOnDrop } from '../../hooks/UseUploadImage';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { HashtagPaste } from './hashtagPaste';
+import HashtagPaste from './hashtagPaste';
+import FileRejections from './fileRejections';
+import DropzoneUploadStatus from './uploadStatus';
+import { DROPZONE_SETTINGS } from '../../config';
 
 export const CommentInputField = ({ comment, setComment }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
-  const appendImgToComment = (url) => setComment(`${comment}\n![](${url})\n`);
+  const appendImgToComment = (url) => setComment(`${comment}\n![image](${url})\n`);
   const [uploadError, uploading, onDrop] = useOnDrop(appendImgToComment);
   const { fileRejections, getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: 'image/*',
-    multiple: false,
-    maxSize: 256000,
+    ...DROPZONE_SETTINGS,
   });
-  const fileRejectionItems = fileRejections.map(({ file, errors }) => (
-    <li key={file.path} className="red">
-      {file.path} (
-      {errors.map((e) => (
-        <span key={e.code} className="dib pr2">
-          {e.message},
-        </span>
-      ))}
-      )
-    </li>
-  ));
 
   return (
     <div {...getRootProps()}>
@@ -46,17 +34,8 @@ export const CommentInputField = ({ comment, setComment }: Object) => {
           <HashtagPaste text={comment} setFn={setComment} hashtag="#author" />
         </span>
       )}
-      {uploadError && (
-        <span className="red f6 pt3 db">
-          <FormattedMessage {...messages.imageUploadFailed} />
-        </span>
-      )}
-      {uploading && (
-        <span className="blue-grey f6 pt3 db">
-          <FormattedMessage {...messages.imageUploadOnProgress} />
-        </span>
-      )}
-      <ul>{fileRejectionItems}</ul>
+      <DropzoneUploadStatus uploading={uploading} uploadError={uploadError} />
+      <FileRejections files={fileRejections} />
     </div>
   );
 };

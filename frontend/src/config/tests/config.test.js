@@ -88,3 +88,9 @@ it('exports MAPBOX_RTL_PLUGIN_URL', () => {
     'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js',
   );
 });
+it('exports DROPZONE_SETTINGS', () => {
+  expect(typeof config.DROPZONE_SETTINGS).toBe('object');
+  expect(config.DROPZONE_SETTINGS.accept).toBe('image/*');
+  expect(config.DROPZONE_SETTINGS.maxSize).toBe(256000);
+  expect(config.DROPZONE_SETTINGS.multiple).toBeFalsy();
+});
