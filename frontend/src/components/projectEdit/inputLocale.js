@@ -1,9 +1,14 @@
 import React, { useState, useLayoutEffect, useCallback, useContext } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { useOnDrop } from '../../hooks/UseUploadImage';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { StateContext, styleClasses } from '../../views/projectEdit';
+import FileRejections from '../comments/fileRejections';
+import DropzoneUploadStatus from '../comments/uploadStatus';
+import { DROPZONE_SETTINGS } from '../../config';
 
 export const InputLocale = (props) => {
   const { projectInfo, setProjectInfo, success, setSuccess, error, setError } = useContext(
@@ -12,6 +17,12 @@ export const InputLocale = (props) => {
   const [language, setLanguage] = useState(null);
   const [value, setValue] = useState('');
   const [preview, setPreview] = useState(null);
+  const appendImgToComment = (url) => setValue(`${value}\n![image](${url})\n`);
+  const [uploadError, uploading, onDrop] = useOnDrop(appendImgToComment);
+  const { fileRejections, getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    ...DROPZONE_SETTINGS,
+  });
 
   const locales = projectInfo.projectInfoLocales;
 
@@ -32,21 +43,14 @@ export const InputLocale = (props) => {
 
   const handleChange = (e) => {
     setValue(e.target.value);
-    if (props.preview !== false) {
-      const html = htmlFromMarkdown(e.target.value);
-      setPreview(html);
-    }
-    if (success !== false) {
-      setSuccess(false);
-    }
-    if (error !== null) {
-      setError(null);
-    }
+    if (success !== false) setSuccess(false);
+    if (error !== null) setError(null);
+    if (!preview) setPreview(true);
   };
 
   // Resets preview when language changes.
   useLayoutEffect(() => {
-    setPreview(null);
+    setPreview(false);
     setSuccess(false);
     setError(null);
   }, [language, setSuccess, setError]);
@@ -60,6 +64,7 @@ export const InputLocale = (props) => {
     }
   }, [language, locales, props.name]);
 
+  // initialize language using project's defaultLocale
   useLayoutEffect(() => {
     if (language === null) {
       if (projectInfo.defaultLocale) {
@@ -103,16 +108,22 @@ export const InputLocale = (props) => {
           onChange={handleChange}
         />
       ) : (
-        <textarea
-          className={styleClasses.inputClass}
-          rows={styleClasses.numRows}
-          type="text"
-          name={props.name}
-          value={value}
-          onBlur={updateState}
-          onChange={handleChange}
-          maxLength={props.maxLength || null}
-        ></textarea>
+        <div {...getRootProps()}>
+          <textarea
+            {...getInputProps()}
+            className={styleClasses.inputClass}
+            style={{ display: 'inline-block' }} // we need to set display, as dropzone makes it none as default
+            rows={styleClasses.numRows}
+            type="text"
+            name={props.name}
+            value={value}
+            onBlur={updateState}
+            onChange={handleChange}
+            maxLength={props.maxLength || null}
+          ></textarea>
+          <FileRejections files={fileRejections} />
+          <DropzoneUploadStatus uploading={uploading} uploadError={uploadError} />
+        </div>
       )}
       {props.maxLength && (
         <div
@@ -124,14 +135,14 @@ export const InputLocale = (props) => {
         </div>
       )}
 
-      {preview && (
+      {props.type !== 'text' && preview && (
         <div className="cf pt1">
           <h3 className="ttu f6 fw6 blue-grey mb1">
             <FormattedMessage {...messages.preview} />
           </h3>
           <div
-            dangerouslySetInnerHTML={preview}
             className="pv1 ph3 bg-grey-light blue-dark markdown-content"
+            dangerouslySetInnerHTML={htmlFromMarkdown(value)}
           />
         </div>
       )}

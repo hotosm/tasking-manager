@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl';
 
 import messages from './messages';
 
-export function HashtagPaste({ text, setFn, hashtag, className }: Object) {
+export default function HashtagPaste({ text, setFn, hashtag, className }: Object) {
   const intl = useIntl();
   return (
     <span

@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { HashtagPaste } from '../hashtagPaste';
+import HashtagPaste from '../hashtagPaste';
 
 test('HashtagPaste with an empty text string', () => {
   const setFn = jest.fn();
