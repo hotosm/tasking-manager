@@ -2,7 +2,7 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, redirect
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
@@ -34,11 +34,7 @@ def create_app(env=None):
     :return: Initialised Flask app
     """
 
-    app = Flask(
-        __name__,
-        static_folder="../frontend/build/static",
-        template_folder="../frontend/build",
-    )
+    app = Flask(__name__,)
 
     # Load configuration options from environment
     app.config.from_object("backend.config.EnvironmentConfig")
@@ -52,25 +48,11 @@ def create_app(env=None):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    app.logger.debug("Initialising frontend routes")
+    app.logger.debug("Add root redirect route")
 
-    # Main route to frontend
     @app.route("/")
-    def index():
-        return render_template("index.html")
-
-    @app.route("/<path:text>")
-    def assets(text):
-        if "service-worker.js" in text:
-            return send_from_directory(app.template_folder, text)
-        elif "precache-manifest" in text:
-            return send_from_directory(app.template_folder, text)
-        elif "manifest.json" in text:
-            return send_from_directory(app.template_folder, text)
-        elif "favicon" in text:
-            return send_from_directory(app.template_folder, text)
-        else:
-            return render_template("index.html")
+    def index_redirect():
+        return redirect(format_url("system/heartbeat/"), code=302)
 
     # Add paths to API endpoints
     add_api_endpoints(app)
