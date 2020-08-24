@@ -112,6 +112,10 @@ export default defineMessages({
     id: 'notifications.message.type.broadcast',
     defaultMessage: 'Broadcast',
   },
+  TEAM_BROADCAST: {
+    id: 'notifications.message.type.team',
+    defaultMessage: 'Team announcement',
+  },
   MENTION_NOTIFICATION: {
     id: 'notifications.message.type.mention_notification',
     defaultMessage: 'Mention',

@@ -308,7 +308,7 @@ class TeamsActionsMessageMembersAPI(Resource):
                 args=(team_id, message_dto),
             ).start()
 
-            return {"Success": "Messages started"}, 200
+            return {"Success": "Message sent successfully"}, 200
         except ValueError as e:
             return {"Error": str(e)}, 403
         except Exception as e:

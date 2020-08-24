@@ -1,5 +1,6 @@
 from flask import current_app
 from sqlalchemy import and_
+from markdown import markdown
 
 from backend import create_app, db
 from backend.models.dtos.team_dto import (
@@ -543,13 +544,22 @@ class TeamService:
 
         with app.app_context():
             team_members = TeamService._get_active_team_members(team_id)
+            team_name = TeamService.get_team_by_id(team_id).name
+            sender = UserService.get_user_by_id(message_dto.from_user_id).username
+
+            message_dto.message = "A message from {}, manager of {} team:<br/><br/>{}".format(
+                MessageService.get_user_profile_link(sender),
+                MessageService.get_team_link(team_name, team_id, False),
+                markdown(message_dto.message, output_format="html"),
+            )
 
             messages = []
             for team_member in team_members:
-                message = Message.from_dto(team_member.user_id, message_dto)
-                message.message_type = MessageType.TEAM_BROADCAST.value
-                message.save()
-                user = UserService.get_user_by_id(team_member.user_id)
-                messages.append(dict(message=message, user=user))
+                if team_member.user_id != message_dto.from_user_id:
+                    message = Message.from_dto(team_member.user_id, message_dto)
+                    message.message_type = MessageType.TEAM_BROADCAST.value
+                    message.save()
+                    user = UserService.get_user_by_id(team_member.user_id)
+                    messages.append(dict(message=message, user=user))
 
             MessageService._push_messages(messages)

@@ -164,6 +164,7 @@
   "notifications.refresh": "Refresh",
   "notifications.message.type.system": "System",
   "notifications.message.type.broadcast": "Broadcast",
+  "notifications.message.type.team": "Team announcement",
   "notifications.message.type.mention_notification": "Mention",
   "notifications.message.type.validation_notification": "Validation",
   "notifications.message.type.invalidation_notification": "Invalidation",
