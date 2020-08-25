@@ -535,7 +535,9 @@ class TeamService:
         return len(user_membership) > 0
 
     @staticmethod
-    def send_message_to_all_team_members(team_id: int, message_dto: MessageDTO):
+    def send_message_to_all_team_members(
+        team_id: int, team_name: str, message_dto: MessageDTO
+    ):
         """  Sends supplied message to all contributors in a team.  Message all team members can take
              over a minute to run, so this method is expected to be called on its own thread """
         app = (
@@ -544,7 +546,6 @@ class TeamService:
 
         with app.app_context():
             team_members = TeamService._get_active_team_members(team_id)
-            team_name = TeamService.get_team_by_id(team_id).name
             sender = UserService.get_user_by_id(message_dto.from_user_id).username
 
             message_dto.message = "A message from {}, manager of {} team:<br/><br/>{}".format(
