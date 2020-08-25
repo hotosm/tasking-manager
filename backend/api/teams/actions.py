@@ -289,6 +289,12 @@ class TeamsActionsMessageMembersAPI(Resource):
             authenticated_user_id = token_auth.current_user()
             team_id = request.view_args["team_id"]
             message_dto = MessageDTO(request.get_json())
+            # Validate if team is present
+            try:
+                TeamService.get_team_by_id(team_id)
+            except NotFound:
+                return {"Error": "Team not found"}, 400
+
             is_manager = TeamService.is_user_team_manager(
                 team_id, authenticated_user_id
             )
@@ -296,6 +302,8 @@ class TeamsActionsMessageMembersAPI(Resource):
                 raise ValueError
             message_dto.from_user_id = authenticated_user_id
             message_dto.validate()
+            if not message_dto.message.strip() or not message_dto.subject.strip():
+                raise DataError({"Validation": "Empty message not allowed"})
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {"Error": "Unable to send message to team members"}, 400
