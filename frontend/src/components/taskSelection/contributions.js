@@ -43,7 +43,7 @@ export const MappingLevelIcon = ({ mappingLevel }) => {
 };
 
 function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
-  const { formatDate } = useIntl();
+  const intl = useIntl();
   const checkActiveUserAndStatus = (status, username) =>
     activeStatus === status && activeUser === username ? 'bg-blue-dark' : 'bg-grey-light';
 
@@ -57,7 +57,7 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
         <FormattedMessage {...messages.registered}>
           {(msg) => (
             <>
-              <span title={`${msg} ${formatDate(user.dateRegistered)}`}>
+              <span title={`${msg} ${intl.formatDate(user.dateRegistered)}`}>
                 <UserAvatar
                   picture={user.pictureUrl}
                   username={user.username}
@@ -73,31 +73,42 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
         <MappingLevelIcon mappingLevel={user.mappingLevel} />
       </div>
 
-      <div
-        className="w-20 fl tr dib pointer pt2 truncate"
-        onClick={() => displayTasks(user.mappedTasks, 'MAPPED', user.username)}
-      >
-        <MappedIcon className="h1 w1 blue-grey mr2" />
-        <span className="mr1 b self-start">{user.mapped}</span>
-        <CheckCircle className={`${checkActiveUserAndStatus('MAPPED', user.username)} white`} />
+      <div className="w-20 fl tr dib truncate">
+        <div
+          className="dib pt2 pointer"
+          onClick={() => displayTasks(user.mappedTasks, 'MAPPED', user.username)}
+          title={intl.formatMessage(messages.mappedByUser, { username: user.username })}
+        >
+          <MappedIcon className="h1 w1 blue-grey mr2" />
+          <span className="mr1 b self-start">{user.mapped}</span>
+          <CheckCircle className={`${checkActiveUserAndStatus('MAPPED', user.username)} white`} />
+        </div>
       </div>
-      <div
-        className="w-20 fl tr dib pointer pt2 truncate"
-        onClick={() => displayTasks(user.validatedTasks, 'VALIDATED', user.username)}
-      >
-        <ValidatedIcon className="h1 w1 blue-grey mr2" />
-        <span className="mr1 b">{user.validated}</span>
-        <CheckCircle className={`${checkActiveUserAndStatus('VALIDATED', user.username)} white`} />
+      <div className="w-20 fl tr dib truncate">
+        <div
+          className="dib pt2 pointer"
+          onClick={() => displayTasks(user.validatedTasks, 'VALIDATED', user.username)}
+          title={intl.formatMessage(messages.validatedByUser, { username: user.username })}
+        >
+          <ValidatedIcon className="h1 w1 blue-grey mr2" />
+          <span className="mr1 b">{user.validated}</span>
+          <CheckCircle
+            className={`${checkActiveUserAndStatus('VALIDATED', user.username)} white`}
+          />
+        </div>
       </div>
-      <div
-        className="w-20 fl tr dib pointer pt2 truncate"
-        onClick={() =>
-          displayTasks([...user.mappedTasks, ...user.validatedTasks], 'ALL', user.username)
-        }
-      >
-        <AsteriskIcon className="h1 w1 blue-grey mr2" />
-        <span className="mr1 b">{user.total}</span>
-        <CheckCircle className={`${checkActiveUserAndStatus('ALL', user.username)} white`} />
+      <div className="w-20 fl tr dib truncate">
+        <div
+          className="dib pt2 pointer"
+          onClick={() =>
+            displayTasks([...user.mappedTasks, ...user.validatedTasks], 'ALL', user.username)
+          }
+          title={intl.formatMessage(messages.allUserTasks, { username: user.username })}
+        >
+          <AsteriskIcon className="h1 w1 blue-grey mr2" />
+          <span className="mr1 b">{user.total}</span>
+          <CheckCircle className={`${checkActiveUserAndStatus('ALL', user.username)} white`} />
+        </div>
       </div>
     </div>
   );
