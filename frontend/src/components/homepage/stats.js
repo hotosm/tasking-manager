@@ -20,9 +20,9 @@ export const StatsNumber = (props) => {
   );
 };
 
-export const StatsColumn = ({ label, value, priority = false }: Object) => {
+export const StatsColumn = ({ label, value }: Object) => {
   return (
-    <div className={`fl tc w-20-l w-third dib-l ${priority ? '' : 'dn'}`}>
+    <div className={`fl tc w-20-l w-third-m w-100 dib h4`}>
       <div className="db f1 fw8 red barlow-condensed">
         <StatsNumber value={value} />
       </div>
@@ -57,19 +57,11 @@ export const StatsSection = () => {
 
   return (
     <div className="cf pv5 ph5-l ph4 bg-white">
-      <StatsColumn label={messages.buildingsStats} value={stats.buildings} priority={true} />
-      <StatsColumn label={messages.roadsStats} value={stats.roads} priority={true} />
+      <StatsColumn label={messages.buildingsStats} value={stats.buildings} />
+      <StatsColumn label={messages.roadsStats} value={stats.roads} />
       <StatsColumn label={messages.editsStats} value={stats.edits} />
-      <StatsColumn
-        label={messages.communityStats}
-        value={tmStats.totalMappers || 0}
-        priority={true}
-      />
-      <StatsColumn
-        label={messages.mappersStats}
-        value={tmStats.mappersOnline || 0}
-        priority={true}
-      />
+      <StatsColumn label={messages.communityStats} value={tmStats.totalMappers || 0} />
+      <StatsColumn label={messages.mappersStats} value={tmStats.mappersOnline || 0} />
     </div>
   );
 };

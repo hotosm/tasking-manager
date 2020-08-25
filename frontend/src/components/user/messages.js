@@ -116,6 +116,14 @@ export default defineMessages({
     id: 'user.notifications.mentions.description',
     defaultMessage: 'Receive an email every time your username is mentioned on a comment.',
   },
+  teamUpdates: {
+    id: 'user.notifications.teams',
+    defaultMessage: 'Team announcements emails',
+  },
+  teamUpdatesDescription: {
+    id: 'user.notifications.teams.description',
+    defaultMessage: 'Receive emails with announcements sent by team managers.',
+  },
   projectUpdates: {
     id: 'user.notifications.projects',
     defaultMessage: 'Project updates',

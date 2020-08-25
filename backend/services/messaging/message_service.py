@@ -6,6 +6,7 @@ from cachetools import TTLCache, cached
 from typing import List
 from flask import current_app
 from sqlalchemy import text, func
+from markdown import markdown
 
 from backend import create_app, db
 from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
@@ -114,12 +115,10 @@ class MessageService:
 
         with app.app_context():
             contributors = Message.get_all_contributors(project_id)
-
-            project_link = MessageService.get_project_link(project_id)
-
-            message_dto.message = (
-                f"{project_link}<br/><br/>" + message_dto.message
-            )  # Append project link to end of message
+            message_dto.message = "A message from {} managers:<br/><br/>{}".format(
+                MessageService.get_project_link(project_id),
+                markdown(message_dto.message, output_format="html"),
+            )
 
             messages = []
             for contributor in contributors:
@@ -156,6 +155,12 @@ class MessageService:
                 user.projects_notifications is False
                 and obj.message_type == MessageType.BROADCAST.value
             ):
+                continue
+            if (
+                user.teams_notifications is False
+                and obj.message_type == MessageType.TEAM_BROADCAST.value
+            ):
+                messages_objs.append(obj)
                 continue
             if user.comments_notifications is False and obj.message_type in (
                 MessageType.TASK_COMMENT_NOTIFICATION.value,
@@ -365,7 +370,7 @@ class MessageService:
         if len(usernames) == 0:
             return  # Nobody @'d so return
 
-        link = MessageService.get_project_link(project_id)
+        link = MessageService.get_project_link(project_id, include_chat_section=True)
 
         messages = []
         for username in usernames:
@@ -394,7 +399,9 @@ class MessageService:
         favorited_users = [r[0] for r in result]
 
         if len(favorited_users) != 0:
-            project_link = MessageService.get_project_link(project_id)
+            project_link = MessageService.get_project_link(
+                project_id, include_chat_section=True
+            )
             # project_title = ProjectService.get_project_title(project_id)
             messages = []
             for user_id in favorited_users:
@@ -642,12 +649,18 @@ class MessageService:
         return f'<a href="{base_url}/projects/{project_id}/tasks/?search={task_id}">Task {task_id}</a>'
 
     @staticmethod
-    def get_project_link(project_id: int, base_url=None) -> str:
+    def get_project_link(
+        project_id: int, base_url=None, include_chat_section=False
+    ) -> str:
         """ Helper method to generate a link to project chat"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
+        if include_chat_section:
+            section = "#questionsAndComments"
+        else:
+            section = ""
 
-        return f'<a href="{base_url}/projects/{project_id}#questionsAndComments">Project {project_id}</a>'
+        return f'<a href="{base_url}/projects/{project_id}{section}">Project {project_id}</a>'
 
     @staticmethod
     def get_user_profile_link(user_name: str, base_url=None) -> str:

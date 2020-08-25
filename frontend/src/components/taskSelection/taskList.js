@@ -15,7 +15,7 @@ import { TASK_COLOURS } from '../../config';
 import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon, InternalLinkIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
-import { Button } from '../button';
+import { CustomButton } from '../button';
 
 export function TaskStatus({ status, lockHolder }: Object) {
   const isReadyOrLockedForMapping = ['READY', 'LOCKED_FOR_MAPPING'].includes(status);
@@ -140,26 +140,40 @@ export function TaskFilter({ userCanValidate, statusFilter, setStatusFn }: Objec
   const inactiveClass = 'bg-white blue-grey';
 
   return (
-    <div className="pt1">
-      <Button
+    <div className="pv1">
+      <CustomButton
         onClick={() => setStatusFn('all')}
-        className={`dbi ${!statusFilter || statusFilter === 'all' ? activeClass : inactiveClass}`}
+        className={`dbi bn ph3 pv2 ${
+          !statusFilter || statusFilter === 'all' ? activeClass : inactiveClass
+        }`}
       >
         <FormattedMessage {...messages.filterAll} />
-      </Button>
-      <Button
+      </CustomButton>
+      <CustomButton
         onClick={() => setStatusFn('readyToMap')}
-        className={`dbi ${statusFilter === 'readyToMap' ? activeClass : inactiveClass}`}
+        className={`dbi bn ph3 pv2 ${statusFilter === 'readyToMap' ? activeClass : inactiveClass}`}
       >
         <FormattedMessage {...messages.filterReadyToMap} />
-      </Button>
+      </CustomButton>
       {userCanValidate && (
-        <Button
-          onClick={() => setStatusFn('readyToValidate')}
-          className={`dbi ${statusFilter === 'readyToValidate' ? activeClass : inactiveClass}`}
-        >
-          <FormattedMessage {...messages.filterReadyToValidate} />
-        </Button>
+        <>
+          <CustomButton
+            onClick={() => setStatusFn('readyToValidate')}
+            className={`dbi bn ph3 pv2 ${
+              statusFilter === 'readyToValidate' ? activeClass : inactiveClass
+            }`}
+          >
+            <FormattedMessage {...messages.filterReadyToValidate} />
+          </CustomButton>
+          <CustomButton
+            onClick={() => setStatusFn('unavailable')}
+            className={`dbi bn ph3 pv2 ${
+              statusFilter === 'unavailable' ? activeClass : inactiveClass
+            }`}
+          >
+            <FormattedMessage {...messages.taskStatus_BADIMAGERY} />
+          </CustomButton>
+        </>
       )}
     </div>
   );
@@ -195,6 +209,9 @@ export function TaskList({
         newTasks = newTasks.filter((task) =>
           ['MAPPED', 'BADIMAGERY'].includes(task.properties.taskStatus),
         );
+      }
+      if (statusFilter === 'unavailable') {
+        newTasks = newTasks.filter((task) => task.properties.taskStatus === 'BADIMAGERY');
       }
       if (textSearch) {
         if (Number(textSearch)) {

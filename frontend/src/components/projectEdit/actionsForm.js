@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import { navigate } from '@reach/router';
+import { useDropzone } from 'react-dropzone';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -9,6 +10,10 @@ import { Button } from '../button';
 import { DeleteModal } from '../deleteModal';
 import { styleClasses } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { useOnDrop } from '../../hooks/UseUploadImage';
+import FileRejections from '../comments/fileRejections';
+import DropzoneUploadStatus from '../comments/uploadStatus';
+import { DROPZONE_SETTINGS } from '../../config';
 
 const checkError = (error, modal) => {
   let successMessage = '';
@@ -70,16 +75,16 @@ const checkError = (error, modal) => {
 };
 
 const ResetTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
 
   const fn = () => {
     fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/reset-all/`, token, 'POST')
-      .then(res => setError(false))
-      .catch(e => setError(true));
+      .then((res) => setError(false))
+      .catch((e) => setError(true));
   };
 
-  const handlerButton = e => {
+  const handlerButton = (e) => {
     fn();
   };
 
@@ -107,16 +112,16 @@ const ResetTasksModal = ({ projectId, close }: Object) => {
 };
 
 const ResetBadImageryModal = ({ projectId, close }: Object) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
 
   const fn = () => {
     fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/reset-all-badimagery/`, token, 'POST')
-      .then(res => setError(false))
-      .catch(e => setError(true));
+      .then((res) => setError(false))
+      .catch((e) => setError(true));
   };
 
-  const handlerButton = e => {
+  const handlerButton = (e) => {
     fn();
   };
 
@@ -145,16 +150,16 @@ const ResetBadImageryModal = ({ projectId, close }: Object) => {
 };
 
 const ValidateAllTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
 
   const fn = () => {
     fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/validate-all/`, token, 'POST')
-      .then(res => setError(false))
-      .catch(e => setError(true));
+      .then((res) => setError(false))
+      .catch((e) => setError(true));
   };
 
-  const handlerButton = e => {
+  const handlerButton = (e) => {
     fn();
   };
 
@@ -183,16 +188,16 @@ const ValidateAllTasksModal = ({ projectId, close }: Object) => {
 };
 
 const InvalidateAllTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
 
   const fn = () => {
     fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/invalidate-all/`, token, 'POST')
-      .then(res => setError(false))
-      .catch(e => setError(true));
+      .then((res) => setError(false))
+      .catch((e) => setError(true));
   };
 
-  const handlerButton = e => {
+  const handlerButton = (e) => {
     fn();
   };
 
@@ -221,16 +226,16 @@ const InvalidateAllTasksModal = ({ projectId, close }: Object) => {
 };
 
 const MapAllTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
 
   const fn = () => {
     fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/map-all/`, token, 'POST')
-      .then(res => setError(false))
-      .catch(e => setError(true));
+      .then((res) => setError(false))
+      .catch((e) => setError(true));
   };
 
-  const handlerButton = e => {
+  const handlerButton = (e) => {
     fn();
   };
 
@@ -258,7 +263,14 @@ const MapAllTasksModal = ({ projectId, close }: Object) => {
 
 const MessageContributorsModal = ({ projectId, close }: Object) => {
   const [data, setData] = useState({ message: '', subject: '' });
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
+  const appendImgToMessage = (url) =>
+    setData({ ...data, message: `${data.message}\n![image](${url})\n` });
+  const [uploadError, uploading, onDrop] = useOnDrop(appendImgToMessage);
+  const { fileRejections, getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    ...DROPZONE_SETTINGS,
+  });
   const [error, setError] = useState(null);
 
   const fn = () => {
@@ -268,15 +280,15 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
       token,
       'POST',
     )
-      .then(res => setError(false))
-      .catch(e => setError(true));
+      .then((res) => setError(false))
+      .catch((e) => setError(true));
   };
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  const handlerButton = e => {
+  const handlerButton = (e) => {
     fn();
   };
 
@@ -289,7 +301,7 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
         <FormattedMessage {...messages.messageContributorsDescription} />
       </p>
       <FormattedMessage {...messages.subjectPlaceholder}>
-        {msg => {
+        {(msg) => {
           return (
             <input
               value={data.subject}
@@ -303,20 +315,26 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
         }}
       </FormattedMessage>
       <FormattedMessage {...messages.messagePlaceholder}>
-        {msg => {
+        {(msg) => {
           return (
-            <textarea
-              value={data.message}
-              onChange={handleChange}
-              name="message"
-              className="dib w-100 fl pa2 mb2"
-              type="text"
-              placeholder={msg}
-              rows={4}
-            />
+            <div {...getRootProps()}>
+              <textarea
+                {...getInputProps()}
+                value={data.message}
+                onChange={handleChange}
+                name="message"
+                className="dib w-100 fl pa2 mb2"
+                style={{ display: 'inline-block' }} // we need to set display, as dropzone makes it none as default
+                type="text"
+                placeholder={msg}
+                rows={4}
+              />
+            </div>
           );
         }}
       </FormattedMessage>
+      <DropzoneUploadStatus uploading={uploading} uploadError={uploadError} />
+      <FileRejections files={fileRejections} />
       <p className={styleClasses.pClass}>
         <FormattedMessage {...messages.messageContributorsTranslationAlert} />
       </p>
@@ -332,15 +350,15 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
 };
 
 const TransferProject = ({ projectId }: Object) => {
-  const token = useSelector(state => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
   const [username, setUsername] = useState('');
   const [users, setUsers] = useState([]);
-  const handleUsers = e => {
-    const fetchUsers = user => {
+  const handleUsers = (e) => {
+    const fetchUsers = (user) => {
       fetchLocalJSONAPI(`users/?username=${user}&role=ADMIN`, token)
-        .then(res => setUsers(res.users.map(user => user.username)))
-        .catch(e => setUsers([]));
+        .then((res) => setUsers(res.users.map((user) => user.username)))
+        .catch((e) => setUsers([]));
     };
 
     const user = e.target.value;
@@ -355,11 +373,11 @@ const TransferProject = ({ projectId }: Object) => {
       token,
       'POST',
     )
-      .then(res => setError(false))
-      .catch(e => setError(true));
+      .then((res) => setError(false))
+      .catch((e) => setError(true));
   };
 
-  const handlerButton = e => {
+  const handlerButton = (e) => {
     fn();
   };
 
@@ -425,7 +443,7 @@ export const ActionsForm = ({ projectId, projectName }: Object) => {
           modal
           closeOnDocumentClick
         >
-          {close => <MessageContributorsModal projectId={projectId} close={close} />}
+          {(close) => <MessageContributorsModal projectId={projectId} close={close} />}
         </Popup>
       </div>
       <div className={styleClasses.divClass}>
@@ -450,7 +468,7 @@ export const ActionsForm = ({ projectId, projectName }: Object) => {
           modal
           closeOnDocumentClick
         >
-          {close => <MapAllTasksModal projectId={projectId} close={close} />}
+          {(close) => <MapAllTasksModal projectId={projectId} close={close} />}
         </Popup>
         <Popup
           trigger={
@@ -461,7 +479,7 @@ export const ActionsForm = ({ projectId, projectName }: Object) => {
           modal
           closeOnDocumentClick
         >
-          {close => <InvalidateAllTasksModal projectId={projectId} close={close} />}
+          {(close) => <InvalidateAllTasksModal projectId={projectId} close={close} />}
         </Popup>
         <Popup
           trigger={
@@ -472,7 +490,7 @@ export const ActionsForm = ({ projectId, projectName }: Object) => {
           modal
           closeOnDocumentClick
         >
-          {close => <ValidateAllTasksModal projectId={projectId} close={close} />}
+          {(close) => <ValidateAllTasksModal projectId={projectId} close={close} />}
         </Popup>
       </div>
 
@@ -498,7 +516,7 @@ export const ActionsForm = ({ projectId, projectName }: Object) => {
           modal
           closeOnDocumentClick
         >
-          {close => <ResetTasksModal projectId={projectId} close={close} />}
+          {(close) => <ResetTasksModal projectId={projectId} close={close} />}
         </Popup>
         <Popup
           trigger={
@@ -509,7 +527,7 @@ export const ActionsForm = ({ projectId, projectName }: Object) => {
           modal
           closeOnDocumentClick
         >
-          {close => <ResetBadImageryModal projectId={projectId} close={close} />}
+          {(close) => <ResetBadImageryModal projectId={projectId} close={close} />}
         </Popup>
       </div>
 

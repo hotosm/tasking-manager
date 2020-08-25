@@ -40,6 +40,18 @@ export default defineMessages({
     id: 'management.teams.members',
     defaultMessage: 'Team members',
   },
+  messageMembers: {
+    id: 'management.teams.members.send_message',
+    defaultMessage: 'Team messaging',
+  },
+  send: {
+    id: 'management.teams.members.send_message.button',
+    defaultMessage: 'Send',
+  },
+  subjectPlaceholder: {
+    id: 'management.teams.members.send_message.subject',
+    defaultMessage: 'Subject',
+  },
   joinRequests: {
     id: 'management.teams.join_requests',
     defaultMessage: 'Join requests',

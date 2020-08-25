@@ -96,7 +96,7 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for creating draft project
+              description: JSON object for creating message
               schema:
                 properties:
                     subject:

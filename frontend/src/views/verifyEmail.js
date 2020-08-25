@@ -8,7 +8,7 @@ import messages from './messages';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
-export function EmailVerification({ id }: Object) {
+export function EmailVerification() {
   useSetTitleTag('Verify email');
   /* eslint-disable-next-line */
   const [token, setToken] = useQueryParam('token', StringParam);
@@ -17,9 +17,11 @@ export function EmailVerification({ id }: Object) {
   const [status, setStatus] = useState('loading');
 
   useEffect(() => {
-    fetchLocalJSONAPI(`/api/v2/system/authentication/email/?token=${token}&username=${username}`)
-      .then((success) => setStatus('emailVerified'))
-      .catch((error) => setStatus('verificationError'));
+    if (token && username) {
+      fetchLocalJSONAPI(`/api/v2/system/authentication/email/?token=${token}&username=${username}`)
+        .then((success) => setStatus('emailVerified'))
+        .catch((error) => setStatus('verificationError'));
+    }
   }, [token, username]);
 
   return (

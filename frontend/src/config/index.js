@@ -150,3 +150,9 @@ export const MAP_STYLE = MAPBOX_TOKEN
   : BASEMAP_OPTIONS[1].value;
 export const MAPBOX_RTL_PLUGIN_URL =
   'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.0/mapbox-gl-rtl-text.js';
+
+export const DROPZONE_SETTINGS = {
+  accept: 'image/*',
+  multiple: false,
+  maxSize: 256000,
+};

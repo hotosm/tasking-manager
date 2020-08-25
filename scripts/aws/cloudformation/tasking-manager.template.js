@@ -115,6 +115,14 @@ const Parameters = {
   TaskingManagerURL: {
     Description: 'URL for setting CNAME in Distribution; Ex: example.hotosm.org',
     Type: 'String'
+  },
+  TaskingManagerOrgName: {
+    Description: 'Org Name',
+    Type: 'String'
+  },
+  TaskingManagerOrgCode: {
+    Description: 'Org Code',
+    Type: 'String'
   }
 };
 
@@ -132,8 +140,8 @@ const Resources = {
     Properties: {
       AutoScalingGroupName: cf.stackName,
       Cooldown: 300,
-      MinSize: cf.if('IsTaskingManagerProduction', 2, 1),
-      DesiredCapacity: cf.if('IsTaskingManagerProduction', 2, 1),
+      MinSize: cf.if('IsTaskingManagerProduction', 3, 1),
+      DesiredCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
       MaxSize: cf.if('IsTaskingManagerProduction', 9, cf.if('IsTaskingManagerDemo', 3, 1)),
       HealthCheckGracePeriod: 600,
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
@@ -374,6 +382,8 @@ const Resources = {
         cf.sub('export TM_EMAIL_CONTACT_ADDRESS="${TaskingManagerEmailContactAddress}"'),
         cf.sub('export TM_LOG_LEVEL="${TaskingManagerLogLevel}"'),
         cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
+        cf.sub('export TM_ORG_NAME="${TaskingManagerOrgName}"'),
+        cf.sub('export TM_ORG_CODE="${TaskingManagerOrgCode}"'),
         cf.sub('export TM_IMAGE_UPLOAD_API_URL="${TaskingManagerImageUploadAPIURL}"'),
         cf.sub('export TM_IMAGE_UPLOAD_API_KEY="${TaskingManagerImageUploadAPIKey}"'),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',

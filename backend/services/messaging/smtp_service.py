@@ -136,7 +136,7 @@ class SMTPService:
         entropy = current_app.secret_key if current_app.secret_key else "un1testingmode"
 
         serializer = URLSafeTimedSerializer(entropy)
-        token = serializer.dumps(email_address.lower())
+        token = serializer.dumps(email_address)
 
         base_url = current_app.config["APP_BASE_URL"]
 
