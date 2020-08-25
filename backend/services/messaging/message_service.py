@@ -156,6 +156,12 @@ class MessageService:
                 and obj.message_type == MessageType.BROADCAST.value
             ):
                 continue
+            if (
+                user.teams_notifications is False
+                and obj.message_type == MessageType.TEAM_BROADCAST.value
+            ):
+                messages_objs.append(obj)
+                continue
             if user.comments_notifications is False and obj.message_type in (
                 MessageType.TASK_COMMENT_NOTIFICATION.value,
                 MessageType.PROJECT_CHAT_NOTIFICATION.value,
