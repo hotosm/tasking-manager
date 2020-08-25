@@ -539,6 +539,18 @@ export default defineMessages({
     id: 'project.contributions.stats',
     defaultMessage: 'Statistics',
   },
+  mappedByUser: {
+    id: 'project.contributions.user.select.mapped',
+    defaultMessage: 'Select tasks mapped by {username}',
+  },
+  validatedByUser: {
+    id: 'project.contributions.user.select.validated',
+    defaultMessage: 'Select tasks validated by {username}',
+  },
+  allUserTasks: {
+    id: 'project.contributions.user.select.all',
+    defaultMessage: 'Select all tasks mapped or validated by {username}',
+  },
   permissionErrorTitle: {
     id: 'project.permissions.error.title',
     defaultMessage: 'You are not ready to work on this project...',
