@@ -293,7 +293,7 @@ class TeamsActionsMessageMembersAPI(Resource):
             try:
                 TeamService.get_team_by_id(team_id)
             except NotFound:
-                return {"Error": "Team not found"}, 400
+                return {"Error": "Team not found"}, 404
 
             is_manager = TeamService.is_user_team_manager(
                 team_id, authenticated_user_id
