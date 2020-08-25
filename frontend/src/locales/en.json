@@ -719,6 +719,8 @@
   "user.settings.become_validator.description": "Validators check the quality of map edits completed and provide feedback for mappers on how to improve. If you are an experienced mapper, apply to become a validator.",
   "user.notifications.mentions": "Mentions emails",
   "user.notifications.mentions.description": "Receive an email every time your username is mentioned on a comment.",
+  "user.notifications.teams": "Team announcements emails",
+  "user.notifications.teams.description": "Receive emails with announcements sent by team managers.",
   "user.notifications.projects": "Project updates",
   "user.notifications.tasks": "Tasks validation emails",
   "user.settings.required": "Required fields",
