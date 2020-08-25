@@ -47,7 +47,7 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
           <CurrentUserAvatar className="h2 w2 fr mr2 br-100" />
         </div>
         <div className="fl w-90-ns w-80 h-100 f6">
-          <CommentInputField comment={comment} setComment={setComment} />
+          <CommentInputField comment={comment} setComment={setComment} enableHashtagPaste={true} />
         </div>
       </div>
       <div className="w-100 pb3 pt2 tr pr3">
