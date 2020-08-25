@@ -1,5 +1,4 @@
 from flask_restful import Resource, request, current_app
-import json
 from schematics.exceptions import DataError
 import threading
 

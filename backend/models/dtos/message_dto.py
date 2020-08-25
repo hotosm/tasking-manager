@@ -8,8 +8,12 @@ class MessageDTO(Model):
     """ DTO used to define a message that will be sent to a user """
 
     message_id = IntType(serialized_name="messageId")
-    subject = StringType(serialized_name="subject", required=True, serialize_when_none=False)
-    message = StringType(serialized_name="message", required=True, serialize_when_none=False)
+    subject = StringType(
+        serialized_name="subject", required=True, serialize_when_none=False
+    )
+    message = StringType(
+        serialized_name="message", required=True, serialize_when_none=False
+    )
     from_user_id = IntType(required=True, serialize_when_none=False)
     from_username = StringType(serialized_name="fromUsername", default="")
     project_id = IntType(serialized_name="projectId")
