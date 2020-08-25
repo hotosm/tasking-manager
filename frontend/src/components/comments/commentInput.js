@@ -10,7 +10,7 @@ import FileRejections from './fileRejections';
 import DropzoneUploadStatus from './uploadStatus';
 import { DROPZONE_SETTINGS } from '../../config';
 
-export const CommentInputField = ({ comment, setComment }: Object) => {
+export const CommentInputField = ({ comment, setComment, enableHashtagPaste = false }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
   const appendImgToComment = (url) => setComment(`${comment}\n![image](${url})\n`);
   const [uploadError, uploading, onDrop] = useOnDrop(appendImgToComment);
@@ -27,7 +27,7 @@ export const CommentInputField = ({ comment, setComment }: Object) => {
         setValueFn={(e) => setComment(e.target.value)}
         token={token}
       />
-      {comment && (
+      {comment && enableHashtagPaste && (
         <span className="blue-grey f6 pt2">
           <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
           <span>, </span>

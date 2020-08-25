@@ -167,7 +167,11 @@ export function CompletionTabForMapping({
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>
-          <CommentInputField comment={taskComment} setComment={setTaskComment} />
+          <CommentInputField
+            comment={taskComment}
+            setComment={setTaskComment}
+            enableHashtagPaste={true}
+          />
         </p>
       </div>
       <div className="cf mv2">
@@ -301,7 +305,11 @@ export function CompletionTabForValidation({
           <FormattedMessage {...messages.comment} />
         </h4>
         <p>
-          <CommentInputField comment={taskComment} setComment={setTaskComment} />
+          <CommentInputField
+            comment={taskComment}
+            setComment={setTaskComment}
+            enableHashtagPaste={true}
+          />
         </p>
       </div>
       <div className="cf mb3">

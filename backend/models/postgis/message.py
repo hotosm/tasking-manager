@@ -25,6 +25,7 @@ class MessageType(Enum):
     TASK_COMMENT_NOTIFICATION = 8
     PROJECT_CHAT_NOTIFICATION = 9
     PROJECT_ACTIVITY_NOTIFICATION = 10
+    TEAM_BROADCAST = 11  # Broadcast message from a team manager
 
 
 class Message(db.Model):

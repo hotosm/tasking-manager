@@ -34,7 +34,7 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
         <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
       </div>
       <div className="fl w-70-ns w-80 ph1 h-100">
-        <CommentInputField comment={comment} setComment={setComment} />
+        <CommentInputField comment={comment} setComment={setComment} enableHashtagPaste={true} />
       </div>
       <div className="fl w-20-ns w-100 tc-ns tr pt3 pr0-ns pr1">
         <Button onClick={saveComment} className="bg-red white f5" disabled={comment === ''}>

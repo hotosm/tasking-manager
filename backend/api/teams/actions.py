@@ -1,6 +1,8 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
+import threading
 
+from backend.models.dtos.message_dto import MessageDTO
 from backend.services.team_service import TeamService, NotFound, TeamJoinNotAllowed
 from backend.services.users.authentication_service import token_auth, tm
 from backend.models.postgis.user import User
@@ -234,3 +236,90 @@ class TeamsActionsLeaveAPI(Resource):
             error_msg = f"TeamMembers DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
+
+
+class TeamsActionsMessageMembersAPI(Resource):
+    @token_auth.login_required
+    def post(self, team_id):
+        """
+        Message all team members
+        ---
+        tags:
+          - teams
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: team_id
+              in: path
+              description: Unique team ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for creating message
+              schema:
+                properties:
+                    subject:
+                        type: string
+                        default: Thanks
+                        required: true
+                    message:
+                        type: string
+                        default: Thanks for your contribution
+                        required: true
+        responses:
+            200:
+                description: Message sent successfully
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
+            500:
+                description: Internal Server Error
+        """
+        try:
+            authenticated_user_id = token_auth.current_user()
+            team_id = request.view_args["team_id"]
+            message_dto = MessageDTO(request.get_json())
+            # Validate if team is present
+            try:
+                team = TeamService.get_team_by_id(team_id)
+            except NotFound:
+                return {"Error": "Team not found"}, 404
+
+            is_manager = TeamService.is_user_team_manager(
+                team_id, authenticated_user_id
+            )
+            if not is_manager:
+                raise ValueError
+            message_dto.from_user_id = authenticated_user_id
+            message_dto.validate()
+            if not message_dto.message.strip() or not message_dto.subject.strip():
+                raise DataError({"Validation": "Empty message not allowed"})
+        except DataError as e:
+            current_app.logger.error(f"Error validating request: {str(e)}")
+            return {"Error": "Request payload did not match validation"}, 400
+        except ValueError:
+            return {"Error": "Unauthorised to send message to team members"}, 403
+
+        try:
+            threading.Thread(
+                target=TeamService.send_message_to_all_team_members,
+                args=(team_id, team.name, message_dto),
+            ).start()
+
+            return {"Success": "Message sent successfully"}, 200
+        except ValueError as e:
+            return {"Error": str(e)}, 403
+        except Exception as e:
+            error_msg = f"Send message all - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": "Unable to send messages to team members"}, 500

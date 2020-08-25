@@ -1,7 +1,8 @@
 from flask import current_app
 from sqlalchemy import and_
+from markdown import markdown
 
-from backend import db
+from backend import create_app, db
 from backend.models.dtos.team_dto import (
     TeamDTO,
     NewTeamDTO,
@@ -9,6 +10,9 @@ from backend.models.dtos.team_dto import (
     ProjectTeamDTO,
     TeamDetailsDTO,
 )
+
+from backend.models.dtos.message_dto import MessageDTO
+from backend.models.postgis.message import Message, MessageType
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.project import ProjectTeams
 from backend.models.postgis.project_info import ProjectInfo
@@ -450,6 +454,10 @@ class TeamService:
         return TeamMembers.query.filter_by(team_id=team_id).all()
 
     @staticmethod
+    def _get_active_team_members(team_id: int):
+        return TeamMembers.query.filter_by(team_id=team_id, active=True).all()
+
+    @staticmethod
     def activate_team_member(team_id: int, user_id: int):
         member = TeamMembers.query.filter(
             TeamMembers.team_id == team_id, TeamMembers.user_id == user_id
@@ -525,3 +533,34 @@ class TeamService:
             if TeamService.is_user_an_active_team_member(team_dto.team_id, user_id)
         ]
         return len(user_membership) > 0
+
+    @staticmethod
+    def send_message_to_all_team_members(
+        team_id: int, team_name: str, message_dto: MessageDTO
+    ):
+        """  Sends supplied message to all contributors in a team.  Message all team members can take
+             over a minute to run, so this method is expected to be called on its own thread """
+        app = (
+            create_app()
+        )  # Because message-all run on background thread it needs it's own app context
+
+        with app.app_context():
+            team_members = TeamService._get_active_team_members(team_id)
+            sender = UserService.get_user_by_id(message_dto.from_user_id).username
+
+            message_dto.message = "A message from {}, manager of {} team:<br/><br/>{}".format(
+                MessageService.get_user_profile_link(sender),
+                MessageService.get_team_link(team_name, team_id, False),
+                markdown(message_dto.message, output_format="html"),
+            )
+
+            messages = []
+            for team_member in team_members:
+                if team_member.user_id != message_dto.from_user_id:
+                    message = Message.from_dto(team_member.user_id, message_dto)
+                    message.message_type = MessageType.TEAM_BROADCAST.value
+                    message.save()
+                    user = UserService.get_user_by_id(team_member.user_id)
+                    messages.append(dict(message=message, user=user))
+
+            MessageService._push_messages(messages)

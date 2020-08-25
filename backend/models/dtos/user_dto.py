@@ -74,6 +74,7 @@ class UserDTO(Model):
     comments_notifications = BooleanType(serialized_name="commentsNotifications")
     projects_notifications = BooleanType(serialized_name="projectsNotifications")
     tasks_notifications = BooleanType(serialized_name="tasksNotifications")
+    teams_notifications = BooleanType(serialized_name="teamsNotifications")
 
     # these are read only
     missing_maps_profile = StringType(serialized_name="missingMapsProfile")
