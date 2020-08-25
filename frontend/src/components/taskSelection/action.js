@@ -191,7 +191,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                   </span>
                   {activeTasks && activeTasks.length === 1 && (
                     <span
-                      className={`mr4-l mr3 pb2 pointer ${
+                      className={`pb2 pointer truncate ${
                         activeSection === 'history' && 'bb b--blue-dark'
                       }`}
                       onClick={() => setActiveSection('history')}
