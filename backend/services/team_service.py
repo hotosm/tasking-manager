@@ -561,7 +561,6 @@ class TeamService:
                     message.message_type = MessageType.TEAM_BROADCAST.value
                     message.save()
                     user = UserService.get_user_by_id(team_member.user_id)
-                    if user.teams_notifications:
-                        messages.append(dict(message=message, user=user))
+                    messages.append(dict(message=message, user=user))
 
             MessageService._push_messages(messages)
