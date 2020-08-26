@@ -221,19 +221,21 @@ class Header extends React.Component {
       // Validate that user has set is email.
       <header className="w-100 bb b--grey-light">
         {this.checkUserEmail()}
-        <div className="cf ph2 red pt3 pb2 bb b--grey-light">
-          <div className="fl w-50">
-            <span className="barlow-condensed f5 ml2 ">
-              <FormattedMessage {...messages.slogan} />
-            </span>
+        {this.props.showOrgBar && (
+          <div className="cf ph2 red pt3 pb2 bb b--grey-light">
+            <div className="fl w-50">
+              <span className="barlow-condensed f5 ml2 ">
+                <FormattedMessage {...messages.slogan} />
+              </span>
+            </div>
+            <div className="tr red">
+              <a className="link red f6 mr2" href={`http://${ORG_URL}`}>
+                {ORG_URL}
+                <ExternalLinkIcon className="pl2 v-btm" style={{ height: '15px' }} />
+              </a>
+            </div>
           </div>
-          <div className="tr red">
-            <a className="link red f6 mr2" href={`http://${ORG_URL}`}>
-              {ORG_URL}
-              <ExternalLinkIcon className="pl2 v-btm" style={{ height: '15px' }} />
-            </a>
-          </div>
-        </div>
+        )}
         <div className="mt3 pb1 pb2-ns ph2 dib w-100">
           <div className="cf fl pt1 dib">
             <Link to={'/'} className="link mv-1">
@@ -277,6 +279,7 @@ const mapStateToProps = (state) => ({
   userDetails: state.auth.get('userDetails'),
   organisations: state.auth.get('organisations'),
   token: state.auth.get('token'),
+  showOrgBar: state.orgBarVisibility.isVisible,
 });
 
 Header = connect(mapStateToProps, { logout })(Header);
