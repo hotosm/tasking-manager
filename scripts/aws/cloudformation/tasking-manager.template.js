@@ -391,6 +391,7 @@ const Resources = {
         './venv/bin/python3.6 manage.py db upgrade',
         'echo "------------------------------------------------------------"',
         cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
+        cf.sub('export NEW_RELIC_ENVIRONMENT="${AWS::StackName}"'),
         cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
         cf.sub('sudo cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
         cf.sub('cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
