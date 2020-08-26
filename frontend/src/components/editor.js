@@ -1,24 +1,30 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import * as iD from '@hotosm/id';
 import '@hotosm/id/dist/iD.css';
 
 import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET } from '../config';
 
 export default function Editor({ editorRef, setEditorRef, setDisable, comment, presets }) {
+  const dispatch = useDispatch();
   const session = useSelector((state) => state.auth.get('session'));
   const locale = useSelector((state) => state.preferences.locale);
   const windowInit = typeof window !== undefined;
 
   useEffect(() => {
-    return () => window.iD.coreContext('destroy');
+    return () => {
+      window.iD.coreContext('destroy');
+      dispatch({ type: 'SET_VISIBILITY', isVisible: true });
+    };
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     if (windowInit && !editorRef) {
+      dispatch({ type: 'SET_VISIBILITY', isVisible: false });
       setEditorRef(window.iD.coreContext());
     }
-  }, [windowInit, setEditorRef, editorRef]);
+  }, [windowInit, setEditorRef, editorRef, dispatch]);
 
   useEffect(() => {
     if (editorRef && comment) {
@@ -69,5 +75,5 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment, p
     }
   }, [session, editorRef, setDisable, presets, locale]);
 
-  return <div className="w-100 vh-minus-122-ns" id="id-container"></div>;
+  return <div className="w-100 vh-minus-77-ns" id="id-container"></div>;
 }
