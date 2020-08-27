@@ -10,6 +10,7 @@ export const useFetch = (url, trigger = true) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
+
   useEffect(() => {
     (async () => {
       if (trigger) {
@@ -39,9 +40,10 @@ export function useFetchIntervaled(url, delay, trigger = true) {
   const locale = useSelector((state) => state.preferences['locale']);
   const [data, setData] = useState();
   const [error, setError] = useState(null);
+
   useInterval(() => {
     (async () => {
-      if (trigger) {
+      if (trigger && document.visibilityState === 'visible') {
         try {
           // replace in locale is needed because the backend uses underscores instead of dashes
           const response = await fetchLocalJSONAPI(url, token, 'GET', locale.replace('-', '_'));

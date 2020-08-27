@@ -61,6 +61,8 @@ export function TaskSelection({ project, type, loading }: Object) {
   const [activeStatus, setActiveStatus] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
   const [textSearch, setTextSearch] = useQueryParam('search', StringParam);
+  const defaultUpdateInterval = 60000;
+  const [updateInterval, setUpdateInterval] = useState(defaultUpdateInterval);
   useSetProjectPageTitleTag(project);
 
   // get teams the user is part of
@@ -95,13 +97,18 @@ export function TaskSelection({ project, type, loading }: Object) {
     getActivities(project.projectId);
     getContributions(project.projectId);
   }, [getActivities, getContributions, project.projectId]);
-  // refresh activities each 60 seconds
+  // refresh activities each 60 seconds if page is visible to user
   useInterval(() => {
-    getActivities(project.projectId);
-    if (activeSection === 'contributions') {
-      getContributions(project.projectId);
+    if (document.visibilityState === 'visible') {
+      getActivities(project.projectId);
+      if (activeSection === 'contributions') {
+        getContributions(project.projectId);
+      }
+      if (updateInterval !== defaultUpdateInterval) setUpdateInterval(defaultUpdateInterval);
+    } else {
+      if (updateInterval !== 1000) setUpdateInterval(1000);
     }
-  }, 60000);
+  }, updateInterval);
 
   const latestTasks = useRef(tasks);
   // it's needed to avoid the following useEffect to be triggered every time the tasks change
