@@ -271,8 +271,8 @@ class Project(db.Model):
         url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={0}&lon={1}".format(
             lat, lng
         )
-        country_info = requests.get(url)
-        country_info_json = country_info.content.decode("utf8").replace("'", '"')
+        country_info = requests.get(url).json()  # returns a dict
+        country_info_json = json.dumps(country_info)  # dict -> json
         # Load the JSON to a Python list & dump it back out as formatted JSON
         data = json.loads(country_info_json)
         if data["address"].get("country") is not None:
