@@ -271,11 +271,12 @@ class Project(db.Model):
         url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={0}&lon={1}".format(
             lat, lng
         )
-        country_info = requests.get(url).json()  # returns a dict
-        if country_info["address"].get("country") is not None:
-            self.country = [country_info["address"]["country"]]
-        else:
-            self.country = [country_info["address"]["county"]]
+        try:
+            country_info = requests.get(url).json()  # returns a dict
+            if country_info["address"].get("country") is not None:
+                self.country = [country_info["address"]["country"]]
+        except (KeyError, AttributeError, requests.exceptions.ConnectionError):
+            pass
 
         self.save()
 
