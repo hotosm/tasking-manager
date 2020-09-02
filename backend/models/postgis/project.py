@@ -260,14 +260,10 @@ class Project(db.Model):
     def set_country_info(self):
         """ Sets the default country based on centroid"""
 
-        lat, lng = (
-            db.session.query(
-                cast(ST_Y(Project.centroid), sqlalchemy.String),
-                cast(ST_X(Project.centroid), sqlalchemy.String),
-            )
-            .filter(Project.id == self.id)
-            .one()
-        )
+        lat, lng = db.session.query(
+            cast(ST_Y(self.centroid), sqlalchemy.String),
+            cast(ST_X(self.centroid), sqlalchemy.String),
+        ).one()
         url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={0}&lon={1}".format(
             lat, lng
         )
@@ -472,6 +468,9 @@ class Project(db.Model):
         self.interests = []
         if project_dto.interests:
             self.interests = [Interest.query.get(i.id) for i in project_dto.interests]
+        # try to update country info if that information is not present
+        if len(self.country) == 0:
+            self.set_country_info()
 
         db.session.commit()
 
