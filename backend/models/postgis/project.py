@@ -272,13 +272,10 @@ class Project(db.Model):
             lat, lng
         )
         country_info = requests.get(url).json()  # returns a dict
-        country_info_json = json.dumps(country_info)  # dict -> json
-        # Load the JSON to a Python list & dump it back out as formatted JSON
-        data = json.loads(country_info_json)
-        if data["address"].get("country") is not None:
-            self.country = [data["address"]["country"]]
+        if country_info["address"].get("country") is not None:
+            self.country = [country_info["address"]["country"]]
         else:
-            self.country = [data["address"]["county"]]
+            self.country = [country_info["address"]["county"]]
 
         self.save()
 
