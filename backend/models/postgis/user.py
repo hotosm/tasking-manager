@@ -180,7 +180,7 @@ class User(db.Model):
 
     @staticmethod
     def filter_users(user_filter: str, project_id: int, page: int) -> UserFilterDTO:
-        """ Finds users that matches first characters, for auto-complete.
+        """Finds users that matches first characters, for auto-complete.
 
         Users who have participated (mapped or validated) in the project, if given, will be
         returned ahead of those who have not.

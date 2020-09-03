@@ -44,7 +44,9 @@ class MappingService:
 
     @staticmethod
     def get_task_as_dto(
-        task_id: int, project_id: int, preferred_local: str = "en",
+        task_id: int,
+        project_id: int,
+        preferred_local: str = "en",
     ) -> TaskDTO:
         """ Get task as DTO for transmission over API """
         task = MappingService.get_task(task_id, project_id)
@@ -262,8 +264,8 @@ class MappingService:
 
     @staticmethod
     def generate_osm_xml(project_id: int, task_ids_str: str) -> str:
-        """ Generate xml response suitable for loading into JOSM.  A sample output file is in
-            /backend/helpers/testfiles/osm-sample.xml """
+        """Generate xml response suitable for loading into JOSM.  A sample output file is in
+        /backend/helpers/testfiles/osm-sample.xml"""
         # Note XML created with upload No to ensure it will be rejected by OSM if uploaded by mistake
         root = ET.Element(
             "osm",

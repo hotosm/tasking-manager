@@ -93,8 +93,8 @@ class IssuesRestAPI(Resource):
             return {"Error": "Unable to update mapping issue category"}, 400
 
         try:
-            updated_category = MappingIssueCategoryService.update_mapping_issue_category(
-                category_dto
+            updated_category = (
+                MappingIssueCategoryService.update_mapping_issue_category(category_dto)
             )
             return updated_category.to_primitive(), 200
         except NotFound:

@@ -427,8 +427,8 @@ class UserService:
 
     @staticmethod
     def update_user_details(user_id: int, user_dto: UserDTO) -> dict:
-        """ Update user with info supplied by user, if they add or change their email address a verification mail
-            will be sent """
+        """Update user with info supplied by user, if they add or change their email address a verification mail
+        will be sent"""
         user = UserService.get_user_by_id(user_id)
 
         verification_email_sent = False

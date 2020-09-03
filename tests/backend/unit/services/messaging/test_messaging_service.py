@@ -33,8 +33,12 @@ class TestMessagingService(unittest.TestCase):
             link,
             '<a href="http://test.com/projects/1#questionsAndComments">Project 1</a>',
         )
-        link = MessageService.get_project_link(1, "http://test.com",)
+        link = MessageService.get_project_link(
+            1,
+            "http://test.com",
+        )
 
         self.assertEqual(
-            link, '<a href="http://test.com/projects/1">Project 1</a>',
+            link,
+            '<a href="http://test.com/projects/1">Project 1</a>',
         )

@@ -46,7 +46,9 @@ class SMTPService:
         message = """New contact from {name} - {email}.
             <p>{content}</p>
             """.format(
-            name=data.get("name"), email=data.get("email"), content=data.get("content"),
+            name=data.get("name"),
+            email=data.get("email"),
+            content=data.get("content"),
         )
 
         subject = "New contact from {name}".format(name=data.get("name"))
