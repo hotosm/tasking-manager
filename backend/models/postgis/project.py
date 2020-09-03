@@ -7,7 +7,7 @@ import geojson
 import datetime
 from flask import current_app
 from geoalchemy2 import Geometry
-import sqlalchemy
+from geoalchemy2.shape import to_shape
 from sqlalchemy.sql.expression import cast, or_
 from sqlalchemy import text, desc, func, Time, orm, literal
 from shapely.geometry import shape
@@ -57,8 +57,6 @@ from backend.models.postgis.utils import (
     timestamp,
     ST_Centroid,
     NotFound,
-    ST_X,
-    ST_Y,
 )
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
@@ -260,10 +258,8 @@ class Project(db.Model):
     def set_country_info(self):
         """ Sets the default country based on centroid"""
 
-        lat, lng = db.session.query(
-            cast(ST_Y(self.centroid), sqlalchemy.String),
-            cast(ST_X(self.centroid), sqlalchemy.String),
-        ).one()
+        centroid = to_shape(self.centroid)
+        lat, lng = (centroid.y, centroid.x)
         url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={0}&lon={1}".format(
             lat, lng
         )
