@@ -205,8 +205,10 @@ class ProjectService:
         is_manager_permission = False
 
         if current_user_id:
-            is_manager_permission = ProjectAdminService.is_user_action_permitted_on_project(
-                current_user_id, project_id
+            is_manager_permission = (
+                ProjectAdminService.is_user_action_permitted_on_project(
+                    current_user_id, project_id
+                )
             )
         # Draft Projects - admins, authors, org admins & team managers permitted
         if project.status == ProjectStatus.DRAFT.value:

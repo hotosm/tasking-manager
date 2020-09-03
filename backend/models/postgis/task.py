@@ -139,8 +139,8 @@ class TaskInvalidationHistory(db.Model):
 
 
 class TaskMappingIssue(db.Model):
-    """ Describes an issue (along with an occurrence count) with a
-    task mapping that contributed to invalidation of the task """
+    """Describes an issue (along with an occurrence count) with a
+    task mapping that contributed to invalidation of the task"""
 
     __tablename__ = "task_mapping_issues"
     id = db.Column(db.Integer, primary_key=True)
@@ -294,9 +294,9 @@ class TaskHistory(db.Model):
     def remove_duplicate_task_history_rows(
         task_id: int, project_id: int, lock_action: TaskStatus, user_id: int
     ):
-        """ Method used in rare cases where we have duplicate task history records for a given action by a user
-            This method will remove the oldest duplicate record, on the basis that the newest record was the
-            last action the user was attempting to perform
+        """Method used in rare cases where we have duplicate task history records for a given action by a user
+        This method will remove the oldest duplicate record, on the basis that the newest record was the
+        last action the user was attempting to perform
         """
         dupe = (
             TaskHistory.query.filter(

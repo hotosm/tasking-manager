@@ -34,7 +34,9 @@ def create_app(env=None):
     :return: Initialised Flask app
     """
 
-    app = Flask(__name__,)
+    app = Flask(
+        __name__,
+    )
 
     # Load configuration options from environment
     app.config.from_object("backend.config.EnvironmentConfig")
@@ -754,7 +756,9 @@ def add_api_endpoints(app):
         SystemAuthenticationEmailAPI, format_url("system/authentication/email/")
     )
     api.add_resource(
-        SystemImageUploadRestAPI, format_url("system/image-upload/"), methods=["POST"],
+        SystemImageUploadRestAPI,
+        format_url("system/image-upload/"),
+        methods=["POST"],
     )
     api.add_resource(
         SystemApplicationsRestAPI,
