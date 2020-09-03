@@ -186,4 +186,21 @@ export const ID_PRESETS = {
       'natural/water/canal',
     ],
   },
+  'category-places': {
+    name: 'Places',
+    members: [
+      'place',
+      'place/locality',
+      'place/isolated_dwelling',
+      'place/hamlet',
+      'place/village',
+      'place/neighbourhood',
+      'place/suburb',
+      'place/town',
+    ],
+  },
+  'category-others': {
+    name: 'Others',
+    members: ['ford'],
+  },
 };
