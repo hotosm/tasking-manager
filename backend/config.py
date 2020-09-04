@@ -93,12 +93,12 @@ class EnvironmentConfig:
 
     # Connection to OSM authentification system
     OSM_OAUTH_SETTINGS = {
-        "base_url": "{}/api/0.6/".format(os.getenv("OSM_SERVER_URL", "https://www.openstreetmap.org")),
+        "base_url": "{}/api/0.6/".format(OSM_SERVER_URL),
         "consumer_key": os.getenv("TM_CONSUMER_KEY", None),
         "consumer_secret": os.getenv("TM_CONSUMER_SECRET", None),
-        "request_token_url": "{}/oauth/request_token".format(os.getenv("OSM_SERVER_URL", "https://www.openstreetmap.org")),
-        "access_token_url": "{}/oauth/access_token".format(os.getenv("OSM_SERVER_URL", "https://www.openstreetmap.org")),
-        "authorize_url": "{}/oauth/authorize".format(os.getenv("OSM_SERVER_URL", "https://www.openstreetmap.org")),
+        "request_token_url": "{}/oauth/request_token".format(OSM_SERVER_URL),
+        "access_token_url": "{}/oauth/access_token".format(OSM_SERVER_URL),
+        "authorize_url": "{}/oauth/authorize".format(OSM_SERVER_URL),
     }
 
     # Some more definitions (not overridable)
