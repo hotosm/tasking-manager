@@ -68,7 +68,7 @@ export function getPotlatch2Url(centroid, zoomLevel) {
 export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl) {
   const base = customUrl
     ? formatCustomUrl(customUrl)
-    : `${ID_EDITOR_URL}&`;
+    : `${ID_EDITOR_URL}`;
   let url = base + '#map=' + [zoomLevel, centroid[1], centroid[0]].join('/');
   if (project.changesetComment) {
     url += '&comment=' + encodeURIComponent(project.changesetComment);
