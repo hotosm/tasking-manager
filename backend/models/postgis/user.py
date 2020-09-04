@@ -1,4 +1,3 @@
-import os
 import geojson
 from backend import db
 from sqlalchemy import desc, func
