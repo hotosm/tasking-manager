@@ -3,8 +3,8 @@ version: '3.4'
 
 x-backend-config: &backend
   build:
-    context: "./scripts/docker"
-    dockerfile: "Dockerfile.backend"
+    context: "."
+    dockerfile: "./scripts/docker/Dockerfile.backend"
 
 services:
   # Main application
@@ -25,11 +25,8 @@ services:
       dockerfile: "./scripts/docker/Dockerfile.frontend"
       args:
         - TM_APP_API_URL=http://localhost/api
-    # stdin_open: true
-    # volumes:
-    #   - "./frontend/src:/usr/src/app/src"
-    # environment:
-    #   - REACT_APP_API_URL=http://localhost/api
+    volumes:
+      - ".:/usr/src/app"
     labels:
       - traefik.http.routers.frontend.rule=Host(`localhost`)
       - traefik.http.services.frontend.loadbalancer.server.port=80

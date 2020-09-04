@@ -5,7 +5,7 @@ export function getEditors(filterList, customEditor) {
     {
       label: 'iD Editor',
       value: 'ID',
-      url: `${OSM_SERVER_URL}&`,
+      url: ID_EDITOR_URL,
     },
     {
       label: 'JOSM',

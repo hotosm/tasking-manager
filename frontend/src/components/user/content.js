@@ -5,7 +5,7 @@ import { FormattedMessage, FormattedNumber, FormattedRelativeTime } from 'react-
 import { selectUnit } from '@formatjs/intl-utils';
 import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import ReactPlaceholder from 'react-placeholder';
-import { OSM_SERVER_URL } from '../config';
+import { OSM_SERVER_URL } from '../../config';
 
 import messages from './messages';
 import { MappingIcon, ClipboardIcon } from '../svgIcons';

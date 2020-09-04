@@ -9,7 +9,7 @@ import { NextMappingLevel } from '../user/settings';
 import { UserOrganisations } from './userTeamsOrgs';
 import { SectionMenu } from '../menu';
 import OsmLogo from '../../assets/img/osm_logo.png';
-import { OSM_SERVER_URL } from '../config';
+import { OSM_SERVER_URL } from '../../config';
 
 const SocialMedia = ({ data }) => {
   const socialMediaItems = ['twitterId', 'facebookId', 'linkedinId'];
