@@ -19,6 +19,8 @@ In order to configure this connection you have to go to `https://www.openstreetm
 
 Afterwards copy the consumer key and secret from OpenStreetMap into your configuration file `tasking-manager.env`, and set the two variables: `TM_CONSUMER_KEY` and `TM_CONSUMER_SECRET`.
 
+**NB**: if you've configured a custom OSM server, make sure that you create the user and oAuth client there. 
+
 **Run the Tasking Manager**
 
 The **easiest way** to run the Tasking Manager requires [Docker](https://docs.docker.com/get-started/) and [Docker Compose](https://docs.docker.com/compose/) to be installed on your system.  Afterwards you'll just need:

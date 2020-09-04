@@ -1,3 +1,4 @@
+import os
 import requests
 import xml.etree.ElementTree as ET
 from flask import current_app
@@ -21,7 +22,7 @@ class OSMService:
         :param user_id: user_id in scope
         :raises OSMServiceError
         """
-        osm_user_details_url = f"http://www.openstreetmap.org/api/0.6/user/{user_id}"
+        osm_user_details_url = f"{os.getenv('OSM_SERVER_URL', 'https://www.openstreetmap.org')}/api/0.6/user/{user_id}"
         response = requests.get(osm_user_details_url)
 
         if response.status_code != 200:
