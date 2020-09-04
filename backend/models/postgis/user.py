@@ -3,6 +3,7 @@ import geojson
 from backend import db
 from sqlalchemy import desc, func
 from geoalchemy2 import functions
+from flask import current_app
 from backend.models.dtos.user_dto import (
     UserDTO,
     UserMappedProjectsDTO,
@@ -74,7 +75,7 @@ class User(db.Model):
 
     @property
     def osm_profile_url(self):
-        return f"{os.getenv('OSM_SERVER_URL', 'https://www.openstreetmap.org')}/user/{self.username}"
+        return f"{current_app.config['OSM_SERVER_URL']}/user/{self.username}"
 
     def create(self):
         """ Creates and saves the current model to the DB """

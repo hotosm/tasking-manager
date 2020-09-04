@@ -36,6 +36,10 @@ class EnvironmentConfig:
     # A freely definable secret key for connecting the front end with the back end
     SECRET_KEY = os.getenv("TM_SECRET", None)
 
+    # OSM API, Nomimatim URLs
+    OSM_SERVER_URL = os.getenv("OSM_SERVER_URL", 'https://www.openstreetmap.org')
+    OSM_NOMINATIM_SERVER_URL = os.getenv("OSM_NOMINATIM_SERVER_URL", 'https://nominatim.openstreetmap.org')
+
     # Database connection
     POSTGRES_USER = os.getenv("POSTGRES_USER", None)
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", None)

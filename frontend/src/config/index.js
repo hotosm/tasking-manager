@@ -39,6 +39,11 @@ export const MATOMO_ID = process.env.REACT_APP_MATOMO_ID || '';
 export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL || '';
 export const HOMEPAGE_VIDEO_URL = process.env.REACT_APP_HOMEPAGE_VIDEO_URL || '';
 
+// OSM API and Editor URLs
+export const OSM_SERVER_URL = process.env.REACT_APP_OSM_SERVER_URL || 'https://www.openstreetmap.org';
+export const ID_EDITOR_URL = process.env.REACT_APP_ID_EDITOR_URL || 'http://www.openstreetmap.org/edit?editor=id&';
+export const POTLATCH2_EDITOR_URL = process.env.REACT_APP_POTLATCH2_EDITOR_URL || 'http://www.openstreetmap.org/edit?editor=potlatch2'
+
 export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 1000000; // bytes
 
 export const TASK_COLOURS = {
