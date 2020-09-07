@@ -260,8 +260,8 @@ class Project(db.Model):
 
         centroid = to_shape(self.centroid)
         lat, lng = (centroid.y, centroid.x)
-        url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={0}&lon={1}".format(
-            lat, lng
+        url = "{0}/reverse?format=jsonv2&lat={1}&lon={2}".format(
+            current_app.config["OSM_NOMINATIM_SERVER_URL"], lat, lng
         )
         try:
             country_info = requests.get(url).json()  # returns a dict

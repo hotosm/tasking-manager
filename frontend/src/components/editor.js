@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as iD from '@hotosm/id';
 import '@hotosm/id/dist/iD.css';
 
-import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET } from '../config';
+import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET, OSM_SERVER_URL } from '../config';
 
 export default function Editor({ editorRef, setEditorRef, setDisable, comment, presets }) {
   const dispatch = useDispatch();
@@ -54,7 +54,7 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment, p
 
       let osm = editorRef.connection();
       const auth = {
-        urlroot: 'https://www.openstreetmap.org',
+        urlroot: OSM_SERVER_URL,
         oauth_consumer_key: OSM_CONSUMER_KEY,
         oauth_secret: OSM_CONSUMER_SECRET,
         oauth_token: session.osm_oauth_token,

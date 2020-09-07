@@ -1,4 +1,4 @@
-import { API_URL } from '../config';
+import { API_URL, ID_EDITOR_URL, POTLATCH2_EDITOR_URL } from '../config';
 import { getCentroidAndZoomFromSelectedTasks, getSelectedTasksBBox } from './tasksGeometry';
 
 export function openEditor(
@@ -58,7 +58,7 @@ export function getFieldPapersUrl(centroid, zoomLevel) {
 }
 
 export function getPotlatch2Url(centroid, zoomLevel) {
-  return `https://www.openstreetmap.org/edit?editor=potlatch2#map=${[
+  return `${POTLATCH2_EDITOR_URL}#map=${[
     zoomLevel,
     roundToDecimals(centroid[1], 5),
     roundToDecimals(centroid[0], 5),
@@ -68,7 +68,7 @@ export function getPotlatch2Url(centroid, zoomLevel) {
 export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl) {
   const base = customUrl
     ? formatCustomUrl(customUrl)
-    : 'https://www.openstreetmap.org/edit?editor=id&';
+    : `${ID_EDITOR_URL}`;
   let url = base + '#map=' + [zoomLevel, centroid[1], centroid[0]].join('/');
   if (project.changesetComment) {
     url += '&comment=' + encodeURIComponent(project.changesetComment);

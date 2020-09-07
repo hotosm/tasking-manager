@@ -94,3 +94,15 @@ it('exports DROPZONE_SETTINGS', () => {
   expect(config.DROPZONE_SETTINGS.maxSize).toBe(256000);
   expect(config.DROPZONE_SETTINGS.multiple).toBeFalsy();
 });
+it('exports OSM_REGISTER_URL', () => {
+  expect(config.OSM_REGISTER_URL.startsWith('https://')).toBeTruthy();
+});
+it('exports OSM_SERVER_URL', () => {
+  expect(config.OSM_SERVER_URL.startsWith('https://')).toBeTruthy();
+});
+it('exports ID_EDITOR_URL', () => {
+  expect(config.ID_EDITOR_URL.startsWith('https://')).toBeTruthy();
+});
+it('exports POTLATCH2_EDITOR_URL', () => {
+  expect(config.POTLATCH2_EDITOR_URL.startsWith('https://')).toBeTruthy();
+});

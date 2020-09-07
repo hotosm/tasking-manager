@@ -36,6 +36,12 @@ class EnvironmentConfig:
     # A freely definable secret key for connecting the front end with the back end
     SECRET_KEY = os.getenv("TM_SECRET", None)
 
+    # OSM API, Nomimatim URLs
+    OSM_SERVER_URL = os.getenv("OSM_SERVER_URL", "https://www.openstreetmap.org")
+    OSM_NOMINATIM_SERVER_URL = os.getenv(
+        "OSM_NOMINATIM_SERVER_URL", "https://nominatim.openstreetmap.org"
+    )
+
     # Database connection
     POSTGRES_USER = os.getenv("POSTGRES_USER", None)
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", None)
@@ -89,12 +95,12 @@ class EnvironmentConfig:
 
     # Connection to OSM authentification system
     OSM_OAUTH_SETTINGS = {
-        "base_url": "https://www.openstreetmap.org/api/0.6/",
+        "base_url": "{}/api/0.6/".format(OSM_SERVER_URL),
         "consumer_key": os.getenv("TM_CONSUMER_KEY", None),
         "consumer_secret": os.getenv("TM_CONSUMER_SECRET", None),
-        "request_token_url": "https://www.openstreetmap.org/oauth/request_token",
-        "access_token_url": "https://www.openstreetmap.org/oauth/access_token",
-        "authorize_url": "https://www.openstreetmap.org/oauth/authorize",
+        "request_token_url": "{}/oauth/request_token".format(OSM_SERVER_URL),
+        "access_token_url": "{}/oauth/access_token".format(OSM_SERVER_URL),
+        "authorize_url": "{}/oauth/authorize".format(OSM_SERVER_URL),
     }
 
     # Some more definitions (not overridable)
