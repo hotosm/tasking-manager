@@ -260,7 +260,7 @@ class Project(db.Model):
 
         centroid = to_shape(self.centroid)
         lat, lng = (centroid.y, centroid.x)
-        url = "{0}/reverse?format=jsonv2&lat={1}&lon={2}".format(
+        url = "{0}/reverse?format=jsonv2&lat={1}&lon={2}&accept-language=en".format(
             current_app.config["OSM_NOMINATIM_SERVER_URL"], lat, lng
         )
         try:
