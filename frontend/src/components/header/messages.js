@@ -37,16 +37,16 @@ export default defineMessages({
   },
   AuthorizeTitle: {
     id: 'signUp.modal.authorize',
-    defaultMessage: `Have you finished the registration on OpenStreetMap?`,
+    defaultMessage: 'Have you finished the registration on OpenStreetMap?',
   },
   AuthorizeMessage: {
     id: 'signUp.authorize.message',
     defaultMessage:
-      `Start mapping now! Just login to the Tasking Manager with your new OpenStreetMap account.`,
+      'Start mapping now! Just login to the Tasking Manager with your new OpenStreetMap account.',
   },
   osmRegisterCheck: {
     id: 'signUp.authorize.check',
-    defaultMessage: `Do you still need an OpenStreetMap account?`,
+    defaultMessage: 'Do you still need an OpenStreetMap account?',
   },
   signUpTitle: {
     id: 'signUp.modal.title',
@@ -62,7 +62,7 @@ export default defineMessages({
   },
   proceedOSMTitle: {
     id: 'signUp.proceed_osm.osm_title',
-    defaultMessage: `Do you have an OpenStreetMap account?`,
+    defaultMessage: 'Do you have an OpenStreetMap account?',
   },
   proceedOSMPart1: {
     id: 'signup.proceed_osm.text1',
