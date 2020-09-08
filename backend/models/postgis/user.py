@@ -2,6 +2,7 @@ import geojson
 from backend import db
 from sqlalchemy import desc, func
 from geoalchemy2 import functions
+from flask import current_app
 from backend.models.dtos.user_dto import (
     UserDTO,
     UserMappedProjectsDTO,
@@ -73,7 +74,7 @@ class User(db.Model):
 
     @property
     def osm_profile_url(self):
-        return f"https://www.openstreetmap.org/user/{self.username}"
+        return f"{current_app.config['OSM_SERVER_URL']}/user/{self.username}"
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -180,7 +181,7 @@ class User(db.Model):
 
     @staticmethod
     def filter_users(user_filter: str, project_id: int, page: int) -> UserFilterDTO:
-        """ Finds users that matches first characters, for auto-complete.
+        """Finds users that matches first characters, for auto-complete.
 
         Users who have participated (mapped or validated) in the project, if given, will be
         returned ahead of those who have not.

@@ -123,7 +123,7 @@ class Organisation(db.Model):
 
     @staticmethod
     def get_organisation_by_name(organisation_name: str):
-        """ Get organisation by name
+        """Get organisation by name
         :param organisation_name: name of organisation
         :return: Organisation if found else None
         """
@@ -131,7 +131,7 @@ class Organisation(db.Model):
 
     @staticmethod
     def get_organisation_name_by_id(organisation_id: int):
-        """ Get organisation name by id
+        """Get organisation name by id
         :param organisation_id:
         :return: Organisation name
         """

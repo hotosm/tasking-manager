@@ -217,7 +217,9 @@ class TeamService:
             query = manager_teams.union(manager_orgs_teams)
 
         if team_name_filter:
-            query = query.filter(Team.name.ilike("%" + team_name_filter + "%"),)
+            query = query.filter(
+                Team.name.ilike("%" + team_name_filter + "%"),
+            )
 
         if team_role_filter:
             try:
@@ -476,7 +478,8 @@ class TeamService:
     @staticmethod
     def is_user_team_member(team_id: int, user_id: int):
         query = TeamMembers.query.filter(
-            TeamMembers.team_id == team_id, TeamMembers.user_id == user_id,
+            TeamMembers.team_id == team_id,
+            TeamMembers.user_id == user_id,
         ).exists()
         return db.session.query(query).scalar()
 
@@ -538,8 +541,8 @@ class TeamService:
     def send_message_to_all_team_members(
         team_id: int, team_name: str, message_dto: MessageDTO
     ):
-        """  Sends supplied message to all contributors in a team.  Message all team members can take
-             over a minute to run, so this method is expected to be called on its own thread """
+        """Sends supplied message to all contributors in a team.  Message all team members can take
+        over a minute to run, so this method is expected to be called on its own thread"""
         app = (
             create_app()
         )  # Because message-all run on background thread it needs it's own app context
@@ -548,10 +551,12 @@ class TeamService:
             team_members = TeamService._get_active_team_members(team_id)
             sender = UserService.get_user_by_id(message_dto.from_user_id).username
 
-            message_dto.message = "A message from {}, manager of {} team:<br/><br/>{}".format(
-                MessageService.get_user_profile_link(sender),
-                MessageService.get_team_link(team_name, team_id, False),
-                markdown(message_dto.message, output_format="html"),
+            message_dto.message = (
+                "A message from {}, manager of {} team:<br/><br/>{}".format(
+                    MessageService.get_user_profile_link(sender),
+                    MessageService.get_team_link(team_name, team_id, False),
+                    markdown(message_dto.message, output_format="html"),
+                )
             )
 
             messages = []

@@ -6,7 +6,7 @@ describe('test getEditors', () => {
       {
         label: 'iD Editor',
         value: 'ID',
-        url: 'http://www.openstreetmap.org/edit?editor=id&',
+        url: 'https://www.openstreetmap.org/edit?editor=id&',
       },
       {
         label: 'JOSM',
@@ -16,7 +16,7 @@ describe('test getEditors', () => {
       {
         label: 'Potlatch 2',
         value: 'POTLATCH_2',
-        url: 'http://www.openstreetmap.org/edit?editor=potlatch2',
+        url: 'https://www.openstreetmap.org/edit?editor=potlatch2',
       },
       {
         label: 'Field Papers',
@@ -31,7 +31,7 @@ describe('test getEditors', () => {
       {
         label: 'iD Editor',
         value: 'ID',
-        url: 'http://www.openstreetmap.org/edit?editor=id&',
+        url: 'https://www.openstreetmap.org/edit?editor=id&',
       },
       {
         label: 'JOSM',
@@ -52,7 +52,7 @@ describe('test getEditors', () => {
       {
         label: 'iD Editor',
         value: 'ID',
-        url: 'http://www.openstreetmap.org/edit?editor=id&',
+        url: 'https://www.openstreetmap.org/edit?editor=id&',
       },
       {
         label: 'JOSM',

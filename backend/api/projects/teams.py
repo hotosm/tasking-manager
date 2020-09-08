@@ -8,7 +8,7 @@ from backend.services.users.authentication_service import token_auth
 class ProjectsTeamsAPI(Resource):
     @token_auth.login_required
     def get(self, project_id):
-        """ Get teams assigned with a project
+        """Get teams assigned with a project
         ---
         tags:
           - teams
@@ -47,7 +47,7 @@ class ProjectsTeamsAPI(Resource):
 
     @token_auth.login_required
     def post(self, team_id, project_id):
-        """ Assign a team to a project
+        """Assign a team to a project
         ---
         tags:
           - teams
@@ -118,7 +118,7 @@ class ProjectsTeamsAPI(Resource):
 
     @token_auth.login_required
     def patch(self, team_id, project_id):
-        """ Update role of a team on a project
+        """Update role of a team on a project
         ---
         tags:
           - teams

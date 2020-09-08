@@ -44,8 +44,10 @@ class OrganisationService:
         organisation_dto = org.as_dto(abbreviated)
 
         if user_id != 0:
-            organisation_dto.is_manager = OrganisationService.can_user_manage_organisation(
-                organisation_id, user_id
+            organisation_dto.is_manager = (
+                OrganisationService.can_user_manage_organisation(
+                    organisation_id, user_id
+                )
             )
         else:
             organisation_dto.is_manager = False

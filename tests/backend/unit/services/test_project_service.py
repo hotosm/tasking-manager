@@ -99,18 +99,6 @@ class TestProjectService(unittest.TestCase):
         # Assert
         self.assertFalse(allowed)
 
-    @patch.object(Task, "get_locked_tasks_for_user")  # noqa
-    @patch.object(Project, "get")
-    def test_user_not_permitted_to_map_if_already_locked_tasks(
-        self, mock_project, mock_user_tasks
-    ):
-        # Arrange
-        mock_project.return_value = Project()
-        mock_user_tasks.return_value = LockedTasksForUser()
-
-        # Act / Assert
-        self.assertFalse(ProjectService.get_task_for_logged_in_user(1).locked_tasks)
-
     @patch.object(UserService, "is_user_blocked")
     @patch.object(Project, "get")
     def test_user_not_permitted_to_map_if_user_is_blocked(

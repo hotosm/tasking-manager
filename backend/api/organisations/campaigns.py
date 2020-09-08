@@ -53,16 +53,20 @@ class OrganisationsCampaignsAPI(Resource):
                 organisation_id, token_auth.current_user()
             ):
                 if Campaign.campaign_organisation_exists(campaign_id, organisation_id):
-                    message = "Campaign {} is already assigned to organisation {}.".format(
-                        campaign_id, organisation_id
+                    message = (
+                        "Campaign {} is already assigned to organisation {}.".format(
+                            campaign_id, organisation_id
+                        )
                     )
                     return {"Error": message}, 400
 
                 CampaignService.create_campaign_organisation(
                     organisation_id, campaign_id
                 )
-                message = "campaign with id {} assigned for organisation with id {}".format(
-                    campaign_id, organisation_id
+                message = (
+                    "campaign with id {} assigned for organisation with id {}".format(
+                        campaign_id, organisation_id
+                    )
                 )
                 return {"Success": message}, 200
             else:

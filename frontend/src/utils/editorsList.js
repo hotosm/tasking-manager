@@ -1,9 +1,11 @@
+import { ID_EDITOR_URL, POTLATCH2_EDITOR_URL } from '../config';
+
 export function getEditors(filterList, customEditor) {
   let editors = [
     {
       label: 'iD Editor',
       value: 'ID',
-      url: 'http://www.openstreetmap.org/edit?editor=id&',
+      url: ID_EDITOR_URL,
     },
     {
       label: 'JOSM',
@@ -13,7 +15,7 @@ export function getEditors(filterList, customEditor) {
     {
       label: 'Potlatch 2',
       value: 'POTLATCH_2',
-      url: 'http://www.openstreetmap.org/edit?editor=potlatch2',
+      url: POTLATCH2_EDITOR_URL,
     },
     {
       label: 'Field Papers',

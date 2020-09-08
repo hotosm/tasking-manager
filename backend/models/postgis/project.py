@@ -7,7 +7,7 @@ import geojson
 import datetime
 from flask import current_app
 from geoalchemy2 import Geometry
-import sqlalchemy
+from geoalchemy2.shape import to_shape
 from sqlalchemy.sql.expression import cast, or_
 from sqlalchemy import text, desc, func, Time, orm, literal
 from shapely.geometry import shape
@@ -57,8 +57,6 @@ from backend.models.postgis.utils import (
     timestamp,
     ST_Centroid,
     NotFound,
-    ST_X,
-    ST_Y,
 )
 from backend.services.grid.grid_service import GridService
 from backend.models.postgis.interests import Interest, project_interests
@@ -260,25 +258,17 @@ class Project(db.Model):
     def set_country_info(self):
         """ Sets the default country based on centroid"""
 
-        lat, lng = (
-            db.session.query(
-                cast(ST_Y(Project.centroid), sqlalchemy.String),
-                cast(ST_X(Project.centroid), sqlalchemy.String),
-            )
-            .filter(Project.id == self.id)
-            .one()
+        centroid = to_shape(self.centroid)
+        lat, lng = (centroid.y, centroid.x)
+        url = "{0}/reverse?format=jsonv2&lat={1}&lon={2}&accept-language=en".format(
+            current_app.config["OSM_NOMINATIM_SERVER_URL"], lat, lng
         )
-        url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={0}&lon={1}".format(
-            lat, lng
-        )
-        country_info = requests.get(url)
-        country_info_json = country_info.content.decode("utf8").replace("'", '"')
-        # Load the JSON to a Python list & dump it back out as formatted JSON
-        data = json.loads(country_info_json)
-        if data["address"].get("country") is not None:
-            self.country = [data["address"]["country"]]
-        else:
-            self.country = [data["address"]["county"]]
+        try:
+            country_info = requests.get(url).json()  # returns a dict
+            if country_info["address"].get("country") is not None:
+                self.country = [country_info["address"]["country"]]
+        except (KeyError, AttributeError, requests.exceptions.ConnectionError):
+            pass
 
         self.save()
 
@@ -474,6 +464,9 @@ class Project(db.Model):
         self.interests = []
         if project_dto.interests:
             self.interests = [Interest.query.get(i.id) for i in project_dto.interests]
+        # try to update country info if that information is not present
+        if len(self.country) == 0:
+            self.set_country_info()
 
         db.session.commit()
 
