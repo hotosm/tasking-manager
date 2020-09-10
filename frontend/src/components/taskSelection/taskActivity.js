@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { viewport } from '@mapbox/geo-viewport';
@@ -8,11 +8,12 @@ import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { CloseIcon } from '../svgIcons';
 import { useInterval } from '../../hooks/UseInterval';
+import useFirstTaskActionDate from '../../hooks/UseFirstTaskActionDate';
+import useGetContributors from '../../hooks/UseGetContributors';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
-import { compareHistoryLastUpdate } from '../../utils/sorting';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Button, CustomButton } from '../button';
@@ -167,35 +168,18 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
 };
 
 export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) => {
-  const [lastActivityDate, setLastActivityDate] = useState(null);
-  const [contributors, setContributors] = useState([]);
-  const [osmchaLink, setOsmchaLink] = useState('');
-
-  useEffect(() => {
-    const users = [];
-    if (history && history.taskHistory) {
-      history.taskHistory.forEach((item) => {
-        if (!users.includes(item.actionBy)) {
-          users.push(item.actionBy);
-        }
-      });
-      setLastActivityDate(
-        history.taskHistory.sort(compareHistoryLastUpdate)[history.taskHistory.length - 1],
-      );
-    }
-    setContributors(users);
-  }, [history]);
-
-  useEffect(() => {
-    setOsmchaLink(
+  const firstDate = useFirstTaskActionDate(history);
+  const contributors = useGetContributors(history);
+  const osmchaLink = useMemo(
+    () =>
       formatOSMChaLink({
         aoiBBOX: bbox,
-        created: lastActivityDate,
-        usernames: contributors,
+        created: firstDate,
+        usernames: contributors(),
         changesetComment: changesetComment,
       }),
-    );
-  }, [changesetComment, contributors, lastActivityDate, bbox]);
+    [bbox, firstDate, contributors, changesetComment],
+  );
 
   if (history && history.taskHistory && history.taskHistory.length > 0) {
     return (
@@ -208,11 +192,11 @@ export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) =>
           { label: <FormattedMessage {...messages.taskOnOSMCha} />, href: osmchaLink },
           {
             label: <FormattedMessage {...messages.overpassVisualization} />,
-            href: formatOverpassLink(contributors, bbox),
+            href: formatOverpassLink(contributors(), bbox),
           },
           {
             label: <FormattedMessage {...messages.overpassDownload} />,
-            href: formatOverpassLink(contributors, bbox, true),
+            href: formatOverpassLink(contributors(), bbox, true),
           },
         ]}
         display={<FormattedMessage {...messages.taskData} />}
