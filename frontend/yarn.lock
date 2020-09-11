@@ -1135,6 +1135,11 @@
   resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.2.0.tgz#5b03ba4931436070ad926d1b2e89bf07edc5ea5b"
   integrity sha512-jc1bZHhIE1YI0HnZIZcdlKpF4wle2pkgQpzXHDoyy4bUqzBSvDqktnF26hOkyA04KD4wqd61gkuTvRrHMmroAg==
 
+"@formatjs/ecma402-abstract@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.2.1.tgz#ad966998d7f0e96fca4bdc5de0ca28d02f371279"
+  integrity sha512-LvbwgHxprafjceDfOC7yMl4sP5al71rAWahXk3qug5bV020aCq64WjqAo+zNnkIJk8hqK2pFKnNdDsT58HZJQw==
+
 "@formatjs/intl-displaynames@^3.3.6":
   version "3.3.6"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-displaynames/-/intl-displaynames-3.3.6.tgz#2b5c938ea1cd38e859f2d716ea317feccbbd8896"
@@ -1149,12 +1154,12 @@
   dependencies:
     "@formatjs/ecma402-abstract" "^1.2.0"
 
-"@formatjs/intl-pluralrules@^3.4.5":
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-3.4.5.tgz#0802dc700fa0fd8b3b88a67d09f0a61256cb6f36"
-  integrity sha512-zX3cxhHinAz11Zdggc95NmlbfqaLeuSfi3dqdXO/H3XQbeo8fid5ePIj64YyNTetXyOwFE0DnVqKOK5nwCmDjw==
+"@formatjs/intl-pluralrules@^3.4.6":
+  version "3.4.6"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-3.4.6.tgz#3047b1fc5c6f5d097588214a35650b8047d82c2f"
+  integrity sha512-6/K0Lqlej2bYM1K3HfSNsEURHlsmWJhrE95k/hZdE4wo7k5S7Fc/QUfHlieLQvCXF77n/zVgzp/9bpgxMDxL0A==
   dependencies:
-    "@formatjs/ecma402-abstract" "^1.2.0"
+    "@formatjs/ecma402-abstract" "^1.2.1"
 
 "@formatjs/intl-relativetimeformat@^7.2.5":
   version "7.2.5"
@@ -1162,6 +1167,13 @@
   integrity sha512-KTf0zTP7YbrVAPPJMnZNYRrNvEwuNwqOVNcfz0cQwewjE2ImxPW+03zdRHkwDt92WbRv6T0EDRBpgC2Dxaip6Q==
   dependencies:
     "@formatjs/ecma402-abstract" "^1.2.0"
+
+"@formatjs/intl-relativetimeformat@^7.2.6":
+  version "7.2.6"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-7.2.6.tgz#7452e0feaa433f341b306e308166058e8126e934"
+  integrity sha512-SHwrzk9HuAUwl3/qfupU3ZnW4ZgVOpI2+3gwGmvoPOmAlKFlo7liSCszA5hcRpsnhjS66BqUzfx6BWOwzYvmKQ==
+  dependencies:
+    "@formatjs/ecma402-abstract" "^1.2.1"
 
 "@formatjs/intl-unified-numberformat@^3.2.0":
   version "3.3.2"
@@ -1232,10 +1244,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@^2.18.4":
-  version "2.18.4"
-  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.18.4.tgz#207c6151168c99c4822bf775c967c91939ffc091"
-  integrity sha512-qxmAZygBxlmeSIQ3LVhI/s0iz7EQNxD/gR8v1894D5zf7Gj4Xh+4GBKFxy/7lqvjRQL+jI6i3x3Do4Djdv52/A==
+"@hotosm/id@^2.18.5":
+  version "2.18.5"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.18.5.tgz#24b073e85cec4661a0f042e21fe124c475429d73"
+  integrity sha512-seXORaL3Pda+crTltgnhixrZI3cdySiwG10fJJbcvMV14gk4Gdd/t9+Xz/zeCMZbt2lYZ+5m1mihmNSxLpQrZg==
   dependencies:
     "@ideditor/country-coder" "^3.2.0"
     "@ideditor/location-conflation" "~0.3.0"
@@ -1254,7 +1266,7 @@
     marked "1.0.0"
     martinez-polygon-clipping "0.7.0"
     node-diff3 "2.1.0"
-    osm-auth "1.0.2"
+    osm-auth "1.1.0"
     pannellum "2.5.6"
     rbush "3.0.1"
     string.fromcodepoint "1.0.0"
@@ -8964,10 +8976,10 @@ osenv@0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
 
-osm-auth@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-1.0.2.tgz#59aab7fef1aaf83c813ce68028fc650a61027342"
-  integrity sha1-Waq3/vGq+DyBPOaAKPxlCmECc0I=
+osm-auth@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-1.1.0.tgz#529648519d8d09c248b472ebe1c209882cf88b20"
+  integrity sha512-e/ecarlh2N/FMfiNa/ZChUIZN8q1LqK4F0iPV4g1MmfHi3/VJ+STJ0qE7ALL3OgHR5IQc3JuI63SCDqHNGt4ew==
   dependencies:
     ohauth "~1.0.0"
     resolve-url "~0.2.1"
