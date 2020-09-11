@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
@@ -6,6 +7,7 @@ import { FormattedMessage, FormattedNumber } from 'react-intl';
 import messages from './messages';
 import { NotificationCard, NotificationCardMini } from './notificationCard';
 import { RefreshIcon } from '../svgIcons';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const NotificationResultsMini = (props) => {
   return <NotificationResults {...props} useMiniCard={true} />;
@@ -83,6 +85,8 @@ export const NotificationResults = (props) => {
 };
 
 const NotificationCards = (props) => {
+  const selectedState = useState([]);
+
   if (!props || !props.pageOfCards || props.pageOfCards.length === 0) {
     return (
       <div className="mb3 blue-grey">
@@ -101,11 +105,50 @@ const NotificationCards = (props) => {
     );
   }
 
-  return filteredCards.map((card, n) =>
-    props.useMiniCard ? (
-      <NotificationCardMini {...card} key={n} />
-    ) : (
-      <NotificationCard {...card} key={n} retryFn={props.retryFn} />
-    ),
+  const Buttons = ({ selectedState }) => {
+    const selected = selectedState[0];
+    const token = useSelector((state) => state.auth.get('token'));
+
+    const deleteMessages = (selected) => {
+      if (selected.length === 0 || !token) {
+        return;
+      }
+      const payload = JSON.stringify({ messageIds: selected });
+      pushToLocalJSONAPI(`/api/v2/notifications/delete-multiple/`, payload, token, 'DELETE')
+        .then((success) => props.retryFn())
+        .catch((e) => {
+          console.log(e.message);
+        });
+    };
+
+    let buttonClass = `${
+      selected.length === 0 ? 'bg-blue-grey' : 'bg-red'
+    } pv2 ph3 white f5 ba b--tan`;
+
+    return (
+      <div className="mb2">
+        <button onClick={() => deleteMessages(selected)} className={buttonClass}>
+          <FormattedMessage {...messages.delete} />
+        </button>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <Buttons selectedState={selectedState} />
+      {filteredCards.map((card, n) =>
+        props.useMiniCard ? (
+          <NotificationCardMini {...card} key={n} />
+        ) : (
+          <NotificationCard
+            {...card}
+            key={n}
+            retryFn={props.retryFn}
+            selectedState={selectedState}
+          />
+        ),
+      )}
+    </div>
   );
 };
