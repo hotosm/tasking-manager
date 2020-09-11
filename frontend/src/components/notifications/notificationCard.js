@@ -62,6 +62,7 @@ export function NotificationCard({
   read,
   sentDate,
   retryFn,
+  selectedState,
 }: Object) {
   const readStyle = read ? '' : 'bl bw2 br2 b2 b--red ';
   const token = useSelector((state) => state.auth.get('token'));
@@ -80,12 +81,43 @@ export function NotificationCard({
   const replacedSubject = subject.replace('task=', 'search=');
   const Navigate = () => navigate(`/inbox/message/${messageId}/${location.search}`);
 
+  const CheckBox = ({ selectedState, messageId }) => {
+    const [selected, setSelected] = selectedState;
+    return (
+      <div
+        className="bg-white w1 h1 ba bw1 b--blue-grey fr mt2 ml2 relative"
+        onClick={(e) => {
+          e.persist();
+          e.preventDefault();
+          e.stopPropagation();
+
+          let copy = selected;
+          if (copy.includes(messageId)) {
+            copy = copy.filter((s) => s !== messageId);
+          } else {
+            copy = [...copy, messageId];
+          }
+          setSelected(copy);
+        }}
+      >
+        {selected.includes(messageId) ? (
+          <div
+            style={{ width: '70%', height: '70%', position: 'absolute', top: '15%', left: '15%' }}
+            className="bg-blue-grey"
+          ></div>
+        ) : null}
+      </div>
+    );
+  };
+
   return (
     <article
       onClick={Navigate}
       className={`pointer db base-font bg-white w-100 mb1 blue-dark mw8 ${readStyle}`}
     >
       <div className="pv3 pr3 ba br1 b--grey-light">
+        <CheckBox selectedState={selectedState} messageId={messageId} />
+
         <div className={`fl dib w2 h3 mh3`}>
           <MessageAvatar messageType={messageType} fromUsername={fromUsername} size={'medium'} />
         </div>
