@@ -93,7 +93,6 @@ export const InboxNav = (props) => {
         <div className="w-100 fl dib">
           <div className="dib w-40">
             <div className="mv2 dib"></div>
-
             <FormattedMessage {...contributionsMessages.searchProject}>
               {(msg) => {
                 return (
@@ -113,7 +112,7 @@ export const InboxNav = (props) => {
               allQueryParams={inboxQuery}
             />
             {!notAnyFilter && (
-              <Link to="./" className="red link ph3 f6 v-mid pv2 mh1 mt1 mt2-ns fr">
+              <Link to="./" className="red link ph3 f6 v-mid pv2 mh1 mt1 mt2-ns dib">
                 <FormattedMessage {...messages.clearFilters} />
               </Link>
             )}

@@ -8,6 +8,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import systemAvatar from '../../assets/img/hot-system-avatar-square-opaque.png';
 import { EyeIcon } from '../svgIcons';
+import { CheckBox } from '../formInputs';
 import { UserAvatar } from '../user/avatar';
 import { DeleteButton } from '../teamsAndOrgs/management';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
@@ -62,9 +63,9 @@ export function NotificationCard({
   read,
   sentDate,
   retryFn,
-  selectedState,
+  selected,
+  setSelected,
 }: Object) {
-  const readStyle = read ? '' : 'bl bw2 br2 b2 b--red ';
   const token = useSelector((state) => state.auth.get('token'));
   const location = useLocation();
   const setMessageAsRead = (messageId) => {
@@ -72,53 +73,28 @@ export function NotificationCard({
   };
   const deleteNotification = (id) => {
     fetchLocalJSONAPI(`notifications/${id}/`, token, 'DELETE')
-      .then((success) => retryFn())
+      .then((success) => {
+        setSelected(selected.filter((i) => i !== id));
+        retryFn();
+      })
       .catch((e) => {
         console.log(e.message);
       });
   };
 
   const replacedSubject = subject.replace('task=', 'search=');
-  const Navigate = () => navigate(`/inbox/message/${messageId}/${location.search}`);
-
-  const CheckBox = ({ selectedState, messageId }) => {
-    const [selected, setSelected] = selectedState;
-    return (
-      <div
-        className="bg-white w1 h1 ba bw1 b--blue-grey fr mt2 ml2 relative"
-        onClick={(e) => {
-          e.persist();
-          e.preventDefault();
-          e.stopPropagation();
-
-          let copy = selected;
-          if (copy.includes(messageId)) {
-            copy = copy.filter((s) => s !== messageId);
-          } else {
-            copy = [...copy, messageId];
-          }
-          setSelected(copy);
-        }}
-      >
-        {selected.includes(messageId) ? (
-          <div
-            style={{ width: '70%', height: '70%', position: 'absolute', top: '15%', left: '15%' }}
-            className="bg-blue-grey"
-          ></div>
-        ) : null}
-      </div>
-    );
-  };
+  const openMessage = () => navigate(`/inbox/message/${messageId}/${location.search}`);
 
   return (
     <article
-      onClick={Navigate}
-      className={`pointer db base-font bg-white w-100 mb1 blue-dark mw8 ${readStyle}`}
+      onClick={openMessage}
+      className="pointer db base-font w-100 mb1 mw8 bg-white blue-dark ba br1 b--grey-light"
     >
-      <div className="pv3 pr3 ba br1 b--grey-light">
-        <CheckBox selectedState={selectedState} messageId={messageId} />
-
-        <div className={`fl dib w2 h3 mh3`}>
+      <div className={`pv3 pr3 bl bw2 br2 ${read ? 'b--white' : 'b--red'}`}>
+        <div className="ph2 pt1 fl">
+          <CheckBox activeItems={selected} toggleFn={setSelected} itemId={messageId} />
+        </div>
+        <div className={`fl dib w2 h3 mr3`}>
           <MessageAvatar messageType={messageType} fromUsername={fromUsername} size={'medium'} />
         </div>
 
@@ -126,9 +102,8 @@ export function NotificationCard({
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
-
             if (e.target.href === undefined) {
-              Navigate();
+              openMessage();
             } else {
               window.open(e.target.href);
             }

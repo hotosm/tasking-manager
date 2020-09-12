@@ -9,6 +9,7 @@ export function Button({ onClick, children, className, disabled }: Object) {
       focusindex="0"
       className={`${className || ''} br1 f5 bn ${disabled ? 'o-50' : 'pointer'}`}
       style={{ padding: '.75rem 1.5rem' }}
+      disabled={disabled}
     >
       {children}
     </button>
