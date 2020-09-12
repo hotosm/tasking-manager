@@ -95,7 +95,7 @@
     "@testing-library/react-hooks": "^3.4.1",
     "combine-react-intl-messages": "^4.0.0",
     "jest-canvas-mock": "^2.2.0",
-    "msw": "^0.21.0",
+    "msw": "^0.21.2",
     "prettier": "^2.1.1",
     "react-test-renderer": "^16.13.1"
   },
