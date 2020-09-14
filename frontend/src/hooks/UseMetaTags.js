@@ -17,9 +17,10 @@ export const useSetTitleTag = (title) => {
   const titleTag = formatTitleTag(title);
   useTitle(titleTag);
   useMeta({ property: 'og:title', content: titleTag });
+  useMeta({ property: 'twitter:title', content: titleTag.substr(0, 70) });
   return true;
 };
 
 export const useSetProjectPageTitleTag = (project) => {
-  return useSetTitleTag(formatTitleTag(formatProjectTag(project)));
+  return useSetTitleTag(formatProjectTag(project));
 };
