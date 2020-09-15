@@ -112,3 +112,6 @@ class EnvironmentConfig:
     # Image upload Api
     IMAGE_UPLOAD_API_KEY = os.getenv("TM_IMAGE_UPLOAD_API_KEY", None)
     IMAGE_UPLOAD_API_URL = os.getenv("TM_IMAGE_UPLOAD_API_URL", None)
+
+    # Sentry backend DSN
+    SENTRY_BACKEND_DSN = os.getenv("TM_SENTRY_BACKEND_DSN", None)
