@@ -166,8 +166,8 @@ export function NotificationCardMini({
 }: Object) {
   return (
     <Link to={`/inbox/message/${messageId}`} className="no-underline hover-red">
-      <article className="db base-font w-100 mb3 hover-red blue-dark">
-        <div className="h2 pr3">
+      <article className="db base-font w-100 mb2 hover-red blue-dark">
+        <div className="pr3">
           <div style={{ width: '1.5rem' }} className="fl w-25 dib h2 ml2 mr3 v-top">
             <MessageAvatar messageType={messageType} fromUsername={fromUsername} size={'small'} />
           </div>
@@ -175,7 +175,7 @@ export function NotificationCardMini({
             className="dib f7 w-75 fl messageSubjectLinks"
             dangerouslySetInnerHTML={rawHtmlNotification(subject)}
           ></div>
-          <div className="blue-grey f7 cf dib">
+          <div className="blue-grey f7 mb1 cf dib">
             <RelativeTimeWithUnit date={sentDate} />
           </div>
         </div>
