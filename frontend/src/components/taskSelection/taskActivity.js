@@ -5,17 +5,18 @@ import { viewport } from '@mapbox/geo-viewport';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
-import { CloseIcon } from '../svgIcons';
 import { useInterval } from '../../hooks/UseInterval';
 import useFirstTaskActionDate from '../../hooks/UseFirstTaskActionDate';
 import useGetContributors from '../../hooks/UseGetContributors';
+import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
-import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
+import { CloseIcon } from '../svgIcons';
+import { ID_EDITOR_URL } from '../../config';
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { CommentInputField } from '../comments/commentInput';
@@ -310,12 +311,17 @@ export const TaskActivity = ({
 };
 
 function EditorDropdown({ project, taskId, bbox }: Object) {
-  const locale = useSelector((state) => state.preferences.locale);
   const loadTaskOnEditor = (arr) => {
     if (arr[0].value === 'ID') {
       let windowObjectReference = window.open('', `iD-${project.projectId}-${taskId}`);
       const { center, zoom } = viewport(bbox, [window.innerWidth, window.innerHeight]);
-      windowObjectReference.location.href = getIdUrl(project, center, zoom, [taskId], locale);
+      windowObjectReference.location.href = getIdUrl(
+        project,
+        center,
+        zoom,
+        [taskId],
+        ID_EDITOR_URL,
+      );
     }
     if (arr[0].value === 'JOSM') {
       sendJosmCommands(project, {}, [taskId], [window.innerWidth, window.innerHeight], bbox);
