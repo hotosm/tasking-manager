@@ -97,17 +97,7 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn }) => {
   if (pageOfCards.length === 0) {
     return (
       <div className="mb3 blue-grey">
-        <FormattedMessage {...messages.noMessages} />
-      </div>
-    );
-  }
-  const filterFn = useMiniCard ? (n) => !n.read : (n) => n;
-  const filteredCards = pageOfCards.filter(filterFn);
-
-  if (filteredCards.length < 1) {
-    return (
-      <div className="mb3 blue-grey">
-        <FormattedMessage {...messages.noUnreadMessages} />
+        <FormattedMessage {...messages[useMiniCard ? 'noUnreadMessages' : 'noMessages']} />
       </div>
     );
   }
@@ -131,8 +121,8 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn }) => {
       )}
       {useMiniCard
         ? // show only 5 messages when on miniCard
-          filteredCards.slice(0, 5).map((card, n) => <NotificationCardMini {...card} key={n} />)
-        : filteredCards.map((card, n) => (
+          pageOfCards.slice(0, 5).map((card, n) => <NotificationCardMini {...card} key={n} />)
+        : pageOfCards.map((card, n) => (
             <NotificationCard
               {...card}
               key={n}

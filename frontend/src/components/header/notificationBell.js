@@ -17,7 +17,7 @@ export const NotificationBell = (props) => {
 
   /* these below make the references stable so hooks doesn't re-request forever */
   const notificationBellRef = useRef(null);
-  const params = useRef({ sortBy: 'read', sortDirection: 'asc' });
+  const params = useRef({ status: 'unread' });
   const readNotifications = useRef(false);
   const [notificationState] = useInboxQueryAPI(
     notificationBellRef.current,

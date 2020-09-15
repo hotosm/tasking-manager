@@ -560,6 +560,7 @@ class MessageService:
         from_username=None,
         project=None,
         task_id=None,
+        status=None,
     ):
         """ Get all messages for user """
         sort_column = Message.__table__.columns.get(sort_by)
@@ -575,6 +576,9 @@ class MessageService:
 
         if task_id is not None:
             query = query.filter(Message.task_id == task_id)
+
+        if status in ["read", "unread"]:
+            query = query.filter(Message.read == (True if status == "read" else False))
 
         if message_type:
             message_type_filters = map(int, message_type.split(","))
