@@ -136,16 +136,22 @@ export const InboxNav = (props) => {
           <FormattedMessage {...messages.messages} />
         </Link>
         <Link
+          to="?orderBy=date&orderByType=desc&page=1&pageSize=10&types=2,9,10"
+          className={`di di-m mh1 ${isActiveButton(['2', '9', '10'], inboxQuery)}  ${linkCombo} `}
+        >
+          <FormattedMessage {...messages.projects} />
+        </Link>
+        <Link
           to={'?orderBy=date&orderByType=desc&page=1&pageSize=10&types=8,4,5'}
           className={`di di-m mh1 ${isActiveButton(['8', '4', '5'], inboxQuery)}  ${linkCombo} `}
         >
           <FormattedMessage {...messages.tasks} />
         </Link>
         <Link
-          to="?orderBy=date&orderByType=desc&page=1&pageSize=10&types=2,9,10"
-          className={`di di-m mh1 ${isActiveButton(['2', '9', '10'], inboxQuery)}  ${linkCombo} `}
+          to={'?orderBy=date&orderByType=desc&page=1&pageSize=10&types=6,7,11'}
+          className={`di di-m mh1 ${isActiveButton(['6', '7', '11'], inboxQuery)}  ${linkCombo} `}
         >
-          <FormattedMessage {...messages.projects} />
+          <FormattedMessage {...messages.teams} />
         </Link>
       </div>
       {props.children}
