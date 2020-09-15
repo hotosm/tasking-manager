@@ -21,6 +21,7 @@ campaign_organisations = db.Table(
 
 
 class Campaign(db.Model):
+    # Typo
     """ Describes an Campaign"""
 
     __tablename__ = "campaigns"

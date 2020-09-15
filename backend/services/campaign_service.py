@@ -39,6 +39,7 @@ class CampaignService:
 
     @staticmethod
     def get_campaign_as_dto(campaign_id: int, user_id: int):
+        # Description is the same as get_campaign despite being a different method
         """Gets the specified campaign"""
         campaign = CampaignService.get_campaign(campaign_id)
         campaign_dto = CampaignDTO()
@@ -56,6 +57,7 @@ class CampaignService:
         )
 
         for org in orgs:
+            # Is logged_in a global variable? If so, why?
             if user_id != 0:
                 logged_in = OrganisationService.can_user_manage_organisation(
                     org.id, user_id
@@ -63,6 +65,7 @@ class CampaignService:
             else:
                 logged_in = False
 
+            # Where is organisation_dto being used?
             organisation_dto = OrganisationDTO()
 
             organisation_dto.organisation_id = org.id
@@ -80,6 +83,7 @@ class CampaignService:
 
     @staticmethod
     def delete_project_campaign(project_id: int, campaign_id: int):
+        # Same description as delete_campaign despite doing something different
         """ Delete campaign for a project"""
         campaign = Campaign.query.get(campaign_id)
         project = Project.query.get(project_id)
@@ -122,6 +126,7 @@ class CampaignService:
 
     @staticmethod
     def create_campaign_organisation(organisation_id: int, campaign_id: int):
+        # The description does not seem to watch what this method is doing
         """ Creates new campaign from DTO """
         statement = campaign_organisations.insert().values(
             campaign_id=campaign_id, organisation_id=organisation_id
@@ -135,11 +140,13 @@ class CampaignService:
 
     @staticmethod
     def get_organisation_campaigns_as_dto(organisation_id: int) -> CampaignListDTO:
+        # Description is the same as get_project_campaigns_as_dto despite actually getting campaigns of a specific org
         """ Gets all the campaigns for a specified project """
         return Campaign.get_organisation_campaigns_as_dto(organisation_id)
 
     @staticmethod
     def delete_organisation_campaign(organisation_id: int, campaign_id: int):
+        # Typo
         """ Delete campaign for a organisation"""
         campaign = Campaign.query.get(campaign_id)
         org = Organisation.query.get(organisation_id)

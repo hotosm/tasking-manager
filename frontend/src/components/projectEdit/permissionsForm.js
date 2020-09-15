@@ -13,8 +13,10 @@ export const PermissionsForm = () => {
     { label: <FormattedMessage {...messages.permissions_LEVEL} />, value: 'LEVEL' },
     { label: <FormattedMessage {...messages.permissions_TEAMS} />, value: 'TEAMS' },
     { label: <FormattedMessage {...messages.permissions_TEAMS_LEVEL} />, value: 'TEAMS_LEVEL' },
-  ];
+  ]; {/*AH: This variable does not need to be instantiated on every render. Move outside of the function.*/}
 
+  {/*AH: Nit: Class names are unclear*/}
+  {/*AH: Nit: Destructure properties outside of styleclasses*/}
   return (
     <div className="w-100">
       <div className={styleClasses.divClass}>
@@ -24,6 +26,7 @@ export const PermissionsForm = () => {
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.mappingPermissionDescription} />
         </p>
+        {/*AH: Nit: Destructure properties outside of permisson*/}
         {permissions.map((permission) => (
           <label className="db pv2" key={permission}>
             <input
@@ -42,6 +45,7 @@ export const PermissionsForm = () => {
           </label>
         ))}
       </div>
+      {/*AH: Below code is very similar to above. Could be pulled out to a subcomponent. Not necessary in this case as it's only repeated twice.*/}
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.validationPermission} />

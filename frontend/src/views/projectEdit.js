@@ -39,8 +39,9 @@ export const styleClasses = {
   actionClass: 'bg-blue-dark white dib mr2 mt2 pointer',
 };
 
+// AH: Do not mutate function arguments (arrayElement), create a new variable instead
 export const handleCheckButton = (event, arrayElement) => {
-  if (event.target.checked === true) {
+  if (event.target.checked === true) { // AH: Do not need to do an equality check for true
     arrayElement.push(event.target.value);
   } else {
     arrayElement = arrayElement.filter((t) => t !== event.target.value);
@@ -51,7 +52,7 @@ export const handleCheckButton = (event, arrayElement) => {
 
 export function ProjectEdit({ id }) {
   useSetTitleTag(`Edit project #${id}`);
-  const mandatoryFields = ['name', 'shortDescription', 'description', 'instructions'];
+  const mandatoryFields = ['name', 'shortDescription', 'description', 'instructions']; // AH: This variable does not need to be instantiated on every render. Move outside of the function.
   const token = useSelector((state) => state.auth.get('token'));
   const user = useSelector((state) => state.auth.get('userDetails'));
   const [error, setError] = useState(null);
@@ -76,6 +77,7 @@ export function ProjectEdit({ id }) {
   });
   const [userCanEditProject] = useEditProjectAllowed(projectInfo);
 
+  // AH: Is there a reason why useLayoutEffect is being used instead of useEffect?
   useLayoutEffect(() => {
     setSuccess(false);
     setError(null);
@@ -94,7 +96,7 @@ export function ProjectEdit({ id }) {
       try {
         const res = await fetchLocalJSONAPI(`projects/${id}/`, token, 'GET');
         setProjectInfo(res);
-      } catch (e) {}
+      } catch (e) {} // AH: Do we not want to setError when this function throws an exception?
     }
     fetchData();
   }, [id, token]);
@@ -115,7 +117,8 @@ export function ProjectEdit({ id }) {
     );
   }
 
-  const renderList = () => {
+  // AH: For functional components, every time the component is rendered all these functions will be defined again. Moving it outside allows us to only declare it once.
+  const renderList = () => { // AH: Move outside of component
     const checkSelected = (optionSelected) => {
       let liClass = 'w-90 link barlow-condensed f4 fw5 pv3 pl2 pointer';
       if (option === optionSelected) {
@@ -134,7 +137,7 @@ export function ProjectEdit({ id }) {
       { value: 'settings' },
       { value: 'actions' },
       { value: 'custom_editor', expert_required: true },
-    ];
+    ]; 
 
     return (
       <div>
@@ -152,7 +155,7 @@ export function ProjectEdit({ id }) {
     );
   };
 
-  const renderForm = (option) => {
+  const renderForm = (option) => { // AH: Move outside of component
     switch (option) {
       case 'description':
         return <DescriptionForm languages={languages} />;
@@ -182,10 +185,10 @@ export function ProjectEdit({ id }) {
     }
   };
 
-  const saveChanges = () => {
+  const saveChanges = () => { // AH: Move outside of component
     const updateProject = () => {
       pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')
-        .then((res) => {
+        .then((res) => { // AH: res is not being used
           setSuccess(true);
           setError(null);
         })
@@ -218,7 +221,7 @@ export function ProjectEdit({ id }) {
     }
   };
 
-  const ServerMessage = () => {
+  const ServerMessage = () => { // AH: Move outside of this component
     return (
       <div className="red ba b--red pa2 br1 dib pa2">
         <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
@@ -227,7 +230,7 @@ export function ProjectEdit({ id }) {
     );
   };
 
-  const SuccessMessage = () => {
+  const SuccessMessage = () => { // AH: Move outside of this component
     return (
       <div className="blue-grey b--blue-grey ba br1 dib pa2">
         <CheckIcon className="h1 w1 mr2" />
@@ -236,7 +239,7 @@ export function ProjectEdit({ id }) {
     );
   };
 
-  const MissingField = (locale) => {
+  const MissingField = (locale) => { // AH: Move outside of this component
     if (locale === null) {
       return <FormattedMessage {...messages.missingFields} />;
     }
@@ -249,7 +252,7 @@ export function ProjectEdit({ id }) {
     );
   };
 
-  const ErrorMessage = ({ e }) => {
+  const ErrorMessage = ({ e }) => { // AH: Move outside of this component
     return (
       <ul className="mt2 mb0">
         {e.fields.map((f, i) => {
@@ -264,7 +267,7 @@ export function ProjectEdit({ id }) {
     );
   };
 
-  const ErrorMessages = ({ error }) => {
+  const ErrorMessages = ({ error }) => { // AH: Move outside of this component
     return (
       <div className="mr4 red ba b--red pa2 br1 dib pa2">
         {error.map((e) => {
@@ -280,8 +283,9 @@ export function ProjectEdit({ id }) {
     );
   };
 
-  const UpdateMessage = ({ error, success }) => {
+  const UpdateMessage = ({ error, success }) => { // AH: Move outside of this component
     let message = null;
+    // AH: Turn into if...else if...statements to prevent running through all statements
     if (success === true) {
       message = <SuccessMessage />;
     }
@@ -316,7 +320,7 @@ export function ProjectEdit({ id }) {
           </div>
           <span className="db">
             <Dropdown
-              onAdd={() => {}}
+              onAdd={() => {}} // AH: What happens when this event and onRemove is triggered?
               onRemove={() => {}}
               value={null}
               options={[

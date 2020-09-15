@@ -11,6 +11,8 @@ import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
 import DueDateBox from './dueDateBox';
 import { PriorityBox } from './priorityBox';
 
+// AH: Is the Object type annotation doing anything in this .js file?
+
 export function ProjectTeaser({
   lastUpdated,
   totalContributors,
@@ -25,12 +27,12 @@ export function ProjectTeaser({
     return (
       <div title={lastUpdated} className={`${outerDivStyles} ${className || ''}`}>
         <span className={littleFont}>
-          <FormattedMessage {...messages['projectLastContribution']} />{' '}
+          <FormattedMessage {...messages['projectLastContribution']} />{' '} {/*AH: Use dot notation*/}
           <RelativeTimeWithUnit date={lastUpdated} />
         </span>
       </div>
     );
-  } else {
+  } else { // AH: else is not needed since the if statement is returning early
     return (
       <div title={lastUpdated} className={`${outerDivStyles} ${className || ''}`}>
         <span className={`${littleFont} blue-light`}>
@@ -67,7 +69,7 @@ export function ProjectCard({
   const [isHovered, setHovered] = useState(false);
   const linkCombo = 'link pa2 f6 ba b--grey-light di w-50 truncate tc';
 
-  const showBottomButtonsHovered = showBottomButtons === true ? isHovered : false;
+  const showBottomButtonsHovered = showBottomButtons === true ? isHovered : false; {/*AH: Change to `showBottomButtons && isHovered` for readability*/}
   const bottomButtonSpacer = showBottomButtons ? 'pt3 pb4' : 'pv3';
   const bottomButtonMargin = showBottomButtons ? 'pb0' : 'pb3';
   const bottomButtons = (
@@ -114,12 +116,12 @@ export function ProjectCard({
             </div>
           </div>
           <div className="ma1 w-100">
-            <div className="f5 blue-grey mt1 lh-title">#{projectId}</div>
+            <div className="f5 blue-grey mt1 lh-title">#{projectId}</div> {/*AH: Can an H1 tag be used instead?*/}
             <h3 title={name} className="pb2 mt1 f5 fw6 h3 lh-title overflow-y-hidden">
               {name}
             </h3>
             <div className="tc f6">
-              <div className="w-100 tl pr2 f7 blue-light dib lh-title mb2 h2 overflow-y-hidden">
+              <div className="w-100 tl pr2 f7 blue-light dib lh-title mb2 h2 overflow-y-hidden"> {/*AH: Can an H2 tag be used instead?*/}
                 {shortDescription} {campaignTag ? ' · ' + campaignTag : ''}
               </div>
               <ProjectTeaser totalContributors={totalContributors} lastUpdated={lastUpdated} />

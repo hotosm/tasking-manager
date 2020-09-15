@@ -5,13 +5,15 @@ import messages from './messages';
 import {StateContext, styleClasses} from '../../views/projectEdit';
 import { Button } from '../button';
 
-export const CustomEditorForm = ({ languages }) => {
+// AH: Inconsistent whitespace with two other files.
+
+export const CustomEditorForm = ({ languages }) => { // AH: languages isn't being used
     const { projectInfo, setProjectInfo } = useContext(StateContext);
 
     const handleChange = event => {
-        var value = val => event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-        var customEditor = {...projectInfo.customEditor, [event.target.name]: value()};
-        setProjectInfo({...projectInfo, customEditor: customEditor});
+        var value = val => event.target.type === 'checkbox' ? event.target.checked : event.target.value; // AH: Does not need to be a function, should be a const. Consider changing name to something more descriptive.
+        var customEditor = {...projectInfo.customEditor, [event.target.name]: value()}; // AH: Should be a const, can put the value ternary directly here
+        setProjectInfo({...projectInfo, customEditor: customEditor}); // AH: Nit: customEditor does not need to be repeated
     };
 
     const handleRemove = event => {
