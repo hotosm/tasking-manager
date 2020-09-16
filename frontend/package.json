@@ -96,7 +96,7 @@
     "combine-react-intl-messages": "^4.0.0",
     "jest-canvas-mock": "^2.2.0",
     "msw": "^0.21.2",
-    "prettier": "^2.1.1",
+    "prettier": "^2.1.2",
     "react-test-renderer": "^16.13.1"
   },
   "jest": {
