@@ -20,7 +20,7 @@ def sentry_init():
     sentry_sdk.init(
         dsn=EnvironmentConfig.SENTRY_BACKEND_DSN,
         integrations=[FlaskIntegration()],
-        traces_sample_rate=1.0,
+        traces_sample_rate=0.1,
     )
 
 
