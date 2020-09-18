@@ -193,45 +193,51 @@ class StatsService:
     @staticmethod
     def get_last_activity(project_id: int) -> ProjectLastActivityDTO:
         """ Gets the last activity for a project's tasks """
+        sq = (
+            TaskHistory.query.with_entities(
+                TaskHistory.task_id,
+                TaskHistory.action_date,
+                TaskHistory.user_id,
+            )
+            .filter(TaskHistory.project_id == project_id)
+            .filter(TaskHistory.action != TaskAction.COMMENT.name)
+            .order_by(TaskHistory.task_id, TaskHistory.action_date.desc())
+            .distinct(TaskHistory.task_id)
+            .subquery()
+        )
 
+        sq_statuses = (
+            Task.query.with_entities(Task.id, Task.task_status)
+            .filter(Task.project_id == project_id)
+            .subquery()
+        )
         results = (
             db.session.query(
-                Task.id,
-                Task.project_id,
-                Task.task_status,
-                Task.locked_by,
-                Task.mapped_by,
-                Task.validated_by,
+                sq_statuses.c.id,
+                sq.c.action_date,
+                sq_statuses.c.task_status,
+                User.username,
             )
-            .filter(Task.project_id == project_id)
-            .order_by(Task.id.asc())
+            .outerjoin(sq, sq.c.task_id == sq_statuses.c.id)
+            .outerjoin(User, User.id == sq.c.user_id)
+            .order_by(sq_statuses.c.id)
+            .all()
         )
-        last_activity_dto = ProjectLastActivityDTO()
 
-        for item in results:
-            latest = TaskStatusDTO()
-            latest.task_id = item.id
-            latest.task_status = TaskStatus(item.task_status).name
-            latest_activity = (
-                db.session.query(
-                    TaskHistory.action_date, TaskHistory.action, User.username
+        dto = ProjectLastActivityDTO()
+        dto.activity = [
+            TaskStatusDTO(
+                dict(
+                    task_id=r.id,
+                    task_status=TaskStatus(r.task_status).name,
+                    action_date=r.action_date,
+                    action_by=r.username,
                 )
-                .join(User)
-                .filter(
-                    TaskHistory.task_id == item.id,
-                    TaskHistory.project_id == project_id,
-                    TaskHistory.action != TaskAction.COMMENT.name,
-                    User.id == TaskHistory.user_id,
-                )
-                .order_by(TaskHistory.id.desc())
-                .first()
             )
-            if latest_activity:
-                latest.action_date = latest_activity[0]
-                latest.action_by = latest_activity[2]
-            last_activity_dto.activity.append(latest)
+            for r in results
+        ]
 
-        return last_activity_dto
+        return dto
 
     @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
