@@ -178,8 +178,9 @@ class MessageService:
             SMTPService.send_email_alert(
                 user.email_address,
                 user.username,
+                message["message"].id,
                 UserService.get_user_by_id(message["message"].from_user_id).username,
-                str(message["message"].project_id),
+                message["message"].project_id,
                 clean_html(message["message"].subject),
                 message["message"].message,
             )
@@ -204,7 +205,6 @@ class MessageService:
 
             messages = []
             for username in usernames:
-
                 try:
                     user = UserService.get_user_by_username(username)
                 except NotFound:

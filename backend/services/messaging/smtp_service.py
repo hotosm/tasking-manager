@@ -58,16 +58,17 @@ class SMTPService:
     def send_email_alert(
         to_address: str,
         username: str,
-        from_user_name: str,
-        message_id: str,
+        message_id: int,
+        from_username: str,
+        project_id: int,
         subject: str,
         content: str,
     ):
         """Send an email to user to alert that they have a new message"""
         current_app.logger.debug(f"Test if email required {to_address}")
         org_code = current_app.config["ORG_CODE"]
-        from_user_link = f"{current_app.config['APP_BASE_URL']}/users/{from_user_name}"
-        project_link = f"{current_app.config['APP_BASE_URL']}/projects/{message_id}"
+        from_user_link = f"{current_app.config['APP_BASE_URL']}/users/{from_username}"
+        project_link = f"{current_app.config['APP_BASE_URL']}/projects/{project_id}"
         settings_url = "{}/settings#notifications".format(
             current_app.config["APP_BASE_URL"]
         )
@@ -84,9 +85,9 @@ class SMTPService:
         inbox_url = f"{current_app.config['APP_BASE_URL']}/inbox{message_path}"
         replace_list = [
             ["[FROM_USER_LINK]", from_user_link],
-            ["[FROM_USER_NAME]", from_user_name],
+            ["[FROM_USERNAME]", from_username],
             ["[PROJECT_LINK]", project_link],
-            ["[PROJECT_NAME]", message_id],
+            ["[PROJECT_ID]", str(project_id)],
             ["[ORG_CODE]", org_code],
             ["[PROFILE_LINK]", inbox_url],
             ["[SETTINGS_LINK]", settings_url],
