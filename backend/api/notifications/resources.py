@@ -139,15 +139,16 @@ class NotificationsAllAPI(Resource):
               type: integer
             - in: query
               name: sortBy
-              description: field to sort by, defaults to date
+              description:
+                field to sort by, defaults to 'date'. Other useful options are 'read', 'project_id' and 'message_type'
               type: string
             - in: query
               name: sortDirection
-              description: direction of sort, defaults to desc
+              description: sorting direction ('asc' or 'desc'), defaults to 'desc'
               type: string
             - in: query
               name: page
-              description: Page of results user requested
+              description: Page of results
               type: integer
             - in: query
               name: pageSize
