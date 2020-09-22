@@ -10,11 +10,12 @@ import { store } from './store';
 import { getUserDetails } from './store/actions/auth';
 import { ConnectedIntl } from './utils/internationalization';
 import * as serviceWorker from './serviceWorker';
-import { ENABLE_SERVICEWORKER, SENTRY_FRONTEND_DSN } from './config';
+import { ENABLE_SERVICEWORKER, SENTRY_FRONTEND_DSN, ENVIRONMENT } from './config';
 
 if (SENTRY_FRONTEND_DSN) {
   Sentry.init({
     dsn: SENTRY_FRONTEND_DSN,
+    environment: ENVIRONMENT,
     integrations: [new Integrations.BrowserTracing()],
     tracesSampleRate: 0.1,
   });

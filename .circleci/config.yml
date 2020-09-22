@@ -162,6 +162,8 @@ jobs:
         type: env_var_name
       upload_api_key:
         type: env_var_name
+      sentry_backend_dsn: 
+        type: env_var_name
     working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3.7-buster-node
@@ -171,7 +173,7 @@ jobs:
     - run:
         name: Set Environment Variables
         command: |
-          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\",\"TaskingManagerLogLevel\":\"<< parameters.log_level >>\",\"TaskingManagerImageUploadAPIURL\":\"${<< parameters.upload_api_url >>}\", \"TaskingManagerImageUploadAPIKey\":\"${<< parameters.upload_api_key >>}\",\"TaskingManagerURL\":\"${<< parameters.app_url >>}\", \"TaskingManagerOrgName\":\"${<< parameters.org_name >>}\", \"TaskingManagerOrgCode\":\"${<< parameters.org_code >>}\", \"TaskingManagerEmailContactAddress\":\"${<< parameters.email_contact_address >>}\"}'" >> $BASH_ENV
+          echo "export JSON_CONFIG='{\"GitSha\":\"$CIRCLE_SHA1\", \"NetworkEnvironment\":\"<< parameters.environment_name >>\", \"AutoscalingPolicy\":\"<< parameters.autoscaling_policy >>\", \"DBSnapshot\":\"\", \"DatabaseDump\":\"\", \"NewRelicLicense\":\"${<< parameters.new_relic_license >>}\", \"PostgresDB\":\"${<< parameters.postgres_db >>}\", \"PostgresEndpoint\":\"\", \"PostgresPassword\":\"${<< parameters.postgres_password >>}\", \"PostgresUser\":\"${<< parameters.postgres_user >>}\", \"DatabaseSize\":\"${<< parameters.db_size >>}\",\"ELBSubnets\":\"${<< parameters.elb_subnets >>}\", \"SSLCertificateIdentifier\":\"${<< parameters.ssl_cert >>}\", \"TaskingManagerLogDirectory\":\"${<< parameters.log_dir >>}\", \"TaskingManagerConsumerKey\":\"${<< parameters.consumer_key >>}\",\"TaskingManagerConsumerSecret\":\"${<< parameters.consumer_secret >>}\",\"TaskingManagerSecret\":\"${<< parameters.tm_secret >>}\",\"TaskingManagerLogLevel\":\"<< parameters.log_level >>\",\"TaskingManagerImageUploadAPIURL\":\"${<< parameters.upload_api_url >>}\", \"TaskingManagerImageUploadAPIKey\":\"${<< parameters.upload_api_key >>}\",\"TaskingManagerURL\":\"${<< parameters.app_url >>}\", \"TaskingManagerOrgName\":\"${<< parameters.org_name >>}\", \"TaskingManagerOrgCode\":\"${<< parameters.org_code >>}\", \"SentryBackendDSN\":\"${<< parameters.sentry_backend_dsn >>}\", \"TaskingManagerEmailContactAddress\":\"${<< parameters.email_contact_address >>}\"}'" >> $BASH_ENV
     - run:
         name: Install modules
         command: |
@@ -354,6 +356,8 @@ jobs:
         type: env_var_name
       homepage_stats_api_url:
         type: env_var_name
+      sentry_frontend_dsn:
+        type: env_var_name
     working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3.7-buster-node
@@ -419,6 +423,7 @@ jobs:
           export TM_IMAGE_UPLOAD_API_URL=${<< parameters.upload_api_url >>}
           export TM_USER_STATS_API_URL=${<< parameters.user_stats_api_url >>}
           export TM_HOMEPAGE_STATS_API_URL=${<< parameters.homepage_stats_api_url >>}
+          export TM_SENTRY_FRONTEND_DSN=${<< parameters.sentry_frontend_dsn >>}
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
           yarn
           CI=true GENERATE_SOURCEMAP=false yarn build
@@ -481,6 +486,7 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL #=https://cdn.hotosm.org/tasking-manager/mapping.mp4
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+        sentry_backend_dsn: TM_SENTRY_BACKEND_DSN
     - frontend_deploy:
         name: staging
         filters:
@@ -530,6 +536,7 @@ workflows:
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
         user_stats_api_url: TM_USER_STATS_API_URL
         homepage_stats_api_url: TM_HOMEPAGE_STATS_API_URL
+        sentry_frontend_dsn: TM_SENTRY_FRONTEND_DSN
     - backend_deploy:
         name: teachosm
         filters:
@@ -577,6 +584,7 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+        sentry_backend_dsn: TM_SENTRY_BACKEND_DSN
     - frontend_deploy:
         name: teachosm
         filters:
@@ -626,6 +634,7 @@ workflows:
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
         user_stats_api_url: TM_USER_STATS_API_URL
         homepage_stats_api_url: TM_HOMEPAGE_STATS_API_URL
+        sentry_frontend_dsn: TM_SENTRY_FRONTEND_DSN
     - backend_deploy:
         name: assisted
         filters:
@@ -673,6 +682,7 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+        sentry_backend_dsn: TM_SENTRY_BACKEND_DSN
     - frontend_deploy:
         name: assisted
         filters:
@@ -722,6 +732,7 @@ workflows:
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
         user_stats_api_url: TM_USER_STATS_API_URL
         homepage_stats_api_url: TM_HOMEPAGE_STATS_API_URL
+        sentry_frontend_dsn: TM_SENTRY_FRONTEND_DSN
   backend-production:
     jobs:
     - backend_deploy:
@@ -769,6 +780,7 @@ workflows:
         org_homepage_video_url: TM_HOMEPAGE_VIDEO_URL
         upload_api_url: TM_IMAGE_UPLOAD_API_URL
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
+        sentry_backend_dsn: TM_SENTRY_BACKEND_DSN
   frontend-production:
     jobs:
     - frontend_deploy:
@@ -819,3 +831,4 @@ workflows:
         upload_api_key: TM_IMAGE_UPLOAD_API_KEY
         user_stats_api_url: TM_USER_STATS_API_URL
         homepage_stats_api_url: TM_HOMEPAGE_STATS_API_URL
+        sentry_frontend_dsn: TM_SENTRY_FRONTEND_DSN
