@@ -124,7 +124,6 @@ class NotificationsAllAPI(Resource):
               name: messageType
               type: string
               description: Optional message-type filter; leave blank to retrieve all
-              default: 1,2
             - in: query
               name: from
               description: Optional from username filter
@@ -137,6 +136,10 @@ class NotificationsAllAPI(Resource):
               name: taskId
               description: Optional task filter
               type: integer
+            - in: query
+              name: status
+              description: Optional status filter (read or unread)
+              type: string
             - in: query
               name: sortBy
               description:
@@ -172,6 +175,7 @@ class NotificationsAllAPI(Resource):
             from_username = request.args.get("from")
             project = request.args.get("project", None, int)
             task_id = request.args.get("taskId", None, int)
+            status = request.args.get("status", None, str)
             user_messages = MessageService.get_all_messages(
                 token_auth.current_user(),
                 preferred_locale,
@@ -183,6 +187,7 @@ class NotificationsAllAPI(Resource):
                 from_username,
                 project,
                 task_id,
+                status,
             )
             return user_messages.to_primitive(), 200
         except Exception as e:
