@@ -145,6 +145,7 @@
   "notifications.filter.messages": "پیام‌ها",
   "notifications.bodytitle.message": "پیام",
   "notifications.filter.tasks": "وظایف",
+  "notifications.filter.teams": "تیم ها",
   "notifications.filter.projects": "پروژه‌ها",
   "notifications.filter.clear": "پاک کردن فیلتر ها",
   "notifications.markAsRead": "",

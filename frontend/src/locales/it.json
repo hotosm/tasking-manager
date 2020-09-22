@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Messaggi",
   "notifications.bodytitle.message": "Messaggio",
   "notifications.filter.tasks": "Compiti",
+  "notifications.filter.teams": "Gruppi",
   "notifications.filter.projects": "Progetti",
   "notifications.filter.clear": "Rimuovi filtri",
   "notifications.markAsRead": "Segna come letto",

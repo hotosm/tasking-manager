@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Meddelanden",
   "notifications.bodytitle.message": "Meddelande",
   "notifications.filter.tasks": "Uppgifter",
+  "notifications.filter.teams": "Lag",
   "notifications.filter.projects": "Projekt",
   "notifications.filter.clear": "Rensa filter",
   "notifications.markAsRead": "",

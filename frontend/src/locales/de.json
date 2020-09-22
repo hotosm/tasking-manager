@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Nachrichten",
   "notifications.bodytitle.message": "Nachricht",
   "notifications.filter.tasks": "Aufgaben",
+  "notifications.filter.teams": "Gruppen",
   "notifications.filter.projects": "Projekte",
   "notifications.filter.clear": "Filter löschen",
   "notifications.markAsRead": "Als gelesen markieren",
