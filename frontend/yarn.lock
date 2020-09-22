@@ -9177,10 +9177,10 @@ parse5@5.1.0:
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-5.1.0.tgz#c59341c9723f414c452975564c7c00a68d58acd2"
   integrity sha512-fxNG2sQjHvlVAYmzBZS9YlDp6PTSSDwa98vkD4QgVDDCAo84z5X1t5XyJQ62ImdLXx5NdIIfihey6xpum9/gRQ==
 
-parsedbf@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/parsedbf/-/parsedbf-1.0.0.tgz#fade7e4fad95b7006ff0b8b59f29a767e0865659"
-  integrity sha512-qm8G6BPAL8yesN4UP4cNq1rxI5g5OyQNwS/SiLvjVT87PZ+9sbRdIANqH8kPKWvIiDbFM2V3C0xUuh/jvUqRdQ==
+parsedbf@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/parsedbf/-/parsedbf-1.1.0.tgz#1eea3dc88bcfbb3161bd61e505a2ca1ad9e89e85"
+  integrity sha512-8sGcx3fHK8PjW2Y4Qmlmzo6WpsGRAYuiW7setycsXS4KmCEd0VEaYP05f+vfqO05QA7QVW3o0Nc93p8nvkFYvg==
   dependencies:
     iconv-lite "^0.4.15"
     text-encoding-polyfill "^0.6.7"
@@ -11507,15 +11507,15 @@ short-number@^1.0.7:
   resolved "https://registry.yarnpkg.com/short-number/-/short-number-1.0.7.tgz#5ab8021b86f20a4bdd1bbe01a85c22ff1cd15514"
   integrity sha512-e3cb811QXHiAH2H5rgZwXHsmg2+aG6XK0QyKF/+pyDIZFBSz/G8bkr8avdBrL5PVIfhIq8rlohjFvSB3azzpEQ==
 
-shpjs@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/shpjs/-/shpjs-3.5.0.tgz#25f5796b0d236ad48524a0a66dc6c05479995d44"
-  integrity sha512-v21xnhMuvIdU+lcm9rLBZcA/PSwYfv1nfeNcgh6KbGygRnCt0wvyLnm1NbAl0wN45gP+qT7fkM414ukXXReTXQ==
+shpjs@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/shpjs/-/shpjs-3.6.0.tgz#4e099b1e73307eaa927672b62d0e1606aeeb38db"
+  integrity sha512-+jK3QPl/Sxh6L406U6zxoMkUxFwiLvgB+58ArdcQjzm2NzNHANX9N6DUmbg4Y5kJxyAbC8N8sCFDlC7DgaYZpQ==
   dependencies:
     jszip "^2.4.0"
     lie "^3.0.1"
     lru-cache "^2.7.0"
-    parsedbf "^1.0.0"
+    parsedbf "^1.1.0"
     proj4 "^2.1.4"
 
 side-channel@^1.0.2:
