@@ -243,6 +243,10 @@ class MessageService:
             for user_id in contributed_users:
                 try:
                     user = UserService.get_user_dto_by_id(user_id)
+                    # if user was mentioned, a message has already been sent to them,
+                    # so we can skip
+                    if user.username in usernames:
+                        break
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
 
