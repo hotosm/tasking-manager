@@ -1135,10 +1135,10 @@
   resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.2.0.tgz#5b03ba4931436070ad926d1b2e89bf07edc5ea5b"
   integrity sha512-jc1bZHhIE1YI0HnZIZcdlKpF4wle2pkgQpzXHDoyy4bUqzBSvDqktnF26hOkyA04KD4wqd61gkuTvRrHMmroAg==
 
-"@formatjs/ecma402-abstract@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.2.1.tgz#ad966998d7f0e96fca4bdc5de0ca28d02f371279"
-  integrity sha512-LvbwgHxprafjceDfOC7yMl4sP5al71rAWahXk3qug5bV020aCq64WjqAo+zNnkIJk8hqK2pFKnNdDsT58HZJQw==
+"@formatjs/ecma402-abstract@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.2.2.tgz#4810bdbd696d3805c535fd0620b7c8f45ab3164f"
+  integrity sha512-mLCoAPGlXCVskb/ojBO6iurGqwo6sZvAl8pRC4N25bz4LPWExAM9LsOo057zN3Br1JxUM3RZHG4YGnVt+nSRYQ==
 
 "@formatjs/intl-displaynames@^3.3.6":
   version "3.3.6"
@@ -1154,12 +1154,12 @@
   dependencies:
     "@formatjs/ecma402-abstract" "^1.2.0"
 
-"@formatjs/intl-pluralrules@^3.4.6":
-  version "3.4.6"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-3.4.6.tgz#3047b1fc5c6f5d097588214a35650b8047d82c2f"
-  integrity sha512-6/K0Lqlej2bYM1K3HfSNsEURHlsmWJhrE95k/hZdE4wo7k5S7Fc/QUfHlieLQvCXF77n/zVgzp/9bpgxMDxL0A==
+"@formatjs/intl-pluralrules@^3.4.7":
+  version "3.4.7"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-3.4.7.tgz#5e46383c585f77d96c0e8c845c5579a67c0c1faa"
+  integrity sha512-CSftdNs8afT1VfB5vQFlSzhEZ+ckbkxzYxNXCeLYt66mXnuCukr7KCsZJHUTMyjlEAnFbfqXnKCtWDs5JMBrog==
   dependencies:
-    "@formatjs/ecma402-abstract" "^1.2.1"
+    "@formatjs/ecma402-abstract" "^1.2.2"
 
 "@formatjs/intl-relativetimeformat@^7.2.5":
   version "7.2.5"
@@ -1168,12 +1168,12 @@
   dependencies:
     "@formatjs/ecma402-abstract" "^1.2.0"
 
-"@formatjs/intl-relativetimeformat@^7.2.6":
-  version "7.2.6"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-7.2.6.tgz#7452e0feaa433f341b306e308166058e8126e934"
-  integrity sha512-SHwrzk9HuAUwl3/qfupU3ZnW4ZgVOpI2+3gwGmvoPOmAlKFlo7liSCszA5hcRpsnhjS66BqUzfx6BWOwzYvmKQ==
+"@formatjs/intl-relativetimeformat@^7.2.7":
+  version "7.2.7"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-7.2.7.tgz#dce72ebafb1ca0bf14673fab3b1aad145e1abac6"
+  integrity sha512-R6rxX4PfPQ/EuDRALLSIEDCDW/FAmmu6xpRXIPdZ33bEP7SXEksJB039Bw//I0VIm2fBeIlxe9oqvRGfuqpwVg==
   dependencies:
-    "@formatjs/ecma402-abstract" "^1.2.1"
+    "@formatjs/ecma402-abstract" "^1.2.2"
 
 "@formatjs/intl-unified-numberformat@^3.2.0":
   version "3.3.2"

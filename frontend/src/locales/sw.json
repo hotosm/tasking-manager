@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Ujumbe",
   "notifications.bodytitle.message": "Ujumbe",
   "notifications.filter.tasks": "Kazi",
+  "notifications.filter.teams": "Timu",
   "notifications.filter.projects": "Miradi",
   "notifications.filter.clear": "Futa vichujio",
   "notifications.markAsRead": "",

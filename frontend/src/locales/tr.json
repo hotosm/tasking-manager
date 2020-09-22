@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Mesajlar",
   "notifications.bodytitle.message": "Mesaj",
   "notifications.filter.tasks": "Görevler",
+  "notifications.filter.teams": "Ekipler",
   "notifications.filter.projects": "Projeler ",
   "notifications.filter.clear": "Filtreleri Temizle",
   "notifications.markAsRead": "Okundu olarak işaretle",
