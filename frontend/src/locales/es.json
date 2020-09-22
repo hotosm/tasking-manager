@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Mensajes",
   "notifications.bodytitle.message": "Mensaje",
   "notifications.filter.tasks": "Tareas",
+  "notifications.filter.teams": "Equipos",
   "notifications.filter.projects": "Proyectos",
   "notifications.filter.clear": "Borrar filtros",
   "notifications.markAsRead": "Marcar como leído",

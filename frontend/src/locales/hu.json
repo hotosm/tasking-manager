@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Üzenetek",
   "notifications.bodytitle.message": "Üzenet",
   "notifications.filter.tasks": "Feladatok",
+  "notifications.filter.teams": "Csoportok",
   "notifications.filter.projects": "Projektek",
   "notifications.filter.clear": "Szűrők törlése",
   "notifications.markAsRead": "Megjelölés olvasottként",

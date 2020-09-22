@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Μηνύματα",
   "notifications.bodytitle.message": "Μήνυμα",
   "notifications.filter.tasks": "Εργασίες",
+  "notifications.filter.teams": "Ομάδες",
   "notifications.filter.projects": "Έργα",
   "notifications.filter.clear": "Καθαρισμός φίλτρων",
   "notifications.markAsRead": "Σήμανση ως αναγνωσμένο",

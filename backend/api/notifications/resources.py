@@ -124,7 +124,6 @@ class NotificationsAllAPI(Resource):
               name: messageType
               type: string
               description: Optional message-type filter; leave blank to retrieve all
-              default: 1,2
             - in: query
               name: from
               description: Optional from username filter
@@ -138,16 +137,21 @@ class NotificationsAllAPI(Resource):
               description: Optional task filter
               type: integer
             - in: query
+              name: status
+              description: Optional status filter (read or unread)
+              type: string
+            - in: query
               name: sortBy
-              description: field to sort by, defaults to date
+              description:
+                field to sort by, defaults to 'date'. Other useful options are 'read', 'project_id' and 'message_type'
               type: string
             - in: query
               name: sortDirection
-              description: direction of sort, defaults to desc
+              description: sorting direction ('asc' or 'desc'), defaults to 'desc'
               type: string
             - in: query
               name: page
-              description: Page of results user requested
+              description: Page of results
               type: integer
             - in: query
               name: pageSize
@@ -171,6 +175,7 @@ class NotificationsAllAPI(Resource):
             from_username = request.args.get("from")
             project = request.args.get("project", None, int)
             task_id = request.args.get("taskId", None, int)
+            status = request.args.get("status", None, str)
             user_messages = MessageService.get_all_messages(
                 token_auth.current_user(),
                 preferred_locale,
@@ -182,6 +187,7 @@ class NotificationsAllAPI(Resource):
                 from_username,
                 project,
                 task_id,
+                status,
             )
             return user_messages.to_primitive(), 200
         except Exception as e:

@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Zprávy",
   "notifications.bodytitle.message": "Zpráva",
   "notifications.filter.tasks": "Úlohy",
+  "notifications.filter.teams": "Týmy",
   "notifications.filter.projects": "Projekty",
   "notifications.filter.clear": "Vymazat filtry",
   "notifications.markAsRead": "Označit jako přečtené",

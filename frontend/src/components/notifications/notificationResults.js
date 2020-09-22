@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 
 import messages from './messages';
 import { NotificationCard, NotificationCardMini } from './notificationCard';
+import { DeleteNotificationsButton } from './deleteNotificationsButton';
 import { RefreshIcon } from '../svgIcons';
+import { SelectAll } from '../formInputs';
 
 export const NotificationResultsMini = (props) => {
   return <NotificationResults {...props} useMiniCard={true} />;
@@ -63,7 +65,11 @@ export const NotificationResults = (props) => {
         </div>
       ) : null}
       <div className={`cf ${!props.useMiniCard ? 'ml1 db' : 'dib'}`}>
-        <ReactPlaceholder ready={!state.isFirstLoading} type="media" rows={10}>
+        <ReactPlaceholder
+          ready={!state.isFirstLoading && stateNotifications}
+          type="media"
+          rows={10}
+        >
           <NotificationCards
             pageOfCards={stateNotifications}
             useMiniCard={props.useMiniCard}
@@ -73,7 +79,10 @@ export const NotificationResults = (props) => {
       </div>
       {showRefreshButton && (
         <div className="ph2 pt1 pb2 tc db mb2">
-          <button className="pa2 pointer ba b--grey-light bg-tan" onClick={() => props.retryFn()}>
+          <button
+            className="pv1 ph2 pointer ba b--grey-light bg-tan"
+            onClick={() => props.retryFn()}
+          >
             <RefreshIcon height="15px" className="pt1" />
           </button>
         </div>
@@ -82,30 +91,46 @@ export const NotificationResults = (props) => {
   );
 };
 
-const NotificationCards = (props) => {
-  if (!props || !props.pageOfCards || props.pageOfCards.length === 0) {
-    return (
-      <div className="mb3 blue-grey">
-        <FormattedMessage {...messages.noMessages} />
-      </div>
-    );
-  }
-  const filterFn = props.useMiniCard ? (n) => !n.read : (n) => n;
-  const filteredCards = props.pageOfCards.filter(filterFn);
+const NotificationCards = ({ pageOfCards, useMiniCard, retryFn }) => {
+  const [selected, setSelected] = useState([]);
 
-  if (filteredCards < 1) {
+  if (pageOfCards.length === 0) {
     return (
       <div className="mb3 blue-grey">
-        <FormattedMessage {...messages.noUnreadMessages} />
+        <FormattedMessage {...messages[useMiniCard ? 'noUnreadMessages' : 'noMessages']} />
       </div>
     );
   }
 
-  return filteredCards.map((card, n) =>
-    props.useMiniCard ? (
-      <NotificationCardMini {...card} key={n} />
-    ) : (
-      <NotificationCard {...card} key={n} retryFn={props.retryFn} />
-    ),
+  return (
+    <div>
+      {!useMiniCard && (
+        <div className="mb2">
+          <SelectAll
+            allItems={pageOfCards.map((message) => message.messageId)}
+            setSelected={setSelected}
+            selected={selected}
+            className="dib v-mid mv3 ml3"
+          />
+          <DeleteNotificationsButton
+            selected={selected}
+            setSelected={setSelected}
+            retryFn={retryFn}
+          />
+        </div>
+      )}
+      {useMiniCard
+        ? // show only 5 messages when on miniCard
+          pageOfCards.slice(0, 5).map((card, n) => <NotificationCardMini {...card} key={n} />)
+        : pageOfCards.map((card, n) => (
+            <NotificationCard
+              {...card}
+              key={n}
+              retryFn={retryFn}
+              selected={selected}
+              setSelected={setSelected}
+            />
+          ))}
+    </div>
   );
 };

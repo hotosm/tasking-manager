@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Hafatra",
   "notifications.bodytitle.message": "Hafatra",
   "notifications.filter.tasks": "Asa",
+  "notifications.filter.teams": "",
   "notifications.filter.projects": "Tetikasa",
   "notifications.filter.clear": "",
   "notifications.markAsRead": "",

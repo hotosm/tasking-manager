@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Pesan",
   "notifications.bodytitle.message": "Pesan",
   "notifications.filter.tasks": "Tasks",
+  "notifications.filter.teams": "Tim",
   "notifications.filter.projects": "Proyek",
   "notifications.filter.clear": "Hapus filter",
   "notifications.markAsRead": "",

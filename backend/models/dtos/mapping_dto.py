@@ -69,7 +69,7 @@ class TaskStatusDTO(Model):
     task_id = IntType(serialized_name="taskId")
     task_status = StringType(serialized_name="taskStatus")
     action_date = UTCDateTimeType(serialized_name="actionDate")
-    action_by = StringType(serialized_name="actionBy", serialize_when_none=False)
+    action_by = StringType(serialized_name="actionBy")
 
 
 class TaskDTO(Model):

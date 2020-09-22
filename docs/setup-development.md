@@ -14,6 +14,8 @@ The two parts can be developed independently of each other.
 
 The client is the front-end user interface of the Tasking Manager. It is based on the React framework and you can find all files in the `frontend` directory.
 
+If you don't want to setup a backend server, you can work on frontend development using our staging server API. Execute `export TM_APP_API_URL='https://tasking-manager-staging-api.hotosm.org'` before running the `yarn start` command. Be aware that the staging API can be offline while we are deploying newer versions to the staging server and that you'll not have access to some management views due to permissions. Check the [configuration](#configuration) section to learn more about how to configure Tasking Manager.
+
 **Dependencies**
 
 The following dependencies must be available _globally_ on your system:
@@ -68,6 +70,8 @@ The backend is made up of a postgres database and an associated API that calls v
 You can check the [Dockerfile](../scripts/docker/tasking-manager/Dockerfile) to have a reference of how to install it in a Debian/Ubuntu system.
 
 #### Configuration
+
+There are two ways to configure Tasking Manager. You can set some environment variables on your shell or you can define the configuration in the `tasking-manager.env` file on the repository root directory. To use that last option, follow the below instructions:
 
 * Copy the example configuration file to start your own configuration: `cp example.env tasking-manager.env`.
 * Adjust the `tasking-manager.env` configuration file to fit your configuration.
