@@ -1,0 +1,50 @@
+name: Staging Build
+on:
+  push:
+    branches:
+      - staging
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js 12
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+    - name: Yarn Install
+      run: |
+        yarn install
+    - name: Build
+      env:
+        TM_APP_BASE_URL: ${{ secrets.STAGING_TM_APP_BASE_URL }}
+        TM_APP_API_URL: ${{ secrets.STAGING_TM_APP_API_URL }}
+        TM_APP_API_VERSION: ${{ secrets.STAGING_TM_APP_API_VERSION }}
+        TM_ORG_NAME: ${{ secrets.STAGING_TM_ORG_NAME }}
+        TM_ORG_CODE: ${{ secrets.STAGING_TM_ORG_CODE }}
+        TM_ORG_URL: ${{ secrets.STAGING_TM_ORG_URL }}
+        TM_ORG_PRIVACY_POLICY_URL: ${{ secrets.STAGING_TM_ORG_PRIVACY_POLICY_URL }}
+        TM_ORG_TWITTER: ${{ secrets.STAGING_TM_ORG_TWITTER }}
+        TM_ORG_GITHUB: ${{ secrets.STAGING_TM_ORG_GITHUB }}
+        TM_CONSUMER_KEY: ${{ secrets.STAGING_TM_CONSUMER_KEY }}
+        TM_CONSUMER_SECRET: ${{ secrets.STAGING_TM_CONSUMER_SECRET }}
+        OSM_SERVER_URL: ${{ secrets.STAGING_OSM_SERVER_URL }}
+        OSM_REGISTER_URL: ${{ secrets.STAGING_OSM_REGISTER_URL }}
+        ID_EDITOR_URL: ${{ secrets.STAGING_ID_EDITOR_URL }}
+        POTLATCH2_EDITOR_URL: ${{ secrets.STAGING_POTLATCH2_EDITOR_URL }}
+      run: |
+        yarn build
+    - name: Unit Tests
+      run: |
+        yarn test
+    - name: Deploy to S3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_STAGING_BUCKET_NAME }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        SOURCE_DIR: "build"
