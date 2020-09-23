@@ -37,7 +37,7 @@ jobs:
         cd frontend && yarn build
     - name: Unit Tests
       run: |
-        yarn test
+      cd frontend && yarn test
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@master
       with:
