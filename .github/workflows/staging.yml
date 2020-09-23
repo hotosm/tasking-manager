@@ -13,11 +13,9 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12'
-    - name: Move to frontend directory
-      run: cd frontend
     - name: Yarn Install
       run: |
-        yarn install
+        cd frontend && yarn install
     - name: Build
       env:
         TM_APP_BASE_URL: ${{ secrets.STAGING_TM_APP_BASE_URL }}
@@ -36,7 +34,7 @@ jobs:
         ID_EDITOR_URL: ${{ secrets.STAGING_ID_EDITOR_URL }}
         POTLATCH2_EDITOR_URL: ${{ secrets.STAGING_POTLATCH2_EDITOR_URL }}
       run: |
-        yarn build
+        cd frontend && yarn build
     - name: Unit Tests
       run: |
         yarn test
@@ -49,4 +47,4 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
-        SOURCE_DIR: "build"
+        SOURCE_DIR: "frontend/build"
