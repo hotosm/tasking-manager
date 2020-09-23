@@ -13,6 +13,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12'
+    - name: Move to frontend directory
+      run: cd frontend
     - name: Yarn Install
       run: |
         yarn install
