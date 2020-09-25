@@ -40,6 +40,7 @@ const backendToQueryConversion = {
   fromUsername: 'from',
   project: 'project',
   taskId: 'taskId',
+  status: 'status',
   orderByType: 'sortBy',
   orderBy: 'sortDirection',
   page: 'page',

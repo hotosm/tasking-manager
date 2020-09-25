@@ -145,6 +145,7 @@
   "notifications.filter.messages": "",
   "notifications.bodytitle.message": "",
   "notifications.filter.tasks": "",
+  "notifications.filter.teams": "",
   "notifications.filter.projects": "",
   "notifications.filter.clear": "",
   "notifications.markAsRead": "",

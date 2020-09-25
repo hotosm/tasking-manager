@@ -145,6 +145,7 @@
   "notifications.filter.messages": "メッセージ",
   "notifications.bodytitle.message": "メッセージ",
   "notifications.filter.tasks": "タスク",
+  "notifications.filter.teams": "チーム",
   "notifications.filter.projects": "プロジェクト",
   "notifications.filter.clear": "フィルタを解除",
   "notifications.markAsRead": "既読にする",

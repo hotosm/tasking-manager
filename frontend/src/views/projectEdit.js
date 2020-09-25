@@ -53,7 +53,6 @@ export function ProjectEdit({ id }) {
   useSetTitleTag(`Edit project #${id}`);
   const mandatoryFields = ['name', 'shortDescription', 'description', 'instructions'];
   const token = useSelector((state) => state.auth.get('token'));
-  const user = useSelector((state) => state.auth.get('userDetails'));
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [languages, setLanguages] = useState(null);
@@ -133,20 +132,18 @@ export function ProjectEdit({ id }) {
       { value: 'permissions' },
       { value: 'settings' },
       { value: 'actions' },
-      { value: 'custom_editor', expert_required: true },
+      { value: 'custom_editor' },
     ];
 
     return (
       <div>
         <ul className="list pl0 mt0 ttu">
-          {elements
-            .filter((elm) => !elm.expert_required || user.isExpert)
-            .map((elm, n) => (
-              <li key={n} className={checkSelected(elm.value)} onClick={() => setOption(elm.value)}>
-                <FormattedMessage {...messages[`projectEditSection_${elm.value}`]} />
-                {elm.required && ' *'}
-              </li>
-            ))}
+          {elements.map((elm, n) => (
+            <li key={n} className={checkSelected(elm.value)} onClick={() => setOption(elm.value)}>
+              <FormattedMessage {...messages[`projectEditSection_${elm.value}`]} />
+              {elm.required && ' *'}
+            </li>
+          ))}
         </ul>
       </div>
     );

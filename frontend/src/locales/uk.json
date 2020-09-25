@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Повідомлення",
   "notifications.bodytitle.message": "Повідомлення",
   "notifications.filter.tasks": "Завдання",
+  "notifications.filter.teams": "Команди",
   "notifications.filter.projects": "Проєкти",
   "notifications.filter.clear": "Скинути фільтри",
   "notifications.markAsRead": "Позначити як прочитане",

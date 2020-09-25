@@ -145,6 +145,7 @@
   "notifications.filter.messages": "收件匣",
   "notifications.bodytitle.message": "訊息",
   "notifications.filter.tasks": "任務",
+  "notifications.filter.teams": "團隊",
   "notifications.filter.projects": "專案",
   "notifications.filter.clear": "清除過濾條件",
   "notifications.markAsRead": "標示為已讀",
