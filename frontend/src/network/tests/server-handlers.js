@@ -19,6 +19,9 @@ const handlers = [
   rest.get(API_URL + 'projects/:id/tasks', async (req, res, ctx) => {
     return res(ctx.json(tasksGeojson));
   }),
+  rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
+    return res(ctx.json({ Success: 'Message deleted' }));
+  }),
 ];
 
 export { handlers };

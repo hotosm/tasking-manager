@@ -17,13 +17,13 @@ export const notificationsReducer = (state = initialState, action) => {
         isError: false,
       };
     case types.NOTIFICATIONS_SUCCESS:
-      const pagedNotifs = action.payload.userMessages.map(n => ({
+      const pagedNotifs = action.payload.userMessages.map((n) => ({
         ...n,
         page: action.payload.pagination.page,
       }));
       const goodForMiniResults =
-        action.params['sortBy'] &&
-        action.params['sortBy'] === 'read' &&
+        action.params['status'] &&
+        action.params['status'] === 'unread' &&
         action.payload.pagination.page === 1;
 
       return {

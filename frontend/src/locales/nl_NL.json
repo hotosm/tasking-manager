@@ -145,6 +145,7 @@
   "notifications.filter.messages": "Berichten",
   "notifications.bodytitle.message": "Bericht",
   "notifications.filter.tasks": "Taken",
+  "notifications.filter.teams": "Teams",
   "notifications.filter.projects": "Projecten",
   "notifications.filter.clear": "Filters leegmaken",
   "notifications.markAsRead": "Markeren als gelezen",

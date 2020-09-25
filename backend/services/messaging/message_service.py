@@ -179,6 +179,8 @@ class MessageService:
                 user.email_address,
                 user.username,
                 message["message"].id,
+                UserService.get_user_by_id(message["message"].from_user_id).username,
+                message["message"].project_id,
                 clean_html(message["message"].subject),
                 message["message"].message,
             )
@@ -203,7 +205,6 @@ class MessageService:
 
             messages = []
             for username in usernames:
-
                 try:
                     user = UserService.get_user_by_username(username)
                 except NotFound:
@@ -242,12 +243,17 @@ class MessageService:
             for user_id in contributed_users:
                 try:
                     user = UserService.get_user_dto_by_id(user_id)
+                    # if user was mentioned, a message has already been sent to them,
+                    # so we can skip
+                    if user.username in usernames:
+                        break
                 except NotFound:
                     continue  # If we can't find the user, keep going no need to fail
 
                 message = Message()
                 message.message_type = MessageType.TASK_COMMENT_NOTIFICATION.value
                 message.project_id = project_id
+                message.from_user_id = comment_from
                 message.task_id = task_id
                 message.to_user_id = user.id
                 message.subject = f"{user_from.username} left a comment in {task_link} of Project {project_id}"
@@ -558,6 +564,7 @@ class MessageService:
         from_username=None,
         project=None,
         task_id=None,
+        status=None,
     ):
         """ Get all messages for user """
         sort_column = Message.__table__.columns.get(sort_by)
@@ -573,6 +580,9 @@ class MessageService:
 
         if task_id is not None:
             query = query.filter(Message.task_id == task_id)
+
+        if status in ["read", "unread"]:
+            query = query.filter(Message.read == (True if status == "read" else False))
 
         if message_type:
             message_type_filters = map(int, message_type.split(","))

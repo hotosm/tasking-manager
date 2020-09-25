@@ -24,6 +24,10 @@ export default defineMessages({
     id: 'notifications.filter.tasks',
     defaultMessage: 'Tasks',
   },
+  teams: {
+    id: 'notifications.filter.teams',
+    defaultMessage: 'Teams',
+  },
   projects: {
     id: 'notifications.filter.projects',
     defaultMessage: 'Projects',

@@ -145,6 +145,7 @@
   "notifications.filter.messages": "הודעות",
   "notifications.bodytitle.message": "הודעה",
   "notifications.filter.tasks": "משימות",
+  "notifications.filter.teams": "צוותים",
   "notifications.filter.projects": "מיזמים",
   "notifications.filter.clear": "השבתת המסננים",
   "notifications.markAsRead": "סימון כנקרא",
