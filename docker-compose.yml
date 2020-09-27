@@ -16,6 +16,7 @@ services:
   backend:
     <<: *backend
     container_name: backend
+    restart: always
     labels:
       - traefik.http.routers.backend.rule=Host(`localhost`)
       - traefik.http.routers.backend.rule=PathPrefix(`/api/`)
@@ -29,6 +30,7 @@ services:
 
   frontend:
     image: hotosm-tasking-manager:frontend
+    restart: always
     networks:
       - tm-web
     labels:
@@ -38,12 +40,14 @@ services:
   postgresql:
     image: mdillon/postgis:11
     container_name: postgresql
+    restart: always
     env_file: ${ENV_FILE:-tasking-manager.env}
     networks:
       - tm-web
 
   traefik:
     image: traefik
+    restart: always
     ports:
       - "80:80"
     volumes:
