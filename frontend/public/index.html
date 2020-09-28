@@ -53,8 +53,8 @@
       _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);   // Tracks downloads
       _paq.push(['trackVisibleContentImpressions']);  // Tracks content blocks
-      var site_id = %REACT_APP_MATOMO_ID%;
-      if (typeof site_id !== 'undefined') {
+      var site_id = "%REACT_APP_MATOMO_ID%";
+      if (site_id && "%REACT_APP_MATOMO_ENDPOINT%") {
         (function() {
           var u="%REACT_APP_MATOMO_ENDPOINT%";
           _paq.push(['setTrackerUrl', u+'piwik.php']);
