@@ -42,6 +42,7 @@ import { ProjectEdit } from './views/projectEdit';
 import { ProjectStats } from './views/projectStats';
 import { ContactPage } from './views/contact';
 import { SwaggerView } from './views/swagger';
+import { ProjectToShow } from './components/carousel/showcard';
 import { ContributionsPage, ContributionsPageIndex, UserStats } from './views/contributions';
 import {
   NotificationsPage,
@@ -65,6 +66,7 @@ let App = (props) => {
         <div className="w-100 base-font bg-white" lang={props.locale}>
           <Router>
             <Header path="/*" />
+            <ProjectToShow path="/cards" />
           </Router>
           <main className="cf w-100 base-font">
             <QueryParamProvider reachHistory={globalHistory}>
