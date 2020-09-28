@@ -782,7 +782,9 @@ class UserService:
             details_msg = f"Email address {user_email} already exists"
             raise ValueError(details_msg)
 
-        user = UserEmail.query.filter(func.lower(UserEmail.email) == user_email).one_or_none()
+        user = UserEmail.query.filter(
+            func.lower(UserEmail.email) == user_email
+        ).one_or_none()
         if user is None:
             user = UserEmail(email=user_email)
             user.create()
