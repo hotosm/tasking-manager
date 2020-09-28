@@ -19,7 +19,8 @@ export const INTERMEDIATE_LEVEL_COUNT =
 export const ADVANCED_LEVEL_COUNT = Number(process.env.REACT_APP_TM_MAPPER_LEVEL_ADVANCED) || 500;
 export const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 export const ENABLE_SERVICEWORKER = process.env.REACT_APP_ENABLE_SERVICEWORKER || 0;
-export const MAP_MAX_AREA = process.env.REACT_APP_MAP_MAX_AREA || 5000;
+export const MAX_AOI_AREA = Number(process.env.REACT_APP_MAX_AOI_AREA) || 5000;
+export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 1000000; // bytes
 
 // ORGANISATIONAL INFORMATION
 export const ORG_NAME = process.env.REACT_APP_ORG_NAME || '';
@@ -40,11 +41,13 @@ export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL |
 export const HOMEPAGE_VIDEO_URL = process.env.REACT_APP_HOMEPAGE_VIDEO_URL || '';
 
 // OSM API and Editor URLs
-export const OSM_SERVER_URL = process.env.REACT_APP_OSM_SERVER_URL || 'https://www.openstreetmap.org';
-export const ID_EDITOR_URL = process.env.REACT_APP_ID_EDITOR_URL || 'https://www.openstreetmap.org/edit?editor=id&';
-export const POTLATCH2_EDITOR_URL = process.env.REACT_APP_POTLATCH2_EDITOR_URL || 'https://www.openstreetmap.org/edit?editor=potlatch2'
-
-export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 1000000; // bytes
+export const OSM_SERVER_URL =
+  process.env.REACT_APP_OSM_SERVER_URL || 'https://www.openstreetmap.org';
+export const ID_EDITOR_URL =
+  process.env.REACT_APP_ID_EDITOR_URL || 'https://www.openstreetmap.org/edit?editor=id&';
+export const POTLATCH2_EDITOR_URL =
+  process.env.REACT_APP_POTLATCH2_EDITOR_URL ||
+  'https://www.openstreetmap.org/edit?editor=potlatch2';
 
 export const TASK_COLOURS = {
   READY: '#fff',
