@@ -11,7 +11,7 @@
     "@hotosm/id": "^2.18.5",
     "@hotosm/iso-countries-languages": "^1.0.2",
     "@lokibai/react-use-copy-clipboard": "^1.0.4",
-    "@mapbox/geo-viewport": "^0.4.0",
+    "@mapbox/geo-viewport": "^0.4.1",
     "@mapbox/mapbox-gl-draw": "^1.1.2",
     "@mapbox/mapbox-gl-language": "^0.10.1",
     "@mapbox/togeojson": "^0.16.0",
