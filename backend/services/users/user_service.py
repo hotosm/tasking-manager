@@ -777,7 +777,7 @@ class UserService:
     def register_user_with_email(user_dto: UserRegisterEmailDTO):
         # Validate that user is not within the general users table.
         user_email = user_dto.email.lower()
-        user = User.query.filter(func.lower(User.email_address) == user_email).one_or_none()
+        user = User.query.filter(func.lower(User.email_address) == user_email).first()
         if user is not None:
             details_msg = f"Email address {user_email} already exists"
             raise ValueError(details_msg)
