@@ -12,7 +12,7 @@ import TrimProject from './trimProject';
 import NavButtons from './navButtons';
 import Review from './review';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { MAP_MAX_AREA } from '../../config';
+import { MAX_AOI_AREA } from '../../config';
 import { AlertIcon } from '../svgIcons';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
@@ -109,10 +109,10 @@ const ProjectCreate = (props) => {
 
   useLayoutEffect(() => {
     let err = { error: false, message: null };
-    if (metadata.area > MAP_MAX_AREA) {
+    if (metadata.area > MAX_AOI_AREA) {
       err = {
         error: true,
-        message: `Project AOI is higher than ${MAP_MAX_AREA} squared kilometers`,
+        message: <FormattedMessage {...messages.areaOverLimitError} values={{ n: MAX_AOI_AREA }} />,
       };
     }
 
@@ -183,7 +183,7 @@ const ProjectCreate = (props) => {
           metadata={metadata}
           mapObj={mapObj}
           updateMetadata={updateMetadata}
-          maxArea={MAP_MAX_AREA}
+          maxArea={MAX_AOI_AREA}
           setErr={setErr}
         />
       </div>
@@ -198,7 +198,7 @@ const ProjectCreate = (props) => {
         <div className="cf absolute" style={{ bottom: '3.5rem', left: '0.6rem' }}>
           <p
             className={`fl mr2 pa1 f7-ns white ${
-              metadata.area > MAP_MAX_AREA || metadata.area === 0 ? 'bg-red' : 'bg-green'
+              metadata.area > MAX_AOI_AREA || metadata.area === 0 ? 'bg-red' : 'bg-green'
             }`}
           >
             <FormattedMessage
