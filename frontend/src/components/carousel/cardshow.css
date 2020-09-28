@@ -1,0 +1,13 @@
+.projectCards{
+    /* padding: 10%; */
+    text-align: center;
+    display: block;
+    padding : 0px 100px 0px 100px;
+}
+div{
+    all: none;
+}
+.cards{
+     width: 1000px;
+    /* height: 1200px;  */
+}

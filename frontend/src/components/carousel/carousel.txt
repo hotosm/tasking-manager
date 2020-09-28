@@ -1,0 +1,4 @@
+for the local setup use
+<iframe src="http://localhost:3000/cards/" width="100%" height="300" style="border:none;" scrolling="no"></iframe>
+To render the carousel widget
+<iframe src="https://tasks.hotosm.org/cards/" width="100%" height="300" style="border:none;" scrolling="no"></iframe>

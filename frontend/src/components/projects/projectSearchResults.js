@@ -81,6 +81,7 @@ const ExploreProjectCards = (props) => {
     return null;
   }
   /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */
+  console.log(props.pageOfCards);
   return props.pageOfCards.map((card, n) => (
     <ProjectCard
       cardWidthClass={props.cardWidthClass}
@@ -96,5 +97,6 @@ const ExploreProjectList = (props) => {
     return null;
   }
   /* cardWidthClass={props.cardWidthClass} as a parameter offers more variability in the size of the cards, set to 'cardWidthNone' disables */
+  
   return props.pageOfCards.map((project, n) => <ProjectListItem project={project} key={n} />);
 };
