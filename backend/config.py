@@ -34,7 +34,6 @@ class EnvironmentConfig:
     OEG_REPORTER_AUTHORIZATION_TOKEN = os.getenv(
         "OEG_REPORTER_AUTHORIZATION_TOKEN", None
     )
-    OEG_REPORTER_AUTHORIZATION_TOKEN = os.getenv("OEG_REPORTER_AUTHORIZATION_TOKEN")
 
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)
