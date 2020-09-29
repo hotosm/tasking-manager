@@ -24,6 +24,7 @@ class EnvironmentConfig:
     API_VERSION = os.getenv("TM_APP_API_VERSION", "v2")
     ORG_CODE = os.getenv("TM_ORG_CODE", "")
     ORG_NAME = os.getenv("TM_ORG_NAME", "")
+    ENVIRONMENT = os.getenv("TM_ENVIRONMENT", "")
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)
 
@@ -112,3 +113,6 @@ class EnvironmentConfig:
     # Image upload Api
     IMAGE_UPLOAD_API_KEY = os.getenv("TM_IMAGE_UPLOAD_API_KEY", None)
     IMAGE_UPLOAD_API_URL = os.getenv("TM_IMAGE_UPLOAD_API_URL", None)
+
+    # Sentry backend DSN
+    SENTRY_BACKEND_DSN = os.getenv("TM_SENTRY_BACKEND_DSN", None)

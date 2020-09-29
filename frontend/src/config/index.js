@@ -12,6 +12,7 @@ export const USER_STATS_API_URL =
 
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
+export const ENVIRONMENT= process.env.REACT_APP_ENVIRONMENT || '';
 export const PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD =
   process.env.REACT_APP_PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD || 5;
 export const INTERMEDIATE_LEVEL_COUNT =
@@ -39,6 +40,8 @@ export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.co
 export const MATOMO_ID = process.env.REACT_APP_MATOMO_ID || '';
 export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL || '';
 export const HOMEPAGE_VIDEO_URL = process.env.REACT_APP_HOMEPAGE_VIDEO_URL || '';
+// Sentry.io DSN
+export const SENTRY_FRONTEND_DSN = process.env.REACT_APP_SENTRY_FRONTEND_DSN;
 
 // OSM API and Editor URLs
 export const OSM_SERVER_URL =

@@ -4,6 +4,18 @@ import { defineMessages } from 'react-intl';
  * Internationalized messages for use on views.
  */
 export default defineMessages({
+  errorFallback: {
+    id: 'error.page.title',
+    defaultMessage: 'An error ocurred',
+  },
+  errorFallbackMessage: {
+    id: 'error.page.description',
+    defaultMessage: 'Something did not work well...',
+  },
+  return: {
+    id: 'error.page.link',
+    defaultMessage: 'Return',
+  },
   pageNotFound: {
     id: 'notFound.page.title',
     defaultMessage: 'Page not found',

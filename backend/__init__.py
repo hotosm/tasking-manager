@@ -9,8 +9,20 @@ from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
-
 from backend.config import EnvironmentConfig
+
+
+def sentry_init():
+    """Initialize sentry.io event tracking"""
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+
+    sentry_sdk.init(
+        dsn=EnvironmentConfig.SENTRY_BACKEND_DSN,
+        environment=EnvironmentConfig.ENVIRONMENT,
+        integrations=[FlaskIntegration()],
+        traces_sample_rate=0.1,
+    )
 
 
 def format_url(endpoint):
@@ -33,6 +45,9 @@ def create_app(env=None):
     Bootstrap function to initialise the Flask app and config
     :return: Initialised Flask app
     """
+    # If SENTRY_BACKEND_DSN is configured, init sentry_sdk tracking
+    if EnvironmentConfig.SENTRY_BACKEND_DSN:
+        sentry_init()
 
     app = Flask(
         __name__,

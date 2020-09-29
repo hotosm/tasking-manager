@@ -3,6 +3,7 @@ import { Router, Redirect, globalHistory } from '@reach/router';
 import { QueryParamProvider } from 'use-query-params';
 import { useMeta } from 'react-meta-elements';
 import { connect } from 'react-redux';
+import * as Sentry from '@sentry/react';
 
 import './assets/styles/index.scss';
 import { ORG_NAME, MATOMO_ID } from './config';
@@ -10,6 +11,7 @@ import { Header } from './components/header';
 import { Footer } from './components/footer';
 import { Preloader } from './components/preloader';
 import { Home } from './views/home';
+import { FallbackComponent } from './views/fallback';
 import { AboutPage } from './views/about';
 import { LearnPage } from './views/learn';
 import { QuickstartPage } from './views/quickstart';
@@ -58,7 +60,7 @@ let App = (props) => {
   const { isLoading } = props;
 
   return (
-    <>
+    <Sentry.ErrorBoundary fallback={<FallbackComponent />}>
       {isLoading ? (
         <Preloader />
       ) : (
@@ -135,7 +137,7 @@ let App = (props) => {
           </Router>
         </div>
       )}
-    </>
+    </Sentry.ErrorBoundary>
   );
 };
 
