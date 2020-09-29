@@ -29,12 +29,11 @@ class EnvironmentConfig:
     )
     ENVIRONMENT = os.getenv("TM_ENVIRONMENT", "")
 
-    # # OEG Reporter service env variables
+    # OEG Reporter service env variables
     OEG_REPORTER_SERVICE_BASE_URL = os.getenv("OEG_REPORTER_SERVICE_BASE_URL", None)
     OEG_REPORTER_AUTHORIZATION_TOKEN = os.getenv(
         "OEG_REPORTER_AUTHORIZATION_TOKEN", None
     )
-    OEG_REPORTER_AUTHORIZATION_TOKEN = os.getenv("OEG_REPORTER_AUTHORIZATION_TOKEN")
 
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)
