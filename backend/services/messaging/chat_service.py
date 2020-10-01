@@ -5,7 +5,6 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.project_service import ProjectService
 from backend.services.project_admin_service import ProjectAdminService
 from backend.services.team_service import TeamService
-from backend.services.users.user_service import UserService
 from backend.models.postgis.statuses import TeamRoles
 from backend.models.postgis.project import ProjectStatus
 from backend import db
@@ -18,9 +17,6 @@ class ChatService:
     ) -> ProjectChatDTO:
         """ Save message to DB and return latest chat"""
         current_app.logger.debug("Posting Chat Message")
-
-        if UserService.is_user_blocked(authenticated_user_id):
-            raise ValueError("User is on read only mode")
 
         project = ProjectService.get_project_by_id(project_id)
         is_allowed_user = True
