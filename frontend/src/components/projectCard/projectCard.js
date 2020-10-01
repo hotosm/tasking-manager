@@ -8,7 +8,6 @@ import ProjectProgressBar from './projectProgressBar';
 import { MappingLevelMessage } from '../mappingLevel';
 import { ProjectStatusBox } from '../projectDetail/statusBox';
 import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
-import DueDateBox from './dueDateBox';
 import { PriorityBox } from './priorityBox';
 
 export function ProjectTeaser({
@@ -127,11 +126,11 @@ export function ProjectCard({
                 percentMapped={percentMapped}
                 percentValidated={percentValidated}
               />
-              <div className="cf pt2 h2">
-                <MappingLevelMessage level={mapperLevel} className="fl f7 mt1 ttc fw5 blue-grey" />
-                <div className="fr">
-                  <DueDateBox dueDate={dueDate} />
-                </div>
+              <div className="cf pt2 h2 truncate">
+                <MappingLevelMessage
+                  level={mapperLevel}
+                  className="fl f7 pv2 ttc fw5 blue-grey truncate"
+                />
               </div>
             </div>
           </div>
