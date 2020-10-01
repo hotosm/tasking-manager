@@ -1,16 +1,14 @@
 import React, { useContext } from 'react';
-import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import DatePicker from 'react-datepicker'
-import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { InputLocale } from './inputLocale';
 
 export const DescriptionForm = ({ languages }) => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
-  const locale = useSelector(state => state.preferences.locale);
 
   const projectStatusOptions = [
     { value: 'PUBLISHED', label: 'PUBLISHED' },
@@ -78,29 +76,7 @@ export const DescriptionForm = ({ languages }) => {
           </label>
         </InputLocale>
       </div>
-      <div className={styleClasses.divClass}>
-          <label className={styleClasses.labelClass}>
-            <FormattedMessage {...messages.dueDate}/>*
-          </label>
-          <DatePicker
-            selected={Date.parse(projectInfo.dueDate)}
-            onChange={date =>
-              setProjectInfo({
-                ...projectInfo,
-                dueDate: date,
-              })
-            }
-            minDate={Date.parse(projectInfo.created)}
-            locale={locale}
-            filterDate={ date => 
-              date.getDay() !== 6 &&
-              date.getDay() !== 0
-            }
-            className={styleClasses.inputClass}
-            showYearDropdown
-            scrollableYearDropdown
-          />
-      </div>
+
       <div className={styleClasses.divClass}>
         <InputLocale languages={languages} name="shortDescription" maxLength={1500}>
           <label className={styleClasses.labelClass}>
@@ -114,6 +90,29 @@ export const DescriptionForm = ({ languages }) => {
             <FormattedMessage {...messages.description} />*
           </label>
         </InputLocale>
+      </div>
+      <div className={styleClasses.divClass}>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.dueDate} />
+        </label>
+        <DatePicker
+          selected={Date.parse(projectInfo.dueDate)}
+          onChange={(date) =>
+            setProjectInfo({
+              ...projectInfo,
+              dueDate: date,
+            })
+          }
+          minDate={Date.parse(projectInfo.created)}
+          dateFormat="dd/MM/yyyy"
+          filterDate={(date) => date.getDay() !== 6 && date.getDay() !== 0}
+          className={styleClasses.inputClass}
+          showYearDropdown
+          scrollableYearDropdown
+        />
+        <p className={styleClasses.pClass}>
+          <FormattedMessage {...messages.dueDateDescription} />
+        </p>
       </div>
     </div>
   );

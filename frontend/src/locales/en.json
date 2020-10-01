@@ -391,6 +391,8 @@
   "projects.formInputs.priority_areas.options.rectangle": "Draw rectangle",
   "projects.formInputs.priority_areas.action.clear": "Clear all",
   "projects.formInputs.name": "Name of the project",
+  "projects.formInputs.dueDate": "Due date",
+  "projects.formInputs.dueDate.description": "Define the ideal date to have the project finished. The date format is day/month/year.",
   "projects.formInputs.description": "Description",
   "projects.formInputs.shortDescription": "Short description",
   "projects.formInputs.instructions": "Detailed instructions",

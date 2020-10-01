@@ -361,7 +361,12 @@ export default defineMessages({
   },
   dueDate: {
     id: 'projects.formInputs.dueDate',
-    defaultMessage: 'Due Date',
+    defaultMessage: 'Due date',
+  },
+  dueDateDescription: {
+    id: 'projects.formInputs.dueDate.description',
+    defaultMessage:
+      'Define the ideal date to have the project finished. The date format is day/month/year.',
   },
   description: {
     id: 'projects.formInputs.description',

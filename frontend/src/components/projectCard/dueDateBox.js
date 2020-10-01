@@ -36,11 +36,9 @@ function DueDateBox({ intl, dueDate, intervalMili, align = 'right' }: Object) {
     largest: 1,
   };
 
-  let className =
-    'relative lh-solid f7 tr br1 link ph1 pv2 bg-grey-light blue-grey truncate mw4 dib';
-  if (align === 'right') {
-    className = className.replace('fl', 'fr');
-  }
+  let className = `dib relative lh-solid f7 tr ${
+    align === 'right' ? 'fr' : 'fl'
+  } br1 link ph1 pv2 bg-grey-light blue-grey truncate mw4`;
   if (intervalMili !== undefined) {
     className = className.replace('mw4', '');
     options = {
