@@ -52,7 +52,7 @@ export const NotificationBell = (props) => {
   const handleBellClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setBellPosition(window.innerWidth - e.target.getBoundingClientRect().right);
+    setBellPosition(e.target.getBoundingClientRect().right);
     setPopoutFocus(!isPopoutFocus);
     if (unreadNotifications) {
       forceUpdate(); // update the notifications when user clicks and there are unread messages
