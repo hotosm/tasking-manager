@@ -62,7 +62,7 @@ class ChatService:
             )
             db.session.commit()
             # Ensure we return latest messages after post
-            return ProjectChat.get_messages(chat_dto.project_id, 1)
+            return ProjectChat.get_messages(chat_dto.project_id, 1, 5)
         else:
             raise ValueError("User not permitted to post Comment")
 
