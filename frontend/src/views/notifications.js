@@ -17,10 +17,13 @@ import { Login } from './login';
 export const NotificationPopout = (props) => {
   return (
     <div
-      style={{ minWidth: '390px', width: '390px', zIndex: '100', right: '4rem' }}
+      style={{ minWidth: '390px', width: '390px', zIndex: '100', right: '40px' }}
       className={`fr ${props.isPopoutFocus ? '' : 'dn'} mt2 br2 absolute shadow-2 ph4 pb3 bg-white`}
     >
-      <span className="absolute top-0 left-2 nt2 w1 h1 bg-white bl ml7 bt b--grey-light rotate-45"></span>
+      <span
+        style={{ right: props.position - 40 }}
+        className="absolute top-0 nt2 w1 h1 bg-white bl bt b--grey-light rotate-45"
+      ></span>
       <InboxNavMini
         newMsgCount={
           props.state &&
