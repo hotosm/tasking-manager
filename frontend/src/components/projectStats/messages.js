@@ -77,4 +77,12 @@ export default defineMessages({
     id: 'project.stats.contributors.experience.year',
     defaultMessage: 'More than 1 year',
   },
+  totalEdits: {
+    id: 'project.stats.totalEdits',
+    defaultMessage: 'Total edits',
+  },
+  taskStats: {
+    id: 'project.stats.tasks.stats',
+    defaultMessage: 'Task statistics',
+  },
 });
