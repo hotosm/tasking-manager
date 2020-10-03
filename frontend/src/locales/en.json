@@ -486,6 +486,7 @@
   "project.stats.tasks.stats": "Task statistics",
   "project.stats.tasks.needs_mapping": "Tasks to map",
   "project.stats.tasks.needs_validation": "Tasks to validate",
+  "project.stats.totalEdits": "Total edits",
   "project.stats.contributors.title": "Contributors",
   "project.stats.contributors.total": "Total contributors",
   "project.stats.experience.title": "Users by experience on Tasking Manager",
