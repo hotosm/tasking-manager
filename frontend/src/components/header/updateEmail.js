@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { updateUserEmail } from '../../store/actions/auth';
-import { PROFILE_RELEVANT_FIELDS } from '../user/forms';
+import { PROFILE_RELEVANT_FIELDS } from '../user/forms/personalInformation';
 import { ORG_PRIVACY_POLICY_URL } from '../../config';
 import { Button } from '../button';
 

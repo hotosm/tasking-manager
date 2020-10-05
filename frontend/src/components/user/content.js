@@ -9,7 +9,7 @@ import { OSM_SERVER_URL } from '../../config';
 
 import messages from './messages';
 import { MappingIcon, ClipboardIcon } from '../svgIcons';
-import { UserInterestsForm } from './forms';
+import { UserInterestsForm } from './forms/interests';
 
 export function APIKeyCard({ token }) {
   //eslint-disable-next-line

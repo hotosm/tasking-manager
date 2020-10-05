@@ -7,6 +7,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { formatCountryList } from '../utils/countries';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
+import { CheckIcon } from './svgIcons';
 
 export const RadioField = ({ name, value, className }: Object) => (
   <Field
@@ -154,3 +155,22 @@ export const SelectAll = ({ selected, setSelected, allItems, className }) => {
 
   return <CheckBoxInput changeState={changeState} isActive={isActive} className={className} />;
 };
+
+export const InterestsList = ({ interests, field, changeSelect }) => (
+  <ul className="list w-100 pa0 flex flex-wrap">
+    {interests.map((i) => (
+      <li
+        onClick={() => changeSelect(i.id)}
+        className={`${
+          i[field] === true ? 'b--blue-dark bw1' : 'b--grey-light'
+        } bg-white w-30-ns w-100 ba pa3 f6 tc mb2 mr3 relative ttc pointer`}
+        key={i.id}
+      >
+        {i.name}
+        {i[field] === true && (
+          <CheckIcon className="f7 pa1 br-100 bg-black white absolute right-0 top-0" />
+        )}
+      </li>
+    ))}
+  </ul>
+);

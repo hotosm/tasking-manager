@@ -1,12 +1,8 @@
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
-import { FormattedMessage, FormattedNumber, IntlProvider } from 'react-intl';
+import { FormattedMessage, FormattedNumber } from 'react-intl';
 
 import { ProfileCompleteness } from '../completeness';
-
-const createComponentWithIntl = (children, props = { locale: 'en' }) => {
-  return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
-};
+import { createComponentWithIntl } from '../../../utils/testWithIntl';
 
 const user0Percent = {
   id: 1,
@@ -103,7 +99,7 @@ const user100Percent = {
 it('test with a user who filled all profile fields', () => {
   const element = createComponentWithIntl(<ProfileCompleteness userDetails={user100Percent} />);
   const elementInstance = element.root;
-  expect(elementInstance.findAllByType(FormattedMessage).map(i => i.props.id)).toContain(
+  expect(elementInstance.findAllByType(FormattedMessage).map((i) => i.props.id)).toContain(
     'user.completeness.lead.complete',
   );
   expect(elementInstance.findByType(FormattedNumber).props.value).toBe(1);
@@ -116,7 +112,7 @@ it('test with a user who filled all profile fields', () => {
 it('test with a user whose profile is 66.7% filled', () => {
   const element = createComponentWithIntl(<ProfileCompleteness userDetails={incompleteProfile} />);
   const elementInstance = element.root;
-  expect(elementInstance.findAllByType(FormattedMessage).map(i => i.props.id)).toContain(
+  expect(elementInstance.findAllByType(FormattedMessage).map((i) => i.props.id)).toContain(
     'user.completeness.lead.high',
   );
   expect(elementInstance.findByType(FormattedNumber).props.value).toBe(2 / 3);
@@ -129,7 +125,7 @@ it('test with a user whose profile is 66.7% filled', () => {
 it('test with a user whose profile is 0% filled', () => {
   const element = createComponentWithIntl(<ProfileCompleteness userDetails={user0Percent} />);
   const elementInstance = element.root;
-  expect(elementInstance.findAllByType(FormattedMessage).map(i => i.props.id)).toContain(
+  expect(elementInstance.findAllByType(FormattedMessage).map((i) => i.props.id)).toContain(
     'user.completeness.lead.start',
   );
   expect(elementInstance.findByType(FormattedNumber).props.value).toBe(0);

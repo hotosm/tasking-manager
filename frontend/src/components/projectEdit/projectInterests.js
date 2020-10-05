@@ -1,9 +1,9 @@
 import React from 'react';
-import { InterestsList } from '../user/forms';
+import { InterestsList } from '../formInputs';
 
 export const ProjectInterests = ({ interests, projectInterests, setProjectInfo }) => {
-  const ids = projectInterests.map(i => i.id);
-  const projectSelected = interests.map(i => {
+  const ids = projectInterests.map((i) => i.id);
+  const projectSelected = interests.map((i) => {
     let selected = false;
     if (ids.includes(i.id)) {
       selected = true;
@@ -11,8 +11,8 @@ export const ProjectInterests = ({ interests, projectInterests, setProjectInfo }
     return { ...i, selected: selected };
   });
 
-  const changeSelect = id => {
-    const index = projectSelected.findIndex(i => i.id === id);
+  const changeSelect = (id) => {
+    const index = projectSelected.findIndex((i) => i.id === id);
 
     const copy = projectSelected.map((interest, idx) => {
       if (idx === index) {
@@ -21,10 +21,10 @@ export const ProjectInterests = ({ interests, projectInterests, setProjectInfo }
       return interest;
     });
 
-    const newProjectInterests = copy.filter(i => i.selected === true);
-    newProjectInterests.map(i => delete i.selected);
+    const newProjectInterests = copy.filter((i) => i.selected === true);
+    newProjectInterests.map((i) => delete i.selected);
 
-    setProjectInfo(p => {
+    setProjectInfo((p) => {
       return { ...p, interests: newProjectInterests };
     });
   };

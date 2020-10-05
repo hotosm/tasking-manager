@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 
 import messages from './messages';
-import { PROFILE_RELEVANT_FIELDS } from './forms';
+import { PROFILE_RELEVANT_FIELDS } from './forms/personalInformation';
 
 function CompletenessProgressBar({ completeness }: Object) {
   return (
@@ -29,7 +29,7 @@ function CompletenessProgressBar({ completeness }: Object) {
 
 export function calculateCompleteness(userDetails) {
   return (
-    PROFILE_RELEVANT_FIELDS.filter(k => userDetails[k]).length / PROFILE_RELEVANT_FIELDS.length
+    PROFILE_RELEVANT_FIELDS.filter((k) => userDetails[k]).length / PROFILE_RELEVANT_FIELDS.length
   );
 }
 
