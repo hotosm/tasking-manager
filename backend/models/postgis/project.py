@@ -448,7 +448,9 @@ class Project(db.Model):
             if self.custom_editor:
                 self.custom_editor.delete()
 
-        self.campaign = [Campaign.query.get(c.id) for c in project_dto.campaigns]
+        self.campaign = []
+        if project_dto.campaigns:
+            self.campaign = [Campaign.query.get(c.id) for c in project_dto.campaigns]
 
         if project_dto.mapping_permission:
             self.mapping_permission = MappingPermission[
