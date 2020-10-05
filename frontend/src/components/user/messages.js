@@ -54,7 +54,11 @@ export default defineMessages({
   },
   slackUsername: {
     id: 'user.slack',
-    defaultMessage: 'Username on HOT Slack',
+    defaultMessage: 'Username on {org} Slack',
+  },
+  urlDetectedError: {
+    id: 'user.personalInfo.error',
+    defaultMessage: 'Type only your username, not the URL.',
   },
   save: {
     id: 'user.form.save',
