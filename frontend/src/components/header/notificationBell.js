@@ -52,7 +52,7 @@ export const NotificationBell = (props) => {
   const handleBellClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setBellPosition(e.target.getBoundingClientRect().right);
+    setBellPosition(e.target.getBoundingClientRect().left);
     setPopoutFocus(!isPopoutFocus);
     if (unreadNotifications) {
       forceUpdate(); // update the notifications when user clicks and there are unread messages
@@ -86,7 +86,7 @@ export const NotificationBell = (props) => {
       >
         <div className="relative dib">
           <BellIcon aria-label="Notifications" role="button" />
-          {unreadNotifications && <div className="redicon"></div>}
+          {unreadNotifications && <div className="redicon"/>}
         </div>
       </TopNavLink>
       <NotificationPopout

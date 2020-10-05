@@ -16,38 +16,44 @@ import { Login } from './login';
 
 export const NotificationPopout = (props) => {
   return (
-    <div
-      style={{
-        minWidth: '390px',
-        width: '390px',
-        zIndex: '100',
-        left: `${props.position < 370 ? 0 : props.position - 180}px`,
-      }}
-      className={`fr ${props.isPopoutFocus ? '' : 'dn'} mt2 br2 absolute shadow-2 ph4 pb3 bg-white`}
-    >
-      <span
-        style={{ left: `${props.position < 370 ? props.position - 20 : 160}px` }}
-        className="absolute top-0 nt2 w1 h1 bg-white bl bt b--grey-light rotate-45"
+    <>
+      <div
+        style={{
+          minWidth: '390px',
+          width: '390px',
+          zIndex: '100',
+          left: `${props.position < 320 ? 0 : props.position - 320}px`,
+        }}
+        className={`fr ${
+          props.isPopoutFocus ? '' : 'dn '
+        }mt2 br2 absolute shadow-2 ph4 pb3 bg-white`}
+      >
+        <InboxNavMini
+          newMsgCount={
+            props.state &&
+            props.state.notifications &&
+            props.state.notifications.filter((n) => !n.read).length
+          }
+        />
+        <NotificationResultsMini
+          liveUnreadCount={props.liveUnreadCount}
+          retryFn={props.forceUpdate}
+          state={props.state}
+          className="tl"
+        />
+        <InboxNavMiniBottom
+          className="tl"
+          setPopoutFocus={props.setPopoutFocus}
+          msgCount={props.state && props.state.notifications && props.state.notifications.length}
+        />
+      </div>
+      <div
+        style={{ zIndex: '100', left: `${props.position}px` }}
+        className={`${
+          props.isPopoutFocus ? '' : 'dn '
+        }absolute w1 h1 bg-white bl bt b--grey-light rotate-45`}
       />
-      <InboxNavMini
-        newMsgCount={
-          props.state &&
-          props.state.notifications &&
-          props.state.notifications.filter((n) => !n.read).length
-        }
-      />
-      <NotificationResultsMini
-        liveUnreadCount={props.liveUnreadCount}
-        retryFn={props.forceUpdate}
-        state={props.state}
-        className="tl"
-      />
-      <InboxNavMiniBottom
-        className="tl"
-        setPopoutFocus={props.setPopoutFocus}
-        msgCount={props.state && props.state.notifications && props.state.notifications.length}
-      />
-    </div>
+    </>
   );
 };
 
