@@ -450,7 +450,9 @@ class Project(db.Model):
 
         self.campaign = []
         if project_dto.campaigns:
-            self.campaign = [Campaign.query.get(c.id) for c in project_dto.campaigns]
+            self.campaign = Campaign.query.filter(
+                Campaign.id.in_([c.id for c in project_dto.campaigns])
+            ).all()
 
         if project_dto.mapping_permission:
             self.mapping_permission = MappingPermission[
