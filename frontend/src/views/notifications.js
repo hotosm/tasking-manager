@@ -15,6 +15,9 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Login } from './login';
 
 export const NotificationPopout = (props) => {
+  // The minimum distance to the viewport before the pop-up "attaches" to it.
+  const MIN_MARGIN_TO_VIEWPORT: number = 320;
+
   return (
     <>
       <div
@@ -22,7 +25,9 @@ export const NotificationPopout = (props) => {
           minWidth: '390px',
           width: '390px',
           zIndex: '100',
-          left: `${props.position < 320 ? 0 : props.position - 320}px`,
+          left: `${
+            props.position < MIN_MARGIN_TO_VIEWPORT ? 0 : props.position - MIN_MARGIN_TO_VIEWPORT
+          }px`,
         }}
         className={`fr ${
           props.isPopoutFocus ? '' : 'dn '
