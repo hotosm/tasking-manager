@@ -37,7 +37,7 @@ const SocialMedia = ({ data }) => {
     const urls = {
       twitterId: `https://www.twitter.com/${value}`,
       facebookId: `https://www.facebook.com/${value}`,
-      linkedinId: `https://www.linkedin.com/${value}`,
+      linkedinId: `https://www.linkedin.com/in/${value}`,
       osm: `${OSM_SERVER_URL}/user/${value}`,
       missingmaps: `https://www.missingmaps.org/users/#/${value}`,
     };
