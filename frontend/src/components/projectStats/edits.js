@@ -28,7 +28,7 @@ const getFieldData = (field) => {
     case 'edits':
       return {
         icon: <EditIcon className={iconClass} style={iconStyle} />,
-      message: <FormattedMessage {...projectMessages.totalEdits} />,
+        message: <FormattedMessage {...projectMessages.totalEdits} />,
       };
     default:
       return null;
@@ -39,10 +39,8 @@ const Element = ({ field, value }) => {
   const element = getFieldData(field);
   return (
     <div className={`w-25-ns w-100 ph2-ns fl`}>
-      <div
-        className={`cf shadow-4 pt3 pb3 ph2 bg-white blue-dark`}
-      >
-        <div className="w-30 w-100-m fl tc">{element.icon}</div>
+      <div className={`cf shadow-4 pt3 pb3 ph2 bg-white blue-dark`}>
+        <div className="w-30 w-100-m fl tc red">{element.icon}</div>
         <StatsCardContent
           value={Math.trunc(value)}
           label={element.message}
@@ -53,18 +51,20 @@ const Element = ({ field, value }) => {
   );
 };
 
-export const ElementsCreated = (props) => {
+export const EditsStats = (props) => {
   const { changesets, buildings, roads, edits } = props.data;
 
-  return(
-    <div className="cf w-100 mb3 ph2 ph4-ns blue-dark">
+  return (
+    <div className="cf w-100 pb4 ph2 ph4-ns bg-white blue-dark">
       <h3 className="barlow-condensed ttu f3">
         <FormattedMessage {...projectMessages.taskStats} />
       </h3>
-      <Element field="changesets" value={changesets || 0} />
-      <Element field="buildings" value={buildings || 0} />
-      <Element field="roads" value={roads || 0} />
-      <Element field="edits" value={edits || 0} />
-  </div>
-  )
-}
+      <div className="cf db pb2">
+        <Element field="changesets" value={changesets || 0} />
+        <Element field="edits" value={edits || 0} />
+        <Element field="buildings" value={buildings || 0} />
+        <Element field="roads" value={roads || 0} />
+      </div>
+    </div>
+  );
+};

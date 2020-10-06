@@ -61,57 +61,57 @@ function ContributorsStats(props) {
   ];
 
   return (
-    <div className="ph2 ph4-ns pv3 pt3 pb4">
-      <h3 className="f3 ttu barlow-condensed pv3 ma0">
+    <div className="ph2 ph4-ns">
+      <h3 className="f3 ttu barlow-condensed">
         <FormattedMessage {...messages.contributors} />
       </h3>
       <div className="cf w-third-l w-100 fl pa2">
-          <div className="cf bg-tan tc">
-            <StatsCardContent
-              value={stats.mappers}
-              label={<FormattedMessage {...messages.mappers} />}
-              className="pv3-l pv2 mb3 shadow-4 bg-white"
-            />
-            <StatsCardContent
-              value={stats.validators}
-              label={<FormattedMessage {...messages.validators} />}
-              className="pv3-l pv2 mb3 shadow-4 bg-white"
-            />
-            <StatsCardContent
-              value={props.contributors.userContributions.length}
-              label={<FormattedMessage {...messages.totalContributors} />}
-              className="pv3-l pv2 mb3 shadow-4 bg-white"
-            />
-            </div>
+        <div className="cf bg-tan tc">
+          <StatsCardContent
+            value={stats.mappers}
+            label={<FormattedMessage {...messages.mappers} />}
+            className="pv3-l pv2 mb3 shadow-4 bg-white"
+          />
+          <StatsCardContent
+            value={stats.validators}
+            label={<FormattedMessage {...messages.validators} />}
+            className="pv3-l pv2 mb3 shadow-4 bg-white"
+          />
+          <StatsCardContent
+            value={props.contributors.userContributions.length}
+            label={<FormattedMessage {...messages.totalContributors} />}
+            className="pv3-l pv2 mb3 shadow-4 bg-white"
+          />
         </div>
-        <div className="w-third-l w-100 fl pa2">
-          <div className="cf bg-white pb4 ph3 pt2 shadow-4">
-            <h3 className="f4 mv3 fw6">
-              <FormattedMessage {...messages.usersExperience} />
-            </h3>
-            <Bar
-              data={formatChartData(userExperienceReference, stats)}
-              options={{
-                legend: { display: false },
-                tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
-              }}
-            />
-          </div>
+      </div>
+      <div className="w-third-l w-100 fl pa2">
+        <div className="cf bg-white pb4 ph3 pt2 shadow-4">
+          <h3 className="f4 mv3 fw6">
+            <FormattedMessage {...messages.usersExperience} />
+          </h3>
+          <Bar
+            data={formatChartData(userExperienceReference, stats)}
+            options={{
+              legend: { display: false },
+              tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
+            }}
+          />
         </div>
-        <div className="w-third-l w-100 fl pa2">
-          <div className="cf bg-white pb4 ph3 pt2 shadow-4">
-            <h3 className="f4 mv3 fw6">
-              <FormattedMessage {...messages.usersLevel} />
-            </h3>
-            <Doughnut
-              data={formatChartData(userLevelsReference, stats)}
-              options={{
-                legend: { position: 'right', labels: { boxWidth: 12 } },
-                tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
-              }}
-            />
-          </div>
+      </div>
+      <div className="w-third-l w-100 fl pa2">
+        <div className="cf bg-white pb4 ph3 pt2 shadow-4">
+          <h3 className="f4 mv3 fw6">
+            <FormattedMessage {...messages.usersLevel} />
+          </h3>
+          <Doughnut
+            data={formatChartData(userLevelsReference, stats)}
+            options={{
+              legend: { position: 'right', labels: { boxWidth: 12 } },
+              tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
+            }}
+          />
         </div>
+      </div>
     </div>
   );
 }

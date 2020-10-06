@@ -57,11 +57,11 @@ const TasksByStatus = (props) => {
   const data = formatChartData(reference, props.stats);
 
   return (
-    <div className="cf w-100 mb3 ph2 ph4-ns blue-dark">
+    <div className="cf w-100 mb3 ph2 ph4-ns bg-tan blue-dark">
       <h3 className="barlow-condensed ttu f3">
         <FormattedMessage {...messages.status} />
       </h3>
-      <div className="cf w-100 bg-white pv2 shadow-4">
+      <div className="cf w-100">
         <div className="w-third-ns w-100 fl pv3">
           <Doughnut
             data={data}

@@ -9,7 +9,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { ProjectHeader } from '../components/projectDetail/header';
 import { TimeStats } from '../components/projectStats/timeStats';
 import { CompletionStats } from '../components/projectStats/completion';
-import { ElementsCreated } from '../components/projectStats/elementsCreated';
+import { EditsStats } from '../components/projectStats/edits';
 
 const ContributorsStats = React.lazy(() => import('../components/projectStats/contributorsStats'));
 const TasksByStatus = React.lazy(() => import('../components/projectStats/taskStatus'));
@@ -29,9 +29,12 @@ export function ProjectStats({ id }: Object) {
     `projects/${id}/contributions/queries/day/`,
     id,
   );
-  const osmData = useFetch(
-    `http://osm-stats-production-api.azurewebsites.net/stats/hotosm-project-${id}`,
-    id
+  // To fix: set this URL with an ENV VAR later
+  const [errorEdits, loadingEdits, edits] = useFetch(
+    `http://osm-stats-production-api.azurewebsites.net/stats/${
+      project && project.changesetComment && project.changesetComment.replace('#', '').split(' ')[0]
+    }`,
+    project && project.changesetComment !== undefined,
   );
 
   return (
@@ -45,21 +48,28 @@ export function ProjectStats({ id }: Object) {
         <div className="w-100 fl pv3 ph2 ph4-ns bg-white blue-dark">
           <ProjectHeader project={project} showEditLink={true} />
         </div>
-        <div className="w-100 fl mt3">
+        <div className="w-100 fl">
           <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
             <TasksByStatus stats={tasksByStatus} />
           </React.Suspense>
         </div>
-        <div className="w-100 fl mt3">
-          <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
-            <ElementsCreated data={osmData[2]} />
-          </React.Suspense>
-        </div>
-        <div className="w-100 fl pb3">
+        <div className="w-100 fl">
           <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
             <ReactPlaceholder
               showLoadingAnimation={true}
-              rows={3}
+              rows={5}
+              delay={500}
+              ready={!errorEdits && !loadingEdits}
+            >
+              <EditsStats data={edits} />
+            </ReactPlaceholder>
+          </React.Suspense>
+        </div>
+        <div className="w-100 fl pb4">
+          <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+            <ReactPlaceholder
+              showLoadingAnimation={true}
+              rows={7}
               delay={500}
               ready={!contributorsError && !contributorsLoading}
             >
@@ -67,26 +77,24 @@ export function ProjectStats({ id }: Object) {
             </ReactPlaceholder>
           </React.Suspense>
         </div>
-        <div className="w-100 mb2 fl ph2 ph4-ns">
+        <div className="w-100 fl ph2 ph4-ns pb4 bg-white">
           <h3 className="barlow-condensed ttu f3">
             <FormattedMessage {...messages.projectTimeline} />
           </h3>
-          <div className="bg-white pv3 ph2 fl w-100 shadow-4">
-            <div className="w-100 w-50-l fl">
-              <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
-                <ReactPlaceholder
-                  showLoadingAnimation={true}
-                  rows={3}
-                  delay={500}
-                  ready={!visualError && !visualLoading}
-                >
-                  <ProjectTimeline tasksByDay={visualData.stats} />
-                </ReactPlaceholder>
-              </React.Suspense>
-            </div>
-            <div className="w-100 w-50-l fl">
-              <CompletionStats tasksByStatus={tasksByStatus} />
-            </div>
+          <div className="w-100 w-50-l fl">
+            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+              <ReactPlaceholder
+                showLoadingAnimation={true}
+                rows={3}
+                delay={500}
+                ready={!visualError && !visualLoading}
+              >
+                <ProjectTimeline tasksByDay={visualData.stats} />
+              </ReactPlaceholder>
+            </React.Suspense>
+          </div>
+          <div className="w-100 w-50-l fl">
+            <CompletionStats tasksByStatus={tasksByStatus} />
           </div>
         </div>
         <div className="w-100 fl bg-tan pb3 mb4">

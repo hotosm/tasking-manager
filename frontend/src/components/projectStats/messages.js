@@ -79,10 +79,10 @@ export default defineMessages({
   },
   totalEdits: {
     id: 'project.stats.totalEdits',
-    defaultMessage: 'Total edits',
+    defaultMessage: 'Total map edits',
   },
   taskStats: {
     id: 'project.stats.tasks.stats',
-    defaultMessage: 'Task statistics',
+    defaultMessage: 'Edits',
   },
 });
