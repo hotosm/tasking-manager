@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+
 import projectMessages from './messages';
-import userMessages from '../user/messages';
 import userDetailMessages from '../userDetail/messages';
 import { MappingIcon, HomeIcon, RoadIcon, EditIcon } from '../svgIcons';
 import { StatsCardContent } from '../statsCardContent';
@@ -23,7 +23,7 @@ const getFieldData = (field) => {
     case 'changesets':
       return {
         icon: <MappingIcon className={iconClass} style={iconStyle} />,
-        message: <FormattedMessage {...userMessages.totalChangesets} />,
+        message: <FormattedMessage {...projectMessages.changesets} />,
       };
     case 'edits':
       return {
@@ -57,7 +57,7 @@ export const EditsStats = (props) => {
   return (
     <div className="cf w-100 pb4 ph2 ph4-ns bg-white blue-dark">
       <h3 className="barlow-condensed ttu f3">
-        <FormattedMessage {...projectMessages.taskStats} />
+        <FormattedMessage {...projectMessages.edits} />
       </h3>
       <div className="cf db pb2">
         <Element field="changesets" value={changesets || 0} />

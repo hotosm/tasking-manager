@@ -81,8 +81,12 @@ export default defineMessages({
     id: 'project.stats.totalEdits',
     defaultMessage: 'Total map edits',
   },
-  taskStats: {
-    id: 'project.stats.tasks.stats',
+  changesets: {
+    id: 'project.stats.changesets',
+    defaultMessage: 'Changesets',
+  },
+  edits: {
+    id: 'project.stats.edits',
     defaultMessage: 'Edits',
   },
 });

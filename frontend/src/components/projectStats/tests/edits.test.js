@@ -1,8 +1,10 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
+import '@testing-library/jest-dom';
+
 import { EditsStats } from '../edits';
 import { ConnectedIntl } from '../../../utils/internationalization';
-import { Provider } from 'react-redux';
 import { store } from '../../../store';
 
 describe('EditsStats component', () => {
@@ -22,11 +24,10 @@ describe('EditsStats component', () => {
       </Provider>,
     );
 
-    expect(getByText('Edits')).toBeTruthy();
-    expect(getByText('Total changesets')).toBeTruthy();
-    expect(getByText('Buildings mapped')).toBeTruthy();
-    expect(getByText('Km road mapped')).toBeTruthy();
-    expect(getByText('Total map edits')).toBeTruthy();
-    expect(getByText('310483')).toBeTruthy();
+    expect(getByText('Changesets')).toBeInTheDocument();
+    expect(getByText('Buildings mapped')).toBeInTheDocument();
+    expect(getByText('Km road mapped')).toBeInTheDocument();
+    expect(getByText('Total map edits')).toBeInTheDocument();
+    expect(getByText('310483')).toBeInTheDocument();
   });
 });
