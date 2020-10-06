@@ -86,7 +86,7 @@ export const NotificationBell = (props) => {
       >
         <div className="relative dib">
           <BellIcon aria-label="Notifications" role="button" />
-          {unreadNotifications && <div className="redicon"/>}
+          {unreadNotifications && <div className="redicon" />}
         </div>
       </TopNavLink>
       <NotificationPopout

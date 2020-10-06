@@ -82,9 +82,7 @@ export const NotificationsPage = (props) => {
       <div className="pt4-l pb5 ph5-l ph2 pt180 pull-center bg-tan">
         {
           props.children
-          /* This is where the full notification body component is rendered
-        using the router, as a child route.
-        */
+          /* This is where the full notification body component is rendered using the router, as a child route. */
         }
         <section className="cf">
           <InboxNav />
