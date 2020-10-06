@@ -64,10 +64,9 @@ export function ProjectInfoPanel({ project, tasks, contributors, type }: Object)
         percentBadImagery={percentBadImagery}
       />
       <div className="cf pb1 bg-white">
-        <MappingLevelMessage level={project.mapperLevel} className="tl f5 mt1 ttc fw5 blue-dark" />
+        <MappingLevelMessage level={project.mapperLevel} className="fl f5 mt1 ttc fw5 blue-dark" />
         <DueDateBox dueDate={project.dueDate} />
       </div>
-      <DueDateBox />
     </ReactPlaceholder>
   );
 }

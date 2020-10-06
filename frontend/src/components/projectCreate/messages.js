@@ -20,6 +20,10 @@ export default defineMessages({
     id: 'management.projects.create.area_size',
     defaultMessage: 'Area size: {area} km{sq}',
   },
+  areaOverLimitError: {
+    id: 'management.projects.create.area_error',
+    defaultMessage: 'Project area is higher than {n} squared kilometers.',
+  },
   taskNumber: {
     id: 'management.projects.create.tasks',
     defaultMessage: 'Number of tasks: {n}',

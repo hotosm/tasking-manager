@@ -25,7 +25,7 @@ import { CheckIcon, CloseIcon } from '../components/svgIcons';
 export const StateContext = React.createContext();
 
 export const styleClasses = {
-  divClass: 'w-70-l w-100 pb5 mb4 bb b--grey-light',
+  divClass: 'w-70-l w-100 pb4 mb3',
   labelClass: 'f4 fw6 db mb3',
   pClass: 'db mb3 f5',
   inputClass: 'w-80 pa2 db mb2',

@@ -67,6 +67,9 @@ it('exports ADVANCED_LEVEL_COUNT', () => {
 it('exports MAX_FILESIZE', () => {
   expect(typeof config.MAX_FILESIZE).toBe('number');
 });
+it('exports MAX_AOI_AREA', () => {
+  expect(typeof config.MAX_AOI_AREA).toBe('number');
+});
 it('exports TASK_COLOURS', () => {
   expect(typeof config.TASK_COLOURS).toBe('object');
   expect(typeof config.TASK_COLOURS.READY).toBe('string');

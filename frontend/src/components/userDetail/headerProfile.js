@@ -5,10 +5,11 @@ import { FormattedMessage } from 'react-intl';
 import messages from '../user/messages';
 import { TwitterIconNoBg, FacebookIcon, LinkedinIcon, ProfilePictureIcon } from '../svgIcons';
 import { MappingLevelMessage } from '../mappingLevel';
-import { NextMappingLevel } from '../user/settings';
+import { NextMappingLevel } from '../user/topBar';
 import { UserOrganisations } from './userTeamsOrgs';
 import { SectionMenu } from '../menu';
 import OsmLogo from '../../assets/img/osm_logo.png';
+import MissingMapsLogo from '../../assets/img/organizations/missingmaps.png';
 import { OSM_SERVER_URL } from '../../config';
 
 const SocialMedia = ({ data }) => {
@@ -33,27 +34,21 @@ const SocialMedia = ({ data }) => {
   };
 
   const createLink = (field, value) => {
-    const aClass = 'blue-grey no-underline';
-    let url = null;
-    switch (field) {
-      case 'twitterId':
-        url = 'https://www.twitter.com/' + value;
-        break;
-      case 'facebookId':
-        url = 'https://www.facebook.com/' + value;
-        break;
-      case 'linkedinId':
-        url = 'https://www.linkedin.com/' + value;
-        break;
-      case 'osm':
-        url = OSM_SERVER_URL + '/user/' + value;
-        break;
-      default:
-        return null;
-    }
+    const urls = {
+      twitterId: `https://www.twitter.com/${value}`,
+      facebookId: `https://www.facebook.com/${value}`,
+      linkedinId: `https://www.linkedin.com/in/${value}`,
+      osm: `${OSM_SERVER_URL}/user/${value}`,
+      missingmaps: `https://www.missingmaps.org/users/#/${value}`,
+    };
 
     return (
-      <a className={aClass} rel="noopener noreferrer" target="_blank" href={url}>
+      <a
+        className="blue-grey no-underline"
+        rel="noopener noreferrer"
+        target="_blank"
+        href={urls[field]}
+      >
         {value}
       </a>
     );
@@ -65,6 +60,12 @@ const SocialMedia = ({ data }) => {
         <div className="mr2 h2">
           <img className="h1 v-mid" src={OsmLogo} alt="OpenStreetMap" />{' '}
           {createLink('osm', data.username)}
+        </div>
+      </li>
+      <li className="dib mr4-ns mr2 cf f7">
+        <div className="mr2 h2">
+          <img className="h1 v-mid" src={MissingMapsLogo} alt="Missing Maps" />{' '}
+          {createLink('missingmaps', data.username)}
         </div>
       </li>
       {socialMediaItems.map((i) => {

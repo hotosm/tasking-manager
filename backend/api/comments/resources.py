@@ -54,7 +54,7 @@ class CommentsProjectsRestAPI(Resource):
         """
         authenticated_user_id = token_auth.current_user()
         if UserService.is_user_blocked(authenticated_user_id):
-            return "User is on read only mode", 403
+            return {"Error": "User is on read only mode."}, 403
 
         try:
             chat_dto = ChatMessageDTO(request.get_json())

@@ -123,6 +123,10 @@ const Parameters = {
   TaskingManagerOrgCode: {
     Description: 'Org Code',
     Type: 'String'
+  },
+  SentryBackendDSN: {
+    Description: "DSN for sentry",
+    Type: 'String'
   }
 };
 
@@ -370,6 +374,7 @@ const Resources = {
         cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
         cf.sub('export POSTGRES_USER="${PostgresUser}"'),
         cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
+        cf.sub('export TM_ENVIRONMENT="${AWS::StackName}"'),
         cf.sub('export TM_CONSUMER_KEY="${TaskingManagerConsumerKey}"'),
         cf.sub('export TM_CONSUMER_SECRET="${TaskingManagerConsumerSecret}"'),
         cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
@@ -391,7 +396,8 @@ const Resources = {
         './venv/bin/python3.6 manage.py db upgrade',
         'echo "------------------------------------------------------------"',
         cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
-        cf.sub('export NEW_RELIC_ENVIRONMENT="${AWS::StackName}"'),
+        cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
+        'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
         cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
         cf.sub('sudo cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
         cf.sub('cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')

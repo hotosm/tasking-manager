@@ -1,13 +1,9 @@
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
-import { FormattedNumber, IntlProvider } from 'react-intl';
+import { FormattedNumber } from 'react-intl';
 
-import { NextMappingLevel } from '../settings';
+import { NextMappingLevel } from '../topBar';
 import { MappingLevelMessage } from '../../mappingLevel';
-
-const createComponentWithIntl = (children, props = { locale: 'en' }) => {
-  return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
-};
+import { createComponentWithIntl } from '../../../utils/testWithIntl';
 
 it('changesets missing to intermediate level', () => {
   const element = createComponentWithIntl(<NextMappingLevel changesetsCount={100} />);
@@ -25,7 +21,7 @@ it('changesets missing to advanced level', () => {
   expect(elementInstance.findByType(MappingLevelMessage).props.level).toBe('ADVANCED');
 });
 
-it('user already is advanced', () => {
+it('user is advanced already', () => {
   const element = createComponentWithIntl(<NextMappingLevel changesetsCount={600} />);
   const elementInstance = element.root;
   expect(() => elementInstance.findByType(FormattedNumber)).toThrow(

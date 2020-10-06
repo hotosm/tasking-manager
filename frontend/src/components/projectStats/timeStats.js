@@ -50,8 +50,8 @@ const StatsRow = ({ stats }) => {
 
 const StatsCards = ({ stats }) => {
   return (
-    <div className="ph2 ph4-ns pv3 pt3 pb4">
-      <h3 className="f3 ttu barlow-condensed pv3 ma0">
+    <div className="ph2 ph4-ns pb4">
+      <h3 className="f3 ttu barlow-condensed">
         <FormattedMessage {...messages.projectStatsTitle} />
       </h3>
       <StatsRow stats={stats} />

@@ -2,13 +2,24 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import WebFont from 'webfontloader';
+import * as Sentry from '@sentry/react';
+import { Integrations } from '@sentry/tracing';
 
 import App from './App';
 import { store } from './store';
 import { getUserDetails } from './store/actions/auth';
 import { ConnectedIntl } from './utils/internationalization';
 import * as serviceWorker from './serviceWorker';
-import { ENABLE_SERVICEWORKER } from './config';
+import { ENABLE_SERVICEWORKER, SENTRY_FRONTEND_DSN, ENVIRONMENT } from './config';
+
+if (SENTRY_FRONTEND_DSN) {
+  Sentry.init({
+    dsn: SENTRY_FRONTEND_DSN,
+    environment: ENVIRONMENT,
+    integrations: [new Integrations.BrowserTracing()],
+    tracesSampleRate: 0.1,
+  });
+}
 
 WebFont.load({
   google: {
