@@ -10,7 +10,7 @@ All of the Tasking Manager development is going to happen in the [project reposi
 1. Write tests for all new backend features and use a tool (like coveralls.io) to measure test coverage.
 2. Consider writing tests when building new frontend.
 3. Stick to pep8 python style guide for the backend.
-4. Apply JSLint style guide rules for the frontend code.
+4. Apply ESLint and [prettier](https://prettier.io/) style guide rules for the frontend code.
 5. Export translatable strings with `make refresh-translatables` and include them in your commit.
 
 ## Code collaboration and version control
@@ -61,7 +61,9 @@ of the commit message can be left out.
 
 Before sending a PR, make sure you run the following commands and include the changes in your commit.
 
-* Code formatting: Format all backend code correctly by running [Black](https://pypi.org/project/black/): `black manage.py backend tests migrations` and all frontend code by running [prettier](https://prettier.io/): `yarn prettier` (inside the `frontend` directory).
+* Code formatting:
+  * Format all backend code by running [Black](https://pypi.org/project/black/): `black manage.py backend tests migrations`
+  * Format all frontend code with [prettier](https://prettier.io/) either by [configuring your editor](https://prettier.io/docs/en/editors.html) or by running `yarn prettier` inside the `frontend` directory.
 * Coding standards: Make sure you adhere to the coding standards eventually risen by [Flake8](http://flake8.pycqa.org/en/latest/): `flake8 manage.py backend tests migrations`
 * Prepare for translations: In case you have introduced new strings on the frontend, the translation source file must be updated this can be done via `make refresh-translatables` or `yarn build-locales` (inside the `frontend` directory).
 
