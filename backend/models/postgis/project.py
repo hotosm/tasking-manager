@@ -447,8 +447,16 @@ class Project(db.Model):
         else:
             if self.custom_editor:
                 self.custom_editor.delete()
-
-        self.campaign = [Campaign.query.get(c.id) for c in project_dto.campaigns]
+        # handle campaign update
+        try:
+            new_ids = [c.id for c in project_dto.campaigns]
+            new_ids.sort()
+        except TypeError:
+            new_ids = []
+        current_ids = [c.id for c in self.campaign]
+        current_ids.sort()
+        if new_ids != current_ids:
+            self.campaign = Campaign.query.filter(Campaign.id.in_(new_ids)).all()
 
         if project_dto.mapping_permission:
             self.mapping_permission = MappingPermission[
@@ -460,10 +468,16 @@ class Project(db.Model):
                 project_dto.validation_permission.upper()
             ].value
 
-        # Update Interests.
-        self.interests = []
-        if project_dto.interests:
-            self.interests = [Interest.query.get(i.id) for i in project_dto.interests]
+        # handle interests update
+        try:
+            new_ids = [c.id for c in project_dto.interests]
+            new_ids.sort()
+        except TypeError:
+            new_ids = []
+        current_ids = [c.id for c in self.interests]
+        current_ids.sort()
+        if new_ids != current_ids:
+            self.interests = Interest.query.filter(Interest.id.in_(new_ids)).all()
         # try to update country info if that information is not present
         if len(self.country) == 0:
             self.set_country_info()
