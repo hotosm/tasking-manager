@@ -31,7 +31,7 @@ export function ProjectStats({ id }: Object) {
   );
   // To fix: set this URL with an ENV VAR later
   const [errorEdits, loadingEdits, edits] = useFetch(
-    `http://osm-stats-production-api.azurewebsites.net/stats/${
+    `https://osm-stats-production-api.azurewebsites.net/stats/${
       project && project.changesetComment && project.changesetComment.replace('#', '').split(' ')[0]
     }`,
     project && project.changesetComment !== undefined,
