@@ -34,7 +34,7 @@ Mako==1.1.3
 markdown==3.2.2
 MarkupSafe==1.1.1
 mccabe==0.6.1
-newrelic==5.20.0.149
+newrelic==5.20.1.150
 nose==1.3.7
 oauthlib==2.0.2
 psycopg2==2.8.6
