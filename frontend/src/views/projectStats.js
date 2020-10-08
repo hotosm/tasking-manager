@@ -77,24 +77,26 @@ export function ProjectStats({ id }: Object) {
             </ReactPlaceholder>
           </React.Suspense>
         </div>
-        <div className="w-100 fl ph2 ph4-ns pb4 bg-white">
+        <div className="w-100 mb2 fl ph2 ph4-ns">
           <h3 className="barlow-condensed ttu f3">
             <FormattedMessage {...messages.projectTimeline} />
           </h3>
-          <div className="w-100 w-50-l fl">
-            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
-              <ReactPlaceholder
-                showLoadingAnimation={true}
-                rows={3}
-                delay={500}
-                ready={!visualError && !visualLoading}
-              >
-                <ProjectTimeline tasksByDay={visualData.stats} />
-              </ReactPlaceholder>
-            </React.Suspense>
-          </div>
-          <div className="w-100 w-50-l fl">
-            <CompletionStats tasksByStatus={tasksByStatus} />
+          <div className="bg-white pv3 ph2 fl w-100 shadow-4">
+            <div className="w-100 w-50-l fl">
+              <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+                <ReactPlaceholder
+                  showLoadingAnimation={true}
+                  rows={3}
+                  delay={500}
+                  ready={!visualError && !visualLoading}
+                >
+                  <ProjectTimeline tasksByDay={visualData.stats} />
+                </ReactPlaceholder>
+              </React.Suspense>
+            </div>
+            <div className="w-100 w-50-l fl">
+              <CompletionStats tasksByStatus={tasksByStatus} />
+            </div>
           </div>
         </div>
         <div className="w-100 fl bg-tan pb3 mb4">
