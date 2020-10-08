@@ -26,6 +26,9 @@ logs/
 venv/
 *pyc
 
+# jupyter notebook autosave files
+.ipynb_checkpoints
+
 # Editor generated files #
 .idea/
 .vscode/
