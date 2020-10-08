@@ -1137,15 +1137,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
   integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
 
-"@formatjs/ecma402-abstract@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.2.0.tgz#5b03ba4931436070ad926d1b2e89bf07edc5ea5b"
-  integrity sha512-jc1bZHhIE1YI0HnZIZcdlKpF4wle2pkgQpzXHDoyy4bUqzBSvDqktnF26hOkyA04KD4wqd61gkuTvRrHMmroAg==
-
-"@formatjs/ecma402-abstract@^1.2.3":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.2.3.tgz#ca94911dd8e9c89eeaabba0f00e2f692979fc27b"
-  integrity sha512-sEkxTZj7qa+Pi/c4ppE5mxZYJkqQO3GNZzJZjAxgsXip2ixO/TZn58qrxdQ0V8mXmf+5xf+AfveyPvv4yHaRtw==
+"@formatjs/ecma402-abstract@^1.2.0", "@formatjs/ecma402-abstract@^1.2.3", "@formatjs/ecma402-abstract@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.2.4.tgz#0f11e0309bc885d53ddc823e36d04d520fda7674"
+  integrity sha512-5XEuvm+bImBmSFlhbE9FeRQKXWtpt+WIYRsma96bneoNMnUMeCADHJxNNSA5JSY4TlrjVZFHW3jE4HYm10bLbA==
   dependencies:
     tslib "^2.0.1"
 
@@ -1163,12 +1158,12 @@
   dependencies:
     "@formatjs/ecma402-abstract" "^1.2.0"
 
-"@formatjs/intl-pluralrules@^3.4.8":
-  version "3.4.8"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-3.4.8.tgz#8adea6bbae3a5109d6b53b0e791b696f1a4fad4d"
-  integrity sha512-u1upykr0awAEsYkfbg7KCsgKLZLWA+xMskUb2CVas3/RS+tD0BEgYSO+x3lGVI9BocX/iWGLsTSUYsU8G2jajQ==
+"@formatjs/intl-pluralrules@^3.4.9":
+  version "3.4.9"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-3.4.9.tgz#2e4254086332cadc735d7634d3f2575d08c96024"
+  integrity sha512-3CC9PMUiKczOvYPU+ssvjxP53WW+lKq20gGgYmVawuC4t7uvXrZcZEtAPXclGcmsg5IAV07fTJHAwuE6UySh4w==
   dependencies:
-    "@formatjs/ecma402-abstract" "^1.2.3"
+    "@formatjs/ecma402-abstract" "^1.2.4"
     tslib "^2.0.1"
 
 "@formatjs/intl-relativetimeformat@^7.2.5":
