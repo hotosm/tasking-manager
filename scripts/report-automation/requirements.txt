@@ -1,0 +1,5 @@
+# python package requirements for report-automation notebooks.
+pandas
+requests
+matplotlib
+numpy
