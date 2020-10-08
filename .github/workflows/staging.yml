@@ -38,7 +38,7 @@ jobs:
         cd frontend && yarn build
     - name: Unit Tests
       run: |
-        cd frontend && yarn test
+        cd frontend && yarn test --testPathIgnorePatterns internationalization.test.js
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@master
       with:
