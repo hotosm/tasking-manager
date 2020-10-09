@@ -16,7 +16,7 @@ import { Login } from './login';
 
 export const NotificationPopout = (props) => {
   // Small screen size, as defined by tachyons
-  let smallScreenSize = window.matchMedia('(max-width: 30em)').matches;
+  let smallScreenSize = !window.matchMedia('(min-width: 30em)').matches;
   // Notification popout position and margin. The popout is anchored outside of the screen and centered on small screens.
   const popoutPosition = {
     left: `${smallScreenSize ? '-2rem' : Math.max(0, props.position - 320).toString() + 'px'}`,
