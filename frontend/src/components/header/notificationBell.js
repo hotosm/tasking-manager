@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import { TopNavLink } from './NavLink';
@@ -9,6 +9,7 @@ import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 import useForceUpdate from '../../hooks/UseForceUpdate';
 import { useInboxQueryAPI } from '../../hooks/UseInboxQueryAPI';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { useOnResize } from '../../hooks/UseOnResize';
 
 export const NotificationBell = (props) => {
   const token = useSelector((state) => state.auth.get('token'));
@@ -61,6 +62,13 @@ export const NotificationBell = (props) => {
     }
   };
 
+  const handleResizeCallback = useCallback(() => {
+    if (isPopoutFocus) {
+      setBellPosition(notificationBellRef.current.getBoundingClientRect().left);
+    }
+  }, [isPopoutFocus]);
+
+  useOnResize(notificationBellRef, handleResizeCallback);
   useOnClickOutside(notificationBellRef, () => setPopoutFocus(false));
 
   const isNotificationBellActive = ({ isCurrent }) => {
