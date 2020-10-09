@@ -599,7 +599,7 @@
   "project.tasks.action.tasks_map": "Tasks map",
   "project.tasks.action.submit_task": "Submit task",
   "project.tasks.action.submit_tasks": "Submit tasks",
-  "project.tasks.history.title": "Task activity",
+  "project.tasks.history.title": "Task {n}",
   "project.tasks.history.splitted": "Task unavailable",
   "project.tasks.history.splitted.description": "The task {id} was split and its history is not available anymore",
   "project.tasks.activity.data.links": "Task data",
