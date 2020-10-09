@@ -15,8 +15,14 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Login } from './login';
 
 export const NotificationPopout = (props) => {
-  // The minimum distance to the viewport before the pop-up transitions to a centered position.
-  const TRANSITION_DISTANCE: number = 320;
+  // Small screen size, as defined by tachyons
+  let smallScreenSize = window.matchMedia('(max-width: 30em)').matches;
+  // Notification popout position and margin. The popout is anchored outside of the screen and centered on small screens.
+  const popoutPosition = {
+    left: `${smallScreenSize ? '-2rem' : Math.max(0, props.position - 320).toString() + 'px'}`,
+    right: `${smallScreenSize ? '-2rem' : 'auto'}`,
+    margin: `${smallScreenSize ? '.5rem auto 0' : '.5rem 0 0'}`,
+  };
 
   return (
     <>
@@ -25,13 +31,7 @@ export const NotificationPopout = (props) => {
           minWidth: '390px',
           width: '390px',
           zIndex: '100',
-          left: `${
-            props.position < TRANSITION_DISTANCE
-              ? '-2rem' //-2 rem to compensate for the padding
-              : (props.position - TRANSITION_DISTANCE).toString() + 'px'
-          }`,
-          right: `${props.position < TRANSITION_DISTANCE ? '-2rem' : 'auto'}`,
-          margin: `${props.position < TRANSITION_DISTANCE ? '.5rem auto 0' : '.5rem 0 0'}`,
+          ...popoutPosition,
         }}
         className={`fr ${props.isPopoutFocus ? '' : 'dn '}br2 absolute shadow-2 ph4 pb3 bg-white`}
       >
