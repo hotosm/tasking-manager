@@ -84,22 +84,18 @@ const ProceedOSM = ({ data, step, setStep, login }) => {
 const SignupForm = ({ data, setData, step, setStep }) => {
   const onChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
+    if (step.errMessage) setStep({ ...step, errMessage: null });
   };
 
-  const CheckFields = () => {
+  const checkFields = () => {
     if (data.name === '') {
-      setStep((s) => {
-        return { ...s, errMessage: <FormattedMessage {...messages.invalidName} /> };
-      });
+      setStep({ ...step, errMessage: <FormattedMessage {...messages.invalidName} /> });
       return;
     }
 
     /* eslint-disable-next-line */
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(data.email) === false) {
-      setStep((s) => {
-        return { ...s, errMessage: <FormattedMessage {...messages.invalidEmail} /> };
-      });
-
+      setStep({ ...step, errMessage: <FormattedMessage {...messages.invalidEmail} /> });
       return;
     }
 
@@ -184,7 +180,11 @@ const SignupForm = ({ data, setData, step, setStep }) => {
         </a>
       </p>
       <div className="mt3 tr">
-        <Button className="bg-red white" onClick={() => CheckFields()}>
+        <Button
+          className="bg-red white"
+          onClick={() => checkFields()}
+          disabled={step.errMessage !== null || !data.name || !data.email}
+        >
           <FormattedMessage {...messages.submitProceed} />
         </Button>
       </div>
@@ -206,7 +206,7 @@ export const SignUp = ({ closeModal }) => {
     createLoginWindow(redirect);
   };
 
-  const GetStep = (step) => {
+  const getStep = (step) => {
     switch (step.number) {
       case 1:
         return <SignupForm data={data} setData={setData} step={step} setStep={setStep} />;
@@ -224,7 +224,7 @@ export const SignUp = ({ closeModal }) => {
       <span className="fr relative blue-light pt1 link pointer" onClick={() => closeModal()}>
         <CloseIcon style={{ height: '18px', width: '18px' }} />
       </span>
-      {GetStep(step)}
+      {getStep(step)}
     </div>
   );
 };

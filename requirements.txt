@@ -11,7 +11,7 @@ chardet==3.0.4
 Click==7.1.2
 coverage==5.3
 entrypoints==0.3
-flake8==3.8.3
+flake8==3.8.4
 Flask==1.1.2
 Flask-Cors==3.0.9
 Flask-HTTPAuth==4.1.0

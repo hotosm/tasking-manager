@@ -77,4 +77,16 @@ export default defineMessages({
     id: 'project.stats.contributors.experience.year',
     defaultMessage: 'More than 1 year',
   },
+  totalEdits: {
+    id: 'project.stats.totalEdits',
+    defaultMessage: 'Total map edits',
+  },
+  changesets: {
+    id: 'project.stats.changesets',
+    defaultMessage: 'Changesets',
+  },
+  edits: {
+    id: 'project.stats.edits',
+    defaultMessage: 'Edits',
+  },
 });
