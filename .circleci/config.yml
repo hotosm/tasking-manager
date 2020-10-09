@@ -77,6 +77,9 @@ jobs:
       stack_name:
         description: "the name of the stack for cfn-config"
         type: string
+      gitsha:
+        description: "The 40 char hash of the git commit"
+        type: string
     working_directory: /home/circleci/tasking-manager
     docker:
     - image: circleci/python:3.7-buster-node
@@ -84,14 +87,10 @@ jobs:
     - checkout
     - setup_remote_docker
     - run:
-        name: Set Environment Variables
-        command: |
-          echo "export JSON_CONFIG='{\"GitSha\": \"$CIRCLE_SHA1\", \"NetworkEnvironment\": \"${ENVIRONMENT_NAME}\", \"AutoscalingPolicy\": \"${AUTOSCALING_POLICY}\", \"DBSnapshot\": \"\", \"DatabaseDump\": \"\", \"NewRelicLicense\": \"${NEW_RELIC_LICENSE}\", \"PostgresDB\": \"${POSTGRES_DB}\", \"PostgresPassword\": \"${POSTGRES_PASSWORD}\", \"PostgresUser\": \"${<POSTGRES_USER}\", \"DatabaseSize\": \"${DB_SIZE}\", \"ELBSubnets\": \"${ELB_SUBNETS}\", \"SSLCertificateIdentifier\": \"${SSL_CERTIFICATE_ID}\", \"TaskingManagerLogDirectory\": \"${TM_LOG_DIR}\", \"TaskingManagerConsumerKey\": \"${TM_CONSUMER_KEY}\", \"TaskingManagerConsumerSecret\": \"${TM_CONSUMER_SECRET}\", \"TaskingManagerSecret\": \"${TM_SECRET}\", \"TaskingManagerLogLevel\": \"${TM_LOG_LEVEL}\", \"TaskingManagerImageUploadAPIURL\": \"${TM_IMAGE_UPLOAD_API_URL}\", \"TaskingManagerImageUploadAPIKey\": \"${TM_IMAGE_UPLOAD_API_KEY}\", \"TaskingManagerURL\": \"${TM_APP_URL}\", \"TaskingManagerOrgName\": \"${TM_ORG_NAME}\", \"TaskingManagerOrgCode\": \"${TM_ORG_CODE}\", \"SentryBackendDSN\": \"${TM_SENTRY_BACKEND_DSN}\", \"TaskingManagerEmailContactAddress\": \"${TM_EMAIL_CONTACT_ADDRESS}\"}'" >> $BASH_ENV
-    - run:
         name: Install modules
         command: |
           sudo apt-get update
-          sudo apt-get install -y libgeos-dev # Required for shapely
+          sudo apt-get install -y libgeos-dev jq # Required for shapely
           sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
           sudo pip3 install awscli --upgrade
     - run:
@@ -147,15 +146,16 @@ jobs:
             exit 125
           fi
     - run:
-        name: Create config file
+        name: Download config file
         command: |
-          touch $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
-          echo $JSON_CONFIG > $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
+          export GITSHA=<< parameters.gitsha >>
+          aws s3 cp s3://hot-cfn-config/tasking-manager/tasking-manager-<< parameters.stack_name >>-${AWS_REGION}.cfn.json - | jq -c --arg GITSHA "$GITSHA" '.GitSha = $GITSHA' > $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
     - deploy:
         name: Deploy to << parameters.stack_name >>
         command: |
           export NODE_PATH=/usr/local/share/.config/yarn/global/node_modules/
           validate-template $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js
+          export JSON_CONFIG="$(cat $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json)"
           cfn-config update << parameters.stack_name >> $CIRCLE_WORKING_DIRECTORY/scripts/aws/cloudformation/tasking-manager.template.js -f -c hot-cfn-config -t hot-cfn-config -r $AWS_REGION -p "$JSON_CONFIG"
     - run:
         name: Cleanup
@@ -235,6 +235,7 @@ workflows:
         requires:
           - build
         stack_name: "staging"
+        gitsha: $CIRCLE_SHA1
         context: tasking-manager-staging
     - frontend_deploy:
         name: staging
@@ -246,6 +247,28 @@ workflows:
           - build
         context: tasking-manager-staging
         stack_name: "staging"
+
+    - backend_deploy:
+        name: test
+        filters:
+          branches:
+            only:
+            - fix/sentry-environments
+        requires:
+          - build
+        stack_name: "test"
+        gitsha: $CIRCLE_SHA1
+        context: tasking-manager-staging
+    - frontend_deploy:
+        name: test
+        filters:
+          branches:
+            only:
+            - fix/sentry-environments
+        requires:
+          - build
+        context: tasking-manager-staging
+        stack_name: "test"
     - backend_deploy:
         name: teachosm
         filters:
@@ -255,6 +278,7 @@ workflows:
         requires:
           - build
         stack_name: "teachosm"
+        gitsha: $CIRCLE_SHA1
         context: tasking-manager-teachosm
     - frontend_deploy:
         name: teachosm
@@ -275,6 +299,7 @@ workflows:
         requires:
           - build
         stack_name: "assisted"
+        gitsha: $CIRCLE_SHA1
         context: tasking-manager-assisted
     - frontend_deploy:
         name: assisted
@@ -295,6 +320,7 @@ workflows:
             only:
               - deployment/hot-tasking-manager
         stack_name: "tm4-production"
+        gitsha: $CIRCLE_SHA1
         context: tasking-manager-tm4-production
   frontend-production:
     jobs:
