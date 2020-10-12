@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { ORG_URL, ORG_NAME } from '../../config';
-import logo from '../../assets/img/main-logo.svg';
+import logo from '../../assets/img/main-logo-ohm.svg';
 import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { LocaleSelector } from '../localeSelect';
