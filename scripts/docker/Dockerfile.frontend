@@ -1,16 +1,7 @@
-FROM alpine/git as base
-
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-ADD . /usr/src/app
-
 FROM tiangolo/node-frontend:10 as build
 
-WORKDIR /usr/src/app
-
-COPY --from=base /usr/src/app/ /usr/src/app
 WORKDIR /usr/src/app/frontend
+COPY frontend .
 
 ## SETUP
 RUN npm install
