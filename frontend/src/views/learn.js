@@ -21,7 +21,7 @@ import CommunityLogo from '../assets/img/icons/community.jpg';
 import EmergencyMappingLogo from '../assets/img/icons/emergency-mapping.jpg';
 import TechnicalLogo from '../assets/img/icons/technical.jpg';
 import LearnOSMLogo from '../assets/img/learn-osm-logo.svg';
-import QuickstartLogo from '../assets/img/info-logo.svg';
+import QuickstartLogo from '../assets/img/main-logo-ohm.svg';
 
 const LearnNav = ({ sections, section, setSection }) => {
   useSetTitleTag('Learn');
