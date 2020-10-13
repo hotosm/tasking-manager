@@ -1,15 +1,43 @@
 ## Installation with Docker
 
-**Get the code**
+### Get the code
 
 `git clone https://github.com/hotosm/tasking-manager.git`.
 
-**Configure**
+### Configure
 
 * Copy the example configuration file to start your own configuration: `cp example.env tasking-manager.env`.
 * Adjust the `tasking-manager.env` configuration file to fit your configuration.
 
-**Connect with OpenStreetMap**
+#### Public host
+
+By default, things are made to work from `localhost`.  If you want to setup a public host, try setting the following:
+
+* `tasking-manager.env`: `TM_APP_BASE_URL=https://tasks.smartcitiestransport.com/`
+* `docker-compose.override.yml`:
+  * `TM_APP_API_URL=https://tasks.smartcitiestransport.com/api`
+  * ```traefik.http.routers.frontend.rule=Host(`localhost`, `tasks.smartcitiestransport.com`)```
+* `docker-compose.yml`:
+  * ```traefik.http.routers.backend.rule=Host(`localhost`, `tasks.smartcitiestransport.com`) && PathPrefix(`/api/`)```
+  * ```traefik.http.routers.frontend.rule=Host(`localhost`, `tasks.smartcitiestransport.com`)```
+
+#### Persistent data
+
+If you may be removing and starting the postgresql container, you may want to setup a persistent volume:
+
+In `docker-compose.override.yml`:
+ 
+```yaml
+services:
+  postgresql:
+    volumes:
+      - "postgresql-data:/var/lib/postgresql/data"
+
+volumes:
+  postgresql-data:
+```
+
+#### Connect with OpenStreetMap
 
 The Tasking Manager uses OpenStreetMap accounts for users to login. 
 
@@ -21,7 +49,7 @@ Afterwards copy the consumer key and secret from OpenStreetMap into your configu
 
 **NB**: if you've configured a custom OSM server, make sure that you create the user and oAuth client there. 
 
-**Run the Tasking Manager**
+### Run the Tasking Manager
 
 The **easiest way** to run the Tasking Manager requires [Docker](https://docs.docker.com/get-started/) and [Docker Compose](https://docs.docker.com/compose/) to be installed on your system.  Afterwards you'll just need:
 
