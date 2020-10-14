@@ -45,7 +45,7 @@
     "react-calendar-heatmap": "^1.8.1",
     "react-chartjs-2": "^2.10.0",
     "react-click-outside": "^3.0.1",
-    "react-datepicker": "^3.2.2",
+    "react-datepicker": "^3.3.0",
     "react-dom": "^16.13.1",
     "react-dropzone": "^11.2.0",
     "react-final-form": "^6.5.1",
