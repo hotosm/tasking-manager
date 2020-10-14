@@ -124,9 +124,9 @@ python3 manage.py db upgrade
 
 You can use [this script](../scripts/database/migration-from-tm2-postgres.sql) to migrate your data from the prior tasking manager version (v2) to the current one. Please see [this documentation page](../scripts/database/README.md) for important information about this process.
 
-#### Set permissions to create a task
+#### Set permissions to create projects
 
-To be able to create a task and have full permissions as an admin inside TM, login to the TM with your OSM account to populate your user information in the database, then execute the following command on your terminal (with the OS user that is the owner of the database):
+To be able to create projects and have full permissions as an admin user inside TM, login to the TM with your OSM account to populate your user information in the database, then execute the following command on your terminal (with the OS user that is the owner of the database):
 
 `psql -d <your_database> -c "UPDATE users set role = 1 where username = '<your_osm_username>'"`
 
