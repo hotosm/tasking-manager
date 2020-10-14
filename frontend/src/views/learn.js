@@ -305,6 +305,10 @@ const LearnToValidate = ({ section }) => {
       message: 'learnValidateHowToVideo',
       youTubeId: 'frVwlJn4tdI',
     },
+    {
+      message: 'learnValidateTrainingVideo',
+      youTubeId: 'YQ18XfRM6d4',
+    },
   ];
 
   return (
@@ -355,7 +359,7 @@ const LearnToMap = ({ section }) => {
     },
     {
       message: 'learnMapBuildings',
-      youTubeId: 'lSLe6rjtgi0',
+      youTubeId: 'nswUcgMfKTM',
     },
     {
       message: 'learnMapRoads',
