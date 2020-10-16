@@ -43,7 +43,7 @@ describe('test if getIdUrl', () => {
     );
   });
 
-  it('with idPresets returns the correct formatted url', () => {
+  it('with idPresets returns the url param', () => {
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
       projectId: 1234,
@@ -51,6 +51,21 @@ describe('test if getIdUrl', () => {
     };
     expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1])).toBe(
       'https://www.openstreetmap.org/edit?editor=id&' +
+        '#map=18/-9.663953/120.25684' +
+        '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
+        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1' +
+        '&presets=building%2Chighway%2Cnatural%2Fwater',
+    );
+  });
+
+  it('with idPresets and internal iD does not return the url param', () => {
+    const testProject = {
+      changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
+      projectId: 1234,
+      idPresets: ['building', 'highway', 'natural/water'],
+    };
+    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1], '?editor=ID')).toBe(
+      '?editor=ID' +
         '#map=18/-9.663953/120.25684' +
         '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
         '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
