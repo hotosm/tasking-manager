@@ -7,7 +7,7 @@ import messages from './messages';
 export function Testimonials() {
   const testimonials = [
     {
-      name: 'Lauren Bateman',
+      name: 'Kehl, Germany, 1850',
       bio: messages.ifrcBio,
       citation: messages.ifrcCitation,
       cssCode: 'ifrc',
@@ -32,7 +32,7 @@ export function Testimonials() {
                 <FormattedMessage {...person.citation} />
               </div>
               <div className="w-70-l w-60-m mh3 mh0-ns ph3 pb5-l pt4-l">
-                <p className="f4 fw6 mb1 tc">{person.name},</p>
+                <p className="f4 fw6 mb1 tc">{person.name}</p>
                 <p className="f6 tc mt2 mw-3">
                   <FormattedMessage {...person.bio} />
                 </p>
