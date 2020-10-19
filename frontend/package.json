@@ -27,7 +27,7 @@
     "@turf/transform-scale": "^5.1.5",
     "@webscopeio/react-textarea-autocomplete": "^4.7.2",
     "axios": "^0.20.0",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "dompurify": "^2.1.1",
     "downshift-hooks": "^0.8.1",
     "final-form": "^4.20.1",
@@ -94,11 +94,11 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.0.4",
+    "@testing-library/react": "^11.1.0",
     "@testing-library/react-hooks": "^3.4.2",
     "combine-react-intl-messages": "^4.0.0",
     "jest-canvas-mock": "^2.3.0",
-    "msw": "^0.21.2",
+    "msw": "^0.21.3",
     "prettier": "^2.1.2",
     "react-test-renderer": "^16.13.1"
   },
