@@ -1,4 +1,7 @@
+import threading
+
 from flask import current_app
+
 from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO
 from backend.models.postgis.project_chat import ProjectChat
 from backend.services.messaging.message_service import MessageService
@@ -57,10 +60,11 @@ class ChatService:
 
         if is_manager_permission or is_team_member or is_allowed_user:
             chat_message = ProjectChat.create_from_dto(chat_dto)
-            MessageService.send_message_after_chat(
-                chat_dto.user_id, chat_message.message, chat_dto.project_id
-            )
             db.session.commit()
+            threading.Thread(
+                target=MessageService.send_message_after_chat,
+                args=(chat_dto.user_id, chat_message.message, chat_dto.project_id),
+            ).start()
             # Ensure we return latest messages after post
             return ProjectChat.get_messages(chat_dto.project_id, 1, 5)
         else:
