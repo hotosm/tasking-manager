@@ -24,6 +24,10 @@ class EnvironmentConfig:
     API_VERSION = os.getenv("TM_APP_API_VERSION", "v2")
     ORG_CODE = os.getenv("TM_ORG_CODE", "")
     ORG_NAME = os.getenv("TM_ORG_NAME", "")
+    ORG_LOGO = os.getenv(
+        "TM_ORG_LOGO",
+        "https://cdn.hotosm.org/tasking-manager/uploads/1588741335578_hot-logo.png",
+    )
     ENVIRONMENT = os.getenv("TM_ENVIRONMENT", "")
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)

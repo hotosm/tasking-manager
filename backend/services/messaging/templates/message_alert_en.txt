@@ -1,6 +1,0 @@
-[FROM_USERNAME] mentioned you in a comment on Project [PROJECT_ID]
-
-[CONTENT]
-
-Access your inbox to read all your messages on the [ORG_CODE] Tasking Manager: [PROFILE_LINK]
-You can opt-out of these emails by visiting your user settings page and adjusting your notification preferences: [SETTINGS_LINK]

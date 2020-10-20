@@ -79,33 +79,38 @@ export const TaskStats = ({ userStats, username }) => {
           <div className="w-25-ns w-100 h-100 pa2 pa0-m fl red tc">
             <MappedIcon className="v-mid w-50-ns w-25" />
           </div>
-          <div className="w-75-ns w-100 fl tc f6 b">
+          <div className="w-75-ns w-100 mt3 fl tc f6 b">
             <div className="cf w-100">
-              <p className="mb1 mt3 mt1-ns f4">
+              <p className="mb1 mt3 mt1-ns f3">
                 <FormattedMessage
                   {...messages.userMapped}
                   values={{ user: username ? username : <FormattedMessage {...messages.you} /> }}
                 />
               </p>
-              <p className="ma0 mb2 barlow-condensed f2 b red">{userStats.tasksMapped}</p>
-              <p className="mv1">
-                <FormattedMessage {...messages.tasks} />
-              </p>
+              <hr className="w-50" />
             </div>
             <div className="cf w-100 pt4">
-              <div className="cf w-50 fl tc">
-                <span className="ma0 v-mid barlow-condensed f3 b red">
+              <div className="cf w-33 fl tc">
+                <p className="ma0 mb2 barlow-condensed f2 b red">
+                  {userStats.tasksMapped}
+                </p>
+                <p className="mb3 ttl">
+                  <FormattedMessage {...messages.tasks} />
+                </p>
+              </div>
+              <div className="cf w-33 fl tc">
+                <p className="ma0 mb2 barlow-condensed f2 b red">
                   {userStats.tasksValidatedByOthers}
-                </span>
-                <p className="mv1 ttl">
+                </p>
+                <p className="mb3 ttl">
                   <FormattedMessage {...messages.validated} />
                 </p>
               </div>
-              <div className="cf w-50 fl tc">
-                <span className="ma0 v-mid barlow-condensed f3 b red">
+              <div className="cf w-33 fl tc">
+                <p className="ma0 mb2 barlow-condensed f2 b red">
                   {userStats.tasksInvalidatedByOthers}
-                </span>
-                <p className="mv1 ttl">
+                </p>
+                <p className="mb3 ttl">
                   <FormattedMessage {...messages.invalidated} />
                 </p>
               </div>
@@ -118,35 +123,38 @@ export const TaskStats = ({ userStats, username }) => {
           <div className="w-25-ns w-100 h-100 pa2 pa0-m fl red tc">
             <ValidatedIcon className="v-mid w-50-ns w-25" />
           </div>
-          <div className="w-75-ns w-100 fl tc f6 b">
+          <div className="w-75-ns w-100 mt3 fl tc f6 b">
             <div className="cf w-100">
-              <p className="mb1 mt3 mt1-ns f4">
+              <p className="mb1 mt3 mt1-ns f3">
                 <FormattedMessage
                   {...messages.userValidated}
                   values={{ user: username ? username : <FormattedMessage {...messages.you} /> }}
                 />
               </p>
-              <p className="ma0 mb2 barlow-condensed f2 b red">
-                {userStats.tasksValidated + userStats.tasksInvalidated || 0}
-              </p>
-              <p className="mv1">
-                <FormattedMessage {...messages.tasks} />
-              </p>
+              <hr className="w-50" />
             </div>
             <div className="cf w-100 pt4">
-              <div className="cf w-50 fl tc">
-                <span className="ma0 v-mid barlow-condensed f3 b red">
+              <div className="cf w-33 fl tc">
+                <p className="ma0 mb3 barlow-condensed f2 b red">
+                  {userStats.tasksValidated + userStats.tasksInvalidated || 0}
+                </p>
+                <p className="mb3 ttl">
+                  <FormattedMessage {...messages.tasks}  />
+                </p>
+              </div>
+              <div className="cf w-33 fl tc">
+                <p className="ma0 mb2 barlow-condensed f2 b red">
                   {userStats.tasksValidated}
-                </span>
-                <p className="mv1 ttl">
+                </p>
+                <p className="mb3 ttl">
                   <FormattedMessage {...messages.finished} />
                 </p>
               </div>
-              <div className="cf w-50 fl tc">
-                <span className="ma0 v-mid barlow-condensed f3 b red">
+              <div className="cf w-33 fl tc">
+                <p className="ma0 mb2 barlow-condensed f2 b red">
                   {userStats.tasksInvalidated}
-                </span>
-                <p className="mv1 ttl">
+                </p>
+                <p className="mb3 ttl">
                   <FormattedMessage {...messages.invalidated} />
                 </p>
               </div>

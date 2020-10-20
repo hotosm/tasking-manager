@@ -17,8 +17,7 @@ services:
     <<: *backend
     container_name: backend
     labels:
-      - traefik.http.routers.backend.rule=Host(`localhost`)
-      - traefik.http.routers.backend.rule=PathPrefix(`/api/`)
+      - traefik.http.routers.backend.rule=Host(`localhost`) && PathPrefix(`/api/`)
       - traefik.http.services.backend.loadbalancer.server.port=5000
 
   migration:
@@ -43,7 +42,7 @@ services:
       - tm-web
 
   traefik:
-    image: traefik
+    image: traefik:v2.3
     ports:
       - "80:80"
     volumes:

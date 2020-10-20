@@ -43,21 +43,19 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
   };
 
   return (
-    <>
-      <div className="w-100 pt3 ph3-ns ph1 h4">
-        <div className="fl w-10-ns w-20">
-          <CurrentUserAvatar className="h2 w2 fr mr2 br-100" />
-        </div>
-        <div className="fl w-90-ns w-80 h-100 f6">
-          <CommentInputField comment={comment} setComment={setComment} enableHashtagPaste={true} />
-        </div>
+    <div className="w-100 pt3 ph3-ns ph1">
+      <div className="fl w-10">
+        <CurrentUserAvatar className="h2 w2 fr mr2 br-100" />
       </div>
-      <div className="w-100 pb3 pt2 tr pr3">
+      <div className="fl w-70 f6">
+        <CommentInputField comment={comment} setComment={setComment} enableHashtagPaste={true} />
+      </div>
+      <div className="w-20 fr pt3 tr">
         <Button onClick={() => saveComment()} className="bg-red white f6">
           <FormattedMessage {...messages.comment} />
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -258,15 +256,14 @@ export const TaskActivity = ({
         <div className="f5 pa0 ma0 cf">
           <div className="w-40-l w-100 fl pt2">
             <p className="ttu f3 pa0 ma0 barlow-condensed b mb2">
-              <FormattedMessage {...messages.taskActivity} />
+              <FormattedMessage {...messages.taskActivity} values={{ n: taskId }} />
             </p>
-            <b>#{taskId}</b>
             {project.projectInfo && project.projectInfo.name ? (
-              `: ${project.projectInfo.name}`
-            ) : (
               <span>
-                , <FormattedMessage {...messages.projectId} values={{ id: project.projectId }} />
+                <b>#{project.projectId}</b>: {project.projectInfo.name}
               </span>
+            ) : (
+              <FormattedMessage {...messages.projectId} values={{ id: project.projectId }} />
             )}
           </div>
           <div className="w-60-l w-100 fl tr pr3 pt2">
@@ -294,7 +291,7 @@ export const TaskActivity = ({
           </div>
         </div>
       </div>
-      <div className="blue-dark h5 overflow-scroll">
+      <div className="blue-dark overflow-scroll vh-50">
         <TaskHistory
           projectId={project.projectId}
           taskId={taskId}

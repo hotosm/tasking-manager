@@ -319,6 +319,15 @@ export default defineMessages({
     id: 'pages.learn.validate.video.description',
     defaultMessage: 'Learn how to start validating projects on Tasking Manager.',
   },
+  learnValidateTrainingVideoTitle: {
+    id: 'pages.learn.validate.training.video.title',
+    defaultMessage: 'Validation training',
+  },
+  learnValidateTrainingVideoDescription: {
+    id: 'pages.learn.validate.training.video.description',
+    defaultMessage:
+      'Deep dive on validation with this training, which includes advanced concepts and the JOSM editor.',
+  },
   learnValidateTitle: {
     id: 'pages.learn.validate_title',
     defaultMessage: 'Learn to validate',

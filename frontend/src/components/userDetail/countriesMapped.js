@@ -19,12 +19,6 @@ try {
 
 const UserCountriesMap = ({ projects }) => {
   const locale = useSelector((state) => state.preferences['locale']);
-  const geojson = {
-    type: 'FeatureCollection',
-    features: projects.mappedProjects.map((f) => {
-      return { type: 'Feature', geometry: f.centroid, properties: { projectId: f.projectId } };
-    }),
-  };
 
   const [map, setMap] = useState(null);
   const mapRef = React.createRef();
@@ -49,11 +43,17 @@ const UserCountriesMap = ({ projects }) => {
   }, []);
 
   useLayoutEffect(() => {
-    if (map) {
+    if (map && projects.mappedProjects) {
+      const geojson = {
+        type: 'FeatureCollection',
+        features: projects.mappedProjects.map((f) => {
+          return { type: 'Feature', geometry: f.centroid, properties: { projectId: f.projectId } };
+        }),
+      };
       map.resize(); //https://docs.mapbox.com/help/troubleshooting/blank-tiles/
       map.on('load', () => mapboxLayerDefn(map, geojson, (id) => navigate(`/projects/${id}/`)));
     }
-  }, [map, geojson]);
+  }, [map, projects.mappedProjects]);
 
   return <div id="map" className="w-two-thirds-l w-100 h-100 fl" ref={mapRef}></div>;
 };

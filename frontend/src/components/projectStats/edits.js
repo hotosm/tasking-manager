@@ -55,7 +55,7 @@ export const EditsStats = (props) => {
   const { changesets, buildings, roads, edits } = props.data;
 
   return (
-    <div className="cf w-100 pb4 ph2 ph4-ns bg-white blue-dark">
+    <div className="cf w-100 pb4 ph2 ph4-ns blue-dark">
       <h3 className="barlow-condensed ttu f3">
         <FormattedMessage {...projectMessages.edits} />
       </h3>

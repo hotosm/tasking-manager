@@ -18,7 +18,7 @@ from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
 from backend.models.postgis.statuses import TeamRoles
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
-    get_template,
+    get_txt_template,
     template_var_replacing,
     clean_html,
 )
@@ -41,7 +41,7 @@ class MessageService:
     def send_welcome_message(user: User):
         """ Sends welcome message to all new users at Sign up"""
         org_code = current_app.config["ORG_CODE"]
-        text_template = get_template("welcome_message_en.txt")
+        text_template = get_txt_template("welcome_message_en.txt")
         replace_list = [
             ["[USERNAME]", user.username],
             ["[ORG_CODE]", org_code],
@@ -68,7 +68,7 @@ class MessageService:
             return  # No need to send a message to yourself
 
         user = UserService.get_user_by_id(mapped_by)
-        text_template = get_template(
+        text_template = get_txt_template(
             "invalidation_message_en.txt"
             if status == TaskStatus.INVALIDATED
             else "validation_message_en.txt"
@@ -183,6 +183,7 @@ class MessageService:
                 message["message"].project_id,
                 clean_html(message["message"].subject),
                 message["message"].message,
+                obj.message_type,
             )
 
             if i + 1 % 10 == 0:
@@ -370,63 +371,64 @@ class MessageService:
     @staticmethod
     def send_message_after_chat(chat_from: int, chat: str, project_id: int):
         """ Send alert to user if they were @'d in a chat message """
-        current_app.logger.debug("Sending Message After Chat")
-        usernames = MessageService._parse_message_for_username(chat, project_id)
+        # Because message-all run on background thread it needs it's own app context
+        app = create_app()
+        with app.app_context():
+            usernames = MessageService._parse_message_for_username(chat, project_id)
+            if len(usernames) == 0:
+                return  # Nobody @'d so return
 
-        if len(usernames) == 0:
-            return  # Nobody @'d so return
-
-        link = MessageService.get_project_link(project_id, include_chat_section=True)
-
-        messages = []
-        for username in usernames:
-            current_app.logger.debug(f"Searching for {username}")
-            try:
-                user = UserService.get_user_by_username(username)
-            except NotFound:
-                current_app.logger.error(f"Username {username} not found")
-                continue  # If we can't find the user, keep going no need to fail
-
-            message = Message()
-            message.message_type = MessageType.MENTION_NOTIFICATION.value
-            message.project_id = project_id
-            message.from_user_id = chat_from
-            message.to_user_id = user.id
-            message.subject = f"You were mentioned in {link} chat"
-            message.message = chat
-            messages.append(dict(message=message, user=user))
-
-        MessageService._push_messages(messages)
-
-        query = (
-            """ select user_id from project_favorites where project_id = :project_id"""
-        )
-        result = db.engine.execute(text(query), project_id=project_id)
-        favorited_users = [r[0] for r in result]
-
-        if len(favorited_users) != 0:
-            project_link = MessageService.get_project_link(
+            link = MessageService.get_project_link(
                 project_id, include_chat_section=True
             )
-            # project_title = ProjectService.get_project_title(project_id)
-            messages = []
-            for user_id in favorited_users:
 
+            messages = []
+            for username in usernames:
+                current_app.logger.debug(f"Searching for {username}")
                 try:
-                    user = UserService.get_user_dto_by_id(user_id)
+                    user = UserService.get_user_by_username(username)
                 except NotFound:
+                    current_app.logger.error(f"Username {username} not found")
                     continue  # If we can't find the user, keep going no need to fail
 
                 message = Message()
-                message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
+                message.message_type = MessageType.MENTION_NOTIFICATION.value
                 message.project_id = project_id
+                message.from_user_id = chat_from
                 message.to_user_id = user.id
-                message.subject = f"{chat_from} left a comment in {project_link}"
+                message.subject = f"You were mentioned in {link} chat"
                 message.message = chat
                 messages.append(dict(message=message, user=user))
 
-            # it's important to keep that line inside the if to avoid duplicated emails
             MessageService._push_messages(messages)
+
+            query = """ select user_id from project_favorites where project_id = :project_id"""
+            result = db.engine.execute(text(query), project_id=project_id)
+            favorited_users = [r[0] for r in result]
+
+            if len(favorited_users) != 0:
+                project_link = MessageService.get_project_link(
+                    project_id, include_chat_section=True
+                )
+                # project_title = ProjectService.get_project_title(project_id)
+                messages = []
+                for user_id in favorited_users:
+
+                    try:
+                        user = UserService.get_user_dto_by_id(user_id)
+                    except NotFound:
+                        continue  # If we can't find the user, keep going no need to fail
+
+                    message = Message()
+                    message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
+                    message.project_id = project_id
+                    message.to_user_id = user.id
+                    message.subject = f"{chat_from} left a comment in {project_link}"
+                    message.message = chat
+                    messages.append(dict(message=message, user=user))
+
+                # it's important to keep that line inside the if to avoid duplicated emails
+                MessageService._push_messages(messages)
 
     @staticmethod
     def send_favorite_project_activities(user_id: int):

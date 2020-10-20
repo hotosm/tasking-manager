@@ -1,0 +1,8 @@
+.*
+*.yml
+**/*.pyc
+**/node_modules
+**/npm-debug.log
+logs/
+docs/
+scripts/
