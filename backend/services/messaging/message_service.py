@@ -183,6 +183,7 @@ class MessageService:
                 message["message"].project_id,
                 clean_html(message["message"].subject),
                 message["message"].message,
+                obj.message_type,
             )
 
             if i + 1 % 10 == 0:
