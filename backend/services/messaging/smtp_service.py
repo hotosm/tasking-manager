@@ -54,6 +54,7 @@ class SMTPService:
         project_id: int,
         subject: str,
         content: str,
+        message_type: int,
     ):
         """Send an email to user to alert that they have a new message"""
         current_app.logger.debug(f"Test if email required {to_address}")
@@ -78,6 +79,7 @@ class SMTPService:
             "PROFILE_LINK": inbox_url,
             "SETTINGS_LINK": settings_url,
             "CONTENT": format_username_link(content),
+            "MESSAGE_TYPE": message_type,
         }
         html_template = get_template("message_alert_en.html", values)
         SMTPService._send_message(to_address, subject, html_template)
