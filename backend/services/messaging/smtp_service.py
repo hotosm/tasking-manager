@@ -6,7 +6,6 @@ from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from backend.services.messaging.template_service import (
     get_template,
-    template_var_replacing,
     format_username_link,
 )
 
@@ -15,26 +14,18 @@ class SMTPService:
     @staticmethod
     def send_verification_email(to_address: str, username: str):
         """ Sends a verification email with a unique token so we can verify user owns this email address """
-        org_code = current_app.config["ORG_CODE"]
         # TODO these could be localised if needed, in the future
-        html_template = get_template("email_verification_en.html")
-        text_template = get_template("email_verification_en.txt")
-
         verification_url = SMTPService._generate_email_verification_url(
             to_address, username
         )
-        replace_list = [
-            ["[USERNAME]", username],
-            ["[VERIFICATION_LINK]", verification_url],
-            ["[ORG_CODE]", org_code],
-            ["[ORG_NAME]", current_app.config["ORG_NAME"]],
-        ]
-        html_template = template_var_replacing(html_template, replace_list)
-        text_template = template_var_replacing(text_template, replace_list)
+        values = {
+            "USERNAME": username,
+            "VERIFICATION_LINK": verification_url,
+        }
+        html_template = get_template("email_verification_en.html", values)
 
-        subject = "{} Tasking Manager - Email Verification".format(org_code)
-        SMTPService._send_message(to_address, subject, html_template, text_template)
-
+        subject = "Confirm your email address"
+        SMTPService._send_message(to_address, subject, html_template)
         return True
 
     @staticmethod
@@ -66,7 +57,6 @@ class SMTPService:
     ):
         """Send an email to user to alert that they have a new message"""
         current_app.logger.debug(f"Test if email required {to_address}")
-        org_code = current_app.config["ORG_CODE"]
         from_user_link = f"{current_app.config['APP_BASE_URL']}/users/{from_username}"
         project_link = f"{current_app.config['APP_BASE_URL']}/projects/{project_id}"
         settings_url = "{}/settings#notifications".format(
@@ -79,33 +69,24 @@ class SMTPService:
         if message_id is not None:
             message_path = f"/message/{message_id}"
 
-        # TODO these could be localised if needed, in the future
-        html_template = get_template("message_alert_en.html")
-        text_template = get_template("message_alert_en.txt")
         inbox_url = f"{current_app.config['APP_BASE_URL']}/inbox{message_path}"
-        replace_list = [
-            ["[FROM_USER_LINK]", from_user_link],
-            ["[FROM_USERNAME]", from_username],
-            ["[PROJECT_LINK]", project_link],
-            ["[PROJECT_ID]", str(project_id)],
-            ["[ORG_CODE]", org_code],
-            ["[PROFILE_LINK]", inbox_url],
-            ["[SETTINGS_LINK]", settings_url],
-        ]
-        html_replace_list = replace_list + [
-            ["[CONTENT]", format_username_link(content)]
-        ]
-        html_template = template_var_replacing(html_template, html_replace_list)
-        replace_list += [["[CONTENT]", content]]
-        text_template = template_var_replacing(text_template, replace_list)
-
-        SMTPService._send_message(to_address, subject, html_template, text_template)
+        values = {
+            "FROM_USER_LINK": from_user_link,
+            "FROM_USERNAME": from_username,
+            "PROJECT_LINK": project_link,
+            "PROJECT_ID": str(project_id) if project_id is not None else None,
+            "PROFILE_LINK": inbox_url,
+            "SETTINGS_LINK": settings_url,
+            "CONTENT": format_username_link(content),
+        }
+        html_template = get_template("message_alert_en.html", values)
+        SMTPService._send_message(to_address, subject, html_template)
 
         return True
 
     @staticmethod
     def _send_message(
-        to_address: str, subject: str, html_message: str, text_message: str
+        to_address: str, subject: str, html_message: str, text_message: str = None
     ):
         """ Helper sends SMTP message """
         from_address = current_app.config["EMAIL_FROM_ADDRESS"]
@@ -120,10 +101,11 @@ class SMTPService:
         msg["To"] = to_address
 
         # Record the MIME types of both parts - text/plain and text/html.
-        part1 = MIMEText(text_message, "plain")
         part2 = MIMEText(html_message, "html")
-        msg.attach(part1)
         msg.attach(part2)
+        if text_message:
+            part1 = MIMEText(text_message, "plain")
+            msg.attach(part1)
 
         current_app.logger.debug(f"Sending email via SMTP {to_address}")
         if current_app.config["LOG_LEVEL"] == "DEBUG":

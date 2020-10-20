@@ -49,9 +49,7 @@ def create_app(env=None):
     if EnvironmentConfig.SENTRY_BACKEND_DSN:
         sentry_init()
 
-    app = Flask(
-        __name__,
-    )
+    app = Flask(__name__, template_folder="services/messaging/templates/")
 
     # Load configuration options from environment
     app.config.from_object("backend.config.EnvironmentConfig")
