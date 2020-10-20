@@ -6,7 +6,7 @@ import DOMPurify from 'dompurify';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import systemAvatar from '../../assets/img/hot-system-avatar-square-opaque.png';
+import systemAvatar from '../../assets/img/logo-square.png';
 import { EyeIcon } from '../svgIcons';
 import { CheckBox } from '../formInputs';
 import { UserAvatar } from '../user/avatar';

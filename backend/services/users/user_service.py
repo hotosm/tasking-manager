@@ -30,7 +30,7 @@ from backend.models.postgis.utils import NotFound
 from backend.services.users.osm_service import OSMService, OSMServiceError
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
-    get_template,
+    get_txt_template,
     template_var_replacing,
 )
 
@@ -742,7 +742,7 @@ class UserService:
 
     @staticmethod
     def notify_level_upgrade(user_id: int, username: str, level: str):
-        text_template = get_template("level_upgrade_message_en.txt")
+        text_template = get_txt_template("level_upgrade_message_en.txt")
         replace_list = [
             ["[USERNAME]", username],
             ["[LEVEL]", level],

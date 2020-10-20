@@ -18,7 +18,7 @@ from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
 from backend.models.postgis.statuses import TeamRoles
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
-    get_template,
+    get_txt_template,
     template_var_replacing,
     clean_html,
 )
@@ -41,7 +41,7 @@ class MessageService:
     def send_welcome_message(user: User):
         """ Sends welcome message to all new users at Sign up"""
         org_code = current_app.config["ORG_CODE"]
-        text_template = get_template("welcome_message_en.txt")
+        text_template = get_txt_template("welcome_message_en.txt")
         replace_list = [
             ["[USERNAME]", user.username],
             ["[ORG_CODE]", org_code],
@@ -68,7 +68,7 @@ class MessageService:
             return  # No need to send a message to yourself
 
         user = UserService.get_user_by_id(mapped_by)
-        text_template = get_template(
+        text_template = get_txt_template(
             "invalidation_message_en.txt"
             if status == TaskStatus.INVALIDATED
             else "validation_message_en.txt"

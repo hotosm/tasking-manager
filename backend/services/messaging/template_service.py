@@ -1,10 +1,10 @@
 import os
 import re
 
-from flask import current_app
+from flask import current_app, render_template
 
 
-def get_template(template_name: str) -> str:
+def get_txt_template(template_name: str):
     """
     Helper function to read the template from disk and return as a string to be manipulated
     :param template_name: The template we want to load
@@ -19,6 +19,24 @@ def get_template(template_name: str) -> str:
     except FileNotFoundError:
         current_app.logger.error("Unable open file {0}".format(template_location))
         raise ValueError("Unable open file {0}".format(template_location))
+
+
+def get_template(template_name: str, values: dict) -> str:
+    """
+    Helper function to read a HTML template from disk and return it using flask's
+    render_template function
+    :param template_name: The template we want to load
+    :return: Template as a string
+    """
+    try:
+        values["ORG_CODE"] = current_app.config["ORG_CODE"]
+        values["ORG_NAME"] = current_app.config["ORG_NAME"]
+        values["ORG_LOGO"] = current_app.config["ORG_LOGO"]
+        values["APP_BASE_URL"] = current_app.config["APP_BASE_URL"]
+        return render_template(template_name, values=values)
+    except (FileNotFoundError, TypeError):
+        current_app.logger.error("Unable open file {0}".format(template_name))
+        raise ValueError("Unable open file {0}".format(template_name))
 
 
 def template_var_replacing(content: str, replace_list: list) -> str:
@@ -41,6 +59,6 @@ def format_username_link(content):
         username = name[2:-1]
         content = content.replace(
             name,
-            f'<a href="{current_app.config["APP_BASE_URL"]}/users/{username}/">@{username}</a>',
+            f'<a style="color: #d73f3f" href="{current_app.config["APP_BASE_URL"]}/users/{username}/">@{username}</a>',
         )
     return content
