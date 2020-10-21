@@ -413,7 +413,7 @@ export default defineMessages({
   },
   taskActivity: {
     id: 'project.tasks.history.title',
-    defaultMessage: 'Task activity',
+    defaultMessage: 'Task {n}',
   },
   taskSplitted: {
     id: 'project.tasks.history.splitted',
