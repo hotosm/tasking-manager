@@ -100,7 +100,7 @@
     "jest-canvas-mock": "^2.3.0",
     "msw": "^0.21.3",
     "prettier": "^2.1.2",
-    "react-test-renderer": "^16.13.1"
+    "react-test-renderer": "^16.14.0"
   },
   "jest": {
     "coverageReporters": [
