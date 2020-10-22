@@ -4,6 +4,7 @@ import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
 import lineToPolygon from '@turf/line-to-polygon';
 import { FormattedMessage } from 'react-intl';
+import { useDropzone } from 'react-dropzone';
 
 import messages from './messages';
 import { addLayer } from './index';
@@ -83,8 +84,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     }
   };
 
-  const uploadFile = (event) => {
-    let files = event.target.files;
+  const uploadFile = (files) => {
     let file = files[0];
     if (!file) {
       return null;
@@ -186,6 +186,8 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     mapObj.draw.changeMode('draw_polygon');
   };
 
+  const { getRootProps, getInputProps } = useDropzone({ onDrop: uploadFile });
+
   return (
     <>
       <h3 className="f3 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
@@ -207,18 +209,14 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
         <h3>
           <FormattedMessage {...messages.option2} />:
         </h3>
-        <p>
-          <FormattedMessage {...messages.importDescription} />
-        </p>
-        <div className="pt3">
-          <label
-            for="file-upload"
-            className="bg-blue-dark white br1 f5 bn pointer"
-            style={{ padding: '.75rem 1.5rem' }}
-          >
-            <FormattedMessage {...messages.uploadFile} />
-          </label>
-          <input onChange={uploadFile} style={{ display: 'none' }} id="file-upload" type="file" />
+        <div className="mr4 pl2 pt2" {...getRootProps()} style={{ border: '1px solid' }}>
+          <p>
+            <FormattedMessage {...messages.importDescription} />
+          </p>
+          <p style={{ color: 'blue' }}>
+            <FormattedMessage {...messages.dragFilesDescription} />
+          </p>
+          <input {...getInputProps()} style={{ display: 'none' }} />
         </div>
       </div>
       <div className="pb2">

@@ -180,6 +180,10 @@ export default defineMessages({
     id: 'management.projects.create.upload.description',
     defaultMessage: 'Import a GeoJSON, KML, OSM or zipped SHP file.',
   },
+  dragFilesDescription: {
+    id: 'management.projects.create.drag.description',
+    defaultMessage: 'Drag files or click to browse',
+  },
   option1: {
     id: 'management.projects.create.options.1',
     defaultMessage: 'Option 1',
