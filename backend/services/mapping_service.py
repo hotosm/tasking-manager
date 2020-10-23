@@ -96,7 +96,7 @@ class MappingService:
                 raise UserLicenseError("User must accept license to map this task")
             else:
                 raise MappingServiceError(
-                    f"Mapping not allowed because: {error_reason.name}"
+                    f"Mapping not allowed because: {error_reason}"
                 )
 
         task.lock_task_for_mapping(lock_task_dto.user_id)
