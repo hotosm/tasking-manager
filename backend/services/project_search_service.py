@@ -49,7 +49,7 @@ class ProjectSearchServiceError(Exception):
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class BBoxTooBigError(Exception):
@@ -57,7 +57,7 @@ class BBoxTooBigError(Exception):
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class ProjectSearchService:
