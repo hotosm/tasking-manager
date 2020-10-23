@@ -25,7 +25,7 @@ class ProjectAdminServiceError(Exception):
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class ProjectStoreError(Exception):
@@ -33,7 +33,7 @@ class ProjectStoreError(Exception):
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class ProjectAdminService:
