@@ -172,8 +172,6 @@ class Project(db.Model):
         default=[
             Editors.ID.value,
             Editors.JOSM.value,
-            Editors.POTLATCH_2.value,
-            Editors.FIELD_PAPERS.value,
             Editors.CUSTOM.value,
         ],
         index=True,
@@ -184,8 +182,6 @@ class Project(db.Model):
         default=[
             Editors.ID.value,
             Editors.JOSM.value,
-            Editors.POTLATCH_2.value,
-            Editors.FIELD_PAPERS.value,
             Editors.CUSTOM.value,
         ],
         index=True,
