@@ -9,6 +9,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
+import { UndoIcon } from '../svgIcons';
 import { addLayer } from './index';
 
 // Maximum resolution of OSM
@@ -96,14 +97,14 @@ export const makeGrid = (geom, zoom, mask) => {
 
 const splitTaskGrid = (taskGrid, geom) => {
   let newTaskGrid = [];
-  taskGrid.features.forEach(f => {
+  taskGrid.features.forEach((f) => {
     let poly = polygon(f.geometry.coordinates[0]);
     let contains = intersect(geom, poly);
     if (contains === null) {
       newTaskGrid.push(f);
     } else {
       const splitGrid = makeGrid(f, f.properties.zoom + 1, {});
-      splitGrid.features.forEach(g => {
+      splitGrid.features.forEach((g) => {
         newTaskGrid.push(g);
       });
     }
@@ -114,7 +115,7 @@ const splitTaskGrid = (taskGrid, geom) => {
 
 export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   const splitHandler = useCallback(
-    event => {
+    (event) => {
       const taskGrid = mapObj.map.getSource('grid')._data;
 
       if (metadata.tempTaskGrid === null) {
@@ -134,23 +135,23 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   );
 
   const splitBbox = () => {
-    mapObj.map.on('mouseenter', 'grid', event => {
+    mapObj.map.on('mouseenter', 'grid', (event) => {
       mapObj.map.getCanvas().style.cursor = 'pointer';
     });
-    mapObj.map.on('mouseleave', 'grid', event => {
+    mapObj.map.on('mouseleave', 'grid', (event) => {
       mapObj.map.getCanvas().style.cursor = '';
     });
     mapObj.map.on('click', 'grid', splitHandler);
   };
 
   const splitPolygon = () => {
-    mapObj.map.on('mouseenter', 'grid', event => {
+    mapObj.map.on('mouseenter', 'grid', (event) => {
       mapObj.map.getCanvas().style.cursor = 'crosshair';
     });
-    mapObj.map.on('mouseleave', 'grid', event => {
+    mapObj.map.on('mouseleave', 'grid', (event) => {
       mapObj.map.getCanvas().style.cursor = '';
     });
-    mapObj.map.once('draw.create', event => {
+    mapObj.map.once('draw.create', (event) => {
       const taskGrid = mapObj.map.getSource('grid')._data;
       if (metadata.tempTaskGrid === null) {
         updateMetadata({ ...metadata, tempTaskGrid: taskGrid });
@@ -241,7 +242,8 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
             <Button className={buttonStyle} onClick={splitPolygon}>
               <FormattedMessage {...messages.splitByDrawing} />
             </Button>
-            <Button className="bg-red white db mt2" onClick={resetGrid}>
+            <Button className="bg-white blue-dark db mt2" onClick={resetGrid}>
+              <UndoIcon className="w1 h1 mr2 v-mid pb1" />
               <FormattedMessage {...messages.reset} />
             </Button>
           </div>

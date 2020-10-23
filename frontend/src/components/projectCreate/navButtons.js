@@ -4,7 +4,7 @@ import { addLayer } from './index';
 import messages from './messages';
 import { Button } from '../button';
 
-const validateStep = props => {
+const validateStep = (props) => {
   switch (props.index) {
     case 1: // Set Project AOI.
       if (props.metadata.area >= props.maxArea) {
@@ -44,11 +44,11 @@ const validateStep = props => {
   return { error: false, message: '' };
 };
 
-const clearParamsStep = props => {
+const clearParamsStep = (props) => {
   switch (props.index) {
     case 2: //clear Tasks
       props.mapObj.map.removeLayer('grid');
-      props.updateMetadata({ ...props.metadata, tasksNo: 0});
+      props.updateMetadata({ ...props.metadata, tasksNo: 0 });
       break;
     case 3:
       props.updateMetadata({ ...props.metadata, taskGrid: props.metadata.tempTaskGrid });
@@ -66,8 +66,8 @@ const clearParamsStep = props => {
   props.setStep(prevStep);
 };
 
-const NavButtons = props => {
-  const stepHandler = event => {
+const NavButtons = (props) => {
+  const stepHandler = (event) => {
     const resp = validateStep(props);
     props.setErr(resp);
   };
@@ -75,12 +75,12 @@ const NavButtons = props => {
   return (
     <div className="pt3">
       {props.index === 1 ? null : (
-        <Button onClick={() => clearParamsStep(props)} className="white bg-red mr3">
+        <Button onClick={() => clearParamsStep(props)} className="blue-dark bg-white mr3">
           <FormattedMessage {...messages.backToPrevious} />
         </Button>
       )}
       {props.index === 4 ? null : (
-        <Button onClick={stepHandler} className="white bg-blue-dark">
+        <Button onClick={stepHandler} className="white bg-red">
           <FormattedMessage {...messages.next} />
         </Button>
       )}

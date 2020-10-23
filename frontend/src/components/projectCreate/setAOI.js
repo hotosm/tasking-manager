@@ -8,6 +8,7 @@ import { useDropzone } from 'react-dropzone';
 
 import messages from './messages';
 import { addLayer } from './index';
+import { UndoIcon } from '../svgIcons';
 import { Button } from '../button';
 import { SwitchToggle } from '../formInputs';
 import { makeGrid } from './setTaskSizes';
@@ -186,39 +187,33 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     mapObj.draw.changeMode('draw_polygon');
   };
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop: uploadFile });
+  const { getRootProps, getInputProps, open } = useDropzone({
+    onDrop: uploadFile,
+    noClick: true,
+    noKeyboard: true,
+  });
 
   return (
-    <>
+    <div {...getRootProps()}>
       <h3 className="f3 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
         <FormattedMessage {...messages.step1} />
       </h3>
       <div className="pb4">
-        <h3>
-          <FormattedMessage {...messages.option1} />:
-        </h3>
         <p>
-          <FormattedMessage {...messages.drawDescription} />
+          <FormattedMessage {...messages.defineAreaDescription} />
         </p>
-        <Button className="bg-blue-dark white" onClick={drawHandler}>
+        <Button className="bg-blue-dark white mr2" onClick={drawHandler}>
           <FormattedMessage {...messages.draw} />
         </Button>
+        <input {...getInputProps()} />
+        <Button className="bg-blue-dark white" onClick={open}>
+          <FormattedMessage {...messages.selectFile} />
+        </Button>
+        <p>
+          <FormattedMessage {...messages.importDescription} />
+        </p>
       </div>
 
-      <div className="pb4">
-        <h3>
-          <FormattedMessage {...messages.option2} />:
-        </h3>
-        <div className="mr4 pl2 pt2" {...getRootProps()} style={{ border: '1px solid' }}>
-          <p>
-            <FormattedMessage {...messages.importDescription} />
-          </p>
-          <p style={{ color: 'blue' }}>
-            <FormattedMessage {...messages.dragFilesDescription} />
-          </p>
-          <input {...getInputProps()} style={{ display: 'none' }} />
-        </div>
-      </div>
       <div className="pb2">
         {containsMultiplePolygons && (
           <SwitchToggle
@@ -232,12 +227,13 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
         )}
       </div>
       {metadata.geom && (
-        <div className="pt4">
-          <Button className="bg-red white" onClick={deleteHandler}>
-            <FormattedMessage {...messages.deleteArea} />
+        <div className="pv3">
+          <Button className="bg-white blue-dark" onClick={deleteHandler}>
+            <UndoIcon className="w1 h1 mr2 v-mid pb1" />
+            <FormattedMessage {...messages.reset} />
           </Button>
         </div>
       )}
-    </>
+    </div>
   );
 }
