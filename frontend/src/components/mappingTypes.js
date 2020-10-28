@@ -15,17 +15,15 @@ export const titledIcons = [
 export function MappingTypes({ types = [], colorClass }: Object) {
   const intl = useIntl();
   return (
-    <>
+    <div className="flex flex-nowrap-ns flex-wrap" style={{maxWidth: titledIcons.length*44}}>
       {titledIcons.map((Element, k) => (
-        <span title={intl.formatMessage(messages[Element.title])} key={k}>
+        <div title={intl.formatMessage(messages[Element.title])} key={k} className="flex-auto mr1">
           <Element.icon
-            className={`ml1 mr3 ${
-              types && types.includes(Element.value) ? colorClass : 'grey-light'
-            }`}
+            className={`${types && types.includes(Element.value) ? colorClass : 'grey-light'}`}
             height="23"
           />
-        </span>
+        </div>
       ))}
-    </>
+    </div>
   );
 }

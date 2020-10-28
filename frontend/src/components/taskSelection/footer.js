@@ -156,7 +156,7 @@ const TaskSelectionFooter = (props) => {
   ]);
 
   const updateEditor = (arr) => setEditor(arr[0].value);
-  const titleClasses = 'db ttu f6 blue-light mb2';
+  const titleClasses = 'db ttu f6 blue-light mb2 truncate';
   return (
     <div className="cf bg-white pb2 ph4-l ph2">
       {lockError !== null && (
@@ -177,11 +177,14 @@ const TaskSelectionFooter = (props) => {
           )}
         </Popup>
       )}
-      <div className="w-25-ns w-40 fl">
-        <h3 className={titleClasses}>
-          <FormattedMessage {...messages.typesOfMapping} />
-        </h3>
-        <div className="db fl pt1">
+      {/* Types of mapping */}
+      <div className="w-25-ns w-40">
+        <div className="db-ns dn">
+          <h3 className={titleClasses}>
+            <FormattedMessage {...messages.typesOfMapping} />
+          </h3>
+        </div>
+        <div className="mr2-ns pt1">
           <MappingTypes types={props.project.mappingTypes} />
         </div>
       </div>
