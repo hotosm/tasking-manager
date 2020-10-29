@@ -390,7 +390,8 @@ export function ReopenEditor({ project, action, editor, callEditor }: Object) {
   );
 }
 
-export function SidebarToggle({ setShowSidebar, editorRef }: Object) {
+export function SidebarToggle({ setShowSidebar }: Object) {
+  const iDContext = useSelector((state) => state.editor.context);
   return (
     <div>
       <FormattedMessage {...messages.hideSidebar}>
@@ -399,7 +400,7 @@ export function SidebarToggle({ setShowSidebar, editorRef }: Object) {
             <SidebarIcon
               onClick={() => {
                 setShowSidebar(false);
-                editorRef.ui().restart();
+                iDContext.ui().restart();
               }}
             />
           </div>

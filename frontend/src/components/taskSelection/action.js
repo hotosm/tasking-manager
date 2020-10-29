@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
@@ -12,7 +12,7 @@ import { HeaderLine } from '../projectDetail/header';
 import { Button } from '../button';
 import Portal from '../portal';
 import { SidebarIcon } from '../svgIcons';
-import { openEditor } from '../../utils/openEditor';
+import { openEditor, getTaskGpxUrl, formatImageryUrl } from '../../utils/openEditor';
 import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
@@ -34,7 +34,6 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
   const tasksIds = activeTasks ? activeTasks.map((task) => task.taskId) : [];
-  const [editorRef, setEditorRef] = useState(null);
   const [disabled, setDisable] = useState(false);
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
@@ -47,6 +46,9 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     `projects/${project.projectId}/tasks/${tasksIds[0]}/`,
     project.projectId && tasksIds && tasksIds.length === 1,
   );
+
+  const getTaskGpxUrlCallback = useCallback((project, tasks) => getTaskGpxUrl(project, tasks), []);
+  const formatImageryUrlCallback = useCallback((imagery) => formatImageryUrl(imagery), []);
 
   useEffect(() => {
     if (!editor && projectIsReady && userDetails.defaultEditor && tasks && tasksIds) {
@@ -111,11 +113,11 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
               }
             >
               <Editor
-                editorRef={editorRef}
-                setEditorRef={setEditorRef}
                 setDisable={setDisable}
                 comment={project.changesetComment}
                 presets={project.idPresets}
+                imageryUrl={formatImageryUrlCallback(project.imagery)}
+                gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
               />
             </React.Suspense>
           ) : (
@@ -143,9 +145,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
               rows={3}
               ready={typeof project.projectId === 'number' && project.projectId > 0}
             >
-              {activeEditor === 'ID' && (
-                <SidebarToggle setShowSidebar={setShowSidebar} editorRef={editorRef} />
-              )}
+              {activeEditor === 'ID' && <SidebarToggle setShowSidebar={setShowSidebar} />}
               <HeaderLine
                 author={project.author}
                 projectId={project.projectId}
