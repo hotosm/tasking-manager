@@ -1253,13 +1253,14 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@^2.19.2":
-  version "2.19.2"
-  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.2.tgz#89714c1e55a823bb4e69aca291c2a2d3e797ec83"
-  integrity sha512-fEUWgwLDRO7jANSyrtjhH5sjoJWL4ahG2xJNMT5GWt7BZHyi8IfVl7KTcaIa7Xs7lSG0B+5pd2vFQksgH/H6WA==
+"@hotosm/id@^2.19.3":
+  version "2.19.3"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.3.tgz#75e20ce90dd08614a63517ac610a82037a2cda7d"
+  integrity sha512-d6tV1M9pzEIUhh8htlu+6mZ+UvybHnybgja9qtIrKKX/C52orOMeQPZZSAjJWAKKnu3Q9+W+GzMFKN1VHmWpuw==
   dependencies:
     "@ideditor/country-coder" "^3.2.0"
     "@ideditor/location-conflation" "~0.5.0"
+    "@mapbox/geojson-rewind" "^0.5.0"
     "@mapbox/sexagesimal" "1.2.0"
     "@mapbox/togeojson" "0.16.0"
     "@mapbox/vector-tile" "^1.3.1"
