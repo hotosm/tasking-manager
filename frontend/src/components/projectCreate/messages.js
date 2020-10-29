@@ -174,7 +174,6 @@ export default defineMessages({
   },
   importDescription: {
     id: 'management.projects.create.upload.description',
-    defaultMessage:
-      'Your can import a GeoJSON, KML, OSM or zipped Shapefile. Dragging and dropping is supported.',
+    defaultMessage: 'Your can import a GeoJSON, KML, OSM or zipped Shapefile.',
   },
 });
