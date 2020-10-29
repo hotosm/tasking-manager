@@ -5,35 +5,39 @@ import '@hotosm/id/dist/iD.css';
 
 import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET, OSM_SERVER_URL } from '../config';
 
-export default function Editor({ editorRef, setEditorRef, setDisable, comment, presets }) {
+export default function Editor({ setDisable, comment, presets, imageryUrl, gpxUrl }) {
   const dispatch = useDispatch();
   const session = useSelector((state) => state.auth.get('session'));
+  const iDContext = useSelector((state) => state.editor.context);
   const locale = useSelector((state) => state.preferences.locale);
   const windowInit = typeof window !== undefined;
 
   useEffect(() => {
     return () => {
-      window.iD.coreContext('destroy');
       dispatch({ type: 'SET_VISIBILITY', isVisible: true });
     };
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    if (windowInit && !editorRef) {
+    if (windowInit) {
       dispatch({ type: 'SET_VISIBILITY', isVisible: false });
-      setEditorRef(window.iD.coreContext());
+      if (iDContext === null) {
+        // we need to keep iD context on redux store because iD works better if
+        // the context is not restarted while running in the same browser session
+        dispatch({ type: 'SET_EDITOR', context: window.iD.coreContext() });
+      }
     }
-  }, [windowInit, setEditorRef, editorRef, dispatch]);
+  }, [windowInit, iDContext, dispatch]);
 
   useEffect(() => {
-    if (editorRef && comment) {
-      editorRef.defaultChangesetComment(comment);
+    if (iDContext && comment) {
+      iDContext.defaultChangesetComment(comment);
     }
-  }, [comment, editorRef]);
+  }, [comment, iDContext]);
 
   useEffect(() => {
-    if (session && locale && iD && editorRef) {
+    if (session && locale && iD && iDContext) {
       // if presets is not a populated list we need to set it as null
       try {
         if (presets.length) {
@@ -44,15 +48,34 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment, p
       } catch (e) {
         window.iD.presetManager.addablePresetIDs(null);
       }
-      editorRef
+      // setup the context
+      iDContext
         .embed(true)
         .assetPath('/static/')
         .locale(locale)
         .setsDocumentTitle(false)
         .containerNode(document.getElementById('id-container'));
-      editorRef.init();
+      // init the ui or restart if it was loaded previously
+      if (iDContext.ui() !== undefined) {
+        iDContext.reset();
+        iDContext.ui().restart();
+      } else {
+        iDContext.init();
+      }
+      if (imageryUrl) {
+        let background = iDContext.background();
+        const backgroundSource = background.findSource('custom');
+        if (backgroundSource) {
+          background.baseLayerSource(backgroundSource.template(imageryUrl));
+          // this line is needed to update the value on the custom background dialog
+          window.iD.prefs('background-custom-template', imageryUrl);
+        }
+      }
+      if (gpxUrl) {
+        iDContext.layers().layer('data').url(gpxUrl, '.gpx');
+      }
 
-      let osm = editorRef.connection();
+      let osm = iDContext.connection();
       const auth = {
         urlroot: OSM_SERVER_URL,
         oauth_consumer_key: OSM_CONSUMER_KEY,
@@ -65,15 +88,15 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment, p
       const thereAreChanges = (changes) =>
         changes.modified.length || changes.created.length || changes.deleted.length;
 
-      editorRef.history().on('change', () => {
-        if (thereAreChanges(editorRef.history().changes())) {
+      iDContext.history().on('change', () => {
+        if (thereAreChanges(iDContext.history().changes())) {
           setDisable(true);
         } else {
           setDisable(false);
         }
       });
     }
-  }, [session, editorRef, setDisable, presets, locale]);
+  }, [session, iDContext, setDisable, presets, locale, imageryUrl, gpxUrl]);
 
   return <div className="w-100 vh-minus-77-ns" id="id-container"></div>;
 }

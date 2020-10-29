@@ -35,11 +35,18 @@ export function openEditor(
   }
 }
 
+export function formatImageryUrl(imageryURL) {
+  // url is supposed to look like tms[22]:http://hiu...
+  if (imageryURL) {
+    return imageryURL.substring(imageryURL.indexOf('http')).replace('zoom', 'z');
+  }
+}
+
 export function getTaskGpxUrl(projectId, selectedTasks) {
   return new URL(
     `projects/${projectId}/tasks/queries/gpx/?tasks=${selectedTasks.join(',')}`,
     API_URL,
-  );
+  ).href;
 }
 
 export function getTaskXmlUrl(projectId, selectedTasks) {
@@ -68,21 +75,21 @@ export function getPotlatch2Url(centroid, zoomLevel) {
 export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl) {
   const base = customUrl ? formatCustomUrl(customUrl) : `${ID_EDITOR_URL}`;
   let url = base + '#map=' + [zoomLevel, centroid[1], centroid[0]].join('/');
-  if (project.changesetComment) {
-    url += '&comment=' + encodeURIComponent(project.changesetComment);
-  }
-  if (project.imagery && project.imagery.includes('http')) {
-    // url is supposed to look like tms[22]:http://hiu...
-    let urlForImagery = project.imagery.substring(project.imagery.indexOf('http'));
-    urlForImagery = urlForImagery.replace('zoom', 'z');
-    url += '&background=custom:' + encodeURIComponent(urlForImagery);
-  }
-  // add GPX
-  if (project.projectId && selectedTasks) {
-    url += '&gpx=' + encodeURIComponent(getTaskGpxUrl(project.projectId, selectedTasks).href);
-  }
-  if (customUrl !== '?editor=ID' && project.idPresets) {
-    url += '&presets=' + encodeURIComponent(project.idPresets.join(','));
+  // the other URL params are only needed by external iD editors
+  if (customUrl !== '?editor=ID') {
+    if (project.changesetComment) {
+      url += '&comment=' + encodeURIComponent(project.changesetComment);
+    }
+    if (project.imagery && project.imagery.includes('http')) {
+      url += '&background=custom:' + encodeURIComponent(formatImageryUrl(project.imagery));
+    }
+    // add GPX
+    if (project.projectId && selectedTasks) {
+      url += '&gpx=' + encodeURIComponent(getTaskGpxUrl(project.projectId, selectedTasks));
+    }
+    if (project.idPresets) {
+      url += '&presets=' + encodeURIComponent(project.idPresets.join(','));
+    }
   }
   return url;
 }

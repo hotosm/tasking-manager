@@ -3,6 +3,7 @@ import {
   getIdUrl,
   getTaskGpxUrl,
   getTaskXmlUrl,
+  formatImageryUrl,
   getFieldPapersUrl,
   getPotlatch2Url,
   formatJosmUrl,
@@ -58,17 +59,16 @@ describe('test if getIdUrl', () => {
     );
   });
 
-  it('with idPresets and internal iD does not return the url param', () => {
+  it('Integrated iD only returns the #map params', () => {
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
       projectId: 1234,
       idPresets: ['building', 'highway', 'natural/water'],
+      imagery:
+        'tms[1,22]:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{zoom}/{x}/{y}?access_token=pk.123',
     };
     expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1], '?editor=ID')).toBe(
-      '?editor=ID' +
-        '#map=18/-9.663953/120.25684' +
-        '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
-        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
+      '?editor=ID#map=18/-9.663953/120.25684',
     );
   });
 
@@ -118,10 +118,10 @@ it('test if getPotlatch2Url returns the correct url', () => {
 });
 
 it('test if getTaskGpxUrl returns the correct url', () => {
-  expect(getTaskGpxUrl(1, [1]).href).toBe(
+  expect(getTaskGpxUrl(1, [1])).toBe(
     new URL('projects/1/tasks/queries/gpx/?tasks=1', API_URL).href,
   );
-  expect(getTaskGpxUrl(2312, [1, 344, 54]).href).toBe(
+  expect(getTaskGpxUrl(2312, [1, 344, 54])).toBe(
     new URL('projects/2312/tasks/queries/gpx/?tasks=1,344,54', API_URL).href,
   );
 });
@@ -193,5 +193,16 @@ describe('test get imagery type from URL', () => {
 
     const wmsWithMaxZoom = 'wms[:22]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
     expect(getImageryInfo(wmsWithMaxZoom)).toStrictEqual(['wms', null, 22]);
+  });
+});
+
+describe('formatImageryUrl', () => {
+  it('returns a string starting with http and replaces {zoom} by {z}', () => {
+    expect(formatImageryUrl('wms:http://tile.openstreetmap.org/{zoom}/{x}/{y}.png')).toBe(
+      'http://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    );
+    expect(formatImageryUrl('tms[0:]https://tile.openstreetmap.org/{zoom}/{x}/{y}.png')).toBe(
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    );
   });
 });
