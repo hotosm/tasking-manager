@@ -1696,6 +1696,15 @@
     "@sentry/utils" "5.27.1"
     tslib "^1.9.3"
 
+"@sentry/hub@5.27.2":
+  version "5.27.2"
+  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-5.27.2.tgz#06923e0b7b5e96cd2cd8b1d44cb83dbd8b8eed26"
+  integrity sha512-KCAWF5oDXd/Pjzbcmfj53F5ZzOX53Rzi23a2mWyUXMdPXoXIiMrIcdC/DqrqKV787LvOJcSFaTychJCH3t15/A==
+  dependencies:
+    "@sentry/types" "5.27.2"
+    "@sentry/utils" "5.27.2"
+    tslib "^1.9.3"
+
 "@sentry/minimal@5.27.1":
   version "5.27.1"
   resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-5.27.1.tgz#d6ce881ba3c262db29520177a4c1f0e0f5388697"
@@ -1703,6 +1712,15 @@
   dependencies:
     "@sentry/hub" "5.27.1"
     "@sentry/types" "5.27.1"
+    tslib "^1.9.3"
+
+"@sentry/minimal@5.27.2":
+  version "5.27.2"
+  resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-5.27.2.tgz#c9b90d71383891e69f4abecf32fdba9d91d3328a"
+  integrity sha512-n9SssI30rpS1tw6hH0ylxVlONdmZCqiPy60fotxUzql6mCo/nW7tcADsW15fvQlUQ160VaGf3iMj+hpHkRBerw==
+  dependencies:
+    "@sentry/hub" "5.27.2"
+    "@sentry/types" "5.27.2"
     tslib "^1.9.3"
 
 "@sentry/react@^5.27.1":
@@ -1717,15 +1735,15 @@
     hoist-non-react-statics "^3.3.2"
     tslib "^1.9.3"
 
-"@sentry/tracing@^5.27.1":
-  version "5.27.1"
-  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-5.27.1.tgz#198cd97514363369d29eef9b597be9332ab170c4"
-  integrity sha512-GBmdR8Ky/nv4KOa6+DEnOSBkFOFhM+asR8Y/gw2qSUWCwzKuWHh9BEnDwxtSI8CMvgUwOIZ5wiiqJGc1unYfCw==
+"@sentry/tracing@^5.27.2":
+  version "5.27.2"
+  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-5.27.2.tgz#a87bed1d96dacdb443894732abb5828e950b14ed"
+  integrity sha512-5Lptd32VtKBzIzTmFqcKgcetTMRraMvjPFTX8kFVX4aGDaUGOx0cCZeAURNoHDfHfjCazYK8yV6BkJfi6YJNww==
   dependencies:
-    "@sentry/hub" "5.27.1"
-    "@sentry/minimal" "5.27.1"
-    "@sentry/types" "5.27.1"
-    "@sentry/utils" "5.27.1"
+    "@sentry/hub" "5.27.2"
+    "@sentry/minimal" "5.27.2"
+    "@sentry/types" "5.27.2"
+    "@sentry/utils" "5.27.2"
     tslib "^1.9.3"
 
 "@sentry/types@5.27.1":
@@ -1733,12 +1751,25 @@
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-5.27.1.tgz#031480a4cf8f0b6e6337fb03ee884deedcef6f40"
   integrity sha512-g1aX0V0fz5BTo0mjgSVY9XmPLGZ6p+8OEzq3ubKzDUf59VHl+Vt8viZ8VXw/vsNtfAjBHn7BzSuzJo7cXJJBtA==
 
+"@sentry/types@5.27.2":
+  version "5.27.2"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-5.27.2.tgz#606e973cee865e83e75491e33e9b2732a0f79c94"
+  integrity sha512-oszEOlWJuySvGc2HJ2KLTgtYwRFnHWDu8YIZ99UhmO2PcGQ5HlZJpV2oC8n3x0g1YSSlAaThjKbliJEAT7fmPg==
+
 "@sentry/utils@5.27.1":
   version "5.27.1"
   resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-5.27.1.tgz#0ed9d9685aae6f4ef9eb6b9ebb81e361fd1c5452"
   integrity sha512-VIzK8utuvFO9EogZcKJPgmLnlJtYbaPQ0jCw7od9HRw1ckrSBc84sA0uuuY6pB6KSM+7k6EjJ5IdIBaCz5ep/A==
   dependencies:
     "@sentry/types" "5.27.1"
+    tslib "^1.9.3"
+
+"@sentry/utils@5.27.2":
+  version "5.27.2"
+  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-5.27.2.tgz#9d52a2ad73aaab41c45202c289c4a63127ce4ebb"
+  integrity sha512-ZrdRgcFapi1NACbtvnPLOIXKjBPVTlhGzmXNCVao0uRBBRNJa5i2Mjp/U/Xy/fT0K1MGJQ+F9YZjZPnAMsDNbw==
+  dependencies:
+    "@sentry/types" "5.27.2"
     tslib "^1.9.3"
 
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
@@ -12397,12 +12428,7 @@ tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
   integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
 
-tslib@^2.0.1:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.2.tgz#462295631185db44b21b1ea3615b63cd1c038242"
-  integrity sha512-wAH28hcEKwna96/UacuWaVspVLkg4x1aDM9JlzqaQTOFczCktkVAb5fmXChgandR1EraDPs2w8P+ozM+oafwxg==
-
-tslib@^2.0.3:
+tslib@^2.0.1, tslib@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.3.tgz#8e0741ac45fc0c226e58a17bfc3e64b9bc6ca61c"
   integrity sha512-uZtkfKblCEQtZKBF6EBXVZeQNl82yqtDQdv+eck8u7tdPxjLu2/lp5/uPW+um2tpuxINHWy3GhiccY7QgEaVHQ==
