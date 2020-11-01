@@ -17,7 +17,7 @@ class InvalidGeoJson(Exception):
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class UserLicenseError(Exception):
@@ -31,7 +31,7 @@ class InvalidData(Exception):
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class ST_SetSRID(GenericFunction):
