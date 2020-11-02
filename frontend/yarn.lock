@@ -1253,10 +1253,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@^2.19.3":
-  version "2.19.3"
-  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.3.tgz#75e20ce90dd08614a63517ac610a82037a2cda7d"
-  integrity sha512-d6tV1M9pzEIUhh8htlu+6mZ+UvybHnybgja9qtIrKKX/C52orOMeQPZZSAjJWAKKnu3Q9+W+GzMFKN1VHmWpuw==
+"@hotosm/id@^2.19.4":
+  version "2.19.4"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.4.tgz#075151d4aa33c8cd776042ff0d8f882126fed1bd"
+  integrity sha512-GlkYIy9ZaMZWhh6Dh2TQtZwBvg+PSsgdfs5/1zORqp/0UcYg4Uqphr+arVboUwXAlRRcm4PHZOwK6/wJ6V1uNA==
   dependencies:
     "@ideditor/country-coder" "^3.2.0"
     "@ideditor/location-conflation" "~0.5.0"
