@@ -1,5 +1,6 @@
 import json
 import re
+import copy
 from typing import Optional
 from cachetools import TTLCache, cached
 
@@ -286,7 +287,7 @@ class Project(db.Model):
             raise NotFound()
 
         # Transform into dictionary.
-        orig_metadata = orig.__dict__.copy()
+        orig_metadata = copy.deepcopy(orig.__dict__)
 
         # Remove unneeded data.
         items_to_remove = ["_sa_instance_state", "id", "allowed_users"]
@@ -329,11 +330,15 @@ class Project(db.Model):
                 orig_changeset, ""
             )
 
-        # Copy array relationships.
-        for field in ["interests", "campaign", "teams"]:
-            value = getattr(orig, field)
-            setattr(new_proj, field, value)
+        teams = []
+        for team in orig.teams:
+            team_data = team.__dict__.copy()
+            team_data.pop("_sa_instance_state")
+            team_data.update({"project_id": new_proj.id})
+            teams.append(ProjectTeams(**team_data))
+            print(team_data)
 
+        new_proj.teams = teams
         new_proj.custom_editor = orig.custom_editor
 
         return new_proj
