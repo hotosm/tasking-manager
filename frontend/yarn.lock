@@ -1253,10 +1253,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@^2.19.3":
-  version "2.19.3"
-  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.3.tgz#75e20ce90dd08614a63517ac610a82037a2cda7d"
-  integrity sha512-d6tV1M9pzEIUhh8htlu+6mZ+UvybHnybgja9qtIrKKX/C52orOMeQPZZSAjJWAKKnu3Q9+W+GzMFKN1VHmWpuw==
+"@hotosm/id@^2.19.4":
+  version "2.19.4"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.4.tgz#075151d4aa33c8cd776042ff0d8f882126fed1bd"
+  integrity sha512-GlkYIy9ZaMZWhh6Dh2TQtZwBvg+PSsgdfs5/1zORqp/0UcYg4Uqphr+arVboUwXAlRRcm4PHZOwK6/wJ6V1uNA==
   dependencies:
     "@ideditor/country-coder" "^3.2.0"
     "@ideditor/location-conflation" "~0.5.0"
@@ -12955,12 +12955,7 @@ whatwg-encoding@^1.0.1, whatwg-encoding@^1.0.3, whatwg-encoding@^1.0.5:
   dependencies:
     iconv-lite "0.4.24"
 
-whatwg-fetch@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.0.0.tgz#fc804e458cc460009b1a2b966bc8817d2578aefb"
-  integrity sha512-9GSJUgz1D4MfyKU7KRqwOjXCXTqWdFNvEr7eUBYchQiVc744mqK/MzXPNR2WsPkmkOa4ywfg8C2n8h+13Bey1Q==
-
-whatwg-fetch@^3.4.1:
+whatwg-fetch@^3.0.0, whatwg-fetch@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.4.1.tgz#e5f871572d6879663fa5674c8f833f15a8425ab3"
   integrity sha512-sofZVzE1wKwO+EYPbWfiwzaKovWiZXf4coEzjGP9b2GBVgQRLQUZ2QcuPpQExGDAW5GItpEm6Tl4OU5mywnAoQ==

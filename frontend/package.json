@@ -8,7 +8,7 @@
     "@formatjs/intl-relativetimeformat": "^7.3.1",
     "@formatjs/intl-utils": "^3.8.4",
     "@formatjs/macro": "^0.2.8",
-    "@hotosm/id": "^2.19.3",
+    "@hotosm/id": "^2.19.4",
     "@hotosm/iso-countries-languages": "^1.0.2",
     "@lokibai/react-use-copy-clipboard": "^1.0.4",
     "@mapbox/geo-viewport": "^0.4.1",
