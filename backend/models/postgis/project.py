@@ -1,6 +1,5 @@
 import json
 import re
-import copy
 from typing import Optional
 from cachetools import TTLCache, cached
 
@@ -287,7 +286,7 @@ class Project(db.Model):
             raise NotFound()
 
         # Transform into dictionary.
-        orig_metadata = copy.deepcopy(orig.__dict__)
+        orig_metadata = orig.__dict__.copy()
 
         # Remove unneeded data.
         items_to_remove = ["_sa_instance_state", "id", "allowed_users"]
