@@ -4,9 +4,11 @@ import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
 import lineToPolygon from '@turf/line-to-polygon';
 import { FormattedMessage } from 'react-intl';
+import { useDropzone } from 'react-dropzone';
 
 import messages from './messages';
 import { addLayer } from './index';
+import { UndoIcon } from '../svgIcons';
 import { Button } from '../button';
 import { SwitchToggle } from '../formInputs';
 import { makeGrid } from './setTaskSizes';
@@ -83,8 +85,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     }
   };
 
-  const uploadFile = (event) => {
-    let files = event.target.files;
+  const uploadFile = (files) => {
     let file = files[0];
     if (!file) {
       return null;
@@ -186,41 +187,33 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
     mapObj.draw.changeMode('draw_polygon');
   };
 
+  const { getRootProps, getInputProps, open } = useDropzone({
+    onDrop: uploadFile,
+    noClick: true,
+    noKeyboard: true,
+  });
+
   return (
-    <>
+    <div {...getRootProps()}>
       <h3 className="f3 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
         <FormattedMessage {...messages.step1} />
       </h3>
       <div className="pb4">
-        <h3>
-          <FormattedMessage {...messages.option1} />:
-        </h3>
         <p>
-          <FormattedMessage {...messages.drawDescription} />
+          <FormattedMessage {...messages.defineAreaDescription} />
         </p>
-        <Button className="bg-blue-dark white" onClick={drawHandler}>
+        <Button className="bg-blue-dark white mr2" onClick={drawHandler}>
           <FormattedMessage {...messages.draw} />
         </Button>
-      </div>
-
-      <div className="pb4">
-        <h3>
-          <FormattedMessage {...messages.option2} />:
-        </h3>
+        <input {...getInputProps()} />
+        <Button className="bg-blue-dark white" onClick={open}>
+          <FormattedMessage {...messages.selectFile} />
+        </Button>
         <p>
           <FormattedMessage {...messages.importDescription} />
         </p>
-        <div className="pt3">
-          <label
-            for="file-upload"
-            className="bg-blue-dark white br1 f5 bn pointer"
-            style={{ padding: '.75rem 1.5rem' }}
-          >
-            <FormattedMessage {...messages.uploadFile} />
-          </label>
-          <input onChange={uploadFile} style={{ display: 'none' }} id="file-upload" type="file" />
-        </div>
       </div>
+
       <div className="pb2">
         {containsMultiplePolygons && (
           <SwitchToggle
@@ -234,12 +227,13 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, setErr }) {
         )}
       </div>
       {metadata.geom && (
-        <div className="pt4">
-          <Button className="bg-red white" onClick={deleteHandler}>
-            <FormattedMessage {...messages.deleteArea} />
+        <div className="pv3">
+          <Button className="bg-white blue-dark" onClick={deleteHandler}>
+            <UndoIcon className="w1 h1 mr2 v-mid pb1" />
+            <FormattedMessage {...messages.reset} />
           </Button>
         </div>
       )}
-    </>
+    </div>
   );
 }

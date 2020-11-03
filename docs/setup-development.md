@@ -19,7 +19,7 @@ If you don't want to setup a backend server, you can work on frontend developmen
 **Dependencies**
 
 The following dependencies must be available _globally_ on your system:
-* Download and install [NodeJS LTS v10+](https://nodejs.org/en/) and [yarn](https://classic.yarnpkg.com/en/docs/install)
+* Download and install [NodeJS LTS v12+](https://nodejs.org/en/) and [yarn](https://classic.yarnpkg.com/en/docs/install)
 * Go into the `frontend` directory and execute `yarn`.
 
 #### Available Scripts
@@ -61,8 +61,8 @@ The backend is made up of a postgres database and an associated API that calls v
 
 #### Dependencies
 
-* [Python 3.6+](https://www.python.org/downloads/)
-  * Note: The project does not work with Python 2.x. You **will** need Python 3.6+
+* [Python 3.7+](https://www.python.org/downloads/)
+  * Python 3.7 is what HOT uses in production. You can use Python 3.8 too.
 * [PostgreSQL](https://www.postgresql.org/download/) with [PostGIS](https://postgis.net/install/)
 * [pip](https://pip.pypa.io/en/stable/installing/)
 * [libgeos-dev](https://trac.osgeo.org/geos/)

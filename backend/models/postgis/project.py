@@ -172,8 +172,6 @@ class Project(db.Model):
         default=[
             Editors.ID.value,
             Editors.JOSM.value,
-            Editors.POTLATCH_2.value,
-            Editors.FIELD_PAPERS.value,
             Editors.CUSTOM.value,
         ],
         index=True,
@@ -184,8 +182,6 @@ class Project(db.Model):
         default=[
             Editors.ID.value,
             Editors.JOSM.value,
-            Editors.POTLATCH_2.value,
-            Editors.FIELD_PAPERS.value,
             Editors.CUSTOM.value,
         ],
         index=True,
@@ -333,11 +329,18 @@ class Project(db.Model):
                 orig_changeset, ""
             )
 
-        # Copy array relationships.
-        for field in ["interests", "campaign", "teams"]:
+        # Populate teams, interests and campaigns
+        teams = []
+        for team in orig.teams:
+            team_data = team.__dict__.copy()
+            team_data.pop("_sa_instance_state")
+            team_data.update({"project_id": new_proj.id})
+            teams.append(ProjectTeams(**team_data))
+        new_proj.teams = teams
+
+        for field in ["interests", "campaign"]:
             value = getattr(orig, field)
             setattr(new_proj, field, value)
-
         new_proj.custom_editor = orig.custom_editor
 
         return new_proj
@@ -401,11 +404,13 @@ class Project(db.Model):
             validation_editors_array.append(Editors[validation_editor].value)
         self.validation_editors = validation_editors_array
         self.country = project_dto.country_tag
+
         # Add list of allowed users, meaning the project can only be mapped by users in this list
         if hasattr(project_dto, "allowed_users"):
             self.allowed_users = []  # Clear existing relationships then re-insert
             for user in project_dto.allowed_users:
                 self.allowed_users.append(user)
+
         # Update teams and projects relationship.
         self.teams = []
         if hasattr(project_dto, "project_teams") and project_dto.project_teams:
@@ -417,6 +422,7 @@ class Project(db.Model):
 
                 role = TeamRoles[team_dto.role].value
                 ProjectTeams(project=self, team=team, role=role)
+
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
 
@@ -447,6 +453,7 @@ class Project(db.Model):
         else:
             if self.custom_editor:
                 self.custom_editor.delete()
+
         # handle campaign update
         try:
             new_ids = [c.id for c in project_dto.campaigns]
@@ -478,8 +485,9 @@ class Project(db.Model):
         current_ids.sort()
         if new_ids != current_ids:
             self.interests = Interest.query.filter(Interest.id.in_(new_ids)).all()
+
         # try to update country info if that information is not present
-        if len(self.country) == 0:
+        if not self.country:
             self.set_country_info()
 
         db.session.commit()

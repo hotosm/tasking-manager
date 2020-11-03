@@ -160,32 +160,20 @@ export default defineMessages({
     id: 'management.projects.create.button.draw',
     defaultMessage: 'Draw',
   },
-  uploadFile: {
-    id: 'management.projects.create.button.upload_file',
-    defaultMessage: 'Upload file',
-  },
-  deleteArea: {
-    id: 'management.projects.create.button.delete_area',
-    defaultMessage: 'Delete area',
+  selectFile: {
+    id: 'management.projects.create.button.select_file',
+    defaultMessage: 'Select file',
   },
   arbitraryTasks: {
     id: 'management.projects.create.arbitrary_tasks',
     defaultMessage: 'Set tasks using uploaded polygons',
   },
-  drawDescription: {
+  defineAreaDescription: {
     id: 'management.projects.create.draw.description',
-    defaultMessage: 'Draw the Area of Interest on the map.',
+    defaultMessage: 'Draw the Area of Interest on the map or import a file.',
   },
   importDescription: {
     id: 'management.projects.create.upload.description',
-    defaultMessage: 'Import a GeoJSON, KML, OSM or zipped SHP file.',
-  },
-  option1: {
-    id: 'management.projects.create.options.1',
-    defaultMessage: 'Option 1',
-  },
-  option2: {
-    id: 'management.projects.create.options.2',
-    defaultMessage: 'Option 2',
+    defaultMessage: 'Your can import a GeoJSON, KML, OSM or zipped Shapefile.',
   },
 });

@@ -32,7 +32,7 @@ class ValidatorServiceError(Exception):
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class ValidatorService:
@@ -75,9 +75,11 @@ class ValidatorService:
         if not user_can_validate:
             if error_reason == ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError("User must accept license to map this task")
+            elif error_reason == ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
+                raise ValidatorServiceError("User already has a task locked")
             else:
                 raise ValidatorServiceError(
-                    f"Validation not allowed because: {error_reason.name}"
+                    f"Validation not allowed because: {error_reason}"
                 )
 
         # Lock all tasks for validation
