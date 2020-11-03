@@ -55,7 +55,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop: uploadFile,
+    onDrop: step === 1 ? uploadFile : () => {}, // drag&drop is activated only on the first step
     noClick: true,
     noKeyboard: true,
   });
