@@ -329,11 +329,18 @@ class Project(db.Model):
                 orig_changeset, ""
             )
 
-        # Copy array relationships.
-        for field in ["interests", "campaign", "teams"]:
+        # Populate teams, interests and campaigns
+        teams = []
+        for team in orig.teams:
+            team_data = team.__dict__.copy()
+            team_data.pop("_sa_instance_state")
+            team_data.update({"project_id": new_proj.id})
+            teams.append(ProjectTeams(**team_data))
+        new_proj.teams = teams
+
+        for field in ["interests", "campaign"]:
             value = getattr(orig, field)
             setattr(new_proj, field, value)
-
         new_proj.custom_editor = orig.custom_editor
 
         return new_proj
