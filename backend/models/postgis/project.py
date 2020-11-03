@@ -397,11 +397,13 @@ class Project(db.Model):
             validation_editors_array.append(Editors[validation_editor].value)
         self.validation_editors = validation_editors_array
         self.country = project_dto.country_tag
+
         # Add list of allowed users, meaning the project can only be mapped by users in this list
         if hasattr(project_dto, "allowed_users"):
             self.allowed_users = []  # Clear existing relationships then re-insert
             for user in project_dto.allowed_users:
                 self.allowed_users.append(user)
+
         # Update teams and projects relationship.
         self.teams = []
         if hasattr(project_dto, "project_teams") and project_dto.project_teams:
@@ -413,6 +415,7 @@ class Project(db.Model):
 
                 role = TeamRoles[team_dto.role].value
                 ProjectTeams(project=self, team=team, role=role)
+
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
 
@@ -443,6 +446,7 @@ class Project(db.Model):
         else:
             if self.custom_editor:
                 self.custom_editor.delete()
+
         # handle campaign update
         try:
             new_ids = [c.id for c in project_dto.campaigns]
@@ -474,8 +478,9 @@ class Project(db.Model):
         current_ids.sort()
         if new_ids != current_ids:
             self.interests = Interest.query.filter(Interest.id.in_(new_ids)).all()
+
         # try to update country info if that information is not present
-        if len(self.country) == 0:
+        if not self.country:
             self.set_country_info()
 
         db.session.commit()
