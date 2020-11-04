@@ -1563,7 +1563,21 @@
   resolved "https://registry.yarnpkg.com/@mapbox/jsonlint-lines-primitives/-/jsonlint-lines-primitives-2.0.2.tgz#ce56e539f83552b58d10d672ea4d6fc9adc7b234"
   integrity sha1-zlblOfg1UrWNENZy6k1vya3HsjQ=
 
-"@mapbox/mapbox-gl-draw@^1.1.1", "@mapbox/mapbox-gl-draw@^1.1.2":
+"@mapbox/mapbox-gl-draw@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-draw/-/mapbox-gl-draw-1.1.1.tgz#b88a7919c8de04eb7946885e747e22049c3a3138"
+  integrity sha512-Xg+R0VUXKdXC7MaSSMiWfz96eLssJZa28/D6MxK/Xc19G5HvU6w/wytm8EeI28T7Sa2C7FII/0/XOwuAfJgDJw==
+  dependencies:
+    "@mapbox/geojson-area" "^0.2.1"
+    "@mapbox/geojson-extent" "^0.3.2"
+    "@mapbox/geojson-normalize" "0.0.1"
+    "@mapbox/geojsonhint" "^2.0.0"
+    "@mapbox/point-geometry" "0.1.0"
+    hat "0.0.3"
+    lodash.isequal "^4.2.0"
+    xtend "^4.0.1"
+
+"@mapbox/mapbox-gl-draw@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-draw/-/mapbox-gl-draw-1.1.2.tgz#247b3f0727db34c2641ab718df5eebeee69a2585"
   integrity sha512-DWtATUAnJaGZYoH/y2O+QTRybxrp5y3w3eV5FXHFNVcKsCAojKEMB8ALKUG2IsiCKqV/JCAguK9AlPWR7Bjafw==
@@ -8009,12 +8023,12 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-mapbox-gl-draw-circle@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/mapbox-gl-draw-circle/-/mapbox-gl-draw-circle-1.1.1.tgz#4b157079656a59ed48c814c35fbe88127281697a"
-  integrity sha512-Jbl1OPR8GlIqtDIqBv7F0jMU1KJJLvNcVZ62FXR5UQIRCo6Wf3dKArEgk7Y95cbM1IzC2MzlWCQkIpyeudVcIA==
+mapbox-gl-draw-circle@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/mapbox-gl-draw-circle/-/mapbox-gl-draw-circle-1.1.2.tgz#5043b7415c2db787ed1aa6bd2be1a4f81b42e38d"
+  integrity sha512-IDtCGwxFD+DOWDIo+GBiL2yvb8fBeKcPJtY1QnyrbR9dPZrr8A5p7LVbAqPNzZ+nKZwfprKFsNlz4AzmRgyh2g==
   dependencies:
-    "@mapbox/mapbox-gl-draw" "^1.1.1"
+    "@mapbox/mapbox-gl-draw" "1.1.1"
     "@turf/along" "^6.0.1"
     "@turf/circle" "^6.0.1"
     "@turf/distance" "^6.0.1"
