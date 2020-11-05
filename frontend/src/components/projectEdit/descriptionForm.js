@@ -105,7 +105,6 @@ export const DescriptionForm = ({ languages }) => {
           }
           minDate={Date.parse(projectInfo.created)}
           dateFormat="dd/MM/yyyy"
-          filterDate={(date) => date.getDay() !== 6 && date.getDay() !== 0}
           className={styleClasses.inputClass}
           showYearDropdown
           scrollableYearDropdown
