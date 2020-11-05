@@ -2,7 +2,7 @@ alembic==1.4.3
 aniso8601==8.0.0
 appdirs==1.4.4
 apscheduler==3.6.3
-attrs==20.2.0
+attrs==20.3.0
 black==20.8b1
 bleach==3.2.1
 cachetools==4.1.1
