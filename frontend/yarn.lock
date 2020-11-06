@@ -10336,10 +10336,10 @@ react-calendar-heatmap@^1.8.1:
     memoize-one "^5.0.0"
     prop-types "^15.6.2"
 
-react-chartjs-2@^2.10.0:
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-2.10.0.tgz#857e7f4788cae27e872624ba7826d53cf82f1ee6"
-  integrity sha512-1MjWEkUn8LLFf6GVyYUOrruJTW3yVU5hlEJOwGj3MiokuC+jH/BahjWVGAMonbe9UYbEIUbd2Rn36iVlC0Hb7w==
+react-chartjs-2@^2.11.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-2.11.0.tgz#a8aa4ae57f361c4ba4a553649af947ccbe7b57b9"
+  integrity sha512-NONOa+aEwRkDjDEXyVSDbulUtyWy+/5jO+ugFowWMjZVG2Z1DRpx2wBdRlPdVFH04hJs9lH9rFp6Z3NRtVk0GA==
   dependencies:
     lodash "^4.17.19"
     prop-types "^15.7.2"
