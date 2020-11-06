@@ -49,7 +49,7 @@ export const LicensesManagement = ({ licenses, userDetails }) => {
   );
 };
 
-export const LicenseInformation = (props) => {
+export const LicenseInformation = () => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
@@ -73,13 +73,13 @@ export const LicenseInformation = (props) => {
   );
 };
 
-export const LicenseForm = (props) => {
+export const LicenseForm = ({ license, updateLicense, disabledForm }) => {
   const [editMode, setEditMode] = useState(false);
 
   return (
     <Form
-      onSubmit={(values) => props.updateLicense(values)}
-      initialValues={props.license}
+      onSubmit={(values) => updateLicense(values)}
+      initialValues={license}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <div className="blue-grey mb3">
@@ -89,10 +89,7 @@ export const LicenseForm = (props) => {
               </h3>
               <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
               <form id="license-form" onSubmit={handleSubmit}>
-                <fieldset
-                  className="bn pa0"
-                  disabled={submitting || props.disabledForm || !editMode}
-                >
+                <fieldset className="bn pa0" disabled={submitting || disabledForm || !editMode}>
                   <LicenseInformation />
                 </fieldset>
               </form>

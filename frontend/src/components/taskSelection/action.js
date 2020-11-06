@@ -17,7 +17,7 @@ import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
-import DueDateBox from '../projectCard/dueDateBox';
+import { DueDateBox } from '../projectCard/dueDateBox';
 import {
   CompletionTabForMapping,
   CompletionTabForValidation,

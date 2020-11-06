@@ -2,7 +2,7 @@ import React from 'react';
 import TestRenderer from 'react-test-renderer';
 import { IntlProvider } from 'react-intl';
 
-import DueDateBox from '../../../components/projectCard/dueDateBox';
+import { DueDateBox } from '../../../components/projectCard/dueDateBox';
 
 const createComponentWithIntl = (children, props = { locale: 'en' }) => {
   return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);

@@ -73,7 +73,7 @@
     "build": "npm run preparation && npm run update-static && react-scripts build",
     "prettier": "prettier --write src/**/*.js",
     "lint": "eslint src",
-    "test": "npm run lint && react-scripts test --transformIgnorePatterns \"node_modules/(?!mapbox-gl-draw-circle)/\" --env=jsdom-fourteen",
+    "test": "npm run lint && react-scripts test --env=jsdom-fourteen",
     "coverage": "npm run test -- --coverage --watchAll=false"
   },
   "eslintConfig": {

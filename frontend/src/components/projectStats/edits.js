@@ -51,8 +51,8 @@ const Element = ({ field, value }) => {
   );
 };
 
-export const EditsStats = (props) => {
-  const { changesets, buildings, roads, edits } = props.data;
+export const EditsStats = ({ data }) => {
+  const { changesets, buildings, roads, edits } = data;
 
   return (
     <div className="cf w-100 pb4 ph2 ph4-ns blue-dark">
