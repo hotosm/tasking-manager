@@ -13,6 +13,11 @@ const Parameters = {
     AllowedValues: ['development', 'demo', 'production'],
     Description: "development: min 1, max 1 instance; demo: min 1 max 3 instances; production: min 3 max 12 instances"
   },
+  BackendInstanceAMI: {
+      Type: 'AWS::EC2::Image::Id',
+      Default: 'ami-0f82752aa17ff8f5d', // Old ImageId: 'ami-0565af6e282977273',
+      Description: 'AMI for backend instance; Currently Ubuntu 16.04'
+  },
   DBSnapshot: {
     Type: 'String',
     Description: 'Specify an RDS snapshot ID, if you want to create the DB from a snapshot.',
@@ -32,6 +37,7 @@ const Parameters = {
   },
   PostgresPassword: {
     Type: 'String',
+    NoEcho: true,
     Description: 'POSTGRES_PASSWORD'
   },
   PostgresUser: {
@@ -89,7 +95,7 @@ const Parameters = {
   },
   ELBSubnets: {
     Description: 'ELB subnets',
-    Type: 'String'
+    Type: 'List<AWS::EC2::Subnet::Id>'
   },
   SSLCertificateIdentifier: {
     Type: 'String',
@@ -257,6 +263,35 @@ const Resources = {
                 "[Install]",
                 "WantedBy=multi-user.target"
                 ])
+            },
+            '/lib/systemd/system/tasking-manager.service': {
+                content: cf.join('\n', [
+                  '[Unit]',
+                  'Description=gunicorn daemon for tasking manager',
+                  'After=network.target',
+                  '',
+                  '[Service]',
+                  'Type=notify',
+                  '',
+                  '; Should run as root (initially)',
+                  'User=root',
+                  'Group=root',
+                  '',
+                  ';PIDFile=/run/tm/tm4.pid',
+                  '',
+                  ';RuntimeDirectory=gunicorn',
+                  'WorkingDirectory=/tasking-manager',
+                  '',
+                  ';ExecStartPre=/bin/chown -R root:root /tasking-manager',
+                  'ExecStart=/tasking-manager/venv/bin/gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 3 --threads 3 --timeout 179 manage:application',
+                  'ExecReload=/bin/kill -s HUP $MAINPID',
+                  'ExecStop=/bin/kill -s TERM $MAINPID',
+                  'Restart=on-failure',
+                  'TimeoutSec=200',
+                  '',
+                  '[Install]',
+                  'WantedBy=multi-user.target'
+                ])
             }
           },
           "commands": {
@@ -272,9 +307,9 @@ const Resources = {
     },
     Properties: {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: 'ami-0565af6e282977273',
+      ImageId: cf.ref('BackendInstanceAMI'),
       InstanceType: 'c5d.large',
-      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
+      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))], // TODO: Shorten
       UserData: cf.userData([
         '#!/bin/bash',
         'set -x',
@@ -295,15 +330,12 @@ const Resources = {
         'sudo ./install-node10.sh',
         'sudo apt-get -y install nodejs',
         'wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -',
-        'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
+        'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
         'sudo apt update -y',
-        'sudo apt-get install -y postgresql-11',
-        'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt xenial-pgdg main" >> /etc/apt/sources.list\'',
-        'wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -',
-        'sudo apt update -y',
-        'sudo apt install -y postgresql-11-postgis',
-        'sudo apt install -y postgresql-11-postgis-scripts',
-        'sudo apt install -y postgis',
+        'sudo apt-get -y install postgresql-11',
+        'sudo apt-get -y install postgresql-11-postgis',
+        'sudo apt-get -y install postgresql-11-postgis-scripts',
+        'sudo apt-get -y install postgis',
         'sudo apt-get -y install libpq-dev',
         'sudo apt-get -y install libxml2',
         'sudo apt-get -y install wget libxml2-dev',
@@ -468,34 +500,25 @@ const Resources = {
         PolicyName: "AccessToDatabaseDump",
         PolicyDocument: {
           Version: "2012-10-17",
-          Statement:[{
-            Action: [ 's3:ListBucket'],
-            Effect: 'Allow',
-            Resource: [ cf.join('',
-              ['arn:aws:s3:::',
-                cf.select(0,
-                  cf.split('/',
-                    cf.select(1,
-                      cf.split('s3://', cf.ref('DatabaseDump'))
-                    )
-                  )
-                )
+          Statement: [
+            {
+                Action: [
+                  's3:ListAllMyBuckets'
+                ],
+                Effect: 'Allow',
+                Resource: [ '*' ]
+            },
+            {
+              Action: [
+                's3:GetObject',
+                's3:GetObjectAcl',
+                's3:ListBucket'
+              ],
+              Effect: 'Allow',
+              Resource: [
+                cf.join('', [ 'arn:aws:s3:::', cf.select(1, cf.split('s3://', cf.ref('DatabaseDump') ) ) ] ),
+                cf.join('', [ 'arn:aws:s3:::', cf.select(2, cf.split('/', cf.ref('DatabaseDump') ) ) ] )
               ]
-            )]
-          }, {
-            Action: [
-              's3:GetObject',
-              's3:GetObjectAcl',
-              's3:ListObjects',
-              's3:ListBucket'
-            ],
-            Effect: 'Allow',
-            Resource: [cf.join('',
-              ['arn:aws:s3:::',
-                cf.select(1,
-                  cf.split('s3://', cf.ref('DatabaseDump'))
-              )]
-            )]
           }]
         }
       }],
@@ -514,7 +537,7 @@ const Resources = {
     Properties: {
       Name: cf.stackName,
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
-      Subnets: cf.split(',', cf.ref('ELBSubnets')),
+      Subnets: cf.ref('ELBSubnets'),
       Type: 'application'
     }
   },
