@@ -1253,10 +1253,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@^2.19.4":
-  version "2.19.4"
-  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.4.tgz#075151d4aa33c8cd776042ff0d8f882126fed1bd"
-  integrity sha512-GlkYIy9ZaMZWhh6Dh2TQtZwBvg+PSsgdfs5/1zORqp/0UcYg4Uqphr+arVboUwXAlRRcm4PHZOwK6/wJ6V1uNA==
+"@hotosm/id@^2.19.5":
+  version "2.19.5"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.5.tgz#1e014e67ba550b1e483712ba1751385fde8374ae"
+  integrity sha512-ypx0U0GmkAgkXKTISFe+xCJ9tAX/MNGmIUwGIsGLRr+rmeDAwkfVqRG/YDk/jcCx+vpZ+0HYuDrEwmKkrnaLng==
   dependencies:
     "@ideditor/country-coder" "^3.2.0"
     "@ideditor/location-conflation" "~0.5.0"
@@ -1273,7 +1273,7 @@
     fast-deep-equal "~3.1.1"
     fast-json-stable-stringify "2.1.0"
     lodash-es "~4.17.15"
-    marked "1.2.2"
+    marked "~1.2.3"
     martinez-polygon-clipping "0.7.0"
     node-diff3 "2.1.0"
     osm-auth "1.1.0"
@@ -8031,12 +8031,7 @@ mapbox-gl@^1.12.0:
     tinyqueue "^2.0.3"
     vt-pbf "^3.1.1"
 
-marked@1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-1.2.2.tgz#5d77ffb789c4cb0ae828bfe76250f7140b123f70"
-  integrity sha512-5jjKHVl/FPo0Z6ocP3zYhKiJLzkwJAw4CZoLjv57FkvbUuwOX4LIBBGGcXjAY6ATcd1q9B8UTj5T9Umauj0QYQ==
-
-marked@^1.2.3:
+marked@^1.2.3, marked@~1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/marked/-/marked-1.2.3.tgz#58817ba348a7c9398cb94d40d12e0d08df83af57"
   integrity sha512-RQuL2i6I6Gn+9n81IDNGbL0VHnta4a+8ZhqvryXEniTb/hQNtf3i26hi1XWUhzb9BgVyWHKR3UO8MaHtKoYibw==
@@ -12954,12 +12949,7 @@ whatwg-encoding@^1.0.1, whatwg-encoding@^1.0.3, whatwg-encoding@^1.0.5:
   dependencies:
     iconv-lite "0.4.24"
 
-whatwg-fetch@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.0.0.tgz#fc804e458cc460009b1a2b966bc8817d2578aefb"
-  integrity sha512-9GSJUgz1D4MfyKU7KRqwOjXCXTqWdFNvEr7eUBYchQiVc744mqK/MzXPNR2WsPkmkOa4ywfg8C2n8h+13Bey1Q==
-
-whatwg-fetch@^3.4.1:
+whatwg-fetch@^3.0.0, whatwg-fetch@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.4.1.tgz#e5f871572d6879663fa5674c8f833f15a8425ab3"
   integrity sha512-sofZVzE1wKwO+EYPbWfiwzaKovWiZXf4coEzjGP9b2GBVgQRLQUZ2QcuPpQExGDAW5GItpEm6Tl4OU5mywnAoQ==
