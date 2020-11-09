@@ -9,6 +9,8 @@
   "author": "thinkWhere",
   "license": "ISC",
   "devDependencies": {
+    "@mapbox/geo-viewport": "^0.4.0",
+    "@turf/turf": "5.x",
     "angular": "^1.7.8",
     "angular-chart.js": "^1.1.1",
     "angular-mocks": "^1.7.8",
@@ -44,11 +46,11 @@
     "karma-firefox-launcher": ">=1.3.0",
     "karma-jasmine": "^1.1.0",
     "karma-junit-reporter": "^1.2.0",
-    "@mapbox/geo-viewport": "^0.4.0",
     "ment.io": "^0.9.23",
     "moment": "^2.24.0",
     "ng-file-upload": "^12.2.13",
     "ng-showdown": "^1.1.0",
+    "ng-table": "^3.0.1",
     "ng-tags-input": "^3.2.0",
     "node-bourbon": "^4.2.8",
     "node-sass": "^4.11.0",
@@ -62,9 +64,7 @@
     "react-dom": "^15.4.2",
     "react-tether": "^0.5.5",
     "run-sequence": "^1.2.2",
-    "showdown": "^1.9.0",
-    "@turf/turf": "5.x",
-    "ng-table": "^3.0.1"
+    "showdown": "^1.9.0"
   },
   "dependencies": {}
 }

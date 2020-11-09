@@ -16,6 +16,7 @@
             deleteMappingIssueCategory: deleteMappingIssueCategory,
             updateMappingIssueCategory: updateMappingIssueCategory,
             getMappingIssueCategories: getMappingIssueCategories,
+            getMappingIssues: getMappingIssues
         };
 
         return service;
@@ -115,6 +116,26 @@
                 method: 'GET',
                 url: configService.tmAPI + '/mapping-issue-categories' +
                      (includeArchived ? '?includeArchived=true' : ''),
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                return response.data;
+            }, function errorCallback() {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                return $q.reject("error");
+            });
+        }
+
+        /**
+        * Get mapping issues as a CSV file
+        */
+        function getMappingIssues(projectId, detailedIssues, zerosRows) {
+            //Returns a promise
+            return $http({
+                method:'GET',
+                url: configService.tmAPI + '/mapping-issues/' + projectId + '/' + detailedIssues + '/' + zerosRows,
+                headers: authService.getAuthenticatedHeader()
             }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available

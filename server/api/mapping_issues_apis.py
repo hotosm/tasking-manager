@@ -4,6 +4,7 @@ from schematics.exceptions import DataError
 from server.models.dtos.mapping_issues_dto import MappingIssueCategoryDTO
 from server.models.postgis.utils import NotFound
 from server.services.mapping_issues_service import MappingIssueCategoryService
+from server.services.mapping_issues_service import MappingIssueExportService
 from server.services.users.authentication_service import token_auth, tm
 
 
@@ -232,3 +233,42 @@ class MappingIssueCategoriesAPI(Resource):
             error_msg = f'User GET - unhandled error: {str(e)}'
             current_app.logger.critical(error_msg)
             return {"error": error_msg}, 500
+
+
+class MappingIssuesAPI(Resource):
+
+    @tm.pm_only()
+    @token_auth.login_required
+    def get(self, project_id, detailed_view, zeros_rows):
+        """
+        Gets all mapping issues and returns them as a csv string/file
+        ___
+        tags:
+            - mapping issues
+        produces:
+            - text/csv
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base^$ encoded session token
+              required: true
+              default: Token sessionTokenHere==
+        responses:
+            200:
+                description: Mapping issues csv included in body
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: Mapping issues not found
+            500:
+                description: Internal server error
+        """
+        try:
+            issuesCSV = MappingIssueExportService().get_mapping_issues(project_id, detailed_view, zeros_rows)
+            return issuesCSV, 200
+        except NotFound:
+            return {"Error": "Mapping-issues not found"}, 404
+        except Exception as e:
+            error_msg = f'Mapping issues GET - unhandled exception: {str(e)}'
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500

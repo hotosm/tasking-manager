@@ -160,5 +160,24 @@
                 </div>
             </div>
         </div>
+        <div class="section-container">
+            <div class="section__body">
+                <div class="inner">
+                    <h2 class="section__title">{{ 'Mapping Issues' | translate }}</h2>
+                    <button class="button button--primary pull-left" type="button"
+                            ng-click="projectDashboardCtrl.getMappingIssues(projectDashboardCtrl.projectId)">
+                        {{ 'Get Mapping Issues' | translate }}
+                    </button>
+                    <div class="issues-checkboxes">
+                        <div>
+                            <input type="checkbox" name="detailedIssues" class="detailed-issues-checkbox" ng-model="projectDashboardCtrl.detailedIssues"/><label for="detailedIssues">Detailed View</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="hideZerosRows" class="hide-zeros-rows-checkbox" ng-model="projectDashboardCtrl.hideZerosRows"/><label for="hideZerosRows">Hide Zeros Rows</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </div>

@@ -7,9 +7,9 @@
      */
     angular
         .module('taskingManager')
-        .controller('projectDashboardController', ['$routeParams', 'mapService', 'projectMapService', 'projectService', 'statsService', projectDashboardController]);
+        .controller('projectDashboardController', ['$routeParams', 'mapService', 'projectMapService', 'projectService', 'statsService', 'mappingIssueService', projectDashboardController]);
 
-    function projectDashboardController($routeParams, mapService, projectMapService, projectService, statsService) {
+    function projectDashboardController($routeParams, mapService, projectMapService, projectService, statsService, mappingIssueService) {
         var vm = this;
         vm.projectId = 0;
 
@@ -18,6 +18,8 @@
         vm.projectActivity = [];
         vm.projectContributions = [];
         vm.projectComments = [];
+        vm.detailedIssues = false;
+        vm.hideZerosRows = false;
 
         activate();
 
@@ -98,6 +100,31 @@
                 // an error occurred
                 vm.projectActivityPagination = [];
                 vm.projectActivity = [];
+            });
+        }
+
+        /**
+        * Get mapping issues for this project as a CSV file
+        */
+        vm.getMappingIssues = function() {
+            var resultsPromise = mappingIssueService.getMappingIssues(vm.projectId, vm.detailedIssues, !vm.hideZerosRows);
+            resultsPromise.then(function (data) {
+                //create file from csv string and download
+                var filename;
+                if (vm.detailedIssues) {
+                    filename = 'mapping_issues_project_' + vm.projectId + '_detailed.csv';
+                }
+                else {
+                    filename = 'mapping_issues_project_' + vm.projectId + '.csv';
+                }
+                var csv = 'data:text/csv;charset=utf-8,' + data;
+                var fileUri = encodeURI(csv);
+                var link = document.createElement('a');
+                link.setAttribute('href', fileUri);
+                link.setAttribute('download', filename);
+                link.click();
+            }, function() {
+                // On error
             });
         }
     }

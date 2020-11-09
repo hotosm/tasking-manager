@@ -109,7 +109,7 @@ def init_flask_restful_routes(app):
     from server.api.swagger_docs_api import SwaggerDocsAPI
     from server.api.stats_api import StatsContributionsAPI, StatsActivityAPI, StatsProjectAPI, HomePageStatsAPI, StatsUserAPI, StatsProjectUserAPI
     from server.api.tags_apis import CampaignsTagsAPI, OrganisationTagsAPI
-    from server.api.mapping_issues_apis import MappingIssueCategoryAPI, MappingIssueCategoriesAPI
+    from server.api.mapping_issues_apis import MappingIssueCategoryAPI, MappingIssueCategoriesAPI, MappingIssuesAPI
     from server.api.users.user_apis import UserAPI, UserIdAPI, UserOSMAPI, UserMappedProjects, UserSetRole, UserSetLevel,\
         UserSetExpertMode, UserAcceptLicense, UserSearchFilterAPI, UserSearchAllAPI, UserUpdateAPI
     from server.api.validator_apis import LockTasksForValidationAPI, UnlockTasksAfterValidationAPI, StopValidatingAPI,\
@@ -180,6 +180,7 @@ def init_flask_restful_routes(app):
     api.add_resource(MappingIssueCategoryAPI,       '/api/v1/mapping-issue-category', endpoint="create_mapping_issue_category", methods=['POST'])
     api.add_resource(MappingIssueCategoryAPI,       '/api/v1/mapping-issue-category/<int:category_id>', methods=['GET', 'PUT', 'DELETE'])
     api.add_resource(MappingIssueCategoriesAPI,     '/api/v1/mapping-issue-categories')
+    api.add_resource(MappingIssuesAPI,              '/api/v1/mapping-issues/<int:project_id>/<detailed_view>/<zeros_rows>')
     api.add_resource(UserSearchAllAPI,              '/api/v1/user/search-all')
     api.add_resource(UserSearchFilterAPI,           '/api/v1/user/search/filter/<string:username>')
     api.add_resource(UserAPI,                       '/api/v1/user/<string:username>')
