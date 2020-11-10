@@ -331,7 +331,7 @@ const Resources = {
         'sudo apt-get -y install nodejs',
         'wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -',
         'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
-        'sudo apt update -y',
+        'sudo apt-get update',
         'sudo apt-get -y install postgresql-11',
         'sudo apt-get -y install postgresql-11-postgis',
         'sudo apt-get -y install postgresql-11-postgis-scripts',
