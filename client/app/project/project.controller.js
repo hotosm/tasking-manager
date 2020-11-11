@@ -562,7 +562,7 @@
                 else {
                     vm.userCanMap, vm.userCanValidate, vm.showOSMCha = false;
                 }
-                
+
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
@@ -1794,20 +1794,11 @@
                 if (vm.currentTab === 'mapping' && vm.project_files.length > 0) {
                     var i;
                     for (i = 0; i < vm.project_files.length; i++) {
-                        var emptyTaskLayerParams = {
+                        var projectFileParams = {
+                            layer_name: encodeURIComponent(vm.project_files[i].fileName.replace(/\.[^/.]+$/,"")),
+                            mime_type: encodeURIComponent('application/x-osm+xml'),
                             new_layer: true,
                             upload_policy: enumerateUploadPolicy(vm.project_files[i].uploadPolicy),
-                            mime_type: encodeURIComponent('application/x-osm+xml'),
-                            layer_name: encodeURIComponent(vm.project_files[i].fileName.replace(/\.[^/.]+$/,"")),
-                            data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
-                        }
-                        editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
-                            .catch(function() {
-                                //warn that JSOM couldn't be started
-                                vm.editorStartError = 'josm-error';
-                            });
-                        var projectFileParams = {
-                            new_layer: false,
                             url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), vm.project_files[i])
                         }
                         editorService.sendJOSMCmd('http://127.0.0.1:8111/import', projectFileParams)
