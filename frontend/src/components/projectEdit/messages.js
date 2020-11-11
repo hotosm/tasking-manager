@@ -247,7 +247,7 @@ export default defineMessages({
   },
   transferProjectSuccess: {
     id: 'projects.actions.transfer_project.success',
-    defaultMessage: 'The project was transfered successfully.',
+    defaultMessage: 'The project was transferred successfully.',
   },
   transferProjectError: {
     id: 'projects.actions.transfer_project.error',
