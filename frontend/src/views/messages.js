@@ -6,7 +6,7 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   errorFallback: {
     id: 'error.page.title',
-    defaultMessage: 'An error ocurred',
+    defaultMessage: 'An error occurred',
   },
   errorFallbackMessage: {
     id: 'error.page.description',
@@ -99,7 +99,7 @@ export default defineMessages({
   editOrgNotAllowed: {
     id: 'teamsAndOrgs.management.organisation.manage.error',
     defaultMessage:
-      'You are not a manager of this organisation, so you are not allowed to edit it.',
+      'You are not a manager of this organization, so you are not allowed to edit it.',
   },
   manageOrganisation: {
     id: 'teamsAndOrgs.management.organisation.manage',
