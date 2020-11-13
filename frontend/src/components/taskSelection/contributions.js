@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from '@reach/router';
 import Select from 'react-select';
 import ReactPlaceholder from 'react-placeholder';
-import { FormattedMessage, injectIntl, useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages.js';
 import { UserAvatar } from '../user/avatar';
@@ -114,31 +114,30 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
   );
 }
 
-const Contributions = (props) => {
+const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus, selectTask }) => {
+  const intl = useIntl();
   const mappingLevels = [
-    { value: 'ALL', label: props.intl.formatMessage(messages.mappingLevelALL) },
-    { value: 'ADVANCED', label: props.intl.formatMessage(messages.mappingLevelADVANCED) },
-    { value: 'INTERMEDIATE', label: props.intl.formatMessage(messages.mappingLevelINTERMEDIATE) },
-    { value: 'BEGINNER', label: props.intl.formatMessage(messages.mappingLevelBEGINNER) },
-    { value: 'NEWUSER', label: props.intl.formatMessage(messages.mappingLevelNEWUSER) },
+    { value: 'ALL', label: intl.formatMessage(messages.mappingLevelALL) },
+    { value: 'ADVANCED', label: intl.formatMessage(messages.mappingLevelADVANCED) },
+    { value: 'INTERMEDIATE', label: intl.formatMessage(messages.mappingLevelINTERMEDIATE) },
+    { value: 'BEGINNER', label: intl.formatMessage(messages.mappingLevelBEGINNER) },
+    { value: 'NEWUSER', label: intl.formatMessage(messages.mappingLevelNEWUSER) },
   ];
   const [level, setLevel] = useState(mappingLevels[0]);
-  const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(
-    props.tasks,
-  );
+  const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(tasks);
 
-  let contributionsArray = props.contribsData.userContributions || [];
+  let contributionsArray = contribsData.userContributions || [];
   if (level.value !== 'ALL' && level.value !== 'NEWUSER') {
     contributionsArray = contributionsArray.filter((u) => u.mappingLevel === level.value);
   }
 
   const displayTasks = (taskIds, status, user) => {
-    if (props.activeStatus === status && user === props.activeUser) {
-      props.selectTask([]);
+    if (activeStatus === status && user === activeUser) {
+      selectTask([]);
       return;
     }
 
-    props.selectTask(taskIds, status, user);
+    selectTask(taskIds, status, user);
   };
 
   if (level.value === 'NEWUSER') {
@@ -159,18 +158,14 @@ const Contributions = (props) => {
           percentBadImagery={percentBadImagery}
           className="pt1 pb3"
         />
-        <Link to={`/projects/${props.project.projectId}/stats/`}>
+        <Link to={`/projects/${project.projectId}/stats/`}>
           <CustomButton className="bg-white blue-light bn">
             <FormattedMessage {...messages.statistics} />
             <ChartLineIcon className="pl1 pb1 h1 v-mid" />
           </CustomButton>
         </Link>
         <span className="blue-light f4 fw7 ph1">&#183;</span>
-        <OSMChaButton
-          project={props.project}
-          className="bg-white blue-light bn mv2"
-          compact={true}
-        />
+        <OSMChaButton project={project} className="bg-white blue-light bn mv2" compact={true} />
         <Select
           classNamePrefix="react-select"
           isClearable={false}
@@ -191,8 +186,8 @@ const Contributions = (props) => {
             return (
               <Contributor
                 user={user}
-                activeUser={props.activeUser}
-                activeStatus={props.activeStatus}
+                activeUser={activeUser}
+                activeStatus={activeStatus}
                 displayTasks={displayTasks}
               />
             );
@@ -203,4 +198,4 @@ const Contributions = (props) => {
   );
 };
 
-export default injectIntl(Contributions);
+export default Contributions;

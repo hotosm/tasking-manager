@@ -139,7 +139,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   }, [latestActivities, project.projectId]);
 
   // show the tasks tab when the page loads if the user has already contributed
-  // to the project. If no, show the intructions tab.
+  // to the project. If no, show the instructions tab.
   useEffect(() => {
     if (contributions && contributions.userContributions && activeSection === null) {
       const currentUserContributions = contributions.userContributions.filter(

@@ -12,7 +12,7 @@ describe('MessageStatus', () => {
         <MessageStatus status="error" />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText('An error ocurred while sending message.').className).toBe('red');
+    expect(screen.getByText('An error occurred while sending message.').className).toBe('red');
   });
   it('with status = messageSent', () => {
     render(

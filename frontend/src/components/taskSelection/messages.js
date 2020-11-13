@@ -44,7 +44,7 @@ export default defineMessages({
   },
   lockErrorLicenseDescription: {
     id: 'project.tasks.lock_error.license.description',
-    defaultMessage: 'Please accept this license in order to colaborate in this project. ',
+    defaultMessage: 'Please accept this license in order to collaborate in this project. ',
   },
   acceptLicense: {
     id: 'project.tasks.lock_error.license.accept',
@@ -415,12 +415,12 @@ export default defineMessages({
     id: 'project.tasks.history.title',
     defaultMessage: 'Task {n}',
   },
-  taskSplitted: {
-    id: 'project.tasks.history.splitted',
+  taskUnavailable: {
+    id: 'project.tasks.history.unavailable',
     defaultMessage: 'Task unavailable',
   },
-  taskSplittedDescription: {
-    id: 'project.tasks.history.splitted.description',
+  taskSplitDescription: {
+    id: 'project.tasks.history.split.description',
     defaultMessage: 'The task {id} was split and its history is not available anymore',
   },
   taskData: {

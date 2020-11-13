@@ -24,20 +24,21 @@ export function ValidateTask({ id }: Object) {
 export function TaskAction({ project, action }: Object) {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
+  const locale = useSelector((state) => state.preferences.locale);
   // eslint-disable-next-line
   const [editor, setEditor] = useQueryParam('editor', StringParam);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (userDetails.id && token && action && project) {
-      fetchLocalJSONAPI(`users/queries/tasks/locked/details/`, token)
+      fetchLocalJSONAPI(`users/queries/tasks/locked/details/`, token, 'GET', locale)
         .then((res) => {
           setTasks(res.tasks);
           setLoading(false);
         })
         .catch((e) => navigate(`/projects/${project}/tasks/`));
     }
-  }, [action, userDetails.id, token, project]);
+  }, [action, userDetails.id, token, project, locale]);
   if (token) {
     if (loading) {
       return (

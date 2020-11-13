@@ -1,6 +1,6 @@
 import React from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import userMessages from '../user/messages';
@@ -9,11 +9,11 @@ import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 import { useContributorStats } from '../../hooks/UseContributorStats';
 import { StatsCardContent } from '../statsCardContent';
 
-function ContributorsStats(props) {
-  const stats = useContributorStats(props.contributors.userContributions);
-  const getUserLevelLabel = (level) =>
-    props.intl.formatMessage(userMessages[`mapperLevel${level}`]);
-  const getUserExpLabel = (id) => props.intl.formatMessage(messages[`${id}`]);
+export default function ContributorsStats({ contributors }) {
+  const intl = useIntl();
+  const stats = useContributorStats(contributors.userContributions);
+  const getUserLevelLabel = (level) => intl.formatMessage(userMessages[`mapperLevel${level}`]);
+  const getUserExpLabel = (id) => intl.formatMessage(messages[`${id}`]);
 
   let userLevelsReference = [
     {
@@ -78,7 +78,7 @@ function ContributorsStats(props) {
             className="pv3-l pv2 mb3 shadow-4 bg-white"
           />
           <StatsCardContent
-            value={props.contributors.userContributions.length}
+            value={contributors.userContributions.length}
             label={<FormattedMessage {...messages.totalContributors} />}
             className="pv3-l pv2 mb3 shadow-4 bg-white"
           />
@@ -115,5 +115,3 @@ function ContributorsStats(props) {
     </div>
   );
 }
-
-export default injectIntl(ContributorsStats);
