@@ -6,6 +6,7 @@ import transformScale from '@turf/transform-scale';
 import bboxPolygon from '@turf/bbox-polygon';
 import { polygon, multiPolygon, featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
 
 import messages from './messages';
 import { Button } from '../button';
@@ -203,14 +204,23 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
     }
   }, [metadata, updateMetadata]);
 
+  const buttonStyle = 'white bg-blue-dark';
+
+  //clean up map draw control and reload
+  useLayoutEffect(() => {
+    mapObj.map.removeControl(mapObj.draw);
+    mapObj.draw = new MapboxDraw({
+      displayControlsDefault: false,
+    });
+    mapObj.map.addControl(mapObj.draw);
+  }, [mapObj.map, mapObj.draw]);
+
   useLayoutEffect(() => {
     addLayer('grid', metadata.taskGrid, mapObj.map);
     return () => {
       mapObj.map.off('click', 'grid', splitHandler);
     };
   }, [metadata, mapObj, smallerSize, largerSize, splitHandler]);
-
-  const buttonStyle = 'white bg-blue-dark';
 
   return (
     <>

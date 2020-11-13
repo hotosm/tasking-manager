@@ -3,8 +3,10 @@ import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
 import { useQueryParam, NumberParam } from 'use-query-params';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import area from '@turf/area';
+import bbox from '@turf/bbox';
+import lineToPolygon from '@turf/line-to-polygon';
 
 import messages from './messages';
 import SetAOI from './setAOI';
@@ -14,15 +16,9 @@ import TrimProject from './trimProject';
 import NavButtons from './navButtons';
 import Review from './review';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { MAX_AOI_AREA } from '../../config';
+import { MAX_AOI_AREA, MAX_FILESIZE } from '../../config';
 import { AlertIcon } from '../svgIcons';
-
-import area from '@turf/area';
-import bbox from '@turf/bbox';
-import { featureCollection } from '@turf/helpers';
-import lineToPolygon from '@turf/line-to-polygon';
 import { makeGrid } from './setTaskSizes';
-import { MAX_FILESIZE } from '../../config';
 
 var toGeojson = require('@mapbox/togeojson');
 var osmToGeojson = require('osmtogeojson');
@@ -81,6 +77,36 @@ const AlertMessage = ({ err }) => {
 const ProjectCreate = (props) => {
   const token = useSelector((state) => state.auth.get('token'));
   const layer_name = 'aoi';
+
+  // Project information.
+  const [metadata, updateMetadata] = useState({
+    geom: null,
+    area: 0,
+    tasksNo: 0,
+    taskGrid: null,
+    projectName: '',
+    zoomLevel: 9,
+    tempTaskGrid: null,
+    arbitraryTasks: false,
+  });
+
+  useLayoutEffect(() => {
+    let err = { error: false, message: null };
+    if (metadata.area > MAX_AOI_AREA) {
+      err = {
+        error: true,
+        message: <FormattedMessage {...messages.areaOverLimitError} values={{ n: MAX_AOI_AREA }} />,
+      };
+    }
+
+    setErr(err);
+  }, [metadata]);
+
+  // map and control placeholder
+  const [mapObj, setMapObj] = useState({
+    map: null,
+    draw: null,
+  });
 
   const setDataGeom = (geom, display) => {
     mapObj.map.fitBounds(bbox(geom), { padding: 20 });
@@ -221,23 +247,6 @@ const ProjectCreate = (props) => {
     }
     updateMetadata({ ...metadata, area: 0, geom: null });
   };
-
-  const drawHandler = () => {
-    const updateArea = (event) => {
-      const features = mapObj.draw.getAll();
-      if (features.features.length > 1) {
-        const id = features.features[0].id;
-        mapObj.draw.delete(id);
-      }
-
-      // Validate area first.
-      setDataGeom(featureCollection(event.features), false);
-    };
-
-    mapObj.map.on('draw.update', updateArea);
-    mapObj.map.once('draw.create', updateArea);
-    mapObj.draw.changeMode('draw_polygon');
-  };
   // eslint-disable-next-line
   const [cloneFromId, setCloneFromId] = useQueryParam('cloneFrom', NumberParam);
   const [step, setStep] = useState(1);
@@ -263,37 +272,6 @@ const ProjectCreate = (props) => {
     name: cloneProjectName,
   };
 
-  // Project information.
-  const [metadata, updateMetadata] = useState({
-    geom: null,
-    area: 0,
-    tasksNo: 0,
-    taskGrid: null,
-    projectName: '',
-    zoomLevel: 9,
-    tempTaskGrid: null,
-    arbitraryTasks: false,
-  });
-
-  useLayoutEffect(() => {
-    let err = { error: false, message: null };
-    if (metadata.area > MAX_AOI_AREA) {
-      err = {
-        error: true,
-        message: <FormattedMessage {...messages.areaOverLimitError} values={{ n: MAX_AOI_AREA }} />,
-      };
-    }
-    setErr(err);
-  }, [metadata]);
-
-  const drawOptions = {
-    displayControlsDefault: false,
-  };
-  const [mapObj, setMapObj] = useState({
-    map: null,
-    draw: new MapboxDraw(drawOptions),
-  });
-
   if (!token) {
     return <Redirect to={'/login'} noThrow />;
   }
@@ -303,10 +281,11 @@ const ProjectCreate = (props) => {
       case 1:
         return (
           <SetAOI
+            mapObj={mapObj}
+            setDataGeom={setDataGeom}
             metadata={metadata}
             updateMetadata={updateMetadata}
             uploadFile={uploadFile}
-            drawHandler={drawHandler}
             deleteHandler={deleteHandler}
           />
         );
@@ -361,12 +340,14 @@ const ProjectCreate = (props) => {
           updateMetadata={updateMetadata}
           mapObj={mapObj}
           setMapObj={setMapObj}
+          setDataGeom={setDataGeom}
+          deleteHandler={deleteHandler}
           step={step}
           uploadFile={uploadFile}
         />
-        <div className="cf absolute" style={{ bottom: '3.5rem', left: '0.6rem' }}>
+      <div className="cf absolute" style={{ bottom: '3.5rem', left: '0.6rem' }}>
           <p
-            className={`fl mr2 pa1 f7-ns white ${
+            className={`fl mr2 pa1 f6-ns white ${
               metadata.area > MAX_AOI_AREA || metadata.area === 0 ? 'bg-red' : 'bg-green'
             }`}
           >
@@ -378,7 +359,7 @@ const ProjectCreate = (props) => {
               }}
             />
           </p>
-          <p className="fl bg-blue-light white mr2 pa1 f7-ns">
+          <p className="fl bg-blue-light white mr2 pa1 f6-ns">
             <FormattedMessage
               {...messages.taskNumber}
               values={{ n: <FormattedNumber value={metadata.tasksNo} /> }}

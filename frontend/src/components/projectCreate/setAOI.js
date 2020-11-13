@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDropzone } from 'react-dropzone';
+import { featureCollection } from '@turf/helpers';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
 
 import messages from './messages';
 import { UndoIcon } from '../svgIcons';
@@ -8,15 +10,42 @@ import { Button } from '../button';
 import { SwitchToggle } from '../formInputs';
 import { useContainsMultiplePolygons } from '../../hooks/UseGeomContainsMultiplePolygons';
 
-export default function SetAOI({
-  metadata,
-  updateMetadata,
-  uploadFile,
-  drawHandler,
-  deleteHandler,
-}) {
-  const { containsMultiplePolygons } = useContainsMultiplePolygons(metadata.geom);
+export default function SetAOI({ mapObj, metadata, updateMetadata, uploadFile, setDataGeom, deleteHandler }) {
+  //clean up map draw control and reload
+  useLayoutEffect(() => {
+    if (mapObj.map !== null) {
+      mapObj.map.getLayer('aoi') && mapObj.map.removeControl(mapObj.draw);
+      mapObj.draw = new MapboxDraw({
+        displayControlsDefault: false,
+        controls: {
+          polygon: true,
+          trash: true
+        }
+      });
+      mapObj.map.addControl(mapObj.draw);
+    };
+  },[mapObj.map, mapObj.draw]);
 
+  useLayoutEffect(() => {
+    if (mapObj.map !== null) {
+      const updateArea = (event) => {
+        const features = mapObj.draw.getAll();
+        if (features.features.length > 1) {
+          const id = features.features[0].id;
+          mapObj.draw.delete(id);
+        }
+        // Validate area first.
+        const geom = featureCollection(event.features);
+        setDataGeom(geom, false);
+      };
+
+      mapObj.map.on('draw.create', updateArea);
+      mapObj.map.on('draw.update', updateArea);
+      mapObj.map.on('draw.delete',deleteHandler);
+    };
+  }, [mapObj, setDataGeom, deleteHandler]);
+
+  const { containsMultiplePolygons } = useContainsMultiplePolygons(metadata.geom);
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop: uploadFile,
     noClick: true,
@@ -32,9 +61,6 @@ export default function SetAOI({
         <p>
           <FormattedMessage {...messages.defineAreaDescription} />
         </p>
-        <Button className="bg-blue-dark white mr2" onClick={drawHandler}>
-          <FormattedMessage {...messages.draw} />
-        </Button>
         <input {...getInputProps()} />
         <Button className="bg-blue-dark white" onClick={open}>
           <FormattedMessage {...messages.selectFile} />

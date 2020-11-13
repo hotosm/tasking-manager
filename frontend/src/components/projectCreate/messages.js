@@ -170,10 +170,10 @@ export default defineMessages({
   },
   defineAreaDescription: {
     id: 'management.projects.create.draw.description',
-    defaultMessage: 'Draw the Area of Interest on the map or import a file.',
+    defaultMessage: 'Search and draw the Area of Interest on the map or import a file.',
   },
   importDescription: {
     id: 'management.projects.create.upload.description',
-    defaultMessage: 'Your can import a GeoJSON, KML, OSM or zipped Shapefile.',
+    defaultMessage: 'You can import a GeoJSON, KML, OSM or zipped Shapefile, or drag and drop the file into the browser to upload it.',
   },
 });

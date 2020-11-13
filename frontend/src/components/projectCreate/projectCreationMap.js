@@ -3,11 +3,12 @@ import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-import { addLayer } from './index';
-import { MAPBOX_TOKEN, BASEMAP_OPTIONS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import { useDropzone } from 'react-dropzone';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
-mapboxgl.accessToken = MAPBOX_TOKEN;
+import { MAPBOX_TOKEN, BASEMAP_OPTIONS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
+
 try {
   mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
 } catch {
@@ -59,6 +60,13 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     noClick: true,
     noKeyboard: true,
   });
+  let searchControl = {};
+  if (MAPBOX_TOKEN) {
+    searchControl = new MapboxGeocoder({
+      accessToken: MAPBOX_TOKEN,
+      mapboxgl: mapboxgl,
+    });
+  };
 
   useLayoutEffect(() => {
     setMapObj({
@@ -72,7 +80,9 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
       })
         .addControl(new mapboxgl.AttributionControl({ compact: false }))
         .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
-        .addControl(new mapboxgl.ScaleControl({ unit: 'metric' })),
+        .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }))
+        .addControl(searchControl)
+        .addControl(new mapboxgl.NavigationControl())
     });
 
     return () => {
@@ -81,35 +91,25 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     // eslint-disable-next-line
   }, []);
 
-  useLayoutEffect(() => {
-    if (mapObj.map !== null) {
-      mapObj.map.on('load', () => {
-        mapObj.map.addControl(new mapboxgl.NavigationControl());
-        mapObj.map.addControl(mapObj.draw);
-      });
-
-      // Remove area and geometry when aoi is deleted.
-      mapObj.map.on('draw.delete', (event) => {
-        updateMetadata({ ...metadata, geom: null, area: 0 });
-      });
-
-      mapObj.map.on('style.load', (event) => {
-        if (!MAPBOX_TOKEN) {
-          return;
-        }
-        const features = mapObj.draw.getAll();
-        if (features.features.length === 0) {
-          addLayer('aoi', metadata.geom, mapObj.map);
-        }
-
-        if (metadata.taskGrid && step !== 1) {
-          addLayer('grid', metadata.taskGrid, mapObj.map);
-        } else {
-          mapObj.map.removeLayer('grid');
-        }
-      });
-    }
-  }, [mapObj, metadata, updateMetadata, step]);
+  // useLayoutEffect(() => {
+  //     if (mapObj.map !== null) {
+  //       mapObj.map.on('style.load', (event) => {
+  //         if (!MAPBOX_TOKEN) {
+  //           return;
+  //         }
+  //         const features = mapObj.draw.getAll();
+  //         if (features.features.length === 0) {
+  //           addLayer('aoi', metadata.geom, mapObj.map);
+  //         }
+  //
+  //         if (metadata.taskGrid && step !== 1) {
+  //           addLayer('grid', metadata.taskGrid, mapObj.map);
+  //         } else {
+  //           mapObj.map.removeLayer('grid');
+  //         }
+  //       });
+  //     }
+  //   }, [mapObj, metadata, step]);
 
   return (
     <div className="w-100 h-100-l relative" {...getRootProps()}>
