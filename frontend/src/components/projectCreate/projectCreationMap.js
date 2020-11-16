@@ -9,6 +9,7 @@ import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 import { MAPBOX_TOKEN, BASEMAP_OPTIONS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 
+mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
   mapboxgl.setRTLTextPlugin(MAPBOX_RTL_PLUGIN_URL);
 } catch {
@@ -60,56 +61,49 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     noClick: true,
     noKeyboard: true,
   });
-  let searchControl = {};
-  if (MAPBOX_TOKEN) {
-    searchControl = new MapboxGeocoder({
-      accessToken: MAPBOX_TOKEN,
-      mapboxgl: mapboxgl,
-    });
-  };
 
   useLayoutEffect(() => {
-    setMapObj({
-      ...mapObj,
-      map: new mapboxgl.Map({
-        container: mapRef.current,
-        style: MAP_STYLE,
-        center: [0, 0],
-        zoom: 1,
-        attributionControl: false,
-      })
-        .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
-        .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }))
-        .addControl(searchControl)
-        .addControl(new mapboxgl.NavigationControl())
-    });
+    if (MAPBOX_TOKEN) {
+      setMapObj({
+        ...mapObj,
+        map: new mapboxgl.Map({
+          container: mapRef.current,
+          style: MAP_STYLE,
+          center: [0, 0],
+          zoom: 1,
+          attributionControl: false,
+        })
+          .addControl(new mapboxgl.AttributionControl({ compact: false }))
+          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
+          .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }))
+          .addControl(new MapboxGeocoder({
+              accessToken: MAPBOX_TOKEN,
+              mapboxgl: mapboxgl,
+            }))
+          .addControl(new mapboxgl.NavigationControl())
+      });
+    } else {
+      setMapObj({
+        ...mapObj,
+        map: new mapboxgl.Map({
+          container: mapRef.current,
+          style: MAP_STYLE,
+          center: [0, 0],
+          zoom: 1,
+          attributionControl: false,
+        })
+          .addControl(new mapboxgl.AttributionControl({ compact: false }))
+          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
+          .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }))
+          .addControl(new mapboxgl.NavigationControl())
+      });
+    }
 
     return () => {
       mapObj.map && mapObj.map.remove();
     };
     // eslint-disable-next-line
   }, []);
-
-  // useLayoutEffect(() => {
-  //     if (mapObj.map !== null) {
-  //       mapObj.map.on('style.load', (event) => {
-  //         if (!MAPBOX_TOKEN) {
-  //           return;
-  //         }
-  //         const features = mapObj.draw.getAll();
-  //         if (features.features.length === 0) {
-  //           addLayer('aoi', metadata.geom, mapObj.map);
-  //         }
-  //
-  //         if (metadata.taskGrid && step !== 1) {
-  //           addLayer('grid', metadata.taskGrid, mapObj.map);
-  //         } else {
-  //           mapObj.map.removeLayer('grid');
-  //         }
-  //       });
-  //     }
-  //   }, [mapObj, metadata, step]);
 
   return (
     <div className="w-100 h-100-l relative" {...getRootProps()}>

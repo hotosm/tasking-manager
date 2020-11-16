@@ -170,7 +170,7 @@ export default defineMessages({
   },
   defineAreaDescription: {
     id: 'management.projects.create.draw.description',
-    defaultMessage: 'Search and draw the Area of Interest on the map or import a file.',
+    defaultMessage: 'Locate and draw the Area of Interest on the map or import a file.',
   },
   importDescription: {
     id: 'management.projects.create.upload.description',

@@ -24,7 +24,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, uploadFile, s
       });
       mapObj.map.addControl(mapObj.draw);
     };
-  },[mapObj.map, mapObj.draw]);
+  },[mapObj.map]);
 
   useLayoutEffect(() => {
     if (mapObj.map !== null) {
@@ -36,7 +36,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, uploadFile, s
         }
         // Validate area first.
         const geom = featureCollection(event.features);
-        setDataGeom(geom, false);
+        setDataGeom(geom, true);
       };
 
       mapObj.map.on('draw.create', updateArea);
