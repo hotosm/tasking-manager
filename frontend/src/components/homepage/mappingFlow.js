@@ -42,22 +42,20 @@ export function MappingFlow() {
     },
   ];
   return (
-    <div className="black">
-      <div className="ph6-l ph4 pv3">
-        <h3 className="mb4 mw-36rem-l lh-copy f3 fw6">
-          <FormattedMessage
-            {...messages.mappingFlowTitle}
-            values={{ number: <FormattedNumber value={100000} /> }}
-          />
-        </h3>
-        <p className="pr2 f5 f4-ns blue-dark lh-title mw7 mb4">
-          <FormattedMessage {...messages.mappingFlowHeadline} />
-        </p>
-        <div className="cf">
-          {cards.map((card, n) => (
-            <MappingCard {...card} key={n} />
-          ))}
-        </div>
+    <div className="blue-dark ph6-l ph4 pv3">
+      <h3 className="mb4 mw-36rem-l lh-copy f3 fw6">
+        <FormattedMessage
+          {...messages.mappingFlowTitle}
+          values={{ number: <FormattedNumber value={100000} /> }}
+        />
+      </h3>
+      <p className="pr2 f5 f4-ns blue-dark lh-title mw7 mb4">
+        <FormattedMessage {...messages.mappingFlowHeadline} />
+      </p>
+      <div className="cf">
+        {cards.map((card, n) => (
+          <MappingCard {...card} key={n} />
+        ))}
       </div>
     </div>
   );
