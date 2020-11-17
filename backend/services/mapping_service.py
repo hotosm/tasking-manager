@@ -1,5 +1,4 @@
 import datetime
-import os
 import xml.etree.ElementTree as ET
 
 from flask import current_app
@@ -130,13 +129,12 @@ class MappingService:
 
         if mapped_task.comment:
             # Parses comment to see if any users have been @'d
-            if "CI" not in os.environ.keys():
-                MessageService.send_message_after_comment(
-                    mapped_task.user_id,
-                    mapped_task.comment,
-                    task.id,
-                    mapped_task.project_id,
-                )
+            MessageService.send_message_after_comment(
+                mapped_task.user_id,
+                mapped_task.comment,
+                task.id,
+                mapped_task.project_id,
+            )
 
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
 
@@ -144,7 +142,7 @@ class MappingService:
 
     @staticmethod
     def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
-        """ Unlocks the task and sets the task history appropriately """
+        """ Unlocks the task and revert the task status to the last one """
         task = MappingService.get_task_locked_by_user(
             stop_task.project_id, stop_task.task_id, stop_task.user_id
         )

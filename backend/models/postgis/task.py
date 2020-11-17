@@ -789,7 +789,8 @@ class Task(db.Model):
         self.update()
 
     def reset_lock(self, user_id, comment=None):
-        """ Removes a current lock from a task, resets to last status and updates history with duration of lock """
+        """Removes a current lock from a task, resets to last status and
+        updates history with duration of lock"""
         if comment:
             self.set_task_history(
                 action=TaskAction.COMMENT, comment=comment, user_id=user_id
