@@ -24,13 +24,13 @@ function FeaturedProjectPaginateArrows({ pages, activeProjectCardPage, mobile, d
   return (
     <div className="fr dib f2 mr2 pv3 pr6-l pr3">
       <div
-        className={`dib mr2 red ${enableLeft ? 'dim' : 'o-50'}`}
+        className={`dib mr2 red ${enableLeft ? 'dim pointer' : 'o-50'}`}
         onClick={() => enableLeft && dispatch({ type: `LAST_PAGE${mobileActionType}` })}
       >
         <LeftIcon />
       </div>
       <div
-        className={`dib red ${enableRight ? 'dim' : 'o-50'}`}
+        className={`dib red ${enableRight ? 'dim pointer' : 'o-50'}`}
         onClick={() => enableRight && dispatch({ type: `NEXT_PAGE${mobileActionType}` })}
       >
         <RightIcon />
@@ -65,64 +65,68 @@ export function FeaturedProjects() {
   const pagedProjs = projectPaginate(apiResults);
   const pagedProjsMobile = projectPaginateMobile(apiResults);
 
-  return (
-    <section className="pt4-l pb5 pl5-l pr1-l pl3 black">
-      <div className="cf">
-        <div className="w-75-l w-60 fl">
-          <h3 className="f2 ttu barlow-condensed fw8">
-            <FormattedMessage {...messages.featuredProjects} />
-          </h3>
+  if (apiResults.length) {
+    return (
+      <section className="pb4 pl5-l pr1-l pl3 black">
+        <div className="cf">
+          <div className="w-75-l w-60 fl">
+            <h3 className="f2 mb0 ttu barlow-condensed fw8">
+              <FormattedMessage {...messages.featuredProjects} />
+            </h3>
+          </div>
+          <div className="fl w-25-l pa3 mw6 dn db-l">
+            {!state.isLoading && (
+              <FeaturedProjectPaginateArrows
+                pages={pagedProjs}
+                activeProjectCardPage={state.activeProjectCardPage}
+                mobile={false}
+                dispatch={dispatch}
+              />
+            )}
+          </div>
+          <div className="fl w-40 pa3 mb4 mw6 db dn-l">
+            {!state.isLoading && (
+              <FeaturedProjectPaginateArrows
+                pages={pagedProjsMobile}
+                mobile={true}
+                activeProjectCardPage={state.activeProjectCardPageMobile}
+                dispatch={dispatch}
+              />
+            )}
+          </div>
         </div>
-        <div className="fl w-25-l pa3 mb4 mw6 dn db-l">
-          {!state.isLoading && (
-            <FeaturedProjectPaginateArrows
-              pages={pagedProjs}
-              activeProjectCardPage={state.activeProjectCardPage}
-              mobile={false}
-              dispatch={dispatch}
+        {state.isError ? (
+          <div className="bg-tan pa4">
+            <FormattedMessage
+              {...messages.errorLoadingTheX}
+              values={{
+                xWord: <FormattedMessage {...messages.featuredProjects} />,
+              }}
             />
-          )}
-        </div>
-        <div className="fl w-40 pa3 mb4 mw6 db dn-l">
-          {!state.isLoading && (
-            <FeaturedProjectPaginateArrows
-              pages={pagedProjsMobile}
-              mobile={true}
-              activeProjectCardPage={state.activeProjectCardPageMobile}
-              dispatch={dispatch}
+          </div>
+        ) : null}
+        <div className="cf dn db-l">
+          <ReactPlaceholder customPlaceholder={nCardPlaceholders(4)} ready={!state.isLoading}>
+            <FeaturedProjectCards
+              pageOfCards={pagedProjs}
+              pageNum={state.activeProjectCardPage}
+              ready={!state.isLoading}
             />
-          )}
+          </ReactPlaceholder>
         </div>
-      </div>
-      {state.isError ? (
-        <div className="bg-tan pa4">
-          <FormattedMessage
-            {...messages.errorLoadingTheX}
-            values={{
-              xWord: <FormattedMessage {...messages.featuredProjects} />,
-            }}
-          />
+        <div className="cf db dn-l">
+          <ReactPlaceholder type="media" rows={10} ready={!state.isLoading}>
+            <FeaturedProjectCards
+              pageOfCards={pagedProjsMobile}
+              pageNum={state.activeProjectCardPageMobile}
+            />
+          </ReactPlaceholder>
         </div>
-      ) : null}
-      <div className="cf dn db-l">
-        <ReactPlaceholder customPlaceholder={nCardPlaceholders(4)} ready={!state.isLoading}>
-          <FeaturedProjectCards
-            pageOfCards={pagedProjs}
-            pageNum={state.activeProjectCardPage}
-            ready={!state.isLoading}
-          />
-        </ReactPlaceholder>
-      </div>
-      <div className="cf db dn-l">
-        <ReactPlaceholder type="media" rows={10} ready={!state.isLoading}>
-          <FeaturedProjectCards
-            pageOfCards={pagedProjsMobile}
-            pageNum={state.activeProjectCardPageMobile}
-          />
-        </ReactPlaceholder>
-      </div>
-    </section>
-  );
+      </section>
+    );
+  } else {
+    return <></>;
+  }
 }
 
 function FeaturedProjectCards({ pageOfCards, pageNum }: Object) {
