@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import { TopNavLink } from './NavLink';
@@ -9,11 +9,13 @@ import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 import useForceUpdate from '../../hooks/UseForceUpdate';
 import { useInboxQueryAPI } from '../../hooks/UseInboxQueryAPI';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { useOnResize } from '../../hooks/UseOnResize';
 
 export const NotificationBell = (props) => {
   const token = useSelector((state) => state.auth.get('token'));
   const trigger = token !== null;
   const [forceUpdated, forceUpdate] = useForceUpdate();
+  const [bellPosition, setBellPosition] = useState(0);
   /* these below make the references stable so hooks doesn't re-request forever */
   const notificationBellRef = useRef(null);
   const params = useRef({ status: 'unread' });
@@ -51,6 +53,7 @@ export const NotificationBell = (props) => {
   const handleBellClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    setBellPosition(e.target.getBoundingClientRect().left);
     setPopoutFocus(!isPopoutFocus);
     if (unreadNotifications) {
       forceUpdate(); // update the notifications when user clicks and there are unread messages
@@ -59,6 +62,13 @@ export const NotificationBell = (props) => {
     }
   };
 
+  const handleResizeCallback = useCallback(() => {
+    if (isPopoutFocus) {
+      setBellPosition(notificationBellRef.current.getBoundingClientRect().left);
+    }
+  }, [isPopoutFocus]);
+
+  useOnResize(notificationBellRef, handleResizeCallback);
   useOnClickOutside(notificationBellRef, () => setPopoutFocus(false));
 
   const isNotificationBellActive = ({ isCurrent }) => {
@@ -84,7 +94,7 @@ export const NotificationBell = (props) => {
       >
         <div className="relative dib">
           <BellIcon aria-label="Notifications" role="button" />
-          {unreadNotifications && <div className="redicon"></div>}
+          {unreadNotifications && <div className="redicon" />}
         </div>
       </TopNavLink>
       <NotificationPopout
@@ -93,6 +103,7 @@ export const NotificationBell = (props) => {
         isPopoutFocus={isPopoutFocus}
         setPopoutFocus={setPopoutFocus}
         liveUnreadCount={liveUnreadCount}
+        position={bellPosition}
       />
     </span>
   );
