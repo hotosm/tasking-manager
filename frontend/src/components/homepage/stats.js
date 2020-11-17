@@ -56,7 +56,7 @@ export const StatsSection = () => {
   }, [url]);
 
   return (
-    <div className="cf pv5 ph5-l ph4 bg-white">
+    <div className="cf pt5 pb2 ph5-l ph4 bg-white">
       <StatsColumn label={messages.buildingsStats} value={stats.buildings} />
       <StatsColumn label={messages.roadsStats} value={stats.roads} />
       <StatsColumn label={messages.editsStats} value={stats.edits} />
