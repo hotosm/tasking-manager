@@ -117,7 +117,7 @@ jobs:
         name: Remove last snapshot and backup database
         no_output_timeout: 15m
         command: |
-          DESCRIBE_SNAPSHOT=$(aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest --db-instance-identifier $RDS_ID --output text)
+          DESCRIBE_SNAPSHOT=$(aws rds describe-db-snapshots --db-snapshot-identifier tm3-<< parameters.stack_name >>-$RDS_ID-latest --db-instance-identifier $RDS_ID --output text --region $AWS_REGION)
           NONCE=$(openssl rand -hex 4)
           echo "export NONCE=$NONCE" >> $BASH_ENV
           # Copy old snapshot to temporary
@@ -127,17 +127,19 @@ jobs:
           else
               aws rds copy-db-snapshot \
                       --source-db-snapshot tm3-<< parameters.stack_name >>-${RDS_ID}-latest \
-                      --target-db-snapshot tm3-<< parameters.stack_name >>-${RDS_ID}-${NONCE}
+                      --target-db-snapshot tm3-<< parameters.stack_name >>-${RDS_ID}-${NONCE} \
+                      --region ${AWS_REGION}
               aws rds delete-db-snapshot \
-                      --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest
+                      --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest \
+                      --region ${AWS_REGION}
           fi
           # create new aws rds snapshot
           aws rds create-db-snapshot \
                       --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest \
-                      --db-instance-identifier ${RDS_ID}
+                      --db-instance-identifier ${RDS_ID} --region ${AWS_REGION}
           aws rds wait db-snapshot-completed \
                       --db-snapshot-identifier tm3-<< parameters.stack_name >>-${RDS_ID}-latest \
-                      --db-instance-identifier ${RDS_ID}
+                      --db-instance-identifier ${RDS_ID} --region ${AWS_REGION}
           if [[ $? -eq 255 ]]; then
             echo "Production snapshot creation failed. Exiting with exit-code 125"
             exit 125
