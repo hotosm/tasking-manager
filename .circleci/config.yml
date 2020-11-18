@@ -226,8 +226,8 @@ jobs:
           yarn
           CI=true GENERATE_SOURCEMAP=false yarn build
           aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-react-app --delete
-          export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
-          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+          export DISTRIBUTION_ID=`aws cloudformation list-exports --region ${AWS_REGION} --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id-${AWS_REGION}'].Value"`
+          aws cloudfront create-invalidation --region ${AWS_REGION} --distribution-id $DISTRIBUTION_ID --paths "/*"
 workflows:
   version: 2
   build-deploy:
