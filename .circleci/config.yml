@@ -263,7 +263,7 @@ workflows:
           - build
         stack_name: "test"
         gitsha: $CIRCLE_SHA1
-        context: tasking-manager-staging
+        context: tasking-manager-indonesia
     - frontend_deploy:
         name: test
         filters:
@@ -272,7 +272,7 @@ workflows:
             - feature/prepare-id-stack
         requires:
           - build
-        context: tasking-manager-staging
+        context: tasking-manager-indonesia
         stack_name: "test"
     - backend_deploy:
         name: teachosm
