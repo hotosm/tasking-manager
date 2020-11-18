@@ -49,7 +49,11 @@ const Parameters = {
   },
   SSLCertificateIdentifier: {
     Type: 'String',
-    Description: 'SSL certificate for HTTPS protocol'
+    Description: 'SSL certificate for Cloudfront Distro MUST BE in region us-east-1'
+  },
+  ELBCertificateIdentifier: {
+    Type: 'String',
+    Description: 'SSL certificate for HTTPS protocol of the ELB'
   },
   TaskingManagerLogDirectory: {
     Description: 'TM_LOG_DIR environment variable',
@@ -151,7 +155,7 @@ const Resources = {
       LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
-      AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f'],
+      AvailabilityZones: ['ap-southeast-1a', 'ap-southeast-1c', 'ap-southeast-1b'],
       Tags: [{
         Key: 'Name',
         PropagateAtLaunch: true,
@@ -305,7 +309,7 @@ const Resources = {
     },
     Properties: {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: 'ami-0565af6e282977273',
+      ImageId: 'ami-070bdb8798e3aeba7',
       InstanceType: 'c5d.large',
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
@@ -402,7 +406,7 @@ const Resources = {
         cf.sub('sudo cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
         cf.sub('cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
       ]),
-      KeyName: 'mbtiles'
+      KeyName: 'tm-id'
     }
   },
   TaskingManagerEC2Role: {
@@ -577,7 +581,7 @@ const Resources = {
     Type: 'AWS::ElasticLoadBalancingV2::Listener',
     Properties: {
       Certificates: [ {
-        CertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier'))
+        CertificateArn: cf.arn('acm', cf.ref('ELBCertificateIdentifier'))
       }],
       DefaultActions: [{
         Type: 'forward',
@@ -706,7 +710,7 @@ const Resources = {
           ViewerProtocolPolicy: "redirect-to-https"
         },
         ViewerCertificate: {
-          AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
+          AcmCertificateArn: cf.join(':', [' arn:aws:acm:us-east-1', cf.accountId, cf.ref('SSLCertificateIdentifier')] ),
           MinimumProtocolVersion: 'TLSv1.2_2018',
           SslSupportMethod: 'sni-only'
         }

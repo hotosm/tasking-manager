@@ -149,7 +149,11 @@ jobs:
         name: Download config file
         command: |
           export GITSHA=<< parameters.gitsha >>
-          aws s3 cp s3://hot-cfn-config/tasking-manager/tasking-manager-<< parameters.stack_name >>-${AWS_REGION}.cfn.json - | jq -c --arg GITSHA "$GITSHA" '.GitSha = $GITSHA' > $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
+          if [[ $AWS_REGION -eq 'ap-southeast-1' ]]; then
+            aws s3 cp s3://hot-cfn-config-id/tasking-manager/tasking-manager-<< parameters.stack_name >>-${AWS_REGION}.cfn.json - | jq -c --arg GITSHA "$GITSHA" '.GitSha = $GITSHA' > $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
+          else
+            aws s3 cp s3://hot-cfn-config/tasking-manager/tasking-manager-<< parameters.stack_name >>-${AWS_REGION}.cfn.json - | jq -c --arg GITSHA "$GITSHA" '.GitSha = $GITSHA' > $CIRCLE_WORKING_DIRECTORY/cfn-config-<< parameters.stack_name >>.json
+          fi
     - deploy:
         name: Deploy to << parameters.stack_name >>
         command: |
@@ -253,7 +257,7 @@ workflows:
         filters:
           branches:
             only:
-            - fix/sentry-environments
+            - feature/prepare-id-stack
         requires:
           - build
         stack_name: "test"
@@ -264,7 +268,7 @@ workflows:
         filters:
           branches:
             only:
-            - fix/sentry-environments
+            - feature/prepare-id-stack
         requires:
           - build
         context: tasking-manager-staging
@@ -311,6 +315,27 @@ workflows:
           - build
         stack_name: "assisted"
         context: tasking-manager-assisted
+    - backend_deploy:
+        name: indonesia
+        filters:
+          branches:
+            only:
+              - deployment/indonesia-tasking-manager
+        requires:
+          - build
+        stack_name: "indonesia"
+        gitsha: $CIRCLE_SHA1
+        context: tasking-manager-indonesia
+    - frontend_deploy:
+        name: indonesia
+        filters:
+          branches:
+            only:
+              - deployment/indonesia-tasking-manager
+        requires:
+          - build
+        stack_name: "indonesia"
+        context: tasking-manager-indonesia
   backend-production:
     jobs:
     - backend_deploy:
