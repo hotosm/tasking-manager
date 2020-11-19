@@ -15,31 +15,52 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Login } from './login';
 
 export const NotificationPopout = (props) => {
+  // Small screen size, as defined by tachyons
+  let smallScreenSize = !window.matchMedia('(min-width: 30em)').matches;
+  // Notification popout position and margin. The popout is anchored outside of the screen and centered on small screens.
+  const popoutPosition = {
+    left: `${smallScreenSize ? '-2rem' : Math.max(0, props.position - 320).toString() + 'px'}`,
+    right: `${smallScreenSize ? '-2rem' : 'auto'}`,
+    margin: `${smallScreenSize ? '.5rem auto 0' : '.5rem 0 0'}`,
+  };
+
   return (
-    <div
-      style={{ minWidth: '390px', width: '390px', zIndex: '100', right: '4rem' }}
-      className={`fr ${props.isPopoutFocus ? '' : 'dn'} mt2 br2 absolute shadow-2 ph4 pb3 bg-white`}
-    >
-      <span className="absolute top-0 left-2 nt2 w1 h1 bg-white bl ml7 bt b--grey-light rotate-45"></span>
-      <InboxNavMini
-        newMsgCount={
-          props.state &&
-          props.state.notifications &&
-          props.state.notifications.filter((n) => !n.read).length
-        }
+    <>
+      <div
+        style={{
+          minWidth: '390px',
+          width: '390px',
+          zIndex: '100',
+          ...popoutPosition,
+        }}
+        className={`fr ${props.isPopoutFocus ? '' : 'dn '}br2 absolute shadow-2 ph4 pb3 bg-white`}
+      >
+        <InboxNavMini
+          newMsgCount={
+            props.state &&
+            props.state.notifications &&
+            props.state.notifications.filter((n) => !n.read).length
+          }
+        />
+        <NotificationResultsMini
+          liveUnreadCount={props.liveUnreadCount}
+          retryFn={props.forceUpdate}
+          state={props.state}
+          className="tl"
+        />
+        <InboxNavMiniBottom
+          className="tl"
+          setPopoutFocus={props.setPopoutFocus}
+          msgCount={props.state && props.state.notifications && props.state.notifications.length}
+        />
+      </div>
+      <div
+        style={{ zIndex: '100', left: `${props.position}px` }}
+        className={`${
+          props.isPopoutFocus ? '' : 'dn '
+        }absolute w1 h1 bg-white bl bt b--grey-light rotate-45`}
       />
-      <NotificationResultsMini
-        liveUnreadCount={props.liveUnreadCount}
-        retryFn={props.forceUpdate}
-        state={props.state}
-        className="tl"
-      />
-      <InboxNavMiniBottom
-        className="tl"
-        setPopoutFocus={props.setPopoutFocus}
-        msgCount={props.state && props.state.notifications && props.state.notifications.length}
-      />
-    </div>
+    </>
   );
 };
 
@@ -68,9 +89,7 @@ export const NotificationsPage = (props) => {
       <div className="pt4-l pb5 ph5-l ph2 pt180 pull-center bg-tan">
         {
           props.children
-          /* This is where the full notification body component is rendered
-        using the router, as a child route.
-        */
+          /* This is where the full notification body component is rendered using the router, as a child route. */
         }
         <section className="cf">
           <InboxNav />

@@ -137,7 +137,7 @@ export default defineMessages({
     defaultMessage: 'Urgent projects',
   },
   sortByBeginner: {
-    id: 'project.sortby.difficulty.begginer',
+    id: 'project.sortby.difficulty.beginner',
     defaultMessage: 'Beginner projects',
   },
   sortByAdvanced: {

@@ -14,7 +14,7 @@ export function ManagementMenu({ isAdmin }: Object) {
     'users',
     'licenses',
   ];
-  // non admin users can only see the three first itens
+  // non admin users can only see the three first items
   if (!isAdmin) {
     links = links.slice(0, 3);
   }

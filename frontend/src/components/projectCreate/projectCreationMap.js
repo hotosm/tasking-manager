@@ -5,6 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { addLayer } from './index';
 import { MAPBOX_TOKEN, BASEMAP_OPTIONS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
+import { useDropzone } from 'react-dropzone';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -50,9 +51,14 @@ const BasemapMenu = ({ map }) => {
   );
 };
 
-const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step }) => {
+const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step, uploadFile }) => {
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: step === 1 ? uploadFile : () => {}, // drag&drop is activated only on the first step
+    noClick: true,
+    noKeyboard: true,
+  });
 
   useLayoutEffect(() => {
     setMapObj({
@@ -106,9 +112,10 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step 
   }, [mapObj, metadata, updateMetadata, step]);
 
   return (
-    <div className="w-100 h-100-l relative">
+    <div className="w-100 h-100-l relative" {...getRootProps()}>
       <div className="absolute top-0 left-0 z-5">
         <BasemapMenu map={mapObj.map} />
+        <input style={{ display: 'null' }} {...getInputProps()} />
       </div>
       <div id="map" className="vh-50 h-100-l w-100" ref={mapRef}></div>
     </div>

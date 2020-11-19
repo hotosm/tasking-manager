@@ -6,7 +6,7 @@ import messages from './messages';
 import { MappingTypes } from '../mappingTypes';
 import { Imagery } from '../taskSelection/imagery';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
-import DueDateBox from '../projectCard/dueDateBox';
+import { DueDateBox } from '../projectCard/dueDateBox';
 import { MappingLevelMessage } from '../mappingLevel';
 import { BigProjectTeaser } from './bigProjectTeaser';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';

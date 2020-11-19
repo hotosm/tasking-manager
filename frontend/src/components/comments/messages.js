@@ -22,7 +22,7 @@ export default defineMessages({
   },
   messageError: {
     id: 'comment.input.sending.error',
-    defaultMessage: 'An error ocurred while sending message.',
+    defaultMessage: 'An error occurred while sending message.',
   },
   managersHashtagTip: {
     id: 'comment.hashtags.help.managers',

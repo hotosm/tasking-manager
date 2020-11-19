@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import humanizeDuration from 'humanize-duration';
 
 import { ClockIcon } from '../svgIcons';
 import messages from './messages';
 
-function DueDateBox({ intl, dueDate, intervalMili, align = 'right' }: Object) {
+export function DueDateBox({ dueDate, intervalMili, align = 'right' }: Object) {
+  const intl = useIntl();
   const [timer, setTimer] = useState(Date.now());
   useEffect(() => {
     let interval;
@@ -72,6 +73,3 @@ function DueDateBox({ intl, dueDate, intervalMili, align = 'right' }: Object) {
     return null;
   }
 }
-
-//decorator pattern to provide the intl object from IntlProvider into function props.
-export default injectIntl(DueDateBox, { forwardRef: true });

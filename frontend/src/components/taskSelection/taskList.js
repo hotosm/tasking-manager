@@ -357,11 +357,11 @@ function TaskActivityModal({
             <div className="w-100 pa4 blue-dark bg-white">
               <CloseIcon className="h1 w1 fr pointer" onClick={() => close()} />
               <h3 className="ttu f3 pa0 ma0 barlow-condensed b mb4">
-                <FormattedMessage {...messages.taskSplitted} />
+                <FormattedMessage {...messages.taskUnavailable} />
               </h3>
               <p className="pb0">
                 <FormattedMessage
-                  {...messages.taskSplittedDescription}
+                  {...messages.taskSplitDescription}
                   values={{ id: <b>#{taskId}</b> }}
                 />
               </p>
@@ -394,7 +394,7 @@ function PaginatedList({
   useEffect(() => {
     latestItems.current = items;
   });
-  // the useEffect above avoids the next one to run everytime the items change
+  // the useEffect above avoids the next one to run every time the items change
   useEffect(() => {
     // switch the taskList page to always show the selected task.
     // Only do it if there is only one task selected

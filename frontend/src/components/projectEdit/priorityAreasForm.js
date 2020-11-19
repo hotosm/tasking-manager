@@ -2,16 +2,16 @@ import React, { useState, useContext, useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import MapboxLanguage from '@mapbox/mapbox-gl-language';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { Button } from '../button';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
-
-const MapboxDraw = require('@mapbox/mapbox-gl-draw');
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -23,7 +23,7 @@ try {
 export const PriorityAreasForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const mapRef = React.createRef();
-  const locale = useSelector(state => state.preferences['locale']);
+  const locale = useSelector((state) => state.preferences['locale']);
   const [map, setMap] = useState(null);
   const [activeMode, setActiveMode] = useState('draw_polygon');
 
@@ -77,7 +77,7 @@ export const PriorityAreasForm = () => {
         }
 
         // update As features
-        const drawPriorityAreas = priorityAreas.map(a => ({
+        const drawPriorityAreas = priorityAreas.map((a) => ({
           type: 'Feature',
           properties: {},
           geometry: a,
@@ -118,7 +118,7 @@ export const PriorityAreasForm = () => {
           },
         });
 
-        map.on('draw.create', e => {
+        map.on('draw.create', (e) => {
           priorityAreas.push(e.features[0].geometry);
           setProjectInfo({ ...projectInfo, priorityAreas: priorityAreas });
         });
@@ -126,7 +126,7 @@ export const PriorityAreasForm = () => {
     }
   }, [map, draw, projectInfo, setProjectInfo]);
 
-  const clearAll = e => {
+  const clearAll = (e) => {
     draw[0].deleteAll();
     map.removeLayer('priority_areas');
     map.removeSource('priority_areas');
@@ -139,7 +139,7 @@ export const PriorityAreasForm = () => {
         <FormattedMessage {...messages.priorityAreasDescription} />
       </p>
       <div className="pb2">
-        {['draw_polygon', 'draw_rectangle'].map(option => (
+        {['draw_polygon', 'draw_rectangle'].map((option) => (
           <label className="di pr3" key={option}>
             <input
               value={option}
