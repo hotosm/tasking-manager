@@ -232,6 +232,7 @@ workflows:
           branches:
             only:
             - develop
+            - staging-test
         requires:
           - build
         stack_name: "staging"
@@ -243,6 +244,7 @@ workflows:
           branches:
             only:
             - develop
+            - staging-test
         requires:
           - build
         context: tasking-manager-staging
