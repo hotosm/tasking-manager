@@ -41,42 +41,26 @@ class CampaignService:
     def get_campaign_as_dto(campaign_id: int, user_id: int):
         """Gets the specified campaign"""
         campaign = CampaignService.get_campaign(campaign_id)
+
         campaign_dto = CampaignDTO()
         campaign_dto.id = campaign.id
         campaign_dto.url = campaign.url
         campaign_dto.name = campaign.name
         campaign_dto.logo = campaign.logo
         campaign_dto.description = campaign.description
-        campaign_dto.organisations = []
-
-        orgs = (
-            Organisation.query.join(campaign_organisations)
-            .filter(campaign_organisations.c.campaign_id == campaign.id)
-            .all()
-        )
-
-        for org in orgs:
-            if user_id != 0:
-                logged_in = OrganisationService.can_user_manage_organisation(
-                    org.id, user_id
-                )
-            else:
-                logged_in = False
-
-            organisation_dto = OrganisationDTO()
-
-            organisation_dto.organisation_id = org.id
-            organisation_dto.name = org.name
-            organisation_dto.logo = org.logo
-            organisation_dto.url = org.url
-            organisation_dto.is_manager = logged_in
 
         return campaign_dto
 
     @staticmethod
     def get_project_campaigns_as_dto(project_id: int) -> CampaignListDTO:
         """Gets all the campaigns for a specified project"""
-        return Campaign.get_project_campaigns_as_dto(project_id)
+        query = (
+            Campaign.query.join(campaign_projects)
+            .filter(campaign_projects.c.project_id == project_id)
+            .all()
+        )
+
+        return Campaign.campaign_list_as_dto(query)
 
     @staticmethod
     def delete_project_campaign(project_id: int, campaign_id: int):
@@ -90,11 +74,14 @@ class CampaignService:
 
     @staticmethod
     def get_all_campaigns() -> CampaignListDTO:
-        """List all campaigns"""
-        return Campaign.get_all_campaigns()
+        """ Returns a list of all campaigns """
+        query = Campaign.query.order_by(Campaign.name).distinct()
+
+        return Campaign.campaign_list_as_dto(query)
 
     @staticmethod
     def create_campaign(campaign_dto: NewCampaignDTO):
+        """ Creates a new campaign """
         campaign = Campaign.from_dto(campaign_dto)
         try:
             campaign.create()
@@ -136,7 +123,23 @@ class CampaignService:
     @staticmethod
     def get_organisation_campaigns_as_dto(organisation_id: int) -> CampaignListDTO:
         """ Gets all the campaigns for a specified project """
-        return Campaign.get_organisation_campaigns_as_dto(organisation_id)
+        query = (
+            Campaign.query.join(campaign_organisations)
+            .filter(campaign_organisations.c.organisation_id == organisation_id)
+            .all()
+        )
+        return Campaign.campaign_list_as_dto(query)
+
+    @staticmethod
+    def campaign_organisation_exists(campaign_id: int, org_id: int):
+        return (
+            Campaign.query.join(campaign_organisations)
+            .filter(
+                campaign_organisations.c.organisation_id == org_id,
+                campaign_organisations.c.campaign_id == campaign_id,
+            )
+            .one_or_none()
+        )
 
     @staticmethod
     def delete_organisation_campaign(organisation_id: int, campaign_id: int):
