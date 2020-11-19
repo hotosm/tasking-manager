@@ -16,7 +16,7 @@ from backend.models.postgis.utils import NotFound
 from backend.models.postgis.project import Project
 from backend.models.postgis.organisation import Organisation
 from backend.services.organisation_service import OrganisationService
-from backend.models.dtos.organisation_dto import OrganisationDTO
+from backend.models.dtos.organisation_dto import OrganisationDTO, ListOrganisationsDTO
 
 
 class CampaignService:
@@ -41,17 +41,28 @@ class CampaignService:
     def get_campaign_as_dto(campaign_id: int, user_id: int):
         """Gets the specified campaign"""
         campaign = CampaignService.get_campaign(campaign_id)
+
         campaign_dto = CampaignDTO()
         campaign_dto.id = campaign.id
         campaign_dto.url = campaign.url
         campaign_dto.name = campaign.name
         campaign_dto.logo = campaign.logo
         campaign_dto.description = campaign.description
-        campaign_dto.organisations = []
+        campaign_dto.organisations = CampaignService.get_campaign_organisations_as_dto(
+            campaign_id, user_id
+        )
 
+        return campaign_dto
+
+    @staticmethod
+    def get_campaign_organisations_as_dto(campaign_id: int, user_id: int):
+        """
+        Returns organisations under a particular campaign
+        """
+        organisation_list_dto = ListOrganisationsDTO()
         orgs = (
             Organisation.query.join(campaign_organisations)
-            .filter(campaign_organisations.c.campaign_id == campaign.id)
+            .filter(campaign_organisations.c.campaign_id == campaign_id)
             .all()
         )
 
@@ -64,14 +75,15 @@ class CampaignService:
                 logged_in = False
 
             organisation_dto = OrganisationDTO()
-
             organisation_dto.organisation_id = org.id
             organisation_dto.name = org.name
             organisation_dto.logo = org.logo
             organisation_dto.url = org.url
             organisation_dto.is_manager = logged_in
 
-        return campaign_dto
+            organisation_list_dto.organisations.append(organisation_dto)
+
+        return organisation_list_dto
 
     @staticmethod
     def get_project_campaigns_as_dto(project_id: int) -> CampaignListDTO:
