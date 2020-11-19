@@ -257,28 +257,27 @@ workflows:
           - build
         context: tasking-manager-staging
         stack_name: "staging"
-
-    - backend_deploy:
-        name: test
-        filters:
-          branches:
-            only:
-            - feature/prepare-id-stack
-        requires:
-          - build
-        stack_name: "test"
-        gitsha: $CIRCLE_SHA1
-        context: tasking-manager-indonesia
-    - frontend_deploy:
-        name: test
-        filters:
-          branches:
-            only:
-            - feature/prepare-id-stack
-        requires:
-          - build
-        context: tasking-manager-indonesia
-        stack_name: "test"
+    # - backend_deploy:
+    #     name: test
+    #     filters:
+    #       branches:
+    #         only:
+    #         - feature/prepare-id-stack
+    #     requires:
+    #       - build
+    #     stack_name: "test"
+    #     gitsha: $CIRCLE_SHA1
+    #     context: tasking-manager-indonesia
+    # - frontend_deploy:
+    #     name: test
+    #     filters:
+    #       branches:
+    #         only:
+    #         - feature/prepare-id-stack
+    #     requires:
+    #       - build
+    #     context: tasking-manager-indonesia
+    #     stack_name: "test"
     - backend_deploy:
         name: teachosm
         filters:
