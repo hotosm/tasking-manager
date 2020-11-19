@@ -52,7 +52,9 @@ class OrganisationsCampaignsAPI(Resource):
             if OrganisationService.can_user_manage_organisation(
                 organisation_id, token_auth.current_user()
             ):
-                if Campaign.campaign_organisation_exists(campaign_id, organisation_id):
+                if CampaignService.campaign_organisation_exists(
+                    campaign_id, organisation_id
+                ):
                     message = (
                         "Campaign {} is already assigned to organisation {}.".format(
                             campaign_id, organisation_id
