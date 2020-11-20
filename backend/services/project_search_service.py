@@ -263,12 +263,21 @@ class ProjectSearchService:
         if search_dto.mapping_types:
             # Construct array of mapping types for query
             mapping_type_array = []
-            mapping_type_array = [
-                MappingTypes[mapping_type].value
-                for mapping_type in search_dto.mapping_types
-            ]
 
-            query = query.filter(Project.mapping_types.contains(mapping_type_array))
+            if search_dto.mapping_types_exact:
+                mapping_type_array = [
+                    {
+                        MappingTypes[mapping_type].value
+                        for mapping_type in search_dto.mapping_types
+                    }
+                ]
+                query = query.filter(Project.mapping_types.in_(mapping_type_array))
+            else:
+                mapping_type_array = [
+                    MappingTypes[mapping_type].value
+                    for mapping_type in search_dto.mapping_types
+                ]
+                query = query.filter(Project.mapping_types.overlap(mapping_type_array))
 
         if search_dto.text_search:
             # We construct an OR search, so any projects that contain or more of the search terms should be returned

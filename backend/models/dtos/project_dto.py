@@ -291,6 +291,7 @@ class ProjectSearchDTO(Model):
     preferred_locale = StringType(default="en")
     mapper_level = StringType(validators=[is_known_mapping_level])
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
+    mapping_types_exact = BooleanType(required=False)
     project_statuses = ListType(StringType, validators=[is_known_project_status])
     organisation_name = StringType()
     organisation_id = IntType()
