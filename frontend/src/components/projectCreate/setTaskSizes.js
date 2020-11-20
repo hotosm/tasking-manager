@@ -213,7 +213,8 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       displayControlsDefault: false,
     });
     mapObj.map.addControl(mapObj.draw);
-  }, [mapObj.map, mapObj.draw]);
+  // eslint-disable-next-line
+  }, [mapObj.map]);
 
   useLayoutEffect(() => {
     addLayer('grid', metadata.taskGrid, mapObj.map);

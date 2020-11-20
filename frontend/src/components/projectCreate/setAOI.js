@@ -24,6 +24,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, uploadFile, s
       });
       mapObj.map.addControl(mapObj.draw);
     };
+  // eslint-disable-next-line
   },[mapObj.map]);
 
   useLayoutEffect(() => {
