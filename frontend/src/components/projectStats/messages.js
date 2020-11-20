@@ -7,11 +7,11 @@ export default defineMessages({
   },
   averageMappingTime: {
     id: 'projects.stats.average_mapping_time',
-    defaultMessage: 'Average mapping time',
+    defaultMessage: 'Average mapping time per Task',
   },
   averageValidationTime: {
     id: 'projects.stats.average_validation_time',
-    defaultMessage: 'Average validation time',
+    defaultMessage: 'Average validation time per Task',
   },
   timeToFinishMapping: {
     id: 'projects.stats.time_finish_mapping',
