@@ -1201,10 +1201,10 @@
   dependencies:
     emojis-list "^3.0.0"
 
-"@formatjs/intl@1.4.5":
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl/-/intl-1.4.5.tgz#566aa941f65f4a5de0cfe41f0cd8fe3e69f2ae5d"
-  integrity sha512-ur7OtcLnfvLH3j7R9fkJoucwXuCTY54dVAN55O6nEn8s+XL36Fs5td689AzaCe5/Y2wwO4aS4/fXw45Ndy2Twg==
+"@formatjs/intl@1.4.6":
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl/-/intl-1.4.6.tgz#7dd5058c546c0ddbc94a4abbc0c9fe88fe050610"
+  integrity sha512-NpmOi3T0ADalssZK0JJkS8mfbaiCwbHdlzdsp33cDY6ZMLSkLASwMUirmmEV9Qdh1TEVOixz9bSdy03eo+k7XA==
   dependencies:
     "@formatjs/ecma402-abstract" "1.4.0"
     "@formatjs/intl-datetimeformat" "2.8.4"
@@ -10427,13 +10427,13 @@ react-input-autosize@^2.2.2:
   dependencies:
     prop-types "^15.5.8"
 
-react-intl@^5.10.1:
-  version "5.10.1"
-  resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-5.10.1.tgz#deac1dec94afa93b875f653e3445b4946b10e178"
-  integrity sha512-D5zP6P7D70qFQc4KSYlwZ5iw1r2kXkmCGD1V6opM7ckIWj6FKs4p1za3eFOn0GpcEJNUQzTwNP4qu1NCHnHS2w==
+react-intl@^5.10.2:
+  version "5.10.2"
+  resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-5.10.2.tgz#7a2520dccd9662c317755418d090dd034c39906f"
+  integrity sha512-g5sxQXdmXSBo8tqi1I2PBpsAG40dgmHnVGoLdBJPwPNHvJbzc08J1r2IOKomPqHMDDjD47Q/Z1Ls87spw/ES5w==
   dependencies:
     "@formatjs/ecma402-abstract" "1.4.0"
-    "@formatjs/intl" "1.4.5"
+    "@formatjs/intl" "1.4.6"
     "@formatjs/intl-displaynames" "3.4.6"
     "@formatjs/intl-listformat" "4.3.6"
     "@formatjs/intl-relativetimeformat" "7.3.6"
