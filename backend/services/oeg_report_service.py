@@ -211,7 +211,7 @@ class OegReportService:
         project["license"] = self.get_project_report_license(project)
         project["externalSource"] = self.get_project_report_external_source(project)
         project["url"] = (
-            current_app.config["FRONTEND_BASE_URL"]
+            current_app.config["APP_BASE_URL"]
             + "/projects/"
             + str(project["projectId"])
         )
@@ -248,7 +248,7 @@ class OegReportService:
             "organisation": (project_organisation),
             "platform": {
                 "name": current_app.config["ORG_CODE"] + " Tasking Manager",
-                "url": current_app.config["FRONTEND_BASE_URL"],
+                "url": current_app.config["APP_BASE_URL"],
             },
         }
         return report_data
