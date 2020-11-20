@@ -520,6 +520,9 @@ class ProjectSearchBase(Resource):
             search_dto.mapping_types = map(
                 str, mapping_types_str.split(",")
             )  # Extract list from string
+        search_dto.mapping_types_exact = strtobool(
+            request.args.get("mappingTypesExact", "false")
+        )
         project_statuses_str = request.args.get("projectStatuses")
         if project_statuses_str:
             search_dto.project_statuses = map(str, project_statuses_str.split(","))
@@ -569,6 +572,11 @@ class ProjectsAllAPI(ProjectSearchBase):
             - in: query
               name: mappingTypes
               type: string
+            - in: query
+              name: mappingTypesExact
+              type: boolean
+              default: false
+              description: if true, limits projects to match the exact mapping types requested
             - in: query
               name: organisationName
               description: Organisation name to search for
