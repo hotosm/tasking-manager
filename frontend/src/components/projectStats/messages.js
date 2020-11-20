@@ -15,11 +15,11 @@ export default defineMessages({
   },
   timeToFinishMapping: {
     id: 'projects.stats.time_finish_mapping',
-    defaultMessage: 'Time to finish mapping',
+    defaultMessage: 'Estimated time to finish mapping',
   },
   timeToFinishValidating: {
     id: 'projects.stats.time_finish_validation',
-    defaultMessage: 'Time to finish validation',
+    defaultMessage: 'Estimated time to finish validation',
   },
   status: {
     id: 'project.stats.tasks.tatus',
