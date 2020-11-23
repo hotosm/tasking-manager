@@ -12,7 +12,8 @@ import { DROPZONE_SETTINGS } from '../../config';
 
 export const CommentInputField = ({ comment, setComment, enableHashtagPaste = false }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
-  const appendImgToComment = (url) => setComment(`${comment}\n![image](${url})\n`);
+  const appendImgToComment = (url) =>
+    setComment(`${comment}\n![${url.substring(url.lastIndexOf('/') + 1)}](${encodeURI(url)})\n`);
   const [uploadError, uploading, onDrop] = useOnDrop(appendImgToComment);
   const { fileRejections, getRootProps, getInputProps } = useDropzone({
     onDrop,
