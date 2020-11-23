@@ -562,7 +562,7 @@
                 else {
                     vm.userCanMap, vm.userCanValidate, vm.showOSMCha = false;
                 }
-                
+
                 addAoiToMap(vm.projectData.areaOfInterest);
                 addPriorityAreasToMap(vm.projectData.priorityAreas);
                 addProjectTasksToMap(vm.projectData.tasks, true);
@@ -1702,24 +1702,12 @@
             changesetComment,
             customUrl) {
             if (taskCount > 1) {
-                // load a new empty layer in josm for task square(s).  This step required to get custom name for layer
-                // use empty, uri encoded osmxml with upload=never for the data para
-                var emptyTaskLayerParams = {
+                //load task square(s) into JOSM
+                var taskImportParams = {
                     new_layer: true,
                     mime_type: encodeURIComponent('application/x-osm+xml'),
                     layer_name: encodeURIComponent('Task Boundaries #' + vm.projectData.projectId + '- Do not edit or upload'),
-                    data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>')
-                };
-                editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
-                    .catch(function() {
-                        //warn that JSOM couldn't be started
-                        vm.editorStartError = 'josm-error';
-                    });
-
-                //load task square(s) into JOSM
-                var taskImportParams = {
                     url: editorService.getOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds()),
-                    new_layer: false
                 };
                 editorService.sendJOSMCmd('http://127.0.0.1:8111/import', taskImportParams)
                     .catch(function() {
@@ -1756,26 +1744,16 @@
 
             // load a new empty layer in josm for osm data, this step necessary to have a custom name for the layer
             // use empty, uri encoded osmxml for the data param
-            var emptyOSMLayerParams = {
+            var loadAndZoomParams = {
                 new_layer: true,
                 mime_type: 'application/x-osm+xml',
                 layer_name: 'OSM Data',
-                data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
-            }
-            editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyOSMLayerParams)
-                .catch(function() {
-                    //warn that JSOM couldn't be started
-                    vm.editorStartError = 'josm-error';
-                });
-
-            var loadAndZoomParams = {
                 left: extentTransformed[0],
                 bottom: extentTransformed[1],
                 right: extentTransformed[2],
                 top: extentTransformed[3],
                 changeset_comment: encodeURIComponent(changesetComment),
-                changeset_source: encodeURIComponent(changesetSource),
-                new_layer: false
+                changeset_source: encodeURIComponent(changesetSource)
             };
 
             if (taskCount == 1) {
@@ -1794,20 +1772,11 @@
                 if (vm.currentTab === 'mapping' && vm.project_files.length > 0) {
                     var i;
                     for (i = 0; i < vm.project_files.length; i++) {
-                        var emptyTaskLayerParams = {
+                        var projectFileParams = {
+                            layer_name: encodeURIComponent(vm.project_files[i].fileName.replace(/\.[^/.]+$/,"")),
+                            mime_type: encodeURIComponent('application/x-osm+xml'),
                             new_layer: true,
                             upload_policy: enumerateUploadPolicy(vm.project_files[i].uploadPolicy),
-                            mime_type: encodeURIComponent('application/x-osm+xml'),
-                            layer_name: encodeURIComponent(vm.project_files[i].fileName.replace(/\.[^/.]+$/,"")),
-                            data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
-                        }
-                        editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
-                            .catch(function() {
-                                //warn that JSOM couldn't be started
-                                vm.editorStartError = 'josm-error';
-                            });
-                        var projectFileParams = {
-                            new_layer: false,
                             url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), vm.project_files[i])
                         }
                         editorService.sendJOSMCmd('http://127.0.0.1:8111/import', projectFileParams)
@@ -1824,21 +1793,11 @@
          * @param file
          */
         vm.loadProjectFile = function (file) {
-            var emptyTaskLayerParams = {
-                new_layer: true,
-                upload_policy: enumerateUploadPolicy(file.uploadPolicy),
+            var projectFileParams = {
                 layer_name: encodeURIComponent(file.fileName.replace(/\.[^/.]+$/,"")),
                 mime_type: encodeURIComponent('application/x-osm+xml'),
-                data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
-            }
-            editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
-                .catch(function() {
-                    //warn that JSOM couldn't be started
-                    vm.editorStartError = 'josm-error';
-                });
-
-            var projectFileParams = {
-                new_layer: false,
+                new_layer: true,
+                upload_policy: enumerateUploadPolicy(file.uploadPolicy),
                 url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), file)
             }
             editorService.sendJOSMCmd('http://127.0.0.1:8111/import', projectFileParams)
@@ -2042,21 +2001,11 @@
          * @param file
          */
         vm.loadProjectFile = function (file) {
-            var emptyTaskLayerParams = {
+            var projectFileParams = {
                 new_layer: true,
                 upload_policy: enumerateUploadPolicy(file.uploadPolicy),
                 layer_name: encodeURIComponent(file.fileName.replace(/\.[^/.]+$/,"")),
                 mime_type: encodeURIComponent('application/x-osm+xml'),
-                data: encodeURIComponent('<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" version="0.6"></osm>')
-            }
-            editorService.sendJOSMCmd('http://127.0.0.1:8111/load_data', emptyTaskLayerParams)
-                .catch(function() {
-                    //warn that JSOM couldn't be started
-                    vm.editorStartError = 'josm-error';
-                });
-
-            var projectFileParams = {
-                new_layer: false,
                 url: editorService.getProjectFileOSMXMLUrl(vm.projectData.projectId, vm.getSelectTaskIds(), file)
             }
             editorService.sendJOSMCmd('http://127.0.0.1:8111/import', projectFileParams)

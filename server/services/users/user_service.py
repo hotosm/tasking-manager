@@ -129,7 +129,7 @@ class UserService:
         stats_dto.time_spent_validating = 0
 
         sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE action='LOCKED_FOR_VALIDATION'
+                WHERE (action='LOCKED_FOR_VALIDATION' or action='AUTO_UNLOCKED_FOR_VALIDATION')
                 and user_id = :user_id;"""
         total_validation_time = db.engine.execute(text(sql), user_id=user.id)
         for time in total_validation_time:
@@ -139,7 +139,7 @@ class UserService:
                 stats_dto.total_time_spent += stats_dto.time_spent_validating
 
         sql = """SELECT SUM(TO_TIMESTAMP(action_text, 'HH24:MI:SS')::TIME) FROM task_history
-                WHERE action='LOCKED_FOR_MAPPING'
+                WHERE (action='LOCKED_FOR_MAPPING' or action='AUTO_UNLOCKED_FOR_MAPPING')
                 and user_id = :user_id;"""
         total_mapping_time = db.engine.execute(text(sql), user_id=user.id)
         for time in total_mapping_time:
