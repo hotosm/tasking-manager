@@ -11,7 +11,7 @@ export default defineMessages({
   jumbotronHeadLine: {
     id: 'home.mainSection.lead',
     defaultMessage:
-      "Join a global community putting the world's most vulnerable people and places on the map to support humanitarian aid and sustainable development.",
+      'Join a global community that is mapping the places most vulnerable to disaster and poverty in order to support humanitarian aid and sustainable development across the world.',
   },
   secJumbotronTitle: {
     id: 'home.callToAction.title',
@@ -20,11 +20,12 @@ export default defineMessages({
   secJumbotronHeadLine: {
     id: 'home.callToAction.firstLeadLine',
     defaultMessage:
-      "Anyone can contribute to the map. If you have never mapped before and would like to get started, visit our {link} page.",
+      'Anyone can contribute to the map. If you have never mapped before and would like to get started, visit our {link} page.',
   },
   secJumbotronHeadLine2: {
     id: 'home.callToAction.secondLeadLine',
-    defaultMessage: 'Are you an experienced mapper? Click below to see what projects are available for mapping.',
+    defaultMessage:
+      'Are you an experienced mapper? Click below to see what projects are available for mapping.',
   },
   featuredProjects: {
     id: 'home.featuredProjects.title',
@@ -65,12 +66,12 @@ export default defineMessages({
   mappingFlowTitle: {
     id: 'home.mappingFlow.title',
     defaultMessage:
-      "Each year, disasters around the world kill nearly {number} and affect or displace 200 million people. Mapping can help change this.",
+      'Each year, disasters around the world kill nearly {number} and affect or displace 200 million people. Mapping can help change this.',
   },
   mappingFlowHeadline: {
     id: 'home.mappingFlow.headLine',
     defaultMessage:
-      'Organizations use Tasking Manager to create mapping projects for areas around the world where they urgently need data to save or improve lives.',
+      'Organizations use Tasking Manager to create mapping projects for areas around the world where data is needed to help save or improve lives.',
   },
   mappingCardTitle: {
     id: 'home.mappingFlow.cards.mapping.title',
@@ -86,12 +87,12 @@ export default defineMessages({
   },
   mappingCardDescription: {
     id: 'home.mappingFlow.cards.mapping.description',
-    defaultMessage: 'Volunteers use satellite imagery from OpenStreetMap to trace buildings, roadways, and other features.',
+    defaultMessage:
+      'Volunteers use satellite imagery from OpenStreetMap to trace buildings, roadways, and other features.',
   },
   validationCardDescription: {
     id: 'home.mappingFlow.cards.validation.description',
-    defaultMessage:
-      'Experienced volunteers check the map data to ensure it is high quality.',
+    defaultMessage: 'Experienced volunteers check the map data to ensure it is high quality.',
   },
   usingDataCardDescription: {
     id: 'home.mappingFlow.cards.usingData.description',
@@ -100,7 +101,7 @@ export default defineMessages({
   },
   whoIsMappingTitle: {
     id: 'home.whoIsMapping.title',
-    defaultMessage: "Who uses the maps?",
+    defaultMessage: 'Who uses the maps?',
   },
   whoIsMappingHeadline: {
     id: 'home.whoIsMapping.headline',

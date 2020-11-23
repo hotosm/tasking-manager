@@ -195,7 +195,7 @@ export default defineMessages({
   aboutIntro: {
     id: 'pages.about.intro',
     defaultMessage:
-      'Every day, a global community works tirelessly behind the scenes to literally put people on the map. They contribute to the online Open Data map of the world. Universal access to geospatial information is heavily changing how people use maps and what they build with them.',
+      'Every day, a global community works tirelessly behind the scenes to make the more complete map of the world. The resulting work is Open Data and can be used by anyone. Universal access to geospatial information is heavily changing how people use maps and what they build with them.',
   },
   learn: {
     id: 'pages.learn.title',
