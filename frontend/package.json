@@ -60,6 +60,7 @@
     "redux-thunk": "^2.3.0",
     "short-number": "^1.0.7",
     "shpjs": "^3.6.2",
+    "slug": "^4.0.2",
     "tachyons": "^4.12.0",
     "use-query-params": "^1.1.9",
     "webfontloader": "^1.6.28"
