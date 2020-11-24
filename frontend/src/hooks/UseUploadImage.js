@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import { slugifyFileName } from '../utils/slugifyFileName';
 
 export const useUploadImage = () => {
   const [uploading, setUploading] = useState(false);
@@ -25,7 +26,7 @@ export const useUploadImage = () => {
           const payload = JSON.stringify({
             mime: file.type,
             data: result.split('base64,')[1],
-            filename: file.name,
+            filename: slugifyFileName(file.name, file.type),
           });
           setUploading(true);
           pushToLocalJSONAPI('system/image-upload/', payload, token)
