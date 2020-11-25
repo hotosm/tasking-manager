@@ -358,7 +358,7 @@ export default defineMessages({
   learnValidateStepBuildDescription: {
     id: 'pages.learn.validate.steps.build.description',
     defaultMessage:
-      'Becoming a skilled mapper is crucial to becoming a validator. Build up your experience in mapping in OpenStreetMap all kinds of map elements. Make sure you are familiar with the {taggingLink}.Eventually check out the JOSM Editor, a customizable editor for OpenStreetMap with a number of tools and plugins to make mapping and validation easier!',
+      'Becoming a skilled mapper is crucial to becoming a validator. Build up your experience in mapping in OpenStreetMap all kinds of map elements. Make sure you are familiar with the {taggingLink}. Eventually check out the JOSM Editor, a customizable editor for OpenStreetMap with a number of tools and plugins to make mapping and validation easier!',
   },
   learnValidateStepCollaborateTitle: {
     id: 'pages.learn.validate.steps.collaborate.title',
@@ -368,6 +368,18 @@ export default defineMessages({
     id: 'pages.learn.validate.steps.collaborate.description',
     defaultMessage:
       'Different validators have different techniques for validating. Join the conversation on the {mailingListLink} or the {forumLink}. Contribute resources that you find helpful and give back to the community! ',
+  },
+  mailingLists: {
+    id: 'pages.learn.validate.mailing_lists',
+    defaultMessage: 'mailing lists',
+  },
+  forum: {
+    id: 'pages.learn.validate.forum',
+    defaultMessage: 'forum',
+  },
+  osmTaggingSchema: {
+    id: 'pages.learn.validate.tagging_schema',
+    defaultMessage: 'OpenStreetMap tagging schema',
   },
   learnValidateNote: {
     id: 'pages.learn.validate.note',
