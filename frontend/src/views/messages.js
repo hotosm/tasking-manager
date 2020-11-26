@@ -358,7 +358,7 @@ export default defineMessages({
   learnValidateStepBuildDescription: {
     id: 'pages.learn.validate.steps.build.description',
     defaultMessage:
-      'Becoming a skilled mapper is crucial to becoming a validator. Build up your experience in mapping in OpenStreetMap all kinds of map elements. Make sure you are familiar with the {taggingLink}. Eventually check out the JOSM Editor, a customizable editor for OpenStreetMap with a number of tools and plugins to make mapping and validation easier!',
+      'Becoming a skilled mapper is crucial to start validating projects. Build up your experience in mapping all kinds of elements. Make sure you are familiar with the {taggingLink}. Eventually check out the JOSM Editor, a customizable editor for OpenStreetMap with a number of tools and plugins to make mapping and validation easier!',
   },
   learnValidateStepCollaborateTitle: {
     id: 'pages.learn.validate.steps.collaborate.title',

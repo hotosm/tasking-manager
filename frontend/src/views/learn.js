@@ -6,17 +6,20 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { TopBar } from '../components/header/topBar';
-import { PlayIcon, CloseIcon } from '../components/svgIcons';
+import {
+  PlayIcon,
+  CloseIcon,
+  PolygonIcon,
+  SelectProject,
+  SelectTask,
+  ValidationIcon,
+  HumanProcessingIcon,
+  WorldNodesIcon,
+} from '../components/svgIcons';
 
 import CommunityLogo from '../assets/img/icons/community.jpg';
 import EmergencyMappingLogo from '../assets/img/icons/emergency-mapping.jpg';
 import TechnicalLogo from '../assets/img/icons/technical.jpg';
-import ValidateStepIdentity from '../assets/img/icons/validate_step_identify.png';
-import ValidateStepBuild from '../assets/img/icons/validate_step_build.png';
-import ValidateStepCollaborate from '../assets/img/icons/validate_step_collaborate.png';
-import SelectProject from '../assets/img/icons/map_step_select_project.png';
-import SelectTask from '../assets/img/icons/map_step_select_task.png';
-import MapOSM from '../assets/img/icons/map_step_osm.png';
 import LearnOSMLogo from '../assets/img/learn-osm-logo.svg';
 import QuickstartLogo from '../assets/img/info-logo.svg';
 
@@ -62,7 +65,7 @@ const Steps = ({ items }) => (
     {items.map((item, i) => (
       <div className="w-third-ns w-100 fl pa2 z-2 bg-white" key={i}>
         <div className="shadow-1 pa3">
-          <img className="w-35" src={item.img} alt={item.message} />
+          {item.img}
 
           <p className="blue-dark b f4 pt0">
             <span className="mr1">{i + 1}.</span>
@@ -210,11 +213,17 @@ const LearnToManage = ({ section }) => {
   };
 
   const items = [
-    { message: 'learnManageStepJoin', img: CommunityLogo },
-    { message: 'learnManageStepCreate', img: EmergencyMappingLogo },
+    {
+      message: 'learnManageStepJoin',
+      img: <img className="w-35" src={CommunityLogo} alt={'join a community'} />,
+    },
+    {
+      message: 'learnManageStepCreate',
+      img: <img className="w-35" src={EmergencyMappingLogo} alt={'create project'} />,
+    },
     {
       message: 'learnManageStepData',
-      img: TechnicalLogo,
+      img: <img className="w-35" src={TechnicalLogo} alt={'use the data'} />,
       values: {
         exportToolLink: (
           <a className="link red fw5" href="https://export.hotosm.org/">
@@ -254,10 +263,10 @@ const LearnToValidate = ({ section }) => {
   };
 
   const items = [
-    { message: 'learnValidateStepIdentify', img: ValidateStepIdentity },
+    { message: 'learnValidateStepIdentify', img: <ValidationIcon className="red" /> },
     {
       message: 'learnValidateStepBuild',
-      img: ValidateStepBuild,
+      img: <HumanProcessingIcon className="red" />,
       values: {
         taggingLink: (
           <a className="link red fw5" href="https://wiki.openstreetmap.org/wiki/Map_Features">
@@ -268,7 +277,7 @@ const LearnToValidate = ({ section }) => {
     },
     {
       message: 'learnValidateStepCollaborate',
-      img: ValidateStepCollaborate,
+      img: <WorldNodesIcon className="red" />,
       values: {
         mailingListLink: (
           <a className="link red fw5" href="https://wiki.openstreetmap.org/wiki/Mailing_lists">
@@ -314,9 +323,13 @@ const LearnToMap = ({ section }) => {
   };
 
   const items = [
-    { message: 'learnMapStepSelectProject', img: SelectProject, titleLink: '/explore' },
-    { message: 'learnMapStepSelectTask', img: SelectTask },
-    { message: 'learnMapStepMapOSM', img: MapOSM },
+    {
+      message: 'learnMapStepSelectProject',
+      img: <SelectProject className="red" />,
+      titleLink: '/explore',
+    },
+    { message: 'learnMapStepSelectTask', img: <SelectTask className="red" /> },
+    { message: 'learnMapStepMapOSM', img: <PolygonIcon className="red" /> },
   ];
 
   const tutorials = [
@@ -380,7 +393,7 @@ export const LearnPage = () => {
 
   const [section, setSection] = useState(sections[0]);
   return (
-    <div className="pt180 pull-center">
+    <div className="pt180 pull-center blue-dark">
       <TopBar pageName={<FormattedMessage {...messages.learn} />} />
       <div className="ph6-l ph4-m ph2">
         <LearnNav sections={sections} section={section} setSection={setSection} />
