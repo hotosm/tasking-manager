@@ -442,6 +442,7 @@
   "project.nav.showMapToggle": "Show map",
   "project.nav.listViewToggle": "List view",
   "project.navFilters.typesOfMapping": "Types of mapping",
+  "project.navFilters.typesOfMapping.exactMatch": "Exact match",
   "project.navFilters.campaigns": "All campaigns",
   "project.navFilters.showAllXTags": "Show {typeOfTag}",
   "project.inputs.placeholders.search": "Search project",

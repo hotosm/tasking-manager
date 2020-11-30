@@ -32,6 +32,10 @@ export default defineMessages({
     id: 'project.navFilters.typesOfMapping',
     defaultMessage: 'Types of mapping',
   },
+  exactMatch: {
+    id: 'project.navFilters.typesOfMapping.exactMatch',
+    defaultMessage: 'Exact match',
+  },
   campaigns: {
     id: 'project.navFilters.campaigns',
     defaultMessage: 'All campaigns',
