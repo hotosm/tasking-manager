@@ -156,7 +156,6 @@ class CustomEditorDTO(Model):
     name = StringType(required=True)
     description = StringType()
     url = StringType(required=True)
-    enabled = BooleanType(default=False)
 
 
 class ProjectDTO(Model):

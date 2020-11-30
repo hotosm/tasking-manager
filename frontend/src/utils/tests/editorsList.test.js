@@ -46,7 +46,6 @@ describe('test getEditors', () => {
       name: 'RapiD',
       description: null,
       url: 'https://mapwith.ai/rapid',
-      enabled: true,
     };
     expect(getEditors(['ID', 'JOSM', 'CUSTOM'], customEditor)).toStrictEqual([
       {
