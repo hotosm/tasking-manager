@@ -24,9 +24,9 @@ import lineToPolygon from '@turf/line-to-polygon';
 import { makeGrid } from './setTaskSizes';
 import { MAX_FILESIZE } from '../../config';
 
-var tj = require('@mapbox/togeojson');
-var osmtogeojson = require('osmtogeojson');
-var shp = require('shpjs');
+var toGeojson = require('@mapbox/togeojson');
+var osmToGeojson = require('osmtogeojson');
+var shpjs = require('shpjs');
 
 const aoiPaintOptions = {
   'fill-color': '#00004d',
@@ -106,7 +106,6 @@ const ProjectCreate = (props) => {
       err.message = (
         <FormattedMessage {...messages.unsupportedGeom} values={{ geometry: e.geometry.type }} />
       );
-
       throw err;
     }
 
@@ -117,8 +116,7 @@ const ProjectCreate = (props) => {
         err.message = <FormattedMessage {...messages.closedLinestring} />;
         throw err;
       }
-      const polygon = lineToPolygon(e);
-      return polygon;
+      return lineToPolygon(e);
     }
 
     return e;
@@ -134,9 +132,7 @@ const ProjectCreate = (props) => {
       }
       // Validate geometry for each feature.
       const supportedGeoms = ['Polygon', 'MultiPolygon', 'LineString'];
-      const features = event.features.map((e) => validateFeature(e, supportedGeoms, err));
-
-      event.features = features;
+      event.features = event.features.map((e) => validateFeature(e, supportedGeoms, err));
       setDataGeom(event, true);
     } catch (e) {
       deleteHandler();
@@ -170,20 +166,18 @@ const ProjectCreate = (props) => {
           break;
         case 'kml':
           let kml = new DOMParser().parseFromString(e.target.result, 'text/xml');
-          geom = tj.kml(kml);
+          geom = toGeojson.kml(kml);
           break;
         case 'osm':
           let osm = new DOMParser().parseFromString(e.target.result, 'text/xml');
-          geom = osmtogeojson(osm);
+          geom = osmToGeojson(osm);
           break;
         case 'xml':
           let xml = new DOMParser().parseFromString(e.target.result, 'text/xml');
-          geom = osmtogeojson(xml);
+          geom = osmToGeojson(xml);
           break;
         case 'zip':
-          shp(e.target.result).then(function (geom) {
-            verifyAndSetData(geom);
-          });
+          shpjs(e.target.result).then((geom) => verifyAndSetData(geom));
           break;
         default:
           break;
@@ -237,8 +231,7 @@ const ProjectCreate = (props) => {
       }
 
       // Validate area first.
-      const geom = featureCollection(event.features);
-      setDataGeom(geom, false);
+      setDataGeom(featureCollection(event.features), false);
     };
 
     mapObj.map.on('draw.update', updateArea);
@@ -290,7 +283,6 @@ const ProjectCreate = (props) => {
         message: <FormattedMessage {...messages.areaOverLimitError} values={{ n: MAX_AOI_AREA }} />,
       };
     }
-
     setErr(err);
   }, [metadata]);
 
