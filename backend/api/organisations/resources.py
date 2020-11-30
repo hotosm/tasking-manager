@@ -44,7 +44,7 @@ class OrganisationsRestAPI(Resource):
                         default: HOT
                     logo:
                         type: string
-                        default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
+                        default: https://cdn.hotosm.org/tasking-manager/uploads/1588741335578_hot-logo.png
                     url:
                         type: string
                         default: https://hotosm.org
@@ -53,8 +53,8 @@ class OrganisationsRestAPI(Resource):
                         items:
                             type: string
                         default: [
-                            the_node_less_traveled,
-                            the_node_less_traveled_import
+                            user_1,
+                            user_2
                         ]
         responses:
             201:
@@ -239,8 +239,8 @@ class OrganisationsRestAPI(Resource):
                         items:
                             type: string
                         default: [
-                            the_node_less_traveled,
-                            the_node_less_traveled_import
+                            user_1,
+                            user_2
                         ]
         responses:
             201:

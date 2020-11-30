@@ -16,7 +16,6 @@ from backend.models.postgis.utils import NotFound
 from backend.models.postgis.project import Project
 from backend.models.postgis.organisation import Organisation
 from backend.services.organisation_service import OrganisationService
-from backend.models.dtos.organisation_dto import OrganisationDTO
 
 
 class CampaignService:
