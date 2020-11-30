@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link } from '@reach/router';
-import { useQueryParam } from 'use-query-params';
+import { useQueryParam, BooleanParam } from 'use-query-params';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
+import { SwitchToggle } from '../formInputs';
 import { useTagAPI } from '../../hooks/UseTagAPI';
 import { useExploreProjectsQueryParams } from '../../hooks/UseProjectsQueryAPI';
 import { MappingTypeFilterPicker } from './mappingTypeFilterPicker';
@@ -20,8 +21,9 @@ export const MoreFiltersForm = (props) => {
     const target = event.target;
     let value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    if (name === 'types') {
-      //handle mappingTypes toggles in its separate fn inside that component
+    if (name === 'types' || !name) {
+      // handle mappingTypes toggles in its separate fn inside that component
+      // exactTypes doesn't have a name and is handled in a separate fn
       return;
     }
     setFormQuery(
@@ -44,15 +46,15 @@ export const MoreFiltersForm = (props) => {
   const [orgAPIState] = useTagAPI([], 'organisations');
   const [countriesAPIState] = useTagAPI([], 'countries', formatFilterCountriesData);
 
-  /* another useQueryParam for the second form */
   const [mappingTypesInQuery, setMappingTypes] = useQueryParam('types', CommaArrayParam);
+  const [exactTypes, setExactTypes] = useQueryParam('exactTypes', BooleanParam);
 
   const fieldsetStyle = 'w-100 bn';
   const titleStyle = 'w-100 db ttu fw5 blue-grey';
 
   return (
     <form className="pt4" onChange={handleInputChange}>
-      <fieldset id="mappingType" className={fieldsetStyle}>
+      <fieldset id="mappingType" className="bn dib">
         <legend className={titleStyle}>
           <FormattedMessage {...messages.typesOfMapping} />
         </legend>
@@ -60,6 +62,19 @@ export const MoreFiltersForm = (props) => {
           mappingTypes={mappingTypesInQuery}
           setMappingTypesQuery={setMappingTypes}
         />
+      </fieldset>
+
+      <fieldset id="mappingTypesExact" className="bn dib v-mid mb4">
+        {mappingTypesInQuery && mappingTypesInQuery.length ? (
+          <SwitchToggle
+            label={<FormattedMessage {...messages.exactMatch} />}
+            isChecked={Boolean(exactTypes)}
+            onChange={() => setExactTypes(!exactTypes || undefined)}
+            labelPosition="right"
+          />
+        ) : (
+          <></>
+        )}
       </fieldset>
 
       <ProjectFilterSelect
