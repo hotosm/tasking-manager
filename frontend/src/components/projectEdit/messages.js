@@ -538,9 +538,13 @@ export default defineMessages({
     id: 'projects.formInputs.custom_editor.url',
     defaultMessage: 'URL',
   },
-  customEditorEnabled: {
-    id: 'projects.formInputs.custom_editor.enabled',
-    defaultMessage: 'Enabled',
+  customEditorEnabledForMapping: {
+    id: 'projects.formInputs.custom_editor.enabled.mapping',
+    defaultMessage: 'Enabled for mapping',
+  },
+  customEditorEnabledForValidation: {
+    id: 'projects.formInputs.custom_editor.enabled.validation',
+    defaultMessage: 'Enabled for validation',
   },
   deleteCustomEditor: {
     id: 'projects.formInputs.custom_editor.delete',
