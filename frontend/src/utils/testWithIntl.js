@@ -10,11 +10,7 @@ export const createComponentWithIntl = (children, props = { locale: 'en' }) => {
 };
 
 export const createComponentWithReduxAndIntl = (children, props = { locale: 'en' }) => {
-  return TestRenderer.create(
-    <Provider store={store}>
-      <IntlProvider {...props}>{children}</IntlProvider>
-    </Provider>,
-  );
+  return TestRenderer.create(<ReduxIntlProviders {...props}>{children}</ReduxIntlProviders>);
 };
 
 export const ReduxIntlProviders = ({ children, props = { locale: 'en' } }: Object) => (
