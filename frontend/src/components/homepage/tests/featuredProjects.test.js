@@ -1,19 +1,15 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { FeaturedProjects } from '../featuredProjects';
-import { store } from '../../../store';
-import { ConnectedIntl } from '../../../utils/internationalization';
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 
 test('featuredProjects render title after loading projects', async () => {
   const { container } = await render(
-    <Provider store={store}>
-      <ConnectedIntl>
-        <FeaturedProjects />
-      </ConnectedIntl>
-    </Provider>,
+    <ReduxIntlProviders>
+      <FeaturedProjects />
+    </ReduxIntlProviders>,
   );
   // render null while the API is loading
   expect(screen.queryByText('Featured Projects')).not.toBeInTheDocument();
