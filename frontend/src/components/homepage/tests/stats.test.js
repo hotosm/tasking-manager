@@ -1,12 +1,8 @@
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
-import { FormattedNumber, IntlProvider } from 'react-intl';
+import { FormattedNumber } from 'react-intl';
 
 import { StatsNumber } from '../stats';
-
-const createComponentWithIntl = (children, props = { locale: 'en' }) => {
-  return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
-};
+import { createComponentWithIntl } from '../../../utils/testWithIntl';
 
 it('test number formatting in English', () => {
   const testNumber = createComponentWithIntl(<StatsNumber value={744531} />);
