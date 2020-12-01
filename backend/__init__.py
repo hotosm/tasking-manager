@@ -26,7 +26,7 @@ def sentry_init():
 
 
 def format_url(endpoint):
-    parts = "/".join([i for i in endpoint.split("/") if i])
+    parts = endpoint.strip("/")
     return "/api/{}/{}/".format(EnvironmentConfig.API_VERSION, parts)
 
 
