@@ -3,7 +3,6 @@ from flask_restful import Resource, current_app
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
 from backend.models.postgis.utils import NotFound
-from backend.models.postgis.campaign import Campaign
 from backend.services.users.authentication_service import token_auth
 
 
@@ -52,7 +51,9 @@ class OrganisationsCampaignsAPI(Resource):
             if OrganisationService.can_user_manage_organisation(
                 organisation_id, token_auth.current_user()
             ):
-                if Campaign.campaign_organisation_exists(campaign_id, organisation_id):
+                if CampaignService.campaign_organisation_exists(
+                    campaign_id, organisation_id
+                ):
                     message = (
                         "Campaign {} is already assigned to organisation {}.".format(
                             campaign_id, organisation_id

@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 
 import { ProfilePictureIcon, CloseIcon } from '../svgIcons';
 import { getRandomArrayItem } from '../../utils/random';
+import { useAvatarStyle } from '../../hooks/UseAvatarStyle';
+import { useAvatarText } from '../../hooks/UseAvatarText';
 
 export const CurrentUserAvatar = (props) => {
   const userPicture = useSelector((state) => state.auth.getIn(['userDetails', 'pictureUrl']));
@@ -30,44 +32,48 @@ export const UserAvatar = ({
   editMode,
   disableLink = false,
 }: Object) => {
-  let sizeClasses = 'h2 w2 f5';
-  let textPadding = editMode ? { top: '-0.75rem' } : { paddingTop: '0.375rem' };
-  let sizeStyles = {};
-  let closeIconStyle = { left: '0.4rem' };
+  const avatarText = useAvatarText(name, username, number);
 
-  if (size === 'large') {
-    closeIconStyle = { marginLeft: '3rem' };
-    sizeClasses = 'h3 w3 f2';
-    textPadding = editMode ? { top: '-0.5rem' } : { paddingTop: '0.625rem' };
-  }
-
-  if (size === 'small') {
-    closeIconStyle = { marginLeft: '0' };
-    sizeClasses = 'f6';
-    sizeStyles = { height: '1.5rem', width: '1.5rem' };
-    textPadding = editMode ? { top: '-0.5rem' } : { paddingTop: '0.225rem' };
-  }
-
-  let letters;
-  if (name) {
-    letters = name
-      .split(' ')
-      .map((word) => word[0])
-      .join('');
-  } else if (number) {
-    letters = number;
+  if ((removeFn && editMode) || disableLink) {
+    return (
+      <Avatar
+        text={avatarText}
+        username={username}
+        picture={picture}
+        size={size}
+        colorClasses={colorClasses}
+        removeFn={removeFn}
+        editMode={editMode}
+      />
+    );
   } else {
-    letters = username
-      .split(' ')
-      .map((word) => word[0])
-      .join('');
+    return (
+      <Link to={`/users/${username}`}>
+        <Avatar
+          text={avatarText}
+          username={username}
+          picture={picture}
+          size={size}
+          colorClasses={colorClasses}
+          removeFn={removeFn}
+          editMode={editMode}
+        />
+      </Link>
+    );
   }
-  if (picture) sizeStyles.backgroundImage = `url(${picture})`;
+};
 
-  const avatar = (
+const Avatar = ({ username, size, colorClasses, removeFn, picture, text, editMode }) => {
+  const { sizeClasses, textPadding, closeIconStyle, sizeStyle } = useAvatarStyle(
+    size,
+    editMode,
+    picture,
+  );
+
+  return (
     <div
       title={username}
-      style={sizeStyles}
+      style={sizeStyle}
       className={`dib mh1 br-100 tc v-mid cover ${colorClasses} ${sizeClasses}`}
     >
       {removeFn && editMode && (
@@ -81,17 +87,11 @@ export const UserAvatar = ({
       )}
       {!picture && (
         <span className="relative tc w-100 dib ttu dib barlow-condensed v-mid" style={textPadding}>
-          {letters.substr(0, 3)}
+          {text}
         </span>
       )}
     </div>
   );
-
-  if ((removeFn && editMode) || disableLink) {
-    return avatar;
-  } else {
-    return <Link to={`/users/${username}`}>{avatar}</Link>;
-  }
 };
 
 export const UserAvatarList = ({

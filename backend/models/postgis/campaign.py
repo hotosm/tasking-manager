@@ -52,66 +52,6 @@ class Campaign(db.Model):
         self.description = dto.description if dto.description else self.description
         db.session.commit()
 
-    @staticmethod
-    def get_all_campaigns() -> CampaignListDTO:
-        query = Campaign.query.order_by(Campaign.name).distinct()
-        campaign_list_dto = CampaignListDTO()
-        for campaign in query:
-            campaign_dto = CampaignDTO()
-            campaign_dto.id = campaign.id
-            campaign_dto.name = campaign.name
-
-            campaign_list_dto.campaigns.append(campaign_dto)
-
-        return campaign_list_dto
-
-    @staticmethod
-    def get_project_campaigns_as_dto(project_id: int) -> CampaignListDTO:
-
-        query = (
-            Campaign.query.join(campaign_projects)
-            .filter(campaign_projects.c.project_id == project_id)
-            .all()
-        )
-        campaign_list_dto = CampaignListDTO()
-        for campaign in query:
-            campaign_dto = CampaignDTO()
-            campaign_dto.id = campaign.id
-            campaign_dto.name = campaign.name
-
-            campaign_list_dto.campaigns.append(campaign_dto)
-
-        return campaign_list_dto
-
-    @staticmethod
-    def campaign_organisation_exists(campaign_id: int, org_id: int):
-        return (
-            Campaign.query.join(campaign_organisations)
-            .filter(
-                campaign_organisations.c.organisation_id == org_id,
-                campaign_organisations.c.campaign_id == campaign_id,
-            )
-            .one_or_none()
-        )
-
-    @staticmethod
-    def get_organisation_campaigns_as_dto(org_id: int) -> CampaignListDTO:
-
-        query = (
-            Campaign.query.join(campaign_organisations)
-            .filter(campaign_organisations.c.organisation_id == org_id)
-            .all()
-        )
-        campaign_list_dto = CampaignListDTO()
-        for campaign in query:
-            campaign_dto = CampaignDTO()
-            campaign_dto.id = campaign.id
-            campaign_dto.name = campaign.name
-
-            campaign_list_dto.campaigns.append(campaign_dto)
-
-        return campaign_list_dto
-
     @classmethod
     def from_dto(cls, dto: CampaignDTO):
         """ Creates new message from DTO """
@@ -133,3 +73,16 @@ class Campaign(db.Model):
         campaign_dto.description = self.description
 
         return campaign_dto
+
+    @staticmethod
+    def campaign_list_as_dto(campaigns: list) -> CampaignListDTO:
+        """ Converts a collection of campaigns into DTO"""
+        campaign_list_dto = CampaignListDTO()
+        for campaign in campaigns:
+            campaign_dto = CampaignDTO()
+            campaign_dto.id = campaign.id
+            campaign_dto.name = campaign.name
+
+            campaign_list_dto.campaigns.append(campaign_dto)
+
+        return campaign_list_dto

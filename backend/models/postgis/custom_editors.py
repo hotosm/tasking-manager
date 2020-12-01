@@ -10,7 +10,6 @@ class CustomEditor(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String)
     url = db.Column(db.String, nullable=False)
-    enabled = db.Column(db.Boolean, nullable=False, default=False)
 
     @staticmethod
     def get_by_project_id(project_id: int):
@@ -30,7 +29,6 @@ class CustomEditor(db.Model):
         self.name = dto.name
         self.description = dto.description
         self.url = dto.url
-        self.enabled = dto.enabled
 
     def delete(self):
         """ Deletes the current model from the DB """
@@ -44,6 +42,5 @@ class CustomEditor(db.Model):
         dto.name = self.name
         dto.description = self.description
         dto.url = self.url
-        dto.enabled = self.enabled
 
         return dto

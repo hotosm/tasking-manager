@@ -195,7 +195,7 @@ export default defineMessages({
   aboutIntro: {
     id: 'pages.about.intro',
     defaultMessage:
-      'Every day, a global community works tirelessly behind the scenes to literally put people on the map. They contribute to the online Open Data map of the world. Universal access to geospatial information is heavily changing how people use maps and what they build with them.',
+      'Every day, a global community works tirelessly behind the scenes to make the more complete map of the world. The resulting work is Open Data and can be used by anyone. Universal access to geospatial information is heavily changing how people use maps and what they build with them.',
   },
   learn: {
     id: 'pages.learn.title',
@@ -358,7 +358,7 @@ export default defineMessages({
   learnValidateStepBuildDescription: {
     id: 'pages.learn.validate.steps.build.description',
     defaultMessage:
-      'Becoming a skilled mapper is crucial to becoming a validator. Build up your experience in mapping in OpenStreetMap all kinds of map elements. Make sure you are familiar with the {taggingLink}.Eventually check out the JOSM Editor, a customizable editor for OpenStreetMap with a number of tools and plugins to make mapping and validation easier!',
+      'Becoming a skilled mapper is crucial to start validating projects. Build up your experience in mapping all kinds of elements. Make sure you are familiar with the {taggingLink}. Eventually check out the JOSM Editor, a customizable editor for OpenStreetMap with a number of tools and plugins to make mapping and validation easier!',
   },
   learnValidateStepCollaborateTitle: {
     id: 'pages.learn.validate.steps.collaborate.title',
@@ -368,6 +368,18 @@ export default defineMessages({
     id: 'pages.learn.validate.steps.collaborate.description',
     defaultMessage:
       'Different validators have different techniques for validating. Join the conversation on the {mailingListLink} or the {forumLink}. Contribute resources that you find helpful and give back to the community! ',
+  },
+  mailingLists: {
+    id: 'pages.learn.validate.mailing_lists',
+    defaultMessage: 'mailing lists',
+  },
+  forum: {
+    id: 'pages.learn.validate.forum',
+    defaultMessage: 'forum',
+  },
+  osmTaggingSchema: {
+    id: 'pages.learn.validate.tagging_schema',
+    defaultMessage: 'OpenStreetMap tagging schema',
   },
   learnValidateNote: {
     id: 'pages.learn.validate.note',

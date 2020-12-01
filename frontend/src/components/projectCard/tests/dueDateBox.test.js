@@ -1,12 +1,7 @@
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
-import { IntlProvider } from 'react-intl';
 
 import { DueDateBox } from '../../../components/projectCard/dueDateBox';
-
-const createComponentWithIntl = (children, props = { locale: 'en' }) => {
-  return TestRenderer.create(<IntlProvider {...props}>{children}</IntlProvider>);
-};
+import { createComponentWithIntl } from '../../../utils/testWithIntl';
 
 it('test relative date formatting in English', () => {
   // six days of milliseconds plus a few seconds for the test

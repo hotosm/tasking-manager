@@ -121,7 +121,7 @@ class SystemDocsAPI(Resource):
                 properties:
                     userName:
                         type: string
-                        default: the_node_less_traveled
+                        default: user_1
                     function:
                         type: string
                         default: MANAGER

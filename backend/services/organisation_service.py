@@ -8,6 +8,7 @@ from backend.models.dtos.organisation_dto import (
     ListOrganisationsDTO,
     UpdateOrganisationDTO,
 )
+from backend.models.postgis.campaign import campaign_organisations
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.utils import NotFound
@@ -207,3 +208,34 @@ class OrganisationService:
         user = UserService.get_user_by_id(user_id)
 
         return user in org.managers
+
+    @staticmethod
+    def get_campaign_organisations_as_dto(campaign_id: int, user_id: int):
+        """
+        Returns organisations under a particular campaign
+        """
+        organisation_list_dto = ListOrganisationsDTO()
+        orgs = (
+            Organisation.query.join(campaign_organisations)
+            .filter(campaign_organisations.c.campaign_id == campaign_id)
+            .all()
+        )
+
+        for org in orgs:
+            if user_id != 0:
+                logged_in = OrganisationService.can_user_manage_organisation(
+                    org.id, user_id
+                )
+            else:
+                logged_in = False
+
+            organisation_dto = OrganisationDTO()
+            organisation_dto.organisation_id = org.id
+            organisation_dto.name = org.name
+            organisation_dto.logo = org.logo
+            organisation_dto.url = org.url
+            organisation_dto.is_manager = logged_in
+
+            organisation_list_dto.organisations.append(organisation_dto)
+
+        return organisation_list_dto
