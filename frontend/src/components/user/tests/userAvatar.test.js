@@ -1,18 +1,21 @@
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
+import TestRenderer, { act } from 'react-test-renderer';
 
 import { UserAvatar, UserAvatarList } from '../avatar';
 import { CloseIcon } from '../../svgIcons';
 
 describe('UserAvatar', () => {
   it('with picture url and default size', () => {
-    const element = TestRenderer.create(
-      <UserAvatar username={'Mary'} picture={'http://image.xyz/photo.jpg'} colorClasses="red" />,
-    );
+    let element;
+    act(() => {
+      element = TestRenderer.create(
+        <UserAvatar username={'Mary'} picture={'http://image.xyz/photo.jpg'} colorClasses="red" />,
+      );
+    });
     const elementInstance = element.root;
     expect(elementInstance.findByProps({ title: 'Mary' }).type).toBe('div');
     expect(elementInstance.findByProps({ title: 'Mary' }).props.style.backgroundImage).toBe(
-      'url(http://image.xyz/photo.jpg)',
+      'url("http://image.xyz/photo.jpg")',
     );
     expect(elementInstance.findByProps({ title: 'Mary' }).props.className).toBe(
       'dib mh1 br-100 tc v-mid cover red h2 w2 f5',
@@ -20,17 +23,20 @@ describe('UserAvatar', () => {
   });
 
   it('with picture url and large size', () => {
-    const element = TestRenderer.create(
-      <UserAvatar
-        username={'Mary'}
-        colorClasses="orange"
-        size="large"
-        picture={'http://image.xyz/photo2.jpg'}
-      />,
-    );
+    let element;
+    act(() => {
+      element = TestRenderer.create(
+        <UserAvatar
+          username={'Mary'}
+          colorClasses="orange"
+          size="large"
+          picture={'http://image.xyz/photo2.jpg'}
+        />,
+      );
+    });
     const elementInstance = element.root;
     expect(elementInstance.findByProps({ title: 'Mary' }).props.style.backgroundImage).toBe(
-      'url(http://image.xyz/photo2.jpg)',
+      'url("http://image.xyz/photo2.jpg")',
     );
     expect(elementInstance.findByProps({ title: 'Mary' }).props.className).toBe(
       'dib mh1 br-100 tc v-mid cover orange h3 w3 f2',
@@ -38,9 +44,12 @@ describe('UserAvatar', () => {
   });
 
   it('without picture url and with large size', () => {
-    const element = TestRenderer.create(
-      <UserAvatar username={'Mary'} size="large" colorClasses="white bg-red" />,
-    );
+    let element;
+    act(() => {
+      element = TestRenderer.create(
+        <UserAvatar username={'Mary'} size="large" colorClasses="white bg-red" />,
+      );
+    });
     const elementInstance = element.root;
     expect(elementInstance.findByType('div').props.className).toBe(
       'dib mh1 br-100 tc v-mid cover white bg-red h3 w3 f2',
@@ -52,9 +61,12 @@ describe('UserAvatar', () => {
   });
 
   it('with name with default size', () => {
-    const element = TestRenderer.create(
-      <UserAvatar username={'Mary'} name={'Mary Poppins'} colorClasses="white bg-red" />,
-    );
+    let element;
+    act(() => {
+      element = TestRenderer.create(
+        <UserAvatar username={'Mary'} name={'Mary Poppins'} colorClasses="white bg-red" />,
+      );
+    });
     const elementInstance = element.root;
     expect(elementInstance.findByType('div').props.className).toBe(
       'dib mh1 br-100 tc v-mid cover white bg-red h2 w2 f5',
@@ -66,17 +78,27 @@ describe('UserAvatar', () => {
   });
 
   it('with more than 3 words name', () => {
-    const element = TestRenderer.create(
-      <UserAvatar username={'Mary'} name={'Mary Poppins Long Name'} colorClasses="white bg-red" />,
-    );
+    let element;
+    act(() => {
+      element = TestRenderer.create(
+        <UserAvatar
+          username={'Mary'}
+          name={'Mary Poppins Long Name'}
+          colorClasses="white bg-red"
+        />,
+      );
+    });
     const elementInstance = element.root;
     expect(elementInstance.findByType('span').props.children).toContain('MPL');
   });
 
   it('with username containing space', () => {
-    const element = TestRenderer.create(
-      <UserAvatar username={'Mary Poppins Long Name'} colorClasses="white bg-red" />,
-    );
+    let element;
+    act(() => {
+      element = TestRenderer.create(
+        <UserAvatar username={'Mary Poppins Long Name'} colorClasses="white bg-red" />,
+      );
+    });
     const elementInstance = element.root;
     expect(elementInstance.findByType('span').props.children).toContain('MPL');
     expect(() => elementInstance.findByType(CloseIcon)).toThrow(
@@ -85,13 +107,16 @@ describe('UserAvatar', () => {
   });
 
   it('with editMode TRUE but without removeFn has NOT a CloseIcon', () => {
-    const element = TestRenderer.create(
-      <UserAvatar
-        username={'Mary Poppins Long Name'}
-        colorClasses="white bg-red"
-        editMode={true}
-      />,
-    );
+    let element;
+    act(() => {
+      element = TestRenderer.create(
+        <UserAvatar
+          username={'Mary Poppins Long Name'}
+          colorClasses="white bg-red"
+          editMode={true}
+        />,
+      );
+    });
     const elementInstance = element.root;
     expect(elementInstance.findByType('span').props.children).toContain('MPL');
     expect(() => elementInstance.findByType(CloseIcon)).toThrow(
@@ -100,13 +125,16 @@ describe('UserAvatar', () => {
   });
 
   it('with removeFn, but with editMode FALSE  has NOT a CloseIcon', () => {
-    const element = TestRenderer.create(
-      <UserAvatar
-        username={'Mary Poppins Long Name'}
-        colorClasses="white bg-red"
-        removeFn={() => console.log('no')}
-      />,
-    );
+    let element;
+    act(() => {
+      element = TestRenderer.create(
+        <UserAvatar
+          username={'Mary Poppins Long Name'}
+          colorClasses="white bg-red"
+          removeFn={() => console.log('no')}
+        />,
+      );
+    });
     const elementInstance = element.root;
     expect(elementInstance.findByType('span').props.children).toContain('MPL');
     expect(() => elementInstance.findByType(CloseIcon)).toThrow(
@@ -188,11 +216,13 @@ describe('UserAvatarList', () => {
     { username: 'osmuser' },
   ];
   it('large size, with a defined bgColor and without maxLength', () => {
-    const element = TestRenderer.create(
-      <UserAvatarList users={users} bgColor="bg-red" size="large" />,
-    );
+    let element;
+    act(() => {
+      element = TestRenderer.create(<UserAvatarList users={users} bgColor="bg-red" size="large" />);
+    });
     const elementInstance = element.root;
     expect(elementInstance.findAllByType(UserAvatar).length).toBe(users.length);
+    expect(elementInstance.findAllByType(UserAvatar)[0].props.colorClasses).toBe('white bg-red');
     expect(elementInstance.findAllByProps({ className: 'dib' }).length).toBe(users.length);
     expect(elementInstance.findAllByProps({ className: 'dib' })[0].props.style).toStrictEqual({
       marginLeft: '',
@@ -201,23 +231,21 @@ describe('UserAvatarList', () => {
       marginLeft: '-1.5rem',
     });
     expect(elementInstance.findAllByType(UserAvatar)[0].props.size).toBe('large');
-    expect(elementInstance.findAllByProps({ colorClasses: 'white bg-red' }).length).toBe(
-      users.length,
-    );
   });
   it('small size, with a defined bgColor and textColor', () => {
-    const element = TestRenderer.create(
-      <UserAvatarList users={users} bgColor="bg-white" textColor="black" size="small" />,
-    );
+    let element;
+    act(() => {
+      element = TestRenderer.create(
+        <UserAvatarList users={users} bgColor="bg-white" textColor="black" size="small" />,
+      );
+    });
     const elementInstance = element.root;
     expect(elementInstance.findAllByType(UserAvatar).length).toBe(users.length);
     expect(elementInstance.findAllByType(UserAvatar)[0].props.size).toBe('small');
+    expect(elementInstance.findAllByType(UserAvatar)[0].props.colorClasses).toBe('black bg-white');
     expect(elementInstance.findAllByProps({ className: 'dib' })[1].props.style).toStrictEqual({
       marginLeft: '-0.875rem',
     });
-    expect(elementInstance.findAllByProps({ colorClasses: 'black bg-white' }).length).toBe(
-      users.length,
-    );
   });
   it('default size, without bgColor and with maxLength = 5', () => {
     const element = TestRenderer.create(<UserAvatarList users={users} maxLength={5} />);
