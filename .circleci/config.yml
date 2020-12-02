@@ -326,8 +326,6 @@ workflows:
           branches:
             only:
               - deployment/indonesia-tasking-manager
-        requires:
-          - build
         stack_name: "indonesia"
         gitsha: $CIRCLE_SHA1
         context: tasking-manager-indonesia
@@ -337,8 +335,6 @@ workflows:
           branches:
             only:
               - deployment/indonesia-tasking-manager
-        requires:
-          - build
         stack_name: "indonesia"
         context: tasking-manager-indonesia
   backend-production:
