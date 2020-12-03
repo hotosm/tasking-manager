@@ -443,7 +443,7 @@
   "project.nav.showMapToggle": "Kaart weergeven",
   "project.nav.listViewToggle": "Lijstweergave",
   "project.navFilters.typesOfMapping": "Typen in kaart brengen",
-  "project.navFilters.typesOfMapping.exactMatch": "",
+  "project.navFilters.typesOfMapping.exactMatch": "Exacte overeenkomst",
   "project.navFilters.campaigns": "Alle campagnes",
   "project.navFilters.showAllXTags": "Weergeven {typeOfTag}",
   "project.inputs.placeholders.search": "Project zoeken",
