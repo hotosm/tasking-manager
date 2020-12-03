@@ -443,7 +443,7 @@
   "project.nav.showMapToggle": "הצגת המפה",
   "project.nav.listViewToggle": "תצוגת רשימה",
   "project.navFilters.typesOfMapping": "סוגי המיפוי",
-  "project.navFilters.typesOfMapping.exactMatch": "",
+  "project.navFilters.typesOfMapping.exactMatch": "תוצאה מדויקת",
   "project.navFilters.campaigns": "כל מסעות הפרסום",
   "project.navFilters.showAllXTags": "הצגת {typeOfTag}",
   "project.inputs.placeholders.search": "חיפוש מיזם",
