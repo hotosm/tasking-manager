@@ -303,6 +303,10 @@ export default defineMessages({
     id: 'project.tasks.filter.noTasksFound',
     defaultMessage: 'No tasks were found.',
   },
+  readTaskComments: {
+    id: 'project.tasks.readComments',
+    defaultMessage: 'Please check history for relevant task comments.',
+  },
   completion: {
     id: 'project.tasks.action.completion',
     defaultMessage: 'Completion',

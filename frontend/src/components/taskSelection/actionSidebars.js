@@ -15,16 +15,19 @@ import {
   QuestionCircleIcon,
   ChevronRightIcon,
   ChevronDownIcon,
+  InfoIcon,
 } from '../svgIcons';
 import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { CommentInputField } from '../comments/commentInput';
 import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedTasks';
+import useReadTaskComments from '../../hooks/useReadTaskComments';
 
 export function CompletionTabForMapping({
   project,
   tasksIds,
+  taskHistory,
   taskInstructions,
   disabled,
   taskComment,
@@ -38,6 +41,7 @@ export function CompletionTabForMapping({
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
   const fetchLockedTasks = useFetchLockedTasks();
   const clearLockedTasks = useClearLockedTasks();
+  const readTaskComments = useReadTaskComments(taskHistory);
 
   const splitTask = () => {
     if (!disabled) {
@@ -103,6 +107,14 @@ export function CompletionTabForMapping({
         >
           {(close) => <UnsavedMapChangesModalContent close={close} action={showMapChangesModal} />}
         </Popup>
+      )}
+      {readTaskComments && (
+        <div class="flex items-center justify-center pa1 mb1 bg-grey-light blue-grey">
+          <InfoIcon />
+          <span class="ml2 fw1 pa1">
+            <FormattedMessage {...messages.readTaskComments} />
+          </span>
+        </div>
       )}
       <div className="cf">
         {taskInstructions && <TaskSpecificInstructions instructions={taskInstructions} />}

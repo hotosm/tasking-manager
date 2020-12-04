@@ -221,6 +221,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       <CompletionTabForMapping
                         project={project}
                         tasksIds={tasksIds}
+                        taskHistory={taskHistory}
                         taskInstructions={
                           activeTasks && activeTasks.length === 1
                             ? activeTasks[0].perTaskInstructions
