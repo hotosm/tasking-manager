@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { IntlProvider } from 'react-intl';
+import { shouldPolyfill } from '@formatjs/intl-locale/should-polyfill';
 
 import ar from '../locales/ar.json';
 import cs from '../locales/cs.json';
@@ -31,14 +32,21 @@ import zh_TW from '../locales/zh_TW.json';
 import { setLocale } from '../store/actions/userPreferences';
 import * as config from '../config';
 
-/* Safari 12- and IE */
-if (!Intl.PluralRules) {
-  require('@formatjs/intl-pluralrules/polyfill-locales');
+async function polyfill() {
+  // This platform already supports Intl.Locale
+  if (shouldPolyfill()) {
+    await import('@formatjs/intl-locale/polyfill');
+  }
+  /* Safari 12- and IE */
+  if (!Intl.PluralRules) {
+    require('@formatjs/intl-pluralrules/polyfill-locales');
+  }
+  /* Safari 13- and IE */
+  if (!Intl.RelativeTimeFormat) {
+    require('@formatjs/intl-relativetimeformat/polyfill-locales');
+  }
 }
-/* Safari 13- and IE */
-if (!Intl.RelativeTimeFormat) {
-  require('@formatjs/intl-relativetimeformat/polyfill-locales');
-}
+polyfill();
 
 const translatedMessages = {
   ar: ar,
