@@ -2,7 +2,7 @@ from flask import current_app
 import math
 import geojson
 from geoalchemy2 import shape
-from sqlalchemy import func, distinct, desc, or_
+from sqlalchemy import func, distinct, desc, or_, and_
 from shapely.geometry import Polygon, box
 from cachetools import TTLCache, cached
 
@@ -19,6 +19,7 @@ from backend.models.postgis.statuses import (
     ProjectStatus,
     MappingLevel,
     MappingTypes,
+    MappingPermission,
     ProjectPriority,
     UserRole,
     TeamRoles,
@@ -244,6 +245,68 @@ class ProjectSearchService:
             query = query.filter(
                 Project.mapper_level == MappingLevel[search_dto.mapper_level].value
             )
+        if search_dto.action and search_dto.action != "any":
+            if search_dto.action == "map":
+                # filter projects that needs mapping
+                query = query.filter(
+                    Project.tasks_mapped + Project.tasks_validated
+                    < Project.total_tasks - Project.tasks_bad_imagery
+                )
+                if user and user.role != UserRole.ADMIN.value:
+                    if user.teams:
+                        selection = []
+                        # get ids of projects assigned to the user's teams
+                        [
+                            [
+                                selection.append(p.project_id)
+                                for p in user_team.team.projects
+                                if p.project_id not in selection
+                            ]
+                            for user_team in user.teams
+                        ]
+                        if user.mapping_level == MappingLevel.BEGINNER.value:
+                            # if user is beginner, get only projects with ANY or TEAMS mapping permission
+                            # on the last case, only those that are associated with user teams
+                            query = query.filter(
+                                or_(
+                                    and_(
+                                        Project.id.in_(selection),
+                                        Project.mapping_permission
+                                        == MappingPermission.TEAMS.value,
+                                    ),
+                                    Project.mapping_permission
+                                    == MappingPermission.ANY.value,
+                                )
+                            )
+                        else:
+                            # if user is intermediate or advanced, get projects with ANY or LEVEL permission
+                            # and projects associated with user teams
+                            query = query.filter(
+                                or_(
+                                    Project.id.in_(selection),
+                                    Project.mapping_permission.in_(
+                                        [
+                                            MappingPermission.ANY.value,
+                                            MappingPermission.LEVEL.value,
+                                        ]
+                                    ),
+                                )
+                            )
+
+                    elif user.mapping_level == MappingLevel.BEGINNER.value:
+                        # case the user is not member of teams, filter based on projects permissions
+                        query = query.filter(
+                            Project.mapping_permission == MappingPermission.ANY.value
+                        )
+                    else:
+                        query = query.filter(
+                            Project.mapping_permission.in_(
+                                [
+                                    MappingPermission.ANY.value,
+                                    MappingPermission.LEVEL.value,
+                                ]
+                            )
+                        )
 
         if search_dto.organisation_name:
             query = query.filter(Organisation.name == search_dto.organisation_name)

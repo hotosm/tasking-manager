@@ -33,6 +33,7 @@ const projectQueryAllSpecification = {
   favoritedByMe: BooleanParam,
   mappedByMe: BooleanParam,
   status: StringParam,
+  action: StringParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -61,6 +62,7 @@ const backendToQueryConversion = {
   favoritedByMe: 'favoritedByMe',
   mappedByMe: 'mappedByMe',
   status: 'projectStatuses',
+  action: 'action',
 };
 
 const dataFetchReducer = (state, action) => {
