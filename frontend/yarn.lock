@@ -6365,10 +6365,10 @@ https-browserify@^1.0.0:
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
   integrity sha1-7AbBDgo0wPL68Zn3/X/Hj//QPHM=
 
-humanize-duration@^3.24.0:
-  version "3.24.0"
-  resolved "https://registry.yarnpkg.com/humanize-duration/-/humanize-duration-3.24.0.tgz#d851ca6fb93277e30ad789e88bd2019655f514c1"
-  integrity sha512-B3udnqisaDeRsvUSb+5n2hjxhABI9jotB+i1IEhgHhguTeM5LxIUKoVIu7UpeyaPOygr/Fnv7UhOi45kYYG+tg==
+humanize-duration@^3.25.0:
+  version "3.25.0"
+  resolved "https://registry.yarnpkg.com/humanize-duration/-/humanize-duration-3.25.0.tgz#ac73be923dbef477c48116f033f8e150f3e0028a"
+  integrity sha512-QXth17C/8J2QVO0urby5sANmgvwdOF4YZW3mO13ZTkJli4ltVphzMJVG+HkVuTN/bIq1W/O0jRYSyQACus/GVQ==
 
 iconv-lite@0.4.24, iconv-lite@^0.4.15, iconv-lite@^0.4.24:
   version "0.4.24"
