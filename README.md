@@ -12,6 +12,7 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 ## Get involved!
 
+* Check our [Code of conduct](.docs/code_of_conduct.md)
 * Get familiar with our [contributor guidelines](./docs/contributing.md)
 * Join the [working groups](./docs/working-groups.md)
 * Help us to [translate the user interface](./docs/contributing-translation.md)
