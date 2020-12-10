@@ -128,7 +128,7 @@ export default defineMessages({
   },
   timeToUnlock: {
     id: 'project.sidebar.timeToUnlock',
-    defaultMessage: 'Time available for you to complete work on this Task',
+    defaultMessage: 'Time available for you to complete work on this task',
   },
   task: {
     id: 'project.task',
