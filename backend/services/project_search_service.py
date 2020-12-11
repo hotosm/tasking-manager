@@ -20,6 +20,7 @@ from backend.models.postgis.statuses import (
     MappingLevel,
     MappingTypes,
     MappingPermission,
+    ValidationPermission,
     ProjectPriority,
     UserRole,
     TeamRoles,
@@ -247,66 +248,13 @@ class ProjectSearchService:
             )
         if search_dto.action and search_dto.action != "any":
             if search_dto.action == "map":
-                # filter projects that needs mapping
-                query = query.filter(
-                    Project.tasks_mapped + Project.tasks_validated
-                    < Project.total_tasks - Project.tasks_bad_imagery
+                query = ProjectSearchService.filter_projects_to_map(
+                    query, search_dto, user
                 )
-                if user and user.role != UserRole.ADMIN.value:
-                    if user.teams:
-                        selection = []
-                        # get ids of projects assigned to the user's teams
-                        [
-                            [
-                                selection.append(p.project_id)
-                                for p in user_team.team.projects
-                                if p.project_id not in selection
-                            ]
-                            for user_team in user.teams
-                        ]
-                        if user.mapping_level == MappingLevel.BEGINNER.value:
-                            # if user is beginner, get only projects with ANY or TEAMS mapping permission
-                            # on the last case, only those that are associated with user teams
-                            query = query.filter(
-                                or_(
-                                    and_(
-                                        Project.id.in_(selection),
-                                        Project.mapping_permission
-                                        == MappingPermission.TEAMS.value,
-                                    ),
-                                    Project.mapping_permission
-                                    == MappingPermission.ANY.value,
-                                )
-                            )
-                        else:
-                            # if user is intermediate or advanced, get projects with ANY or LEVEL permission
-                            # and projects associated with user teams
-                            query = query.filter(
-                                or_(
-                                    Project.id.in_(selection),
-                                    Project.mapping_permission.in_(
-                                        [
-                                            MappingPermission.ANY.value,
-                                            MappingPermission.LEVEL.value,
-                                        ]
-                                    ),
-                                )
-                            )
-
-                    elif user.mapping_level == MappingLevel.BEGINNER.value:
-                        # case the user is not member of teams, filter based on projects permissions
-                        query = query.filter(
-                            Project.mapping_permission == MappingPermission.ANY.value
-                        )
-                    else:
-                        query = query.filter(
-                            Project.mapping_permission.in_(
-                                [
-                                    MappingPermission.ANY.value,
-                                    MappingPermission.LEVEL.value,
-                                ]
-                            )
-                        )
+            if search_dto.action == "validate":
+                query = ProjectSearchService.filter_projects_to_validate(
+                    query, search_dto, user
+                )
 
         if search_dto.organisation_name:
             query = query.filter(Organisation.name == search_dto.organisation_name)
@@ -412,10 +360,104 @@ class ProjectSearchService:
         return all_results, paginated_results
 
     @staticmethod
+    def filter_projects_to_map(query, search_dto, user):
+        """Filter projects that needs mapping and can be mapped by the current user."""
+        query = query.filter(
+            Project.tasks_mapped + Project.tasks_validated
+            < Project.total_tasks - Project.tasks_bad_imagery
+        )
+        if user and user.role != UserRole.ADMIN.value:
+            selection = []
+            # get ids of projects assigned to the user's teams
+            [
+                [
+                    selection.append(p.project_id)
+                    for p in user_team.team.projects
+                    if p.project_id not in selection
+                ]
+                for user_team in user.teams
+            ]
+            if user.mapping_level == MappingLevel.BEGINNER.value:
+                # if user is beginner, get only projects with ANY or TEAMS mapping permission
+                # on the last case, only those that are associated with user teams
+                query = query.filter(
+                    or_(
+                        and_(
+                            Project.id.in_(selection),
+                            Project.mapping_permission == MappingPermission.TEAMS.value,
+                        ),
+                        Project.mapping_permission == MappingPermission.ANY.value,
+                    )
+                )
+            else:
+                # if user is intermediate or advanced, get projects with ANY or LEVEL permission
+                # and projects associated with user teams
+                query = query.filter(
+                    or_(
+                        Project.id.in_(selection),
+                        Project.mapping_permission.in_(
+                            [
+                                MappingPermission.ANY.value,
+                                MappingPermission.LEVEL.value,
+                            ]
+                        ),
+                    )
+                )
+
+        return query
+
+    @staticmethod
+    def filter_projects_to_validate(query, search_dto, user):
+        """Filter projects that needs validation and can be validated by the current user."""
+        query = query.filter(
+            Project.tasks_validated < Project.total_tasks - Project.tasks_bad_imagery
+        )
+        if user and user.role != UserRole.ADMIN.value:
+            selection = []
+            # get ids of projects assigned to the user's teams
+            [
+                [
+                    selection.append(p.project_id)
+                    for p in user_team.team.projects
+                    if p.project_id not in selection
+                ]
+                for user_team in user.teams
+            ]
+            if user.mapping_level == MappingLevel.BEGINNER.value:
+                # if user is beginner, get only projects with ANY or TEAMS validation permission
+                # on the last case, only those that are associated with user teams
+                query = query.filter(
+                    or_(
+                        and_(
+                            Project.id.in_(selection),
+                            Project.validation_permission
+                            == ValidationPermission.TEAMS.value,
+                        ),
+                        Project.validation_permission == ValidationPermission.ANY.value,
+                    )
+                )
+            else:
+                # if user is intermediate or advanced, get projects with ANY or LEVEL validation
+                # permission and projects associated with user teams
+                query = query.filter(
+                    or_(
+                        Project.id.in_(selection),
+                        Project.validation_permission.in_(
+                            [
+                                ValidationPermission.ANY.value,
+                                ValidationPermission.LEVEL.value,
+                            ]
+                        ),
+                    )
+                )
+
+        return query
+
+    @staticmethod
     def get_projects_geojson(
         search_bbox_dto: ProjectSearchBBoxDTO,
     ) -> geojson.FeatureCollection:
-        """  search for projects meeting criteria provided return as a geojson feature collection"""
+        """Search for projects meeting the provided criteria. Returns a GeoJSON feature collection."""
 
         # make a polygon from provided bounding box
         polygon = ProjectSearchService._make_4326_polygon_from_bbox(
@@ -457,7 +499,7 @@ class ProjectSearchService:
 
     @staticmethod
     def _get_intersecting_projects(search_polygon: Polygon, author_id: int):
-        """ executes a database query to get the intersecting projects created by the author if provided """
+        """Executes a database query to get the intersecting projects created by the author if provided """
 
         query = db.session.query(
             Project.id,
