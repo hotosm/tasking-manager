@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import Popup from 'reactjs-popup';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { ProjectInstructions } from './instructions';
@@ -37,6 +37,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [disabled, setDisable] = useState(false);
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
+  const intl = useIntl();
 
   const activeTask = activeTasks && activeTasks[0];
   const timer = new Date(activeTask.lastUpdated);
@@ -169,7 +170,9 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                     </span>
                   ))}
                 </h3>
-                <DueDateBox dueDate={timer} align="left" intervalMili={60000} />
+                <div className="db" title={intl.formatMessage(messages.timeToUnlock)}>
+                  <DueDateBox dueDate={timer} align="left" intervalMili={60000} />
+                </div>
               </div>
               <div className="cf">
                 <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
@@ -200,12 +203,12 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       {taskHistory &&
                         taskHistory.taskHistory &&
                         taskHistory.taskHistory.length > 1 && (
-                          <div
+                          <span
                             className="bg-red white dib br-100 tc f6 ml1 mb1 v-mid"
                             style={{ height: '1.125rem', width: '1.125rem' }}
                           >
                             {taskHistory.taskHistory.length}
-                          </div>
+                          </span>
                         )}
                     </span>
                   )}

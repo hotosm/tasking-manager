@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactPlaceholder from 'react-placeholder';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { MappingTypes } from '../mappingTypes';
@@ -34,6 +34,7 @@ const ProjectDetailTypeBar = (props) => {
 };
 
 export function ProjectInfoPanel({ project, tasks, contributors, type }: Object) {
+  const intl = useIntl();
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(tasks);
   return (
     <ReactPlaceholder
@@ -65,7 +66,10 @@ export function ProjectInfoPanel({ project, tasks, contributors, type }: Object)
       />
       <div className="cf pb1 bg-white">
         <MappingLevelMessage level={project.mapperLevel} className="fl f5 mt1 ttc fw5 blue-dark" />
-        <DueDateBox dueDate={project.dueDate} />
+        <DueDateBox
+          dueDate={project.dueDate}
+          tooltipMsg={intl.formatMessage(messages.dueDateTooltip)}
+        />
       </div>
     </ReactPlaceholder>
   );
