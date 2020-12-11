@@ -479,6 +479,21 @@ class TaskHistory(db.Model):
         )
 
 
+class TaskDependency(db.Model):
+    """ Describes a relationship between two tasks """
+
+    __tablename__ = "task_dependencies"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    task_id = db.Column(
+        db.Integer, db.ForeignKey("tasks.id"), index=True
+    )
+    dependent_task_id = db.Column(
+        db.Integer, db.ForeignKey("tasks.id"), index=True
+    )
+
+
 class Task(db.Model):
     """ Describes an individual mapping Task """
 
@@ -505,6 +520,11 @@ class Task(db.Model):
     )
     validated_by = db.Column(
         db.BigInteger, db.ForeignKey("users.id", name="fk_users_validator"), index=True
+    )
+
+    # List of dependent tasks, relationship on Task's id field
+    task_dependencies = db.relationship(
+        TaskDependency, backref=db.backref("task_dependency", remote_side=[id])
     )
 
     # Mapped objects

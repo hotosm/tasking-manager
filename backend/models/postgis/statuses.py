@@ -36,6 +36,7 @@ class TaskStatus(Enum):
     INVALIDATED = 5
     BADIMAGERY = 6  # Task cannot be mapped because of clouds, fuzzy imagery
     SPLIT = 7  # Task has been split
+    LOCKED_BY_DEPENDENCY = 8 # Task can be in locked state because of incomplete dependent Tasks
 
 
 class MappingLevel(Enum):
