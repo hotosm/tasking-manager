@@ -22,6 +22,8 @@ from backend.models.postgis.statuses import (
     ProjectPriority,
     UserRole,
     TeamRoles,
+    ValidationPermission,
+    MappingPermission,
 )
 from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.organisation import Organisation
@@ -354,16 +356,23 @@ class ProjectSearchService:
         return all_results, paginated_results
 
     @staticmethod
-    def filter_projects_by_user(query, user, permission: str, team_roles: list):
+    def filter_by_user_permission(query, user, permission: str):
+        """Filter projects a user can map or validate, based on their permissions."""
         if user and user.role != UserRole.ADMIN.value:
-            separator = permission.find("_")
-            permission_class = (
-                permission[:separator].capitalize()
-                + permission[separator + 1 :].capitalize()  # noqa
-            )
-            import_permission_class = getattr(
-                backend.models.postgis.statuses, permission_class  # noqa
-            )
+            if permission == "validation_permission":
+                permission_class = ValidationPermission
+                team_roles = [
+                    TeamRoles.VALIDATOR.value,
+                    TeamRoles.PROJECT_MANAGER.value,
+                ]
+            else:
+                permission_class = MappingPermission
+                team_roles = [
+                    TeamRoles.MAPPER.value,
+                    TeamRoles.VALIDATOR.value,
+                    TeamRoles.PROJECT_MANAGER.value,
+                ]
+
             selection = []
             # get ids of projects assigned to the user's teams
             [
@@ -383,10 +392,9 @@ class ProjectSearchService:
                         and_(
                             Project.id.in_(selection),
                             getattr(Project, permission)
-                            == import_permission_class.TEAMS.value,
+                            == permission_class.TEAMS.value,
                         ),
-                        getattr(Project, permission)
-                        == import_permission_class.ANY.value,
+                        getattr(Project, permission) == permission_class.ANY.value,
                     )
                 )
             else:
@@ -397,8 +405,8 @@ class ProjectSearchService:
                         Project.id.in_(selection),
                         getattr(Project, permission).in_(
                             [
-                                import_permission_class.ANY.value,
-                                import_permission_class.LEVEL.value,
+                                permission_class.ANY.value,
+                                permission_class.LEVEL.value,
                             ]
                         ),
                     )
@@ -413,13 +421,8 @@ class ProjectSearchService:
             Project.tasks_mapped + Project.tasks_validated
             < Project.total_tasks - Project.tasks_bad_imagery
         )
-        team_roles = [
-            TeamRoles.MAPPER.value,
-            TeamRoles.VALIDATOR.value,
-            TeamRoles.PROJECT_MANAGER.value,
-        ]
-        return ProjectSearchService.filter_projects_by_user(
-            query, user, "mapping_permission", team_roles
+        return ProjectSearchService.filter_by_user_permission(
+            query, user, "mapping_permission"
         )
 
     @staticmethod
@@ -428,9 +431,8 @@ class ProjectSearchService:
         query = query.filter(
             Project.tasks_validated < Project.total_tasks - Project.tasks_bad_imagery
         )
-        team_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
-        return ProjectSearchService.filter_projects_by_user(
-            query, user, "validation_permission", team_roles
+        return ProjectSearchService.filter_by_user_permission(
+            query, user, "validation_permission"
         )
 
     @staticmethod
