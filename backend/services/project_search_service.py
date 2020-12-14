@@ -354,7 +354,7 @@ class ProjectSearchService:
         return all_results, paginated_results
 
     @staticmethod
-    def filter_projects_by_user(query, user, permission: str, team_roles: list = []):
+    def filter_projects_by_user(query, user, permission: str, team_roles: list):
         if user and user.role != UserRole.ADMIN.value:
             separator = permission.find("_")
             permission_class = (
@@ -413,8 +413,13 @@ class ProjectSearchService:
             Project.tasks_mapped + Project.tasks_validated
             < Project.total_tasks - Project.tasks_bad_imagery
         )
+        team_roles = [
+            TeamRoles.MAPPER.value,
+            TeamRoles.VALIDATOR.value,
+            TeamRoles.PROJECT_MANAGER.value,
+        ]
         return ProjectSearchService.filter_projects_by_user(
-            query, user, "mapping_permission"
+            query, user, "mapping_permission", team_roles
         )
 
     @staticmethod
