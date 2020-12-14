@@ -248,13 +248,9 @@ class ProjectSearchService:
             )
         if search_dto.action and search_dto.action != "any":
             if search_dto.action == "map":
-                query = ProjectSearchService.filter_projects_to_map(
-                    query, search_dto, user
-                )
+                query = ProjectSearchService.filter_projects_to_map(query, user)
             if search_dto.action == "validate":
-                query = ProjectSearchService.filter_projects_to_validate(
-                    query, search_dto, user
-                )
+                query = ProjectSearchService.filter_projects_to_validate(query, user)
 
         if search_dto.organisation_name:
             query = query.filter(Organisation.name == search_dto.organisation_name)
@@ -360,7 +356,7 @@ class ProjectSearchService:
         return all_results, paginated_results
 
     @staticmethod
-    def filter_projects_to_map(query, search_dto, user):
+    def filter_projects_to_map(query, user):
         """Filter projects that needs mapping and can be mapped by the current user."""
         query = query.filter(
             Project.tasks_mapped + Project.tasks_validated
@@ -371,9 +367,9 @@ class ProjectSearchService:
             # get ids of projects assigned to the user's teams
             [
                 [
-                    selection.append(p.project_id)
-                    for p in user_team.team.projects
-                    if p.project_id not in selection
+                    selection.append(team_project.project_id)
+                    for team_project in user_team.team.projects
+                    if team_project.project_id not in selection
                 ]
                 for user_team in user.teams
             ]
@@ -407,19 +403,21 @@ class ProjectSearchService:
         return query
 
     @staticmethod
-    def filter_projects_to_validate(query, search_dto, user):
+    def filter_projects_to_validate(query, user):
         """Filter projects that needs validation and can be validated by the current user."""
         query = query.filter(
             Project.tasks_validated < Project.total_tasks - Project.tasks_bad_imagery
         )
         if user and user.role != UserRole.ADMIN.value:
             selection = []
+            roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
             # get ids of projects assigned to the user's teams
             [
                 [
-                    selection.append(p.project_id)
-                    for p in user_team.team.projects
-                    if p.project_id not in selection
+                    selection.append(team_project.project_id)
+                    for team_project in user_team.team.projects
+                    if team_project.project_id not in selection
+                    and team_project.role in roles
                 ]
                 for user_team in user.teams
             ]
