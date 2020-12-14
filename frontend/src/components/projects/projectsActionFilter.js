@@ -1,0 +1,55 @@
+import React, { useEffect } from 'react';
+import { FormattedMessage } from 'react-intl';
+import { useSelector, useDispatch } from 'react-redux';
+
+import messages from './messages';
+import { Dropdown } from '../dropdown';
+
+export const ProjectsActionFilter = ({ setQuery, fullProjectsQuery }) => {
+  const dispatch = useDispatch();
+  const action = useSelector((state) => state.preferences['action']);
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+
+  useEffect(() => {
+    // if action is not set on redux/localStorage,
+    // set as 'any' for advanced mappers and 'map' for others
+    if (!action || action === 'null') {
+      dispatch({
+        type: 'SET_ACTION',
+        action: userDetails.mappingLevel === 'ADVANCED' ? 'any' : 'map',
+      });
+    }
+  }, [dispatch, action, userDetails.mappingLevel]);
+
+  return (
+    <Dropdown
+      onAdd={() => {}}
+      onRemove={() => {}}
+      onChange={(n) => {
+        const value = n && n[0] && n[0].value;
+        // clean the action query param if it was set on the URL,
+        // as our main source of truth is the redux store
+        if (fullProjectsQuery.action) {
+          setQuery(
+            {
+              ...fullProjectsQuery,
+              page: undefined,
+              action: undefined,
+            },
+            'pushIn',
+          );
+        }
+        dispatch({ type: 'SET_ACTION', action: value });
+      }}
+      // use the action query param, in case someone loads the page with /explore?action=*
+      value={fullProjectsQuery.action || action || 'any'}
+      options={[
+        { label: <FormattedMessage {...messages.projectsToMap} />, value: 'map' },
+        { label: <FormattedMessage {...messages.projectsToValidate} />, value: 'validate' },
+        { label: <FormattedMessage {...messages.anyProject} />, value: 'any' },
+      ]}
+      display={'Action'}
+      className={'ba b--grey-light bg-white mr1 f6 v-mid dn dib-ns pv2'}
+    />
+  );
+};

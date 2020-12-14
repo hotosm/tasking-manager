@@ -41,6 +41,7 @@ export const updateUserEmail = (userDetails, token, relevant_fields) => (dispatc
 export const logout = () => (dispatch) => {
   safeStorage.removeItem('username');
   safeStorage.removeItem('token');
+  safeStorage.removeItem('action');
   safeStorage.removeItem('osm_oauth_token');
   safeStorage.removeItem('osm_oauth_token_secret');
   dispatch(clearUserDetails());
@@ -129,7 +130,10 @@ export const setUserDetails = (username, encodedToken, update = false) => (dispa
           dispatch(updateOrgsInfo(orgs.organisations.map((org) => org.organisationId))),
         )
         .catch((error) => dispatch(updateOrgsInfo([])));
-      fetchLocalJSONAPI(`teams/?omitMemberList=true&team_role=PROJECT_MANAGER&member=${userDetails.id}`, encodedToken)
+      fetchLocalJSONAPI(
+        `teams/?omitMemberList=true&team_role=PROJECT_MANAGER&member=${userDetails.id}`,
+        encodedToken,
+      )
         .then((teams) => dispatch(updatePMsTeams(teams.teams.map((team) => team.teamId))))
         .catch((error) => dispatch(updatePMsTeams([])));
       dispatch(setLoader(false));
