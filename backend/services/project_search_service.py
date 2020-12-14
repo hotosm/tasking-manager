@@ -377,7 +377,7 @@ class ProjectSearchService:
             ]
             if user.mapping_level == MappingLevel.BEGINNER.value:
                 # if user is beginner, get only projects with ANY or TEAMS mapping permission
-                # on the last case, only those that are associated with user teams
+                # in the later case, only those that are associated with user teams
                 query = query.filter(
                     or_(
                         and_(
