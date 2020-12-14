@@ -357,9 +357,10 @@ class ProjectSearchService:
     def filter_projects_by_user(query, user, permission: str, team_roles: list = []):
         if user and user.role != UserRole.ADMIN.value:
             separator = permission.find("_")
+            next_char = separator + 1 # to avoid flake E203 https://gitlab.com/pycqa/flake8/-/issues/451
             permission_class = (
                 permission[:separator].capitalize()
-                + permission[separator + 1:].capitalize()
+                + permission[next_char:].capitalize()
             )
             import_permission_class = getattr(
                 backend.models.postgis.statuses, permission_class
