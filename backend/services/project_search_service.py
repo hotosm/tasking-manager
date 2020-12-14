@@ -19,8 +19,6 @@ from backend.models.postgis.statuses import (
     ProjectStatus,
     MappingLevel,
     MappingTypes,
-    MappingPermission,
-    ValidationPermission,
     ProjectPriority,
     UserRole,
     TeamRoles,
@@ -356,13 +354,16 @@ class ProjectSearchService:
         return all_results, paginated_results
 
     @staticmethod
-    def filter_projects_to_map(query, user):
-        """Filter projects that needs mapping and can be mapped by the current user."""
-        query = query.filter(
-            Project.tasks_mapped + Project.tasks_validated
-            < Project.total_tasks - Project.tasks_bad_imagery
-        )
+    def filter_projects_by_user(query, user, permission: str, team_roles: list = []):
         if user and user.role != UserRole.ADMIN.value:
+            separator = permission.find("_")
+            permission_class = (
+                permission[:separator].capitalize()
+                + permission[separator + 1:].capitalize()
+            )
+            import_permission_class = getattr(
+                backend.models.postgis.statuses, permission_class
+            )
             selection = []
             # get ids of projects assigned to the user's teams
             [
@@ -370,6 +371,7 @@ class ProjectSearchService:
                     selection.append(team_project.project_id)
                     for team_project in user_team.team.projects
                     if team_project.project_id not in selection
+                    and team_project.role in team_roles
                 ]
                 for user_team in user.teams
             ]
@@ -380,9 +382,11 @@ class ProjectSearchService:
                     or_(
                         and_(
                             Project.id.in_(selection),
-                            Project.mapping_permission == MappingPermission.TEAMS.value,
+                            getattr(Project, permission)
+                            == import_permission_class.TEAMS.value,
                         ),
-                        Project.mapping_permission == MappingPermission.ANY.value,
+                        getattr(Project, permission)
+                        == import_permission_class.ANY.value,
                     )
                 )
             else:
@@ -391,10 +395,10 @@ class ProjectSearchService:
                 query = query.filter(
                     or_(
                         Project.id.in_(selection),
-                        Project.mapping_permission.in_(
+                        getattr(Project, permission).in_(
                             [
-                                MappingPermission.ANY.value,
-                                MappingPermission.LEVEL.value,
+                                import_permission_class.ANY.value,
+                                import_permission_class.LEVEL.value,
                             ]
                         ),
                     )
@@ -403,53 +407,26 @@ class ProjectSearchService:
         return query
 
     @staticmethod
+    def filter_projects_to_map(query, user):
+        """Filter projects that needs mapping and can be mapped by the current user."""
+        query = query.filter(
+            Project.tasks_mapped + Project.tasks_validated
+            < Project.total_tasks - Project.tasks_bad_imagery
+        )
+        return ProjectSearchService.filter_projects_by_user(
+            query, user, "mapping_permission"
+        )
+
+    @staticmethod
     def filter_projects_to_validate(query, user):
         """Filter projects that needs validation and can be validated by the current user."""
         query = query.filter(
             Project.tasks_validated < Project.total_tasks - Project.tasks_bad_imagery
         )
-        if user and user.role != UserRole.ADMIN.value:
-            selection = []
-            roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
-            # get ids of projects assigned to the user's teams
-            [
-                [
-                    selection.append(team_project.project_id)
-                    for team_project in user_team.team.projects
-                    if team_project.project_id not in selection
-                    and team_project.role in roles
-                ]
-                for user_team in user.teams
-            ]
-            if user.mapping_level == MappingLevel.BEGINNER.value:
-                # if user is beginner, get only projects with ANY or TEAMS validation permission
-                # on the last case, only those that are associated with user teams
-                query = query.filter(
-                    or_(
-                        and_(
-                            Project.id.in_(selection),
-                            Project.validation_permission
-                            == ValidationPermission.TEAMS.value,
-                        ),
-                        Project.validation_permission == ValidationPermission.ANY.value,
-                    )
-                )
-            else:
-                # if user is intermediate or advanced, get projects with ANY or LEVEL validation
-                # permission and projects associated with user teams
-                query = query.filter(
-                    or_(
-                        Project.id.in_(selection),
-                        Project.validation_permission.in_(
-                            [
-                                ValidationPermission.ANY.value,
-                                ValidationPermission.LEVEL.value,
-                            ]
-                        ),
-                    )
-                )
-
-        return query
+        team_roles = [TeamRoles.VALIDATOR.value, TeamRoles.PROJECT_MANAGER.value]
+        return ProjectSearchService.filter_projects_by_user(
+            query, user, "validation_permission", team_roles
+        )
 
     @staticmethod
     def get_projects_geojson(
