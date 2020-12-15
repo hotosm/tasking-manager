@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
@@ -18,7 +18,7 @@ describe('ElementsMapped & TaskStats components', () => {
     };
     const { getByText } = render(
       <ReduxIntlProviders>
-        <ElementsMapped userStats={userStats} osmStats={osmStats}/>
+        <ElementsMapped userStats={userStats} osmStats={osmStats} />
       </ReduxIntlProviders>,
     );
 
@@ -31,7 +31,7 @@ describe('ElementsMapped & TaskStats components', () => {
     expect(getByText('229')).toBeInTheDocument();
   });
 
-  it ('TaskStats component is rendered', ()=> {
+  it('TaskStats component is rendered', () => {
     const userStats = {
       tasksMapped: 9,
       tasksValidatedByOthers: 8,

@@ -126,7 +126,7 @@ export function ProjectCard({
                 percentMapped={percentMapped}
                 percentValidated={percentValidated}
               />
-              <div className="cf pt2 h2 truncate">
+              <div className="cf pt2 truncate">
                 <MappingLevelMessage
                   level={mapperLevel}
                   className="fl f7 pv2 ttc fw5 blue-grey truncate"

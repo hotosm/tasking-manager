@@ -42,3 +42,28 @@ export const history = {
     },
   ],
 };
+
+export const invalidatedTaskHistory = {
+  taskHistory: [
+    {
+      historyId: 12001,
+      taskId: 1,
+      action: 'COMMENT',
+      actionText: 'More buildings need to be mapped',
+      actionDate: '2020-10-04T14:35:30.174515Z',
+      actionBy: 'test_user',
+      pictureUrl: null,
+      issues: null,
+    },
+    {
+      historyId: 12000,
+      taskId: 1,
+      action: 'STATE_CHANGE',
+      actionText: 'INVALIDATED',
+      actionDate: '2020-10-04T14:35:20.174515Z',
+      actionBy: 'test_user',
+      pictureUrl: null,
+      issues: null,
+    },
+  ],
+};

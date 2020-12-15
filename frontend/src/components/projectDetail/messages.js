@@ -187,6 +187,10 @@ export default defineMessages({
     id: 'project.detail.sections.overview',
     defaultMessage: 'Overview',
   },
+  dueDateTooltip: {
+    id: 'project.detail.sections.overview.dueDate',
+    defaultMessage: 'Ideal date to complete the project',
+  },
   description: {
     id: 'project.detail.sections.description',
     defaultMessage: 'Description',

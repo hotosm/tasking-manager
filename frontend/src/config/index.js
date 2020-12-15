@@ -12,7 +12,7 @@ export const USER_STATS_API_URL =
 
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
-export const ENVIRONMENT= process.env.REACT_APP_ENVIRONMENT || '';
+export const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || '';
 export const PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD =
   process.env.REACT_APP_PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD || 5;
 export const INTERMEDIATE_LEVEL_COUNT =
@@ -32,11 +32,11 @@ export const OSM_CONSUMER_SECRET = process.env.REACT_APP_OSM_CONSUMER_SECRET || 
 export const ORG_PRIVACY_POLICY_URL = process.env.REACT_APP_ORG_PRIVACY_POLICY_URL || '';
 export const OSM_REGISTER_URL =
   process.env.REACT_APP_OSM_REGISTER_URL || 'https://www.openstreetmap.org/user/new';
-export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || 'http://twitter.com';
-export const ORG_FB = process.env.REACT_APP_ORG_FB || 'https://www.facebook.com';
-export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || 'https://www.instagram.com';
-export const ORG_YOUTUBE = process.env.REACT_APP_ORG_YOUTUBE || 'https://www.youtube.com';
-export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.com/';
+export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || '';
+export const ORG_FB = process.env.REACT_APP_ORG_FB || '';
+export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || '';
+export const ORG_YOUTUBE = process.env.REACT_APP_ORG_YOUTUBE || '';
+export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || '';
 export const MATOMO_ID = process.env.REACT_APP_MATOMO_ID || '';
 export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL || '';
 export const HOMEPAGE_VIDEO_URL = process.env.REACT_APP_HOMEPAGE_VIDEO_URL || '';

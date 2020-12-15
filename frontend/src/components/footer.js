@@ -52,15 +52,17 @@ export function Footer({ location }: Object) {
               </Link>
             ))}
             <p className="pt5-l pt4 pb3">
-              {socialNetworks.map((item, n) => (
-                <a
-                  key={n}
-                  href={item.link}
-                  className="link barlow-condensed white f4 ttu di-l dib ph2"
-                >
-                  {item.icon}
-                </a>
-              ))}
+              {socialNetworks
+                .filter((item) => item.link)
+                .map((item, n) => (
+                  <a
+                    key={n}
+                    href={item.link}
+                    className="link barlow-condensed white f4 ttu di-l dib ph2"
+                  >
+                    {item.icon}
+                  </a>
+                ))}
             </p>
           </div>
         </div>

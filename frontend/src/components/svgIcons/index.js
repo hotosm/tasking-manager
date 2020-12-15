@@ -72,3 +72,4 @@ export { SidebarIcon } from './sidebar';
 export { QuestionCircleIcon } from './questionCircle';
 export { ChartLineIcon } from './chart';
 export { EditIcon } from './edit';
+export { InfoIcon } from './info';

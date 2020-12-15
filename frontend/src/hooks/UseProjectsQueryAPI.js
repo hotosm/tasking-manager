@@ -33,6 +33,7 @@ const projectQueryAllSpecification = {
   favoritedByMe: BooleanParam,
   mappedByMe: BooleanParam,
   status: StringParam,
+  action: StringParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -61,6 +62,7 @@ const backendToQueryConversion = {
   favoritedByMe: 'favoritedByMe',
   mappedByMe: 'mappedByMe',
   status: 'projectStatuses',
+  action: 'action',
 };
 
 const dataFetchReducer = (state, action) => {
@@ -111,6 +113,7 @@ export const useProjectsQueryAPI = (
   /* Get the user bearer token from the Redux store */
   const token = useSelector((state) => state.auth.get('token'));
   const locale = useSelector((state) => state.preferences['locale']);
+  const action = useSelector((state) => state.preferences['action']);
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
@@ -142,6 +145,10 @@ export const useProjectsQueryAPI = (
         throttledExternalQueryParamsState,
         backendToQueryConversion,
       );
+      // it's needed in order to query by action when the user goes to /explore page
+      if (paramsRemapped.action === undefined && action) {
+        paramsRemapped.action = action;
+      }
 
       try {
         const result = await axios({
@@ -212,7 +219,7 @@ export const useProjectsQueryAPI = (
       console.log('tried to cancel on effect cleanup ', cancel && cancel.params);
       cancel && cancel.end();
     };
-  }, [throttledExternalQueryParamsState, forceUpdate, token, locale]);
+  }, [throttledExternalQueryParamsState, forceUpdate, token, locale, action]);
 
   return [state, dispatch];
 };

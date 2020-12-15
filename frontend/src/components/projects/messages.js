@@ -32,6 +32,18 @@ export default defineMessages({
     id: 'project.navFilters.typesOfMapping',
     defaultMessage: 'Types of mapping',
   },
+  projectsToMap: {
+    id: 'project.navFilters.action.map',
+    defaultMessage: 'Projects to map',
+  },
+  projectsToValidate: {
+    id: 'project.navFilters.action.validate',
+    defaultMessage: 'Projects to validate',
+  },
+  anyProject: {
+    id: 'project.navFilters.action.any',
+    defaultMessage: 'Any project',
+  },
   exactMatch: {
     id: 'project.navFilters.typesOfMapping.exactMatch',
     defaultMessage: 'Exact match',

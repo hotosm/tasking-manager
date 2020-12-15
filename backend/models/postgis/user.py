@@ -151,7 +151,7 @@ class User(db.Model):
             ]
             base = base.filter(User.mapping_level.in_(mapping_level_array))
         if query.username:
-            base = base.filter(User.username.ilike(query.username.lower() + "%"))
+            base = base.filter(User.username.ilike(("%" + query.username + "%")))
 
         if query.role:
             roles = query.role.split(",")

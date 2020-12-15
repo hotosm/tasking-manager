@@ -126,6 +126,10 @@ export default defineMessages({
     id: 'project.sidebar.hide',
     defaultMessage: 'Hide sidebar',
   },
+  timeToUnlock: {
+    id: 'project.sidebar.timeToUnlock',
+    defaultMessage: 'Time available for you to complete work on this task',
+  },
   task: {
     id: 'project.task',
     defaultMessage: 'Task',
@@ -298,6 +302,10 @@ export default defineMessages({
   noTasksFound: {
     id: 'project.tasks.filter.noTasksFound',
     defaultMessage: 'No tasks were found.',
+  },
+  readTaskComments: {
+    id: 'project.tasks.readComments',
+    defaultMessage: 'Please check the history tab for relevant comments.',
   },
   completion: {
     id: 'project.tasks.action.completion',

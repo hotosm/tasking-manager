@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import Popup from 'reactjs-popup';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { ProjectInstructions } from './instructions';
@@ -17,6 +17,7 @@ import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
+import useReadTaskComments from '../../hooks/useReadTaskComments';
 import { DueDateBox } from '../projectCard/dueDateBox';
 import {
   CompletionTabForMapping,
@@ -37,6 +38,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [disabled, setDisable] = useState(false);
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
+  const [historyTabChecked, setHistoryTabChecked] = useState(false);
+  const intl = useIntl();
 
   const activeTask = activeTasks && activeTasks[0];
   const timer = new Date(activeTask.lastUpdated);
@@ -46,9 +49,15 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     `projects/${project.projectId}/tasks/${tasksIds[0]}/`,
     project.projectId && tasksIds && tasksIds.length === 1,
   );
+  const readTaskComments = useReadTaskComments(taskHistory);
 
   const getTaskGpxUrlCallback = useCallback((project, tasks) => getTaskGpxUrl(project, tasks), []);
   const formatImageryUrlCallback = useCallback((imagery) => formatImageryUrl(imagery), []);
+
+  const historyTabSwitch = () => {
+    setHistoryTabChecked(true);
+    setActiveSection('history');
+  };
 
   useEffect(() => {
     if (!editor && projectIsReady && userDetails.defaultEditor && tasks && tasksIds) {
@@ -169,7 +178,9 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                     </span>
                   ))}
                 </h3>
-                <DueDateBox dueDate={timer} align="left" intervalMili={60000} />
+                <div className="db" title={intl.formatMessage(messages.timeToUnlock)}>
+                  <DueDateBox dueDate={timer} align="left" intervalMili={60000} />
+                </div>
               </div>
               <div className="cf">
                 <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
@@ -194,18 +205,18 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       className={`pb2 pointer truncate ${
                         activeSection === 'history' && 'bb b--blue-dark'
                       }`}
-                      onClick={() => setActiveSection('history')}
+                      onClick={() => historyTabSwitch()}
                     >
                       <FormattedMessage {...messages.history} />
                       {taskHistory &&
                         taskHistory.taskHistory &&
                         taskHistory.taskHistory.length > 1 && (
-                          <div
+                          <span
                             className="bg-red white dib br-100 tc f6 ml1 mb1 v-mid"
                             style={{ height: '1.125rem', width: '1.125rem' }}
                           >
                             {taskHistory.taskHistory.length}
-                          </div>
+                          </span>
                         )}
                     </span>
                   )}
@@ -218,6 +229,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       <CompletionTabForMapping
                         project={project}
                         tasksIds={tasksIds}
+                        showReadCommentsAlert={readTaskComments && !historyTabChecked}
+                        historyTabSwitch={historyTabSwitch}
                         taskInstructions={
                           activeTasks && activeTasks.length === 1
                             ? activeTasks[0].perTaskInstructions
