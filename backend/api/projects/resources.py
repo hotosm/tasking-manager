@@ -955,8 +955,9 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
                 if request.args.get("as_file")
                 else False
             )
+            locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
             project_dto = ProjectService.get_project_dto_for_mapper(
-                project_id, request.environ.get("HTTP_ACCEPT_LANGUAGE"), True
+                project_id, None, locale, True
             )
             project_dto = project_dto.to_primitive()
 
