@@ -482,6 +482,7 @@ class ProjectSearchBase(Resource):
         search_dto = ProjectSearchDTO()
         search_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
         search_dto.mapper_level = request.args.get("mapperLevel")
+        search_dto.action = request.args.get("action")
         search_dto.organisation_name = request.args.get("organisationName")
         search_dto.organisation_id = request.args.get("organisationId")
         search_dto.team_id = request.args.get("teamId")
@@ -601,6 +602,11 @@ class ProjectsAllAPI(ProjectSearchBase):
             - in: query
               name: country
               description: Project country
+              type: string
+            - in: query
+              name: action
+              description: Filter projects by possible actions
+              enum: [map, validate, any]
               type: string
             - in: query
               name: projectStatuses

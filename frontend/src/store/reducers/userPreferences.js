@@ -4,6 +4,7 @@ const initialState = {
   locale: null,
   mapShown: false,
   projectListView: false,
+  action: 'any',
 };
 
 export function preferencesReducer(state = initialState, action) {
@@ -12,6 +13,12 @@ export function preferencesReducer(state = initialState, action) {
       return {
         ...state,
         locale: action.locale,
+      };
+    }
+    case types.SET_ACTION: {
+      return {
+        ...state,
+        action: action.action,
       };
     }
     case types.TOGGLE_MAP: {

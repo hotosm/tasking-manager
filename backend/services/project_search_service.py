@@ -2,7 +2,7 @@ from flask import current_app
 import math
 import geojson
 from geoalchemy2 import shape
-from sqlalchemy import func, distinct, desc, or_
+from sqlalchemy import func, distinct, desc, or_, and_
 from shapely.geometry import Polygon, box
 from cachetools import TTLCache, cached
 
@@ -22,6 +22,8 @@ from backend.models.postgis.statuses import (
     ProjectPriority,
     UserRole,
     TeamRoles,
+    ValidationPermission,
+    MappingPermission,
 )
 from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.organisation import Organisation
@@ -244,6 +246,11 @@ class ProjectSearchService:
             query = query.filter(
                 Project.mapper_level == MappingLevel[search_dto.mapper_level].value
             )
+        if search_dto.action and search_dto.action != "any":
+            if search_dto.action == "map":
+                query = ProjectSearchService.filter_projects_to_map(query, user)
+            if search_dto.action == "validate":
+                query = ProjectSearchService.filter_projects_to_validate(query, user)
 
         if search_dto.organisation_name:
             query = query.filter(Organisation.name == search_dto.organisation_name)
@@ -349,10 +356,90 @@ class ProjectSearchService:
         return all_results, paginated_results
 
     @staticmethod
+    def filter_by_user_permission(query, user, permission: str):
+        """Filter projects a user can map or validate, based on their permissions."""
+        if user and user.role != UserRole.ADMIN.value:
+            if permission == "validation_permission":
+                permission_class = ValidationPermission
+                team_roles = [
+                    TeamRoles.VALIDATOR.value,
+                    TeamRoles.PROJECT_MANAGER.value,
+                ]
+            else:
+                permission_class = MappingPermission
+                team_roles = [
+                    TeamRoles.MAPPER.value,
+                    TeamRoles.VALIDATOR.value,
+                    TeamRoles.PROJECT_MANAGER.value,
+                ]
+
+            selection = []
+            # get ids of projects assigned to the user's teams
+            [
+                [
+                    selection.append(team_project.project_id)
+                    for team_project in user_team.team.projects
+                    if team_project.project_id not in selection
+                    and team_project.role in team_roles
+                ]
+                for user_team in user.teams
+            ]
+            if user.mapping_level == MappingLevel.BEGINNER.value:
+                # if user is beginner, get only projects with ANY or TEAMS mapping permission
+                # in the later case, only those that are associated with user teams
+                query = query.filter(
+                    or_(
+                        and_(
+                            Project.id.in_(selection),
+                            getattr(Project, permission)
+                            == permission_class.TEAMS.value,
+                        ),
+                        getattr(Project, permission) == permission_class.ANY.value,
+                    )
+                )
+            else:
+                # if user is intermediate or advanced, get projects with ANY or LEVEL permission
+                # and projects associated with user teams
+                query = query.filter(
+                    or_(
+                        Project.id.in_(selection),
+                        getattr(Project, permission).in_(
+                            [
+                                permission_class.ANY.value,
+                                permission_class.LEVEL.value,
+                            ]
+                        ),
+                    )
+                )
+
+        return query
+
+    @staticmethod
+    def filter_projects_to_map(query, user):
+        """Filter projects that needs mapping and can be mapped by the current user."""
+        query = query.filter(
+            Project.tasks_mapped + Project.tasks_validated
+            < Project.total_tasks - Project.tasks_bad_imagery
+        )
+        return ProjectSearchService.filter_by_user_permission(
+            query, user, "mapping_permission"
+        )
+
+    @staticmethod
+    def filter_projects_to_validate(query, user):
+        """Filter projects that needs validation and can be validated by the current user."""
+        query = query.filter(
+            Project.tasks_validated < Project.total_tasks - Project.tasks_bad_imagery
+        )
+        return ProjectSearchService.filter_by_user_permission(
+            query, user, "validation_permission"
+        )
+
+    @staticmethod
     def get_projects_geojson(
         search_bbox_dto: ProjectSearchBBoxDTO,
     ) -> geojson.FeatureCollection:
-        """  search for projects meeting criteria provided return as a geojson feature collection"""
+        """Search for projects meeting the provided criteria. Returns a GeoJSON feature collection."""
 
         # make a polygon from provided bounding box
         polygon = ProjectSearchService._make_4326_polygon_from_bbox(
@@ -394,7 +481,7 @@ class ProjectSearchService:
 
     @staticmethod
     def _get_intersecting_projects(search_polygon: Polygon, author_id: int):
-        """ executes a database query to get the intersecting projects created by the author if provided """
+        """Executes a database query to get the intersecting projects created by the author if provided """
 
         query = db.session.query(
             Project.id,
