@@ -15,6 +15,7 @@ import {
   QuestionCircleIcon,
   ChevronRightIcon,
   ChevronDownIcon,
+  InfoIcon,
 } from '../svgIcons';
 import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
@@ -25,6 +26,8 @@ import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedT
 export function CompletionTabForMapping({
   project,
   tasksIds,
+  showReadCommentsAlert,
+  historyTabSwitch,
   taskInstructions,
   disabled,
   taskComment,
@@ -103,6 +106,14 @@ export function CompletionTabForMapping({
         >
           {(close) => <UnsavedMapChangesModalContent close={close} action={showMapChangesModal} />}
         </Popup>
+      )}
+      {showReadCommentsAlert && (
+        <div class="tc pa2 mb1 bg-grey-light blue-dark pointer" onClick={() => historyTabSwitch()}>
+          <InfoIcon className="v-mid h1 w1" />
+          <span class="ml2 fw1 pa1">
+            <FormattedMessage {...messages.readTaskComments} />
+          </span>
+        </div>
       )}
       <div className="cf">
         {taskInstructions && <TaskSpecificInstructions instructions={taskInstructions} />}

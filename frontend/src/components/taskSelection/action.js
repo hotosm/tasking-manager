@@ -17,6 +17,7 @@ import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
+import useReadTaskComments from '../../hooks/useReadTaskComments';
 import { DueDateBox } from '../projectCard/dueDateBox';
 import {
   CompletionTabForMapping,
@@ -37,6 +38,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [disabled, setDisable] = useState(false);
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
+  const [historyTabChecked, setHistoryTabChecked] = useState(false);
   const intl = useIntl();
 
   const activeTask = activeTasks && activeTasks[0];
@@ -47,9 +49,15 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     `projects/${project.projectId}/tasks/${tasksIds[0]}/`,
     project.projectId && tasksIds && tasksIds.length === 1,
   );
+  const readTaskComments = useReadTaskComments(taskHistory);
 
   const getTaskGpxUrlCallback = useCallback((project, tasks) => getTaskGpxUrl(project, tasks), []);
   const formatImageryUrlCallback = useCallback((imagery) => formatImageryUrl(imagery), []);
+
+  const historyTabSwitch = () => {
+    setHistoryTabChecked(true);
+    setActiveSection('history');
+  };
 
   useEffect(() => {
     if (!editor && projectIsReady && userDetails.defaultEditor && tasks && tasksIds) {
@@ -197,7 +205,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       className={`pb2 pointer truncate ${
                         activeSection === 'history' && 'bb b--blue-dark'
                       }`}
-                      onClick={() => setActiveSection('history')}
+                      onClick={() => historyTabSwitch()}
                     >
                       <FormattedMessage {...messages.history} />
                       {taskHistory &&
@@ -221,6 +229,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       <CompletionTabForMapping
                         project={project}
                         tasksIds={tasksIds}
+                        showReadCommentsAlert={readTaskComments && !historyTabChecked}
+                        historyTabSwitch={historyTabSwitch}
                         taskInstructions={
                           activeTasks && activeTasks.length === 1
                             ? activeTasks[0].perTaskInstructions
