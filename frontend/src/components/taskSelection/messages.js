@@ -305,7 +305,7 @@ export default defineMessages({
   },
   readTaskComments: {
     id: 'project.tasks.readComments',
-    defaultMessage: 'Please check history for relevant task comments.',
+    defaultMessage: 'Please check the history tab for relevant comments.',
   },
   completion: {
     id: 'project.tasks.action.completion',

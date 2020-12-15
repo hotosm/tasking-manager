@@ -572,7 +572,7 @@
   "project.tasks.filter.readyToValidate": "Ready for validation",
   "project.tasks.filter.readyToMap": "Available for mapping",
   "project.tasks.filter.noTasksFound": "No tasks were found.",
-  "project.tasks.readComments": "Please check history for relevant task comments.",
+  "project.tasks.readComments": "Please check the history tab for relevant comments.",
   "project.tasks.action.completion": "Completion",
   "project.tasks.action.history": "History",
   "project.tasks.action.finish_mapping.title": "Once you have finished mapping",
