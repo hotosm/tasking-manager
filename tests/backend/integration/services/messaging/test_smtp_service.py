@@ -56,17 +56,25 @@ class TestStatsService(unittest.TestCase):
 
         for x in range(0, 50):
             self.assertTrue(
-                SMTPService.send_email_alert("hot-test@mailinator.com", "Iain Hunter", True)
+                SMTPService.send_email_alert(
+                    "hot-test@mailinator.com", "Iain Hunter", True
+                )
             )
 
     def test_alert_not_sent_if_email_not_supplied(self):
         self.assertFalse(SMTPService.send_email_alert("", "Iain Hunter", True))
 
     def test_does_not_send_if_user_not_verified(self):
-        self.assertFalse(SMTPService.send_email_alert("hot-test@mailinator.com", "Iain Hunter", False))
+        self.assertFalse(
+            SMTPService.send_email_alert(
+                "hot-test@mailinator.com", "Iain Hunter", False
+            )
+        )
 
     def test_does_send_if_user_verified(self):
-        self.assertTrue(SMTPService.send_email_alert("hot-test@mailinator.com", "Iain Hunter", True))
+        self.assertTrue(
+            SMTPService.send_email_alert("hot-test@mailinator.com", "Iain Hunter", True)
+        )
 
     def test_email_verification_url_generated_correctly(self):
         # Arrange
