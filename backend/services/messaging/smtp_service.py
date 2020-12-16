@@ -49,6 +49,7 @@ class SMTPService:
     def send_email_alert(
         to_address: str,
         username: str,
+        user_email_verified: bool,
         message_id: int,
         from_username: str,
         project_id: int,
@@ -56,7 +57,11 @@ class SMTPService:
         content: str,
         message_type: int,
     ):
-        """Send an email to user to alert that they have a new message"""
+        """Send an email to user to alert that they have a new message."""
+
+        if not user_email_verified:
+            return False
+
         current_app.logger.debug(f"Test if email required {to_address}")
         from_user_link = f"{current_app.config['APP_BASE_URL']}/users/{from_username}"
         project_link = f"{current_app.config['APP_BASE_URL']}/projects/{project_id}"
