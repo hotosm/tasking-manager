@@ -1,6 +1,6 @@
 FROM python:3.8-alpine as base
 LABEL version=0.1
-LABEL maintainer="Yogesh Girikumar <yogesh.girikumar@hotosm.org>"
+LABEL maintainer="HOT Sysadmin <sysadmin@hotosm.org>"
 LABEL description="Builds backend docker image"
 
 WORKDIR /usr/src/app
