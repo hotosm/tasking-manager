@@ -222,7 +222,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                   )}
                 </div>
               </div>
-              <div className="pt3">
+              <div className="pt1">
                 {activeSection === 'completion' && (
                   <>
                     {action === 'MAPPING' && (
@@ -308,6 +308,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                     projectId={project.projectId}
                     taskId={tasksIds[0]}
                     commentPayload={taskHistory}
+                    mapperLevel={userDetails['mappingLevel']}
                   />
                 )}
               </div>

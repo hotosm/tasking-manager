@@ -20,6 +20,7 @@ import { ID_EDITOR_URL } from '../../config';
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { CommentInputField } from '../comments/commentInput';
+import { CheckBoxInput } from '../formInputs';
 
 const PostComment = ({ projectId, taskId, setCommentPayload }) => {
   const token = useSelector((state) => state.auth.get('token'));
@@ -59,21 +60,30 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
   );
 };
 
-export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
+export const TaskHistory = ({ projectId, taskId, commentPayload, mapperLevel }) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [history, setHistory] = useState([]);
+  const [showTaskComments, setShowTaskComments] = useState(false);
+  const [taskComments, setTaskComments] = useState([]);
+  const [showTaskChanges, setShowTaskChanges] = useState(false);
+  const [taskChanges, setTaskChanges] = useState([]);
+  const [shownHistory, setShownHistory] = useState([]);
 
   useEffect(() => {
     if (commentPayload) {
       setHistory(commentPayload.taskHistory);
+      setTaskComments(commentPayload.taskHistory.filter((t) => t.action === 'COMMENT'));
+      setTaskChanges(commentPayload.taskHistory.filter((t) => t.action !== 'COMMENT'));
     }
   }, [commentPayload]);
 
   const getTaskInfo = useCallback(
     (projectId, taskId, token) =>
-      fetchLocalJSONAPI(`projects/${projectId}/tasks/${taskId}/`, token).then((res) =>
-        setHistory(res.taskHistory),
-      ),
+      fetchLocalJSONAPI(`projects/${projectId}/tasks/${taskId}/`, token).then((res) => {
+        setHistory(res.taskHistory);
+        setTaskComments(res.taskHistory.filter((t) => t.action === 'COMMENT'));
+        setTaskChanges(res.taskHistory.filter((t) => t.action !== 'COMMENT'));
+      }),
     [],
   );
 
@@ -82,6 +92,23 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
       getTaskInfo(projectId, taskId, token);
     }
   }, [projectId, taskId, token, commentPayload, getTaskInfo]);
+
+  useEffect(() => {
+    // automatically show comments for beginner mappers
+    if (mapperLevel === 'BEGINNER') {
+      setShowTaskComments(true);
+    }
+
+    if (showTaskComments && showTaskChanges) {
+      setShownHistory(history);
+    } else if (showTaskComments) {
+      setShownHistory(taskComments);
+    } else if (showTaskChanges) {
+      setShownHistory(taskChanges);
+    } else {
+      setShownHistory(history);
+    }
+  }, [mapperLevel, showTaskComments, showTaskChanges, taskComments, taskChanges, history]);
 
   const getTaskActionMessage = (action, actionText) => {
     let message = '';
@@ -137,32 +164,56 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
   if (!history) {
     return null;
   } else {
-    return history.map((t, n) => (
-      <div className="w-90 mh3 pv3 bb b--grey-light f6 cf" key={n}>
-        <div className="fl w-10-ns w-100 mr2 tr">
-          <UserAvatar
-            username={t.actionBy}
-            picture={t.pictureUrl}
-            colorClasses="white bg-blue-grey"
-          />
+    return (
+      <>
+        <div className="pb4" aria-label="view task history options">
+          <div className="pt1 fl" aria-labelledby="comments">
+            <CheckBoxInput
+              isActive={showTaskComments}
+              changeState={() => setShowTaskComments(!showTaskComments)}
+            />
+          </div>
+          <span className="fl pt2 mr1 ph2" id="comments">
+            <FormattedMessage {...messages.taskComments} />
+          </span>
+          <div className="pt1 fl" aria-labelledby="changes">
+            <CheckBoxInput
+              isActive={showTaskChanges}
+              changeState={() => setShowTaskChanges(!showTaskChanges)}
+            />
+          </div>
+          <span className="fl pt2 mr1 ph2" id="changes">
+            <FormattedMessage {...messages.taskStateChanges} />
+          </span>
         </div>
-        <div className="w-80-ns w-100 fl">
-          <p className="ma0 pt2">
-            <a href={'/users/' + t.actionBy} className="blue-dark b underline">
-              {t.actionBy}
-            </a>{' '}
-            {getTaskActionMessage(t.action, t.actionText)}{' '}
-            <RelativeTimeWithUnit date={t.actionDate} />
-          </p>
-          {t.action === 'COMMENT' ? (
-            <p
-              className="ma0 mt2 blue-grey markdown-content"
-              dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(t.actionText))}
-            ></p>
-          ) : null}
-        </div>
-      </div>
-    ));
+        {shownHistory.map((t, n) => (
+          <div className="w-90 mh3 pv3 bb b--grey-light f6 cf" key={n}>
+            <div className="fl w-10-ns w-100 mr2 tr">
+              <UserAvatar
+                username={t.actionBy}
+                picture={t.pictureUrl}
+                colorClasses="white bg-blue-grey"
+              />
+            </div>
+            <div className="w-80-ns w-100 fl">
+              <p className="ma0 pt2">
+                <a href={'/users/' + t.actionBy} className="blue-dark b underline">
+                  {t.actionBy}
+                </a>{' '}
+                {getTaskActionMessage(t.action, t.actionText)}{' '}
+                <RelativeTimeWithUnit date={t.actionDate} />
+              </p>
+              {t.action === 'COMMENT' ? (
+                <p
+                  className="ma0 mt2 blue-grey markdown-content"
+                  dangerouslySetInnerHTML={htmlFromMarkdown(formatUserNamesToLink(t.actionText))}
+                ></p>
+              ) : null}
+            </div>
+          </div>
+        ))}
+      </>
+    );
   }
 };
 
