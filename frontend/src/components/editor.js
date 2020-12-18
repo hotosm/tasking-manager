@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as iD from '@hotosm/id';
 import '@hotosm/id/dist/iD.css';
@@ -10,7 +10,25 @@ export default function Editor({ setDisable, comment, presets, imageryUrl, gpxUr
   const session = useSelector((state) => state.auth.get('session'));
   const iDContext = useSelector((state) => state.editor.context);
   const locale = useSelector((state) => state.preferences.locale);
+  const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
   const windowInit = typeof window !== undefined;
+
+  useEffect(() => {
+    if (
+      !customImageryIsSet &&
+      imageryUrl &&
+      iDContext &&
+      iDContext.background() &&
+      iDContext.background().findSource('custom')
+    ) {
+      iDContext
+        .background()
+        .baseLayerSource(iDContext.background().findSource('custom').template(imageryUrl));
+      setCustomImageryIsSet(true);
+      // this line is needed to update the value on the custom background dialog
+      window.iD.prefs('background-custom-template', imageryUrl);
+    }
+  }, [customImageryIsSet, imageryUrl, iDContext]);
 
   useEffect(() => {
     return () => {
@@ -62,15 +80,6 @@ export default function Editor({ setDisable, comment, presets, imageryUrl, gpxUr
       } else {
         iDContext.init();
       }
-      if (imageryUrl) {
-        let background = iDContext.background();
-        const backgroundSource = background.findSource('custom');
-        if (backgroundSource) {
-          background.baseLayerSource(backgroundSource.template(imageryUrl));
-          // this line is needed to update the value on the custom background dialog
-          window.iD.prefs('background-custom-template', imageryUrl);
-        }
-      }
       if (gpxUrl) {
         iDContext.layers().layer('data').url(gpxUrl, '.gpx');
       }
@@ -96,7 +105,7 @@ export default function Editor({ setDisable, comment, presets, imageryUrl, gpxUr
         }
       });
     }
-  }, [session, iDContext, setDisable, presets, locale, imageryUrl, gpxUrl]);
+  }, [session, iDContext, setDisable, presets, locale, gpxUrl]);
 
   return <div className="w-100 vh-minus-77-ns" id="id-container"></div>;
 }
