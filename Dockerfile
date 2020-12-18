@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 
 FROM base as builder
 
-# Setup backend build dependencies
+# Setup backend build-time dependencies
 RUN apk update && \
     apk add \
         postgresql-dev \
@@ -28,6 +28,7 @@ RUN pip install \
     --no-warn-script-location \
     -r requirements.txt
 
+# Setup backend runtime dependencies
 FROM base
 
 RUN apk update && \
