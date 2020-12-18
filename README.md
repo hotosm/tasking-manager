@@ -1,5 +1,7 @@
 # Tasking Manager
 
+[![TM Backend on Quay](https://quay.io/repository/hotosm/tasking-manager/status "Tasking Manager Backend Build")](https://quay.io/repository/hotosm/tasking-manager)
+
 The most popular tool for teams to coordinate mapping on OpenStreetMap.
 
 [<img src="screenshot.jpg" />](./screenshot.jpg)
