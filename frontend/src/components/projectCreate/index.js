@@ -336,14 +336,10 @@ const ProjectCreate = (props) => {
       </div>
       <div className="w-70-l w-100 h-100-l h-50 pt3 pt0-l fr relative">
         <ProjectCreationMap
-          metadata={metadata}
-          updateMetadata={updateMetadata}
           mapObj={mapObj}
           setMapObj={setMapObj}
-          setDataGeom={setDataGeom}
-          deleteHandler={deleteHandler}
-          step={step}
           uploadFile={uploadFile}
+          step={step}
         />
       <div className="cf absolute" style={{ bottom: '3.5rem', left: '0.6rem' }}>
           <p

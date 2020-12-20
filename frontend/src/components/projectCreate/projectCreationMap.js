@@ -53,7 +53,7 @@ const BasemapMenu = ({ map }) => {
   );
 };
 
-const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step, uploadFile }) => {
+const ProjectCreationMap = ({ mapObj, setMapObj,uploadFile, step }) => {
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const { getRootProps, getInputProps } = useDropzone({
