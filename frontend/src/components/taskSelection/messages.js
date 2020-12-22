@@ -315,6 +315,14 @@ export default defineMessages({
     id: 'project.tasks.action.history',
     defaultMessage: 'History',
   },
+  taskComments: {
+    id: 'project.tasks.history.comments',
+    defaultMessage: 'Comments',
+  },
+  taskStateChanges: {
+    id: 'project.tasks.history.stateChanges',
+    defaultMessage: 'Activities',
+  },
   finishMappingTitle: {
     id: 'project.tasks.action.finish_mapping.title',
     defaultMessage: 'Once you have finished mapping',
