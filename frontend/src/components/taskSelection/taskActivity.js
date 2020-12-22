@@ -162,7 +162,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload, mapperLevel }) 
   } else {
     return (
       <>
-        <div className="ml3 pl1 pb4" aria-label="view task history options">
+        <div className="ml3 pl1 pb4 blue-dark" aria-label="view task history options">
           <div className="pt1 fl" aria-labelledby="comments">
             <CheckBoxInput
               isActive={showTaskComments}
@@ -183,7 +183,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload, mapperLevel }) 
           </span>
         </div>
         {shownHistory.map((t, n) => (
-          <div className="w-90 mh3 pv3 bb b--grey-light f6 cf" key={n}>
+          <div className="w-90 mh3 pv3 bb b--grey-light f6 cf blue-dark" key={n}>
             <div className="fl w-10-ns w-100 mr2 tr">
               <UserAvatar
                 username={t.actionBy}
