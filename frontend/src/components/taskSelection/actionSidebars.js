@@ -108,9 +108,12 @@ export function CompletionTabForMapping({
         </Popup>
       )}
       {showReadCommentsAlert && (
-        <div class="tc pa2 mb1 bg-grey-light blue-dark pointer" onClick={() => historyTabSwitch()}>
+        <div
+          className="tc pa2 mb1 bg-grey-light blue-dark pointer"
+          onClick={() => historyTabSwitch()}
+        >
           <InfoIcon className="v-mid h1 w1" />
-          <span class="ml2 fw1 pa1">
+          <span className="ml2 fw1 pa1">
             <FormattedMessage {...messages.readTaskComments} />
           </span>
         </div>
