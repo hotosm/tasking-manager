@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "Slutförande",
   "project.tasks.action.history": "Historia",
+  "project.tasks.history.comments": "Kommentarer",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "När du är klar med kartläggningen",
   "project.tasks.action.instructions.select_task": "Välj ett av alternativen nedan som matchar din redigeringsstatus",
   "project.input.placeholder.write_comment": "Skriv en kommentar",

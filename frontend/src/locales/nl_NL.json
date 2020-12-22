@@ -578,6 +578,8 @@
   "project.tasks.readComments": "Bekijk de tab Geschiedenis voor relevante opmerkingen.",
   "project.tasks.action.completion": "Voltooiïng",
   "project.tasks.action.history": "Geschiedenis",
+  "project.tasks.history.comments": "Opmerkingen",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "Als u eenmaal gereed bent met in kaart brengen",
   "project.tasks.action.instructions.select_task": "Selecteer een van de opties hieronder die overeenkomt met uw status voor bewerken",
   "project.input.placeholder.write_comment": "Plaats een opmerking",

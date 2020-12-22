@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "Tamamlanma",
   "project.tasks.action.history": "Geçmiş",
+  "project.tasks.history.comments": "Yorumlar",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "Haritalamayı bitirdikten sonra",
   "project.tasks.action.instructions.select_task": "Düzenleme durumunuzla eşleşen seçeneklerden birini seçin",
   "project.input.placeholder.write_comment": "Bir yorum yaz",

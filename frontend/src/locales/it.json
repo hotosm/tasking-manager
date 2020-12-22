@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "Completamento",
   "project.tasks.action.history": "Storico",
+  "project.tasks.history.comments": "Commenti",
+  "project.tasks.history.stateChanges": "Attività",
   "project.tasks.action.finish_mapping.title": "Quando hai finito la mappatura",
   "project.tasks.action.instructions.select_task": "",
   "project.input.placeholder.write_comment": "Scrivi un commento",

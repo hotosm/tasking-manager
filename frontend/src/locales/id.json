@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "Sudah dipetakan",
   "project.tasks.action.history": "Riwayat",
+  "project.tasks.history.comments": "Komentar",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "Ketika Anda selesai memetakan",
   "project.tasks.action.instructions.select_task": "Pilih salah satu dari opsi di bawah yang sesuai dengan status pengeditan Anda",
   "project.input.placeholder.write_comment": "Tulis komentar",

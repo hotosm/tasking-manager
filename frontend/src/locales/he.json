@@ -578,6 +578,8 @@
   "project.tasks.readComments": "נא לבדוק את לשונית ההיסטוריה לאיתור תגובות תואמות.",
   "project.tasks.action.completion": "השלמה",
   "project.tasks.action.history": "היסטוריה",
+  "project.tasks.history.comments": "הערות",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "לאחר שסיימת למפות",
   "project.tasks.action.instructions.select_task": "נא לבחור את אחת המשימות שלהלן שתואמת את מצב העריכה שלך",
   "project.input.placeholder.write_comment": "כתיבת הערה",

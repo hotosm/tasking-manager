@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "",
   "project.tasks.action.history": "",
+  "project.tasks.history.comments": "備註",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "",
   "project.tasks.action.instructions.select_task": "",
   "project.input.placeholder.write_comment": "",
