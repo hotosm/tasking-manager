@@ -63,9 +63,10 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
 export const TaskHistory = ({ projectId, taskId, commentPayload, mapperLevel }) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [history, setHistory] = useState([]);
-  const [showTaskComments, setShowTaskComments] = useState(false);
+  const taskChangeSetting = mapperLevel === 'BEGINNER' ? false : true;
+  const [showTaskComments, setShowTaskComments] = useState(true);
   const [taskComments, setTaskComments] = useState([]);
-  const [showTaskChanges, setShowTaskChanges] = useState(false);
+  const [showTaskChanges, setShowTaskChanges] = useState(taskChangeSetting);
   const [taskChanges, setTaskChanges] = useState([]);
   const [shownHistory, setShownHistory] = useState([]);
 
@@ -94,11 +95,6 @@ export const TaskHistory = ({ projectId, taskId, commentPayload, mapperLevel }) 
   }, [projectId, taskId, token, commentPayload, getTaskInfo]);
 
   useEffect(() => {
-    // automatically show comments for beginner mappers
-    if (mapperLevel === 'BEGINNER') {
-      setShowTaskComments(true);
-    }
-
     if (showTaskComments && showTaskChanges) {
       setShownHistory(history);
     } else if (showTaskComments) {
@@ -166,7 +162,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload, mapperLevel }) 
   } else {
     return (
       <>
-        <div className="pb4" aria-label="view task history options">
+        <div className="ml3 pl1 pb4" aria-label="view task history options">
           <div className="pt1 fl" aria-labelledby="comments">
             <CheckBoxInput
               isActive={showTaskComments}

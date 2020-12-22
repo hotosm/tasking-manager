@@ -321,7 +321,7 @@ export default defineMessages({
   },
   taskStateChanges: {
     id: 'project.tasks.history.stateChanges',
-    defaultMessage: 'Task Changes',
+    defaultMessage: 'Activities',
   },
   finishMappingTitle: {
     id: 'project.tasks.action.finish_mapping.title',
