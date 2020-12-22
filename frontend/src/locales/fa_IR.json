@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "تکمیل",
   "project.tasks.action.history": "تاریخچه",
+  "project.tasks.history.comments": "نظر",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "",
   "project.tasks.action.instructions.select_task": "",
   "project.input.placeholder.write_comment": "",

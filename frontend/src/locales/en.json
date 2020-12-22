@@ -578,6 +578,8 @@
   "project.tasks.readComments": "Please check the history tab for relevant comments.",
   "project.tasks.action.completion": "Completion",
   "project.tasks.action.history": "History",
+  "project.tasks.history.comments": "Comments",
+  "project.tasks.history.stateChanges": "Activities",
   "project.tasks.action.finish_mapping.title": "Once you have finished mapping",
   "project.tasks.action.instructions.select_task": "Select one of the options below that matches your edit status",
   "project.input.placeholder.write_comment": "Write a comment",

@@ -578,6 +578,8 @@
   "project.tasks.readComments": "Por favor, verifique a guia Histórico e leia os comentários.",
   "project.tasks.action.completion": "Atualização",
   "project.tasks.action.history": "Histórico",
+  "project.tasks.history.comments": "Comentários",
+  "project.tasks.history.stateChanges": "Atividades",
   "project.tasks.action.finish_mapping.title": "Depois de terminar o mapeamento",
   "project.tasks.action.instructions.select_task": "Selecione uma das opções abaixo que corresponda ao seu status de edição",
   "project.input.placeholder.write_comment": "Escreva um cometário",

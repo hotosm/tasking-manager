@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "Erfüllungsgrad",
   "project.tasks.action.history": "Verlauf",
+  "project.tasks.history.comments": "Kommentare",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "Sobald Sie die Kartierung abgeschlossen haben",
   "project.tasks.action.instructions.select_task": "Wählen Sie eine der folgenden Optionen aus, die Ihrem Bearbeitungsstatus entspricht.",
   "project.input.placeholder.write_comment": "Schreiben Sie einen Kommentar",

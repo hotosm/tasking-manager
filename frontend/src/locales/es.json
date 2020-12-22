@@ -578,6 +578,8 @@
   "project.tasks.readComments": "Por favor, compruebe la pestaña Historial para ver los comentarios relevantes.",
   "project.tasks.action.completion": "Terminación",
   "project.tasks.action.history": "Historial",
+  "project.tasks.history.comments": "Comentarios",
+  "project.tasks.history.stateChanges": "Actividades",
   "project.tasks.action.finish_mapping.title": "Una vez que haya terminado de mapear",
   "project.tasks.action.instructions.select_task": "Seleccione una de las siguientes opciones que coincida con su estado de edición",
   "project.input.placeholder.write_comment": "Escribir un comentario",

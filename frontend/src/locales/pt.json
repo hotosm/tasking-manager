@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "Finalização",
   "project.tasks.action.history": "Histórico",
+  "project.tasks.history.comments": "Comentários",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "Quando terminares de mapear",
   "project.tasks.action.instructions.select_task": "Seleciona uma das opções em baixo que corresponda ao teu estado de edição",
   "project.input.placeholder.write_comment": "Escrever um comentário",

@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "完了",
   "project.tasks.action.history": "履歴",
+  "project.tasks.history.comments": "コメント",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "マッピングが完了したら、",
   "project.tasks.action.instructions.select_task": "編集のステータスに一致するオプションを 1 つ選択します。",
   "project.input.placeholder.write_comment": "コメントを書く",

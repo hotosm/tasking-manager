@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "Dokončení",
   "project.tasks.action.history": "Historie",
+  "project.tasks.history.comments": "Komentáře",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "Jakmile skončíte s mapováním",
   "project.tasks.action.instructions.select_task": "Vyberte jednu z možností uvedených níže, která odpovídá stavu vašich úprav",
   "project.input.placeholder.write_comment": "Napsat komentář",

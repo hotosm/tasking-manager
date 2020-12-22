@@ -578,6 +578,8 @@
   "project.tasks.readComments": "",
   "project.tasks.action.completion": "Ολοκλήρωση",
   "project.tasks.action.history": "Ιστορικό",
+  "project.tasks.history.comments": "Σχόλια",
+  "project.tasks.history.stateChanges": "",
   "project.tasks.action.finish_mapping.title": "Εφόσον έχετε ολοκληρώσει τη χαρτογράφηση",
   "project.tasks.action.instructions.select_task": "Ορίστε μία από τις παρακάτω επιλογές που ταιριάζει με την κατάσταση επεξεργασίας σας",
   "project.input.placeholder.write_comment": "Γράψτε ένα σχόλιο",
