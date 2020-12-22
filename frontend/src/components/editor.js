@@ -12,23 +12,17 @@ export default function Editor({ setDisable, comment, presets, imageryUrl, gpxUr
   const locale = useSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);
   const windowInit = typeof window !== undefined;
+  const customSource =
+    iDContext && iDContext.background() && iDContext.background().findSource('custom');
 
   useEffect(() => {
-    if (
-      !customImageryIsSet &&
-      imageryUrl &&
-      iDContext &&
-      iDContext.background() &&
-      iDContext.background().findSource('custom')
-    ) {
-      iDContext
-        .background()
-        .baseLayerSource(iDContext.background().findSource('custom').template(imageryUrl));
+    if (!customImageryIsSet && imageryUrl && customSource) {
+      iDContext.background().baseLayerSource(customSource.template(imageryUrl));
       setCustomImageryIsSet(true);
       // this line is needed to update the value on the custom background dialog
       window.iD.prefs('background-custom-template', imageryUrl);
     }
-  }, [customImageryIsSet, imageryUrl, iDContext]);
+  }, [customImageryIsSet, imageryUrl, iDContext, customSource]);
 
   useEffect(() => {
     return () => {
