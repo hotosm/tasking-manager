@@ -147,168 +147,416 @@ const Conditions = {
 };
 
 const Resources = {
-  TaskingManagerASG: {
-    DependsOn: 'TaskingManagerLaunchConfiguration',
-    Type: 'AWS::AutoScaling::AutoScalingGroup',
+  // TaskingManagerASG: {
+  //   DependsOn: 'TaskingManagerLaunchConfiguration',
+  //   Type: 'AWS::AutoScaling::AutoScalingGroup',
+  //   Properties: {
+  //     AutoScalingGroupName: cf.stackName,
+  //     Cooldown: 300,
+  //     MinSize: cf.if('IsTaskingManagerProduction', 3, 1),
+  //     DesiredCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
+  //     MaxSize: cf.if('IsTaskingManagerProduction', 9, cf.if('IsTaskingManagerDemo', 3, 1)),
+  //     HealthCheckGracePeriod: 600,
+  //     LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
+  //     TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
+  //     HealthCheckType: 'EC2',
+  //     AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f'],
+  //     Tags: [{
+  //       Key: 'Name',
+  //       PropagateAtLaunch: true,
+  //       Value: cf.stackName
+  //     }]
+  //   },
+  //   UpdatePolicy: {
+  //     AutoScalingRollingUpdate: {
+  //       PauseTime: 'PT60M',
+  //       MaxBatchSize: 2,
+  //       WaitOnResourceSignals: true
+  //     }
+  //   }
+  // },
+  // TaskingManagerScaleUp: {
+  //     Type: "AWS::AutoScaling::ScalingPolicy",
+  //     Properties: {
+  //       AutoScalingGroupName: cf.ref('TaskingManagerASG'),
+  //       PolicyType: 'TargetTrackingScaling',
+  //       TargetTrackingConfiguration: {
+  //         TargetValue: 500,
+  //         PredefinedMetricSpecification: {
+  //           PredefinedMetricType: 'ALBRequestCountPerTarget',
+  //           ResourceLabel: cf.join('/', [
+  //             cf.select(1,
+  //               cf.split('loadbalancer/',
+  //                 cf.select(5,
+  //                   cf.split(':', cf.ref("TaskingManagerLoadBalancer"))
+  //                 )
+  //               )
+  //             ),
+  //             cf.select(5,
+  //               cf.split(':', cf.ref("TaskingManagerTargetGroup"))
+  //             )
+  //           ])
+  //         }
+  //       },
+  //       Cooldown: 300
+  //     }
+  // },
+  // TaskingManagerLaunchConfiguration: {
+  //   Type: "AWS::AutoScaling::LaunchConfiguration",
+  //   Metadata: {
+  //     "AWS::CloudFormation::Init": {
+  //       "configSets": {
+  //         "default": [
+  //           "01_setupCfnHup",
+  //           "02_config-amazon-cloudwatch-agent",
+  //           "03_restart_amazon-cloudwatch-agent"
+  //         ],
+  //         "UpdateEnvironment": [
+  //           "02_config-amazon-cloudwatch-agent",
+  //           "03_restart_amazon-cloudwatch-agent"
+  //           ]
+  //       },
+  //       // Definition of json configuration of AmazonCloudWatchAgent, you can change the configuration below.
+  //       "02_config-amazon-cloudwatch-agent": {
+  //         "files": {
+  //           '/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json': {
+  //             "content": cf.join("\n", [
+  //                 "{\"logs\": {",
+  //                 "\"logs_collected\": {",
+  //                 "\"files\": {",
+  //                 "\"collect_list\": [",
+  //                 "{",
+  //                 "\"file_path\": \"/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log\",",
+  //                 cf.sub("\"log_group_name\": \"${AWS::StackName}.log\","),
+  //                 cf.sub("\"log_stream_name\": \"${AWS::StackName}-cloudwatch-agent.log\","),
+  //                 "\"timezone\": \"UTC\"",
+  //                 "},",
+  //                 "{",
+  //                 cf.sub("\"file_path\": \"${TaskingManagerLogDirectory}/tasking-manager.log\","),
+  //                 cf.sub("\"log_group_name\": \"${AWS::StackName}.log\","),
+  //                 cf.sub("\"log_stream_name\": \"${AWS::StackName}.log\","),
+  //                 "\"timezone\": \"UTC\"",
+  //                 "},",
+  //                 "{",
+  //                 cf.sub("\"file_path\": \"${TaskingManagerLogDirectory}/gunicorn-access.log\","),
+  //                 cf.sub("\"log_group_name\": \"${AWS::StackName}.log\","),
+  //                 cf.sub("\"log_stream_name\": \"${AWS::StackName}-gunicorn.log\","),
+  //                 "\"timezone\": \"UTC\"",
+  //                 "}]}},",
+  //                 cf.sub("\"log_stream_name\": \"${AWS::StackName}-logs\","),
+  //                 "\"force_flush_interval\" : 15",
+  //                 "}}"
+  //             ])
+  //           }
+  //         }
+  //       },
+  //       // Invoke amazon-cloudwatch-agent-ctl to restart the AmazonCloudWatchAgent.
+  //       "03_restart_amazon-cloudwatch-agent": {
+  //         "commands": {
+  //           "01_stop_service": {
+  //             "command": "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a stop"
+  //           },
+  //           "02_start_service": {
+  //             "command": "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s"
+  //           }
+  //         }
+  //       },
+  //       // Cfn-hup setting, it is to monitor the change of metadata.
+  //       // When there is change in the contents of json file in the metadata section, cfn-hup will call cfn-init to restart the AmazonCloudWatchAgent.
+  //       "01_setupCfnHup": {
+  //         "files": {
+  //           "/etc/cfn/cfn-hup.conf": {
+  //             "content": cf.join('\n', [
+  //               "[main]",
+  //               cf.sub("stack=${!AWS::StackName}"),
+  //               cf.sub("region=${!AWS::Region}"),
+  //               "interval=1"
+  //             ]),
+  //             "mode": "000400",
+  //             "owner": "root",
+  //             "group": "root"
+  //           },
+  //           "/etc/cfn/hooks.d/amazon-cloudwatch-agent-auto-reloader.conf": {
+  //             "content": cf.join('\n', [
+  //               "[cfn-auto-reloader-hook]",
+  //               "triggers=post.update",
+  //               "path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init.02_config-amazon-cloudwatch-agent",
+  //               cf.sub("action=cfn-init -v --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region} --configsets UpdateEnvironment"),
+  //               "runas=root"
+  //             ]),
+  //             "mode": "000400",
+  //             "owner": "root",
+  //             "group": "root"
+  //           },
+  //           "/lib/systemd/system/cfn-hup.service": {
+  //             "content": cf.join('\n', [
+  //               "[Unit]",
+  //               "Description=cfn-hup daemon",
+  //               "[Service]",
+  //               "Type=simple",
+  //               "ExecStart=/opt/aws/bin/cfn-hup",
+  //               "Restart=always",
+  //               "[Install]",
+  //               "WantedBy=multi-user.target"
+  //               ])
+  //           }
+  //         },
+  //         "commands": {
+  //           "01enable_cfn_hup": {
+  //           "command": "systemctl enable cfn-hup.service"
+  //           },
+  //           "02start_cfn_hup": {
+  //             "command": "systemctl start cfn-hup.service"
+  //           }
+  //         }
+  //       }
+  //     }
+  //   },
+  //   Properties: {
+  //     IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
+  //     ImageId: 'ami-0565af6e282977273',
+  //     InstanceType: 'c5d.large',
+  //     SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
+  //     UserData: cf.userData([
+  //       '#!/bin/bash',
+  //       'set -x',
+  //       'export DEBIAN_FRONTEND=noninteractive',
+  //       'export LC_ALL="en_US.UTF-8"',
+  //       'export LC_CTYPE="en_US.UTF-8"',
+  //       'dpkg-reconfigure --frontend=noninteractive locales',
+  //       'sudo apt-get -y update',
+  //       'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
+  //       'sudo add-apt-repository ppa:deadsnakes/ppa -y',
+  //       'sudo apt-get update',
+  //       'sudo apt-get -y install python3.6',
+  //       'sudo apt-get -y install python3.6-dev',
+  //       'sudo apt-get -y install python3.6-venv',
+  //       'sudo apt-get -y install curl',
+  //       'wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -',
+  //       'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
+  //       'sudo apt-get update -y',
+  //       'sudo apt-get install -y postgresql-11',
+  //       'sudo apt-get -y install postgresql-11-postgis',
+  //       'sudo apt-get -y install postgresql-11-postgis-scripts',
+  //       'sudo apt-get -y install postgis',
+  //       'sudo apt-get -y install libpq-dev',
+  //       'sudo apt-get -y install libxml2',
+  //       'sudo apt-get -y install wget libxml2-dev',
+  //       'sudo apt-get -y install libgeos-3.5.0',
+  //       'sudo apt-get -y install libgeos-dev',
+  //       'sudo apt-get -y install libproj9',
+  //       'sudo apt-get -y install libproj-dev',
+  //       'sudo apt-get -y install python-pip libgdal1-dev',
+  //       'sudo apt-get -y install libjson-c-dev',
+  //       'sudo apt-get -y install git',
+  //       'sudo apt-get -y install awscli',
+  //       'sudo apt-get -y install ruby',
+  //       'pushd /home/ubuntu',
+  //       'wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install',
+  //       'chmod +x ./install && sudo ./install auto',
+  //       'sudo systemctl start codedeploy-agent',
+  //       'popd',
+  //       'git clone --recursive https://github.com/hotosm/tasking-manager.git',
+  //       'cd tasking-manager/',
+  //       cf.sub('git reset --hard ${GitSha}'),
+  //       'python3.6 -m venv ./venv',
+  //       '. ./venv/bin/activate',
+  //       'pip install --upgrade pip',
+  //       'pip install -r requirements.txt',
+  //       'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf',
+  //       'export LC_ALL=C',
+  //       'wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
+  //       'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
+  //       'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz',
+  //       'pip2 install aws-cfn-bootstrap-latest.tar.gz',
+  //       'echo "Exporting environment variables:"',
+  //       cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
+  //       cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
+  //       cf.sub('export POSTGRES_DB=${PostgresDB}'),
+  //       cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
+  //       cf.sub('export POSTGRES_USER="${PostgresUser}"'),
+  //       cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
+  //       cf.sub('export TM_ENVIRONMENT="${AWS::StackName}"'),
+  //       cf.sub('export TM_CONSUMER_KEY="${TaskingManagerConsumerKey}"'),
+  //       cf.sub('export TM_CONSUMER_SECRET="${TaskingManagerConsumerSecret}"'),
+  //       cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
+  //       cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
+  //       cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
+  //       cf.sub('export TM_SMTP_PORT="${TaskingManagerSMTPPort}"'),
+  //       cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
+  //       cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
+  //       cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
+  //       cf.sub('export TM_EMAIL_CONTACT_ADDRESS="${TaskingManagerEmailContactAddress}"'),
+  //       cf.sub('export TM_LOG_LEVEL="${TaskingManagerLogLevel}"'),
+  //       cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
+  //       cf.sub('export TM_ORG_NAME="${TaskingManagerOrgName}"'),
+  //       cf.sub('export TM_ORG_CODE="${TaskingManagerOrgCode}"'),
+  //       cf.sub('export TM_IMAGE_UPLOAD_API_URL="${TaskingManagerImageUploadAPIURL}"'),
+  //       cf.sub('export TM_IMAGE_UPLOAD_API_KEY="${TaskingManagerImageUploadAPIKey}"'),
+  //       'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
+  //       cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
+  //       './venv/bin/python3.6 manage.py db upgrade',
+  //       'echo "------------------------------------------------------------"',
+  //       cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
+  //       cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
+  //       'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
+  //       cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
+  //       cf.sub('sudo cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
+  //       cf.sub('cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
+  //     ]),
+  //     KeyName: 'mbtiles'
+  //   }
+  // },
+  // TaskingManagerEC2Role: {
+  //   Type: 'AWS::IAM::Role',
+  //   Properties: {
+  //     AssumeRolePolicyDocument: {
+  //       Version: "2012-10-17",
+  //       Statement: [{
+  //         Effect: "Allow",
+  //         Principal: {
+  //            Service: [ "ec2.amazonaws.com" ]
+  //         },
+  //         Action: [ "sts:AssumeRole" ]
+  //       }]
+  //     },
+  //     ManagedPolicyArns: [
+  //         'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy',
+  //         'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy',
+  //         'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
+  //     ],
+  //     Policies: [{
+  //       PolicyName: "RDSPolicy",
+  //       PolicyDocument: {
+  //         Version: "2012-10-17",
+  //         Statement:[{
+  //           Action: ['rds:DescribeDBInstances'],
+  //           Effect: 'Allow',
+  //           Resource: ['arn:aws:rds:*']
+  //         }]
+  //       }
+  //     }, {
+  //       PolicyName: "CloudFormationPermissions",
+  //       PolicyDocument: {
+  //         Version: "2012-10-17",
+  //         Statement:[{
+  //           Action: [
+  //             'cloudformation:SignalResource',
+  //             'cloudformation:DescribeStackResource'
+  //           ],
+  //           Effect: 'Allow',
+  //           Resource: ['arn:aws:cloudformation:*']
+  //         }]
+  //       }
+  //     }
+  //     ],
+  //     RoleName: cf.join('-', [cf.stackName, 'ec2', 'role'])
+  //   }
+  // },
+  // TaskingManagerDatabaseDumpAccessRole: {
+  //   Condition: 'DatabaseDumpFileGiven',
+  //   Type: 'AWS::IAM::Role',
+  //   Properties: {
+  //     AssumeRolePolicyDocument: {
+  //       Version: "2012-10-17",
+  //       Statement: [{
+  //         Effect: "Allow",
+  //         Principal: {
+  //            Service: [ "ec2.amazonaws.com" ]
+  //         },
+  //         Action: [ "sts:AssumeRole" ]
+  //       }]
+  //     },
+  //     Policies: [{
+  //       PolicyName: "RDSPolicy",
+  //       PolicyDocument: {
+  //         Version: "2012-10-17",
+  //         Statement:[{
+  //           Action: ['rds:DescribeDBInstances'],
+  //           Effect: 'Allow',
+  //           Resource: ['arn:aws:rds:*']
+  //         }]
+  //       }
+  //     }, {
+  //       PolicyName: "CloudFormationPermissions",
+  //       PolicyDocument: {
+  //         Version: "2012-10-17",
+  //         Statement:[{
+  //           Action: [
+  //             'cloudformation:SignalResource',
+  //             'cloudformation:DescribeStackResource'
+  //           ],
+  //           Effect: 'Allow',
+  //           Resource: ['arn:aws:cloudformation:*']
+  //         }]
+  //       }
+  //     }, {
+  //       PolicyName: "AccessToDatabaseDump",
+  //       PolicyDocument: {
+  //         Version: "2012-10-17",
+  //         Statement:[{
+  //           Action: [ 's3:ListBucket'],
+  //           Effect: 'Allow',
+  //           Resource: [ cf.join('',
+  //             ['arn:aws:s3:::',
+  //               cf.select(0,
+  //                 cf.split('/',
+  //                   cf.select(1,
+  //                     cf.split('s3://', cf.ref('DatabaseDump'))
+  //                   )
+  //                 )
+  //               )
+  //             ]
+  //           )]
+  //         }, {
+  //           Action: [
+  //             's3:GetObject',
+  //             's3:GetObjectAcl',
+  //             's3:ListObjects',
+  //             's3:ListBucket'
+  //           ],
+  //           Effect: 'Allow',
+  //           Resource: [cf.join('',
+  //             ['arn:aws:s3:::',
+  //               cf.select(1,
+  //                 cf.split('s3://', cf.ref('DatabaseDump'))
+  //             )]
+  //           )]
+  //         }]
+  //       }
+  //     }],
+  //     RoleName: cf.join('-', [cf.stackName, 'ec2', 'database-dump-access', 'role'])
+  //   }
+  // },
+  // TaskingManagerEC2InstanceProfile: {
+  //    Type: "AWS::IAM::InstanceProfile",
+  //    Properties: {
+  //       Roles: cf.if('DatabaseDumpFileGiven', [cf.ref('TaskingManagerDatabaseDumpAccessRole')], [cf.ref('TaskingManagerEC2Role')]),
+  //       InstanceProfileName: cf.join('-', [cf.stackName, 'ec2', 'instance', 'profile'])
+  //    }
+  // },
+  TaskingManagerECSCluster: {
+    Type: 'AWS::ECS:Cluster',
     Properties: {
-      AutoScalingGroupName: cf.stackName,
-      Cooldown: 300,
-      MinSize: cf.if('IsTaskingManagerProduction', 3, 1),
-      DesiredCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
-      MaxSize: cf.if('IsTaskingManagerProduction', 9, cf.if('IsTaskingManagerDemo', 3, 1)),
-      HealthCheckGracePeriod: 600,
-      LaunchConfigurationName: cf.ref('TaskingManagerLaunchConfiguration'),
-      TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
-      HealthCheckType: 'EC2',
-      AvailabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-east-1d', 'us-east-1f'],
-      Tags: [{
-        Key: 'Name',
-        PropagateAtLaunch: true,
-        Value: cf.stackName
-      }]
-    },
-    UpdatePolicy: {
-      AutoScalingRollingUpdate: {
-        PauseTime: 'PT60M',
-        MaxBatchSize: 2,
-        WaitOnResourceSignals: true
-      }
-    }
-  },
-  TaskingManagerScaleUp: {
-      Type: "AWS::AutoScaling::ScalingPolicy",
-      Properties: {
-        AutoScalingGroupName: cf.ref('TaskingManagerASG'),
-        PolicyType: 'TargetTrackingScaling',
-        TargetTrackingConfiguration: {
-          TargetValue: 500,
-          PredefinedMetricSpecification: {
-            PredefinedMetricType: 'ALBRequestCountPerTarget',
-            ResourceLabel: cf.join('/', [
-              cf.select(1,
-                cf.split('loadbalancer/',
-                  cf.select(5,
-                    cf.split(':', cf.ref("TaskingManagerLoadBalancer"))
-                  )
-                )
-              ),
-              cf.select(5,
-                cf.split(':', cf.ref("TaskingManagerTargetGroup"))
-              )
-            ])
-          }
+      CapacityProviders: [
+        'FARGATE',
+        'FARGATE_SPOT'
+      ],
+      ClusterName: cf.stackName,
+      ClusterSettings: [{
+        Name: 'containerInsights',
+        Value: 'enabled'
+      }],
+      // DefaultCapacityProviderStrategy: [{
+      // }],
+      Tags: [
+        {
+          Key: 'Name',
+          Value: cf.stackName
         },
-        Cooldown: 300
-      }
-  },
-  TaskingManagerLaunchConfiguration: {
-    Type: "AWS::AutoScaling::LaunchConfiguration",
-    Metadata: {
-      "AWS::CloudFormation::Init": {
-        "configSets": {
-          "default": [
-            "01_setupCfnHup",
-            "02_config-amazon-cloudwatch-agent",
-            "03_restart_amazon-cloudwatch-agent"
-          ],
-          "UpdateEnvironment": [
-            "02_config-amazon-cloudwatch-agent",
-            "03_restart_amazon-cloudwatch-agent"
-            ]
-        },
-        // Definition of json configuration of AmazonCloudWatchAgent, you can change the configuration below.
-        "02_config-amazon-cloudwatch-agent": {
-          "files": {
-            '/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json': {
-              "content": cf.join("\n", [
-                  "{\"logs\": {",
-                  "\"logs_collected\": {",
-                  "\"files\": {",
-                  "\"collect_list\": [",
-                  "{",
-                  "\"file_path\": \"/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log\",",
-                  cf.sub("\"log_group_name\": \"${AWS::StackName}.log\","),
-                  cf.sub("\"log_stream_name\": \"${AWS::StackName}-cloudwatch-agent.log\","),
-                  "\"timezone\": \"UTC\"",
-                  "},",
-                  "{",
-                  cf.sub("\"file_path\": \"${TaskingManagerLogDirectory}/tasking-manager.log\","),
-                  cf.sub("\"log_group_name\": \"${AWS::StackName}.log\","),
-                  cf.sub("\"log_stream_name\": \"${AWS::StackName}.log\","),
-                  "\"timezone\": \"UTC\"",
-                  "},",
-                  "{",
-                  cf.sub("\"file_path\": \"${TaskingManagerLogDirectory}/gunicorn-access.log\","),
-                  cf.sub("\"log_group_name\": \"${AWS::StackName}.log\","),
-                  cf.sub("\"log_stream_name\": \"${AWS::StackName}-gunicorn.log\","),
-                  "\"timezone\": \"UTC\"",
-                  "}]}},",
-                  cf.sub("\"log_stream_name\": \"${AWS::StackName}-logs\","),
-                  "\"force_flush_interval\" : 15",
-                  "}}"
-              ])
-            }
-          }
-        },
-        // Invoke amazon-cloudwatch-agent-ctl to restart the AmazonCloudWatchAgent.
-        "03_restart_amazon-cloudwatch-agent": {
-          "commands": {
-            "01_stop_service": {
-              "command": "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a stop"
-            },
-            "02_start_service": {
-              "command": "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s"
-            }
-          }
-        },
-        // Cfn-hup setting, it is to monitor the change of metadata.
-        // When there is change in the contents of json file in the metadata section, cfn-hup will call cfn-init to restart the AmazonCloudWatchAgent.
-        "01_setupCfnHup": {
-          "files": {
-            "/etc/cfn/cfn-hup.conf": {
-              "content": cf.join('\n', [
-                "[main]",
-                cf.sub("stack=${!AWS::StackName}"),
-                cf.sub("region=${!AWS::Region}"),
-                "interval=1"
-              ]),
-              "mode": "000400",
-              "owner": "root",
-              "group": "root"
-            },
-            "/etc/cfn/hooks.d/amazon-cloudwatch-agent-auto-reloader.conf": {
-              "content": cf.join('\n', [
-                "[cfn-auto-reloader-hook]",
-                "triggers=post.update",
-                "path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init.02_config-amazon-cloudwatch-agent",
-                cf.sub("action=cfn-init -v --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region} --configsets UpdateEnvironment"),
-                "runas=root"
-              ]),
-              "mode": "000400",
-              "owner": "root",
-              "group": "root"
-            },
-            "/lib/systemd/system/cfn-hup.service": {
-              "content": cf.join('\n', [
-                "[Unit]",
-                "Description=cfn-hup daemon",
-                "[Service]",
-                "Type=simple",
-                "ExecStart=/opt/aws/bin/cfn-hup",
-                "Restart=always",
-                "[Install]",
-                "WantedBy=multi-user.target"
-                ])
-            }
-          },
-          "commands": {
-            "01enable_cfn_hup": {
-            "command": "systemctl enable cfn-hup.service"
-            },
-            "02start_cfn_hup": {
-              "command": "systemctl start cfn-hup.service"
-            }
-          }
+        {
+          Key: 'Project',
+          Value: 'TaskingManager'
         }
       }
     },
@@ -408,134 +656,78 @@ const Resources = {
       KeyName: 'mbtiles'
     }
   },
-  TaskingManagerEC2Role: {
-    Type: 'AWS::IAM::Role',
+  TaskingManagerECSTaskDefinition: {
+    Type: 'AWS::ECS::TaskDefinition',
     Properties: {
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [{
-          Effect: "Allow",
-          Principal: {
-             Service: [ "ec2.amazonaws.com" ]
-          },
-          Action: [ "sts:AssumeRole" ]
-        }]
-      },
-      ManagedPolicyArns: [
-          'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy',
-          'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy',
-          'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
-      ],
-      Policies: [{
-        PolicyName: "RDSPolicy",
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement:[{
-            Action: ['rds:DescribeDBInstances'],
-            Effect: 'Allow',
-            Resource: ['arn:aws:rds:*']
-          }]
-        }
-      }, {
-        PolicyName: "CloudFormationPermissions",
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement:[{
-            Action: [
-              'cloudformation:SignalResource',
-              'cloudformation:DescribeStackResource'
-            ],
-            Effect: 'Allow',
-            Resource: ['arn:aws:cloudformation:*']
-          }]
-        }
-      }
-      ],
-      RoleName: cf.join('-', [cf.stackName, 'ec2', 'role'])
-    }
-  },
-  TaskingManagerDatabaseDumpAccessRole: {
-    Condition: 'DatabaseDumpFileGiven',
-    Type: 'AWS::IAM::Role',
-    Properties: {
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [{
-          Effect: "Allow",
-          Principal: {
-             Service: [ "ec2.amazonaws.com" ]
-          },
-          Action: [ "sts:AssumeRole" ]
-        }]
-      },
-      Policies: [{
-        PolicyName: "RDSPolicy",
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement:[{
-            Action: ['rds:DescribeDBInstances'],
-            Effect: 'Allow',
-            Resource: ['arn:aws:rds:*']
-          }]
-        }
-      }, {
-        PolicyName: "CloudFormationPermissions",
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement:[{
-            Action: [
-              'cloudformation:SignalResource',
-              'cloudformation:DescribeStackResource'
-            ],
-            Effect: 'Allow',
-            Resource: ['arn:aws:cloudformation:*']
-          }]
-        }
-      }, {
-        PolicyName: "AccessToDatabaseDump",
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement:[{
-            Action: [ 's3:ListBucket'],
-            Effect: 'Allow',
-            Resource: [ cf.join('',
-              ['arn:aws:s3:::',
-                cf.select(0,
-                  cf.split('/',
-                    cf.select(1,
-                      cf.split('s3://', cf.ref('DatabaseDump'))
-                    )
-                  )
-                )
-              ]
-            )]
-          }, {
-            Action: [
-              's3:GetObject',
-              's3:GetObjectAcl',
-              's3:ListObjects',
-              's3:ListBucket'
-            ],
-            Effect: 'Allow',
-            Resource: [cf.join('',
-              ['arn:aws:s3:::',
-                cf.select(1,
-                  cf.split('s3://', cf.ref('DatabaseDump'))
-              )]
-            )]
-          }]
-        }
+      ContainerDefinitions: [{
+        EnvironmentFiles: [],
+        Essential: true,
+        // HealthCheck: {
+          // Need more input from Yogesh
+        // },
+        Image: 'quay.io/hotosm/taskingmanager:latest', //configure this properly
+
       }],
-      RoleName: cf.join('-', [cf.stackName, 'ec2', 'database-dump-access', 'role'])
+      Cpu: '1024',
+      ExecutionRoleArn: cf.ref('TaskingManagerECSExecutionRole'),
+      Family: cf.stackName,
+      Memory: '4096',
+      NetworkMode: 'awsvpc',
+      RequiresCompatibilities: ['FARGATE'],
+      Tags: [{
+        Key: 'Project',
+        Value: 'TaskingManager'
+      }, {
+        Key: 'Name',
+        Value: cf.stackName
+      }],
+      // TaskRoleArn:'', Do we need this??
     }
   },
-  TaskingManagerEC2InstanceProfile: {
-     Type: "AWS::IAM::InstanceProfile",
-     Properties: {
-        Roles: cf.if('DatabaseDumpFileGiven', [cf.ref('TaskingManagerDatabaseDumpAccessRole')], [cf.ref('TaskingManagerEC2Role')]),
-        InstanceProfileName: cf.join('-', [cf.stackName, 'ec2', 'instance', 'profile'])
-     }
+  TaskingManagerECSService: {
+    Type: 'AWS::ECS::Service',
+    Properties: {
+      // CapacityProviderStrategy: [{}],
+      Cluster: cf.ref('TaskingManagerECSCluster'),
+      DeploymentConfiguration: {
+        MaximumPercent: 200,
+        MinimumHealthyPercent: 50
+      },
+      DeploymentController: {
+        'Type': 'ECS'
+      },
+      DesiredCount: 1, // Loadbalancer?
+      EnableECSManagedTags: true,
+      HealthCheckGracePeriodSeconds: 300,
+      LaunchType: 'FARGATE',
+      LoadBalancers: [{
+        ContainerName: cf.stackName,
+        ContainerPort: 8000,
+        TargetGroupArn: cf.ref('TaskingManagerTargetGroup')
+      }],
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
+          Subnets: cf.split(',', cf.ref('ELBSubnets'))
+        }
+      },
+      PlatformVersion: '1.4.0',
+      PropagateTags: 'SERVICE',
+      Role: cf.ref('TaskingManagerECSServiceRole'), 
+      SchedulingStrategy: 'REPLICA',
+      ServiceArn: cf.stackName,
+      ServiceName: cf.stackName,
+      Tags: [{
+        Key: 'Project',
+        Value: 'TaskingManager'
+      }, {
+        Key: 'Name',
+        Value: cf.stackName
+      }],
+      TaskDefinition: cf.ref('TaskingManagerECSTaskDefinition')
+    }
   },
+  TaskingManagerECSServiceRole: {},
   TaskingManagerLoadBalancer: {
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
     Properties: {
@@ -569,6 +761,7 @@ const Resources = {
       HealthCheckPath: '/api/v2/system/heartbeat/',
       Port: 8000,
       Protocol: 'HTTP',
+      TargetType: 'ip', //what else might this change?
       VpcId: cf.importValue(cf.join('-', ['hotosm-network-production', 'default-vpc', cf.region])),
       Tags: [ { "Key": "stack_name", "Value": cf.stackName } ],
       Matcher: {
