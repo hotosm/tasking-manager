@@ -4,6 +4,13 @@ import { navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import Popup from 'reactjs-popup';
 import { FormattedMessage, useIntl } from 'react-intl';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel,
+} from 'react-accessible-accordion';
 
 import messages from './messages';
 import { ProjectInstructions } from './instructions';
@@ -25,12 +32,15 @@ import {
   SidebarToggle,
   ReopenEditor,
 } from './actionSidebars';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import 'react-accessible-accordion/dist/fancy-example.css';
 
 const Editor = React.lazy(() => import('../editor'));
 
 export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
   useSetProjectPageTitleTag(project);
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -39,6 +49,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
   const [historyTabChecked, setHistoryTabChecked] = useState(false);
+  const [multipleTasksInfo, setMultipleTasksInfo] = useState({});
   const intl = useIntl();
 
   const activeTask = activeTasks && activeTasks[0];
@@ -49,6 +60,27 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     `projects/${project.projectId}/tasks/${tasksIds[0]}/`,
     project.projectId && tasksIds && tasksIds.length === 1,
   );
+
+  const handleFetch = (taskIds) => {
+    // this function gets passed an array of uuids (task Ids in this case) of the selected Accordion items
+    if (taskIds.length < 1) {
+      return;
+    } else {
+      for (let i = 0; i < taskIds.length; i++) {
+        // check state: multipleTasksInfo for cached results, fetch and store results if none
+        if (Object.keys(multipleTasksInfo).indexOf(taskIds[i].toString()) > -1) {
+          continue;
+        } else {
+          fetchLocalJSONAPI(`projects/${project.projectId}/tasks/${taskIds[i]}/`, token).then(
+            (data) => {
+              setMultipleTasksInfo({ ...multipleTasksInfo, [taskIds[i]]: data });
+            },
+          );
+        }
+      }
+    }
+  };
+
   const readTaskComments = useReadTaskComments(taskHistory);
 
   const getTaskGpxUrlCallback = useCallback((project, tasks) => getTaskGpxUrl(project, tasks), []);
@@ -200,7 +232,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                   >
                     <FormattedMessage {...messages.instructions} />
                   </span>
-                  {activeTasks && activeTasks.length === 1 && (
+                  {activeTasks && (
                     <span
                       className={`pb2 pointer truncate ${
                         activeSection === 'history' && 'bb b--blue-dark'
@@ -208,7 +240,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       onClick={() => historyTabSwitch()}
                     >
                       <FormattedMessage {...messages.history} />
-                      {taskHistory &&
+                      {activeTasks.length === 1 &&
+                        taskHistory &&
                         taskHistory.taskHistory &&
                         taskHistory.taskHistory.length > 1 && (
                           <span
@@ -218,6 +251,14 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                             {taskHistory.taskHistory.length}
                           </span>
                         )}
+                      {action === 'VALIDATION' && activeTasks.length > 1 && (
+                        <span
+                          className="bg-red white dib br-100 tc f6 ml1 mb1 v-mid"
+                          style={{ height: '1.125rem', width: '1.125rem' }}
+                        >
+                          {activeTasks.length}
+                        </span>
+                      )}
                     </span>
                   )}
                 </div>
@@ -304,12 +345,40 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                   </>
                 )}
                 {activeSection === 'history' && (
-                  <TaskHistory
-                    projectId={project.projectId}
-                    taskId={tasksIds[0]}
-                    commentPayload={taskHistory}
-                    mapperLevel={userDetails['mappingLevel']}
-                  />
+                  <>
+                    {activeTasks.length === 1 && (
+                      <>
+                        <TaskHistory
+                          projectId={project.projectId}
+                          taskId={tasksIds[0]}
+                          commentPayload={taskHistory}
+                          mapperLevel={userDetails['mappingLevel']}
+                        />
+                      </>
+                    )}
+                    {action === 'VALIDATION' && activeTasks.length > 1 && (
+                      <Accordion allowMultipleExpanded allowZeroExpanded onChange={handleFetch}>
+                        {activeTasks.map((t) => (
+                          <AccordionItem key={t.taskId} uuid={t.taskId}>
+                            <AccordionItemHeading>
+                              <AccordionItemButton>
+                                <FormattedMessage {...messages.task} />
+                                &nbsp; {t.taskId}
+                              </AccordionItemButton>
+                            </AccordionItemHeading>
+                            <AccordionItemPanel>
+                              <TaskHistory
+                                projectId={project.projectId}
+                                taskId={t.taskId}
+                                commentPayload={multipleTasksInfo[t.taskId.toString()]}
+                                mapperLevel={userDetails['mappingLevel']}
+                              />
+                            </AccordionItemPanel>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
+                    )}
+                  </>
                 )}
               </div>
             </ReactPlaceholder>
