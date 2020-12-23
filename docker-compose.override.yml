@@ -25,6 +25,8 @@ services:
       dockerfile: "./scripts/docker/Dockerfile.frontend"
       args:
         - TM_APP_API_URL=http://localhost/api
+        - TM_IMPORT_MAX_FILESIZE=1000000
+        - TM_MAX_AOI_AREA=5000
     volumes:
       - ".:/usr/src/app"
     labels:

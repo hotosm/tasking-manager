@@ -20,6 +20,8 @@ COPY --from=base /usr/src/app/frontend /usr/src/app
 RUN npm install
 
 ARG TM_APP_API_URL=http://localhost/api
+ARG TM_IMPORT_MAX_FILESIZE=1000000
+ARG TM_MAX_AOI_AREA=5000
 
 # SERVE
 CMD ["npm", "start"]
