@@ -67,3 +67,36 @@ export const invalidatedTaskHistory = {
     },
   ],
 };
+
+export const multipleTaskInfo = [
+  {
+    taskId: 1,
+    taskHistory: [
+      {
+        historyId: 11334,
+        taskId: 1,
+        action: 'STATE_CHANGE',
+        actionText: 'VALIDATED',
+        actionDate: '2020-09-04T14:35:20.174515Z',
+        actionBy: 'user_123',
+        pictureUrl: null,
+        issues: null,
+      },
+    ],
+  },
+  {
+    taskId: 2,
+    taskHistory: [
+      {
+        historyId: 5705,
+        taskId: 2,
+        action: 'STATE_CHANGE',
+        actionText: 'MAPPED',
+        actionDate: '2020-04-08T10:19:53.537193Z',
+        actionBy: 'test_user',
+        pictureUrl: null,
+        issues: null,
+      },
+    ],
+  },
+];

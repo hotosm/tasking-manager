@@ -163,7 +163,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload, mapperLevel }) 
     return (
       <>
         <div
-          className="ml3 pl1 pb4 blue-dark flex flex-wrap"
+          className="ml3 pl1 pb3 blue-dark flex flex-wrap"
           aria-label="view task history options"
         >
           <div className="pt1 fl w-15" aria-labelledby="comments">
@@ -186,7 +186,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload, mapperLevel }) 
           </span>
         </div>
         {shownHistory.map((t, n) => (
-          <div className="w-90 mh3 pv3 bt bb b--grey-light f6 cf blue-dark" key={n}>
+          <div className="w-90 mh3 pv3 bt b--grey-light f6 cf blue-dark" key={n}>
             <div className="fl w-10-ns w-100 mr2 tr">
               <UserAvatar
                 username={t.actionBy}

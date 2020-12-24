@@ -4,13 +4,6 @@ import { navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import Popup from 'reactjs-popup';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionItemHeading,
-  AccordionItemButton,
-  AccordionItemPanel,
-} from 'react-accessible-accordion';
 
 import messages from './messages';
 import { ProjectInstructions } from './instructions';
@@ -33,7 +26,7 @@ import {
   ReopenEditor,
 } from './actionSidebars';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import 'react-accessible-accordion/dist/fancy-example.css';
+import { MultipleTaskHistoriesAccordion } from '../accordion';
 
 const Editor = React.lazy(() => import('../editor'));
 
@@ -61,26 +54,6 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     project.projectId && tasksIds && tasksIds.length === 1,
   );
 
-  const handleFetch = (taskIds) => {
-    // this function gets passed an array of uuids (task Ids in this case) of the selected Accordion items
-    if (taskIds.length < 1) {
-      return;
-    } else {
-      for (let i = 0; i < taskIds.length; i++) {
-        // check state: multipleTasksInfo for cached results, fetch and store results if none
-        if (Object.keys(multipleTasksInfo).indexOf(taskIds[i].toString()) > -1) {
-          continue;
-        } else {
-          fetchLocalJSONAPI(`projects/${project.projectId}/tasks/${taskIds[i]}/`, token).then(
-            (data) => {
-              setMultipleTasksInfo({ ...multipleTasksInfo, [taskIds[i]]: data });
-            },
-          );
-        }
-      }
-    }
-  };
-
   const readTaskComments = useReadTaskComments(taskHistory);
 
   const getTaskGpxUrlCallback = useCallback((project, tasks) => getTaskGpxUrl(project, tasks), []);
@@ -89,6 +62,18 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const historyTabSwitch = () => {
     setHistoryTabChecked(true);
     setActiveSection('history');
+  };
+
+  const handleTaskHistories = (taskIds) => {
+    if (taskIds.length < 1) return;
+
+    taskIds.forEach((id) => {
+      if (!Object.keys(multipleTasksInfo).includes(id.toString())) {
+        fetchLocalJSONAPI(`projects/${project.projectId}/tasks/${id}/`, token).then((data) =>
+          setMultipleTasksInfo({ ...multipleTasksInfo, [id]: data }),
+        );
+      }
+    });
   };
 
   useEffect(() => {
@@ -357,26 +342,12 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       </>
                     )}
                     {action === 'VALIDATION' && activeTasks.length > 1 && (
-                      <Accordion allowMultipleExpanded allowZeroExpanded onChange={handleFetch}>
-                        {activeTasks.map((t) => (
-                          <AccordionItem key={t.taskId} uuid={t.taskId}>
-                            <AccordionItemHeading>
-                              <AccordionItemButton>
-                                <FormattedMessage {...messages.task} />
-                                &nbsp; {t.taskId}
-                              </AccordionItemButton>
-                            </AccordionItemHeading>
-                            <AccordionItemPanel>
-                              <TaskHistory
-                                projectId={project.projectId}
-                                taskId={t.taskId}
-                                commentPayload={multipleTasksInfo[t.taskId.toString()]}
-                                mapperLevel={userDetails['mappingLevel']}
-                              />
-                            </AccordionItemPanel>
-                          </AccordionItem>
-                        ))}
-                      </Accordion>
+                      <MultipleTaskHistoriesAccordion
+                        handleChange={handleTaskHistories}
+                        tasks={activeTasks}
+                        projectId={project.projectId}
+                        mapperLevel={userDetails['mappingLevel']}
+                      />
                     )}
                   </>
                 )}
