@@ -36,7 +36,7 @@ const BasemapMenu = ({ map }) => {
   };
 
   return (
-    <div className="bg-white blue-dark flex mt2 ml2 f7 br1 shadow-1">
+    <div className="bg-white blue-dark flex mt2 mr2 f7 br1 shadow-1">
       {styles.map((style) => {
         return (
           <div
@@ -79,8 +79,10 @@ const ProjectCreationMap = ({ mapObj, setMapObj,uploadFile, step }) => {
           .addControl(new MapboxGeocoder({
               accessToken: MAPBOX_TOKEN,
               mapboxgl: mapboxgl,
-            }))
-          .addControl(new mapboxgl.NavigationControl())
+              marker: false,
+              language: locale.substr(0, 2) || 'en'
+            }), 'top-left')
+          .addControl(new mapboxgl.NavigationControl(),'top-left')
       });
     } else {
       setMapObj({
@@ -95,7 +97,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj,uploadFile, step }) => {
           .addControl(new mapboxgl.AttributionControl({ compact: false }))
           .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
           .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }))
-          .addControl(new mapboxgl.NavigationControl())
+          .addControl(new mapboxgl.NavigationControl(), 'top-left')
       });
     }
 
@@ -107,7 +109,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj,uploadFile, step }) => {
 
   return (
     <div className="w-100 h-100-l relative" {...getRootProps()}>
-      <div className="absolute top-0 left-0 z-5">
+      <div className="absolute top-0 right-0 z-5">
         <BasemapMenu map={mapObj.map} />
         <input style={{ display: 'null' }} {...getInputProps()} />
       </div>

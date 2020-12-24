@@ -22,7 +22,7 @@ export default function SetAOI({ mapObj, metadata, updateMetadata, uploadFile, s
           trash: true
         }
       });
-      mapObj.map.addControl(mapObj.draw);
+      mapObj.map.addControl(mapObj.draw, 'top-left');
     };
   // eslint-disable-next-line
   },[mapObj.map]);
