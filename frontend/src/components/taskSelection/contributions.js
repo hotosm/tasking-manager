@@ -127,9 +127,14 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(tasks);
 
   let contributionsArray = contribsData.userContributions || [];
+
+    
   if (level.value !== 'ALL' && level.value !== 'NEWUSER') {
     contributionsArray = contributionsArray.filter((u) => u.mappingLevel === level.value);
   }
+
+
+  
 
   const displayTasks = (taskIds, status, user) => {
     if (activeStatus === status && user === activeUser) {
@@ -149,6 +154,17 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
       .filter((u) => u.dateObj > monthFiltered);
   }
 
+  // allUser list all username in the given level
+  const allUser=contributionsArray.map((user) =>{
+  return {value:user.username,label:user.username};});
+  // setUser set username to selectUser 
+  const [selectUser, setUser] = useState('');
+  // classifies the search username 
+  if(selectUser !== '')
+  {
+    contributionsArray = contributionsArray.filter((u) => selectUser=== u.username);
+  }
+    
   return (
     <div className="w-100 f5 pr4-l pr2 cf blue-dark bg-white">
       <div className="w-100 fr cf">
@@ -166,11 +182,21 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
         </Link>
         <span className="blue-light f4 fw7 ph1">&#183;</span>
         <OSMChaButton project={project} className="bg-white blue-light bn mv2" compact={true} />
+        {/* this select searches username in given level */}
+        <Select
+          classNamePrefix="react-select"
+          isClearable={false}
+          options={allUser}
+          onChange={(value) => {setUser(value.value)}}  //setUser set the value of selectUser to searched username
+          className="w-30 fr mb3 pointer"
+          value={selectUser}
+        />
+        
         <Select
           classNamePrefix="react-select"
           isClearable={false}
           options={mappingLevels}
-          onChange={(value) => setLevel(value)}
+          onChange={(value) => {setLevel(value); setUser('');}} // setuser sets the value of selectUser (searched user) to initial
           className="w-30 fr mb3 pointer"
           value={level}
         />
