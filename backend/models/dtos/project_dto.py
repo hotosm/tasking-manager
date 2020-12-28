@@ -26,15 +26,6 @@ from backend.models.postgis.statuses import (
 )
 from backend.models.dtos.campaign_dto import CampaignDTO
 
-ORDER_BY_OPTIONS = (
-    "id",
-    "mapper_level",
-    "priority",
-    "status",
-    "last_updated",
-    "due_date",
-)
-
 
 def is_known_project_status(value):
     """ Validates that Project Status is known value """
@@ -289,7 +280,7 @@ class ProjectSearchDTO(Model):
 
     preferred_locale = StringType(default="en")
     mapper_level = StringType(validators=[is_known_mapping_level])
-    action = StringType(choices=("map", "validate", "any"))
+    action = StringType()
     mapping_types = ListType(StringType, validators=[is_known_mapping_type])
     mapping_types_exact = BooleanType(required=False)
     project_statuses = ListType(StringType, validators=[is_known_project_status])
@@ -297,8 +288,8 @@ class ProjectSearchDTO(Model):
     organisation_id = IntType()
     team_id = IntType()
     campaign = StringType()
-    order_by = StringType(choices=ORDER_BY_OPTIONS)
-    order_by_type = StringType(choices=("ASC", "DESC"))
+    order_by = StringType()
+    order_by_type = StringType()
     country = StringType()
     page = IntType(required=True)
     text_search = StringType()
