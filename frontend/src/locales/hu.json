@@ -947,6 +947,8 @@
   "pages.about.description2": "Ezzel a megközelítéssel a projekt felosztható sok egyedi térképész között. Ezen kívül lehetővé teszi a projekt előrehaladásának nyomon követését is, és elősegíti a térképezés egységességének javulását (például felrajzolandó elemek, specifikus címkék stb.)",
   "pages.about.OpenStreetMap.description": "Minden munka az {osmLink} segítségével történik. Az OpenStreetMap a közösség által vezérelt, ingyenes és szerkeszthető világtérkép, amelyet a nonprofit OpenStreetMap Alapítvány támogat.",
   "pages.about.OpenStreetMap.wiki": "Olvassa el az {osmWikiLink} oldalt, vagy csatlakozzék a helyi OSM közösség beszélgetéseihez.",
+  "pages.about.sustainabilityModel": "",
+  "pages.about.sustainabilityModel.faq": "",
   "pages.about.floss.title": "Ingyenes és nyílt forráskódú szoftver",
   "pages.about.floss.description": "A Tasking Manager ingyenes és nyílt forráskódú szoftver, amelyet a {hotLink} fejlesztett ki. Az alkalmazás kódja a {code} webhelyen érhető el, ahol bejelenthet problémákat és közreműködhet a szerkesztésben.",
   "pages.edit_project.title": "Projekt szerkesztése",
