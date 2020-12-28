@@ -947,6 +947,8 @@
   "pages.about.description2": "Esta abordagem permite a distribuição de tarefas por muitos mapeadores individuais. Também permite o monitoramento do progresso do projeto e ajuda a melhorar a consistência do mapeamento (por exemplo: elementos que precisam de ser mapeados, etiquetas específicas que devem ser usadas, etc.)",
   "pages.about.OpenStreetMap.description": "Todo o trabalho é feito através de {osmLink}. O OpenStreetMap é o mapa do mundo livre e editável pela comunidade, apoiado pela Fundação OpenStreetMap sem fins lucrativos.",
   "pages.about.OpenStreetMap.wiki": "Lê mais sobre o {OSMWikiLink} ou junta-te à discussão na tua comunidade local de OSM.",
+  "pages.about.sustainabilityModel": "",
+  "pages.about.sustainabilityModel.faq": "",
   "pages.about.floss.title": "Software gratuito e de código aberto",
   "pages.about.floss.description": "O Gestor de Tarefas é um software livre e de código aberto desenvolvido pelo {hotLink}. O código da aplicação pode ser consultado em {code}, onde também poderás relatar problemas e contribuir.",
   "pages.edit_project.title": "Editar projeto",

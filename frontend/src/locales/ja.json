@@ -947,6 +947,8 @@
   "pages.about.description2": "この方法を利用することで、多くの個人マッパーに対してタスクを割り当てることができます。また、プロジェクトの進捗状況を監視し、マッピングの完成度 (例: マッピングするべき要素の完成率、特定タグの利用など) を高めることもできるようになります。",
   "pages.about.OpenStreetMap.description": "すべての作業は {osmLink} を通じて行われます。OpenStreetMapはコミュニティによって運営される自由で編集可能な世界地図であり、非営利組織OpenStreetMap Foundationによって支援されています。",
   "pages.about.OpenStreetMap.wiki": "より詳しい情報を知るためには、 {osmWikiLink} を参照したり、地域のOSMコミュニティに参加したりしてみてください。",
+  "pages.about.sustainabilityModel": "",
+  "pages.about.sustainabilityModel.faq": "",
   "pages.about.floss.title": "Free and Open Source Software",
   "pages.about.floss.description": "Tasking Managerはフリーかつオープンソースのソフトウェアであり、 {hotLink} によって開発されています。アプリケーションのソースコードは {code} で公開されており、課題の報告や活動の参加はそちらから行うことができます。",
   "pages.edit_project.title": "プロジェクト編集",

@@ -947,6 +947,8 @@
   "pages.about.description2": "Essa abordagem permite a distribuição de tarefas para muitos mapeadores individuais. Ele também permite o monitoramento do progresso do projeto e ajuda a melhorar a consistência do mapeamento (por exemplo, elementos que serão mapeados, tags específicas para serem utilizadas, etc.)",
   "pages.about.OpenStreetMap.description": "Todo o trabalho é feito através do {osmLink}. O OpenStreetMap é o mapa mundial gratuito e editável da comunidade, suportado pela OpenStreetMap Foundation, sem fins lucrativos.",
   "pages.about.OpenStreetMap.wiki": "Leia mais no {osmWikiLink} ou participe da discussão com sua comunidade OSM local.",
+  "pages.about.sustainabilityModel": "Acesse as {faqs} para obter informações sobre serviços e suporte.",
+  "pages.about.sustainabilityModel.faq": "perguntas frequentes sobre o modelo de sustentabilidade do Tasking Manager",
   "pages.about.floss.title": "Software gratuito e de código aberto",
   "pages.about.floss.description": "O Tasking Manager é um software livre e de código aberto desenvolvido pelo {hotLink}. O código do aplicativo pode ser acessado através de {code}, onde você pode relatar problemas e fazer contribuições.",
   "pages.edit_project.title": "Editar projeto",
