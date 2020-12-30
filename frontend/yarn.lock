@@ -8385,10 +8385,10 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-msw@^0.24.3:
-  version "0.24.3"
-  resolved "https://registry.yarnpkg.com/msw/-/msw-0.24.3.tgz#e18fc134a81be797575b1fffa2eedd44068ecb00"
-  integrity sha512-IdXMZtcvPDoloq/H2jD81YHPFABM7Nu6sfjWPJWDUWAzwE3d86qkGqTLq8aFKL8VPF8i3yuuw/B0GA6xfw6ptw==
+msw@^0.24.4:
+  version "0.24.4"
+  resolved "https://registry.yarnpkg.com/msw/-/msw-0.24.4.tgz#e1f918862146a2bb39be005e52b24905c8c6108e"
+  integrity sha512-RKPAyfOrEVwritMn6RL5QROYhZMeRVApGuj4JdIQh/uyV0ASx349wsARJVI4VAXGEKu4B1TBvJZf0P0iVMsheg==
   dependencies:
     "@open-draft/until" "^1.0.3"
     "@types/cookie" "^0.4.0"
