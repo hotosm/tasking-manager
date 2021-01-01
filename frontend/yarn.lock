@@ -1184,10 +1184,10 @@
     cldr-core "38"
     tslib "^2.0.1"
 
-"@formatjs/intl-pluralrules@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.1.tgz#a1d3222f11647ca3222d91c52482c7f7411cc940"
-  integrity sha512-FIFSP1N0ZRPdhe2pnV4psKb34RD9Ci6ISYgsluAZsPzaR8UERb46oz7jag/OXlMcAPU4BoiZ2EHRGy++CePQtw==
+"@formatjs/intl-pluralrules@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.2.tgz#73dafc7f3872b50faec65fce15822f210f334386"
+  integrity sha512-Oh4zmA3odkXBCPAGVhZuAnP3IfCPy8DyizA9s4QkYptVICX38RbUvXwzr2a9DVpKNiZ7i2TnV4Qkeo06N/6b7Q==
   dependencies:
     "@formatjs/ecma402-abstract" "1.5.0"
     tslib "^2.0.1"
