@@ -1192,10 +1192,18 @@
     "@formatjs/ecma402-abstract" "1.5.0"
     tslib "^2.0.1"
 
-"@formatjs/intl-relativetimeformat@8.0.1", "@formatjs/intl-relativetimeformat@^8.0.1":
+"@formatjs/intl-relativetimeformat@8.0.1":
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-8.0.1.tgz#9fcad0dba673cf0e21b4b9f83dab22ca6b482901"
   integrity sha512-yMCtrDeQnqx95ucaYbHc1BP4XUP0q+JoMiP8kzMe04AgVvkfAScsoRuKfXw1EH1FkV51C/vqWIKDoGj1WoZnxQ==
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.5.0"
+    tslib "^2.0.1"
+
+"@formatjs/intl-relativetimeformat@^8.0.2":
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-8.0.2.tgz#c8b999f66abe029f108a97a2105582f34b6319a8"
+  integrity sha512-RBO+4zxJuIYtYGfxv1GuZJQDtrA+fZlgcHjSVoo5HwznWdfg5vVTe8qdbSDbdyFobbB2OYqwj4mcRO2M5P1oNw==
   dependencies:
     "@formatjs/ecma402-abstract" "1.5.0"
     tslib "^2.0.1"
