@@ -38,7 +38,7 @@
     "mapbox-gl": "^1.13.0",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "marked": "^1.2.7",
-    "node-sass": "^4.14.1",
+    "node-sass": "^5.0.0",
     "osmtogeojson": "^3.0.0-beta.3",
     "query-string": "^6.13.8",
     "react": "^16.14.0",
