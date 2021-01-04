@@ -239,6 +239,7 @@ class MessageService:
             user_from = User.query.get(comment_from)
             if user_from is None:
                 raise ValueError("Username not found")
+            user_link = MessageService.get_user_link(user_from.username)
 
             task_link = MessageService.get_task_link(project_id, task_id)
             messages = []
@@ -258,7 +259,9 @@ class MessageService:
                 message.from_user_id = comment_from
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = f"{user_from.username} left a comment in {task_link} of Project {project_id}"
+                message.subject = (
+                    f"{user_link} left a comment in {task_link} of Project {project_id}"
+                )
                 message.message = comment
                 messages.append(dict(message=message, user=user))
 
@@ -419,6 +422,8 @@ class MessageService:
             users_to_notify = list(set(contributed_users + favorited_users))
 
             if len(users_to_notify) != 0:
+                from_user = User.query.get(chat_from)
+                from_user_link = MessageService.get_user_link(from_user.username)
                 project_link = MessageService.get_project_link(
                     project_id, include_chat_section=True
                 )
@@ -427,14 +432,15 @@ class MessageService:
                     try:
                         user = UserService.get_user_dto_by_id(user_id)
                     except NotFound:
-                        print("User not found")
                         continue  # If we can't find the user, keep going no need to fail
                     message = Message()
                     message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
                     message.project_id = project_id
                     message.from_user_id = chat_from
                     message.to_user_id = user.id
-                    message.subject = f"{chat_from} left a comment in {project_link}"
+                    message.subject = (
+                        f"{from_user_link} left a comment in {project_link}"
+                    )
                     message.message = chat
                     messages.append(dict(message=message, user=user))
 
