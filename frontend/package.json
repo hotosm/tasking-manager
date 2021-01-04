@@ -49,7 +49,7 @@
     "react-dom": "^16.14.0",
     "react-dropzone": "^11.2.4",
     "react-final-form": "^6.5.2",
-    "react-intl": "^5.10.9",
+    "react-intl": "^5.10.11",
     "react-meta-elements": "^1.0.0",
     "react-placeholder": "^4.0.3",
     "react-redux": "^7.2.2",
