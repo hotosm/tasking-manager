@@ -401,7 +401,9 @@ class MessageService:
                 MessageService._push_messages(messages)
 
             query = """ select user_id from project_favorites where project_id = :project_id"""
-            favorited_users_results = db.engine.execute(text(query), project_id=project_id)
+            favorited_users_results = db.engine.execute(
+                text(query), project_id=project_id
+            )
             favorited_users = [r[0] for r in favorited_users_results]
 
             # Notify all contributors except the user that created the comment.
@@ -435,7 +437,7 @@ class MessageService:
                     message.subject = f"{chat_from} left a comment in {project_link}"
                     message.message = chat
                     messages.append(dict(message=message, user=user))
-   
+
                 # it's important to keep that line inside the if to avoid duplicated emails
                 MessageService._push_messages(messages)
 
