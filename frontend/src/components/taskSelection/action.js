@@ -26,7 +26,7 @@ import {
   ReopenEditor,
 } from './actionSidebars';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { MultipleTaskHistoriesAccordion } from '../accordion';
+import { MultipleTaskHistoriesAccordion } from './multipleTaskHistories';
 
 const Editor = React.lazy(() => import('../editor'));
 

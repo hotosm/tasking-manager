@@ -8,8 +8,8 @@ import {
 } from 'react-accessible-accordion';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './taskSelection/messages';
-import { TaskHistory } from './taskSelection/taskActivity';
+import messages from './messages';
+import { TaskHistory } from './taskActivity';
 
 export const MultipleTaskHistoriesAccordion = ({ handleChange, tasks, projectId, mapperLevel }) => {
   return (

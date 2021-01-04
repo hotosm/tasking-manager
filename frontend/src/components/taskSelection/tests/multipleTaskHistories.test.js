@@ -2,11 +2,10 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 
-import { MultipleTaskHistoriesAccordion } from '../accordion';
-import { multipleTaskInfo } from '../../network/tests/mockData/taskHistory';
-import { ReduxIntlProviders } from '../../utils/testWithIntl';
+import { MultipleTaskHistoriesAccordion } from '../multipleTaskHistories';
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 
-describe('MultipleTasKHistories Accordion', () => {
+describe('MultipleTaskHistories Accordion', () => {
   let handleChange = jest.fn();
 
   it('does not render accordion with task history items if there are no tasks', () => {
@@ -28,11 +27,43 @@ describe('MultipleTasKHistories Accordion', () => {
   });
 
   it('renders accordion correctly with task history items for 2 tasks', () => {
+    const tasks = [
+      {
+        taskId: 1,
+        taskHistory: [
+          {
+            historyId: 11334,
+            taskId: 1,
+            action: 'STATE_CHANGE',
+            actionText: 'VALIDATED',
+            actionDate: '2020-09-04T14:35:20.174515Z',
+            actionBy: 'user_123',
+            pictureUrl: null,
+            issues: null,
+          },
+        ],
+      },
+      {
+        taskId: 2,
+        taskHistory: [
+          {
+            historyId: 5705,
+            taskId: 2,
+            action: 'STATE_CHANGE',
+            actionText: 'MAPPED',
+            actionDate: '2020-04-08T10:19:53.537193Z',
+            actionBy: 'test_user',
+            pictureUrl: null,
+            issues: null,
+          },
+        ],
+      },
+    ];
     render(
       <ReduxIntlProviders>
         <MultipleTaskHistoriesAccordion
           handleChange={handleChange}
-          tasks={multipleTaskInfo}
+          tasks={tasks}
           projectId={1}
           mapperLevel={''}
         />
