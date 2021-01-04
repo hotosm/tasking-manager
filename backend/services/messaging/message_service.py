@@ -181,6 +181,7 @@ class MessageService:
                 message["message"].id,
                 UserService.get_user_by_id(message["message"].from_user_id).username,
                 message["message"].project_id,
+                message["message"].task_id,
                 clean_html(message["message"].subject),
                 message["message"].message,
                 obj.message_type,
@@ -238,6 +239,7 @@ class MessageService:
             user_from = User.query.get(comment_from)
             if user_from is None:
                 raise ValueError("Username not found")
+            user_link = MessageService.get_user_link(user_from.username)
 
             task_link = MessageService.get_task_link(project_id, task_id)
             messages = []
@@ -257,7 +259,9 @@ class MessageService:
                 message.from_user_id = comment_from
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = f"{user_from.username} left a comment in {task_link} of Project {project_id}"
+                message.subject = (
+                    f"{user_link} left a comment in {task_link} of Project {project_id}"
+                )
                 message.message = comment
                 messages.append(dict(message=message, user=user))
 
@@ -375,55 +379,68 @@ class MessageService:
         app = create_app()
         with app.app_context():
             usernames = MessageService._parse_message_for_username(chat, project_id)
-            if len(usernames) == 0:
-                return  # Nobody @'d so return
+            if len(usernames) != 0:
+                link = MessageService.get_project_link(
+                    project_id, include_chat_section=True
+                )
+                messages = []
+                for username in usernames:
+                    current_app.logger.debug(f"Searching for {username}")
+                    try:
+                        user = UserService.get_user_by_username(username)
+                    except NotFound:
+                        current_app.logger.error(f"Username {username} not found")
+                        continue  # If we can't find the user, keep going no need to fail
 
-            link = MessageService.get_project_link(
-                project_id, include_chat_section=True
-            )
+                    message = Message()
+                    message.message_type = MessageType.MENTION_NOTIFICATION.value
+                    message.project_id = project_id
+                    message.from_user_id = chat_from
+                    message.to_user_id = user.id
+                    message.subject = f"You were mentioned in {link} chat"
+                    message.message = chat
+                    messages.append(dict(message=message, user=user))
 
-            messages = []
-            for username in usernames:
-                current_app.logger.debug(f"Searching for {username}")
-                try:
-                    user = UserService.get_user_by_username(username)
-                except NotFound:
-                    current_app.logger.error(f"Username {username} not found")
-                    continue  # If we can't find the user, keep going no need to fail
-
-                message = Message()
-                message.message_type = MessageType.MENTION_NOTIFICATION.value
-                message.project_id = project_id
-                message.from_user_id = chat_from
-                message.to_user_id = user.id
-                message.subject = f"You were mentioned in {link} chat"
-                message.message = chat
-                messages.append(dict(message=message, user=user))
-
-            MessageService._push_messages(messages)
+                MessageService._push_messages(messages)
 
             query = """ select user_id from project_favorites where project_id = :project_id"""
-            result = db.engine.execute(text(query), project_id=project_id)
-            favorited_users = [r[0] for r in result]
+            favorited_users_results = db.engine.execute(
+                text(query), project_id=project_id
+            )
+            favorited_users = [r[0] for r in favorited_users_results]
 
-            if len(favorited_users) != 0:
+            # Notify all contributors except the user that created the comment.
+            contributed_users_results = (
+                TaskHistory.query.with_entities(TaskHistory.user_id.distinct())
+                .filter(TaskHistory.project_id == project_id)
+                .filter(TaskHistory.user_id != chat_from)
+                .filter(TaskHistory.action == TaskAction.STATE_CHANGE.name)
+                .all()
+            )
+            contributed_users = [r[0] for r in contributed_users_results]
+
+            users_to_notify = list(set(contributed_users + favorited_users))
+
+            if len(users_to_notify) != 0:
+                from_user = User.query.get(chat_from)
+                from_user_link = MessageService.get_user_link(from_user.username)
                 project_link = MessageService.get_project_link(
                     project_id, include_chat_section=True
                 )
-                # project_title = ProjectService.get_project_title(project_id)
                 messages = []
-                for user_id in favorited_users:
-
+                for user_id in users_to_notify:
                     try:
                         user = UserService.get_user_dto_by_id(user_id)
                     except NotFound:
                         continue  # If we can't find the user, keep going no need to fail
-
                     message = Message()
                     message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
                     message.project_id = project_id
+                    message.from_user_id = chat_from
                     message.to_user_id = user.id
-                    message.subject = f"{chat_from} left a comment in {project_link}"
+                    message.subject = (
+                        f"{from_user_link} left a comment in {project_link}"
+                    )
                     message.message = chat
                     messages.append(dict(message=message, user=user))
 
