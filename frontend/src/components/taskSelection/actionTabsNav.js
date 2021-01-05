@@ -12,21 +12,21 @@ export const ActionTabsNav = ({
   action,
 }) => {
   return (
-    <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
+    <div className="cf ttu barlow-condensed f4 pt2 pb3 blue-dark nowrap overflow-x-auto">
       <span
-        className={`mr4-l mr3 pb2 pointer ${activeSection === 'completion' && 'bb b--blue-dark'}`}
+        className={`mr4-l mr3 pb1 pointer ${activeSection === 'completion' && 'bb b--blue-dark'}`}
         onClick={() => setActiveSection('completion')}
       >
         <FormattedMessage {...messages.completion} />
       </span>
       <span
-        className={`mr4-l mr3 pb2 pointer ${activeSection === 'instructions' && 'bb b--blue-dark'}`}
+        className={`mr4-l mr3 pb1 pointer ${activeSection === 'instructions' && 'bb b--blue-dark'}`}
         onClick={() => setActiveSection('instructions')}
       >
         <FormattedMessage {...messages.instructions} />
       </span>
       <span
-        className={`mr4-l mr3 pb2 pointer truncate ${
+        className={`mr4-l mr3 pb1 pointer truncate ${
           activeSection === 'history' && 'bb b--blue-dark'
         }`}
         onClick={() => historyTabSwitch()}
@@ -43,7 +43,7 @@ export const ActionTabsNav = ({
       </span>
       {action === 'VALIDATION' && (
         <span
-          className={`mr4-l mr3 pb2 pointer ${activeSection === 'resources' && 'bb b--blue-dark'}`}
+          className={`mr4-l mr3 pb1 pointer ${activeSection === 'resources' && 'bb b--blue-dark'}`}
           onClick={() => setActiveSection('resources')}
         >
           <FormattedMessage {...messages.resources} />
