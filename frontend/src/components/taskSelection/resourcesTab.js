@@ -37,11 +37,11 @@ export const ResourcesTab = ({ project, tasksIds, tasksGeojson }) => {
             </CustomButton>
           </OSMChaButton>
         </p>
-        <div className="w-100 cf">
+        <div className="w-100 cf flex flex-wrap">
           {tasksIds.length > 1 && (
             <Select
               classNamePrefix="react-select"
-              className="z-4 w-30 di fl mr3"
+              className="z-4 flex-auto fl mr3 pb2"
               isClearable={false}
               getOptionLabel={(option) => option.label}
               getOptionValue={(option) => option.value}
