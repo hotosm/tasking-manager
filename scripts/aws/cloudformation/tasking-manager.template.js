@@ -114,7 +114,9 @@ const Parameters = {
   },
   TaskingManagerURL: {
     Description: 'URL for setting CNAME in Distribution; Ex: example.hotosm.org',
-    Type: 'String'
+    Type: 'String',
+    AllowedPattern: '^([a-zA-Z0-9-]*\\.){2}(\\w){2,20}$',
+    ConstraintDescription: 'Parameter must be in the form of a url with subdomain.'
   },
   TaskingManagerOrgName: {
     Description: 'Org Name',
@@ -134,7 +136,10 @@ const Conditions = {
   UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
   DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
   IsTaskingManagerProduction: cf.equals(cf.ref('AutoscalingPolicy'), 'production'),
-  IsTaskingManagerDemo: cf.equals(cf.ref('AutoscalingPolicy'), 'Demo (max 3)')
+  IsTaskingManagerDemo: cf.equals(cf.ref('AutoscalingPolicy'), 'Demo (max 3)'),
+  IsHOTOSMUrl: cf.equals(
+    cf.select('1', cf.split('.', cf.ref('TaskingManagerURL')))
+    , 'hotosm')
 };
 
 const Resources = {
@@ -327,9 +332,6 @@ const Resources = {
         'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
         'sudo apt-get update -y',
         'sudo apt-get install -y postgresql-11',
-        'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt xenial-pgdg main" >> /etc/apt/sources.list\'',
-        'wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -',
-        'sudo apt-get -y update',
         'sudo apt-get -y install postgresql-11-postgis',
         'sudo apt-get -y install postgresql-11-postgis-scripts',
         'sudo apt-get -y install postgis',
@@ -711,6 +713,7 @@ const Resources = {
   },
   TaskingManagerRoute53: {
     Type: 'AWS::Route53::RecordSet',
+    Condition: 'IsHOTOSMUrl',
     Properties: {
       Name: cf.ref('TaskingManagerURL'),
       Type: 'A',

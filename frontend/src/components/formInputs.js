@@ -110,7 +110,7 @@ export function UserCountrySelect({ className }: Object) {
   );
 }
 
-const CheckBoxInput = ({ isActive, changeState, className = '' }) => (
+export const CheckBoxInput = ({ isActive, changeState, className = '' }) => (
   <div
     role="checkbox"
     aria-checked={isActive}

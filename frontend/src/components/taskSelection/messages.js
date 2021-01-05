@@ -315,6 +315,18 @@ export default defineMessages({
     id: 'project.tasks.action.history',
     defaultMessage: 'History',
   },
+  taskComments: {
+    id: 'project.tasks.history.comments',
+    defaultMessage: 'Comments',
+  },
+  taskStateChanges: {
+    id: 'project.tasks.history.stateChanges',
+    defaultMessage: 'Activities',
+  },
+  resources: {
+    id: 'project.tasks.action.resources',
+    defaultMessage: 'Resources',
+  },
   finishMappingTitle: {
     id: 'project.tasks.action.finish_mapping.title',
     defaultMessage: 'Once you have finished mapping',
@@ -446,6 +458,26 @@ export default defineMessages({
   overpassVisualization: {
     id: 'project.tasks.activity.overpass.visualization',
     defaultMessage: 'Visualize with Overpass',
+  },
+  projectData: {
+    id: 'project.resources.data',
+    defaultMessage: "Project's data",
+  },
+  changesets: {
+    id: 'project.resources.changesets',
+    defaultMessage: 'Changesets',
+  },
+  selectTask: {
+    id: 'project.resources.changesets.select_task',
+    defaultMessage: 'Select task',
+  },
+  entireProject: {
+    id: 'project.resources.changesets.entire_project',
+    defaultMessage: 'Entire project',
+  },
+  seeTaskChangesets: {
+    id: 'project.resources.changesets.task',
+    defaultMessage: "See task's changesets",
   },
   taskOnOSMCha: {
     id: 'project.tasks.activity.osmcha',

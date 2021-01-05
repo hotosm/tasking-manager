@@ -18,17 +18,17 @@ const isActiveButton = (buttonName, contributionQuery) => {
   }
 };
 
-export const MyTasksNav = props => {
+export const MyTasksNav = (props) => {
   const [contributionsQuery, setContributionsQuery] = useTaskContributionQueryParams();
 
   const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
   const notAnyFilter = !stringify(contributionsQuery);
   return (
     /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
-    <header className=" w-100 ">
+    <header className="w-100">
       <div className="cf">
         <div className="w-75-l w-60 fl">
-          <h3 className="barlow-condensed f2 ma0 pv3 mt1 v-mid dib ttu pl2 pl0-l">
+          <h3 className="barlow-condensed blue-dark f2 ma0 pv3 mt1 v-mid dib ttu pl2 pl0-l">
             <FormattedMessage {...messages.myTasks} />
           </h3>
         </div>
@@ -38,7 +38,7 @@ export const MyTasksNav = props => {
           <div className="dib">
             <div className="mv2 dib"></div>
             <FormattedMessage {...messages.searchProject}>
-              {msg => {
+              {(msg) => {
                 return (
                   <ProjectSearchBox
                     className="dib fl mh1"
