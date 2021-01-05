@@ -27,6 +27,8 @@ import {
 } from './actionSidebars';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { MultipleTaskHistoriesAccordion } from './multipleTaskHistories';
+import { ResourcesTab } from './resourcesTab';
+import { ActionTabsNav } from './actionTabsNav';
 
 const Editor = React.lazy(() => import('../editor'));
 
@@ -200,53 +202,16 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                 </div>
               </div>
               <div className="cf">
-                <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
-                  <span
-                    className={`mr4-l mr3 pb2 pointer ${
-                      activeSection === 'completion' && 'bb b--blue-dark'
-                    }`}
-                    onClick={() => setActiveSection('completion')}
-                  >
-                    <FormattedMessage {...messages.completion} />
-                  </span>
-                  <span
-                    className={`mr4-l mr3 pb2 pointer ${
-                      activeSection === 'instructions' && 'bb b--blue-dark'
-                    }`}
-                    onClick={() => setActiveSection('instructions')}
-                  >
-                    <FormattedMessage {...messages.instructions} />
-                  </span>
-                  {activeTasks && (
-                    <span
-                      className={`pb2 pointer truncate ${
-                        activeSection === 'history' && 'bb b--blue-dark'
-                      }`}
-                      onClick={() => historyTabSwitch()}
-                    >
-                      <FormattedMessage {...messages.history} />
-                      {activeTasks.length === 1 &&
-                        taskHistory &&
-                        taskHistory.taskHistory &&
-                        taskHistory.taskHistory.length > 1 && (
-                          <span
-                            className="bg-red white dib br-100 tc f6 ml1 mb1 v-mid"
-                            style={{ height: '1.125rem', width: '1.125rem' }}
-                          >
-                            {taskHistory.taskHistory.length}
-                          </span>
-                        )}
-                      {action === 'VALIDATION' && activeTasks.length > 1 && (
-                        <span
-                          className="bg-red white dib br-100 tc f6 ml1 mb1 v-mid"
-                          style={{ height: '1.125rem', width: '1.125rem' }}
-                        >
-                          {activeTasks.length}
-                        </span>
-                      )}
-                    </span>
-                  )}
-                </div>
+                <ActionTabsNav
+                  activeSection={activeSection}
+                  setActiveSection={setActiveSection}
+                  activeTasks={activeTasks}
+                  historyTabSwitch={historyTabSwitch}
+                  taskHistoryLength={
+                    taskHistory && taskHistory.taskHistory && taskHistory.taskHistory.length
+                  }
+                  action={action}
+                />
               </div>
               <div className="pt1">
                 {activeSection === 'completion' && (
@@ -350,6 +315,9 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                       />
                     )}
                   </>
+                )}
+                {activeSection === 'resources' && (
+                  <ResourcesTab project={project} tasksIds={tasksIds} tasksGeojson={tasks} />
                 )}
               </div>
             </ReactPlaceholder>

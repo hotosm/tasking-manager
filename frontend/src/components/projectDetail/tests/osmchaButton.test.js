@@ -42,3 +42,25 @@ test('OSMChaButton with compact True', () => {
   expect(container.querySelector('svg.pl1')).toBeInTheDocument();
   expect(container.querySelector('svg.pl2')).not.toBeInTheDocument();
 });
+
+test('OSMChaButton with children', () => {
+  const project = {
+    osmchaFilterId: null,
+    aoiBBOX: [0, 0, 1, 1],
+    changesetComment: '#TM4-TEST',
+    created: '2019-08-27T12:20:42.460024Z',
+  };
+  const { container } = render(
+    <ReduxIntlProviders>
+      <OSMChaButton project={project} className="pl3" compact={true}>
+        Custom text
+      </OSMChaButton>
+    </ReduxIntlProviders>,
+  );
+  expect(screen.queryByText('Changesets')).not.toBeInTheDocument();
+  expect(screen.queryByText('Changesets in OSMCha')).not.toBeInTheDocument();
+  expect(screen.queryByText('Custom text')).toBeInTheDocument();
+  expect(container.querySelector('a').href).toBe(formatOSMChaLink(project));
+  expect(container.querySelector('svg.pl1')).not.toBeInTheDocument();
+  expect(container.querySelector('svg.pl2')).not.toBeInTheDocument();
+});
