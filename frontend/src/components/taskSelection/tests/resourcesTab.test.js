@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { tasks } from '../../../network/tests/mockData/taskGrid';
@@ -29,6 +29,17 @@ describe('ResourcesTab', () => {
     );
     expect(screen.getByText('Download Tasks Grid')).toBeInTheDocument();
     expect(container.querySelectorAll('a')[3].href).toContain('/projects/1/tasks/?as_file=true');
+
+    const selectInput = container.querySelector('input');
+    fireEvent.focus(selectInput);
+    fireEvent.keyDown(selectInput, { key: 'ArrowDown' });
+    waitFor(() => {
+      expect(screen.getByText(1));
+    });
+    expect(screen.getByText(2));
+    fireEvent.click(screen.getByText(1));
+    expect(screen.queryByText('Select task')).not.toBeInTheDocument();
+    expect(screen.getByText("See task's changesets").disabled).toBeFalsy();
   });
   it('with single task locked', () => {
     render(
