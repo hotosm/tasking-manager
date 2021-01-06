@@ -411,6 +411,14 @@ export default defineMessages({
     id: 'project.tasks.action.split_task',
     defaultMessage: 'Split task',
   },
+  splitTaskError: {
+    id: 'project.tasks.action.split_task.error',
+    defaultMessage: 'It was not possible to split the task',
+  },
+  splitTaskErrorDescription: {
+    id: 'project.tasks.action.split_task.error.description',
+    defaultMessage: 'This task is already too small and can not be split.',
+  },
   selectAnotherTask: {
     id: 'project.tasks.action.select_another_task',
     defaultMessage: 'Select another task',

@@ -170,6 +170,10 @@ class SplitService:
             raise NotFound()
 
         original_geometry = shape.to_shape(original_task.geometry)
+        if (
+            original_task.zoom and original_task.zoom >= 18
+        ) or original_geometry < 5e-07:
+            raise SplitServiceError("Task is too small to be split")
 
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:

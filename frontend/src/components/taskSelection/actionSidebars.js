@@ -38,6 +38,7 @@ export function CompletionTabForMapping({
   const token = useSelector((state) => state.auth.get('token'));
   const [showHelp, setShowHelp] = useState(false);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
+  const [splitTaskError, setSplitTaskError] = useState(false);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
   const fetchLockedTasks = useFetchLockedTasks();
   const clearLockedTasks = useClearLockedTasks();
@@ -48,10 +49,14 @@ export function CompletionTabForMapping({
         `projects/${project.projectId}/tasks/actions/split/${tasksIds[0]}/`,
         token,
         'POST',
-      ).then((r) => {
-        clearLockedTasks();
-        navigate(`../tasks/`);
-      });
+      )
+        .then((r) => {
+          clearLockedTasks();
+          navigate(`../tasks/`);
+        })
+        .catch((e) => {
+          setSplitTaskError(true);
+        });
     } else {
       setShowMapChangesModal('split');
     }
@@ -105,6 +110,17 @@ export function CompletionTabForMapping({
           onClose={() => setShowMapChangesModal(null)}
         >
           {(close) => <UnsavedMapChangesModalContent close={close} action={showMapChangesModal} />}
+        </Popup>
+      )}
+      {splitTaskError && (
+        <Popup
+          modal
+          open
+          closeOnEscape={true}
+          closeOnDocumentClick={true}
+          onClose={() => setSplitTaskError(false)}
+        >
+          {(close) => <TaskSplitErrorModalContent close={close} />}
         </Popup>
       )}
       {showReadCommentsAlert && (
@@ -436,6 +452,25 @@ function UnsavedMapChangesModalContent({ close, action }: Object) {
       <div className="mv4 lh-title">
         {action === 'split' && <FormattedMessage {...messages.unsavedChangesToSplit} />}
         {action === 'unlock' && <FormattedMessage {...messages.unsavedChangesToUnlock} />}
+      </div>
+      <Button className="bg-red white" onClick={() => close()}>
+        <FormattedMessage {...messages.closeModal} />
+      </Button>
+    </div>
+  );
+}
+
+function TaskSplitErrorModalContent({ close }: Object) {
+  return (
+    <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns tc">
+      <div className="cf tc orange pb3">
+        <AlertIcon height="50px" width="50px" />
+      </div>
+      <h3 className="barlow-condensed f3 fw6 mv0">
+        <FormattedMessage {...messages.splitTaskError} />
+      </h3>
+      <div className="mv4 lh-title">
+        <FormattedMessage {...messages.splitTaskErrorDescription} />
       </div>
       <Button className="bg-red white" onClick={() => close()}>
         <FormattedMessage {...messages.closeModal} />
