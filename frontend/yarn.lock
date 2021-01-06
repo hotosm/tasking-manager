@@ -1212,10 +1212,10 @@
   resolved "https://registry.yarnpkg.com/@formatjs/intl-utils/-/intl-utils-2.2.1.tgz#0eeefe92d317acfcd179c14826e719b3b130d82a"
   integrity sha512-WF3oU6l2WqJjN4OWvnjF9AHyQjHpjcfpyuckM7euFeX6ZGRPpPj+ZCqzf41g81MSksf9aZI4fFCZXWTBusgcWA==
 
-"@formatjs/intl@1.4.16":
-  version "1.4.16"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl/-/intl-1.4.16.tgz#07b98e021f7c589102f06a39fdd9ee3a26a38dca"
-  integrity sha512-F2vw1wK+RL51hs7TwjTiZ3JhQ8v5n5dfMjZhRsAFEmEEKKLjbCOjO7sB/tkMLEvAHBmQ5e/wR8MqT/Wm7F4giQ==
+"@formatjs/intl@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl/-/intl-1.5.0.tgz#954e84fcb5302a1f8dace86871692c87af6d562e"
+  integrity sha512-X/vf6M158zO6b2QtQ2sV2mv9w5gB8Z+gjdWvsz0Ahexe61lzmMUw7uJlWWm+MbYdh7y8ixyxE9a3DpKLSIh2BA==
   dependencies:
     "@formatjs/ecma402-abstract" "1.5.1"
     "@formatjs/intl-datetimeformat" "3.2.3"
@@ -10457,13 +10457,13 @@ react-input-autosize@^2.2.2:
   dependencies:
     prop-types "^15.5.8"
 
-react-intl@^5.10.12:
-  version "5.10.12"
-  resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-5.10.12.tgz#e13cbe23d7097e12b84e8d7a78657d9ed77f448d"
-  integrity sha512-lsvY0CPf3P0f7LtpX4Y973wfClkZtu/B5Mhx0WuwcXizTr/lI435EELnn7P6+HoTBF6UK7hYotRdrZ15zrugeA==
+react-intl@^5.10.13:
+  version "5.10.13"
+  resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-5.10.13.tgz#9ca2491ad8a8b74a1ab225348fa55b0b9edf7086"
+  integrity sha512-rQF+TwmCmTzr0EYdBN5P/raIA8DrPAQgdcoYjNNK1Jg6LDq67Ex2lxa+MNXyVaqWsnxDAxpPPHlhcugD6ZRcgw==
   dependencies:
     "@formatjs/ecma402-abstract" "1.5.1"
-    "@formatjs/intl" "1.4.16"
+    "@formatjs/intl" "1.5.0"
     "@formatjs/intl-displaynames" "4.0.4"
     "@formatjs/intl-listformat" "5.0.4"
     "@formatjs/intl-relativetimeformat" "8.0.3"
