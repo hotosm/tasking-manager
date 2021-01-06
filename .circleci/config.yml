@@ -30,7 +30,6 @@ jobs:
           # Install NPM packages and build frontend
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend
           yarn
-          npm rebuild node-sass
           cd ${CIRCLE_WORKING_DIRECTORY}
           # Install Python dependencies
           pip install virtualenv
