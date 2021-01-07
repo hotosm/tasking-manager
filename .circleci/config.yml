@@ -279,9 +279,9 @@ workflows:
               - deployment/teachosm-tasking-manager
         requires:
           - build
-        stack_name: "teachosm"
+        stack_name: "tm4-teachosm"
         gitsha: $CIRCLE_SHA1
-        context: tasking-manager-teachosm
+        context: tasking-manager-tm4-teachosm
     - frontend_deploy:
         name: teachosm
         filters:
@@ -290,8 +290,8 @@ workflows:
               - deployment/teachosm-tasking-manager
         requires:
           - build
-        context: tasking-manager-teachosm
-        stack_name: "teachosm"
+        context: tasking-manager-tm4-teachosm
+        stack_name: "tm4-teachosm"
     - backend_deploy:
         name: assisted
         filters:
