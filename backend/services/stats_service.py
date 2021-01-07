@@ -1,5 +1,6 @@
 from cachetools import TTLCache, cached
 
+from flask_restful import Resource, request, current_app
 from sqlalchemy import func, desc, cast, extract, or_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
@@ -27,8 +28,8 @@ from backend.models.postgis.utils import timestamp, NotFound  # noqa: F401
 from backend.services.project_service import ProjectService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
-
-from datetime import date, timedelta
+import logging
+from datetime import date, datetime, timedelta
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
@@ -171,7 +172,7 @@ class StatsService:
             )
             .filter(TaskHistory.action_text is not None)
             .filter(TaskHistory.action_text != "")
-            .group_by(TaskHistory.project_id)
+            .group_.by(TaskHistory.project_id)
             .order_by(desc("rate"))
             .limit(10)
             .subquery()
@@ -477,3 +478,113 @@ class StatsService:
             Task.task_status == TaskStatus.BADIMAGERY.value
         ).count()
         project.save()
+
+    @staticmethod
+    def get_all_user_statistics(start: datetime, end: datetime):
+
+        # mapped_results get no of tasks mapped by user registered between a given period
+        mapped_results = (
+            Task.query.with_entities(
+                func.count(Task.id).label("Total_tasks_mapped"),
+            )
+            .filter(User.id == Task.mapped_by)
+            .filter(
+                Task.mapped_by != None,
+            )
+            .filter(
+                User.date_registered >= start,
+            )
+            .filter(
+                User.date_registered <= end,
+            )
+        )
+
+        # validated_results get no of tasks validated by user registered between a given period
+        validated_results = (
+            Task.query.with_entities(
+                func.count(Task.id).label("Total_tasks_validated"),
+            )
+            .filter(User.id == Task.validated_by)
+            .filter(
+                Task.validated_by != None,
+            )
+            .filter(
+                User.date_registered >= start,
+            )
+            .filter(
+                User.date_registered <= end,
+            )
+        )
+        # Beginner :get no of users registered within given period having mapping_level= beginner
+        Beginner = (
+            User.query.with_entities(
+                func.count(User.mapping_level).label("beginner"),
+            )
+            .filter(
+                User.mapping_level == 1,
+            )
+            .filter(
+                User.username != None,
+            )
+            .filter(
+                User.date_registered >= start,
+            )
+            .filter(
+                User.date_registered <= end,
+            )
+            .all()
+        )
+
+        # Intermediate :get no of users registered within given period having mapping_level= intermediate
+        Intermediate = (
+            User.query.with_entities(
+                func.count((User.mapping_level)).label("intermediate"),
+            )
+            .filter(
+                User.mapping_level == 2,
+            )
+            .filter(
+                User.username != None,
+            )
+            .filter(
+                User.date_registered >= start,
+            )
+            .filter(
+                User.date_registered <= end,
+            )
+            .all()
+        )
+
+        # Advance :get no of users registered within given period having mapping_level= advanced
+        Advance = (
+            User.query.with_entities(
+                func.count((User.mapping_level)).label("advance"),
+            )
+            .filter(
+                User.mapping_level == 3,
+            )
+            .filter(
+                User.username != None,
+            )
+            .filter(
+                User.date_registered >= start,
+            )
+            .filter(
+                User.date_registered <= end,
+            )
+            .all()
+        )
+
+        stats_dto = dict(
+            total=Beginner[0].beginner
+            + Intermediate[0].intermediate
+            + Advance[0].advance,
+            beginner=Beginner[0].beginner,
+            intermediate=Intermediate[0].intermediate,
+            advanced=Advance[0].advance,
+            tasks_mapped=mapped_results[0].Total_tasks_mapped,
+            tasks_validated=validated_results[0].Total_tasks_validated,
+        )
+
+        current_app.logger.critical(stats_dto)
+        return stats_dto
