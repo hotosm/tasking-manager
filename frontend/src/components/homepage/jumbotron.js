@@ -9,7 +9,7 @@ import { Button } from '../button';
 import { SignUp } from '../header/signUp';
 import bannerHR from '../../assets/img/banner_2500.jpg';
 import bannerLR from '../../assets/img/banner_824.jpg';
-import { HOMEPAGE_VIDEO_URL } from '../../config';
+import { HOMEPAGE_VIDEO_URL, HOMEPAGE_IMG_HIGH, HOMEPAGE_IMG_LOW } from '../../config';
 
 function JumbotronButtons() {
   const token = useSelector((state) => state.auth.get('token'));
@@ -70,7 +70,7 @@ export function Jumbotron() {
         ) : (
           <img
             className="w-100 h-100 object-fit-cover"
-            srcSet={`${bannerLR} 824w, ${bannerHR} 2500w`}
+            srcSet={`${HOMEPAGE_IMG_LOW || bannerLR} 824w, ${HOMEPAGE_IMG_HIGH || bannerHR} 2500w`}
             sizes="(max-width: 825px) 824w, 2500w"
             alt="banner background"
           />

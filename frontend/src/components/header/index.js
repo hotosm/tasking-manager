@@ -5,7 +5,7 @@ import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { ORG_URL, ORG_NAME } from '../../config';
+import { ORG_URL, ORG_NAME, ORG_LOGO } from '../../config';
 import logo from '../../assets/img/main-logo.svg';
 import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
@@ -239,12 +239,7 @@ class Header extends React.Component {
         <div className="mt3 pb1 pb2-ns ph2 dib w-100">
           <div className="cf fl pt1 dib">
             <Link to={'/'} className="link mv-1">
-              <img
-                src={logo}
-                alt={`${ORG_NAME} logo`}
-                className="ml2 v-mid pb2"
-                style={{ width: '54px' }}
-              />
+              <img src={ORG_LOGO || logo} alt={`${ORG_NAME} logo`} className="h2 ml2 v-mid pb2" />
               <span className="barlow-condensed f3 fw6 ml2 blue-dark">Tasking Manager</span>
             </Link>
           </div>
