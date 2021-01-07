@@ -16,6 +16,15 @@ it('exports USER_STATS_API_URL', () => {
 it('exports ORG_URL', () => {
   expect(typeof config.ORG_URL).toBe('string');
 });
+it('exports ORG_LOGO', () => {
+  expect(typeof config.ORG_LOGO).toBe('string');
+});
+it('exports HOMEPAGE_IMG_HIGH', () => {
+  expect(typeof config.HOMEPAGE_IMG_HIGH).toBe('string');
+});
+it('exports HOMEPAGE_IMG_LOW', () => {
+  expect(typeof config.HOMEPAGE_IMG_LOW).toBe('string');
+});
 it('exports ORG_NAME', () => {
   expect(typeof config.ORG_NAME).toBe('string');
 });
