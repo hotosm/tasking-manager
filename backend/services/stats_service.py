@@ -1,6 +1,6 @@
 from cachetools import TTLCache, cached
 
-from flask_restful import Resource, request, current_app
+from flask_restful import current_app
 from sqlalchemy import func, desc, cast, extract, or_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
@@ -28,7 +28,6 @@ from backend.models.postgis.utils import timestamp, NotFound  # noqa: F401
 from backend.services.project_service import ProjectService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
-import logging
 from datetime import date, datetime, timedelta
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
@@ -489,9 +488,6 @@ class StatsService:
             )
             .filter(User.id == Task.mapped_by)
             .filter(
-                Task.mapped_by != None,
-            )
-            .filter(
                 User.date_registered >= start,
             )
             .filter(
@@ -506,9 +502,6 @@ class StatsService:
             )
             .filter(User.id == Task.validated_by)
             .filter(
-                Task.validated_by != None,
-            )
-            .filter(
                 User.date_registered >= start,
             )
             .filter(
@@ -522,9 +515,6 @@ class StatsService:
             )
             .filter(
                 User.mapping_level == 1,
-            )
-            .filter(
-                User.username != None,
             )
             .filter(
                 User.date_registered >= start,
@@ -544,9 +534,6 @@ class StatsService:
                 User.mapping_level == 2,
             )
             .filter(
-                User.username != None,
-            )
-            .filter(
                 User.date_registered >= start,
             )
             .filter(
@@ -562,9 +549,6 @@ class StatsService:
             )
             .filter(
                 User.mapping_level == 3,
-            )
-            .filter(
-                User.username != None,
             )
             .filter(
                 User.date_registered >= start,
