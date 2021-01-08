@@ -1,5 +1,16 @@
+import datetime
 from flask_restful import Resource, current_app, request
 from backend.services.stats_service import NotFound, StatsService
+
+
+def validate_date_input(date):
+    if date:
+        date_format = "%Y-%m-%d"
+        current_date = datetime.datetime.now()
+        date = datetime.datetime.strptime(date, date_format)
+        if date <= current_date:
+            return date
+        raise Exception("Error: Date out of range for task activity")
 
 
 class TasksStatisticsAPI(Resource):
@@ -25,17 +36,17 @@ class TasksStatisticsAPI(Resource):
               type: string
               default: null
             - in: query
-              name: organisationName
+              name: organisation_name
               description: Organisation name to filter by
               required: false
               default: null
             - in: query
-              name: organisationID
+              name: organisation_id
               description: Organisation ID to filter by
               required: false
               default: null
             - in: query
-              name: campaigns
+              name: campaign
               description: Campaign name to filter by
               required: false
               default: null
@@ -58,16 +69,23 @@ class TasksStatisticsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            print(request.args)
-            start_date = request.args.get("start_date")
-            end_date = request.args.get("end_date")
-            org_id = request.args.get("org_id")
-            org_name = request.args.get("org_name")
-            campaign = request.args.get("campaigns")
-            project_ids = request.args.get("project_ids")
-            country = request.args.get("country")
+            start_date = validate_date_input(request.args.get("start_date"))
+            end_date = validate_date_input(request.args.get("end_date"))
+            organisation_id = request.args.get("organisation_id", None, int)
+            organisation_name = request.args.get("organisation_name", None, str)
+            campaign = request.args.get("campaign", None, int)
+            project_id = request.args.get("project_id")
+            if project_id:
+                project_id = map(str, project_id.split(","))
+            country = request.args.get("country", None, str)
             task_stats = StatsService.get_task_stats(
-                start_date, end_date, org_id, org_name, campaign, project_ids, country
+                start_date,
+                end_date,
+                organisation_id,
+                organisation_name,
+                campaign,
+                project_id,
+                country,
             )
             return task_stats.to_primitive(), 200
         except NotFound:
