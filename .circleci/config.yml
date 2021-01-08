@@ -277,8 +277,6 @@ workflows:
           branches:
             only:
               - deployment/teachosm-tasking-manager
-        requires:
-          - build
         stack_name: "tm4-teachosm"
         gitsha: $CIRCLE_SHA1
         context: tasking-manager-tm4-teachosm
@@ -288,8 +286,6 @@ workflows:
           branches:
             only:
               - deployment/teachosm-tasking-manager
-        requires:
-          - build
         context: tasking-manager-tm4-teachosm
         stack_name: "tm4-teachosm"
     - backend_deploy:
