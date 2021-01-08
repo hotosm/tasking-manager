@@ -15,6 +15,7 @@ from backend.models.dtos.stats_dto import (
     HomePageStatsDTO,
     OrganizationListStatsDTO,
     CampaignStatsDTO,
+    TaskStatsDTO,
 )
 
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
@@ -481,5 +482,69 @@ class StatsService:
         project.save()
 
     @staticmethod
-    def get_task_stats():
-        pass
+    def get_task_stats(
+        start_date, end_date, org_id, org_name, campaign, project_ids, country
+    ):
+        """
+        Add tasks stats endpoint to the API.
+        Return the number of tasks with activities on the period.
+        """
+
+        mapped = validated = invalidated = unavailable = 0
+
+        query = (
+            db.session.query(
+                TaskHistory.id,
+                TaskHistory.task_id,
+                TaskHistory.project_id,
+                TaskHistory.action,
+                TaskHistory.action_text,
+                TaskHistory.action_date,
+            )
+            .distinct(TaskHistory.task_id, TaskHistory.project_id)
+            .order_by(
+                TaskHistory.task_id,
+                TaskHistory.project_id,
+                TaskHistory.action_date.desc(),
+            )
+        )
+
+        if start_date:
+            query = query.filter(TaskHistory.action_date >= start_date)
+        if end_date:
+            query = query.filter(TaskHistory.action_date <= end_date)
+        if org_id:
+            query = query.join(Project, Project.id == TaskHistory.project_id).filter(
+                Project.organisation_id == org_id
+            )
+        if org_name:
+            pass
+        if campaign:
+            pass
+        if project_ids:
+            query = query.filter(TaskHistory.project_id.in_(project_ids))
+        if country:
+            query = query.join(Project, Project.id == TaskHistory.project_id).filter(
+                Project.country == country
+            )
+
+        for i in query:
+            if i.action == "STATE_CHANGE":
+                if i.action_text == "MAPPED":
+                    mapped += 1
+                elif i.action_text == "VALIDATED":
+                    validated += 1
+                elif i.action_text == "INVALIDATED":
+                    invalidated += 1
+                elif i.action_text == "BADIMAGERY":
+                    unavailable += 1
+            elif i.action == "LOCKED_FOR_VALIDATION":
+                mapped += 1
+
+        stats_dto = TaskStatsDTO()
+        stats_dto.mapped = mapped
+        stats_dto.validated = validated
+        stats_dto.invalidated = invalidated
+        stats_dto.unavailable = unavailable
+
+        return stats_dto

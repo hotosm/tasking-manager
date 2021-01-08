@@ -141,3 +141,12 @@ class HomePageStatsDTO(Model):
     # avg_completion_time = IntType(serialized_name='averageCompletionTime')
     organisations = ListType(ModelType(OrganizationListStatsDTO))
     campaigns = ListType(ModelType(CampaignStatsDTO))
+
+
+class TaskStatsDTO(Model):
+    """ DTO for tasks stats """
+
+    mapped = IntType()
+    validated = IntType()
+    invalidated = IntType()
+    unavailable = IntType()
