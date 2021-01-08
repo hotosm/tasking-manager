@@ -12,6 +12,8 @@ import { EditModeControl } from './editMode';
 import { Management } from './management';
 import { Button } from '../button';
 import { UserAvatarList } from '../user/avatar';
+import { SwitchToggle } from '../formInputs';
+
 
 export function OrgsManagement({
   organisations,
@@ -157,6 +159,23 @@ export function OrgInformation(props) {
           <FormattedMessage {...messages.description} />
         </label>
         <Field name="description" component="textarea" className={fieldClasses} />
+      </div>
+      <div className="cf pt1">
+        <label className={labelClasses}>
+          <FormattedMessage {...messages.enabledOegReport} />
+        </label>
+        <Field name="enabledOegReport" className={fieldClasses}>
+          {(props) => (
+            <div className="fl">
+              <SwitchToggle
+                isChecked={props.input.value}
+                onChange={props.input.onChange}
+                label={<FormattedMessage {...messages.enabledOegReportDescription} />}
+                labelPosition="right"
+              />
+            </div>
+          )}
+        </Field>
       </div>
       <div className="cf">
         <label className={labelClasses}>

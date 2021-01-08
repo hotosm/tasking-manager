@@ -176,6 +176,14 @@ export default defineMessages({
     id: 'management.fields.description',
     defaultMessage: 'Description',
   },
+  enabledOegReport: {
+    id: 'management.fields.enabledOegReport',
+    defaultMessage: 'Enable OEG Report',
+  },
+  enabledOegReportDescription: {
+    id: 'management.fields.enabledOegReport',
+    defaultMessage: 'Enable automated OEG report to OSM wiki',
+  },
   inviteOnly: {
     id: 'management.fields.invite_only',
     defaultMessage: 'Invite only',

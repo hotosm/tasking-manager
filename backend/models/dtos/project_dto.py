@@ -10,6 +10,7 @@ from schematics.types import (
     DateType,
 )
 from schematics.types.compound import ListType, ModelType
+from schematics.transforms import whitelist
 from backend.models.dtos.task_annotation_dto import TaskAnnotationDTO
 from backend.models.dtos.user_dto import is_known_mapping_level
 from backend.models.dtos.stats_dto import Pagination
@@ -139,6 +140,17 @@ class ProjectInfoDTO(Model):
     per_task_instructions = StringType(
         default="", serialized_name="perTaskInstructions"
     )
+    reported = BooleanType(
+        required=False, default=False
+    )  # Project is not reported by default
+
+    class Options:
+        # Skip unnecessary fields in the OEG Report.
+        roles = {
+            "report": whitelist(
+                "name", "short_description", "instructions", "per_task_instructions"
+            )
+        }
 
 
 class CustomEditorDTO(Model):
@@ -255,6 +267,22 @@ class ProjectDTO(Model):
     )
     interests = ListType(ModelType(InterestDTO))
 
+    class Options:
+        # Skip unnecessary fields in the OEG Report.
+        roles = {
+            "report": whitelist(
+                "project_id",
+                "project_status",
+                "project_info",
+                "changeset_comment",
+                "imagery",
+                "organisation",
+                "license_id",
+                "created",
+                "author",
+            )
+        }
+
 
 class ProjectFavoriteDTO(Model):
     """ DTO used to favorite a project """
@@ -273,6 +301,32 @@ class ProjectFavoritesDTO(Model):
     favorited_projects = ListType(
         ModelType(ProjectDTO), serialized_name="favoritedProjects"
     )
+
+
+class ProjectUser(Model):
+    """ Describes an individual user in a project """
+
+    user_id = StringType(serialized_name="userId")
+    user_name = StringType(serialized_name="userName")
+
+    class Options:
+        # Skip unnecessary fields in the OEG Report.
+        roles = {"report": whitelist("user_id", "user_name")}
+
+
+class ProjectUsersDTO(Model):
+    """ Contains all users on a project """
+
+    def __init__(self):
+        """ DTO constructor initialise all arrays to empty"""
+        super().__init__()
+        self.users = []
+
+    users = ListType(ModelType(ProjectUser))
+
+    class Options:
+        # Skip unnecessary fields in the OEG Report.
+        roles = {"report": whitelist("users")}
 
 
 class ProjectSearchDTO(Model):

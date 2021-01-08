@@ -18,6 +18,7 @@ from backend.services.license_service import LicenseService
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
 from backend.services.team_service import TeamService
+from backend.services.oeg_report_service import OegReportService
 
 
 class ProjectAdminServiceError(Exception):
@@ -127,7 +128,16 @@ class ProjectAdminService:
             authenticated_user_id, project_id
         ):
             project = ProjectAdminService._get_project_by_id(project_id)
+            current_project = project.as_dto_for_report()
             project.update(project_dto)
+
+            # report project data to oeg-reporter service if it's configured
+            if (
+                current_app.config["OEG_REPORTER_SERVICE_BASE_URL"]
+                and current_app.config["OEG_REPORTER_AUTHORIZATION_TOKEN"]
+            ):
+                oeg_report_service = OegReportService()
+                oeg_report_service.report_data_to_osm(project_dto, current_project)
         else:
             raise ValueError(
                 str(project_id)
@@ -251,7 +261,9 @@ class ProjectAdminService:
             if attr == "per_task_instructions":
                 continue  # Not mandatory field
 
-            if not value:
+            if (
+                not value and attr != "reported"
+            ):  # Reported field uses False as default value
                 raise (
                     ProjectAdminServiceError(f"{attr} not provided for Default Locale")
                 )
