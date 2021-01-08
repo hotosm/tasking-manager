@@ -47,9 +47,13 @@ const Parameters = {
     Description: 'ELB subnets',
     Type: 'String'
   },
-  SSLCertificateIdentifier: {
+  ApiSSLCertificateIdentifier: {
     Type: 'String',
-    Description: 'SSL certificate for HTTPS protocol'
+    Description: 'SSL certificate for HTTPS protocol for the API'
+  },
+  FrontendSSLCertificateIdentifier: {
+    Type: 'String',
+    Description: 'SSL certificate for HTTPS protocol for the frontend'
   },
   TaskingManagerLogDirectory: {
     Description: 'TM_LOG_DIR environment variable',
@@ -575,7 +579,7 @@ const Resources = {
     Type: 'AWS::ElasticLoadBalancingV2::Listener',
     Properties: {
       Certificates: [ {
-        CertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier'))
+        CertificateArn: cf.arn('acm', cf.ref('ApiSSLCertificateIdentifier'))
       }],
       DefaultActions: [{
         Type: 'forward',
@@ -704,7 +708,7 @@ const Resources = {
           ViewerProtocolPolicy: "redirect-to-https"
         },
         ViewerCertificate: {
-          AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
+          AcmCertificateArn: cf.arn('acm', cf.ref('FrontendSSLCertificateIdentifier')),
           MinimumProtocolVersion: 'TLSv1.2_2018',
           SslSupportMethod: 'sni-only'
         }
