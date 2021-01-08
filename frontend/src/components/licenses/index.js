@@ -104,9 +104,7 @@ export const LicenseForm = ({ license, updateLicense, disabledForm }) => {
                 <div className="w-30-l w-50 h-100 fr dib">
                   <Button
                     onClick={() => {
-                      document
-                        .getElementById('license-form')
-                        .dispatchEvent(new Event('submit', { cancelable: true }));
+                      handleSubmit();
                       setEditMode(false);
                     }}
                     className="w-100 h-100 bg-red white"

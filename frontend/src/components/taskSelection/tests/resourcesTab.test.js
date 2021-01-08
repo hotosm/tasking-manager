@@ -12,7 +12,7 @@ describe('ResourcesTab', () => {
     created: '2019-08-27T12:18:07.186897Z',
     changesetComment: '#hot-osm-project-123 #buildings',
   };
-  it('with multiple tasks locked', () => {
+  it('with multiple tasks locked', async () => {
     const { container } = render(
       <ReduxIntlProviders>
         <ResourcesTab tasksGeojson={tasks} project={projectData} tasksIds={[1, 2]} />
@@ -33,12 +33,12 @@ describe('ResourcesTab', () => {
     const selectInput = container.querySelector('input');
     fireEvent.focus(selectInput);
     fireEvent.keyDown(selectInput, { key: 'ArrowDown' });
-    waitFor(() => {
+    await waitFor(() => {
       expect(screen.getByText(1));
     });
     expect(screen.getByText(2));
     fireEvent.click(screen.getByText(1));
-    expect(screen.queryByText('Select task')).not.toBeInTheDocument();
+    await expect(screen.queryByText('Select task')).not.toBeInTheDocument();
     expect(screen.getByText("See task's changesets").disabled).toBeFalsy();
   });
   it('with single task locked', () => {

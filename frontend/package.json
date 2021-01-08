@@ -39,13 +39,13 @@
     "marked": "^1.2.7",
     "osmtogeojson": "^3.0.0-beta.3",
     "query-string": "^6.13.8",
-    "react": "^16.14.0",
+    "react": "^17.0.1",
     "react-accessible-accordion": "^3.3.3",
     "react-calendar-heatmap": "^1.8.1",
     "react-chartjs-2": "^2.11.1",
     "react-click-outside": "^3.0.1",
     "react-datepicker": "^3.3.0",
-    "react-dom": "^16.14.0",
+    "react-dom": "^17.0.1",
     "react-dropzone": "^11.2.4",
     "react-final-form": "^6.5.2",
     "react-intl": "^5.10.12",
@@ -101,7 +101,7 @@
     "jest-canvas-mock": "^2.3.0",
     "msw": "^0.25.0",
     "prettier": "^2.2.1",
-    "react-test-renderer": "^16.14.0"
+    "react-test-renderer": "^17.0.1"
   },
   "jest": {
     "coverageReporters": [
