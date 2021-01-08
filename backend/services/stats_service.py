@@ -28,6 +28,7 @@ from backend.models.postgis.utils import timestamp, NotFound  # noqa: F401
 from backend.services.project_service import ProjectService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
+from backend.services.organisation_service import OrganisationService
 
 from datetime import date, timedelta
 
@@ -483,12 +484,9 @@ class StatsService:
 
     @staticmethod
     def get_task_stats(
-        start_date, end_date, org_id, org_name, campaign, project_ids, country
+        start_date, end_date, org_id, org_name, campaign_id, project_id, country
     ):
-        """
-        Add tasks stats endpoint to the API.
-        Return the number of tasks with activities on the period.
-        """
+        """ Creates tasks stats for a period using the TaskStatsDTO """
 
         mapped = validated = invalidated = unavailable = 0
 
@@ -518,16 +516,22 @@ class StatsService:
                 Project.organisation_id == org_id
             )
         if org_name:
-            pass
-        if campaign:
-            pass
-        if project_ids:
-            query = query.filter(TaskHistory.project_id.in_(project_ids))
-        if country:
+            organisation = OrganisationService.get_organisation_by_name(org_name)
             query = query.join(Project, Project.id == TaskHistory.project_id).filter(
-                Project.country == country
+                Project.organisation_id == organisation.id
             )
-
+        if campaign_id:
+            query = query.join(
+                campaign_projects,
+                campaign_projects.c.project_id == TaskHistory.project_id,
+            ).filter(campaign_projects.c.campaign_id == campaign_id)
+        if project_id:
+            query = query.filter(TaskHistory.project_id.in_(project_id))
+        if country:
+            # query = query.join(Project, Project.id == TaskHistory.project_id).filter(
+            #     Project.country.contains({country}))
+            pass
+        print(query)
         for i in query:
             if i.action == "STATE_CHANGE":
                 if i.action_text == "MAPPED":

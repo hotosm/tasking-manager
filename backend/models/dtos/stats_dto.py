@@ -146,7 +146,7 @@ class HomePageStatsDTO(Model):
 class TaskStatsDTO(Model):
     """ DTO for tasks stats """
 
-    mapped = IntType()
-    validated = IntType()
-    invalidated = IntType()
-    unavailable = IntType()
+    mapped = IntType(serialized_name="mapped")
+    validated = IntType(serialized_name="validated")
+    invalidated = IntType(serialized_name="invalidated")
+    unavailable = IntType(serialized_name="unavailable")
