@@ -25,12 +25,17 @@ import {
   SidebarToggle,
   ReopenEditor,
 } from './actionSidebars';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { MultipleTaskHistoriesAccordion } from './multipleTaskHistories';
+import { ResourcesTab } from './resourcesTab';
+import { ActionTabsNav } from './actionTabsNav';
 
 const Editor = React.lazy(() => import('../editor'));
 
 export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
   useSetProjectPageTitleTag(project);
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -39,6 +44,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
   const [historyTabChecked, setHistoryTabChecked] = useState(false);
+  const [multipleTasksInfo, setMultipleTasksInfo] = useState({});
   const intl = useIntl();
 
   const activeTask = activeTasks && activeTasks[0];
@@ -49,6 +55,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     `projects/${project.projectId}/tasks/${tasksIds[0]}/`,
     project.projectId && tasksIds && tasksIds.length === 1,
   );
+
   const readTaskComments = useReadTaskComments(taskHistory);
 
   const getTaskGpxUrlCallback = useCallback((project, tasks) => getTaskGpxUrl(project, tasks), []);
@@ -57,6 +64,18 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const historyTabSwitch = () => {
     setHistoryTabChecked(true);
     setActiveSection('history');
+  };
+
+  const handleTaskHistories = (taskIds) => {
+    if (taskIds.length < 1) return;
+
+    taskIds.forEach((id) => {
+      if (!Object.keys(multipleTasksInfo).includes(id.toString())) {
+        fetchLocalJSONAPI(`projects/${project.projectId}/tasks/${id}/`, token).then((data) =>
+          setMultipleTasksInfo({ ...multipleTasksInfo, [id]: data }),
+        );
+      }
+    });
   };
 
   useEffect(() => {
@@ -183,44 +202,16 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                 </div>
               </div>
               <div className="cf">
-                <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
-                  <span
-                    className={`mr4-l mr3 pb2 pointer ${
-                      activeSection === 'completion' && 'bb b--blue-dark'
-                    }`}
-                    onClick={() => setActiveSection('completion')}
-                  >
-                    <FormattedMessage {...messages.completion} />
-                  </span>
-                  <span
-                    className={`mr4-l mr3 pb2 pointer ${
-                      activeSection === 'instructions' && 'bb b--blue-dark'
-                    }`}
-                    onClick={() => setActiveSection('instructions')}
-                  >
-                    <FormattedMessage {...messages.instructions} />
-                  </span>
-                  {activeTasks && activeTasks.length === 1 && (
-                    <span
-                      className={`pb2 pointer truncate ${
-                        activeSection === 'history' && 'bb b--blue-dark'
-                      }`}
-                      onClick={() => historyTabSwitch()}
-                    >
-                      <FormattedMessage {...messages.history} />
-                      {taskHistory &&
-                        taskHistory.taskHistory &&
-                        taskHistory.taskHistory.length > 1 && (
-                          <span
-                            className="bg-red white dib br-100 tc f6 ml1 mb1 v-mid"
-                            style={{ height: '1.125rem', width: '1.125rem' }}
-                          >
-                            {taskHistory.taskHistory.length}
-                          </span>
-                        )}
-                    </span>
-                  )}
-                </div>
+                <ActionTabsNav
+                  activeSection={activeSection}
+                  setActiveSection={setActiveSection}
+                  activeTasks={activeTasks}
+                  historyTabSwitch={historyTabSwitch}
+                  taskHistoryLength={
+                    taskHistory && taskHistory.taskHistory && taskHistory.taskHistory.length
+                  }
+                  action={action}
+                />
               </div>
               <div className="pt1">
                 {activeSection === 'completion' && (
@@ -304,12 +295,29 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                   </>
                 )}
                 {activeSection === 'history' && (
-                  <TaskHistory
-                    projectId={project.projectId}
-                    taskId={tasksIds[0]}
-                    commentPayload={taskHistory}
-                    mapperLevel={userDetails['mappingLevel']}
-                  />
+                  <>
+                    {activeTasks.length === 1 && (
+                      <>
+                        <TaskHistory
+                          projectId={project.projectId}
+                          taskId={tasksIds[0]}
+                          commentPayload={taskHistory}
+                          mapperLevel={userDetails['mappingLevel']}
+                        />
+                      </>
+                    )}
+                    {action === 'VALIDATION' && activeTasks.length > 1 && (
+                      <MultipleTaskHistoriesAccordion
+                        handleChange={handleTaskHistories}
+                        tasks={activeTasks}
+                        projectId={project.projectId}
+                        mapperLevel={userDetails['mappingLevel']}
+                      />
+                    )}
+                  </>
+                )}
+                {activeSection === 'resources' && (
+                  <ResourcesTab project={project} tasksIds={tasksIds} tasksGeojson={tasks} />
                 )}
               </div>
             </ReactPlaceholder>

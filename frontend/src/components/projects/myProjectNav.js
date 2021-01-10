@@ -69,7 +69,11 @@ export const MyProjectNav = (props) => {
 
               {!notAnyFilter && (
                 <ClearFilters
-                  url={props.management ? './?status=PUBLISHED&managedByMe=1' : './?mappedByMe=1'}
+                  url={
+                    props.management
+                      ? './?status=PUBLISHED&managedByMe=1&action=any'
+                      : './?mappedByMe=1&action=any'
+                  }
                   className="v-top mh1 mt1 mt2-ns dib"
                 />
               )}

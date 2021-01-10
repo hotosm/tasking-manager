@@ -537,6 +537,14 @@ export default defineMessages({
     defaultMessage:
       'Read more on the {osmWikiLink} or join the discussion with your local OSM community.',
   },
+  sustainabilityModel: {
+    id: 'pages.about.sustainabilityModel',
+    defaultMessage: 'Access the {faqs} for services and support information.',
+  },
+  smFAQ: {
+    id: 'pages.about.sustainabilityModel.faq',
+    defaultMessage: 'Tasking Manager Sustainability Model FAQs',
+  },
   floss: {
     id: 'pages.about.floss.title',
     defaultMessage: 'Free and Open Source Software',

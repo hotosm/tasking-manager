@@ -509,7 +509,7 @@ class Task(db.Model):
 
     # Mapped objects
     task_history = db.relationship(
-        TaskHistory, cascade="all", order_by=desc(TaskHistory.id)
+        TaskHistory, cascade="all", order_by=desc(TaskHistory.action_date)
     )
     task_annotations = db.relationship(TaskAnnotation, cascade="all")
     lock_holder = db.relationship(User, foreign_keys=[locked_by])

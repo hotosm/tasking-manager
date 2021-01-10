@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-  {% if values['MESSAGE_TYPE'] in [3, 8, 9] %}
+  {% if values['MESSAGE_TYPE'] == 3 %}
     <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> mentioned you in a comment on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_ID']}}</a>:</p>
   {% endif %}
   {% if values['MESSAGE_TYPE'] == 4 %}
@@ -8,6 +8,12 @@
   {% endif %}
   {% if values['MESSAGE_TYPE'] == 5 %}
     <p style="font-size: 14px; font-weight: 600">Task on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_ID']}}</a> needs more mapping:</p>
+  {% endif %}
+  {% if values['MESSAGE_TYPE'] == 8 %}
+    <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> left a comment on <a style="color: #d73f3f" href="{{values['TASK_LINK']}}">Task {{values['TASK_ID']}}</a> in <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_ID']}}</a>:</p>
+  {% endif %}
+  {% if values['MESSAGE_TYPE'] == 9 %}
+    <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> left a comment on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_ID']}}</a>:</p>
   {% endif %}
   <p>
     {{ values['CONTENT']|safe }}
