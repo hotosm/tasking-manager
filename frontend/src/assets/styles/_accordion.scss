@@ -1,0 +1,33 @@
+.accordion_button {
+  &::before {
+    display: inline-block;
+    content: '';
+    height: 8px;
+    width: 8px;
+    margin-right: 12px;
+    border-bottom: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(-45deg);
+  }
+}
+
+.accordion_button[aria-expanded='true']::before,
+.accordion_button[aria-selected='true']::before {
+    transform: rotate(45deg);
+}
+
+[hidden] {
+  display: none;
+}
+.accordion_panel {
+    animation: fadein 0.35s ease-in;
+}
+
+@keyframes fadein {
+  0% {
+      opacity: 0;
+  }
+  100% {
+      opacity: 1;
+  }
+}

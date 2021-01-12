@@ -44,7 +44,7 @@ export function TaskCard({
         }`}
       >
         <div className="pv3 ph3 ba br1 b--grey-light cf">
-          <div className="w-40-ns w-100 fl">
+          <div className="w-third-ns w-100 fl">
             <Link
               to={`/projects/${projectId}/tasks/?search=${taskId}`}
               className="no-underline link blue-dark dib"
@@ -65,7 +65,7 @@ export function TaskCard({
               </span>
             </div>
           </div>
-          <div className="w-40-ns w-100 fl">
+          <div className="w-third-ns w-100 fl">
             <div className={lockHolder ? '' : 'pv2 mv1'}>
               <div className="db">
                 <TaskStatus status={taskStatus} lockHolder={lockHolder} />
@@ -86,7 +86,7 @@ export function TaskCard({
               )}
             </div>
           </div>
-          <div className="w-20-ns w-100 fr">
+          <div className="w-third-ns w-100 fr">
             <Popup
               trigger={
                 <ListIcon className="pointer fr h1 w1 mv1 pv2 v-mid pr3 blue-light hover-blue-grey" />

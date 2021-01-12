@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Link, useLocation, navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
-import { selectUnit } from '@formatjs/intl-utils';
+import { selectUnit } from '../../utils/selectUnit';
 import { FormattedRelativeTime, FormattedMessage } from 'react-intl';
 
 import messages from './messages';

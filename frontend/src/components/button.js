@@ -33,13 +33,14 @@ export function FormSubmitButton({ children, className, disabledClassName, disab
   );
 }
 
-export function CustomButton({ onClick, children, className }: Object) {
+export function CustomButton({ onClick, children, className, disabled }: Object) {
   return (
     <button
       onClick={onClick}
       aria-pressed="false"
       focusindex="0"
-      className={`${className || ''} br1 f5 pointer`}
+      className={`${className || ''} br1 f5 ${disabled ? 'o-50' : 'pointer'}`}
+      disabled={disabled}
     >
       {children}
     </button>

@@ -38,6 +38,21 @@ export function AboutPage() {
             }}
           />
         </p>
+        <p>
+          <FormattedMessage
+            {...messages.sustainabilityModel}
+            values={{
+              faqs: (
+                <a
+                  className="link red fw5"
+                  href="https://docs.google.com/document/d/1p0zGfvANgrynn7vnOND-2rK4HHKbWVha9Xx8jfOwick"
+                >
+                  <FormattedMessage {...messages.smFAQ} />
+                </a>
+              ),
+            }}
+          />
+        </p>
       </div>
       <div className="w-100 ph6-l ph4 pt2 cf mb4">
         <h1 className="v-mid f2 barlow-condensed ttu fw8">

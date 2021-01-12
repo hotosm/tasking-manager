@@ -78,7 +78,7 @@ export function Welcome() {
         {completeness <= 0.5 ? (
           <IncompleteProfile />
         ) : userDetails.projectsMapped ? (
-          <Redirect to={'/contributions/projects/?mappedByMe=1'} noThrow />
+          <Redirect to={'/contributions/projects/?mappedByMe=1&action=any'} noThrow />
         ) : (
           <NewContributor username={userDetails.username} userIsloggedIn={userIsloggedIn} />
         )}

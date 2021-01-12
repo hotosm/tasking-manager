@@ -52,6 +52,7 @@ class SMTPService:
         message_id: int,
         from_username: str,
         project_id: int,
+        task_id: int,
         subject: str,
         content: str,
         message_type: int,
@@ -60,6 +61,7 @@ class SMTPService:
         current_app.logger.debug(f"Test if email required {to_address}")
         from_user_link = f"{current_app.config['APP_BASE_URL']}/users/{from_username}"
         project_link = f"{current_app.config['APP_BASE_URL']}/projects/{project_id}"
+        task_link = f"{current_app.config['APP_BASE_URL']}/projects/{project_id}/tasks/?search={task_id}"
         settings_url = "{}/settings#notifications".format(
             current_app.config["APP_BASE_URL"]
         )
@@ -76,6 +78,8 @@ class SMTPService:
             "FROM_USERNAME": from_username,
             "PROJECT_LINK": project_link,
             "PROJECT_ID": str(project_id) if project_id is not None else None,
+            "TASK_LINK": task_link,
+            "TASK_ID": str(task_id) if task_id is not None else None,
             "PROFILE_LINK": inbox_url,
             "SETTINGS_LINK": settings_url,
             "CONTENT": format_username_link(content),
