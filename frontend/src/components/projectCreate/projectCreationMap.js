@@ -3,6 +3,9 @@ import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+
 import { addLayer } from './index';
 import { MAPBOX_TOKEN, BASEMAP_OPTIONS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import { useDropzone } from 'react-dropzone';
@@ -61,19 +64,30 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   });
 
   useLayoutEffect(() => {
-    setMapObj({
-      ...mapObj,
-      map: new mapboxgl.Map({
-        container: mapRef.current,
-        style: MAP_STYLE,
-        center: [0, 0],
-        zoom: 1,
-        attributionControl: false,
-      })
-        .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
-        .addControl(new mapboxgl.ScaleControl({ unit: 'metric' })),
-    });
+    const map = new mapboxgl.Map({
+      container: mapRef.current,
+      style: MAP_STYLE,
+      center: [0, 0],
+      zoom: 1,
+      attributionControl: false,
+    })
+      .addControl(new mapboxgl.AttributionControl({ compact: false }))
+      .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
+      .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }));
+    if (MAPBOX_TOKEN) {
+      map.addControl(
+        new MapboxGeocoder({
+          accessToken: MAPBOX_TOKEN,
+          mapboxgl: mapboxgl,
+          marker: false,
+          collapsed: true,
+          language: locale.substr(0, 2) || 'en',
+        }),
+        'top-right',
+      );
+    }
+
+    setMapObj({ ...mapObj, map: map });
 
     return () => {
       mapObj.map && mapObj.map.remove();
@@ -113,11 +127,11 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
 
   return (
     <div className="w-100 h-100-l relative" {...getRootProps()}>
-      <div className="absolute top-0 left-0 z-5">
+      <div className="absolute top-0 right-0 z-5 mr2">
         <BasemapMenu map={mapObj.map} />
         <input style={{ display: 'null' }} {...getInputProps()} />
       </div>
-      <div id="map" className="vh-50 h-100-l w-100" ref={mapRef}></div>
+      <div id="project-creation-map" className="vh-50 h-100-l w-100" ref={mapRef}></div>
     </div>
   );
 };
