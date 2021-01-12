@@ -8,6 +8,7 @@ from backend.services.project_service import (
     MappingLevel,
     UserService,
     MappingNotAllowed,
+    ValidatingNotAllowed,
 )
 from backend.services.project_service import ProjectAdminService
 from backend.models.dtos.project_dto import LockedTasksForUser
@@ -126,3 +127,122 @@ class TestProjectService(unittest.TestCase):
         # Assert
         self.assertFalse(allowed)
         self.assertEqual(reason, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST)
+
+    @patch.object(UserService, "is_user_blocked")
+    @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
+    @patch.object(Task, "get_locked_tasks_for_user")
+    @patch.object(Project, "get")
+    def test_user_permitted_to_validate(
+        self,
+        mock_project,
+        mock_user_tasks,
+        mock_user_blocked,
+        mock_user_action_permitted,
+    ):
+        # Arrange
+        stub_project = Project()
+        stub_project.status = ProjectStatus.PUBLISHED.value
+        mock_project.return_value = stub_project
+
+        mock_user_tasks.return_value = LockedTasksForUser()
+        mock_user_tasks.return_value.locked_tasks = []
+        mock_user_blocked.return_value = False
+        mock_user_action_permitted.return_value = False
+
+        # Act
+        allowed, reason = ProjectService.is_user_permitted_to_validate(1, 1)
+
+        # Assert
+        self.assertTrue(allowed)
+        self.assertEqual(reason, "User allowed to validate")
+
+    @patch.object(UserService, "is_user_blocked")
+    @patch.object(Project, "get")
+    def test_user_not_permitted_to_validate_if_user_is_blocked(
+        self, mock_project, mock_user_blocked
+    ):
+
+        # Arrange
+        mock_project.return_value = Project()
+        mock_user_blocked.return_value = True
+
+        # Act
+        allowed, reason = ProjectService.is_user_permitted_to_validate(1, 1)
+
+        # Assert
+        self.assertFalse(allowed)
+        self.assertEqual(reason, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST)
+
+    @patch.object(UserService, "is_user_blocked")
+    @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
+    @patch.object(Project, "get")
+    def test_user_cant_validate_if_project_not_published(
+        self, mock_project, mock_user_action_permitted, mock_user_blocked
+    ):
+        # Arrange
+        stub_project = Project()
+        stub_project.status = ProjectStatus.DRAFT.value
+        mock_project.return_value = stub_project
+
+        mock_user_blocked.return_value = False
+        mock_user_action_permitted.return_value = False
+
+        # Act
+        allowed, reason = ProjectService.is_user_permitted_to_validate(1, 1)
+
+        # Assert
+        self.assertFalse(allowed)
+        self.assertEqual(reason, ValidatingNotAllowed.PROJECT_NOT_PUBLISHED)
+
+    @patch.object(UserService, "has_user_accepted_license")
+    @patch.object(UserService, "is_user_blocked")
+    @patch.object(Task, "get_locked_tasks_for_user")
+    @patch.object(Project, "get")
+    def test_user_not_permitted_to_validate_if_user_has_not_accepted_license(
+        self, mock_project, mock_user_tasks, mock_user_blocked, mock_user_service
+    ):
+        # Arrange
+        stub_project = Project()
+        stub_project.status = ProjectStatus.PUBLISHED.value
+        stub_project.license_id = 11
+
+        mock_project.return_value = stub_project
+        mock_user_tasks.return_value = LockedTasksForUser()
+        mock_user_tasks.return_value.locked_tasks = []
+        mock_user_service.return_value = False
+        mock_user_blocked.return_value = False
+
+        # Act
+        allowed, reason = ProjectService.is_user_permitted_to_validate(1, 1)
+
+        # Assert
+        self.assertFalse(allowed)
+        self.assertEqual(reason, ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE)
+
+    @patch.object(UserService, "is_user_blocked")
+    @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
+    @patch.object(Task, "get_locked_tasks_for_user")
+    @patch.object(Project, "get")
+    def test_user_not_permitted_to_validate_if_already_locked_tasks(
+        self,
+        mock_project,
+        mock_user_tasks,
+        mock_user_blocked,
+        mock_user_action_permitted,
+    ):
+        # Arrange
+        stub_project = Project()
+        stub_project.status = ProjectStatus.PUBLISHED.value
+        mock_project.return_value = stub_project
+
+        mock_user_tasks.return_value = LockedTasksForUser()
+        mock_user_tasks.return_value.locked_tasks = [1]
+        mock_user_blocked.return_value = False
+        mock_user_action_permitted.return_value = False
+
+        # Act
+        allowed, reason = ProjectService.is_user_permitted_to_validate(1, 1)
+
+        # Assert
+        self.assertFalse(allowed)
+        self.assertEqual(reason, ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED)
