@@ -78,10 +78,12 @@ export function Jumbotron() {
       </div>
       <div className="absolute top-0 pl6-l pl4 pv5-ns pv3 z-1">
         <h3 className="mb4 mw7-ns mw-20rem f-4rem-l f1 ttu barlow-condensed fw8">
-          <FormattedMessage {...messages.jumbotronTitle} />
+          Teach the world to map
         </h3>
         <div className="pr2 f4 f3-ns mw7-l mw6-m mw5 mb4">
-          <FormattedMessage {...messages.jumbotronHeadLine} />
+          Communities, organizations and governments worldwide need access to information to address
+          local issues. Engage your students around these critical issues, by contributing to
+          OpenStreetMap, the free and editable map of the world.
         </div>
         <JumbotronButtons />
       </div>

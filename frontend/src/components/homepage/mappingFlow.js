@@ -52,6 +52,10 @@ export function MappingFlow() {
       <p className="pr2 f5 f4-ns blue-dark lh-title mw7 mb4">
         <FormattedMessage {...messages.mappingFlowHeadline} />
       </p>
+      <p className="pr2 f5 f4-ns blue-dark lh-title mw7 mb4">
+        This Tasking Manager is geared toward classroom instructors, or any other individuals
+        leading a coordinated group in team-mapping instruction.
+      </p>
       <div className="cf">
         {cards.map((card, n) => (
           <MappingCard {...card} key={n} />
