@@ -42,8 +42,8 @@ export function TaskStatus({ status, lockHolder }: Object) {
             }}
           />
         ) : (
-          <FormattedMessage {...messages[`taskStatus_${status}`]} />
-        )}
+            <FormattedMessage {...messages[`taskStatus_${status}`]} />
+          )}
       </span>
     </>
   );
@@ -62,9 +62,8 @@ function TaskItem({
 
   return (
     <div
-      className={`cf db ba br1 mt2 ${
-        selected.includes(data.taskId) ? 'b--blue-dark bw1' : 'b--tan bw1'
-      }`}
+      className={`cf db ba br1 mt2 ${selected.includes(data.taskId) ? 'b--blue-dark bw1' : 'b--tan bw1'
+        }`}
     >
       <div
         className="w-80 pv3 fl cf pointer"
@@ -143,9 +142,8 @@ export function TaskFilter({ userCanValidate, statusFilter, setStatusFn }: Objec
     <div className="pv1">
       <CustomButton
         onClick={() => setStatusFn('all')}
-        className={`dbi bn ph3 pv2 ${
-          !statusFilter || statusFilter === 'all' ? activeClass : inactiveClass
-        }`}
+        className={`dbi bn ph3 pv2 ${!statusFilter || statusFilter === 'all' ? activeClass : inactiveClass
+          }`}
       >
         <FormattedMessage {...messages.filterAll} />
       </CustomButton>
@@ -159,17 +157,15 @@ export function TaskFilter({ userCanValidate, statusFilter, setStatusFn }: Objec
         <>
           <CustomButton
             onClick={() => setStatusFn('readyToValidate')}
-            className={`dbi bn ph3 pv2 ${
-              statusFilter === 'readyToValidate' ? activeClass : inactiveClass
-            }`}
+            className={`dbi bn ph3 pv2 ${statusFilter === 'readyToValidate' ? activeClass : inactiveClass
+              }`}
           >
             <FormattedMessage {...messages.filterReadyToValidate} />
           </CustomButton>
           <CustomButton
             onClick={() => setStatusFn('unavailable')}
-            className={`dbi bn ph3 pv2 ${
-              statusFilter === 'unavailable' ? activeClass : inactiveClass
-            }`}
+            className={`dbi bn ph3 pv2 ${statusFilter === 'unavailable' ? activeClass : inactiveClass
+              }`}
           >
             <FormattedMessage {...messages.taskStatus_BADIMAGERY} />
           </CustomButton>
@@ -245,7 +241,8 @@ export function TaskList({
 
   const sortingOptions = [
     { label: <FormattedMessage {...messages.sortById} />, value: 'id' },
-    { label: <FormattedMessage {...messages.sortByLastUpdate} />, value: 'date' },
+    { label: <FormattedMessage {...messages.sortByMostRecentUpdate} />, value: 'date' },
+    { label: <FormattedMessage {...messages.sortByLeastRecentlyUpdate} />, value: 'least_date' },
   ];
 
   return (
@@ -269,15 +266,14 @@ export function TaskList({
             onClick={() => {
               setTextSearch('');
             }}
-            className={`absolute w1 h1 top-0 red pt3 pointer pr3 right-0 ${
-              textSearch ? 'dib' : 'dn'
-            }`}
+            className={`absolute w1 h1 top-0 red pt3 pointer pr3 right-0 ${textSearch ? 'dib' : 'dn'
+              }`}
           />
         </div>
         <div className="w-60-l w-50-m w-100 dib pv1">
           <Dropdown
-            onAdd={() => {}}
-            onRemove={() => {}}
+            onAdd={() => { }}
+            onRemove={() => { }}
             onChange={updateSortingOption}
             value={sortBy || 'date'}
             options={sortingOptions}
@@ -301,7 +297,7 @@ export function TaskList({
           <PaginatedList
             pageSize={6}
             items={
-              sortBy === 'id' ? readyTasks.sort(compareTaskId) : readyTasks.sort(compareLastUpdate)
+              sortBy === 'id' ? readyTasks.sort(compareTaskId) : sortBy === 'date' ? readyTasks.sort(compareLastUpdate) : (readyTasks.sort(compareLastUpdate)).reverse()
             }
             ItemComponent={TaskItem}
             setZoomedTaskId={setZoomedTaskId}
@@ -354,19 +350,19 @@ function TaskActivityModal({
               userCanValidate={userCanValidate}
             />
           ) : (
-            <div className="w-100 pa4 blue-dark bg-white">
-              <CloseIcon className="h1 w1 fr pointer" onClick={() => close()} />
-              <h3 className="ttu f3 pa0 ma0 barlow-condensed b mb4">
-                <FormattedMessage {...messages.taskUnavailable} />
-              </h3>
-              <p className="pb0">
-                <FormattedMessage
-                  {...messages.taskSplitDescription}
-                  values={{ id: <b>#{taskId}</b> }}
-                />
-              </p>
-            </div>
-          )}
+              <div className="w-100 pa4 blue-dark bg-white">
+                <CloseIcon className="h1 w1 fr pointer" onClick={() => close()} />
+                <h3 className="ttu f3 pa0 ma0 barlow-condensed b mb4">
+                  <FormattedMessage {...messages.taskUnavailable} />
+                </h3>
+                <p className="pb0">
+                  <FormattedMessage
+                    {...messages.taskSplitDescription}
+                    values={{ id: <b>#{taskId}</b> }}
+                  />
+                </p>
+              </div>
+            )}
         </>
       )}
     </Popup>
