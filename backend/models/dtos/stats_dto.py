@@ -78,7 +78,28 @@ class ProjectLastActivityDTO(Model):
     activity = ListType(ModelType(TaskStatusDTO))
 
 
+class OrganizationProjectsStatsDTO(Model):
+    draft = IntType()
+    published = IntType()
+    archived = IntType()
+
+
+class OrganizationTasksStatsDTO(Model):
+    ready = IntType()
+    locked_for_mapping = IntType(serialized_name="lockedForMapping")
+    locked_for_validation = IntType(serialized_name="lockedForValidation")
+    mapped = IntType()
+    validated = IntType()
+    invalidated = IntType()
+    badimagery = IntType(serialized_name="badImagery")
+
+
 class OrganizationStatsDTO(Model):
+    projects = ModelType(OrganizationProjectsStatsDTO)
+    active_tasks = ModelType(OrganizationTasksStatsDTO, serialized_name="activeTasks")
+
+
+class OrganizationListStatsDTO(Model):
     def __init__(self, row):
         super().__init__()
         self.organisation = row[0]
@@ -118,5 +139,5 @@ class HomePageStatsDTO(Model):
     total_organisations = IntType(serialized_name="totalOrganisations")
     total_campaigns = IntType(serialized_name="totalCampaigns")
     # avg_completion_time = IntType(serialized_name='averageCompletionTime')
-    organisations = ListType(ModelType(OrganizationStatsDTO))
+    organisations = ListType(ModelType(OrganizationListStatsDTO))
     campaigns = ListType(ModelType(CampaignStatsDTO))

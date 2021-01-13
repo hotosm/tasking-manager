@@ -279,6 +279,44 @@ class OrganisationsRestAPI(Resource):
             return {"Error": error_msg}, 500
 
 
+class OrganisationsStatsAPI(Resource):
+    def get(self, organisation_id):
+        """
+        Return statistics about projects and active tasks of an organisation
+        ---
+        tags:
+            - organisations
+        produces:
+            - application/json
+        parameters:
+            - name: organisation_id
+              in: path
+              description: The unique organisation ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Organisation found
+            404:
+                description: Organisation not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            OrganisationService.get_organisation_by_id(organisation_id)
+            organisation_dto = OrganisationService.get_organisation_stats(
+                organisation_id
+            )
+            return organisation_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Organisation Not Found"}, 404
+        except Exception as e:
+            error_msg = f"Organisation GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
 class OrganisationsAllAPI(Resource):
     @token_auth.login_required(optional=True)
     def get(self):

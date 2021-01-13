@@ -8,9 +8,16 @@ from backend.models.dtos.organisation_dto import (
     ListOrganisationsDTO,
     UpdateOrganisationDTO,
 )
+from backend.models.dtos.stats_dto import (
+    OrganizationStatsDTO,
+    OrganizationProjectsStatsDTO,
+    OrganizationTasksStatsDTO,
+)
 from backend.models.postgis.campaign import campaign_organisations
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectInfo
+from backend.models.postgis.task import Task
+from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
 
@@ -165,6 +172,58 @@ class OrganisationService:
             raise NotFound()
 
         return projects
+
+    @staticmethod
+    def get_organisation_stats(organisation_id: int) -> Organisation:
+        projects = db.session.query(Project.id, Project.status).filter(
+            Project.organisation_id == organisation_id
+        )
+        published_projects = projects.filter(
+            Project.status == ProjectStatus.PUBLISHED.value
+        )
+        active_tasks = db.session.query(
+            Task.id, Task.project_id, Task.task_status
+        ).filter(Task.project_id.in_([i.id for i in published_projects.all()]))
+
+        # populate projects stats
+        projects_dto = OrganizationProjectsStatsDTO()
+        projects_dto.draft = projects.filter(
+            Project.status == ProjectStatus.DRAFT.value
+        ).count()
+        projects_dto.published = published_projects.count()
+        projects_dto.archived = projects.filter(
+            Project.status == ProjectStatus.ARCHIVED.value
+        ).count()
+
+        # populate tasks stats
+        tasks_dto = OrganizationTasksStatsDTO()
+        tasks_dto.ready = active_tasks.filter(
+            Task.task_status == TaskStatus.READY.value
+        ).count()
+        tasks_dto.locked_for_mapping = active_tasks.filter(
+            Task.task_status == TaskStatus.LOCKED_FOR_MAPPING.value
+        ).count()
+        tasks_dto.mapped = active_tasks.filter(
+            Task.task_status == TaskStatus.MAPPED.value
+        ).count()
+        tasks_dto.locked_for_validation = active_tasks.filter(
+            Task.task_status == TaskStatus.LOCKED_FOR_VALIDATION.value
+        ).count()
+        tasks_dto.validated = active_tasks.filter(
+            Task.task_status == TaskStatus.VALIDATED.value
+        ).count()
+        tasks_dto.invalidated = active_tasks.filter(
+            Task.task_status == TaskStatus.INVALIDATED.value
+        ).count()
+        tasks_dto.badimagery = active_tasks.filter(
+            Task.task_status == TaskStatus.BADIMAGERY.value
+        ).count()
+
+        # populate and return main dto
+        stats_dto = OrganizationStatsDTO()
+        stats_dto.projects = projects_dto
+        stats_dto.active_tasks = tasks_dto
+        return stats_dto
 
     @staticmethod
     def assert_validate_name(org: Organisation, name: str):
