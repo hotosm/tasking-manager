@@ -61,6 +61,7 @@ export function ProjectEdit({ id }) {
     mappingTypes: [],
     mappingEditors: [],
     validationEditors: [],
+    organisation: '',
     teams: [],
     projectInfoLocales: [
       {
@@ -208,6 +209,10 @@ export function ProjectEdit({ id }) {
       filtered.push({ locale: null, fields: ['mappingTypes'] });
     }
 
+    if (!projectInfo.organisation) {
+      filtered.push({ locale: null, fields: ['organisation'] });
+    }
+
     if (filtered.length > 0) {
       setError(filtered);
     } else {
@@ -251,7 +256,7 @@ export function ProjectEdit({ id }) {
       <ul className="mt2 mb0">
         {e.fields.map((f, i) => {
           return (
-            <li className="b">
+            <li className="b" key={i}>
               {<FormattedMessage {...projectEditMessages[f]} />}
               {i === e.fields.length - 1 ? null : ','}
             </li>
@@ -264,9 +269,9 @@ export function ProjectEdit({ id }) {
   const ErrorMessages = ({ error }) => {
     return (
       <div className="mr4 red ba b--red pa2 br1 dib pa2">
-        {error.map((e) => {
+        {error.map((e, i) => {
           return (
-            <div className="pv2">
+            <div className="pv2" key={i}>
               <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
               {MissingField(e.locale)}
               <ErrorMessage e={e} />
