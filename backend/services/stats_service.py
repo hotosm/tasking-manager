@@ -1,6 +1,6 @@
 from cachetools import TTLCache, cached
 
-from sqlalchemy import func, desc, cast, extract, or_
+from sqlalchemy import func, desc, cast, extract, or_, and_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
 from backend import db
@@ -488,22 +488,35 @@ class StatsService:
     ):
         """ Creates tasks stats for a period using the TaskStatsDTO """
 
-        mapped = validated = invalidated = unavailable = 0
-
         query = (
             db.session.query(
-                TaskHistory.id,
                 TaskHistory.task_id,
                 TaskHistory.project_id,
-                TaskHistory.action,
-                TaskHistory.action_text,
                 TaskHistory.action_date,
+                Task.task_status,
             )
             .distinct(TaskHistory.task_id, TaskHistory.project_id)
+            .join(
+                Task,
+                and_(
+                    Task.id == TaskHistory.task_id,
+                    Task.project_id == TaskHistory.project_id,
+                ),
+            )
+            .filter(
+                Task.task_status.in_(
+                    (
+                        TaskStatus.MAPPED.value,
+                        TaskStatus.VALIDATED.value,
+                        TaskStatus.INVALIDATED.value,
+                        TaskStatus.BADIMAGERY.value,
+                    )
+                )
+            )
             .order_by(
                 TaskHistory.task_id,
                 TaskHistory.project_id,
-                TaskHistory.action_date.desc(),
+                TaskHistory.id.desc(),
             )
         )
 
@@ -528,27 +541,27 @@ class StatsService:
         if project_id:
             query = query.filter(TaskHistory.project_id.in_(project_id))
         if country:
-            # query = query.join(Project, Project.id == TaskHistory.project_id).filter(
-            #     Project.country.contains({country}))
-            pass
-        print(query)
-        for i in query:
-            if i.action == "STATE_CHANGE":
-                if i.action_text == "MAPPED":
-                    mapped += 1
-                elif i.action_text == "VALIDATED":
-                    validated += 1
-                elif i.action_text == "INVALIDATED":
-                    invalidated += 1
-                elif i.action_text == "BADIMAGERY":
-                    unavailable += 1
-            elif i.action == "LOCKED_FOR_VALIDATION":
-                mapped += 1
+            # Unnest country column array.
+            sq = Project.query.with_entities(
+                Project.id, func.unnest(Project.country).label("country")
+            ).subquery()
+
+            query = query.filter(sq.c.country.ilike("%{}%".format(country))).filter(
+                TaskHistory.project_id == sq.c.id
+            )
 
         stats_dto = TaskStatsDTO()
-        stats_dto.mapped = mapped
-        stats_dto.validated = validated
-        stats_dto.invalidated = invalidated
-        stats_dto.unavailable = unavailable
+        stats_dto.mapped = query.filter(
+            Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))
+        ).count()
+        stats_dto.validated = query.filter(
+            Task.task_status == TaskStatus.VALIDATED.value
+        ).count()
+        stats_dto.invalidated = query.filter(
+            Task.task_status == TaskStatus.INVALIDATED.value
+        ).count()
+        stats_dto.unavailable = query.filter(
+            Task.task_status == TaskStatus.BADIMAGERY.value
+        ).count()
 
         return stats_dto
