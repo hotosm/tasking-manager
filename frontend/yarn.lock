@@ -1951,12 +1951,12 @@
     "@turf/helpers" "6.x"
     "@turf/invariant" "6.x"
 
-"@turf/bbox-polygon@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/@turf/bbox-polygon/-/bbox-polygon-6.0.1.tgz#ae0fbb14558831fb34538aae089a23d3336c6379"
-  integrity sha512-f6BK6GOzUNjmJeOYHklk/5LNcQMQbo51gvAM10dTM5IqzKP01KM5bgV88uOKfSZB0HRQVpaRV1tgXk2bg5cPRg==
+"@turf/bbox-polygon@^6.2.0":
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/@turf/bbox-polygon/-/bbox-polygon-6.2.0.tgz#53f87b2865949d01ab78752510a649e638bf5cd1"
+  integrity sha512-07madHnOzuB6XYeHVCEyYbg7Wta1tFkbGZ6zXUXIjCoq/eVXYtBoh8Q2uyFRuUhAODwBVYCA2iSNk6bsMPJhxw==
   dependencies:
-    "@turf/helpers" "6.x"
+    "@turf/helpers" "^6.2.0"
 
 "@turf/bbox@6.x", "@turf/bbox@^6.0.1":
   version "6.0.1"
@@ -1997,10 +1997,10 @@
   dependencies:
     "@turf/helpers" "^5.1.5"
 
-"@turf/helpers@6.x", "@turf/helpers@^6.1.4":
-  version "6.1.4"
-  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.1.4.tgz#d6fd7ebe6782dd9c87dca5559bda5c48ae4c3836"
-  integrity sha512-vJvrdOZy1ngC7r3MDA7zIGSoIgyrkWcGnNIEaqn/APmw+bVLF2gAW7HIsdTxd12s5wQMqEpqIQrmrbRRZ0xC7g==
+"@turf/helpers@6.x", "@turf/helpers@^6.1.4", "@turf/helpers@^6.2.0":
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.2.0.tgz#dc770ce3b35b230f6a661824f3f87591378e379b"
+  integrity sha512-ANcZ0LFpnrza52y3um8KXgbpF1l7qmJXEqY1Bv5RovdQH+kUvMrZsb4SO3q4VH4eQqlsxDLxxXl7hkjjFbDtHg==
 
 "@turf/helpers@^5.1.5":
   version "5.1.5"
