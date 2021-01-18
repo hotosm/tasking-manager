@@ -52,10 +52,6 @@ export default defineMessages({
     id: 'management.projects.create.review_tasks.organisation',
     defaultMessage: 'Organisation',
   },
-  selectOrganisation: {
-    id: 'management.projects.create.review_tasks.organisation.select',
-    defaultMessage: 'Select organisation',
-  },
   creationFailed: {
     id: 'management.projects.create.review_tasks.failure.message',
     defaultMessage: 'It was not possible to save your project due to an error: {error}',

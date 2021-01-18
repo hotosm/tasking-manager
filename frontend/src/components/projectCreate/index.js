@@ -249,7 +249,6 @@ const ProjectCreate = (props) => {
   const [cloneProjectName, setCloneProjectName] = useState(null);
   const [cloneProjectOrg, setCloneProjectOrg] = useState(null);
   const [err, setErr] = useState({ error: false, message: null });
-  // console.log(cloneProjectOrg)
 
   const fetchCloneProjectInfo = useCallback(
     async (cloneFromId) => {

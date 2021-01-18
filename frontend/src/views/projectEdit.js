@@ -205,12 +205,18 @@ export function ProjectEdit({ id }) {
       })
       .filter((l) => l.fields.length > 0);
 
+    const nonLocaleMissingFields = { locale: null, fields: [] };
+
     if (projectInfo.mappingTypes.length === 0) {
-      filtered.push({ locale: null, fields: ['mappingTypes'] });
+      nonLocaleMissingFields.fields = [...nonLocaleMissingFields.fields, 'mappingTypes'];
     }
 
     if (!projectInfo.organisation) {
-      filtered.push({ locale: null, fields: ['organisation'] });
+      nonLocaleMissingFields.fields = [...nonLocaleMissingFields.fields, 'organisation'];
+    }
+
+    if (nonLocaleMissingFields.fields.length > 0) {
+      filtered.push(nonLocaleMissingFields);
     }
 
     if (filtered.length > 0) {

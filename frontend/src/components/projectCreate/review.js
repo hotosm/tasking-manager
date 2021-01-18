@@ -54,7 +54,7 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
 
       {cloneProjectData.name === null ? (
         <>
-          <label for="name" className="f5 fw6 db mb2 pt3">
+          <label htmlFor="name" className="f5 fw6 db mb2 pt3">
             <FormattedMessage {...messages.name} />
           </label>
           <input
