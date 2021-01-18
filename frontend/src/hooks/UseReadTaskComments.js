@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const useReadTaskComments = (history) => {
+export const useReadTaskComments = (history) => {
   const [readTaskComments, setReadTaskComments] = useState(false);
 
   useEffect(() => {
@@ -17,5 +17,3 @@ const useReadTaskComments = (history) => {
   }, [history]);
   return readTaskComments;
 };
-
-export default useReadTaskComments;
