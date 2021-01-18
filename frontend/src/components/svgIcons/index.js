@@ -73,3 +73,7 @@ export { QuestionCircleIcon } from './questionCircle';
 export { ChartLineIcon } from './chart';
 export { EditIcon } from './edit';
 export { InfoIcon } from './info';
+export { CircleIcon } from './circle';
+export { FourCellsGridIcon, NineCellsGridIcon } from './grid';
+export { CutIcon } from './cut';
+export { FileImportIcon } from './fileImport';

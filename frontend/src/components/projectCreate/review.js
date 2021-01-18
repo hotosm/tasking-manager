@@ -43,7 +43,7 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
 
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark">
+      <h3 className="f3 ttu fw6 mt2 mb3 barlow-condensed blue-dark">
         <FormattedMessage {...messages.step4} />
       </h3>
       <p className="pt2">
@@ -58,7 +58,7 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
           <input
             onChange={setProjectName}
             id="name"
-            className="input-reset ba b--black-20 pa2 mb2 db w-75"
+            className="input-reset ba b--black-20 pa2 mb2 db w-100"
             type="text"
           />
         </>

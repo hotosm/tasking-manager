@@ -174,6 +174,7 @@ export default defineMessages({
   },
   importDescription: {
     id: 'management.projects.create.upload.description',
-    defaultMessage: 'Your can import a GeoJSON, KML, OSM or zipped Shapefile.',
+    defaultMessage:
+      'The supported file formats are: GeoJSON, KML, OSM or zipped Shapefile. You can drag and drop a file over the map to import it.',
   },
 });
