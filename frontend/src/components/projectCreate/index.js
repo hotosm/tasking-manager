@@ -247,14 +247,17 @@ const ProjectCreate = (props) => {
   const [cloneFromId, setCloneFromId] = useQueryParam('cloneFrom', NumberParam);
   const [step, setStep] = useState(1);
   const [cloneProjectName, setCloneProjectName] = useState(null);
+  const [cloneProjectOrg, setCloneProjectOrg] = useState(null);
   const [err, setErr] = useState({ error: false, message: null });
+  // console.log(cloneProjectOrg)
 
   const fetchCloneProjectInfo = useCallback(
     async (cloneFromId) => {
       const res = await fetchLocalJSONAPI(`projects/${cloneFromId}/`, token);
       setCloneProjectName(res.projectInfo.name);
+      setCloneProjectOrg(res.organisation);
     },
-    [setCloneProjectName, token],
+    [setCloneProjectName, setCloneProjectOrg, token],
   );
 
   useLayoutEffect(() => {
@@ -266,6 +269,7 @@ const ProjectCreate = (props) => {
   let cloneProjectData = {
     id: cloneFromId,
     name: cloneProjectName,
+    org: cloneProjectOrg,
   };
 
   // Project information.
@@ -278,6 +282,7 @@ const ProjectCreate = (props) => {
     zoomLevel: 9,
     tempTaskGrid: null,
     arbitraryTasks: false,
+    organisation: '',
   });
 
   useLayoutEffect(() => {

@@ -9,7 +9,7 @@ import messages from './messages';
 import { useEditTeamAllowed } from '../../hooks/UsePermissions';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
-import { SwitchToggle, RadioField, OrganisationSelect } from '../formInputs';
+import { SwitchToggle, RadioField, OrganisationSelectInput } from '../formInputs';
 import { EditModeControl } from './editMode';
 import { Button, EditButton } from '../button';
 
@@ -160,7 +160,7 @@ export function TeamInformation(props) {
         <label className={labelClasses}>
           <FormattedMessage {...messages.organisation} />
         </label>
-        <OrganisationSelect name="organisation_id" />
+        <OrganisationSelectInput name="organisation_id" />
       </div>
       <div className="cf pt1">
         <label className={labelClasses}>

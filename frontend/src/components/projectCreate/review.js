@@ -7,6 +7,7 @@ import { Button } from '../button';
 import { createProject } from '../../store/actions/project';
 import { store } from '../../store';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { OrganisationSelect } from '../formInputs';
 
 const handleCreate = (metadata, updateMetadata, projectName, token, cloneProjectData, setError) => {
   if (!metadata.geom) {
@@ -35,6 +36,7 @@ const handleCreate = (metadata, updateMetadata, projectName, token, cloneProject
 export default function Review({ metadata, updateMetadata, token, projectId, cloneProjectData }) {
   const [error, setError] = useState(null);
   const projectName = metadata.projectName;
+  const organisation = metadata.organisation;
 
   const setProjectName = (event) => {
     event.preventDefault();
@@ -60,6 +62,21 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
             id="name"
             className="input-reset ba b--black-20 pa2 mb2 db w-100"
             type="text"
+          />
+        </>
+      ) : null}
+
+      {cloneProjectData.org === null ? (
+        <>
+          <label className="f5 fw6 db mb2 pt3">
+            <FormattedMessage {...messages.organisation} />
+          </label>
+          <OrganisationSelect
+            orgId={organisation}
+            onChange={(value) =>
+              updateMetadata({ ...metadata, organisation: value.organisationId || '' })
+            }
+            className="z-5 w-75"
           />
         </>
       ) : null}
