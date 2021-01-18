@@ -1,42 +1,49 @@
-import React, { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useState, useCallback } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { navigate } from '@reach/router';
 
 import messages from './messages';
 import { Button } from '../button';
+import { AlertMessage } from './alertMessage';
 import { createProject } from '../../store/actions/project';
 import { store } from '../../store';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { OrganisationSelect } from '../formInputs';
 
-const handleCreate = (metadata, updateMetadata, projectName, token, cloneProjectData, setError) => {
-  if (!metadata.geom) {
-    setError('Area of interest not provided');
-    return;
-  }
-
-  updateMetadata({ ...metadata, projectName: projectName });
-  store.dispatch(createProject(metadata));
-  let projectParams = {
-    areaOfInterest: metadata.geom,
-    projectName: metadata.projectName,
-    tasks: metadata.taskGrid,
-    arbitraryTasks: metadata.arbitraryTasks,
-  };
-
-  if (cloneProjectData.name !== null) {
-    projectParams.projectName = '';
-    projectParams.cloneFromProjectId = cloneProjectData.id;
-  }
-  pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
-    .then((res) => navigate(`/manage/projects/${res.projectId}`))
-    .catch((e) => setError(e));
-};
-
 export default function Review({ metadata, updateMetadata, token, projectId, cloneProjectData }) {
   const [error, setError] = useState(null);
-  const projectName = metadata.projectName;
-  const organisation = metadata.organisation;
+  const intl = useIntl();
+
+  const handleCreate = useCallback(
+    (metadata, token, cloneProjectData, setError) => {
+      if (!metadata.geom) {
+        setError(intl.formatMessage(messages.noGeometry));
+        return;
+      }
+      if (!metadata.organisation && !cloneProjectData.organisation) {
+        setError(intl.formatMessage(messages.noOrganization));
+        return;
+      }
+
+      store.dispatch(createProject(metadata));
+      let projectParams = {
+        areaOfInterest: metadata.geom,
+        projectName: metadata.projectName,
+        organisation: metadata.organisation || cloneProjectData.organisation,
+        tasks: metadata.taskGrid,
+        arbitraryTasks: metadata.arbitraryTasks,
+      };
+
+      if (cloneProjectData.name !== null) {
+        projectParams.projectName = '';
+        projectParams.cloneFromProjectId = cloneProjectData.id;
+      }
+      pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
+        .then((res) => navigate(`/manage/projects/${res.projectId}`))
+        .catch((e) => setError(e.Error));
+    },
+    [intl],
+  );
 
   const setProjectName = (event) => {
     event.preventDefault();
@@ -66,16 +73,17 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
         </>
       ) : null}
 
-      {cloneProjectData.org === null ? (
+      {cloneProjectData.organisation === null ? (
         <>
           <label className="f5 fw6 db mb2 pt3">
             <FormattedMessage {...messages.organisation} />
           </label>
           <OrganisationSelect
-            orgId={organisation}
-            onChange={(value) =>
-              updateMetadata({ ...metadata, organisation: value.organisationId || '' })
-            }
+            orgId={metadata.organisation}
+            onChange={(value) => {
+              setError(null);
+              updateMetadata({ ...metadata, organisation: value.organisationId || '' });
+            }}
             className="z-5 w-75"
           />
         </>
@@ -83,9 +91,7 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
 
       <div className="mt4">
         <Button
-          onClick={() =>
-            handleCreate(metadata, updateMetadata, projectName, token, cloneProjectData, setError)
-          }
+          onClick={() => handleCreate(metadata, token, cloneProjectData, setError)}
           className="white bg-red"
         >
           {cloneProjectData.name === null ? (
@@ -96,8 +102,13 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
         </Button>
       </div>
       {error && (
-        <div className="mt3">
-          <FormattedMessage {...messages.creationFailed} values={{ error: error }} />
+        <div className="mt3 red">
+          <AlertMessage
+            error={{
+              error: true,
+              message: <FormattedMessage {...messages.creationFailed} values={{ error: error }} />,
+            }}
+          />
         </div>
       )}
     </>

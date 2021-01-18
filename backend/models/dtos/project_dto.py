@@ -122,6 +122,7 @@ class DraftProjectDTO(Model):
 
     cloneFromProjectId = IntType(serialized_name="cloneFromProjectId")
     project_name = StringType(required=True, serialized_name="projectName")
+    organisation = IntType(required=True)
     area_of_interest = BaseType(required=True, serialized_name="areaOfInterest")
     tasks = BaseType(required=False)
     has_arbitrary_tasks = BooleanType(required=True, serialized_name="arbitraryTasks")
@@ -212,7 +213,7 @@ class ProjectDTO(Model):
         validators=[is_known_mapping_type],
     )
     campaigns = ListType(ModelType(CampaignDTO), default=[])
-    organisation = IntType()
+    organisation = IntType(required=True)
     organisation_name = StringType(serialized_name="organisationName")
     organisation_logo = StringType(serialized_name="organisationLogo")
     country_tag = ListType(StringType, serialized_name="countryTag")

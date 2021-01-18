@@ -227,6 +227,7 @@ class Project(db.Model):
         self.project_info.append(
             ProjectInfo.create_from_name(draft_project_dto.project_name)
         )
+        self.organisation = draft_project_dto.organisation
         self.status = ProjectStatus.DRAFT.value
         self.author_id = draft_project_dto.user_id
         self.last_updated = timestamp()

@@ -114,6 +114,14 @@ export default defineMessages({
     id: 'management.projects.create.errors.closed_linestring',
     defaultMessage: 'Points do not form a closed linestring',
   },
+  noGeometry: {
+    id: 'management.projects.create.errors.no_geometry',
+    defaultMessage: "You need to define the project's area of interest.",
+  },
+  noOrganization: {
+    id: 'management.projects.create.errors.no_organization',
+    defaultMessage: 'Organization is a required field.',
+  },
   fileSize: {
     id: 'management.projects.create.errors.fileSize',
     defaultMessage:

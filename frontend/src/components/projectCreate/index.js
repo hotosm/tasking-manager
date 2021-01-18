@@ -1,6 +1,10 @@
 import React, { useState, useLayoutEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
+import area from '@turf/area';
+import bbox from '@turf/bbox';
+import { featureCollection } from '@turf/helpers';
+import lineToPolygon from '@turf/line-to-polygon';
 import { useQueryParam, NumberParam } from 'use-query-params';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -13,14 +17,10 @@ import SetTaskSizes from './setTaskSizes';
 import TrimProject from './trimProject';
 import NavButtons from './navButtons';
 import Review from './review';
+import { AlertMessage } from './alertMessage';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { MAX_AOI_AREA } from '../../config';
-import { AlertIcon } from '../svgIcons';
 
-import area from '@turf/area';
-import bbox from '@turf/bbox';
-import { featureCollection } from '@turf/helpers';
-import lineToPolygon from '@turf/line-to-polygon';
 import { makeGrid } from './setTaskSizes';
 import { MAX_FILESIZE } from '../../config';
 
@@ -61,21 +61,6 @@ export const addLayer = (layerName, data, map) => {
     },
     paint: options,
   });
-};
-
-const AlertMessage = ({ err }) => {
-  if (err.error === true) {
-    return (
-      <p className={'pv2 tl f6 fw6 red br1 lh-copy'}>
-        <span className="ph1">
-          <AlertIcon className="red mr2" height="15px" width="15px" />
-          {err.message}
-        </span>
-      </p>
-    );
-  } else {
-    return null;
-  }
 };
 
 const ProjectCreate = (props) => {
@@ -268,7 +253,7 @@ const ProjectCreate = (props) => {
   let cloneProjectData = {
     id: cloneFromId,
     name: cloneProjectName,
-    org: cloneProjectOrg,
+    organisation: cloneProjectOrg,
   };
 
   // Project information.
