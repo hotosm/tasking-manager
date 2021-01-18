@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { invalidatedTaskHistory, history } from '../../network/tests/mockData/taskHistory';
-import useReadTaskComments from '../useReadTaskComments';
+import { useReadTaskComments } from '../UseReadTaskComments';
 
 describe('test useReadTaskComments hook', () => {
   it('returns false when there is no task history', () => {

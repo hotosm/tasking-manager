@@ -27,6 +27,7 @@ export function CompletionTabForMapping({
   project,
   tasksIds,
   showReadCommentsAlert,
+  disableBadImagery,
   historyTabSwitch,
   taskInstructions,
   disabled,
@@ -162,19 +163,21 @@ export function CompletionTabForMapping({
             <FormattedMessage {...messages.incomplete} />
           </label>
         </p>
-        <p>
-          <input
-            id="BADIMAGERY"
-            type="radio"
-            value="BADIMAGERY"
-            className={radioInput}
-            checked={selectedStatus === 'BADIMAGERY'}
-            onClick={() => setSelectedStatus('BADIMAGERY')}
-          />
-          <label htmlFor="BADIMAGERY">
-            <FormattedMessage {...messages.badImagery} />
-          </label>
-        </p>
+        {!disableBadImagery && (
+          <p>
+            <input
+              id="BADIMAGERY"
+              type="radio"
+              value="BADIMAGERY"
+              className={radioInput}
+              checked={selectedStatus === 'BADIMAGERY'}
+              onClick={() => setSelectedStatus('BADIMAGERY')}
+            />
+            <label htmlFor="BADIMAGERY">
+              <FormattedMessage {...messages.badImagery} />
+            </label>
+          </p>
+        )}
       </div>
       <div className="cf">
         <h4 className="ttu blue-grey f5">
