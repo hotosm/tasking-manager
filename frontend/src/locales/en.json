@@ -235,7 +235,7 @@
   "management.projects.create.button.select_file": "Select file",
   "management.projects.create.arbitrary_tasks": "Set tasks using uploaded polygons",
   "management.projects.create.draw.description": "Draw the Area of Interest on the map or import a file.",
-  "management.projects.create.upload.description": "Your can import a GeoJSON, KML, OSM or zipped Shapefile.",
+  "management.projects.create.upload.description": "The supported file formats are: GeoJSON, KML, OSM or zipped Shapefile. You can drag and drop a file over the map to import it.",
   "project.detail.teams.empty": "This project doesn't have any teams associated with.",
   "project.detail.coordination": "Coordination",
   "project.detail.coordination.description": "This project is coordinated by {organisation} and was created by {user}.",

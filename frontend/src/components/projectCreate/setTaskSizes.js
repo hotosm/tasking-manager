@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useCallback } from 'react';
+import React, { useEffect, useLayoutEffect, useState, useCallback } from 'react';
 import area from '@turf/area';
 import bbox from '@turf/bbox';
 import intersect from '@turf/intersect';
@@ -8,8 +8,14 @@ import { polygon, multiPolygon, featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button';
-import { UndoIcon } from '../svgIcons';
+import { CustomButton } from '../button';
+import {
+  UndoIcon,
+  MappedIcon,
+  CircleIcon,
+  FourCellsGridIcon,
+  NineCellsGridIcon,
+} from '../svgIcons';
 import { addLayer } from './index';
 
 // Maximum resolution of OSM
@@ -114,6 +120,8 @@ const splitTaskGrid = (taskGrid, geom) => {
 };
 
 export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
+  const [splitMode, setSplitMode] = useState(null);
+
   const splitHandler = useCallback(
     (event) => {
       const taskGrid = mapObj.map.getSource('grid')._data;
@@ -134,17 +142,25 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
     [updateMetadata, metadata, mapObj.map],
   );
 
-  const splitBbox = () => {
-    mapObj.map.on('mouseenter', 'grid', (event) => {
-      mapObj.map.getCanvas().style.cursor = 'pointer';
-    });
-    mapObj.map.on('mouseleave', 'grid', (event) => {
-      mapObj.map.getCanvas().style.cursor = '';
-    });
-    mapObj.map.on('click', 'grid', splitHandler);
-  };
+  useEffect(() => {
+    if (splitMode === 'click') {
+      mapObj.map.on('mouseenter', 'grid', (event) => {
+        mapObj.map.getCanvas().style.cursor = 'pointer';
+      });
+      mapObj.map.on('mouseleave', 'grid', (event) => {
+        mapObj.map.getCanvas().style.cursor = '';
+      });
+      mapObj.map.on('click', 'grid', splitHandler);
+    } else {
+      mapObj.map.on('mouseenter', 'grid', (event) => {
+        mapObj.map.getCanvas().style.cursor = '';
+      });
+      mapObj.map.off('click', 'grid', splitHandler);
+    }
+  }, [mapObj, splitHandler, splitMode]);
 
-  const splitPolygon = () => {
+  const splitDrawing = () => {
+    setSplitMode('draw');
     mapObj.map.on('mouseenter', 'grid', (event) => {
       mapObj.map.getCanvas().style.cursor = 'crosshair';
     });
@@ -168,6 +184,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         taskGrid: featureCollection(newTaskGrid),
         tasksNo: featureCollection(newTaskGrid).features.length,
       });
+      setSplitMode(null);
     });
 
     mapObj.draw.changeMode('draw_polygon');
@@ -206,15 +223,14 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   useLayoutEffect(() => {
     addLayer('grid', metadata.taskGrid, mapObj.map);
     return () => {
+      // remove the split on click function when leaving the page
       mapObj.map.off('click', 'grid', splitHandler);
     };
   }, [metadata, mapObj, smallerSize, largerSize, splitHandler]);
 
-  const buttonStyle = 'white bg-blue-dark';
-
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark">
+      <h3 className="f3 ttu fw6 mt2 mb3 barlow-condensed blue-dark">
         <FormattedMessage {...messages.step2} />
       </h3>
       <div>
@@ -223,39 +239,65 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
             <FormattedMessage {...messages.taskSizes} />
           </p>
           <div role="group">
-            <Button onClick={smallerSize} className={`${buttonStyle} mr2`}>
+            <CustomButton
+              className="bg-white blue-dark ba b--grey-light ph3 pv2 mr2"
+              onClick={smallerSize}
+            >
+              <NineCellsGridIcon className="h1 w1 v-mid mr2" />
               <FormattedMessage {...messages.smaller} />
-            </Button>
-            <Button onClick={largerSize} className={buttonStyle}>
+            </CustomButton>
+            <CustomButton
+              className="bg-white blue-dark ba b--grey-light ph3 pv2"
+              onClick={largerSize}
+            >
+              <FourCellsGridIcon className="h1 w1 v-mid mr2" />
               <FormattedMessage {...messages.larger} />
-            </Button>
+            </CustomButton>
           </div>
         </div>
-        <div className="pt3">
+        <div className="pt3 pb1">
           <p>
             <FormattedMessage {...messages.splitTaskDescription} />
           </p>
           <div role="group">
-            <Button className={`${buttonStyle} mr2`} onClick={splitBbox}>
+            <CustomButton
+              className={`bg-white ph3 pv2 mr2 ba ${
+                splitMode === 'click' ? 'red b--red' : 'blue-dark b--grey-light'
+              }`}
+              onClick={() => setSplitMode(splitMode === 'click' ? null : 'click')}
+            >
+              <CircleIcon className="v-mid mr2" style={{ width: '0.5rem' }} />
               <FormattedMessage {...messages.splitByClicking} />
-            </Button>
-            <Button className={buttonStyle} onClick={splitPolygon}>
+            </CustomButton>
+            <CustomButton
+              className={`bg-white ph3 pv2 mr2 ba ${
+                splitMode === 'draw' ? 'red b--red' : 'blue-dark b--grey-light'
+              }`}
+              onClick={splitDrawing}
+            >
+              <MappedIcon className="h1 w1 v-mid mr2" />
               <FormattedMessage {...messages.splitByDrawing} />
-            </Button>
-            <Button className="bg-white blue-dark db mt2" onClick={resetGrid}>
-              <UndoIcon className="w1 h1 mr2 v-mid pb1" />
+            </CustomButton>
+            <CustomButton
+              className="bg-white blue-dark ba b--grey-light ph3 pv2"
+              onClick={resetGrid}
+            >
+              <UndoIcon className="w1 h1 v-mid mr2" />
               <FormattedMessage {...messages.reset} />
-            </Button>
+            </CustomButton>
           </div>
         </div>
-        <p>
-          <FormattedMessage {...messages.taskNumberMessage} values={{ n: metadata.tasksNo || 0 }} />
+        <p className="f6 blue-grey lh-title mt3 mb2">
+          <FormattedMessage
+            {...messages.taskNumberMessage}
+            values={{ n: <strong>{metadata.tasksNo || 0}</strong> }}
+          />
         </p>
-        <p>
+        <p className="f6 blue-grey lh-title mt1">
           <FormattedMessage
             {...messages.taskAreaMessage}
             values={{
-              area: (area(metadata.taskGrid.features[0]) / 1e6).toFixed(2) || 0,
+              area: <strong>{(area(metadata.taskGrid.features[0]) / 1e6).toFixed(2) || 0}</strong>,
               sq: <sup>2</sup>,
             }}
           />

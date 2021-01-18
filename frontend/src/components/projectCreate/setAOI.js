@@ -3,8 +3,8 @@ import { FormattedMessage } from 'react-intl';
 import { useDropzone } from 'react-dropzone';
 
 import messages from './messages';
-import { UndoIcon } from '../svgIcons';
-import { Button } from '../button';
+import { UndoIcon, MappedIcon, FileImportIcon } from '../svgIcons';
+import { CustomButton } from '../button';
 import { SwitchToggle } from '../formInputs';
 import { useContainsMultiplePolygons } from '../../hooks/UseGeomContainsMultiplePolygons';
 
@@ -14,6 +14,7 @@ export default function SetAOI({
   uploadFile,
   drawHandler,
   deleteHandler,
+  drawIsActive,
 }) {
   const { containsMultiplePolygons } = useContainsMultiplePolygons(metadata.geom);
 
@@ -25,21 +26,28 @@ export default function SetAOI({
 
   return (
     <div {...getRootProps()}>
-      <h3 className="f3 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
+      <h3 className="f3 fw6 mt0 mb3 ttu barlow-condensed blue-dark">
         <FormattedMessage {...messages.step1} />
       </h3>
-      <div className="pb4">
+      <div>
         <p>
           <FormattedMessage {...messages.defineAreaDescription} />
         </p>
-        <Button className="bg-blue-dark white mr2" onClick={drawHandler}>
+        <CustomButton
+          className={`bg-white ph3 pv2 mr2 ba ${
+            drawIsActive ? 'red b--red' : 'blue-dark b--grey-light'
+          }`}
+          onClick={drawHandler}
+        >
+          <MappedIcon className="h1 w1 v-mid mr2" />
           <FormattedMessage {...messages.draw} />
-        </Button>
+        </CustomButton>
         <input {...getInputProps()} />
-        <Button className="bg-blue-dark white" onClick={open}>
+        <CustomButton className="bg-white blue-dark ba b--grey-light ph3 pv2" onClick={open}>
+          <FileImportIcon className="h1 w1 v-mid mr2" />
           <FormattedMessage {...messages.selectFile} />
-        </Button>
-        <p>
+        </CustomButton>
+        <p className="f6 blue-grey lh-title mt3">
           <FormattedMessage {...messages.importDescription} />
         </p>
       </div>
@@ -57,11 +65,14 @@ export default function SetAOI({
         )}
       </div>
       {metadata.geom && (
-        <div className="pv3">
-          <Button className="bg-white blue-dark" onClick={deleteHandler}>
+        <div>
+          <CustomButton
+            className="bg-white blue-dark ba b--grey-light ph3 pv2"
+            onClick={deleteHandler}
+          >
             <UndoIcon className="w1 h1 mr2 v-mid pb1" />
             <FormattedMessage {...messages.reset} />
-          </Button>
+          </CustomButton>
         </div>
       )}
     </div>
