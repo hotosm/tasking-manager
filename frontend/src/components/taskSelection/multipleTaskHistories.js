@@ -11,7 +11,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { TaskHistory } from './taskActivity';
 
-export const MultipleTaskHistoriesAccordion = ({ handleChange, tasks, projectId, mapperLevel }) => {
+export const MultipleTaskHistoriesAccordion = ({ handleChange, tasks, projectId }) => {
   return (
     <Accordion className="bn" allowMultipleExpanded allowZeroExpanded onChange={handleChange}>
       {tasks.map((t) => (
@@ -22,12 +22,7 @@ export const MultipleTaskHistoriesAccordion = ({ handleChange, tasks, projectId,
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className="pa2 accordion_panel">
-            <TaskHistory
-              projectId={projectId}
-              taskId={t.taskId}
-              commentPayload={undefined}
-              mapperLevel={mapperLevel}
-            />
+            <TaskHistory projectId={projectId} taskId={t.taskId} commentPayload={undefined} />
           </AccordionItemPanel>
         </AccordionItem>
       ))}

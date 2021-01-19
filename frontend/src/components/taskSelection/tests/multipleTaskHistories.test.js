@@ -11,12 +11,7 @@ describe('MultipleTaskHistories Accordion', () => {
   it('does not render accordion with task history items if there are no tasks', () => {
     render(
       <ReduxIntlProviders>
-        <MultipleTaskHistoriesAccordion
-          handleChange={handleChange}
-          tasks={[]}
-          projectId={1}
-          mapperLevel={''}
-        />
+        <MultipleTaskHistoriesAccordion handleChange={handleChange} tasks={[]} projectId={1} />
       </ReduxIntlProviders>,
     );
 
@@ -61,12 +56,7 @@ describe('MultipleTaskHistories Accordion', () => {
     ];
     render(
       <ReduxIntlProviders>
-        <MultipleTaskHistoriesAccordion
-          handleChange={handleChange}
-          tasks={tasks}
-          projectId={1}
-          mapperLevel={''}
-        />
+        <MultipleTaskHistoriesAccordion handleChange={handleChange} tasks={tasks} projectId={1} />
       </ReduxIntlProviders>,
     );
 
