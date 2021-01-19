@@ -38,9 +38,10 @@ const BasemapMenu = ({ map }) => {
 
   return (
     <div className="bg-white blue-dark flex mt2 ml2 f7 br1 shadow-1">
-      {styles.map((style) => {
+      {styles.map((style, k) => {
         return (
           <div
+            key={k}
             onClick={() => handleClick(style)}
             className={`ttc pv2 ph3 pointer link + ${
               basemap === style.label ? 'bg-grey-light fw6' : ''

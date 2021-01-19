@@ -48,6 +48,10 @@ export default defineMessages({
     id: 'management.projects.create.review_tasks.name',
     defaultMessage: 'Name',
   },
+  organization: {
+    id: 'management.projects.create.review_tasks.organization',
+    defaultMessage: 'Organization',
+  },
   creationFailed: {
     id: 'management.projects.create.review_tasks.failure.message',
     defaultMessage: 'It was not possible to save your project due to an error: {error}',
@@ -109,6 +113,14 @@ export default defineMessages({
   closedLinestring: {
     id: 'management.projects.create.errors.closed_linestring',
     defaultMessage: 'Points do not form a closed linestring',
+  },
+  noGeometry: {
+    id: 'management.projects.create.errors.no_geometry',
+    defaultMessage: "You need to define the project's area of interest.",
+  },
+  noOrganization: {
+    id: 'management.projects.create.errors.no_organization',
+    defaultMessage: 'Organization is a required field.',
   },
   fileSize: {
     id: 'management.projects.create.errors.fileSize',
