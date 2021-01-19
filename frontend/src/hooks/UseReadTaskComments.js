@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+// return true if a task was previously invalidated and received comments
 export const useReadTaskComments = (history) => {
   const [readTaskComments, setReadTaskComments] = useState(false);
 

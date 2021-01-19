@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+// return true if a task was previously marked as BADIMAGERY and reverted to READY
 export const useDisableBadImagery = (history) => {
   const [disableBadImagery, setDisableBadImagery] = useState(false);
 
@@ -8,11 +9,9 @@ export const useDisableBadImagery = (history) => {
       const wasSetAsBadImagery = history.taskHistory.filter(
         (task) => task.actionText === 'BADIMAGERY',
       ).length;
-      console.log(wasSetAsBadImagery);
       const wasRevertedToReady = history.taskHistory.filter(
         (task) => task.actionText === 'Undo state from BADIMAGERY to READY',
       ).length;
-      console.log(wasRevertedToReady);
 
       if (wasSetAsBadImagery && wasRevertedToReady) {
         setDisableBadImagery(true);
