@@ -1756,13 +1756,13 @@
     "@sentry/utils" "5.29.2"
     tslib "^1.9.3"
 
-"@sentry/hub@5.30.0":
-  version "5.30.0"
-  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-5.30.0.tgz#2453be9b9cb903404366e198bd30c7ca74cdc100"
-  integrity sha512-2tYrGnzb1gKz2EkMDQcfLrDTvmGcQPuWxLnJKXJvYTQDGLlEvi2tWz1VIHjunmOvJrB5aIQLhm+dcMRwFZDCqQ==
+"@sentry/hub@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-6.0.0.tgz#c0d8cf1d1f19384d1d3f23fe8c00bc6b7134b002"
+  integrity sha512-s8IsW6LvEH7ACnniQcxxb/9uEyjmoQ/TAoryTJN2qyPzzrHTw8NCyMuJvK+8ivUvRViz5AvtuOFf8AJlh9lzeA==
   dependencies:
-    "@sentry/types" "5.30.0"
-    "@sentry/utils" "5.30.0"
+    "@sentry/types" "6.0.0"
+    "@sentry/utils" "6.0.0"
     tslib "^1.9.3"
 
 "@sentry/minimal@5.29.2":
@@ -1774,13 +1774,13 @@
     "@sentry/types" "5.29.2"
     tslib "^1.9.3"
 
-"@sentry/minimal@5.30.0":
-  version "5.30.0"
-  resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-5.30.0.tgz#ce3d3a6a273428e0084adcb800bc12e72d34637b"
-  integrity sha512-BwWb/owZKtkDX+Sc4zCSTNcvZUq7YcH3uAVlmh/gtR9rmUvbzAA3ewLuB3myi4wWRAMEtny6+J/FN/x+2wn9Xw==
+"@sentry/minimal@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-6.0.0.tgz#f38e1325937770c7d038fdde11737e70804eb444"
+  integrity sha512-daYdEzTr+ERMwViu6RpWHOfk0oZrSNqdx+7bejTqmFHqO4pt+9ZrMiw3vinL+MWQcKXwD95uXBz6O/ryrVdPtg==
   dependencies:
-    "@sentry/hub" "5.30.0"
-    "@sentry/types" "5.30.0"
+    "@sentry/hub" "6.0.0"
+    "@sentry/types" "6.0.0"
     tslib "^1.9.3"
 
 "@sentry/react@^5.29.2":
@@ -1795,15 +1795,15 @@
     hoist-non-react-statics "^3.3.2"
     tslib "^1.9.3"
 
-"@sentry/tracing@^5.30.0":
-  version "5.30.0"
-  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-5.30.0.tgz#501d21f00c3f3be7f7635d8710da70d9419d4e1f"
-  integrity sha512-dUFowCr0AIMwiLD7Fs314Mdzcug+gBVo/+NCMyDw8tFxJkwWAKl7Qa2OZxLQ0ZHjakcj1hNKfCQJ9rhyfOl4Aw==
+"@sentry/tracing@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-6.0.0.tgz#9a78380ab6f316e2f50ce219af090f0d2896102e"
+  integrity sha512-7Qes5godGCuvcEBxynFuRT5iiFR5aOfBdvdPmWnx29XbZKQvhjvBsDtdoVSQUmv/nCLtpH6UWeLwddFvXh3A2w==
   dependencies:
-    "@sentry/hub" "5.30.0"
-    "@sentry/minimal" "5.30.0"
-    "@sentry/types" "5.30.0"
-    "@sentry/utils" "5.30.0"
+    "@sentry/hub" "6.0.0"
+    "@sentry/minimal" "6.0.0"
+    "@sentry/types" "6.0.0"
+    "@sentry/utils" "6.0.0"
     tslib "^1.9.3"
 
 "@sentry/types@5.29.2":
@@ -1811,10 +1811,10 @@
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-5.29.2.tgz#ac87383df1222c2d9b9f8f9ed7a6b86ea41a098a"
   integrity sha512-dM9wgt8wy4WRty75QkqQgrw9FV9F+BOMfmc0iaX13Qos7i6Qs2Q0dxtJ83SoR4YGtW8URaHzlDtWlGs5egBiMA==
 
-"@sentry/types@5.30.0":
-  version "5.30.0"
-  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-5.30.0.tgz#19709bbe12a1a0115bc790b8942917da5636f402"
-  integrity sha512-R8xOqlSTZ+htqrfteCWU5Nk0CDN5ApUTvrlvBuiH1DyP6czDZ4ktbZB0hAgBlVcK0U+qpD3ag3Tqqpa5Q67rPw==
+"@sentry/types@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-6.0.0.tgz#250ae7287875bf729eddfe30346611bb11034f47"
+  integrity sha512-yueRSRGPCahuju/UMdtOt8LIIncbpwLINQd9Q8E4OXtoPpMHR6Oun8sMKCPd+Wq3piI5yRDzKkGCl+sH7mHVrA==
 
 "@sentry/utils@5.29.2":
   version "5.29.2"
@@ -1824,12 +1824,12 @@
     "@sentry/types" "5.29.2"
     tslib "^1.9.3"
 
-"@sentry/utils@5.30.0":
-  version "5.30.0"
-  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-5.30.0.tgz#9a5bd7ccff85ccfe7856d493bffa64cabc41e980"
-  integrity sha512-zaYmoH0NWWtvnJjC9/CBseXMtKHm/tm40sz3YfJRxeQjyzRqNQPgivpd9R/oDJCYj999mzdW382p/qi2ypjLww==
+"@sentry/utils@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-6.0.0.tgz#87a8e7c29c3b05483d31654c106df6b7ed95d10a"
+  integrity sha512-dMMWOT69bQ4CF1R33dOnXIOyiHRWsUAON3nFVljV1JNNTDA69YwaF9f5FIT0DKpO4qhgTlElsm8WgHI9prAVEQ==
   dependencies:
-    "@sentry/types" "5.30.0"
+    "@sentry/types" "6.0.0"
     tslib "^1.9.3"
 
 "@sindresorhus/is@^0.7.0":
