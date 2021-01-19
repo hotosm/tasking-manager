@@ -175,11 +175,10 @@ class SplitService:
         original_task_area_m = db.engine.execute(
             ST_Area(ST_GeogFromWKB(original_task.geometry))
         ).scalar()
-        original_task_area = original_task_area_m / 1e6
 
         if (
             original_task.zoom and original_task.zoom >= 18
-        ) or original_task_area < 5e-07:
+        ) or original_task_area_m < 25000:
             raise SplitServiceError("Task is too small to be split")
 
         # check its locked for mapping by the current user
