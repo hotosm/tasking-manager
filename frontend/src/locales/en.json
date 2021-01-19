@@ -605,6 +605,8 @@
   "project.tasks.action.options.incomplete": "No",
   "project.tasks.action.options.bad_imagery": "The imagery is bad",
   "project.tasks.action.split_task": "Split task",
+  "project.tasks.action.split_task.error": "It was not possible to split the task",
+  "project.tasks.action.split_task.error.description": "This task is already too small and can not be split.",
   "project.tasks.action.select_another_task": "Select another task",
   "project.tasks.action.stop_validation": "Stop validation",
   "project.tasks.action.tasks_map": "Tasks map",
