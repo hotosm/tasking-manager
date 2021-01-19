@@ -76,7 +76,7 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
       {cloneProjectData.organisation === null ? (
         <>
           <label className="f5 fw6 db mb2 pt3">
-            <FormattedMessage {...messages.organisation} />
+            <FormattedMessage {...messages.organization} />
           </label>
           <OrganisationSelect
             orgId={metadata.organisation}

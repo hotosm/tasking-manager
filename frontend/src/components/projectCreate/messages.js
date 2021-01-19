@@ -48,9 +48,9 @@ export default defineMessages({
     id: 'management.projects.create.review_tasks.name',
     defaultMessage: 'Name',
   },
-  organisation: {
-    id: 'management.projects.create.review_tasks.organisation',
-    defaultMessage: 'Organisation',
+  organization: {
+    id: 'management.projects.create.review_tasks.organization',
+    defaultMessage: 'Organization',
   },
   creationFailed: {
     id: 'management.projects.create.review_tasks.failure.message',

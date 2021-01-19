@@ -349,7 +349,7 @@ const ProjectCreate = (props) => {
             </p>
           )}
           {renderCurrentStep()}
-          <AlertMessage err={err} />
+          <AlertMessage error={err} />
 
           <NavButtons
             index={step}

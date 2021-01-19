@@ -205,7 +205,7 @@
   "management.projects.create.steps.3": "Step 3: trim task grid",
   "management.projects.create.steps.4": "Step 4: review",
   "management.projects.create.review_tasks.name": "Name",
-  "management.projects.create.review_tasks.organisation": "Organisation",
+  "management.projects.create.review_tasks.organization": "Organization",
   "management.projects.create.review_tasks.failure.message": "It was not possible to save your project due to an error: {error}",
   "management.projects.create.review_tasks.button.create": "Create",
   "management.projects.create.review_tasks.number": "Your project will be created with {n} tasks.",
