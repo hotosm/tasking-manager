@@ -307,7 +307,6 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                           projectId={project.projectId}
                           taskId={tasksIds[0]}
                           commentPayload={taskHistory}
-                          mapperLevel={userDetails['mappingLevel']}
                         />
                       </>
                     )}
@@ -316,7 +315,6 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                         handleChange={handleTaskHistories}
                         tasks={activeTasks}
                         projectId={project.projectId}
-                        mapperLevel={userDetails['mappingLevel']}
                       />
                     )}
                   </>
