@@ -328,7 +328,7 @@ class Project(db.Model):
             orig_changeset = f"{default_comment}-{orig.id}"  # Preserve space
             new_proj.changeset_comment = orig.changeset_comment.replace(
                 orig_changeset, ""
-            )
+            ).strip()
 
         # Populate teams, interests and campaigns
         teams = []
