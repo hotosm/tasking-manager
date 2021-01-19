@@ -76,6 +76,13 @@ class ST_Area(GenericFunction):
     type = None
 
 
+class ST_GeogFromWKB(GenericFunction):
+    """ Exposes PostGIS ST_GeogFromWKB function """
+
+    name = "ST_GeogFromWKB"
+    type = None
+
+
 class ST_Buffer(GenericFunction):
     """ Exposes PostGIS ST_Buffer function """
 
