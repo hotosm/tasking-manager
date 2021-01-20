@@ -25,7 +25,7 @@
     "@turf/helpers": "^6.2.0",
     "@turf/intersect": "^6.2.0",
     "@turf/line-to-polygon": "^6.2.0",
-    "@turf/transform-scale": "^6.2.0",
+    "@turf/transform-scale": "^6.3.0",
     "@webscopeio/react-textarea-autocomplete": "^4.7.3",
     "axios": "^0.21.1",
     "chart.js": "^2.9.4",
