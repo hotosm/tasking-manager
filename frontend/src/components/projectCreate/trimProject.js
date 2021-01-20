@@ -4,8 +4,9 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { addLayer } from './index';
-import { Button } from '../button';
-
+import { CustomButton } from '../button';
+import { SwitchToggle } from '../formInputs';
+import { CutIcon } from '../svgIcons';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 const clipProject = (clip, metadata, map, updateMetadata, token) => {
@@ -31,32 +32,30 @@ export default function TrimProject({ metadata, mapObj, updateMetadata }) {
 
   return (
     <>
-      <h3 className="f3 fw6 mt2 mb3 barlow-condensed blue-dark">
+      <h3 className="f3 ttu fw6 mt2 mb3 barlow-condensed blue-dark">
         <FormattedMessage {...messages.step3} />
       </h3>
       <div>
         <p>
           <FormattedMessage {...messages.trimTasksDescriptionLine1} />
         </p>
-        <p>
+        <p className="pb2">
           <FormattedMessage {...messages.trimTasksDescriptionLine2} />
         </p>
-        <input
-          type="checkbox"
-          className="v-mid"
-          defaultChecked={clipStatus}
+        <SwitchToggle
+          isChecked={clipStatus}
+          labelPosition="right"
           onChange={() => setClipStatus(!clipStatus)}
+          label={<FormattedMessage {...messages.trimToAOI} />}
         />
-        <span className="pl2 v-mid">
-          <FormattedMessage {...messages.trimToAOI} />
-        </span>
-        <div className="pt2">
-          <Button
+        <div className="pt3">
+          <CustomButton
             onClick={() => clipProject(clipStatus, metadata, mapObj.map, updateMetadata, token)}
-            className="white bg-blue-dark"
+            className="bg-white blue-dark ba b--grey-light ph3 pv2"
           >
+            <CutIcon className="h1 w1 v-mid mr2" />
             <FormattedMessage {...messages.trim} />
-          </Button>
+          </CustomButton>
         </div>
       </div>
     </>

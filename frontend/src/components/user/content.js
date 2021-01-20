@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage, FormattedNumber, FormattedRelativeTime } from 'react-intl';
-import { selectUnit } from '@formatjs/intl-utils';
+import { selectUnit } from '../../utils/selectUnit';
 import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import ReactPlaceholder from 'react-placeholder';
 import { OSM_SERVER_URL } from '../../config';

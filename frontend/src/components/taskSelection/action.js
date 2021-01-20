@@ -17,7 +17,8 @@ import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
-import useReadTaskComments from '../../hooks/useReadTaskComments';
+import { useReadTaskComments } from '../../hooks/UseReadTaskComments';
+import { useDisableBadImagery } from '../../hooks/UseDisableBadImagery';
 import { DueDateBox } from '../projectCard/dueDateBox';
 import {
   CompletionTabForMapping,
@@ -57,6 +58,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   );
 
   const readTaskComments = useReadTaskComments(taskHistory);
+  const disableBadImagery = useDisableBadImagery(taskHistory);
 
   const getTaskGpxUrlCallback = useCallback((project, tasks) => getTaskGpxUrl(project, tasks), []);
   const formatImageryUrlCallback = useCallback((imagery) => formatImageryUrl(imagery), []);
@@ -221,6 +223,9 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                         project={project}
                         tasksIds={tasksIds}
                         showReadCommentsAlert={readTaskComments && !historyTabChecked}
+                        disableBadImagery={
+                          userDetails.mappingLevel !== 'ADVANCED' && disableBadImagery
+                        }
                         historyTabSwitch={historyTabSwitch}
                         taskInstructions={
                           activeTasks && activeTasks.length === 1
@@ -302,7 +307,6 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                           projectId={project.projectId}
                           taskId={tasksIds[0]}
                           commentPayload={taskHistory}
-                          mapperLevel={userDetails['mappingLevel']}
                         />
                       </>
                     )}
@@ -311,7 +315,6 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                         handleChange={handleTaskHistories}
                         tasks={activeTasks}
                         projectId={project.projectId}
-                        mapperLevel={userDetails['mappingLevel']}
                       />
                     )}
                   </>

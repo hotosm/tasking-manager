@@ -1,6 +1,10 @@
 import React, { useState, useLayoutEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
+import area from '@turf/area';
+import bbox from '@turf/bbox';
+import { featureCollection } from '@turf/helpers';
+import lineToPolygon from '@turf/line-to-polygon';
 import { useQueryParam, NumberParam } from 'use-query-params';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -13,14 +17,10 @@ import SetTaskSizes from './setTaskSizes';
 import TrimProject from './trimProject';
 import NavButtons from './navButtons';
 import Review from './review';
+import { AlertMessage } from './alertMessage';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { MAX_AOI_AREA } from '../../config';
-import { AlertIcon } from '../svgIcons';
 
-import area from '@turf/area';
-import bbox from '@turf/bbox';
-import { featureCollection } from '@turf/helpers';
-import lineToPolygon from '@turf/line-to-polygon';
 import { makeGrid } from './setTaskSizes';
 import { MAX_FILESIZE } from '../../config';
 
@@ -63,23 +63,9 @@ export const addLayer = (layerName, data, map) => {
   });
 };
 
-const AlertMessage = ({ err }) => {
-  if (err.error === true) {
-    return (
-      <p className={'w-80 pv2 tc f6 fw6 red ba b--red br1 lh-copy'}>
-        <span className="ph1">
-          <AlertIcon className="red mr2" height="15px" width="15px" />
-          {err.message}
-        </span>
-      </p>
-    );
-  } else {
-    return null;
-  }
-};
-
 const ProjectCreate = (props) => {
   const token = useSelector((state) => state.auth.get('token'));
+  const [drawModeIsActive, setDrawModeIsActive] = useState(false);
   const layer_name = 'aoi';
 
   const setDataGeom = (geom, display) => {
@@ -108,7 +94,6 @@ const ProjectCreate = (props) => {
       );
       throw err;
     }
-
     // Transform lineString to polygon
     if (e.geometry.type === 'LineString') {
       const coords = e.geometry.coordinates;
@@ -118,13 +103,11 @@ const ProjectCreate = (props) => {
       }
       return lineToPolygon(e);
     }
-
     return e;
   };
 
   const verifyAndSetData = (event) => {
     let err = { code: 403, message: null };
-
     try {
       if (event.type !== 'FeatureCollection') {
         err.message = <FormattedMessage {...messages.noFeatureCollection} />;
@@ -223,6 +206,12 @@ const ProjectCreate = (props) => {
   };
 
   const drawHandler = () => {
+    if (drawModeIsActive) {
+      setDrawModeIsActive(false);
+      mapObj.draw.changeMode('simple_select');
+      return;
+    }
+    setDrawModeIsActive(true);
     const updateArea = (event) => {
       const features = mapObj.draw.getAll();
       if (features.features.length > 1) {
@@ -232,6 +221,7 @@ const ProjectCreate = (props) => {
 
       // Validate area first.
       setDataGeom(featureCollection(event.features), false);
+      setDrawModeIsActive(false);
     };
 
     mapObj.map.on('draw.update', updateArea);
@@ -242,14 +232,16 @@ const ProjectCreate = (props) => {
   const [cloneFromId, setCloneFromId] = useQueryParam('cloneFrom', NumberParam);
   const [step, setStep] = useState(1);
   const [cloneProjectName, setCloneProjectName] = useState(null);
+  const [cloneProjectOrg, setCloneProjectOrg] = useState(null);
   const [err, setErr] = useState({ error: false, message: null });
 
   const fetchCloneProjectInfo = useCallback(
     async (cloneFromId) => {
       const res = await fetchLocalJSONAPI(`projects/${cloneFromId}/`, token);
       setCloneProjectName(res.projectInfo.name);
+      setCloneProjectOrg(res.organisation);
     },
-    [setCloneProjectName, token],
+    [setCloneProjectName, setCloneProjectOrg, token],
   );
 
   useLayoutEffect(() => {
@@ -261,6 +253,7 @@ const ProjectCreate = (props) => {
   let cloneProjectData = {
     id: cloneFromId,
     name: cloneProjectName,
+    organisation: cloneProjectOrg,
   };
 
   // Project information.
@@ -273,6 +266,7 @@ const ProjectCreate = (props) => {
     zoomLevel: 9,
     tempTaskGrid: null,
     arbitraryTasks: false,
+    organisation: '',
   });
 
   useLayoutEffect(() => {
@@ -308,6 +302,7 @@ const ProjectCreate = (props) => {
             uploadFile={uploadFile}
             drawHandler={drawHandler}
             deleteHandler={deleteHandler}
+            drawIsActive={drawModeIsActive}
           />
         );
       case 2:
@@ -330,32 +325,12 @@ const ProjectCreate = (props) => {
 
   return (
     <div className="cf vh-minus-122-ns h-100 pr0-l">
-      <div className="fl pt3 w-30-l cf w-100">
+      <div className="fl pt3 cf w-100">
         <h2 className="f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
           <FormattedMessage {...messages.createProject} />
         </h2>
-        {cloneFromId && (
-          <p className="fw6 pv2 blue-grey">
-            <FormattedMessage
-              {...messages.cloneProject}
-              values={{ id: cloneFromId, name: cloneProjectName }}
-            />
-          </p>
-        )}
-        {renderCurrentStep()}
-        <AlertMessage err={err} />
-
-        <NavButtons
-          index={step}
-          setStep={setStep}
-          metadata={metadata}
-          mapObj={mapObj}
-          updateMetadata={updateMetadata}
-          maxArea={MAX_AOI_AREA}
-          setErr={setErr}
-        />
       </div>
-      <div className="w-70-l w-100 h-100-l h-50 pt3 pt0-l fr relative">
+      <div className="w-100 h-100-l h-50 pt3 pt0-l fr relative">
         <ProjectCreationMap
           metadata={metadata}
           updateMetadata={updateMetadata}
@@ -364,6 +339,28 @@ const ProjectCreate = (props) => {
           step={step}
           uploadFile={uploadFile}
         />
+        <div className="cf absolute bg-white o-90 top-1 left-1 pa3 mw6">
+          {cloneFromId && (
+            <p className="fw6 pv2 blue-grey">
+              <FormattedMessage
+                {...messages.cloneProject}
+                values={{ id: cloneFromId, name: cloneProjectName }}
+              />
+            </p>
+          )}
+          {renderCurrentStep()}
+          <AlertMessage error={err} />
+
+          <NavButtons
+            index={step}
+            setStep={setStep}
+            metadata={metadata}
+            mapObj={mapObj}
+            updateMetadata={updateMetadata}
+            maxArea={MAX_AOI_AREA}
+            setErr={setErr}
+          />
+        </div>
         <div className="cf absolute" style={{ bottom: '3.5rem', left: '0.6rem' }}>
           <p
             className={`fl mr2 pa1 f7-ns white ${

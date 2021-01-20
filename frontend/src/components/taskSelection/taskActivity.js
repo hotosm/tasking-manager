@@ -60,13 +60,12 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
   );
 };
 
-export const TaskHistory = ({ projectId, taskId, commentPayload, mapperLevel }) => {
+export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [history, setHistory] = useState([]);
-  const taskChangeSetting = mapperLevel === 'BEGINNER' ? false : true;
   const [showTaskComments, setShowTaskComments] = useState(true);
   const [taskComments, setTaskComments] = useState([]);
-  const [showTaskChanges, setShowTaskChanges] = useState(taskChangeSetting);
+  const [showTaskChanges, setShowTaskChanges] = useState(false);
   const [taskChanges, setTaskChanges] = useState([]);
   const [shownHistory, setShownHistory] = useState([]);
 
@@ -104,7 +103,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload, mapperLevel }) 
     } else {
       setShownHistory(history);
     }
-  }, [mapperLevel, showTaskComments, showTaskChanges, taskComments, taskChanges, history]);
+  }, [showTaskComments, showTaskChanges, taskComments, taskChanges, history]);
 
   const getTaskActionMessage = (action, actionText) => {
     let message = '';

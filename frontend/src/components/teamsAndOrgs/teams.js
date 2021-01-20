@@ -9,7 +9,7 @@ import messages from './messages';
 import { useEditTeamAllowed } from '../../hooks/UsePermissions';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
-import { SwitchToggle, RadioField, OrganisationSelect } from '../formInputs';
+import { SwitchToggle, RadioField, OrganisationSelectInput } from '../formInputs';
 import { EditModeControl } from './editMode';
 import { Button, EditButton } from '../button';
 
@@ -160,7 +160,7 @@ export function TeamInformation(props) {
         <label className={labelClasses}>
           <FormattedMessage {...messages.organisation} />
         </label>
-        <OrganisationSelect name="organisation_id" />
+        <OrganisationSelectInput name="organisation_id" />
       </div>
       <div className="cf pt1">
         <label className={labelClasses}>
@@ -234,9 +234,7 @@ export function TeamForm(props) {
                 <div className="w-30-l w-50 h-100 fr dib">
                   <Button
                     onClick={() => {
-                      document
-                        .getElementById('team-form')
-                        .dispatchEvent(new Event('submit', { cancelable: true }));
+                      handleSubmit();
                       setEditMode(false);
                     }}
                     className="w-100 h-100 bg-red white"

@@ -1,5 +1,7 @@
 # Tasking Manager
 
+[![TM Backend on Quay](https://quay.io/repository/hotosm/tasking-manager/status "Tasking Manager Backend Build")](https://quay.io/repository/hotosm/tasking-manager)
+
 The most popular tool for teams to coordinate mapping on OpenStreetMap.
 
 [<img src="screenshot.jpg" />](./screenshot.jpg)
@@ -23,3 +25,12 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 * [Setup the TM for development](./docs/setup-development.md)
 * [Learn about migrations between major versions](./docs/migration.md)
 * Help us and submit [pull requests](https://github.com/hotosm/tasking-manager/pulls)
+
+## Instances
+* [HOT Tasking Manager (production)](https://tasks.hotosm.org)
+* [HOT Tasking Manager (staging)](https://tasks-stage.hotosm.org)
+* [TeachOSM](https://tasks.teachosm.org/)
+* [OpenStreetMap Indonesia](https://tasks-indonesia.hotosm.org/)
+* [OpenStreetMap US](https://tasks.openstreetmap.us/)
+* [Map My Kerala](https://mapmykerala.in/)
+* [OpenHistoricalMap](https://tasks.openhistoricalmap.org)

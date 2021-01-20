@@ -66,6 +66,12 @@ class ProjectAdminService:
             draft_project = Project.clone(draft_project_dto.cloneFromProjectId, user_id)
         else:
             draft_project = Project()
+            org = OrganisationService.get_organisation_by_id(
+                draft_project_dto.organisation
+            )
+            if org is None:
+                raise NotFound("Organisation does not exist")
+            draft_project_dto.organisation = org
             draft_project.create_draft_project(draft_project_dto)
 
         draft_project.set_project_aoi(draft_project_dto)

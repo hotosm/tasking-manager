@@ -147,7 +147,7 @@ export const MetadataForm = () => {
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
-          <FormattedMessage {...messages.organisation} />
+          <FormattedMessage {...messages.organisation} />*
         </label>
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.organisationDescription} />

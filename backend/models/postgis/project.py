@@ -227,6 +227,7 @@ class Project(db.Model):
         self.project_info.append(
             ProjectInfo.create_from_name(draft_project_dto.project_name)
         )
+        self.organisation = draft_project_dto.organisation
         self.status = ProjectStatus.DRAFT.value
         self.author_id = draft_project_dto.user_id
         self.last_updated = timestamp()
@@ -327,7 +328,7 @@ class Project(db.Model):
             orig_changeset = f"{default_comment}-{orig.id}"  # Preserve space
             new_proj.changeset_comment = orig.changeset_comment.replace(
                 orig_changeset, ""
-            )
+            ).strip()
 
         # Populate teams, interests and campaigns
         teams = []

@@ -39,7 +39,7 @@ export const SwitchToggle = ({ label, isChecked, onChange, labelPosition }: Obje
   </div>
 );
 
-export function OrganisationSelect({ className }: Object) {
+export const OrganisationSelect = ({ className, orgId, onChange }) => {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [organisations, setOrganisations] = useState([]);
@@ -52,20 +52,32 @@ export function OrganisationSelect({ className }: Object) {
         .catch((e) => console.log(e));
     }
   }, [userDetails, token]);
+
   const getOrgPlaceholder = (id) => {
     const orgs = organisations.filter((org) => org.organisationId === id);
     return orgs.length ? orgs[0].name : <FormattedMessage {...messages.selectOrganisation} />;
   };
+
+  return (
+    <Select
+      classNamePrefix="react-select"
+      isClearable={false}
+      getOptionLabel={(option) => option.name}
+      getOptionValue={(option) => option.organisationId}
+      options={organisations}
+      placeholder={getOrgPlaceholder(orgId)}
+      onChange={onChange}
+      className={className}
+    />
+  );
+};
+
+export function OrganisationSelectInput({ className }) {
   return (
     <Field name="organisation_id" className={className} required>
       {(props) => (
-        <Select
-          classNamePrefix="react-select"
-          isClearable={false}
-          getOptionLabel={(option) => option.name}
-          getOptionValue={(option) => option.organisationId}
-          options={organisations}
-          placeholder={getOrgPlaceholder(props.input.value)}
+        <OrganisationSelect
+          orgId={props.input.value}
           onChange={(value) => props.input.onChange(value.organisationId || '')}
           className="z-5"
         />

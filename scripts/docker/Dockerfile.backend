@@ -1,17 +1,30 @@
 FROM python:3.7-alpine as base
+LABEL version=0.2
+LABEL description="Builds docker image for TM Backend"
+
 WORKDIR /usr/src/app
 
-## BUILD
+## BUILD STAGE
 FROM base as builder
 
 # Setup backend build dependencies
-RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev libffi-dev geos-dev proj-util proj-dev make
+RUN apk update && \
+    apk add \
+       gcc \
+       make \
+       musl-dev \
+       libffi-dev \
+       python3-dev \
+       postgresql-dev \
+       geos-dev \
+       proj-util \
+       proj-dev
 
 # Setup backend Python dependencies
 COPY requirements.txt .
 RUN pip install --prefix=/install --no-warn-script-location -r requirements.txt
 
-## DEPLOY
+## DEPLOY STAGE
 FROM base
 
 # Setup backend runtime dependencies
@@ -23,8 +36,4 @@ COPY . .
 ENV TZ UTC # Fix timezone (do not change - see issue #3638)
 EXPOSE 5000
 
-ENV WORKERS 3
-ENV THREADS 3
-ENV TIMEOUT 179
-
-CMD ["sh", "-c", "exec gunicorn -b 0.0.0.0:5000 --worker-class gevent --workers $WORKERS --threads $THREADS --timeout $TIMEOUT manage:application"]
+CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application"]

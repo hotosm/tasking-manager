@@ -13,7 +13,7 @@ from backend.models.dtos.stats_dto import (
     ProjectActivityDTO,
     ProjectLastActivityDTO,
     HomePageStatsDTO,
-    OrganizationStatsDTO,
+    OrganizationListStatsDTO,
     CampaignStatsDTO,
 )
 
@@ -427,10 +427,12 @@ class StatsService:
                 .filter(~Organisation.id.in_(subquery))
                 .scalar()
             )
-            dto.organisations = [OrganizationStatsDTO(row) for row in linked_orgs_count]
+            dto.organisations = [
+                OrganizationListStatsDTO(row) for row in linked_orgs_count
+            ]
 
             if no_org_project_count:
-                no_org_proj = OrganizationStatsDTO(
+                no_org_proj = OrganizationListStatsDTO(
                     ("Unassociated", no_org_project_count)
                 )
                 dto.organisations.append(no_org_proj)

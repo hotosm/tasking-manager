@@ -6,7 +6,7 @@ from flask import current_app
 from geoalchemy2 import shape
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.dtos.mapping_dto import TaskDTOs
-from backend.models.postgis.utils import ST_Transform
+from backend.models.postgis.utils import ST_Transform, ST_Area, ST_GeogFromWKB
 from backend.models.postgis.task import Task, TaskStatus, TaskAction
 from backend.models.postgis.project import Project
 from backend.models.postgis.utils import NotFound, InvalidGeoJson
@@ -170,6 +170,16 @@ class SplitService:
             raise NotFound()
 
         original_geometry = shape.to_shape(original_task.geometry)
+
+        # Fetch the task geometry in meters
+        original_task_area_m = db.engine.execute(
+            ST_Area(ST_GeogFromWKB(original_task.geometry))
+        ).scalar()
+
+        if (
+            original_task.zoom and original_task.zoom >= 18
+        ) or original_task_area_m < 25000:
+            raise SplitServiceError("Task is too small to be split")
 
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
