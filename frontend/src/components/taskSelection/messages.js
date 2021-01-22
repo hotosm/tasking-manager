@@ -20,6 +20,15 @@ export default defineMessages({
     id: 'project.tasks.unsaved_map_changes.actions.close_modal',
     defaultMessage: 'Close',
   },
+  noMappedTasksSelected: {
+    id: 'project.tasks.no_mapped_tasks_selected',
+    defaultMessage: 'No mapped tasks selected',
+  },
+  noMappedTasksSelectedDescription: {
+    id: 'project.tasks.no_mapped_tasks_selected.description',
+    defaultMessage:
+      'It was not possible to lock the selected tasks, as none of them are on the mapped status.',
+  },
   josmError: {
     id: 'project.tasks.josm_error',
     defaultMessage: 'Connection with JOSM failed',
