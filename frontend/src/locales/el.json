@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Αποθηκεύστε ή αναιρέστε για να μπορείτε να αποσχίσετε την εργασία",
   "project.tasks.unsaved_map_changes.unlock": "Αποθηκεύστε ή αναιρέστε για να μπορέσετε να επιλέξετε μια άλλη εργασία",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Κλείστε",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "Η σύνδεση με το JOSM απέτυχε",
   "project.tasks.josm_error.description": "Βεβαιωθείτε ότι το JOSM εκτελείται στον υπολογιστή σας και η απομακρυσμένη διαχείριση είναι ενεργοποιημένη.",
   "project.tasks.lock_error.generic": "Δεν ήταν δυνατόν να κλειδωθεί αυτή την εργασία για σας...",

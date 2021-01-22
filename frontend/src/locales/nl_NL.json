@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Sla ze op of maak ze ongedaan om de taak te kunnen splitsen",
   "project.tasks.unsaved_map_changes.unlock": "Sla ze op of maak ze ongedaan om een andere taak te kunnen selecteren",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Sluiten",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "Verbinding met JOSM mislukt",
   "project.tasks.josm_error.description": "Verifieer of JOSM op uw computer wordt uitgevoerd en of Afstandsbediening is ingeschakeld.",
   "project.tasks.lock_error.generic": "Het was niet mogelijk deze taak voor u te vergrendelen…",

@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Görevi bölmek için değişikliklerinizi kaydedin veya geri alın",
   "project.tasks.unsaved_map_changes.unlock": "Başka bir görevi seçebilmek için değişikliklerinizi kaydedin veya geri alın",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Kapat",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "",
   "project.tasks.josm_error.description": "",
   "project.tasks.lock_error.generic": "Sizin için bu görevi kilitlemek mümkün olmadı.",

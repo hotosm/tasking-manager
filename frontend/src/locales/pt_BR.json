@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Salve ou desfaça para poder dividir a tarefa",
   "project.tasks.unsaved_map_changes.unlock": "Salve ou desfaça para poder selecionar outra tarefa",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Fechar",
+  "project.tasks.no_mapped_tasks_selected": "Nenhuma tarefa mapeada selecionada",
+  "project.tasks.no_mapped_tasks_selected.description": "Não foi possível bloquear as tarefas selecionadas, pois nenhuma delas possui o status de mapeada.",
   "project.tasks.josm_error": "Falha na conexão com o JOSM",
   "project.tasks.josm_error.description": "Verifique se o JOSM está em execução no seu computador e se o controle remoto está ativado.",
   "project.tasks.lock_error.generic": "Não foi possível bloquear esta tarefa para você...",

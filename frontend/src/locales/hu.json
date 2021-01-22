@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "A feladat felosztásához mentse el vagy vonja vissza",
   "project.tasks.unsaved_map_changes.unlock": "Másik feladat kijelöléséhez mentse el vagy vonja vissza",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Bezárás",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "Nem sikerült a kapcsolat a JOSM-mal",
   "project.tasks.josm_error.description": "Kérjük, ellenőrizze, hogy a JOSM fut-e a számítógépén, és engedélyezve van-e a távirányító.",
   "project.tasks.lock_error.generic": "Ezt a feladatot nem lehetett Önnek zárolni…",

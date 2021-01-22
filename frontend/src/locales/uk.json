@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Збережіть або скасуйте їх для того щоб розділити завдання",
   "project.tasks.unsaved_map_changes.unlock": "Збережіть або скасуйте їх для того щоб обрати інше завдання",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Закрити",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "Зв'язок з JOSM не встановлено",
   "project.tasks.josm_error.description": "Перевірте, будь ласка, чи ви запустили JOSM та увімкнули в ньому службу дистанційного керування.",
   "project.tasks.lock_error.generic": "Неможливо заблокувати це завдання для вас…",

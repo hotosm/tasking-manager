@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "יש לשמור או לבטל זאת כדי שיתאפשר לך לפצל את המשימה",
   "project.tasks.unsaved_map_changes.unlock": "יש לשמור או לבטל זאת כדי שיתאפשר לך לבחור במשימה אחרת",
   "project.tasks.unsaved_map_changes.actions.close_modal": "סגירה",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "החיבור ל־JOSM נכשל",
   "project.tasks.josm_error.description": "נא לוודא ש־JOSM פעיל במחשב שלך ושהשליטה מרחוק מופעלת.",
   "project.tasks.lock_error.generic": "לא הייתה אפשרות לנעול את המשימה הזאת לטובתך…",

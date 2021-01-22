@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "タスクを分割するには、変更を保存するか、変更の取り消しを行ってください",
   "project.tasks.unsaved_map_changes.unlock": "別のタスクを選択するには、変更の保存か取り消しを行ってください。",
   "project.tasks.unsaved_map_changes.actions.close_modal": "閉じる",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "JOSMとの接続に失敗しました",
   "project.tasks.josm_error.description": "JOSMがコンピュータで実行されていて、リモート制御が有効になっているかどうかを確認してください。",
   "project.tasks.lock_error.generic": "このタスクをロックすることができませんでした。",

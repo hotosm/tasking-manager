@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Sauvegarder ou annuler pour pouvoir scinder la tâche.",
   "project.tasks.unsaved_map_changes.unlock": "Sauvegarder ou annuler pour pouvoir choisir une autre tâche",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Fermer",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "La connexion à JOSM a échoué.",
   "project.tasks.josm_error.description": "Vérifiez si JOSM tourne sur votre ordinateur et et le contrôle à distance est autorisé.",
   "project.tasks.lock_error.generic": "Il n'a pas été possible de verrouiller cette tâche pour vous...",
