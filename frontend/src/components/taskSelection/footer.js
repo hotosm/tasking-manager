@@ -143,9 +143,9 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
   ]);
 
   const updateEditor = (arr) => setEditor(arr[0].value);
-  const titleClasses = 'db ttu f6 blue-light mb2';
+  const titleClasses = 'db ttu f6 blue-light mb2 truncate';
   return (
-    <div className="cf bg-white pb2 ph4-l ph2">
+    <div className="bg-white pb2 ph4-l ph2 flex flex-nowrap-ns flex-wrap">
       {lockError !== null && (
         <Popup
           modal
@@ -164,21 +164,28 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
           )}
         </Popup>
       )}
-      <div className="w-25-ns w-40 fl">
-        <h3 className={titleClasses}>
-          <FormattedMessage {...messages.typesOfMapping} />
-        </h3>
-        <div className="db fl pt1">
+      {/* Types of mapping */}
+      <div className="w-25-ns w-40 order-0-ns order-4">
+        <div className="db-ns dn">
+          <h3 className={titleClasses}>
+            <FormattedMessage {...messages.typesOfMapping} />
+          </h3>
+        </div>
+        <div className="mr2-ns pt1">
           <MappingTypes types={project.mappingTypes} />
         </div>
       </div>
-      <div className="w-25-ns w-60 fl">
+      {/* Imagery */}
+      <div className="w-25-ns w-60 order-1">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.imagery} />
         </h3>
-        <Imagery value={project.imagery} />
+        <div className="pt1 mr1-ns">
+          <Imagery value={project.imagery} />
+        </div>
       </div>
-      <div className="w-20-ns w-40 fl">
+      {/* Select editor */}
+      <div className="w-25-ns w-60 order-2">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.editor} />
         </h3>
@@ -193,7 +200,8 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
           onRemove={() => {}}
         />
       </div>
-      <div className="w-30-ns w-60 fl tr">
+      {/* The "Map a task" etc. button */}
+      <div className="w-25-ns w-40 order-3-ns order-1 tr-ns tc mb0-ns mb1">
         <div className="mt3">
           <Button className="white bg-red" onClick={() => lockTasks()}>
             {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(

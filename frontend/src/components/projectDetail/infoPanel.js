@@ -19,7 +19,7 @@ const ProjectDetailTypeBar = (props) => {
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.typesOfMapping} />
         </h3>
-        <div className="db fl pt1">
+        <div className="pt1">
           <MappingTypes types={props.mappingTypes} />
         </div>
       </div>
