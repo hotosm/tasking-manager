@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Save or undo it to be able to split the task",
   "project.tasks.unsaved_map_changes.unlock": "Save or undo it to be able to select another task",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Close",
+  "project.tasks.no_mapped_tasks_selected": "No mapped tasks selected",
+  "project.tasks.no_mapped_tasks_selected.description": "It was not possible to lock the selected tasks, as none of them are on the mapped status.",
   "project.tasks.josm_error": "Connection with JOSM failed",
   "project.tasks.josm_error.description": "Please verify if JOSM is running on your computer and the remote control is enabled.",
   "project.tasks.lock_error.generic": "It wasn't possible to lock this task for you...",

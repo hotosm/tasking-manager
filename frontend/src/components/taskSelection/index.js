@@ -72,7 +72,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   );
   //eslint-disable-next-line
   const [priorityAreasError, priorityAreasLoading, priorityAreas] = useFetch(
-    `/api/v2/projects/${project.projectId}/queries/priority-areas/`,
+    `projects/${project.projectId}/queries/priority-areas/`,
     project.projectId !== undefined,
   );
 
