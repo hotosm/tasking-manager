@@ -53,7 +53,7 @@
     "react-meta-elements": "^1.0.0",
     "react-placeholder": "^4.0.3",
     "react-redux": "^7.2.2",
-    "react-scripts": "^3.4.4",
+    "react-scripts": "^4.0.1",
     "react-select": "^3.2.0",
     "react-tooltip": "^4.2.13",
     "reactjs-popup": "^1.5.0",
@@ -76,7 +76,7 @@
     "build": "npm run preparation && npm run update-static && react-scripts build",
     "prettier": "prettier --write src/**/*.js",
     "lint": "eslint src",
-    "test": "npm run lint && react-scripts test --env=jsdom-fourteen",
+    "test": "npm run lint && react-scripts test --env=jsdom",
     "coverage": "npm run test -- --coverage --watchAll=false"
   },
   "eslintConfig": {

@@ -7,6 +7,12 @@ import { store } from '../../store';
 import { ConnectedIntl } from '../../utils/internationalization';
 import { ProjectStats } from '../projectStats';
 
+jest.mock('react-chartjs-2', () => ({
+  Doughnut: () => null,
+  Bar: () => null,
+  Line: () => null,
+}));
+
 describe('ProjectStats dashboard', () => {
   it('fetch urls and render sections title', async () => {
     jest.spyOn(window, 'fetch');
