@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Spara eller ångra den för att kunna dela upp uppgiften",
   "project.tasks.unsaved_map_changes.unlock": "Spara eller ångra den för att kunna välja en annan uppgift",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Stäng",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "",
   "project.tasks.josm_error.description": "",
   "project.tasks.lock_error.generic": "Det var inte möjligt att låsa den här uppgiften för dig...",

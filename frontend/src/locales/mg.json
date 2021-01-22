@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "",
   "project.tasks.unsaved_map_changes.unlock": "",
   "project.tasks.unsaved_map_changes.actions.close_modal": "",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "",
   "project.tasks.josm_error.description": "",
   "project.tasks.lock_error.generic": "",

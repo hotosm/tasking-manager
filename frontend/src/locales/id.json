@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Simpan atau batalkan untuk dapat membagi task",
   "project.tasks.unsaved_map_changes.unlock": "Simpan atau batalkan untuk dapat memilih task lain",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Tutup",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "Koneksi dengan JOSM gagal",
   "project.tasks.josm_error.description": "Harap verifikasi apakah JOSM berjalan di komputer Anda dan remote control diaktifkan.",
   "project.tasks.lock_error.generic": "Tidak mungkin bagi Anda untuk mengunci task ini...",

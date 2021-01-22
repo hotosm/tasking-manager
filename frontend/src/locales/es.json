@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Guardar o deshacer para poder dividir la tarea",
   "project.tasks.unsaved_map_changes.unlock": "Guardar o deshacer para poder seleccionar otra tarea",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Cerrar",
+  "project.tasks.no_mapped_tasks_selected": "No se seleccionaron tareas mapeadas",
+  "project.tasks.no_mapped_tasks_selected.description": "No fue posible bloquear las tareas seleccionadas, ya que ninguna de ellas está en el status de mapeada.",
   "project.tasks.josm_error": "Fallo de conexión con JOSM",
   "project.tasks.josm_error.description": "Compruebe si JOSM se está ejecutando en su equipo y el control remoto está habilitado.",
   "project.tasks.lock_error.generic": "No fue posible bloquear esta tarea...",

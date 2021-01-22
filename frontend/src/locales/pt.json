@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Guardar ou desfazer para poder dividir a tarefa",
   "project.tasks.unsaved_map_changes.unlock": "Guardar ou desfazer para poder selecionar outra tarefa",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Perto",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "A ligação ao JOSM falhou",
   "project.tasks.josm_error.description": "Por favor, verifica se o JOSM está a correr no teu computador e se o controlo remoto se encontra ativado.",
   "project.tasks.lock_error.generic": "Não foi possível bloquear esta tarefa para ti...",

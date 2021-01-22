@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Salvare o annullare l'operazione per dividere l'attività",
   "project.tasks.unsaved_map_changes.unlock": "Salvare o annullare l'operazione per selezionare un'altra attività",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Chiudi",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "Connessione con JOSM fallita",
   "project.tasks.josm_error.description": "Per favore verificare se JOSM è in esecuzione sul computer e se il controllo remoto è abilitato.",
   "project.tasks.lock_error.generic": "Non è stato possibile bloccare questo compito per te...",

@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "Chcete-li úlohu rozdělit, uložte ji nebo zrušte",
   "project.tasks.unsaved_map_changes.unlock": "Chcete-li vybrat jinou úlohu, uložte ji nebo zrušte",
   "project.tasks.unsaved_map_changes.actions.close_modal": "Zavřít",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "Spojení s JOSM selhalo",
   "project.tasks.josm_error.description": "Ověřte, zda je na vašem počítači spuštěn JOSM a je povoleno dálkové ovládání.",
   "project.tasks.lock_error.generic": "Nepovedlo se danou úlohu pro vás uzamknout...",

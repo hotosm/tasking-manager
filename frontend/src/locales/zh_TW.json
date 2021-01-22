@@ -509,6 +509,8 @@
   "project.tasks.unsaved_map_changes.split": "",
   "project.tasks.unsaved_map_changes.unlock": "",
   "project.tasks.unsaved_map_changes.actions.close_modal": "",
+  "project.tasks.no_mapped_tasks_selected": "",
+  "project.tasks.no_mapped_tasks_selected.description": "",
   "project.tasks.josm_error": "連線到 JOSM 失敗",
   "project.tasks.josm_error.description": "請確認你已經在你電腦運行 JOSM 並且開啟遠端控制。",
   "project.tasks.lock_error.generic": "",
