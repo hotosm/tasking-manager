@@ -671,11 +671,13 @@ const Resources = {
           cf.ref('TaskingManagerURL')
         ],
         Enabled: true,
+        HttpVersion: 'http2',
         Origins: [{
           Id: cf.join('-', [cf.stackName, 'react-app']),
           DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
           CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only'
+            OriginProtocolPolicy: 'https-only',
+            OriginSSLProtocols: 'TLSv1.2'
           }
         }],
         CustomErrorResponses: [{
@@ -705,7 +707,7 @@ const Resources = {
         },
         ViewerCertificate: {
           AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
-          MinimumProtocolVersion: 'TLSv1.2_2018',
+          MinimumProtocolVersion: 'TLSv1.2_2019',
           SslSupportMethod: 'sni-only'
         }
       }
