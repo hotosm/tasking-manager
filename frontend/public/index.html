@@ -5,6 +5,26 @@
     <link rel="shortcut icon" href="%PUBLIC_URL%/static/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <!-- for security -->
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self';
+                   connect-src 'self' https://api.mapbox.com https://cdn.jsdelivr.net https://dev.virtualearth.net https://events.mapbox.com https://osm-stats-production-api.azurewebsites.net https://osmstats-api.hotosm.org https://taginfo.openstreetmap.org https://tasking-manager-tm4-production-api.hotosm.org https://www.openstreetmap.org; 
+                   font-src https://fonts.gstatic.com; 
+                   img-src 'self' data: https://cdn.hotosm.org https://img.youtube.com https://opensource.org https://openstreetmap-user-avatars.s3.dualstack.eu-west-1.amazonaws.com https://services.digitalglobe.com https://www.gravatar.com https://www.openstreetmap.org https://*.tile.openstreetmap.org https://*.tile.opentopomap.org https://*.tiles.mapbox.com https://api.mapbox.com https://clarity.maptiles.arcgis.com https://*.tiles.virtualearth.net https://osmlab.github.io https://server.arcgisonline.com https://services.arcgisonline.com;
+                   media-src https://cdn.hotosm.org; 
+                   script-src 'self' 'unsafe-inline' https://api.mapbox.com https://matomo.hotosm.org; 
+                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+                   object-src 'none';
+                   base-uri 'self';
+                   frame-src 'self';
+                   frame-ancestors 'self';
+                   manifest-src 'self';
+                   worker-src blob:">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Strict-Transport-Security" content="max-age=63072000">
+
     <!-- for Google -->
     <meta name="description" content="Tasking Manager is a the tool for coordination of volunteers and organization of groups to map on OpenStreetMap.">
     <meta name="keywords" content="OpenStreetMap, Tasking Manager, OSM">
