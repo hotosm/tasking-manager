@@ -5,8 +5,8 @@ export function useHover() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   // Wrap in useCallback so we can use in dependencies below
-  const handleMouseOver = useCallback(e => {
-    setPosition({ x: e.clientX, y: e.clientY });
+  const handleMouseOver = useCallback((e) => {
+    setPosition({ x: e.clientX - ref.current.offsetLeft - 35, y: e.clientY });
     setValue(true);
   }, []);
   const handleMouseOut = useCallback(() => setValue(false), []);
@@ -20,7 +20,7 @@ export function useHover() {
   // a different element later. With useEffect, changes to ref.current
   // wouldn't cause a rerender and thus the effect would run again.
   const callbackRef = useCallback(
-    node => {
+    (node) => {
       if (ref.current) {
         ref.current.removeEventListener('mouseover', handleMouseOver);
         ref.current.removeEventListener('mouseout', handleMouseOut);

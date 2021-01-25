@@ -148,6 +148,39 @@ export default defineMessages({
     id: 'management.organisations',
     defaultMessage: 'Organizations',
   },
+  toBeMapped: {
+    id: 'management.organisations.stats.to_be_mapped',
+    defaultMessage: 'Tasks to be mapped',
+  },
+  readyForValidation: {
+    id: 'management.organisations.stats.ready_for_validation',
+    defaultMessage: 'Ready for validation',
+  },
+  actionsNeeded: {
+    id: 'management.organisations.stats.actions_needed',
+    defaultMessage: 'Actions needed',
+  },
+  actionsNeededHelp: {
+    id: 'management.organisations.stats.actions_needed.help',
+    defaultMessage:
+      'Action means a mapping or validation operation. As each task needs to be mapped and validated, this is the number of actions needed to finish all the published projects of that organization.',
+  },
+  levelTooltip: {
+    id: 'management.organisations.stats.level.tooltip',
+    defaultMessage: '{n} of {total} ({percent}%) completed to move to level {nextLevel}',
+  },
+  levelInfo: {
+    id: 'management.organisations.stats.level.description',
+    defaultMessage: '{org} is an organization level {level}.',
+  },
+  nextLevelInfo: {
+    id: 'management.organisations.stats.level.next',
+    defaultMessage: 'After completing more {n} actions, it will reach the level {nextLevel}.',
+  },
+  topLevelInfo: {
+    id: 'management.organisations.stats.level.top',
+    defaultMessage: 'It is the highest level an organization can be on Tasking Manager!',
+  },
   orgInfo: {
     id: 'management.titles.organisation_information',
     defaultMessage: 'Organization information',

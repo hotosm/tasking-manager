@@ -30,7 +30,12 @@ import { Login } from './views/login';
 import { Welcome } from './views/welcome';
 import { Settings } from './views/settings';
 import { ManagementPageIndex, ManagementSection } from './views/management';
-import { ListOrganisations, CreateOrganisation, EditOrganisation } from './views/organisations';
+import {
+  ListOrganisations,
+  CreateOrganisation,
+  EditOrganisation,
+  OrganisationStats,
+} from './views/organisations';
 import { MyTeams, ManageTeams, CreateTeam, EditTeam, TeamDetail } from './views/teams';
 import { ListCampaigns, CreateCampaign, EditCampaign } from './views/campaigns';
 import { ListInterests, CreateInterest, EditInterest } from './views/interests';
@@ -78,9 +83,10 @@ let App = (props) => {
                 </ProjectsPage>
                 <ProjectDetailPage path="projects/:id" />
                 <SelectTask path="projects/:id/tasks" />
-                <ProjectStats path="projects/:id/stats" />
                 <MapTask path="projects/:id/map" />
                 <ValidateTask path="projects/:id/validate" />
+                <ProjectStats path="projects/:id/stats" />
+                <OrganisationStats path="organisations/:id/stats/" />
                 <LearnPage path="learn" />
                 <QuickstartPage path="learn/quickstart" />
                 <AboutPage path="about" />
