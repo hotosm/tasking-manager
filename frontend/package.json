@@ -100,7 +100,7 @@
     "@testing-library/react-hooks": "^5.0.3",
     "combine-react-intl-messages": "^4.0.0",
     "jest-canvas-mock": "^2.3.0",
-    "msw": "^0.25.0",
+    "msw": "^0.26.0",
     "prettier": "^2.2.1",
     "react-test-renderer": "^17.0.1"
   },
