@@ -492,38 +492,33 @@ class StatsService:
             db.session.query(
                 TaskHistory.task_id,
                 TaskHistory.project_id,
-                TaskHistory.action_date,
-                Task.task_status,
+                TaskHistory.action_text,
+                func.DATE(TaskHistory.action_date).label("day"),
             )
-            .distinct(TaskHistory.task_id, TaskHistory.project_id)
-            .join(
-                Task,
-                and_(
-                    Task.id == TaskHistory.task_id,
-                    Task.project_id == TaskHistory.project_id,
+            .filter(
+                TaskHistory.action == "STATE_CHANGE",
+                or_(
+                    TaskHistory.action_text == "MAPPED",
+                    TaskHistory.action_text == "VALIDATED",
+                    TaskHistory.action_text == "INVALIDATED",
+                    TaskHistory.action_text == "BAD_IMAGERY",
                 ),
             )
             .filter(
-                Task.task_status.in_(
-                    (
-                        TaskStatus.MAPPED.value,
-                        TaskStatus.VALIDATED.value,
-                        TaskStatus.INVALIDATED.value,
-                        TaskStatus.BADIMAGERY.value,
-                    )
+                and_(
+                    func.DATE(TaskHistory.action_date) >= start_date,
+                    func.DATE(TaskHistory.action_date) <= end_date,
                 )
             )
-            .order_by(
-                TaskHistory.task_id,
+            .group_by(
+                TaskHistory.action_text,
+                "day",
                 TaskHistory.project_id,
-                TaskHistory.id.desc(),
+                TaskHistory.task_id,
             )
+            .order_by("day")
         )
-
-        if start_date:
-            query = query.filter(TaskHistory.action_date >= start_date)
-        if end_date:
-            query = query.filter(TaskHistory.action_date <= end_date)
+        print(query)
         if org_id:
             query = query.join(Project, Project.id == TaskHistory.project_id).filter(
                 Project.organisation_id == org_id
@@ -551,17 +546,15 @@ class StatsService:
             )
 
         stats_dto = TaskStatsDTO()
-        stats_dto.mapped = query.filter(
-            Task.task_status.in_((TaskStatus.MAPPED.value, TaskStatus.VALIDATED.value))
-        ).count()
+        stats_dto.mapped = query.filter(TaskHistory.action_text == "MAPPED").count()
         stats_dto.validated = query.filter(
-            Task.task_status == TaskStatus.VALIDATED.value
+            TaskHistory.action_text == "VALIDATED"
         ).count()
         stats_dto.invalidated = query.filter(
-            Task.task_status == TaskStatus.INVALIDATED.value
+            TaskHistory.action_text == "INVALIDATED"
         ).count()
-        stats_dto.unavailable = query.filter(
-            Task.task_status == TaskStatus.BADIMAGERY.value
+        stats_dto.bad_imagery = query.filter(
+            TaskHistory.action_text == "BAD_IMAGERY"
         ).count()
 
         return stats_dto
