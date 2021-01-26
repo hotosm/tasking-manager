@@ -10,7 +10,7 @@ def validate_date_input(date):
         date = datetime.datetime.strptime(date, date_format)
         if date <= current_date:
             return date
-        raise Exception("Error: Date out of range for task activity")
+        raise ValueError("Date out of range for task activity")
 
 
 class TasksStatisticsAPI(Resource):
@@ -26,13 +26,13 @@ class TasksStatisticsAPI(Resource):
             - in: query
               name: start_date
               description: Date to filter as minimum
-              required: false
+              required: true
               type: string
               default: null
             - in: query
               name: end_date
               description: Date to filter as maximum
-              required: false
+              required: true
               type: string
               default: null
             - in: query
@@ -63,6 +63,8 @@ class TasksStatisticsAPI(Resource):
         responses:
             200:
                 description: Task statistics
+            400:
+                description: Bad Request
             404:
                 description: Not found
             500:
@@ -71,6 +73,10 @@ class TasksStatisticsAPI(Resource):
         try:
             start_date = validate_date_input(request.args.get("start_date"))
             end_date = validate_date_input(request.args.get("end_date"))
+            if not (start_date or end_date):
+                raise KeyError("Missing date parameters")
+            if end_date < start_date:
+                raise ValueError("End date should be later than start date")
             organisation_id = request.args.get("organisation_id", None, int)
             organisation_name = request.args.get("organisation_name", None, str)
             campaign = request.args.get("campaign", None, int)
@@ -88,6 +94,14 @@ class TasksStatisticsAPI(Resource):
                 country,
             )
             return task_stats.to_primitive(), 200
+        except KeyError as e:
+            error_msg = f"Task Statistics GET - {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 400
+        except ValueError as e:
+            error_msg = f"Task Statistics GET - {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 400
         except NotFound:
             return {"Error": "Not found"}, 404
         except Exception as e:

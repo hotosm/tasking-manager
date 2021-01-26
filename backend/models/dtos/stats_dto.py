@@ -149,4 +149,4 @@ class TaskStatsDTO(Model):
     mapped = IntType(serialized_name="mapped")
     validated = IntType(serialized_name="validated")
     invalidated = IntType(serialized_name="invalidated")
-    unavailable = IntType(serialized_name="unavailable")
+    bad_imagery = IntType(serialized_name="badImagery")
