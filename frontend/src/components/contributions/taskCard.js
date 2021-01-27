@@ -23,12 +23,7 @@ export function TaskCard({
   lastUpdatedBy,
 }: Object) {
   const [isHovered, setHovered] = useState(false);
-  if (!title) {
-    title = 'My Project';
-  }
-  if (!lastUpdatedBy) {
-    lastUpdatedBy = 'user';
-  }
+  const taskLink = `/projects/${projectId}/tasks?search=${taskId}`;
 
   const timeToAutoUnlock =
     lastUpdated &&
@@ -45,10 +40,7 @@ export function TaskCard({
       >
         <div className="pv3 ph3 ba br1 b--grey-light cf">
           <div className="w-third-ns w-100 fl">
-            <Link
-              to={`/projects/${projectId}/tasks/?search=${taskId}`}
-              className="no-underline link blue-dark dib"
-            >
+            <Link to={taskLink} className="no-underline link blue-dark dib">
               <h4 className="mv0 fw6 f5">
                 <FormattedMessage
                   {...messages.projectTask}
@@ -102,7 +94,7 @@ export function TaskCard({
               ['READY', 'LOCKED_FOR_MAPPING', 'LOCKED_FOR_VALIDATION', 'INVALIDATED'].includes(
                 taskStatus,
               ) && (
-                <Link to={`/projects/${projectId}/tasks#search=${taskId}`}>
+                <Link to={taskLink}>
                   <div className={`dn dib-l link pv2 ph3 mh3 mv1 bg-red white f7 fr`}>
                     <ResumeIcon className={`ph1 dib-l dn`} />
                     <FormattedMessage {...messages.resumeTask} />
