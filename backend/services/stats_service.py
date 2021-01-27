@@ -16,6 +16,7 @@ from backend.models.dtos.stats_dto import (
     OrganizationListStatsDTO,
     CampaignStatsDTO,
     TaskStatsDTO,
+    AllTaskStatsDTO,
 )
 
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
@@ -518,7 +519,7 @@ class StatsService:
             )
             .order_by("day")
         )
-        print(query)
+
         if org_id:
             query = query.join(Project, Project.id == TaskHistory.project_id).filter(
                 Project.organisation_id == org_id
@@ -545,16 +546,58 @@ class StatsService:
                 TaskHistory.project_id == sq.c.id
             )
 
-        stats_dto = TaskStatsDTO()
-        stats_dto.mapped = query.filter(TaskHistory.action_text == "MAPPED").count()
-        stats_dto.validated = query.filter(
-            TaskHistory.action_text == "VALIDATED"
-        ).count()
-        stats_dto.invalidated = query.filter(
-            TaskHistory.action_text == "INVALIDATED"
-        ).count()
-        stats_dto.bad_imagery = query.filter(
-            TaskHistory.action_text == "BAD_IMAGERY"
-        ).count()
+        dates_stats = []
+        task_tracker = {
+            "MAPPED": [],
+            "VALIDATED": [],
+            "INVALIDATED": [],
+            "BAD IMAGERY": [],
+        }
 
-        return stats_dto
+        # r -> (58, 3, 'MAPPED', datetime.date(2021, 1, 5)):
+        # r[0]: task_id, r[1]: project_id,r[2]: action_text, r[3]: date
+        dates = list(set(r[3] for r in query))
+        dates.sort(reverse=False)
+
+        for d in dates:
+            day_stats_dto = TaskStatsDTO(
+                {
+                    "date": d,
+                    "mapped": 0,
+                    "validated": 0,
+                    "invalidated": 0,
+                    "bad_imagery": 0,
+                }
+            )
+
+            values = [(r[0], r[1], r[2]) for r in query if d == r[3]]
+            values.sort(reverse=True)
+
+            for value in values:
+                task_detail = (value[0], value[1])  # tuple for (task_id, project_id)
+                task_status = value[2]
+
+                if task_status == "MAPPED":
+                    if task_detail not in task_tracker["MAPPED"]:
+                        task_tracker["MAPPED"].append(task_detail)
+                        day_stats_dto.mapped += 1
+                elif task_status == "VALIDATED":
+                    if task_detail not in task_tracker["VALIDATED"]:
+                        task_tracker["VALIDATED"].append(task_detail)
+                        day_stats_dto.validated += 1
+                        if task_detail in task_tracker["INVALIDATED"]:
+                            task_tracker["INVALIDATED"].remove(task_detail)
+                elif task_status == "INVALIDATED":
+                    if task_detail not in task_tracker["INVALIDATED"]:
+                        task_tracker["INVALIDATED"].append(task_detail)
+                        day_stats_dto.invalidated += 1
+                else:
+                    if task_detail not in task_tracker["BAD IMAGERY"]:
+                        task_tracker["BAD IMAGERY"].append(task_detail)
+                        day_stats_dto.bad_imagery += 1
+            dates_stats.append(day_stats_dto)
+
+        results_dto = AllTaskStatsDTO()
+        results_dto.stats = dates_stats
+
+        return results_dto
