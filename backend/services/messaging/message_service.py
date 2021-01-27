@@ -65,7 +65,7 @@ class MessageService:
     ):
         """ Sends mapper a notification after their task has been marked valid or invalid """
         if validated_by == mapped_by:
-            return  # No need to send a message to yourself
+            return  # No need to send a notification if you've verified your own task
 
         user = UserService.get_user_by_id(mapped_by)
         text_template = get_txt_template(
@@ -174,10 +174,10 @@ class MessageService:
                 messages_objs.append(obj)
                 continue
             messages_objs.append(obj)
-
             SMTPService.send_email_alert(
                 user.email_address,
                 user.username,
+                user.is_email_verified,
                 message["message"].id,
                 UserService.get_user_by_id(message["message"].from_user_id).username,
                 message["message"].project_id,
