@@ -143,17 +143,20 @@ class HomePageStatsDTO(Model):
     campaigns = ListType(ModelType(CampaignStatsDTO))
 
 
-class TaskStatsDTO(Model):
+class TaskStats(Model):
     """ DTO for tasks stats for a single day """
 
     date = DateType(required=True)
     mapped = IntType(serialized_name="mapped")
     validated = IntType(serialized_name="validated")
-    invalidated = IntType(serialized_name="invalidated")
     bad_imagery = IntType(serialized_name="badImagery")
 
 
-class AllTaskStatsDTO(Model):
+class TaskStatsDTO(Model):
     """ Contains all tasks stats broken down by day"""
 
-    stats = ListType(ModelType(TaskStatsDTO))
+    def __init__(self):
+        super().__init__()
+        self.stats = []
+
+    stats = ListType(ModelType(TaskStats), serialized_name="taskStats")
