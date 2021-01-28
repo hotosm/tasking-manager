@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from '../user/messages';
 import { TwitterIconNoBg, FacebookIcon, LinkedinIcon, ProfilePictureIcon } from '../svgIcons';
@@ -10,9 +10,11 @@ import { UserOrganisations } from './userTeamsOrgs';
 import { SectionMenu } from '../menu';
 import OsmLogo from '../../assets/img/osm_logo.png';
 import MissingMapsLogo from '../../assets/img/organizations/missingmaps.png';
-import { OSM_SERVER_URL } from '../../config';
+import SlackLogo from '../../assets/img/icons/slack.png';
+import { OSM_SERVER_URL, ORG_CODE } from '../../config';
 
 const SocialMedia = ({ data }) => {
+  const intl = useIntl();
   const socialMediaItems = ['twitterId', 'facebookId', 'linkedinId'];
 
   const getSocialIcon = (field) => {
@@ -68,6 +70,16 @@ const SocialMedia = ({ data }) => {
           {createLink('missingmaps', data.username)}
         </div>
       </li>
+      {data.slackId && (
+        <li
+          className="dib mr4-ns mr2 cf f7"
+          title={intl.formatMessage(messages.slackUsername, { org: ORG_CODE })}
+        >
+          <div className="mr2 h2 blue-grey">
+            <img className="h1 v-mid" src={SlackLogo} alt="Slack" /> {data.slackId}
+          </div>
+        </li>
+      )}
       {socialMediaItems.map((i) => {
         if (data[i] === null) {
           return null;
