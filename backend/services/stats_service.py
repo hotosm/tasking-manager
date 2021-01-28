@@ -15,8 +15,8 @@ from backend.models.dtos.stats_dto import (
     HomePageStatsDTO,
     OrganizationListStatsDTO,
     CampaignStatsDTO,
+    TaskStats,
     TaskStatsDTO,
-    AllTaskStatsDTO,
 )
 
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
@@ -501,7 +501,6 @@ class StatsService:
                 or_(
                     TaskHistory.action_text == "MAPPED",
                     TaskHistory.action_text == "VALIDATED",
-                    TaskHistory.action_text == "INVALIDATED",
                     TaskHistory.action_text == "BAD_IMAGERY",
                 ),
             )
@@ -550,7 +549,7 @@ class StatsService:
         task_tracker = {
             "MAPPED": [],
             "VALIDATED": [],
-            "INVALIDATED": [],
+            # "INVALIDATED": [],
             "BAD IMAGERY": [],
         }
 
@@ -560,12 +559,11 @@ class StatsService:
         dates.sort(reverse=False)
 
         for d in dates:
-            day_stats_dto = TaskStatsDTO(
+            day_stats_dto = TaskStats(
                 {
                     "date": d,
                     "mapped": 0,
                     "validated": 0,
-                    "invalidated": 0,
                     "bad_imagery": 0,
                 }
             )
@@ -585,19 +583,13 @@ class StatsService:
                     if task_detail not in task_tracker["VALIDATED"]:
                         task_tracker["VALIDATED"].append(task_detail)
                         day_stats_dto.validated += 1
-                        if task_detail in task_tracker["INVALIDATED"]:
-                            task_tracker["INVALIDATED"].remove(task_detail)
-                elif task_status == "INVALIDATED":
-                    if task_detail not in task_tracker["INVALIDATED"]:
-                        task_tracker["INVALIDATED"].append(task_detail)
-                        day_stats_dto.invalidated += 1
                 else:
                     if task_detail not in task_tracker["BAD IMAGERY"]:
                         task_tracker["BAD IMAGERY"].append(task_detail)
                         day_stats_dto.bad_imagery += 1
             dates_stats.append(day_stats_dto)
 
-        results_dto = AllTaskStatsDTO()
+        results_dto = TaskStatsDTO()
         results_dto.stats = dates_stats
 
         return results_dto
