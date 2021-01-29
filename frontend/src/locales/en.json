@@ -645,6 +645,7 @@
   "project.tasks.number.total": "Total",
   "project.tasks.locked_by_user": "{lockStatus} by {user}",
   "project.tasks.extra_information.title": "Specific task information",
+  "project.users.all": "All users",
   "project.level.all": "All levels",
   "project.level.advanced": "Advanced",
   "project.level.intermediate": "Intermediate",
