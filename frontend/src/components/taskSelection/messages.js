@@ -572,6 +572,10 @@ export default defineMessages({
     id: 'project.tasks.extra_information.title',
     defaultMessage: 'Specific task information',
   },
+  userFilterDefaultLabel: {
+    id: 'project.users.all',
+    defaultMessage: 'All users',
+  },
   mappingLevelALL: {
     id: 'project.level.all',
     defaultMessage: 'All levels',
