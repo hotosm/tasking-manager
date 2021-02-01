@@ -1139,16 +1139,19 @@ class Project(db.Model):
         target, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery
     ):
         """ Calculates percentages of contributions """
-        if target == "mapped":
-            return int(
-                (tasks_mapped + tasks_validated)
-                / (total_tasks - tasks_bad_imagery)
-                * 100
-            )
-        elif target == "validated":
-            return int(tasks_validated / (total_tasks - tasks_bad_imagery) * 100)
-        elif target == "bad_imagery":
-            return int((tasks_bad_imagery / total_tasks) * 100)
+        try:
+            if target == "mapped":
+                return int(
+                    (tasks_mapped + tasks_validated)
+                    / (total_tasks - tasks_bad_imagery)
+                    * 100
+                )
+            elif target == "validated":
+                return int(tasks_validated / (total_tasks - tasks_bad_imagery) * 100)
+            elif target == "bad_imagery":
+                return int((tasks_bad_imagery / total_tasks) * 100)
+        except ZeroDivisionError:
+            return 0
 
     def as_dto_for_admin(self, project_id):
         """ Creates a Project DTO suitable for transmitting to project admins """
