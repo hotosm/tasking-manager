@@ -98,7 +98,7 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.3",
     "@testing-library/react-hooks": "^5.0.3",
-    "@testing-library/user-event": "^12.6.2",
+    "@testing-library/user-event": "^12.6.3",
     "combine-react-intl-messages": "^4.0.0",
     "jest-canvas-mock": "^2.3.0",
     "msw": "^0.26.0",
