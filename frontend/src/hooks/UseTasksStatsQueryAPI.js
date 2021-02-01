@@ -1,12 +1,6 @@
 import { useEffect, useReducer } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  useQueryParams,
-  encodeQueryParams,
-  StringParam,
-  NumberParam,
-  BooleanParam,
-} from 'use-query-params';
+import { useQueryParams, encodeQueryParams, StringParam, NumberParam } from 'use-query-params';
 import { stringify as stringifyUQP } from 'query-string';
 import axios from 'axios';
 
@@ -15,54 +9,40 @@ import { useThrottle } from '../hooks/UseThrottle';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import { API_URL } from '../config';
 
-const projectQueryAllSpecification = {
-  difficulty: StringParam,
-  organisation: StringParam,
+/* See also moreFiltersForm, the useQueryParams are duplicated there for specific modular usage */
+/* This one is e.g. used for updating the URL when returning to /contribute
+ *  and directly submitting the query to the API */
+const statsQueryAllSpecification = {
+  startDate: StringParam,
+  endDate: StringParam,
   campaign: StringParam,
-  team: NumberParam,
   location: StringParam,
-  types: CommaArrayParam,
-  exactTypes: BooleanParam,
-  interests: CommaArrayParam,
-  page: NumberParam,
-  text: StringParam,
-  orderBy: StringParam,
-  orderByType: StringParam,
-  createdByMe: BooleanParam,
-  managedByMe: BooleanParam,
-  favoritedByMe: BooleanParam,
-  mappedByMe: BooleanParam,
-  status: StringParam,
-  action: StringParam,
+  project: CommaArrayParam,
+  organisationName: StringParam,
+  organisationId: NumberParam,
 };
 
-/* This can be passed into project API or used independently */
-export const useExploreProjectsQueryParams = () => {
-  return useQueryParams(projectQueryAllSpecification);
+export const useTasksStatsQueryParams = () => {
+  const uqp = useQueryParams(statsQueryAllSpecification);
+  return uqp;
 };
 
 /* The API uses slightly different JSON keys than the queryParams,
    this fn takes an object with queryparam keys and outputs JSON keys
    while maintaining the same values */
+/* TODO support full text search and change text=>project for that */
 const backendToQueryConversion = {
-  difficulty: 'mapperLevel',
+  startDate: 'startDate',
+  endDate: 'endDate',
   campaign: 'campaign',
-  team: 'teamId',
-  organisation: 'organisationName',
   location: 'country',
-  types: 'mappingTypes',
-  exactTypes: 'mappingTypesExact',
-  interests: 'interests',
-  text: 'textSearch',
-  page: 'page',
-  orderBy: 'orderBy',
-  orderByType: 'orderByType',
-  createdByMe: 'createdByMe',
-  managedByMe: 'managedByMe',
-  favoritedByMe: 'favoritedByMe',
-  mappedByMe: 'mappedByMe',
-  status: 'projectStatuses',
-  action: 'action',
+  project: 'projectId',
+  organisationName: 'organisationName',
+  organisationId: 'organisationId',
+};
+
+const defaultInitialData = {
+  taskStats: [],
 };
 
 const dataFetchReducer = (state, action) => {
@@ -78,9 +58,7 @@ const dataFetchReducer = (state, action) => {
         ...state,
         isLoading: false,
         isError: false,
-        projects: action.payload.results,
-        mapResults: action.payload.mapResults,
-        pagination: action.payload.pagination,
+        stats: action.payload.taskStats,
       };
     case 'FETCH_FAILURE':
       return {
@@ -94,33 +72,19 @@ const dataFetchReducer = (state, action) => {
   }
 };
 
-const defaultInitialData = {
-  mapResults: {
-    features: [],
-    type: 'FeatureCollection',
-  },
-  results: [],
-  pagination: { hasNext: false, hasPrev: false, page: 1 },
-};
-
-export const useProjectsQueryAPI = (
+export const useTasksStatsQueryAPI = (
   initialData = defaultInitialData,
   ExternalQueryParamsState,
   forceUpdate = null,
+  extraQuery = '',
 ) => {
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
-
-  /* Get the user bearer token from the Redux store */
   const token = useSelector((state) => state.auth.get('token'));
-  const locale = useSelector((state) => state.preferences['locale']);
-  const action = useSelector((state) => state.preferences['action']);
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
     isError: false,
-    projects: initialData.results,
-    mapResults: initialData.mapResults,
-    pagination: initialData.pagination,
+    stats: initialData.taskStats,
     queryParamsState: ExternalQueryParamsState[0],
   });
 
@@ -136,24 +100,21 @@ export const useProjectsQueryAPI = (
 
       let headers = {
         'Content-Type': 'application/json',
-        'Accept-Language': locale ? locale.replace('-', '_') : 'en',
+        Authorization: `Token ${token}`,
       };
-      if (token) {
-        headers['Authorization'] = `Token ${token}`;
-      }
       const paramsRemapped = remapParamsToAPI(
         throttledExternalQueryParamsState,
         backendToQueryConversion,
       );
-      // it's needed in order to query by action when the user goes to /explore page
-      if (paramsRemapped.action === undefined && action) {
-        paramsRemapped.action = action;
-      }
+      extraQuery.split(',').forEach((query) => {
+        const [key, value] = query.trim().split('=');
+        paramsRemapped[key] = value;
+      });
 
       try {
         const result = await axios({
-          url: `${API_URL}projects/`,
-          method: 'get',
+          url: `${API_URL}tasks/statistics/`,
+          method: 'GET',
           headers: headers,
           params: paramsRemapped,
           cancelToken: new CancelToken(function executor(c) {
@@ -180,7 +141,7 @@ export const useProjectsQueryAPI = (
           error &&
           error.response &&
           error.response.data &&
-          error.response.data.Error === 'No projects found'
+          error.response.data.Error === 'No statistics found'
         ) {
           const zeroPayload = Object.assign(defaultInitialData, { pagination: { total: 0 } });
           /* TODO(tdk): when 404 and page > 1, re-request page 1 */
@@ -202,7 +163,7 @@ export const useProjectsQueryAPI = (
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js
-          console.log('Request failure', error.request, errorReqPayload);
+          console.log('request failure', error.request, errorReqPayload);
           dispatch({ type: 'FETCH_FAILURE', payload: errorReqPayload });
         } else if (!didCancel) {
           dispatch({ type: 'FETCH_FAILURE' });
@@ -219,12 +180,12 @@ export const useProjectsQueryAPI = (
       console.log('tried to cancel on effect cleanup ', cancel && cancel.params);
       cancel && cancel.end();
     };
-  }, [throttledExternalQueryParamsState, forceUpdate, token, locale, action]);
+  }, [throttledExternalQueryParamsState, forceUpdate, token, extraQuery]);
 
   return [state, dispatch];
 };
 
 export const stringify = (obj) => {
-  const encodedQuery = encodeQueryParams(projectQueryAllSpecification, obj);
+  const encodedQuery = encodeQueryParams(statsQueryAllSpecification, obj);
   return stringifyUQP(encodedQuery);
 };

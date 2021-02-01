@@ -1,0 +1,52 @@
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+
+import { ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { tasksStats } from '../../../network/tests/mockData/tasksStats';
+import TasksStats from '../tasksStats';
+
+jest.mock('react-chartjs-2', () => ({
+  Bar: () => null,
+}));
+
+describe('TasksStats', () => {
+  const setQuery = jest.fn();
+  it('render basic elements', () => {
+    render(
+      <ReduxIntlProviders>
+        <TasksStats
+          stats={tasksStats.taskStats}
+          query={{ startDate: null, endDate: null, campaign: null, location: null }}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText('From')).toBeInTheDocument();
+    expect(screen.getByText('To')).toBeInTheDocument();
+    expect(screen.getByText('Campaign')).toBeInTheDocument();
+    expect(screen.getByText('Location')).toBeInTheDocument();
+    expect(screen.getByText('165')).toBeInTheDocument();
+    expect(screen.getByText('Tasks mapped')).toBeInTheDocument();
+    expect(screen.getByText('46')).toBeInTheDocument();
+    expect(screen.getByText('Tasks validated')).toBeInTheDocument();
+    expect(screen.getByText('211')).toBeInTheDocument();
+    expect(screen.getByText('Completed actions')).toBeInTheDocument();
+  });
+  it('load correct query values', async () => {
+    const { container } = render(
+      <ReduxIntlProviders>
+        <TasksStats
+          stats={tasksStats.taskStats}
+          setQuery={setQuery}
+          query={{ startDate: '2020-04-05', endDate: '2021-01-01', campaign: null, location: null }}
+        />
+      </ReduxIntlProviders>,
+    );
+    const startDateInput = container.querySelectorAll('input')[0];
+    const endDateInput = container.querySelectorAll('input')[1];
+    expect(startDateInput.placeholder).toBe('Click to select a start date');
+    expect(startDateInput.value).toBe('2020-04-05');
+    expect(endDateInput.placeholder).toBe('Click to select an end date');
+    expect(endDateInput.value).toBe('2021-01-01');
+  });
+});

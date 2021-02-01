@@ -104,7 +104,8 @@ describe('formatTimelineTooltip', () => {
     labels: ['2020-05-19', '2020-06-01', '2020-06-26'],
   };
   it('returns correct information for Mapped tasks', () => {
-    expect(formatTimelineTooltip(tooltipItem, data)).toBe('Mapped tasks: 31%');
+    expect(formatTimelineTooltip(tooltipItem, data, true)).toBe('Mapped tasks: 31%');
+    expect(formatTimelineTooltip(tooltipItem, data)).toBe('Mapped tasks: 31');
   });
   it('returns correct information for Validated tasks', () => {
     const tooltipItem2 = {
@@ -117,7 +118,8 @@ describe('formatTimelineTooltip', () => {
       x: 1074.8309643713924,
       y: 78.45394354462593,
     };
-    expect(formatTimelineTooltip(tooltipItem2, data)).toBe('Validated tasks: 0%');
+    expect(formatTimelineTooltip(tooltipItem2, data, true)).toBe('Validated tasks: 0%');
+    expect(formatTimelineTooltip(tooltipItem2, data)).toBe('Validated tasks: 0');
   });
 });
 

@@ -101,9 +101,9 @@ export default defineMessages({
     defaultMessage:
       'You are not a manager of this organization, so you are not allowed to edit it.',
   },
-  statistics: {
+  tasksStatistics: {
     id: 'teamsAndOrgs.management.organisation.stats',
-    defaultMessage: 'Statistics',
+    defaultMessage: 'Tasks statistics',
   },
   remainingTasks: {
     id: 'teamsAndOrgs.management.organisation.remaining_tasks',
