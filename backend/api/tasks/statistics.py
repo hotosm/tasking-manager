@@ -1,5 +1,7 @@
 from datetime import date, datetime, timedelta
 from flask_restful import Resource, current_app, request
+
+from backend.services.users.authentication_service import token_auth
 from backend.services.stats_service import StatsService
 
 
@@ -13,6 +15,7 @@ def validate_date_input(input_date):
 
 
 class TasksStatisticsAPI(Resource):
+    @token_auth.login_required
     def get(self):
         """
         Get Task Stats
@@ -22,6 +25,12 @@ class TasksStatisticsAPI(Resource):
         produces:
           - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              required: true
+              default: Token sessionTokenHere==
             - in: query
               name: startDate
               description: Date to filter as minimum
@@ -57,6 +66,8 @@ class TasksStatisticsAPI(Resource):
                 description: Task statistics
             400:
                 description: Bad Request
+            401:
+                description: Request is not authenticated
             500:
                 description: Internal Server Error
         """
@@ -67,8 +78,8 @@ class TasksStatisticsAPI(Resource):
                 raise KeyError("Missing start date parameter")
             if end_date < start_date:
                 raise ValueError("Start date must be earlier than end date")
-            if (end_date - start_date) > timedelta(days=731):
-                raise ValueError("Date range can not be bigger than 2 years")
+            if (end_date - start_date) > timedelta(days=366):
+                raise ValueError("Date range can not be bigger than 1 year")
             organisation_id = request.args.get("organisationId", None, int)
             organisation_name = request.args.get("organisationName", None, str)
             campaign = request.args.get("campaign", None, int)
@@ -86,11 +97,7 @@ class TasksStatisticsAPI(Resource):
                 country,
             )
             return task_stats.to_primitive(), 200
-        except KeyError as e:
-            error_msg = f"Task Statistics GET - {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 400
-        except ValueError as e:
+        except (KeyError, ValueError) as e:
             error_msg = f"Task Statistics GET - {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 400
