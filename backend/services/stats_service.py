@@ -501,7 +501,7 @@ class StatsService:
                 or_(
                     TaskHistory.action_text == "MAPPED",
                     TaskHistory.action_text == "VALIDATED",
-                    TaskHistory.action_text == "BAD_IMAGERY",
+                    TaskHistory.action_text == "BADIMAGERY",
                 ),
             )
             .filter(
@@ -524,9 +524,14 @@ class StatsService:
                 Project.organisation_id == org_id
             )
         if org_name:
-            organisation = OrganisationService.get_organisation_by_name(org_name)
+            try:
+                organisation_id = OrganisationService.get_organisation_by_name(
+                    org_name
+                ).id
+            except NotFound:
+                organisation_id = None
             query = query.join(Project, Project.id == TaskHistory.project_id).filter(
-                Project.organisation_id == organisation.id
+                Project.organisation_id == organisation_id
             )
         if campaign_id:
             query = query.join(
@@ -549,8 +554,7 @@ class StatsService:
         task_tracker = {
             "MAPPED": [],
             "VALIDATED": [],
-            # "INVALIDATED": [],
-            "BAD IMAGERY": [],
+            "BADIMAGERY": [],
         }
 
         # r -> (58, 3, 'MAPPED', datetime.date(2021, 1, 5)):
@@ -583,9 +587,9 @@ class StatsService:
                     if task_detail not in task_tracker["VALIDATED"]:
                         task_tracker["VALIDATED"].append(task_detail)
                         day_stats_dto.validated += 1
-                else:
-                    if task_detail not in task_tracker["BAD IMAGERY"]:
-                        task_tracker["BAD IMAGERY"].append(task_detail)
+                elif task_status == "BADIMAGERY":
+                    if task_detail not in task_tracker["BADIMAGERY"]:
+                        task_tracker["BADIMAGERY"].append(task_detail)
                         day_stats_dto.bad_imagery += 1
             dates_stats.append(day_stats_dto)
 
