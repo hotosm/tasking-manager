@@ -9,7 +9,7 @@ def validate_date_input(input_date):
             input_date = datetime.strptime(input_date, "%Y-%m-%d").date()
         return input_date
     except (TypeError, ValueError):
-        raise ValueError("Invalid date value.")
+        raise ValueError("Invalid date value")
 
 
 class TasksStatisticsAPI(Resource):
