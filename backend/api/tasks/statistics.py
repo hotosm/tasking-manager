@@ -1,16 +1,15 @@
-import datetime
+from datetime import date, datetime, timedelta
 from flask_restful import Resource, current_app, request
-from backend.services.stats_service import NotFound, StatsService
+from backend.services.stats_service import StatsService
 
 
-def validate_date_input(date):
-    if date:
-        date_format = "%Y-%m-%d"
-        current_date = datetime.datetime.now()
-        date = datetime.datetime.strptime(date, date_format)
-        if date <= current_date:
-            return date
-        raise ValueError("Date out of range for task activity")
+def validate_date_input(input_date):
+    try:
+        if not isinstance(input_date, date):
+            input_date = datetime.strptime(input_date, "%Y-%m-%d").date()
+        return input_date
+    except (TypeError, ValueError):
+        raise ValueError("Invalid date value.")
 
 
 class TasksStatisticsAPI(Resource):
@@ -24,63 +23,56 @@ class TasksStatisticsAPI(Resource):
           - application/json
         parameters:
             - in: query
-              name: start_date
+              name: startDate
               description: Date to filter as minimum
               required: true
               type: string
-              default: null
             - in: query
-              name: end_date
-              description: Date to filter as maximum
-              required: true
+              name: endDate
+              description: Date to filter as maximum. Default value is the current date.
+              required: false
               type: string
-              default: null
             - in: query
-              name: organisation_name
+              name: organisationName
               description: Organisation name to filter by
               required: false
-              default: null
             - in: query
-              name: organisation_id
+              name: organisationId
               description: Organisation ID to filter by
               required: false
-              default: null
             - in: query
               name: campaign
               description: Campaign name to filter by
               required: false
-              default: null
             - in: query
-              name: project_id
+              name: projectId
               description: Project IDs to filter by
               required: false
-              default: null
             - in: query
               name: country
               description: Country name to filter by
               required: false
-              default: null
         responses:
             200:
                 description: Task statistics
             400:
                 description: Bad Request
-            404:
-                description: Not found
             500:
                 description: Internal Server Error
         """
         try:
-            start_date = validate_date_input(request.args.get("start_date"))
-            end_date = validate_date_input(request.args.get("end_date"))
-            if not (start_date or end_date):
-                raise KeyError("Missing date parameters")
+            start_date = validate_date_input(request.args.get("startDate"))
+            end_date = validate_date_input(request.args.get("endDate", date.today()))
+            if not (start_date):
+                raise KeyError("Missing start date parameter")
             if end_date < start_date:
-                raise ValueError("End date should be later than start date")
-            organisation_id = request.args.get("organisation_id", None, int)
-            organisation_name = request.args.get("organisation_name", None, str)
+                raise ValueError("Start date must be earlier than end date")
+            if (end_date - start_date) > timedelta(days=731):
+                raise ValueError("Date range can not be bigger than 2 years")
+            organisation_id = request.args.get("organisationId", None, int)
+            organisation_name = request.args.get("organisationName", None, str)
             campaign = request.args.get("campaign", None, int)
-            project_id = request.args.get("project_id")
+            project_id = request.args.get("projectId")
             if project_id:
                 project_id = map(str, project_id.split(","))
             country = request.args.get("country", None, str)
@@ -102,8 +94,6 @@ class TasksStatisticsAPI(Resource):
             error_msg = f"Task Statistics GET - {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 400
-        except NotFound:
-            return {"Error": "Not found"}, 404
         except Exception as e:
             error_msg = f"Task Statistics GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
