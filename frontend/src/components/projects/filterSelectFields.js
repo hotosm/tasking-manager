@@ -2,18 +2,29 @@ import React from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 import Select from 'react-select';
+import { format, parse } from 'date-fns';
+import DatePicker from 'react-datepicker';
+import { FormattedMessage, useIntl } from 'react-intl';
 
-import { FormattedMessage } from 'react-intl';
 import messages from './messages';
+import { CalendarIcon } from '../svgIcons';
 
-export const ProjectFilterSelect = (props) => {
-  const state = props.options;
-  const fieldsetTitle = <FormattedMessage {...messages[props.fieldsetName]} />;
-  const fieldsetTitlePlural = <FormattedMessage {...messages[`${props.fieldsetName}s`]} />;
+export const ProjectFilterSelect = ({
+  fieldsetName,
+  fieldsetStyle,
+  titleStyle,
+  selectedTag,
+  setQueryForChild,
+  allQueryParamsForChild,
+  options,
+}) => {
+  const state = options;
+  const fieldsetTitle = <FormattedMessage {...messages[fieldsetName]} />;
+  const fieldsetTitlePlural = <FormattedMessage {...messages[`${fieldsetName}s`]} />;
 
   return (
-    <fieldset id={props.fieldsetName} className={props.fieldsetStyle}>
-      <legend className={props.titleStyle}>{fieldsetTitle}</legend>
+    <fieldset id={fieldsetName} className={fieldsetStyle}>
+      <legend className={titleStyle}>{fieldsetTitle}</legend>
       {state.isError ? (
         <div className="bg-tan pa4">
           <FormattedMessage
@@ -29,13 +40,51 @@ export const ProjectFilterSelect = (props) => {
         <TagFilterPickerAutocomplete
           fieldsetTitle={fieldsetTitle}
           defaultSelectedItem={fieldsetTitlePlural}
-          fieldsetName={props.fieldsetName}
-          queryParamSelectedItem={props.selectedTag || fieldsetTitle}
-          tagOptionsFromAPI={props.options}
-          setQuery={props.setQueryForChild}
-          allQueryParams={props.allQueryParamsForChild}
+          fieldsetName={fieldsetName}
+          queryParamSelectedItem={selectedTag || fieldsetTitle}
+          tagOptionsFromAPI={options}
+          setQuery={setQueryForChild}
+          allQueryParams={allQueryParamsForChild}
         />
       </ReactPlaceholder>
+    </fieldset>
+  );
+};
+
+export const DateFilterPicker = ({
+  fieldsetName,
+  fieldsetStyle,
+  titleStyle,
+  selectedValue,
+  setQueryForChild,
+  allQueryParamsForChild,
+}) => {
+  const intl = useIntl();
+  const dateFormat = 'yyyy-MM-dd';
+  return (
+    <fieldset id={fieldsetName} className={fieldsetStyle}>
+      <legend className={titleStyle}>
+        <FormattedMessage {...messages[fieldsetName]} />
+      </legend>
+      <CalendarIcon className="blue-grey dib w1 pr2 v-mid" />
+      <DatePicker
+        selected={selectedValue ? parse(selectedValue, dateFormat, new Date()) : null}
+        onChange={(date) =>
+          setQueryForChild(
+            {
+              ...allQueryParamsForChild,
+              page: undefined,
+              [fieldsetName]: date ? format(date, dateFormat) : null,
+            },
+            'pushIn',
+          )
+        }
+        dateFormat={dateFormat}
+        className="w-auto pv2 ph1"
+        placeholderText={intl.formatMessage(messages[`${fieldsetName}Placeholder`])}
+        showYearDropdown
+        scrollableYearDropdown
+      />
     </fieldset>
   );
 };

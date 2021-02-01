@@ -13,8 +13,6 @@ import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../network/genericJSONReq
 import { Members } from '../components/teamsAndOrgs/members';
 import { Teams } from '../components/teamsAndOrgs/teams';
 import { Projects } from '../components/teamsAndOrgs/projects';
-import { RemainingTasksStats } from '../components/teamsAndOrgs/remainingTasksStats';
-import { OrganisationUsageLevel } from '../components/teamsAndOrgs/orgUsageLevel';
 import {
   OrganisationForm,
   CreateOrgInfo,
@@ -252,55 +250,3 @@ export function EditOrganisation(props) {
     </ReactPlaceholder>
   );
 }
-
-export const OrganisationStats = ({ id }) => {
-  const [error, loading, organisation] = useFetch(`organisations/${id}/?omitManagerList=true`, id);
-  const [errorOrgStats, loadingOrgStats, orgStats] = useFetch(
-    `organisations/${id}/statistics/`,
-    id,
-  );
-  useSetTitleTag(`${organisation.name || 'Organization'} stats`);
-
-  return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      rows={26}
-      ready={!error && !loading}
-      className="pv3 ph2 ph4-ns"
-    >
-      <div className="w-100 cf pv3 ph2 ph4-ns bg-white blue-dark">
-        <img src={organisation.logo} className="w3 dib v-mid mr3" alt={organisation.name} />
-        <h3 className="f2 fw6 mv2 ttu barlow-condensed blue-dark dib v-mid">{organisation.name}</h3>
-        <div className="w-100 fl cf">
-          <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mb3">
-            <FormattedMessage {...messages.statistics} />
-          </h4>
-          <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
-            {
-              // space for a chart
-            }
-          </React.Suspense>
-        </div>
-        <div className="w-100 fl cf">
-          <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mb3">
-            <FormattedMessage {...messages.remainingTasks} />
-          </h4>
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            rows={5}
-            delay={500}
-            ready={!errorOrgStats && !loadingOrgStats}
-          >
-            <RemainingTasksStats tasks={orgStats && orgStats.activeTasks} />
-          </ReactPlaceholder>
-        </div>
-        <div className="w-100 fl cf">
-          <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mv1">
-            <FormattedMessage {...messages.usageLevel} />
-          </h4>
-          <OrganisationUsageLevel orgName={organisation.name} completedActions={100} />
-        </div>
-      </div>
-    </ReactPlaceholder>
-  );
-};

@@ -5,6 +5,10 @@ import '@testing-library/jest-dom';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { EditsByNumbers } from '../editsByNumbers';
 
+jest.mock('react-chartjs-2', () => ({
+  Doughnut: () => null,
+}));
+
 describe('EditsByNumbers card', () => {
   it('renders a message if the user has not stats yet', () => {
     render(
@@ -45,6 +49,5 @@ describe('EditsByNumbers card', () => {
         'No data to show yet. OpenStreetMap edits stats are updated with a delay of one hour.',
       ),
     ).not.toBeInTheDocument();
-    expect(container.querySelector('canvas')).toBeInTheDocument();
   });
 });

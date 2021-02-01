@@ -152,13 +152,25 @@ export default defineMessages({
     id: 'management.organisations.stats.to_be_mapped',
     defaultMessage: 'Tasks to be mapped',
   },
+  tasksMapped: {
+    id: 'management.organisations.stats.tasks_mapped',
+    defaultMessage: 'Tasks mapped',
+  },
   readyForValidation: {
     id: 'management.organisations.stats.ready_for_validation',
     defaultMessage: 'Ready for validation',
   },
+  tasksValidated: {
+    id: 'management.organisations.stats.tasks_validated',
+    defaultMessage: 'Tasks validated',
+  },
   actionsNeeded: {
     id: 'management.organisations.stats.actions_needed',
     defaultMessage: 'Actions needed',
+  },
+  completedActions: {
+    id: 'management.organisations.stats.completed_actions',
+    defaultMessage: 'Completed actions',
   },
   actionsNeededHelp: {
     id: 'management.organisations.stats.actions_needed.help',
