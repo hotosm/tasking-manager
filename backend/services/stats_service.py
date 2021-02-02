@@ -1,6 +1,6 @@
 from cachetools import TTLCache, cached
 
-from sqlalchemy import func, desc, cast, extract, or_, and_
+from sqlalchemy import func, desc, distinct, cast, extract, or_, and_, tuple_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
 from backend import db
@@ -485,6 +485,18 @@ class StatsService:
         project.save()
 
     @staticmethod
+    def set_task_stats(date):
+        date_dto = TaskStats(
+            {
+                "date": date,
+                "mapped": 0,
+                "validated": 0,
+                "bad_imagery": 0,
+            }
+        )
+        return date_dto
+
+    @staticmethod
     def get_task_stats(
         start_date, end_date, org_id, org_name, campaign, project_id, country
     ):
@@ -555,50 +567,57 @@ class StatsService:
                 TaskHistory.project_id == sq.c.id
             )
 
-        dates_stats = []
-        task_tracker = {
-            "MAPPED": [],
-            "VALIDATED": [],
-            "BADIMAGERY": [],
-        }
-
-        # r -> (58, 3, 'MAPPED', datetime.date(2021, 1, 5)):
-        # r[0]: task_id, r[1]: project_id,r[2]: action_text, r[3]: date
-        dates = list(set(r[3] for r in query))
-        dates.sort(reverse=False)
-
-        for d in dates:
-            day_stats_dto = TaskStats(
-                {
-                    "date": d,
-                    "mapped": 0,
-                    "validated": 0,
-                    "bad_imagery": 0,
-                }
+        query = query.subquery()
+        tasks_mapped = dict(
+            db.session.query(
+                func.to_char(query.c.day, "YYYY-MM-DD"),
+                func.count(distinct(tuple_(query.c.task_id, query.c.project_id))),
             )
+            .select_from(query)
+            .filter(query.c.action_text == "MAPPED")
+            .group_by("day")
+            .order_by("day")
+            .all()
+        )
+        tasks_validated = dict(
+            db.session.query(
+                func.to_char(query.c.day, "YYYY-MM-DD"),
+                func.count(distinct(tuple_(query.c.task_id, query.c.project_id))),
+            )
+            .select_from(query)
+            .filter(query.c.action_text == "VALIDATED")
+            .group_by("day")
+            .order_by("day")
+            .all()
+        )
+        tasks_bad_imagery = dict(
+            db.session.query(
+                func.to_char(query.c.day, "YYYY-MM-DD"),
+                func.count(distinct(tuple_(query.c.task_id, query.c.project_id))),
+            )
+            .select_from(query)
+            .filter(query.c.action_text == "BADIMAGERY")
+            .group_by("day")
+            .order_by("day")
+            .all()
+        )
 
-            values = [(r[0], r[1], r[2]) for r in query if d == r[3]]
-            values.sort(reverse=True)
+        dates = db.session.query(distinct(query.c.day)).select_from(query).all()
+        dates = [r[0] for r in dates]
+        day_stats_dto = list(map(StatsService.set_task_stats, dates))
 
-            for value in values:
-                task_detail = (value[0], value[1])  # tuple for (task_id, project_id)
-                task_status = value[2]
-
-                if task_status == "MAPPED":
-                    if task_detail not in task_tracker["MAPPED"]:
-                        task_tracker["MAPPED"].append(task_detail)
-                        day_stats_dto.mapped += 1
-                elif task_status == "VALIDATED":
-                    if task_detail not in task_tracker["VALIDATED"]:
-                        task_tracker["VALIDATED"].append(task_detail)
-                        day_stats_dto.validated += 1
-                elif task_status == "BADIMAGERY":
-                    if task_detail not in task_tracker["BADIMAGERY"]:
-                        task_tracker["BADIMAGERY"].append(task_detail)
-                        day_stats_dto.bad_imagery += 1
-            dates_stats.append(day_stats_dto)
+        for dto in day_stats_dto:
+            date = dto.date.strftime("%Y-%m-%d")
+            try:
+                dto.mapped = tasks_mapped[date] if date in tasks_mapped else 0
+                dto.validated = tasks_validated[date] if date in tasks_validated else 0
+                dto.bad_imagery = (
+                    tasks_bad_imagery[date] if date in tasks_bad_imagery else 0
+                )
+            except Exception as e:
+                print("Error", e)
 
         results_dto = TaskStatsDTO()
-        results_dto.stats = dates_stats
+        results_dto.stats = day_stats_dto
 
         return results_dto
