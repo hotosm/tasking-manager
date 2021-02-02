@@ -563,39 +563,59 @@ class StatsService:
             )
 
         query = query.subquery()
-        tasks_mapped = dict(
+        mapped_query = (
             db.session.query(
-                func.to_char(query.c.day, "YYYY-MM-DD"),
-                func.count(distinct(tuple_(query.c.task_id, query.c.project_id))),
+                query.c.day.label("day"),
+                tuple_(query.c.task_id, query.c.project_id).label("task_project"),
             )
             .select_from(query)
+            .distinct(tuple_(query.c.task_id, query.c.project_id))
             .filter(query.c.action_text == "MAPPED")
-            .group_by("day")
-            .order_by("day")
-            .all()
+            .group_by(query.c.task_id, query.c.project_id, query.c.day)
+            .order_by(query.c.task_id, query.c.project_id, query.c.day)
+            .subquery()
         )
-        tasks_validated = dict(
+        tasks_mapped_q = db.session.query(
+            func.to_char(mapped_query.c.day, "YYYY-MM-DD"),
+            func.count(mapped_query.c.task_project),
+        ).group_by(mapped_query.c.day)
+        tasks_mapped = dict(tasks_mapped_q.all())
+
+        validated_query = (
             db.session.query(
-                func.to_char(query.c.day, "YYYY-MM-DD"),
-                func.count(distinct(tuple_(query.c.task_id, query.c.project_id))),
+                query.c.day.label("day"),
+                tuple_(query.c.task_id, query.c.project_id).label("task_project"),
             )
             .select_from(query)
+            .distinct(tuple_(query.c.task_id, query.c.project_id))
             .filter(query.c.action_text == "VALIDATED")
-            .group_by("day")
-            .order_by("day")
-            .all()
+            .group_by(query.c.task_id, query.c.project_id, query.c.day)
+            .order_by(query.c.task_id, query.c.project_id, query.c.day)
+            .subquery()
         )
-        tasks_bad_imagery = dict(
+        tasks_validated_q = db.session.query(
+            func.to_char(validated_query.c.day, "YYYY-MM-DD"),
+            func.count(validated_query.c.task_project),
+        ).group_by(validated_query.c.day)
+        tasks_validated = dict(tasks_validated_q.all())
+
+        bad_imagery_query = (
             db.session.query(
-                func.to_char(query.c.day, "YYYY-MM-DD"),
-                func.count(distinct(tuple_(query.c.task_id, query.c.project_id))),
+                query.c.day.label("day"),
+                tuple_(query.c.task_id, query.c.project_id).label("task_project"),
             )
             .select_from(query)
+            .distinct(tuple_(query.c.task_id, query.c.project_id))
             .filter(query.c.action_text == "BADIMAGERY")
-            .group_by("day")
-            .order_by("day")
-            .all()
+            .group_by(query.c.task_id, query.c.project_id, query.c.day)
+            .order_by(query.c.task_id, query.c.project_id, query.c.day)
+            .subquery()
         )
+        tasks_bad_imagery_q = db.session.query(
+            func.to_char(bad_imagery_query.c.day, "YYYY-MM-DD"),
+            func.count(bad_imagery_query.c.task_project),
+        ).group_by(bad_imagery_query.c.day)
+        tasks_bad_imagery = dict(tasks_bad_imagery_q.all())
 
         dates = db.session.query(distinct(query.c.day)).select_from(query).all()
         dates = [r[0] for r in dates]
