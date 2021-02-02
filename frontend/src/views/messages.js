@@ -105,6 +105,10 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.organisation.stats',
     defaultMessage: 'Tasks statistics',
   },
+  statistics: {
+    id: 'teamsAndOrgs.management.organisation.activity.stats',
+    defaultMessage: 'Statistics',
+  },
   remainingTasks: {
     id: 'teamsAndOrgs.management.organisation.remaining_tasks',
     defaultMessage: 'Total remaining',

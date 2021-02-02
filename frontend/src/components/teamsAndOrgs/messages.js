@@ -148,6 +148,14 @@ export default defineMessages({
     id: 'management.organisations',
     defaultMessage: 'Organizations',
   },
+  retry: {
+    id: 'management.organisations.stats.retry',
+    defaultMessage: 'Try again',
+  },
+  errorLoadingStats: {
+    id: 'management.organisations.stats.error',
+    defaultMessage: 'An error ocurred while loading stats.',
+  },
   toBeMapped: {
     id: 'management.organisations.stats.to_be_mapped',
     defaultMessage: 'Tasks to be mapped',

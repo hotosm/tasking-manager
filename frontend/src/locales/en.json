@@ -700,6 +700,8 @@
   "management.links.viewAll": "View all",
   "management.organisation": "Organization",
   "management.organisations": "Organizations",
+  "management.organisations.stats.retry": "Try again",
+  "management.organisations.stats.error": "An error ocurred while loading stats.",
   "management.organisations.stats.to_be_mapped": "Tasks to be mapped",
   "management.organisations.stats.tasks_mapped": "Tasks mapped",
   "management.organisations.stats.ready_for_validation": "Ready for validation",
