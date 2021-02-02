@@ -18,7 +18,7 @@ import {
 } from '../svgIcons';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
-import { getPastMonths } from '../../utils/date';
+import { useFilterContributors } from '../../hooks/UseFilterContributors';
 import { OSMChaButton } from '../projectDetail/osmchaButton';
 
 export const MappingLevelIcon = ({ mappingLevel }) => {
@@ -123,31 +123,27 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
     { value: 'BEGINNER', label: intl.formatMessage(messages.mappingLevelBEGINNER) },
     { value: 'NEWUSER', label: intl.formatMessage(messages.mappingLevelNEWUSER) },
   ];
+  const defaultUserFilter = {
+    label: intl.formatMessage(messages.userFilterDefaultLabel),
+    value: null,
+  };
   const [level, setLevel] = useState(mappingLevels[0]);
+  const [userFilter, setUserFilter] = useState(defaultUserFilter);
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(tasks);
 
-  let contributionsArray = contribsData.userContributions || [];
-  if (level.value !== 'ALL' && level.value !== 'NEWUSER') {
-    contributionsArray = contributionsArray.filter((u) => u.mappingLevel === level.value);
-  }
+  const contributors = useFilterContributors(
+    contribsData.userContributions || [],
+    level && level.value,
+    userFilter && userFilter.value,
+  );
 
   const displayTasks = (taskIds, status, user) => {
     if (activeStatus === status && user === activeUser) {
       selectTask([]);
       return;
     }
-
     selectTask(taskIds, status, user);
   };
-
-  if (level.value === 'NEWUSER') {
-    const monthFiltered = getPastMonths(1);
-    contributionsArray = contributionsArray
-      .map((u) => {
-        return { ...u, dateObj: new Date(u.dateRegistered) };
-      })
-      .filter((u) => u.dateObj > monthFiltered);
-  }
 
   return (
     <div className="w-100 f5 pr4-l pr2 cf blue-dark bg-white">
@@ -170,9 +166,22 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
           classNamePrefix="react-select"
           isClearable={false}
           options={mappingLevels}
-          onChange={(value) => setLevel(value)}
-          className="w-30 fr mb3 pointer"
+          onChange={(value) => {
+            setLevel(value);
+            setUserFilter(defaultUserFilter); // reset userFilter
+          }}
+          className="w-25 fr mb3 pointer"
           value={level}
+        />
+
+        {/* this select searches username in given level */}
+        <Select
+          classNamePrefix="react-select"
+          isClearable={true}
+          options={contributors.map((user) => ({ value: user.username, label: user.username }))}
+          onChange={(value) => setUserFilter(value)}
+          className="w-25 fr pr3 mb3 pointer"
+          value={userFilter}
         />
       </div>
       <div className="w-100 fl cf">
@@ -180,18 +189,17 @@ const Contributions = ({ project, tasks, contribsData, activeUser, activeStatus,
           showLoadingAnimation={true}
           rows={6}
           delay={50}
-          ready={contributionsArray !== undefined}
+          ready={contributors !== undefined}
         >
-          {contributionsArray.map((user) => {
-            return (
-              <Contributor
-                user={user}
-                activeUser={activeUser}
-                activeStatus={activeStatus}
-                displayTasks={displayTasks}
-              />
-            );
-          })}
+          {contributors.map((user, k) => (
+            <Contributor
+              user={user}
+              activeUser={activeUser}
+              activeStatus={activeStatus}
+              displayTasks={displayTasks}
+              key={k}
+            />
+          ))}
         </ReactPlaceholder>
       </div>
     </div>

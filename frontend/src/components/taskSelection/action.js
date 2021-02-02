@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
@@ -40,7 +40,9 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
-  const tasksIds = activeTasks ? activeTasks.map((task) => task.taskId) : [];
+  const tasksIds = useMemo(() => (activeTasks ? activeTasks.map((task) => task.taskId) : []), [
+    activeTasks,
+  ]);
   const [disabled, setDisable] = useState(false);
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();

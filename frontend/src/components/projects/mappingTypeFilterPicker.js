@@ -2,7 +2,7 @@ import React from 'react';
 import { useIntl } from 'react-intl';
 
 import messages from '../messages';
-import { titledIcons } from '../mappingTypes';
+import { TITLED_ICONS } from '../mappingTypes';
 
 export const MappingTypeFilterPicker = (props) => {
   const intl = useIntl();
@@ -22,7 +22,7 @@ export const MappingTypeFilterPicker = (props) => {
 
   return (
     <div className="mv2 base-font">
-      {titledIcons.map((EachIcon, key) => {
+      {TITLED_ICONS.map((EachIcon, key) => {
         const isActive = props.mappingTypes
           ? props.mappingTypes.find((n) => n === EachIcon.value)
           : false;
@@ -43,7 +43,7 @@ export const MappingTypeFilterPicker = (props) => {
               key={'chkmtp' + key}
             />
 
-            <EachIcon.icon
+            <EachIcon.Icon
               title={EachIcon.title}
               className={`${pagerStyle} ${highlight}`}
               key={key}

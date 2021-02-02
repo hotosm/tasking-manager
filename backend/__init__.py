@@ -187,6 +187,9 @@ def add_api_endpoints(app):
         TasksActionsResetAllAPI,
         TasksActionsSplitAPI,
     )
+    from backend.api.tasks.statistics import (
+        TasksStatisticsAPI,
+    )
 
     # Comments API impor
     from backend.api.comments.resources import (
@@ -531,6 +534,13 @@ def add_api_endpoints(app):
     api.add_resource(
         TasksActionsSplitAPI,
         format_url("projects/<int:project_id>/tasks/actions/split/<int:task_id>/"),
+    )
+
+    # Tasks Statistics endpoint
+    api.add_resource(
+        TasksStatisticsAPI,
+        format_url("tasks/statistics/"),
+        methods=["GET"],
     )
 
     # Comments REST endoints

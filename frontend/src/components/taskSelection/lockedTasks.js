@@ -148,19 +148,42 @@ export function JosmError({ close }: Object) {
   );
 }
 
+export function NoMappedTasksError({ close }: Object) {
+  return (
+    <>
+      <h3 className="barlow-condensed f3 fw6 mv0">
+        <FormattedMessage {...messages.noMappedTasksSelected} />
+      </h3>
+      <div className="mv4 lh-title">
+        <FormattedMessage {...messages.noMappedTasksSelectedDescription} />
+      </div>
+      <div className="w-100 pt3">
+        <Button onClick={() => close()} className="bg-red white mr2">
+          <FormattedMessage {...messages.closeModal} />
+        </Button>
+      </div>
+    </>
+  );
+}
+
 export function LockedTaskModalContent({ project, error, close, lockTasks }: Object) {
   const lockedTasks = useGetLockedTasks();
   const action = lockedTasks.get('status') === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
   const licenseError =
     ['Conflict', 'CONFLICT', 'conflict'].includes(error) && !lockedTasks.get('project');
   const josmError = error === 'JOSM' && !lockedTasks.get('project');
+  const noMappedTasksSelectedError = error === 'No mapped tasks selected';
   return (
     <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
+      {noMappedTasksSelectedError && <NoMappedTasksError close={close} />}
       {licenseError && <LicenseError id={project.licenseId} close={close} lockTasks={lockTasks} />}
       {josmError && <JosmError close={close} />}
 
       {/* User has not tasks locked, but other error happened */}
-      {!lockedTasks.get('project') && !licenseError && !josmError && <LockError />}
+      {!lockedTasks.get('project') &&
+        !licenseError &&
+        !josmError &&
+        !noMappedTasksSelectedError && <LockError />}
       {/* User has tasks locked on another project */}
       {lockedTasks.get('project') && lockedTasks.get('project') !== project.projectId && (
         <AnotherProjectLock

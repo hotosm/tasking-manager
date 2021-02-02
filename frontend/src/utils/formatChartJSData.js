@@ -38,6 +38,25 @@ export const formatTimelineData = (stats, mappedColour, validatedColour) => {
   return { datasets: [validated, mapped], labels: labels };
 };
 
+export const formatTasksStatsData = (stats, mappedColour, validatedColour) => {
+  let mapped = {
+    data: [],
+    backgroundColor: mappedColour,
+    label: 'Mapped tasks',
+  };
+  let validated = {
+    data: [],
+    backgroundColor: validatedColour,
+    label: 'Validated tasks',
+  };
+
+  const labels = stats.map((entry) => entry.date);
+  mapped.data = stats.map((entry) => entry.mapped);
+  validated.data = stats.map((entry) => entry.validated);
+
+  return { datasets: [mapped, validated], labels: labels };
+};
+
 export const formatTooltip = (tooltipItem, data) => {
   var label = data.labels[tooltipItem.index] || '';
   if (label) label += ': ';
@@ -46,10 +65,10 @@ export const formatTooltip = (tooltipItem, data) => {
   return (label += '%');
 };
 
-export const formatTimelineTooltip = (tooltipItem, data) => {
+export const formatTimelineTooltip = (tooltipItem, data, isPercent) => {
   var label = data.datasets[tooltipItem.datasetIndex].label || '';
   if (label) label += ': ';
   label += data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
 
-  return (label += '%');
+  return `${label}${isPercent ? '%' : ''}`;
 };

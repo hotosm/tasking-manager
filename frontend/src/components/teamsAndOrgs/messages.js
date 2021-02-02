@@ -148,6 +148,67 @@ export default defineMessages({
     id: 'management.organisations',
     defaultMessage: 'Organizations',
   },
+  retry: {
+    id: 'management.organisations.stats.retry',
+    defaultMessage: 'Try again',
+  },
+  errorLoadingStats: {
+    id: 'management.organisations.stats.error',
+    defaultMessage: 'An error ocurred while loading stats.',
+  },
+  badStartDate: {
+    id: 'management.organisations.stats.error.start_date',
+    defaultMessage: 'Start date should not be later than end date.',
+  },
+  longDateRange: {
+    id: 'management.organisations.stats.error.date_range',
+    defaultMessage: 'Date range is longer than one year.',
+  },
+  toBeMapped: {
+    id: 'management.organisations.stats.to_be_mapped',
+    defaultMessage: 'Tasks to be mapped',
+  },
+  tasksMapped: {
+    id: 'management.organisations.stats.tasks_mapped',
+    defaultMessage: 'Tasks mapped',
+  },
+  readyForValidation: {
+    id: 'management.organisations.stats.ready_for_validation',
+    defaultMessage: 'Ready for validation',
+  },
+  tasksValidated: {
+    id: 'management.organisations.stats.tasks_validated',
+    defaultMessage: 'Tasks validated',
+  },
+  actionsNeeded: {
+    id: 'management.organisations.stats.actions_needed',
+    defaultMessage: 'Actions needed',
+  },
+  completedActions: {
+    id: 'management.organisations.stats.completed_actions',
+    defaultMessage: 'Completed actions',
+  },
+  actionsNeededHelp: {
+    id: 'management.organisations.stats.actions_needed.help',
+    defaultMessage:
+      'Action means a mapping or validation operation. As each task needs to be mapped and validated, this is the number of actions needed to finish all the published projects of that organization.',
+  },
+  levelTooltip: {
+    id: 'management.organisations.stats.level.tooltip',
+    defaultMessage: '{n} of {total} ({percent}%) completed to move to level {nextLevel}',
+  },
+  levelInfo: {
+    id: 'management.organisations.stats.level.description',
+    defaultMessage: '{org} is an organization level {level}.',
+  },
+  nextLevelInfo: {
+    id: 'management.organisations.stats.level.next',
+    defaultMessage: 'After completing more {n} actions, it will reach the level {nextLevel}.',
+  },
+  topLevelInfo: {
+    id: 'management.organisations.stats.level.top',
+    defaultMessage: 'It is the highest level an organization can be on Tasking Manager!',
+  },
   orgInfo: {
     id: 'management.titles.organisation_information',
     defaultMessage: 'Organization information',

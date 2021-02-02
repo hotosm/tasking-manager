@@ -9,6 +9,7 @@ frontend/public/static/
 frontend/assets/styles/
 frontend/package-lock.json
 frontend/.env
+frontend/.eslintcache
 frontend/coverage/
 
 # Ignore dist folder as this contains the minimized build for deploy

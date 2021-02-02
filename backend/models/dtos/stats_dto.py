@@ -20,7 +20,7 @@ class UserContribution(Model):
 
 
 class ProjectContributionsDTO(Model):
-    """ DTO for all user contributons on a project """
+    """ DTO for all user contributions on a project """
 
     def __init__(self):
         super().__init__()
@@ -141,3 +141,22 @@ class HomePageStatsDTO(Model):
     # avg_completion_time = IntType(serialized_name='averageCompletionTime')
     organisations = ListType(ModelType(OrganizationListStatsDTO))
     campaigns = ListType(ModelType(CampaignStatsDTO))
+
+
+class TaskStats(Model):
+    """ DTO for tasks stats for a single day """
+
+    date = DateType(required=True)
+    mapped = IntType(serialized_name="mapped")
+    validated = IntType(serialized_name="validated")
+    bad_imagery = IntType(serialized_name="badImagery")
+
+
+class TaskStatsDTO(Model):
+    """ Contains all tasks stats broken down by day"""
+
+    def __init__(self):
+        super().__init__()
+        self.stats = []
+
+    stats = ListType(ModelType(TaskStats), serialized_name="taskStats")

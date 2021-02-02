@@ -72,15 +72,25 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       windowObjectReference = window.open('', `TM-${project.projectId}-${selectedTasks}`);
     }
     if (['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(taskAction)) {
-      pushToLocalJSONAPI(
-        `projects/${project.projectId}/tasks/actions/lock-for-validation/`,
-        JSON.stringify({ taskIds: selectedTasks }),
-        token,
-      )
-        .then((res) => {
-          lockSuccess('LOCKED_FOR_VALIDATION', 'validate', windowObjectReference);
-        })
-        .catch((e) => lockFailed(windowObjectReference, e.message));
+      const mappedTasks = selectedTasks.filter(
+        (id) =>
+          tasks.features.filter(
+            (task) => task.properties.taskId === id && task.properties.taskStatus === 'MAPPED',
+          ).length,
+      );
+      if (!mappedTasks.length) {
+        setLockError('No mapped tasks selected');
+      } else {
+        pushToLocalJSONAPI(
+          `projects/${project.projectId}/tasks/actions/lock-for-validation/`,
+          JSON.stringify({ taskIds: mappedTasks }),
+          token,
+        )
+          .then((res) => {
+            lockSuccess('LOCKED_FOR_VALIDATION', 'validate', windowObjectReference);
+          })
+          .catch((e) => lockFailed(windowObjectReference, e.message));
+      }
     }
     if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(taskAction)) {
       fetchLocalJSONAPI(

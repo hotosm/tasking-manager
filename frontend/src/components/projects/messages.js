@@ -20,6 +20,22 @@ export default defineMessages({
     id: 'project.nav.campaign',
     defaultMessage: 'Campaign',
   },
+  startDate: {
+    id: 'navFilters.startDate',
+    defaultMessage: 'From',
+  },
+  startDatePlaceholder: {
+    id: 'navFilters.startDate.placeholder',
+    defaultMessage: 'Click to select a start date',
+  },
+  endDate: {
+    id: 'navFilters.endDate',
+    defaultMessage: 'To',
+  },
+  endDatePlaceholder: {
+    id: 'navFilters.endDatePlace.placeholder',
+    defaultMessage: 'Click to select an end date',
+  },
   showMapToggle: {
     id: 'project.nav.showMapToggle',
     defaultMessage: 'Show map',

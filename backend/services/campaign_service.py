@@ -30,6 +30,15 @@ class CampaignService:
         return campaign
 
     @staticmethod
+    def get_campaign_by_name(campaign_name: str) -> Campaign:
+        campaign = Campaign.query.filter_by(name=campaign_name).first()
+
+        if campaign is None:
+            raise NotFound()
+
+        return campaign
+
+    @staticmethod
     def delete_campaign(campaign_id: int):
         """Delete campaign for a project"""
         campaign = Campaign.query.get(campaign_id)
