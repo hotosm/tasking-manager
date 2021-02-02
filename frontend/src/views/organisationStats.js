@@ -56,6 +56,7 @@ export const OrganisationStats = ({ id }) => {
               setQuery={setQuery}
               stats={apiState.stats}
               error={apiState.isError}
+              loading={apiState.isLoading}
               retryFn={forceUpdate}
             />
           </React.Suspense>

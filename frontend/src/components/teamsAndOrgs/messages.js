@@ -156,6 +156,14 @@ export default defineMessages({
     id: 'management.organisations.stats.error',
     defaultMessage: 'An error ocurred while loading stats.',
   },
+  badStartDate: {
+    id: 'management.organisations.stats.error.start_date',
+    defaultMessage: 'Start date should not be later than end date.',
+  },
+  longDateRange: {
+    id: 'management.organisations.stats.error.date_range',
+    defaultMessage: 'Date range is longer than one year.',
+  },
   toBeMapped: {
     id: 'management.organisations.stats.to_be_mapped',
     defaultMessage: 'Tasks to be mapped',

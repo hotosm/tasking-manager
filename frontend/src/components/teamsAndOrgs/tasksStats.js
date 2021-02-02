@@ -1,16 +1,18 @@
 import React from 'react';
+import ReactPlaceholder from 'react-placeholder';
 import { Bar } from 'react-chartjs-2';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { CHART_COLOURS } from '../../config';
 import { useTagAPI } from '../../hooks/UseTagAPI';
+import { useValidateDateRange } from '../../hooks/UseValidateDateRange';
 import { formatFilterCountriesData } from '../../utils/countries';
 import { formatTasksStatsData, formatTimelineTooltip } from '../../utils/formatChartJSData';
 import { ProjectFilterSelect, DateFilterPicker } from '../projects/filterSelectFields';
 import { TasksStatsSummary } from './tasksStatsSummary';
 
-const TasksStats = ({ query, setQuery, stats, error, retryFn }) => {
+const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) => {
   const [campaignAPIState] = useTagAPI([], 'campaigns');
   const [countriesAPIState] = useTagAPI([], 'countries', formatFilterCountriesData);
   const {
@@ -19,6 +21,8 @@ const TasksStats = ({ query, setQuery, stats, error, retryFn }) => {
     campaign: campaignInQuery,
     location: countryInQuery,
   } = query;
+
+  const dateValidation = useValidateDateRange(query);
 
   const fieldsetStyle = 'bn dib pv0-ns pv2 ph2-ns ph1 mh0 mb1';
   const titleStyle = 'dib ttu fw5 blue-grey mb1';
@@ -63,25 +67,36 @@ const TasksStats = ({ query, setQuery, stats, error, retryFn }) => {
           />
         </div>
       </div>
-      {error ? (
-        <div className="bg-tan pa4">
-          <FormattedMessage {...messages.errorLoadingStats} />
-          <div className="pv3">
-            <button className="pa1" onClick={() => retryFn()}>
-              <FormattedMessage {...messages.retry} />
-            </button>
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        rows={26}
+        ready={!loading}
+        className="pv3 ph2 ph4-ns"
+      >
+        {!loading && error ? (
+          <div className="bg-tan pa4">
+            <FormattedMessage {...messages.errorLoadingStats} />
+            <div className="pv3">
+              {dateValidation.error && dateValidation.detail ? (
+                <FormattedMessage {...messages[dateValidation.detail]} />
+              ) : (
+                <button className="pa1 pointer" onClick={() => retryFn()}>
+                  <FormattedMessage {...messages.retry} />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        <>
-          <div className="pt3 pb3 ph2 cf w-100 w-two-thirds-l">
-            <TasksStatsChart stats={stats} />
-          </div>
-          <div className="cf w-100">
-            <TasksStatsSummary stats={stats} />
-          </div>
-        </>
-      )}
+        ) : (
+          <>
+            <div className="pt3 pb3 ph2 cf w-100 w-two-thirds-l">
+              <TasksStatsChart stats={stats} />
+            </div>
+            <div className="cf w-100">
+              <TasksStatsSummary stats={stats} />
+            </div>
+          </>
+        )}
+      </ReactPlaceholder>
     </>
   );
 };
