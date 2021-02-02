@@ -1,6 +1,8 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import { CHART_COLOURS } from '../../config';
 import { useTagAPI } from '../../hooks/UseTagAPI';
 import { formatFilterCountriesData } from '../../utils/countries';
@@ -8,7 +10,7 @@ import { formatTasksStatsData, formatTimelineTooltip } from '../../utils/formatC
 import { ProjectFilterSelect, DateFilterPicker } from '../projects/filterSelectFields';
 import { TasksStatsSummary } from './tasksStatsSummary';
 
-const TasksStats = ({ query, setQuery, stats }) => {
+const TasksStats = ({ query, setQuery, stats, error, retryFn }) => {
   const [campaignAPIState] = useTagAPI([], 'campaigns');
   const [countriesAPIState] = useTagAPI([], 'countries', formatFilterCountriesData);
   const {
@@ -61,12 +63,25 @@ const TasksStats = ({ query, setQuery, stats }) => {
           />
         </div>
       </div>
-      <div className="pt3 pb3 ph2 cf w-100 w-two-thirds-l">
-        <TasksStatsChart stats={stats} />
-      </div>
-      <div className="cf w-100">
-        <TasksStatsSummary stats={stats} />
-      </div>
+      {error ? (
+        <div className="bg-tan pa4">
+          <FormattedMessage {...messages.errorLoadingStats} />
+          <div className="pv3">
+            <button className="pa1" onClick={() => retryFn()}>
+              <FormattedMessage {...messages.retry} />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="pt3 pb3 ph2 cf w-100 w-two-thirds-l">
+            <TasksStatsChart stats={stats} />
+          </div>
+          <div className="cf w-100">
+            <TasksStatsSummary stats={stats} />
+          </div>
+        </>
+      )}
     </>
   );
 };

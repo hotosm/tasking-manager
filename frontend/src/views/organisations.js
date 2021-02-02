@@ -19,6 +19,7 @@ import {
   OrgsManagement,
 } from '../components/teamsAndOrgs/organisations';
 import { FormSubmitButton, CustomButton } from '../components/button';
+import { ChartLineIcon } from '../components/svgIcons';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 
@@ -195,7 +196,7 @@ export function EditOrganisation(props) {
     >
       {isUserAllowed ? (
         <div className="cf">
-          <div className="cf pv4">
+          <div className="cf pv4 w-100">
             <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib">
               <FormattedMessage {...messages.manageOrganisation} />
             </h3>
@@ -204,6 +205,12 @@ export function EditOrganisation(props) {
               name={organisation.name}
               type="organisations"
             />
+            <Link to={`/organisations/${organisation.organisationId}/stats/`}>
+              <CustomButton className="bg-tan ba b--blue-light blue-light pv2 ph3 fr">
+                <ChartLineIcon className="pr1 pb1 h1 v-mid" />
+                <FormattedMessage {...messages.statistics} />
+              </CustomButton>
+            </Link>
           </div>
           <div className="w-40-l w-100 mt4 fl">
             <OrganisationForm

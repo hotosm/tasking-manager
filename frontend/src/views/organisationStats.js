@@ -7,6 +7,7 @@ import messages from './messages';
 import { useTasksStatsQueryParams, useTasksStatsQueryAPI } from '../hooks/UseTasksStatsQueryAPI';
 import { useForceUpdate } from '../hooks/UseForceUpdate';
 import { useTotalTasksStats } from '../hooks/UseTotalTasksStats';
+import { useCurrentYearStats } from '../hooks/UseOrgYearStats';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { RemainingTasksStats } from '../components/teamsAndOrgs/remainingTasksStats';
@@ -15,14 +16,13 @@ const TasksStats = React.lazy(() => import('../components/teamsAndOrgs/tasksStat
 
 export const OrganisationStats = ({ id }) => {
   const [query, setQuery] = useTasksStatsQueryParams();
-  // eslint-disable-next-line
   const [forceUpdated, forceUpdate] = useForceUpdate();
   useEffect(() => {
     if (!query.startDate) {
       setQuery({ ...query, startDate: format(startOfYear(Date.now()), 'yyyy-MM-dd') });
     }
   });
-  const [stats] = useTasksStatsQueryAPI(
+  const [apiState] = useTasksStatsQueryAPI(
     { taskStats: [] },
     query,
     query.startDate ? forceUpdated : false,
@@ -33,7 +33,7 @@ export const OrganisationStats = ({ id }) => {
     `organisations/${id}/statistics/`,
     id,
   );
-  const totalStats = useTotalTasksStats(stats.stats);
+  const totalStats = useTotalTasksStats(useCurrentYearStats(id, query, apiState.stats));
   useSetTitleTag(`${organisation.name || 'Organization'} stats`);
 
   return (
@@ -51,7 +51,13 @@ export const OrganisationStats = ({ id }) => {
             <FormattedMessage {...messages.tasksStatistics} />
           </h4>
           <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
-            <TasksStats query={query} setQuery={setQuery} stats={stats.stats} />
+            <TasksStats
+              query={query}
+              setQuery={setQuery}
+              stats={apiState.stats}
+              error={apiState.isError}
+              retryFn={forceUpdate}
+            />
           </React.Suspense>
         </div>
         <div className="w-100 fl cf">
