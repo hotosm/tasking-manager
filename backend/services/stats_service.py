@@ -30,6 +30,7 @@ from backend.services.project_service import ProjectService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
+from backend.services.campaign_service import CampaignService
 
 from datetime import date, timedelta
 
@@ -497,7 +498,7 @@ class StatsService:
 
     @staticmethod
     def get_task_stats(
-        start_date, end_date, org_id, org_name, campaign_id, project_id, country
+        start_date, end_date, org_id, org_name, campaign, project_id, country
     ):
         """ Creates tasks stats for a period using the TaskStatsDTO """
 
@@ -545,7 +546,11 @@ class StatsService:
             query = query.join(Project, Project.id == TaskHistory.project_id).filter(
                 Project.organisation_id == organisation_id
             )
-        if campaign_id:
+        if campaign:
+            try:
+                campaign_id = CampaignService.get_campaign_by_name(campaign).id
+            except NotFound:
+                campaign_id = None
             query = query.join(
                 campaign_projects,
                 campaign_projects.c.project_id == TaskHistory.project_id,
