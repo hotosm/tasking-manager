@@ -82,7 +82,7 @@ class TasksStatisticsAPI(Resource):
                 raise ValueError("Date range can not be bigger than 1 year")
             organisation_id = request.args.get("organisationId", None, int)
             organisation_name = request.args.get("organisationName", None, str)
-            campaign = request.args.get("campaign", None, int)
+            campaign = request.args.get("campaign", None, str)
             project_id = request.args.get("projectId")
             if project_id:
                 project_id = map(str, project_id.split(","))
