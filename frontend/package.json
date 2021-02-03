@@ -102,7 +102,7 @@
     "@testing-library/user-event": "^12.6.3",
     "combine-react-intl-messages": "^4.0.0",
     "jest-canvas-mock": "^2.3.0",
-    "msw": "^0.26.0",
+    "msw": "^0.26.1",
     "prettier": "^2.2.1",
     "react-select-event": "^5.1.0",
     "react-test-renderer": "^17.0.1"
