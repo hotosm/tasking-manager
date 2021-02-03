@@ -267,6 +267,7 @@ def add_api_endpoints(app):
     from backend.api.users.statistics import (
         UsersStatisticsAPI,
         UsersStatisticsInterestsAPI,
+        UsersStatisticsAllAPI,
     )
 
     # System API endpoint
@@ -753,7 +754,11 @@ def add_api_endpoints(app):
     api.add_resource(
         UsersStatisticsAPI, format_url("users/<string:username>/statistics/")
     )
-
+    
+    api.add_resource(
+        UsersStatisticsAllAPI,
+        format_url("users/statistics/"),
+    )
     # User RecommendedProjects endpoint
     api.add_resource(
         UsersRecommendedProjectsAPI,
