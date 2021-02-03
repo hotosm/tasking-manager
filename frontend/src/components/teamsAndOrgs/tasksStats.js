@@ -7,6 +7,7 @@ import messages from './messages';
 import { CHART_COLOURS } from '../../config';
 import { useTagAPI } from '../../hooks/UseTagAPI';
 import { useValidateDateRange } from '../../hooks/UseValidateDateRange';
+import { useTimeDiff } from '../../hooks/UseTimeDiff';
 import { formatFilterCountriesData } from '../../utils/countries';
 import { formatTasksStatsData, formatTimelineTooltip } from '../../utils/formatChartJSData';
 import { ProjectFilterSelect, DateFilterPicker } from '../projects/filterSelectFields';
@@ -77,7 +78,7 @@ const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) => {
           <div className="bg-tan pa4">
             <FormattedMessage {...messages.errorLoadingStats} />
             <div className="pv3">
-              {dateValidation.error && dateValidation.detail ? (
+              {dateValidation && dateValidation.detail ? (
                 <FormattedMessage {...messages[dateValidation.detail]} />
               ) : (
                 <button className="pa1 pointer" onClick={() => retryFn()}>
@@ -102,6 +103,7 @@ const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) => {
 };
 
 const TasksStatsChart = ({ stats }) => {
+  const unit = useTimeDiff(stats);
   const options = {
     legend: { position: 'top', align: 'end', labels: { boxWidth: 12 } },
     tooltips: {
@@ -119,6 +121,8 @@ const TasksStatsChart = ({ stats }) => {
       xAxes: [
         {
           stacked: true,
+          type: 'time',
+          time: { unit: unit },
         },
       ],
     },
