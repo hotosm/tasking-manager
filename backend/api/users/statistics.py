@@ -1,12 +1,12 @@
-from json import dumps, loads, JSONEncoder, JSONDecoder
-from flask_restful import Resource, request,  current_app
+from json import JSONEncoder
+from flask_restful import Resource, request, current_app
 from backend.services.users.user_service import UserService, NotFound
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
 from backend.services.users.authentication_service import token_auth
-from backend.services.users.authentication_service import token_auth, tm
-from schematics.types import StringType, IntType, FloatType, BooleanType, DateType
-from datetime import datetime, date
+from backend.services.users.authentication_service import tm
+from datetime import datetime
+
 
 class UsersStatisticsAPI(Resource, JSONEncoder):
     @token_auth.login_required

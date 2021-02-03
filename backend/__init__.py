@@ -754,7 +754,7 @@ def add_api_endpoints(app):
     api.add_resource(
         UsersStatisticsAPI, format_url("users/<string:username>/statistics/")
     )
-    
+
     api.add_resource(
         UsersStatisticsAllAPI,
         format_url("users/statistics/"),

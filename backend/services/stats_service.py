@@ -1,6 +1,6 @@
 from cachetools import TTLCache, cached
 
-from flask_restful import Resource, request, current_app
+from flask_restful import current_app
 from sqlalchemy import func, desc, distinct, cast, extract, or_, and_, tuple_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
@@ -495,9 +495,6 @@ class StatsService:
             )
             .filter(User.id == Task.mapped_by)
             .filter(
-                Task.mapped_by != None,
-            )
-            .filter(
                 User.date_registered >= start,
             )
             .filter(
@@ -512,9 +509,6 @@ class StatsService:
             )
             .filter(User.id == Task.validated_by)
             .filter(
-                Task.validated_by != None,
-            )
-            .filter(
                 User.date_registered >= start,
             )
             .filter(
@@ -528,9 +522,6 @@ class StatsService:
             )
             .filter(
                 User.mapping_level == 1,
-            )
-            .filter(
-                User.username != None,
             )
             .filter(
                 User.date_registered >= start,
@@ -550,9 +541,6 @@ class StatsService:
                 User.mapping_level == 2,
             )
             .filter(
-                User.username != None,
-            )
-            .filter(
                 User.date_registered >= start,
             )
             .filter(
@@ -568,9 +556,6 @@ class StatsService:
             )
             .filter(
                 User.mapping_level == 3,
-            )
-            .filter(
-                User.username != None,
             )
             .filter(
                 User.date_registered >= start,
