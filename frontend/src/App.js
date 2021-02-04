@@ -8,6 +8,7 @@ import * as Sentry from '@sentry/react';
 import './assets/styles/index.scss';
 import { ORG_NAME, MATOMO_ID } from './config';
 import { Header } from './components/header';
+import { WebglErrorModal } from './components/webglErrorModal';
 import { Footer } from './components/footer';
 import { Preloader } from './components/preloader';
 import { Home } from './views/home';
@@ -67,6 +68,7 @@ let App = (props) => {
       ) : (
         <div className="w-100 base-font bg-white" lang={props.locale}>
           <Router>
+            <WebglErrorModal path="/*" />
             <Header path="/*" />
           </Router>
           <main className="cf w-100 base-font">
