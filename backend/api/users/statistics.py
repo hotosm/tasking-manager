@@ -1,11 +1,12 @@
 from json import JSONEncoder
+from datetime import date, timedelta
 from flask_restful import Resource, request, current_app
+
 from backend.services.users.user_service import UserService, NotFound
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
 from backend.services.users.authentication_service import token_auth
-from backend.services.users.authentication_service import tm
-from datetime import datetime
+from backend.api.utils import validate_date_input
 
 
 class UsersStatisticsAPI(Resource, JSONEncoder):
@@ -94,49 +95,58 @@ class UsersStatisticsInterestsAPI(Resource):
 
 
 class UsersStatisticsAllAPI(Resource):
-    @tm.pm_only(False)
+    @token_auth.login_required
     def get(self):
         """
-        Get the mapped and validation of users registered within a period
+        Get stats about users registered within a period of time
         ---
         tags:
             - users
         produces:
             - application/json
         parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              required: true
+              default: Token sessionTokenHere==
             - in: query
-              name: start
-              description: From date
+              name: startDate
+              description: Initial date
               required: true
               type: string
-              default: 01-01-2000
             - in: query
-              name: end
-              description: To date.
-              required: true
+              name: endDate
+              description: Final date.
               type: string
-              default: 30-12-2020
         responses:
             200:
-                description: number of users registered in a period of time
-            404:
-                description: Invalid date format
+                description: User statistics
+            400:
+                description: Bad Request
+            401:
+                description: Request is not authenticated
             500:
                 description: Internal Server Error
         """
         try:
-            start = datetime.date(
-                datetime.strptime(request.args.get("start"), "%d-%m-%Y")
-            )  # convert string parameters to date
-            end = datetime.date(datetime.strptime(request.args.get("end"), "%d-%m-%Y"))
-            # get_all_user_statistics function of StatsService
-            UserStats = StatsService.get_all_user_statistics(start, end)
-            return UserStats, 200
-        except NotFound:
-            return {"Error": "Project not found"}, 404
-        except Exception as e:
-            error_msg = f"Chat GET - unhandled error: {str(e)}"
+            start_date = validate_date_input(request.args.get("startDate"))
+            end_date = validate_date_input(request.args.get("endDate", date.today()))
+            if not (start_date):
+                raise KeyError("Missing start date parameter")
+            if end_date < start_date:
+                raise ValueError("Start date must be earlier than end date")
+            if (end_date - start_date) > timedelta(days=366 * 3):
+                raise ValueError("Date range can not be bigger than 3 years")
+
+            stats = StatsService.get_all_users_statistics(start_date, end_date)
+            return stats.to_primitive(), 200
+        except (KeyError, ValueError) as e:
+            error_msg = f"User Statistics GET - {str(e)}"
             current_app.logger.critical(error_msg)
-            return {
-                "Error": "Unable to fetch mapped and validated task with a period"
-            }, 500
+            return {"Error": error_msg}, 400
+        except Exception as e:
+            error_msg = f"User Statistics GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": "Unable to fetch user stats"}, 500

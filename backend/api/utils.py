@@ -1,4 +1,5 @@
 from functools import wraps
+from datetime import date, datetime
 
 
 class TMAPIDecorators:
@@ -24,3 +25,12 @@ class TMAPIDecorators:
             return decorated_function
 
         return pm_only_decorator
+
+
+def validate_date_input(input_date):
+    try:
+        if not isinstance(input_date, date):
+            input_date = datetime.strptime(input_date, "%Y-%m-%d").date()
+        return input_date
+    except (TypeError, ValueError):
+        raise ValueError("Invalid date value")

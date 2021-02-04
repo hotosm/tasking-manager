@@ -1,9 +1,9 @@
 from cachetools import TTLCache, cached
-
-from flask_restful import current_app
+from datetime import date, timedelta
 from sqlalchemy import func, desc, distinct, cast, extract, or_, and_, tuple_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
+
 from backend import db
 from backend.models.dtos.stats_dto import (
     ProjectContributionsDTO,
@@ -18,13 +18,15 @@ from backend.models.dtos.stats_dto import (
     CampaignStatsDTO,
     TaskStats,
     TaskStatsDTO,
+    GenderStatsDTO,
+    UserStatsDTO,
 )
 
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.models.postgis.campaign import Campaign, campaign_projects
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project
-from backend.models.postgis.statuses import TaskStatus, MappingLevel
+from backend.models.postgis.statuses import TaskStatus, MappingLevel, UserGender
 from backend.models.postgis.task import TaskHistory, User, Task, TaskAction
 from backend.models.postgis.utils import timestamp, NotFound  # noqa: F401
 from backend.services.project_service import ProjectService
@@ -32,8 +34,6 @@ from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
 from backend.services.campaign_service import CampaignService
-
-from datetime import date, datetime, timedelta
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
@@ -486,98 +486,41 @@ class StatsService:
         project.save()
 
     @staticmethod
-    def get_all_user_statistics(start: datetime, end: datetime):
-
-        # mapped_results get no of tasks mapped by user registered between a given period
-        mapped_results = (
-            Task.query.with_entities(
-                func.count(Task.id).label("Total_tasks_mapped"),
-            )
-            .filter(User.id == Task.mapped_by)
-            .filter(
-                User.date_registered >= start,
-            )
-            .filter(
-                User.date_registered <= end,
-            )
+    def get_all_users_statistics(start_date: date, end_date: date):
+        users = User.query.filter(
+            User.date_registered >= start_date,
+            User.date_registered <= end_date,
         )
 
-        # validated_results get no of tasks validated by user registered between a given period
-        validated_results = (
-            Task.query.with_entities(
-                func.count(Task.id).label("Total_tasks_validated"),
-            )
-            .filter(User.id == Task.validated_by)
-            .filter(
-                User.date_registered >= start,
-            )
-            .filter(
-                User.date_registered <= end,
-            )
-        )
-        # Beginner :get no of users registered within given period having mapping_level= beginner
-        Beginner = (
-            User.query.with_entities(
-                func.count(User.mapping_level).label("beginner"),
-            )
-            .filter(
-                User.mapping_level == 1,
-            )
-            .filter(
-                User.date_registered >= start,
-            )
-            .filter(
-                User.date_registered <= end,
-            )
-            .all()
-        )
+        stats_dto = UserStatsDTO()
+        stats_dto.total = users.count()
+        stats_dto.beginner = users.filter(
+            User.mapping_level == MappingLevel.BEGINNER.value
+        ).count()
+        stats_dto.intermediate = users.filter(
+            User.mapping_level == MappingLevel.INTERMEDIATE.value
+        ).count()
+        stats_dto.advanced = users.filter(
+            User.mapping_level == MappingLevel.ADVANCED.value
+        ).count()
+        stats_dto.contributed = users.filter(User.projects_mapped.isnot(None)).count()
+        stats_dto.email_verified = users.filter(
+            User.is_email_verified.is_(True)
+        ).count()
 
-        # Intermediate :get no of users registered within given period having mapping_level= intermediate
-        Intermediate = (
-            User.query.with_entities(
-                func.count((User.mapping_level)).label("intermediate"),
-            )
-            .filter(
-                User.mapping_level == 2,
-            )
-            .filter(
-                User.date_registered >= start,
-            )
-            .filter(
-                User.date_registered <= end,
-            )
-            .all()
-        )
+        gender_stats = GenderStatsDTO()
+        gender_stats.male = users.filter(User.gender == UserGender.MALE.value).count()
+        gender_stats.female = users.filter(
+            User.gender == UserGender.FEMALE.value
+        ).count()
+        gender_stats.self_describe = users.filter(
+            User.gender == UserGender.SELF_DESCRIBE.value
+        ).count()
+        gender_stats.prefer_not = users.filter(
+            User.gender == UserGender.PREFER_NOT.value
+        ).count()
 
-        # Advance :get no of users registered within given period having mapping_level= advanced
-        Advance = (
-            User.query.with_entities(
-                func.count((User.mapping_level)).label("advance"),
-            )
-            .filter(
-                User.mapping_level == 3,
-            )
-            .filter(
-                User.date_registered >= start,
-            )
-            .filter(
-                User.date_registered <= end,
-            )
-            .all()
-        )
-
-        stats_dto = dict(
-            total=Beginner[0].beginner
-            + Intermediate[0].intermediate
-            + Advance[0].advance,
-            beginner=Beginner[0].beginner,
-            intermediate=Intermediate[0].intermediate,
-            advanced=Advance[0].advance,
-            tasks_mapped=mapped_results[0].Total_tasks_mapped,
-            tasks_validated=validated_results[0].Total_tasks_validated,
-        )
-
-        current_app.logger.critical(stats_dto)
+        stats_dto.genders = gender_stats
         return stats_dto
 
     @staticmethod
