@@ -152,6 +152,27 @@ class TaskStats(Model):
     bad_imagery = IntType(serialized_name="badImagery")
 
 
+class GenderStatsDTO(Model):
+    """ DTO for genre stats of users."""
+
+    male = IntType()
+    female = IntType()
+    prefer_not = IntType(serialized_name="preferNotIdentify")
+    self_describe = IntType(serialized_name="selfDescribe")
+
+
+class UserStatsDTO(Model):
+    """ DTO for user stats."""
+
+    total = IntType()
+    beginner = IntType()
+    intermediate = IntType()
+    advanced = IntType()
+    contributed = IntType()
+    email_verified = IntType(serialized_name="emailVerified")
+    genders = ModelType(GenderStatsDTO)
+
+
 class TaskStatsDTO(Model):
     """ Contains all tasks stats broken down by day"""
 
