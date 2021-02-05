@@ -38,6 +38,7 @@ class Organisation(db.Model):
     logo = db.Column(db.String)  # URL of a logo
     description = db.Column(db.String)
     url = db.Column(db.String)
+    exempt = db.Column(db.Boolean, default=True, nullable=False)
 
     managers = db.relationship(
         User,
