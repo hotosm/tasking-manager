@@ -52,7 +52,7 @@
     "react-final-form": "^6.5.2",
     "react-intl": "^5.12.0",
     "react-meta-elements": "^1.0.0",
-    "react-placeholder": "^4.0.3",
+    "react-placeholder": "^4.1.0",
     "react-redux": "^7.2.2",
     "react-scripts": "^4.0.1",
     "react-select": "^4.0.2",

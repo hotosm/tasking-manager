@@ -11567,10 +11567,10 @@ react-onclickoutside@^6.9.0:
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.9.0.tgz#a54bc317ae8cf6131a5d78acea55a11067f37a1f"
   integrity sha512-8ltIY3bC7oGhj2nPAvWOGi+xGFybPNhJM0V1H8hY/whNcXgmDeaeoCMPPd8VatrpTsUWjb/vGzrmu6SrXVty3A==
 
-react-placeholder@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/react-placeholder/-/react-placeholder-4.0.3.tgz#098f8ee00122bfd73f1ce47d7d99de00384ab141"
-  integrity sha512-yPyqFYbh/u72p0UHsKTu19KruK/aJFP0x3YENg8ZBBjf13PoTKBQckVxlpLCfn0Rm2MaMly7IxZuRsUIQV+mrw==
+react-placeholder@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/react-placeholder/-/react-placeholder-4.1.0.tgz#943128820b3b0a6f94371655aadec18d306e05e3"
+  integrity sha512-z1HGD86NWJTYTQumHsmGH9jkozv4QHa9dju/vHVUd4f1svu23pf5v7QoBLBfs3kA1S9GLJaCeRMHLbO2SCdz5A==
 
 react-popper@^1.3.4:
   version "1.3.7"
