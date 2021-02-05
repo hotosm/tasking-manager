@@ -166,6 +166,7 @@ class Organisation(db.Model):
         organisation_dto.description = self.description
         organisation_dto.url = self.url
         organisation_dto.managers = []
+        organisation_dto.exempt = self.exempt
 
         if omit_managers:
             return organisation_dto

@@ -40,6 +40,7 @@ class OrganisationDTO(Model):
     projects = ListType(StringType, serialize_when_none=False)
     teams = ListType(ModelType(OrganisationTeamsDTO))
     campaigns = ListType(ListType(StringType))
+    exempt = BooleanType()
 
 
 class ListOrganisationsDTO(Model):
