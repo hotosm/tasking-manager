@@ -101,7 +101,7 @@
     "@testing-library/react-hooks": "^5.0.3",
     "@testing-library/user-event": "^12.6.3",
     "combine-react-intl-messages": "^4.0.0",
-    "jest-canvas-mock": "^2.3.0",
+    "jest-canvas-mock": "^2.3.1",
     "msw": "^0.26.1",
     "prettier": "^2.2.1",
     "react-select-event": "^5.1.0",
