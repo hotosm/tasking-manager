@@ -1,4 +1,4 @@
-FROM python:3.8-alpine as base
+FROM quay.io/hotosm/base-python-image as base
 LABEL version=0.1
 LABEL maintainer="HOT Sysadmin <sysadmin@hotosm.org>"
 LABEL description="Builds backend docker image"
