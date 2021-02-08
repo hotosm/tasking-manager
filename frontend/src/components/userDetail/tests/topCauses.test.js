@@ -40,7 +40,7 @@ describe('TopCauses card', () => {
       ],
       projectsMapped: 7,
     };
-    const { container } = render(
+    render(
       <ReduxIntlProviders>
         <TopCauses userStats={stats} />
       </ReduxIntlProviders>,
