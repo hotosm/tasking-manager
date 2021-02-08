@@ -37,7 +37,7 @@ describe('EditsByNumbers card', () => {
       total_road_count_add: 13345,
       total_road_count_mod: 51730,
     };
-    const { container } = render(
+    render(
       <ReduxIntlProviders>
         <EditsByNumbers osmStats={stats} />
       </ReduxIntlProviders>,
