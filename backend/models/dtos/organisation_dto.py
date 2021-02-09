@@ -1,4 +1,5 @@
 from schematics import Model
+from schematics.exceptions import ValidationError
 from schematics.types import (
     StringType,
     IntType,
@@ -7,6 +8,19 @@ from schematics.types import (
     BooleanType,
     DictType,
 )
+
+from backend.models.postgis.statuses import OrganisationType
+
+
+def is_known_organisation_type(value):
+    """ Validates organisation subscription type string """
+    try:
+        OrganisationType[value.upper()]
+    except KeyError:
+        raise ValidationError(
+            f"Unknown organisationType: {value}. Valid values are {OrganisationType.FREE.name}, "
+            f"{OrganisationType.DISCOUNTED.name}, {OrganisationType.FULL_FEE.name}"
+        )
 
 
 class OrganisationManagerDTO(Model):
@@ -40,7 +54,7 @@ class OrganisationDTO(Model):
     projects = ListType(StringType, serialize_when_none=False)
     teams = ListType(ModelType(OrganisationTeamsDTO))
     campaigns = ListType(ListType(StringType))
-    exempt = BooleanType()
+    type = IntType(validators=[is_known_organisation_type])
 
 
 class ListOrganisationsDTO(Model):
