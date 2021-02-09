@@ -197,9 +197,53 @@ export default defineMessages({
     id: 'management.organisations.stats.level.tooltip',
     defaultMessage: '{n} of {total} ({percent}%) completed to move to level {nextLevel}',
   },
+  tierTooltip: {
+    id: 'management.organisations.stats.tier.tooltip',
+    defaultMessage: '{n} of {total} ({percent}%) completed to move to the {nextTier} tier',
+  },
   levelInfo: {
     id: 'management.organisations.stats.level.description',
     defaultMessage: '{org} is an organization level {level}.',
+  },
+  estimatedLevel: {
+    id: 'management.organisations.stats.level.estimation',
+    defaultMessage: 'Estimated level by the end of {year}',
+  },
+  estimatedTier: {
+    id: 'management.organisations.stats.tier.estimation',
+    defaultMessage: 'Estimated tier by the end of {year}',
+  },
+  estimatedCost: {
+    id: 'management.organisations.stats.cost.estimation',
+    defaultMessage: 'Estimated cost by the end of {year}',
+  },
+  actionsToNextLevel: {
+    id: 'management.organisations.stats.next_level.actions',
+    defaultMessage: 'Actions to reach the level {n}',
+  },
+  actionsToNextTier: {
+    id: 'management.organisations.stats.next_tier.actions',
+    defaultMessage: 'Actions to reach the next tier',
+  },
+  freeTier: {
+    id: 'management.organisations.tier.free',
+    defaultMessage: 'Free',
+  },
+  lowTier: {
+    id: 'management.organisations.tier.low',
+    defaultMessage: 'Low',
+  },
+  mediumTier: {
+    id: 'management.organisations.tier.medium',
+    defaultMessage: 'Medium',
+  },
+  highTier: {
+    id: 'management.organisations.tier.high',
+    defaultMessage: 'High',
+  },
+  veryHighTier: {
+    id: 'management.organisations.tier.very_high',
+    defaultMessage: 'Very High',
   },
   nextLevelInfo: {
     id: 'management.organisations.stats.level.next',

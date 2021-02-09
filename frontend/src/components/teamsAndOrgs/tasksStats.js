@@ -89,7 +89,7 @@ const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) => {
           </div>
         ) : (
           <>
-            <div className="pt3 pb3 ph2 cf w-100 w-two-thirds-l">
+            <div className="pt3 pb3 pl2 mr2 cf w-100 w-two-thirds-l">
               <TasksStatsChart stats={stats} />
             </div>
             <div className="cf w-100">
