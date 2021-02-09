@@ -9,6 +9,7 @@ from backend.models.dtos.organisation_dto import (
 from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_organisations
 from backend.models.postgis.utils import NotFound
+from backend.models.postgis.statuses import OrganisationType
 
 
 # Secondary table defining many-to-many relationship between organisations and managers
@@ -38,6 +39,7 @@ class Organisation(db.Model):
     logo = db.Column(db.String)  # URL of a logo
     description = db.Column(db.String)
     url = db.Column(db.String)
+    type = db.Column(db.Integer, default=OrganisationType.FREE.value, nullable=False)
 
     managers = db.relationship(
         User,
@@ -165,6 +167,7 @@ class Organisation(db.Model):
         organisation_dto.description = self.description
         organisation_dto.url = self.url
         organisation_dto.managers = []
+        organisation_dto.type = OrganisationType(self.type).name
 
         if omit_managers:
             return organisation_dto
