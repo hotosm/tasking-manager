@@ -99,7 +99,6 @@ class TasksStatisticsAPI(Resource):
             return task_stats.to_primitive(), 200
         except (KeyError, ValueError) as e:
             error_msg = f"Task Statistics GET - {str(e)}"
-            current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 400
         except Exception as e:
             error_msg = f"Task Statistics GET - unhandled error: {str(e)}"
