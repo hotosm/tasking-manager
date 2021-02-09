@@ -11,11 +11,9 @@ export function useTotalTasksStats(stats) {
   });
   useEffect(() => {
     if (stats && stats.length) {
-      const mapped = getStatusCount(stats, 'mapped');
-      const validated = getStatusCount(stats, 'validated');
       setTotalStats({
-        mapped: mapped,
-        validated: validated,
+        mapped: getStatusCount(stats, 'mapped'),
+        validated: getStatusCount(stats, 'validated'),
       });
     }
   }, [stats]);

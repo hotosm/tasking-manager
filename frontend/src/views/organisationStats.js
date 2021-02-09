@@ -18,6 +18,11 @@ const TasksStats = React.lazy(() => import('../components/teamsAndOrgs/tasksStat
 
 export const OrganisationStats = ({ id }) => {
   const token = useSelector((state) => state.auth.get('token'));
+  const isOrgManager = useSelector(
+    (state) =>
+      state.auth.get('userDetails').role === 'ADMIN' ||
+      (state.auth.get('organisations') && state.auth.get('organisations').includes(Number(id))),
+  );
   const [query, setQuery] = useTasksStatsQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
   useEffect(() => {
@@ -36,7 +41,10 @@ export const OrganisationStats = ({ id }) => {
     `organisations/${id}/statistics/`,
     id,
   );
-  const totalStats = useTotalTasksStats(useCurrentYearStats(id, query, apiState.stats));
+  const currentYearStats = useCurrentYearStats(id, query, apiState.stats);
+  const totalStats = useTotalTasksStats(currentYearStats);
+  const completedActions = totalStats.mapped + totalStats.validated;
+  const showTierInfo = ['DISCOUNTED', 'FULL_FEE'].includes(organisation.type) && isOrgManager;
   useSetTitleTag(`${organisation.name || 'Organization'} stats`);
 
   if (token) {
@@ -82,12 +90,18 @@ export const OrganisationStats = ({ id }) => {
           </div>
           <div className="w-100 fl cf">
             <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
-              <FormattedMessage {...messages.usageLevel} />
+              {showTierInfo ? (
+                <FormattedMessage {...messages.tier} />
+              ) : (
+                <FormattedMessage {...messages.usageLevel} />
+              )}
             </h4>
             <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={totalStats}>
               <OrganisationUsageLevel
                 orgName={organisation.name}
-                completedActions={totalStats.mapped + totalStats.validated}
+                type={organisation.type}
+                completedActions={completedActions}
+                userIsOrgManager={isOrgManager}
               />
             </ReactPlaceholder>
           </div>
