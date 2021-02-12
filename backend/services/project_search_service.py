@@ -161,7 +161,13 @@ class ProjectSearchService:
                 Project.id, func.count(distinct(TaskHistory.user_id)).label("total")
             )
             .filter(Project.id.in_(paginated_projects_ids))
-            .outerjoin(TaskHistory, TaskHistory.project_id == Project.id)
+            .outerjoin(
+                TaskHistory,
+                and_(
+                    TaskHistory.project_id == Project.id,
+                    TaskHistory.action != "COMMENT",
+                ),
+            )
             .group_by(Project.id)
             .all()
         )
