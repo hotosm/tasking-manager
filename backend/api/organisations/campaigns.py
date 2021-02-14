@@ -121,7 +121,7 @@ class OrganisationsCampaignsAPI(Resource):
     @token_auth.login_required
     def delete(self, organisation_id, campaign_id):
         """
-        Unassigns an organization from an campaign
+        Un-assigns an organization from an campaign
         ---
         tags:
             - campaigns

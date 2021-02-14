@@ -738,12 +738,12 @@ class ProjectsQueriesBboxAPI(Resource):
             search_dto.bbox = map(float, request.args.get("bbox").split(","))
             search_dto.input_srid = request.args.get("srid")
             search_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-            createdByMe = (
+            created_by_me = (
                 strtobool(request.args.get("createdByMe"))
                 if request.args.get("createdByMe")
                 else False
             )
-            if createdByMe:
+            if created_by_me:
                 search_dto.project_author = authenticated_user_id
             search_dto.validate()
         except Exception as e:

@@ -39,7 +39,7 @@ class Notification(db.Model):
         db.session.commit()
 
     @staticmethod
-    def get_unread_message_count(user_id: int) -> NotificationDTO:
+    def get_unread_message_count(user_id: int) -> int:
         """ Get count of unread messages for user """
         notifications = Notification.query.filter(
             Notification.user_id == user_id

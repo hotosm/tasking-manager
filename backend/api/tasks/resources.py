@@ -111,18 +111,18 @@ class TasksQueriesJsonAPI(Resource):
                 else True
             )
 
-            tasksJson = ProjectService.get_project_tasks(int(project_id), tasks)
+            tasks_json = ProjectService.get_project_tasks(int(project_id), tasks)
 
             if as_file:
-                tasksJson = str(tasksJson).encode("utf-8")
+                tasks_json = str(tasks_json).encode("utf-8")
                 return send_file(
-                    io.BytesIO(tasksJson),
+                    io.BytesIO(tasks_json),
                     mimetype="application/json",
                     as_attachment=True,
                     attachment_filename=f"{str(project_id)}-tasks.geoJSON",
                 )
 
-            return tasksJson, 200
+            return tasks_json, 200
         except NotFound:
             return {"Error": "Project or Task Not Found"}, 404
         except ProjectServiceError as e:

@@ -622,7 +622,6 @@ class MessageService:
 
         messages_dto = MessagesDTO()
         for item in results.items:
-            message_dto = None
             if isinstance(item, tuple):
                 message_dto = item[0].as_dto()
                 message_dto.project_title = item[1].name

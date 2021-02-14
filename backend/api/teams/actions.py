@@ -161,7 +161,6 @@ class TeamsActionsJoinAPI(Resource):
                 )
                 return {"Success": "True"}, 200
         except Exception as e:
-            raise
             error_msg = f"Team Join PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
@@ -240,7 +239,7 @@ class TeamsActionsLeaveAPI(Resource):
 
 class TeamsActionsMessageMembersAPI(Resource):
     @token_auth.login_required
-    def post(self, team_id):
+    def post(self):
         """
         Message all team members
         ---
