@@ -478,7 +478,7 @@ class ProjectsRestAPI(Resource):
 
 class ProjectSearchBase(Resource):
     @token_auth.login_required(optional=True)
-    def setup_search_dto(self):
+    def setup_search_dto(self) -> ProjectSearchDTO:
         search_dto = ProjectSearchDTO()
         search_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
         search_dto.mapper_level = request.args.get("mapperLevel")
@@ -497,6 +497,7 @@ class ProjectSearchBase(Resource):
         search_dto.omit_map_results = strtobool(
             request.args.get("omitMapResults", "false")
         )
+        search_dto.last_updated = request.args.get("lastUpdated")
 
         # See https://github.com/hotosm/tasking-manager/pull/922 for more info
         try:

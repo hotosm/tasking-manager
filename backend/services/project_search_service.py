@@ -313,6 +313,9 @@ class ProjectSearchService:
                 sq.c.country.ilike("%{}%".format(search_dto.country))
             ).filter(Project.id == sq.c.id)
 
+        if search_dto.last_updated:
+            query = query.filter(Project.last_updated > search_dto.last_updated)
+
         order_by = search_dto.order_by
         if search_dto.order_by_type == "DESC":
             order_by = desc(search_dto.order_by)
