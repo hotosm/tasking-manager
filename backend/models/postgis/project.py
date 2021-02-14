@@ -1134,9 +1134,9 @@ class Project(db.Model):
         tags_dto.tags = [r[0] for r in query]
         return tags_dto
 
-    @staticmethod
+    @classmethod
     def calculate_tasks_percent(
-        target, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery
+        cls, target, total_tasks, tasks_mapped, tasks_validated, tasks_bad_imagery
     ):
         """ Calculates percentages of contributions """
         try:
