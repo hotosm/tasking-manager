@@ -83,7 +83,8 @@
     "prettier": "prettier --write src/**/*.js",
     "lint": "eslint src",
     "test": "npm run lint && react-scripts test --env=jsdom",
-    "coverage": "npm run test -- --coverage --watchAll=false"
+    "coverage": "npm run test -- --coverage --watchAll=false",
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -110,7 +111,8 @@
     "msw": "^0.26.2",
     "prettier": "^2.2.1",
     "react-select-event": "^5.1.0",
-    "react-test-renderer": "^17.0.1"
+    "react-test-renderer": "^17.0.1",
+    "source-map-explorer": "^2.5.2"
   },
   "jest": {
     "coverageReporters": [
