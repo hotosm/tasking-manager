@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { TopCauses } from '../topCauses';
+import TopCauses from '../topCauses';
 
 jest.mock('react-chartjs-2', () => ({
   Doughnut: () => null,

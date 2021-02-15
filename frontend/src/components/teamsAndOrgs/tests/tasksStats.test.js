@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { tasksStats } from '../../../network/tests/mockData/tasksStats';
-import TasksStats from '../tasksStats';
+import { TasksStats } from '../tasksStats';
 
 jest.mock('react-chartjs-2', () => ({
   Bar: () => null,

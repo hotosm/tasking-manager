@@ -14,7 +14,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { RemainingTasksStats } from '../components/teamsAndOrgs/remainingTasksStats';
 import { OrganisationUsageLevel } from '../components/teamsAndOrgs/orgUsageLevel';
-const TasksStats = React.lazy(() => import('../components/teamsAndOrgs/tasksStats'));
+import { TasksStats } from '../components/teamsAndOrgs/tasksStats';
 
 export const OrganisationStats = ({ id }) => {
   const token = useSelector((state) => state.auth.get('token'));
@@ -64,16 +64,14 @@ export const OrganisationStats = ({ id }) => {
             <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
               <FormattedMessage {...messages.tasksStatistics} />
             </h4>
-            <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
-              <TasksStats
-                query={query}
-                setQuery={setQuery}
-                stats={apiState.stats}
-                error={apiState.isError}
-                loading={apiState.isLoading}
-                retryFn={forceUpdate}
-              />
-            </React.Suspense>
+            <TasksStats
+              query={query}
+              setQuery={setQuery}
+              stats={apiState.stats}
+              error={apiState.isError}
+              loading={apiState.isLoading}
+              retryFn={forceUpdate}
+            />
           </div>
           <div className="w-100 fl cf">
             <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
