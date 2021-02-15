@@ -4,6 +4,7 @@ import 'react-placeholder/lib/reactPlaceholder.css';
 import Select from 'react-select';
 import { format, parse } from 'date-fns';
 import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
