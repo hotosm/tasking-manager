@@ -6,7 +6,7 @@ import messages from './messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 
-export const TopCauses = ({ userStats }) => {
+const TopCauses = ({ userStats }) => {
   const sliceVal = 3;
   const colours = [
     CHART_COLOURS.green,
@@ -52,3 +52,5 @@ export const TopCauses = ({ userStats }) => {
     </div>
   );
 };
+
+export default TopCauses;

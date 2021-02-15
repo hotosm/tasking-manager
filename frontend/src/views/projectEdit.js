@@ -49,7 +49,7 @@ export const handleCheckButton = (event, arrayElement) => {
   return arrayElement;
 };
 
-export function ProjectEdit({ id }) {
+export default function ProjectEdit({ id }) {
   useSetTitleTag(`Edit project #${id}`);
   const mandatoryFields = ['name', 'shortDescription', 'description', 'instructions'];
   const token = useSelector((state) => state.auth.get('token'));

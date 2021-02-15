@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactPlaceholder from 'react-placeholder';
-import { Bar } from 'react-chartjs-2';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { CHART_COLOURS } from '../../config';
 import { useTagAPI } from '../../hooks/UseTagAPI';
 import { useValidateDateRange } from '../../hooks/UseValidateDateRange';
-import { useTimeDiff } from '../../hooks/UseTimeDiff';
 import { formatFilterCountriesData } from '../../utils/countries';
-import { formatTasksStatsData, formatTimelineTooltip } from '../../utils/formatChartJSData';
 import { ProjectFilterSelect, DateFilterPicker } from '../projects/filterSelectFields';
 import { TasksStatsSummary } from './tasksStatsSummary';
 
-const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) => {
+const TasksStatsChart = React.lazy(() =>
+  import('./tasksStatsChart' /* webpackChunkName: "taskStatsChart" */),
+);
+
+export const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) => {
   const [campaignAPIState] = useTagAPI([], 'campaigns');
   const [countriesAPIState] = useTagAPI([], 'countries', formatFilterCountriesData);
   const {
@@ -89,8 +89,10 @@ const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) => {
           </div>
         ) : (
           <>
-            <div className="pt3 pb3 pl2 mr2 cf w-100 w-two-thirds-l">
-              <TasksStatsChart stats={stats} />
+            <div className="pt3 pb3 ph2 cf mr2 w-100 w-two-thirds-l">
+              <Suspense fallback={<div>loading...</div>}>
+                <TasksStatsChart stats={stats} />
+              </Suspense>
             </div>
             <div className="cf w-100">
               <TasksStatsSummary stats={stats} />
@@ -101,38 +103,3 @@ const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) => {
     </>
   );
 };
-
-const TasksStatsChart = ({ stats }) => {
-  const unit = useTimeDiff(stats);
-  const options = {
-    legend: { position: 'top', align: 'end', labels: { boxWidth: 12 } },
-    tooltips: {
-      callbacks: { label: (tooltip, data) => formatTimelineTooltip(tooltip, data, false) },
-    },
-    scales: {
-      yAxes: [
-        {
-          stacked: true,
-          ticks: {
-            beginAtZero: true,
-          },
-        },
-      ],
-      xAxes: [
-        {
-          stacked: true,
-          type: 'time',
-          time: { unit: unit },
-        },
-      ],
-    },
-  };
-  return (
-    <Bar
-      data={formatTasksStatsData(stats, CHART_COLOURS.orange, CHART_COLOURS.red)}
-      options={options}
-    />
-  );
-};
-
-export default TasksStats;

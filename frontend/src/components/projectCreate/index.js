@@ -1,6 +1,7 @@
-import React, { useState, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useLayoutEffect, useCallback, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect } from '@reach/router';
+import ReactPlaceholder from 'react-placeholder';
 import area from '@turf/area';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
@@ -12,7 +13,6 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 import messages from './messages';
 import SetAOI from './setAOI';
-import { ProjectCreationMap } from './projectCreationMap';
 import SetTaskSizes from './setTaskSizes';
 import TrimProject from './trimProject';
 import NavButtons from './navButtons';
@@ -23,6 +23,10 @@ import { MAX_AOI_AREA } from '../../config';
 
 import { makeGrid } from './setTaskSizes';
 import { MAX_FILESIZE } from '../../config';
+
+const ProjectCreationMap = React.lazy(() =>
+  import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
+);
 
 var toGeojson = require('@mapbox/togeojson');
 var osmToGeojson = require('osmtogeojson');
@@ -331,14 +335,16 @@ const ProjectCreate = (props) => {
         </h2>
       </div>
       <div className="w-100 h-100-l h-50 pt3 pt0-l fr relative">
-        <ProjectCreationMap
-          metadata={metadata}
-          updateMetadata={updateMetadata}
-          mapObj={mapObj}
-          setMapObj={setMapObj}
-          step={step}
-          uploadFile={uploadFile}
-        />
+        <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={30} delay={300} />}>
+          <ProjectCreationMap
+            metadata={metadata}
+            updateMetadata={updateMetadata}
+            mapObj={mapObj}
+            setMapObj={setMapObj}
+            step={step}
+            uploadFile={uploadFile}
+          />
+        </Suspense>
         <div className="cf absolute bg-white o-90 top-1 left-1 pa3 mw6">
           {cloneFromId && (
             <p className="fw6 pv2 blue-grey">
