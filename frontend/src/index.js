@@ -9,7 +9,7 @@ import App from './App';
 import { store } from './store';
 import { getUserDetails } from './store/actions/auth';
 import { ConnectedIntl } from './utils/internationalization';
-import * as serviceWorker from './serviceWorker';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { ENABLE_SERVICEWORKER, SENTRY_FRONTEND_DSN, ENVIRONMENT } from './config';
 
 if (SENTRY_FRONTEND_DSN) {
@@ -47,7 +47,7 @@ if (
   ENABLE_SERVICEWORKER === 'true' ||
   ENABLE_SERVICEWORKER === true
 ) {
-  serviceWorker.register();
+  serviceWorkerRegistration.register();
 } else {
-  serviceWorker.unregister();
+  serviceWorkerRegistration.unregister();
 }

@@ -137,4 +137,4 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   );
 };
 
-export { ProjectCreationMap };
+export default ProjectCreationMap;

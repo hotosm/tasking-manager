@@ -161,7 +161,6 @@ class TeamsActionsJoinAPI(Resource):
                 )
                 return {"Success": "True"}, 200
         except Exception as e:
-            raise
             error_msg = f"Team Join PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 500
@@ -287,7 +286,6 @@ class TeamsActionsMessageMembersAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            team_id = request.view_args["team_id"]
             message_dto = MessageDTO(request.get_json())
             # Validate if team is present
             try:

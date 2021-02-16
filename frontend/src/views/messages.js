@@ -113,6 +113,10 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.organisation.remaining_tasks',
     defaultMessage: 'Total remaining',
   },
+  tier: {
+    id: 'teamsAndOrgs.management.organisation.usage_tier',
+    defaultMessage: 'Tier',
+  },
   usageLevel: {
     id: 'teamsAndOrgs.management.organisation.usage_level',
     defaultMessage: 'Level',

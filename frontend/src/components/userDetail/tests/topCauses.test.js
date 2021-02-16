@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { TopCauses } from '../topCauses';
+import TopCauses from '../topCauses';
 
 jest.mock('react-chartjs-2', () => ({
   Doughnut: () => null,
@@ -40,7 +40,7 @@ describe('TopCauses card', () => {
       ],
       projectsMapped: 7,
     };
-    const { container } = render(
+    render(
       <ReduxIntlProviders>
         <TopCauses userStats={stats} />
       </ReduxIntlProviders>,

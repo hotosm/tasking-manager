@@ -1,17 +1,9 @@
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from flask_restful import Resource, current_app, request
 
 from backend.services.users.authentication_service import token_auth
 from backend.services.stats_service import StatsService
-
-
-def validate_date_input(input_date):
-    try:
-        if not isinstance(input_date, date):
-            input_date = datetime.strptime(input_date, "%Y-%m-%d").date()
-        return input_date
-    except (TypeError, ValueError):
-        raise ValueError("Invalid date value")
+from backend.api.utils import validate_date_input
 
 
 class TasksStatisticsAPI(Resource):
@@ -99,7 +91,6 @@ class TasksStatisticsAPI(Resource):
             return task_stats.to_primitive(), 200
         except (KeyError, ValueError) as e:
             error_msg = f"Task Statistics GET - {str(e)}"
-            current_app.logger.critical(error_msg)
             return {"Error": error_msg}, 400
         except Exception as e:
             error_msg = f"Task Statistics GET - unhandled error: {str(e)}"

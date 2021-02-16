@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { EditsByNumbers } from '../editsByNumbers';
+import EditsByNumbers from '../editsByNumbers';
 
 jest.mock('react-chartjs-2', () => ({
   Doughnut: () => null,
@@ -37,7 +37,7 @@ describe('EditsByNumbers card', () => {
       total_road_count_add: 13345,
       total_road_count_mod: 51730,
     };
-    const { container } = render(
+    render(
       <ReduxIntlProviders>
         <EditsByNumbers osmStats={stats} />
       </ReduxIntlProviders>,

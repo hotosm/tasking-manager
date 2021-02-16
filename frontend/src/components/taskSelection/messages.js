@@ -292,9 +292,13 @@ export default defineMessages({
     id: 'project.tasks.sorting.id',
     defaultMessage: 'Sort by task number',
   },
-  sortByLastUpdate: {
+  sortByMostRecentlyUpdate: {
     id: 'project.tasks.sorting.date',
-    defaultMessage: 'Last updated first',
+    defaultMessage: 'Mostly recently updated',
+  },
+  sortByLeastRecentlyUpdate: {
+    id: 'project.tasks.sorting.date.reverse',
+    defaultMessage: 'Least recently updated',
   },
   filterAll: {
     id: 'project.tasks.filter.all',

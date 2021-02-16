@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from '@reach/router';
 import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
@@ -197,6 +197,16 @@ export function TaskList({
   const [sortBy, setSortingOption] = useQueryParam('sortBy', StringParam);
   const [statusFilter, setStatusFilter] = useQueryParam('filter', StringParam);
 
+  const orderedTasks = useCallback(
+    (criteria) => {
+      if (criteria === 'id') return readyTasks.sort(compareTaskId);
+      if (criteria === '-date') return readyTasks.sort(compareLastUpdate).reverse();
+      // default option is to order by date
+      return readyTasks.sort(compareLastUpdate);
+    },
+    [readyTasks],
+  );
+
   useEffect(() => {
     if (tasks && tasks.features) {
       let newTasks = tasks.features;
@@ -245,7 +255,8 @@ export function TaskList({
 
   const sortingOptions = [
     { label: <FormattedMessage {...messages.sortById} />, value: 'id' },
-    { label: <FormattedMessage {...messages.sortByLastUpdate} />, value: 'date' },
+    { label: <FormattedMessage {...messages.sortByMostRecentlyUpdate} />, value: 'date' },
+    { label: <FormattedMessage {...messages.sortByLeastRecentlyUpdate} />, value: '-date' },
   ];
 
   return (
@@ -300,9 +311,7 @@ export function TaskList({
         {readyTasks && (
           <PaginatedList
             pageSize={6}
-            items={
-              sortBy === 'id' ? readyTasks.sort(compareTaskId) : readyTasks.sort(compareLastUpdate)
-            }
+            items={orderedTasks(sortBy)}
             ItemComponent={TaskItem}
             setZoomedTaskId={setZoomedTaskId}
             setActiveTaskModal={setActiveTaskModal}

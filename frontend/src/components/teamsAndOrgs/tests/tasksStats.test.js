@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { tasksStats } from '../../../network/tests/mockData/tasksStats';
-import TasksStats from '../tasksStats';
+import { TasksStats } from '../tasksStats';
 
 jest.mock('react-chartjs-2', () => ({
   Bar: () => null,
@@ -12,6 +12,7 @@ jest.mock('react-chartjs-2', () => ({
 
 describe('TasksStats', () => {
   const setQuery = jest.fn();
+  const retryFn = jest.fn();
   it('render basic elements', () => {
     render(
       <ReduxIntlProviders>
@@ -48,5 +49,50 @@ describe('TasksStats', () => {
     expect(startDateInput.value).toBe('2020-04-05');
     expect(endDateInput.placeholder).toBe('Click to select an end date');
     expect(endDateInput.value).toBe('2021-01-01');
+  });
+  it('show error message if date range exceeds the maximum value', async () => {
+    render(
+      <ReduxIntlProviders>
+        <TasksStats
+          stats={tasksStats.taskStats}
+          setQuery={setQuery}
+          query={{ startDate: '2019-04-05', endDate: null, campaign: null, location: null }}
+          error={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText('An error ocurred while loading stats.')).toBeInTheDocument();
+    expect(screen.getByText('Date range is longer than one year.')).toBeInTheDocument();
+  });
+  it('show error message if start date is after end date', async () => {
+    render(
+      <ReduxIntlProviders>
+        <TasksStats
+          stats={tasksStats.taskStats}
+          setQuery={setQuery}
+          query={{ startDate: '2019-04-05', endDate: '2018-08-05', campaign: null, location: null }}
+          error={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText('An error ocurred while loading stats.')).toBeInTheDocument();
+    expect(screen.getByText('Start date should not be later than end date.')).toBeInTheDocument();
+  });
+  it('render "Try again" button case the error is not on the dates', async () => {
+    render(
+      <ReduxIntlProviders>
+        <TasksStats
+          stats={tasksStats.taskStats}
+          setQuery={setQuery}
+          query={{ startDate: '2020-04-05', endDate: '2021-01-01', campaign: null, location: null }}
+          error={true}
+          retryFn={retryFn}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText('An error ocurred while loading stats.')).toBeInTheDocument();
+    expect(screen.getByText('Try again')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Try again'));
+    expect(retryFn).toHaveBeenCalled();
   });
 });

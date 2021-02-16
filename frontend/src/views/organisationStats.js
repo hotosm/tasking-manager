@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { Redirect } from '@reach/router';
 import { startOfYear, format } from 'date-fns';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
@@ -12,9 +14,15 @@ import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { RemainingTasksStats } from '../components/teamsAndOrgs/remainingTasksStats';
 import { OrganisationUsageLevel } from '../components/teamsAndOrgs/orgUsageLevel';
-const TasksStats = React.lazy(() => import('../components/teamsAndOrgs/tasksStats'));
+import { TasksStats } from '../components/teamsAndOrgs/tasksStats';
 
 export const OrganisationStats = ({ id }) => {
+  const token = useSelector((state) => state.auth.get('token'));
+  const isOrgManager = useSelector(
+    (state) =>
+      state.auth.get('userDetails').role === 'ADMIN' ||
+      (state.auth.get('organisations') && state.auth.get('organisations').includes(Number(id))),
+  );
   const [query, setQuery] = useTasksStatsQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
   useEffect(() => {
@@ -33,24 +41,29 @@ export const OrganisationStats = ({ id }) => {
     `organisations/${id}/statistics/`,
     id,
   );
-  const totalStats = useTotalTasksStats(useCurrentYearStats(id, query, apiState.stats));
+  const currentYearStats = useCurrentYearStats(id, query, apiState.stats);
+  const totalStats = useTotalTasksStats(currentYearStats);
+  const completedActions = totalStats.mapped + totalStats.validated;
+  const showTierInfo = ['DISCOUNTED', 'FULL_FEE'].includes(organisation.type) && isOrgManager;
   useSetTitleTag(`${organisation.name || 'Organization'} stats`);
 
-  return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      rows={26}
-      ready={!error && !loading}
-      className="pv3 ph2 ph4-ns"
-    >
-      <div className="w-100 cf pv3 ph2 ph4-ns bg-white blue-dark">
-        <img src={organisation.logo} className="w3 dib v-mid mr3" alt={organisation.name} />
-        <h3 className="f2 fw6 mv2 ttu barlow-condensed blue-dark dib v-mid">{organisation.name}</h3>
-        <div className="w-100 fl cf">
-          <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
-            <FormattedMessage {...messages.tasksStatistics} />
-          </h4>
-          <React.Suspense fallback={<div className={`w7 h5`}>Loading...</div>}>
+  if (token) {
+    return (
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        rows={26}
+        ready={!error && !loading}
+        className="pv3 ph2 ph4-ns"
+      >
+        <div className="w-100 cf pv3 ph2 ph4-ns bg-white blue-dark">
+          <img src={organisation.logo} className="w3 dib v-mid mr3" alt={organisation.name} />
+          <h3 className="f2 fw6 mv2 ttu barlow-condensed blue-dark dib v-mid">
+            {organisation.name}
+          </h3>
+          <div className="w-100 fl cf">
+            <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
+              <FormattedMessage {...messages.tasksStatistics} />
+            </h4>
             <TasksStats
               query={query}
               setQuery={setQuery}
@@ -59,33 +72,41 @@ export const OrganisationStats = ({ id }) => {
               loading={apiState.isLoading}
               retryFn={forceUpdate}
             />
-          </React.Suspense>
+          </div>
+          <div className="w-100 fl cf">
+            <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
+              <FormattedMessage {...messages.remainingTasks} />
+            </h4>
+            <ReactPlaceholder
+              showLoadingAnimation={true}
+              rows={5}
+              delay={500}
+              ready={!errorOrgStats && !loadingOrgStats}
+            >
+              <RemainingTasksStats tasks={orgStats && orgStats.activeTasks} />
+            </ReactPlaceholder>
+          </div>
+          <div className="w-100 fl cf">
+            <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
+              {showTierInfo ? (
+                <FormattedMessage {...messages.tier} />
+              ) : (
+                <FormattedMessage {...messages.usageLevel} />
+              )}
+            </h4>
+            <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={totalStats}>
+              <OrganisationUsageLevel
+                orgName={organisation.name}
+                type={organisation.type}
+                completedActions={completedActions}
+                userIsOrgManager={isOrgManager}
+              />
+            </ReactPlaceholder>
+          </div>
         </div>
-        <div className="w-100 fl cf">
-          <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
-            <FormattedMessage {...messages.remainingTasks} />
-          </h4>
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            rows={5}
-            delay={500}
-            ready={!errorOrgStats && !loadingOrgStats}
-          >
-            <RemainingTasksStats tasks={orgStats && orgStats.activeTasks} />
-          </ReactPlaceholder>
-        </div>
-        <div className="w-100 fl cf">
-          <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
-            <FormattedMessage {...messages.usageLevel} />
-          </h4>
-          <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={totalStats}>
-            <OrganisationUsageLevel
-              orgName={organisation.name}
-              completedActions={totalStats.mapped + totalStats.validated}
-            />
-          </ReactPlaceholder>
-        </div>
-      </div>
-    </ReactPlaceholder>
-  );
+      </ReactPlaceholder>
+    );
+  } else {
+    return <Redirect from={`organisations/${id}/stats/`} to={'/login'} noThrow />;
+  }
 };

@@ -620,7 +620,7 @@ class TasksActionsMapAllAPI(Resource):
         except Exception as e:
             error_msg = f"TasksActionsMapAllAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to mapall tasks"}, 500
+            return {"Error": "Unable to map all the tasks"}, 500
 
 
 class TasksActionsValidateAllAPI(Resource):

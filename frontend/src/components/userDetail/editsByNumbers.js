@@ -7,7 +7,7 @@ import typesMessages from '../messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 
-export const EditsByNumbers = ({ osmStats }) => {
+const EditsByNumbers = ({ osmStats }) => {
   const intl = useIntl();
   let reference = [
     {
@@ -55,3 +55,5 @@ export const EditsByNumbers = ({ osmStats }) => {
     </div>
   );
 };
+
+export default EditsByNumbers;

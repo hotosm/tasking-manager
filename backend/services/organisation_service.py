@@ -153,7 +153,7 @@ class OrganisationService:
         return Organisation.get_organisations_managed_by_user(user_id)
 
     @staticmethod
-    def get_organisations_managed_by_user_as_dto(user_id: int):
+    def get_organisations_managed_by_user_as_dto(user_id: int) -> ListOrganisationsDTO:
         orgs = OrganisationService.get_organisations_managed_by_user(user_id)
         orgs_dto = ListOrganisationsDTO()
         orgs_dto.organisations = [org.as_dto() for org in orgs]
@@ -174,7 +174,7 @@ class OrganisationService:
         return projects
 
     @staticmethod
-    def get_organisation_stats(organisation_id: int) -> Organisation:
+    def get_organisation_stats(organisation_id: int) -> OrganizationStatsDTO:
         projects = db.session.query(Project.id, Project.status).filter(
             Project.organisation_id == organisation_id
         )
@@ -237,6 +237,7 @@ class OrganisationService:
         if organisation_dto.managers and len(organisation_dto.managers) == 0:
             raise OrganisationServiceError("Must have at least one admin")
 
+        if organisation_dto.managers and len(organisation_dto.managers) > 0:
             managers = []
             for user in organisation_dto.managers:
                 try:

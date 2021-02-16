@@ -39,11 +39,11 @@ async function polyfill() {
   }
   /* Safari 12- and IE */
   if (!Intl.PluralRules) {
-    require('@formatjs/intl-pluralrules/polyfill-locales');
+    await import('@formatjs/intl-pluralrules/polyfill-locales');
   }
   /* Safari 13- and IE */
   if (!Intl.RelativeTimeFormat) {
-    require('@formatjs/intl-relativetimeformat/polyfill-locales');
+    await import('@formatjs/intl-relativetimeformat/polyfill-locales');
   }
 }
 polyfill();

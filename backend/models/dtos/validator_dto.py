@@ -33,7 +33,7 @@ class LockForValidationDTO(Model):
 
 
 class ValidationMappingIssue(Model):
-    """ Describes one or more occurences of an identified mapping problem during validation """
+    """ Describes one or more occurrences of an identified mapping problem during validation """
 
     mapping_issue_category_id = IntType(
         required=True, serialized_name="mappingIssueCategoryId"

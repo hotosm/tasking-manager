@@ -1,8 +1,9 @@
 from cachetools import TTLCache, cached
-
-from sqlalchemy import func, desc, distinct, cast, extract, or_, and_, tuple_
+from datetime import date, timedelta
+from sqlalchemy import func, desc, cast, extract, or_, tuple_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
+
 from backend import db
 from backend.models.dtos.stats_dto import (
     ProjectContributionsDTO,
@@ -17,13 +18,15 @@ from backend.models.dtos.stats_dto import (
     CampaignStatsDTO,
     TaskStats,
     TaskStatsDTO,
+    GenderStatsDTO,
+    UserStatsDTO,
 )
 
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.models.postgis.campaign import Campaign, campaign_projects
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project
-from backend.models.postgis.statuses import TaskStatus, MappingLevel
+from backend.models.postgis.statuses import TaskStatus, MappingLevel, UserGender
 from backend.models.postgis.task import TaskHistory, User, Task, TaskAction
 from backend.models.postgis.utils import timestamp, NotFound  # noqa: F401
 from backend.services.project_service import ProjectService
@@ -31,8 +34,6 @@ from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
 from backend.services.campaign_service import CampaignService
-
-from datetime import date, timedelta
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
@@ -485,13 +486,51 @@ class StatsService:
         project.save()
 
     @staticmethod
-    def set_task_stats(date):
+    def get_all_users_statistics(start_date: date, end_date: date):
+        users = User.query.filter(
+            User.date_registered >= start_date,
+            User.date_registered <= end_date,
+        )
+
+        stats_dto = UserStatsDTO()
+        stats_dto.total = users.count()
+        stats_dto.beginner = users.filter(
+            User.mapping_level == MappingLevel.BEGINNER.value
+        ).count()
+        stats_dto.intermediate = users.filter(
+            User.mapping_level == MappingLevel.INTERMEDIATE.value
+        ).count()
+        stats_dto.advanced = users.filter(
+            User.mapping_level == MappingLevel.ADVANCED.value
+        ).count()
+        stats_dto.contributed = users.filter(User.projects_mapped.isnot(None)).count()
+        stats_dto.email_verified = users.filter(
+            User.is_email_verified.is_(True)
+        ).count()
+
+        gender_stats = GenderStatsDTO()
+        gender_stats.male = users.filter(User.gender == UserGender.MALE.value).count()
+        gender_stats.female = users.filter(
+            User.gender == UserGender.FEMALE.value
+        ).count()
+        gender_stats.self_describe = users.filter(
+            User.gender == UserGender.SELF_DESCRIBE.value
+        ).count()
+        gender_stats.prefer_not = users.filter(
+            User.gender == UserGender.PREFER_NOT.value
+        ).count()
+
+        stats_dto.genders = gender_stats
+        return stats_dto
+
+    @staticmethod
+    def set_task_stats(result_row):
         date_dto = TaskStats(
             {
-                "date": date,
-                "mapped": 0,
-                "validated": 0,
-                "bad_imagery": 0,
+                "date": result_row[0],
+                "mapped": result_row[1],
+                "validated": result_row[2],
+                "bad_imagery": result_row[3],
             }
         )
         return date_dto
@@ -509,6 +548,11 @@ class StatsService:
                 TaskHistory.action_text,
                 func.DATE(TaskHistory.action_date).label("day"),
             )
+            .distinct(
+                tuple_(
+                    TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text
+                )
+            )
             .filter(
                 TaskHistory.action == "STATE_CHANGE",
                 or_(
@@ -517,19 +561,12 @@ class StatsService:
                     TaskHistory.action_text == "BADIMAGERY",
                 ),
             )
-            .filter(
-                and_(
-                    func.DATE(TaskHistory.action_date) >= start_date,
-                    func.DATE(TaskHistory.action_date) <= end_date,
-                )
-            )
-            .group_by(
-                TaskHistory.action_text,
-                "day",
+            .order_by(
                 TaskHistory.project_id,
                 TaskHistory.task_id,
+                TaskHistory.action_text,
+                TaskHistory.action_date,
             )
-            .order_by("day")
         )
 
         if org_id:
@@ -568,74 +605,65 @@ class StatsService:
             )
 
         query = query.subquery()
-        mapped_query = (
+
+        date_query = db.session.query(
+            func.DATE(
+                func.generate_series(start_date, end_date, timedelta(days=1))
+            ).label("d_day")
+        ).subquery()
+
+        grouped_dates = (
             db.session.query(
-                query.c.day.label("day"),
-                tuple_(query.c.task_id, query.c.project_id).label("task_project"),
+                date_query.c.d_day,
+                query.c.action_text,
+                func.count(query.c.action_text).label("cnt"),
             )
-            .select_from(query)
-            .distinct(tuple_(query.c.task_id, query.c.project_id))
-            .filter(query.c.action_text == "MAPPED")
-            .group_by(query.c.task_id, query.c.project_id, query.c.day)
-            .order_by(query.c.task_id, query.c.project_id, query.c.day)
+            .join(date_query, date_query.c.d_day == query.c.day)
+            .group_by(date_query.c.d_day, query.c.action_text)
+            .order_by(date_query.c.d_day)
+        ).subquery()
+
+        mapped = (
+            db.session.query(
+                grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
+            )
+            .select_from(grouped_dates)
+            .filter(grouped_dates.c.action_text == "MAPPED")
             .subquery()
         )
-        tasks_mapped_q = db.session.query(
-            func.to_char(mapped_query.c.day, "YYYY-MM-DD"),
-            func.count(mapped_query.c.task_project),
-        ).group_by(mapped_query.c.day)
-        tasks_mapped = dict(tasks_mapped_q.all())
-
-        validated_query = (
+        validated = (
             db.session.query(
-                query.c.day.label("day"),
-                tuple_(query.c.task_id, query.c.project_id).label("task_project"),
+                grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
             )
-            .select_from(query)
-            .distinct(tuple_(query.c.task_id, query.c.project_id))
-            .filter(query.c.action_text == "VALIDATED")
-            .group_by(query.c.task_id, query.c.project_id, query.c.day)
-            .order_by(query.c.task_id, query.c.project_id, query.c.day)
+            .select_from(grouped_dates)
+            .filter(grouped_dates.c.action_text == "VALIDATED")
             .subquery()
         )
-        tasks_validated_q = db.session.query(
-            func.to_char(validated_query.c.day, "YYYY-MM-DD"),
-            func.count(validated_query.c.task_project),
-        ).group_by(validated_query.c.day)
-        tasks_validated = dict(tasks_validated_q.all())
-
-        bad_imagery_query = (
+        badimagery = (
             db.session.query(
-                query.c.day.label("day"),
-                tuple_(query.c.task_id, query.c.project_id).label("task_project"),
+                grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
             )
-            .select_from(query)
-            .distinct(tuple_(query.c.task_id, query.c.project_id))
-            .filter(query.c.action_text == "BADIMAGERY")
-            .group_by(query.c.task_id, query.c.project_id, query.c.day)
-            .order_by(query.c.task_id, query.c.project_id, query.c.day)
+            .select_from(grouped_dates)
+            .filter(grouped_dates.c.action_text == "BADIMAGERY")
             .subquery()
         )
-        tasks_bad_imagery_q = db.session.query(
-            func.to_char(bad_imagery_query.c.day, "YYYY-MM-DD"),
-            func.count(bad_imagery_query.c.task_project),
-        ).group_by(bad_imagery_query.c.day)
-        tasks_bad_imagery = dict(tasks_bad_imagery_q.all())
 
-        dates = db.session.query(distinct(query.c.day)).select_from(query).all()
-        dates = [r[0] for r in dates]
-        day_stats_dto = list(map(StatsService.set_task_stats, dates))
+        result = (
+            db.session.query(
+                func.to_char(grouped_dates.c.d_day, "YYYY-MM-DD"),
+                func.coalesce(mapped.c.cnt, 0).label("mapped"),
+                func.coalesce(validated.c.cnt, 0).label("validated"),
+                func.coalesce(badimagery.c.cnt, 0).label("badimagery"),
+            )
+            .select_from(grouped_dates)
+            .distinct(grouped_dates.c.d_day)
+            .filter(grouped_dates.c.d_day is not None)
+            .outerjoin(mapped, mapped.c.d_day == grouped_dates.c.d_day)
+            .outerjoin(validated, validated.c.d_day == grouped_dates.c.d_day)
+            .outerjoin(badimagery, badimagery.c.d_day == grouped_dates.c.d_day)
+        )
 
-        for dto in day_stats_dto:
-            date = dto.date.strftime("%Y-%m-%d")
-            try:
-                dto.mapped = tasks_mapped[date] if date in tasks_mapped else 0
-                dto.validated = tasks_validated[date] if date in tasks_validated else 0
-                dto.bad_imagery = (
-                    tasks_bad_imagery[date] if date in tasks_bad_imagery else 0
-                )
-            except Exception as e:
-                print("Error", e)
+        day_stats_dto = list(map(StatsService.set_task_stats, result))
 
         results_dto = TaskStatsDTO()
         results_dto.stats = day_stats_dto

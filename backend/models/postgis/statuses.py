@@ -149,3 +149,11 @@ class ValidationPermission(Enum):
     LEVEL = 1
     TEAMS = 2
     TEAMS_LEVEL = 3
+
+
+class OrganisationType(Enum):
+    """ Describes an organisation's subscription type """
+
+    FREE = 1
+    DISCOUNTED = 2
+    FULL_FEE = 3
