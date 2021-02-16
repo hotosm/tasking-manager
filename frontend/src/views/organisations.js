@@ -220,6 +220,7 @@ export function EditOrganisation(props) {
                 url: organisation.url,
                 logo: organisation.logo,
                 description: organisation.description,
+                type: organisation.type,
               }}
               updateOrg={updateOrg}
               disabledForm={error || loading}
