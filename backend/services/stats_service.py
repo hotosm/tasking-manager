@@ -618,7 +618,7 @@ class StatsService:
                 query.c.action_text,
                 func.count(query.c.action_text).label("cnt"),
             )
-            .outerjoin(date_query, date_query.c.d_day == query.c.day)
+            .join(date_query, date_query.c.d_day == query.c.day)
             .group_by(date_query.c.d_day, query.c.action_text)
             .order_by(date_query.c.d_day)
         ).subquery()
@@ -647,6 +647,7 @@ class StatsService:
             .filter(grouped_dates.c.action_text == "BADIMAGERY")
             .subquery()
         )
+
         result = (
             db.session.query(
                 func.to_char(grouped_dates.c.d_day, "YYYY-MM-DD"),
@@ -656,6 +657,7 @@ class StatsService:
             )
             .select_from(grouped_dates)
             .distinct(grouped_dates.c.d_day)
+            .filter(grouped_dates.c.d_day is not None)
             .outerjoin(mapped, mapped.c.d_day == grouped_dates.c.d_day)
             .outerjoin(validated, validated.c.d_day == grouped_dates.c.d_day)
             .outerjoin(badimagery, badimagery.c.d_day == grouped_dates.c.d_day)
