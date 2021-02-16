@@ -1,6 +1,6 @@
 from cachetools import TTLCache, cached
 from datetime import date, timedelta
-from sqlalchemy import func, desc, cast, extract, or_, and_
+from sqlalchemy import func, desc, cast, extract, or_, and_, distinct, tuple_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
 
@@ -548,6 +548,11 @@ class StatsService:
                 TaskHistory.action_text,
                 func.DATE(TaskHistory.action_date).label("day"),
             )
+            .distinct(
+                tuple_(
+                    TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text
+                )
+            )
             .filter(
                 TaskHistory.action == "STATE_CHANGE",
                 or_(
@@ -562,13 +567,12 @@ class StatsService:
                     func.DATE(TaskHistory.action_date) <= end_date,
                 )
             )
-            .group_by(
-                TaskHistory.action_text,
-                "day",
+            .order_by(
                 TaskHistory.project_id,
                 TaskHistory.task_id,
+                TaskHistory.action_text,
+                TaskHistory.action_date,
             )
-            .order_by("day")
         )
 
         if org_id:
@@ -657,10 +661,10 @@ class StatsService:
                 func.coalesce(badimagery.c.cnt, 0).label("badimagery"),
             )
             .select_from(grouped_dates)
+            .distinct(grouped_dates.c.d_day)
             .outerjoin(mapped, mapped.c.d_day == grouped_dates.c.d_day)
             .outerjoin(validated, validated.c.d_day == grouped_dates.c.d_day)
             .outerjoin(badimagery, badimagery.c.d_day == grouped_dates.c.d_day)
-            .all()
         )
 
         day_stats_dto = list(map(StatsService.set_task_stats, result))
