@@ -25,14 +25,14 @@ class CampaignDTO(Model):
 
 
 class CampaignProjectDTO(Model):
-    """ DTO used to define avaliable campaign connnected projects"""
+    """ DTO used to define available campaign connected projects"""
 
     project_id = IntType()
     campaign_id = IntType()
 
 
 class CampaignOrganisationDTO(Model):
-    """ DTO used to define avaliable campaign connnected projects"""
+    """ DTO used to define available campaign connected projects"""
 
     organisation_id = IntType()
     campaign_id = IntType()

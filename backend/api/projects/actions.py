@@ -47,7 +47,7 @@ class ProjectsActionsTransferAPI(Resource):
                         type: string
         responses:
             200:
-                description: Project ownership transfered successfully
+                description: Project ownership transferred successfully
             401:
                 description: Unauthorized - Invalid credentials
             403:
@@ -61,7 +61,7 @@ class ProjectsActionsTransferAPI(Resource):
             ProjectAdminService.transfer_project_to(
                 project_id, authenticated_user_id, username
             )
-            return {"Success": "Project Transfered"}, 200
+            return {"Success": "Project Transferred"}, 200
         except ValueError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
@@ -227,7 +227,7 @@ class ProjectsActionsUnFeatureAPI(Resource):
               default: 1
         responses:
             200:
-                description: Project Unfeatured
+                description: Project is no longer featured
             400:
                 description: Bad request
             403:
