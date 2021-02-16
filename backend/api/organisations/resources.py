@@ -1,3 +1,4 @@
+from distutils.util import strtobool
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
@@ -11,9 +12,8 @@ from backend.services.organisation_service import (
     OrganisationServiceError,
     NotFound,
 )
-
+from backend.models.postgis.statuses import OrganisationType
 from backend.services.users.authentication_service import token_auth
-from distutils.util import strtobool
 
 
 class OrganisationsRestAPI(Resource):
@@ -261,6 +261,12 @@ class OrganisationsRestAPI(Resource):
         try:
             organisation_dto = UpdateOrganisationDTO(request.get_json())
             organisation_dto.organisation_id = organisation_id
+            # Don't update organisation type if user is not admin
+            if User.get_by_id(token_auth.current_user()).role != 1:
+                org_type = OrganisationService.get_organisation_by_id(
+                    organisation_id
+                ).type
+                organisation_dto.type = OrganisationType(org_type).name
             organisation_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")

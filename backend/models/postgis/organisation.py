@@ -64,6 +64,7 @@ class Organisation(db.Model):
         new_org.logo = new_organisation_dto.logo
         new_org.description = new_organisation_dto.description
         new_org.url = new_organisation_dto.url
+        new_org.type = OrganisationType[new_organisation_dto.type].value
 
         for manager in new_organisation_dto.managers:
             user = User.get_by_username(manager)
@@ -80,6 +81,8 @@ class Organisation(db.Model):
         """ Updates Organisation from DTO """
 
         for attr, value in organisation_dto.items():
+            if attr == "type" and value is not None:
+                value = OrganisationType[organisation_dto.type].value
             if attr == "managers":
                 continue
 

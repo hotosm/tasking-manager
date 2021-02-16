@@ -148,6 +148,26 @@ export default defineMessages({
     id: 'management.organisations',
     defaultMessage: 'Organizations',
   },
+  type: {
+    id: 'management.organisations.type',
+    defaultMessage: 'Type',
+  },
+  selectType: {
+    id: 'management.organisations.type.select',
+    defaultMessage: 'Select type',
+  },
+  free: {
+    id: 'management.organisations.type.free',
+    defaultMessage: 'Free',
+  },
+  discounted: {
+    id: 'management.organisations.type.discounted',
+    defaultMessage: 'Discounted',
+  },
+  defaultFee: {
+    id: 'management.organisations.type.defaultFee',
+    defaultMessage: 'Default fee',
+  },
   retry: {
     id: 'management.organisations.stats.retry',
     defaultMessage: 'Try again',

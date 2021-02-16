@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { Form, Field } from 'react-final-form';
+import Select from 'react-select';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
@@ -132,9 +133,19 @@ export function OrganisationForm(props) {
 
 export function OrgInformation(props) {
   const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const [uploadError, uploading, uploadImg] = useUploadImage();
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
+  const typeOptions = [
+    { label: <FormattedMessage {...messages.free} />, value: 'FREE' },
+    { label: <FormattedMessage {...messages.discounted} />, value: 'DISCOUNTED' },
+    { label: <FormattedMessage {...messages.defaultFee} />, value: 'FULL_FEE' },
+  ];
+  const getTypePlaceholder = (value) => {
+    const selected = typeOptions.filter((type) => value === type.value);
+    return selected.length ? selected[0].label : <FormattedMessage {...messages.selectType} />;
+  };
 
   return (
     <>
@@ -156,6 +167,25 @@ export function OrgInformation(props) {
         </label>
         <Field name="description" component="textarea" className={fieldClasses} />
       </div>
+      {userDetails.role === 'ADMIN' && ( // only admin users can edit the org type
+        <div className="cf">
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.type} />
+          </label>
+          <Field name="type" className={fieldClasses} required>
+            {(props) => (
+              <Select
+                classNamePrefix="react-select"
+                isClearable={false}
+                options={typeOptions}
+                placeholder={getTypePlaceholder(props.input.value)}
+                onChange={(value) => props.input.onChange(value.value)}
+                className="z-5"
+              />
+            )}
+          </Field>
+        </div>
+      )}
       <div className="cf">
         <label className={labelClasses}>
           <FormattedMessage {...messages.image} />

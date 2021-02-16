@@ -16,7 +16,7 @@ def is_known_organisation_type(value):
     """ Validates organisation subscription type string """
     try:
         OrganisationType[value.upper()]
-    except KeyError:
+    except (AttributeError, KeyError):
         raise ValidationError(
             f"Unknown organisationType: {value}. Valid values are {OrganisationType.FREE.name}, "
             f"{OrganisationType.DISCOUNTED.name}, {OrganisationType.FULL_FEE.name}"
@@ -54,7 +54,7 @@ class OrganisationDTO(Model):
     projects = ListType(StringType, serialize_when_none=False)
     teams = ListType(ModelType(OrganisationTeamsDTO))
     campaigns = ListType(ListType(StringType))
-    type = IntType(validators=[is_known_organisation_type])
+    type = StringType(validators=[is_known_organisation_type])
 
 
 class ListOrganisationsDTO(Model):
@@ -74,6 +74,7 @@ class NewOrganisationDTO(Model):
     logo = StringType()
     description = StringType()
     url = StringType()
+    type = StringType(validators=[is_known_organisation_type])
 
 
 class UpdateOrganisationDTO(OrganisationDTO):
@@ -84,3 +85,4 @@ class UpdateOrganisationDTO(OrganisationDTO):
     logo = StringType()
     description = StringType()
     url = StringType()
+    type = StringType(validators=[is_known_organisation_type])
