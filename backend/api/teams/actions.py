@@ -239,7 +239,7 @@ class TeamsActionsLeaveAPI(Resource):
 
 class TeamsActionsMessageMembersAPI(Resource):
     @token_auth.login_required
-    def post(self):
+    def post(self, team_id):
         """
         Message all team members
         ---
@@ -286,7 +286,6 @@ class TeamsActionsMessageMembersAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            team_id = request.view_args["team_id"]
             message_dto = MessageDTO(request.get_json())
             # Validate if team is present
             try:
