@@ -1,6 +1,6 @@
 from cachetools import TTLCache, cached
 from datetime import date, timedelta
-from sqlalchemy import func, desc, cast, extract, or_, and_, tuple_
+from sqlalchemy import func, desc, cast, extract, or_, tuple_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
 
@@ -561,12 +561,6 @@ class StatsService:
                     TaskHistory.action_text == "BADIMAGERY",
                 ),
             )
-            .filter(
-                and_(
-                    func.DATE(TaskHistory.action_date) >= start_date,
-                    func.DATE(TaskHistory.action_date) <= end_date,
-                )
-            )
             .order_by(
                 TaskHistory.project_id,
                 TaskHistory.task_id,
@@ -624,7 +618,7 @@ class StatsService:
                 query.c.action_text,
                 func.count(query.c.action_text).label("cnt"),
             )
-            .outerjoin(query, date_query.c.d_day == query.c.day)
+            .outerjoin(date_query, date_query.c.d_day == query.c.day)
             .group_by(date_query.c.d_day, query.c.action_text)
             .order_by(date_query.c.d_day)
         ).subquery()
