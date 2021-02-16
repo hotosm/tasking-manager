@@ -237,6 +237,7 @@ class OrganisationService:
         if organisation_dto.managers and len(organisation_dto.managers) == 0:
             raise OrganisationServiceError("Must have at least one admin")
 
+        if organisation_dto.managers and len(organisation_dto.managers) > 0:
             managers = []
             for user in organisation_dto.managers:
                 try:
