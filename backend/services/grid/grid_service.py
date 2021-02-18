@@ -4,8 +4,10 @@ from shapely.geometry import MultiPolygon, mapping
 from shapely.ops import cascaded_union
 import shapely.geometry
 from flask import current_app
+
+from backend import db
 from backend.models.dtos.grid_dto import GridDTO
-from backend.models.postgis.utils import InvalidGeoJson
+from backend.models.postgis.utils import InvalidGeoJson, ST_Area, ST_GeogFromWKB
 
 
 class GridServiceError(Exception):
@@ -54,7 +56,15 @@ class GridService:
                 clipped_feature = GridService._update_feature(
                     clip_to_aoi, feature, intersection
                 )
-                intersecting_features.append(clipped_feature)
+                area = db.engine.execute(
+                    ST_Area(
+                        ST_GeogFromWKB(
+                            shapely.geometry.shape(clipped_feature["geometry"]).wkb
+                        )
+                    )
+                ).scalar()
+                if area >= 2000:
+                    intersecting_features.append(clipped_feature)
         return geojson.FeatureCollection(intersecting_features)
 
     @staticmethod
@@ -78,7 +88,11 @@ class GridService:
                 feature.geometry = shapely.ops.transform(
                     GridService._to_2d, feature.geometry
                 )
-
+            area = db.engine.execute(
+                ST_Area(ST_GeogFromWKB(feature.geometry.wkb))
+            ).scalar()
+            if area < 2000:
+                continue
             feature.geometry = shapely.geometry.mapping(feature.geometry)
 
             # set default properties
