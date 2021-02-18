@@ -110,7 +110,7 @@
     "jest-canvas-mock": "^2.3.1",
     "msw": "^0.26.2",
     "prettier": "^2.2.1",
-    "react-select-event": "^5.1.0",
+    "react-select-event": "^5.2.0",
     "react-test-renderer": "^17.0.1",
     "source-map-explorer": "^2.5.2"
   },
