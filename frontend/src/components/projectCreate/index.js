@@ -206,7 +206,7 @@ const ProjectCreate = (props) => {
     if (mapObj.map.getSource(layer_name)) {
       mapObj.map.removeSource(layer_name);
     }
-    updateMetadata({ ...metadata, area: 0, geom: null });
+    updateMetadata({ ...metadata, area: 0, geom: null, arbitraryTasks: false });
   };
 
   const drawHandler = () => {
