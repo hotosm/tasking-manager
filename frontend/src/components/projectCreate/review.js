@@ -56,7 +56,10 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
         <FormattedMessage {...messages.step4} />
       </h3>
       <p className="pt2">
-        <FormattedMessage {...messages.reviewTaskNumberMessage} values={{ n: metadata.tasksNo }} />
+        <FormattedMessage
+          {...messages.reviewTaskNumberMessage}
+          values={{ n: metadata.tasksNumber }}
+        />
       </p>
 
       {cloneProjectData.name === null ? (

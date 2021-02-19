@@ -8,10 +8,14 @@ const clearParamsStep = (props) => {
   switch (props.index) {
     case 2: //clear Tasks
       props.mapObj.map.removeLayer('grid');
-      props.updateMetadata({ ...props.metadata, tasksNo: 0 });
+      props.updateMetadata({ ...props.metadata, tasksNumber: 0 });
       break;
     case 3:
-      props.updateMetadata({ ...props.metadata, taskGrid: props.metadata.tempTaskGrid });
+      props.updateMetadata({
+        ...props.metadata,
+        taskGrid: props.metadata.tempTaskGrid,
+        tasksNumber: props.metadata.tempTaskGrid.features.length,
+      });
       break;
     default:
       break;
@@ -44,7 +48,7 @@ const NavButtons = (props) => {
           addLayer('aoi', props.metadata.geom, props.mapObj.map);
           props.updateMetadata({
             ...props.metadata,
-            tasksNo: props.metadata.taskGrid.features.length,
+            tasksNumber: props.metadata.taskGrid.features.length,
           });
         }
 
