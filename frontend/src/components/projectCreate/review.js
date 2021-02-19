@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { navigate } from '@reach/router';
+import truncate from '@turf/truncate';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
@@ -27,10 +28,10 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
 
       store.dispatch(createProject(metadata));
       let projectParams = {
-        areaOfInterest: metadata.geom,
+        areaOfInterest: truncate(metadata.geom, { precision: 6 }),
         projectName: metadata.projectName,
         organisation: metadata.organisation || cloneProjectData.organisation,
-        tasks: metadata.taskGrid,
+        tasks: truncate(metadata.taskGrid, { precision: 6 }),
         arbitraryTasks: metadata.arbitraryTasks,
       };
 
