@@ -136,7 +136,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       updateMetadata({
         ...metadata,
         taskGrid: featureCollection(newTaskGrid),
-        tasksNo: featureCollection(newTaskGrid).features.length,
+        tasksNumber: featureCollection(newTaskGrid).features.length,
       });
     },
     [updateMetadata, metadata, mapObj.map],
@@ -182,7 +182,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       updateMetadata({
         ...metadata,
         taskGrid: featureCollection(newTaskGrid),
-        tasksNo: featureCollection(newTaskGrid).features.length,
+        tasksNumber: featureCollection(newTaskGrid).features.length,
       });
       setSplitMode(null);
     });
@@ -202,7 +202,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
       zoomLevel: zoomLevel,
       tempTaskGrid: squareGrid,
       taskGrid: squareGrid,
-      tasksNo: squareGrid.features.length,
+      tasksNumber: squareGrid.features.length,
     });
   }, [metadata, updateMetadata]);
 
@@ -215,7 +215,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         zoomLevel: zoomLevel,
         tempTaskGrid: squareGrid,
         taskGrid: squareGrid,
-        tasksNo: squareGrid.features.length,
+        tasksNumber: squareGrid.features.length,
       });
     }
   }, [metadata, updateMetadata]);
@@ -290,7 +290,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
         <p className="f6 blue-grey lh-title mt3 mb2">
           <FormattedMessage
             {...messages.taskNumberMessage}
-            values={{ n: <strong>{metadata.tasksNo || 0}</strong> }}
+            values={{ n: <strong>{metadata.tasksNumber || 0}</strong> }}
           />
         </p>
         <p className="f6 blue-grey lh-title mt1">
