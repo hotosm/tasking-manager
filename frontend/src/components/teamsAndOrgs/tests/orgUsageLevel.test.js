@@ -91,6 +91,7 @@ describe('OrganisationUsageLevel', () => {
     expect(screen.getByText('Actions to reach the next tier')).toBeInTheDocument();
     expect(screen.getByText(`Estimated tier by the end of ${currentYear}`)).toBeInTheDocument();
     expect(screen.getByText(`Estimated cost by the end of ${currentYear}`)).toBeInTheDocument();
+    expect(screen.queryByText('(discounted)')).not.toBeInTheDocument();
   });
 
   it('with level 2', () => {
@@ -230,5 +231,28 @@ describe('OrganisationUsageLevel', () => {
     expect(
       screen.getByText(/It is the highest level an organization can be on Tasking Manager!/),
     ).toBeInTheDocument();
+  });
+
+  it('shows the discounted cost for a discounted level 1 (tier) organisation moving to level 2', () => {
+    const { container } = render(
+      <ReduxIntlProviders>
+        <OrganisationUsageLevel
+          completedActions={1100}
+          orgName="My organization"
+          type="DISCOUNTED"
+          userIsOrgManager={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(container.querySelector('h1').className).toBe(
+      'relative f1 tc w-100 dib ttu red barlow-condensed ma0 pv2 mt3',
+    );
+    expect(within(container.querySelector('h1')).getByText('Low')).toBeTruthy();
+    expect(screen.getAllByRole('progressbar')[1].style.width).toBe('11%');
+    expect(screen.getByText('8,900')).toBeInTheDocument();
+    expect(screen.getByText('Actions to reach the next tier')).toBeInTheDocument();
+    expect(screen.getByText(`Estimated tier by the end of ${currentYear}`)).toBeInTheDocument();
+    expect(screen.getByText(`Estimated cost by the end of ${currentYear}`)).toBeInTheDocument();
+    expect(screen.getByText('(discounted)')).toBeInTheDocument();
   });
 });

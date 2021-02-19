@@ -32,3 +32,19 @@ export function useGetLevel(actions) {
   }, [actions]);
   return currentLevel;
 }
+
+export function usePredictLevel(actions, type) {
+  const newLevel = useGetLevel(actions);
+  const [predictedLevel, setPredictedLevel] = useState(newLevel);
+
+  useEffect(() => {
+    if (type === 'DISCOUNTED') {
+      const cost =
+        newLevel.level > 1 ? levels.filter((item) => item.level === newLevel.level - 1)[0].fee : 0;
+      setPredictedLevel({ ...newLevel, fee: cost });
+    } else {
+      setPredictedLevel(newLevel);
+    }
+  }, [type, newLevel]);
+  return predictedLevel;
+}
