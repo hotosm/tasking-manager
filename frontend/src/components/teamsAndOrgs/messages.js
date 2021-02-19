@@ -237,6 +237,10 @@ export default defineMessages({
     id: 'management.organisations.stats.cost.estimation',
     defaultMessage: 'Estimated cost by the end of {year}',
   },
+  discountedLabel: {
+    id: 'management.organisations.stats.cost.estimation.discounted',
+    defaultMessage: 'discounted',
+  },
   actionsToNextLevel: {
     id: 'management.organisations.stats.next_level.actions',
     defaultMessage: 'Actions to reach the level {n}',
