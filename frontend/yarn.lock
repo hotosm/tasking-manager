@@ -2254,6 +2254,13 @@
   dependencies:
     tslib "^2.0.1"
 
+"@formatjs/ecma402-abstract@1.5.3":
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.5.3.tgz#76ec8d3d984a8c0519e476d0f6dee2f4c10be02f"
+  integrity sha512-PI+C4JhJV1WFINrTbX0jHlWPOQOAsg4jmGWp23cbIb+q7+nALBlpElcik4XhsIjbJstmUGR8r83j8vvgNjO90g==
+  dependencies:
+    tslib "^2.0.1"
+
 "@formatjs/intl-datetimeformat@3.2.7":
   version "3.2.7"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-datetimeformat/-/intl-datetimeformat-3.2.7.tgz#2cd32add6d79242394c3f5057b8b6e385f8665b6"
@@ -2304,12 +2311,20 @@
     "@formatjs/ecma402-abstract" "1.5.2"
     tslib "^2.0.1"
 
-"@formatjs/intl-relativetimeformat@8.0.4", "@formatjs/intl-relativetimeformat@^8.0.4":
+"@formatjs/intl-relativetimeformat@8.0.4":
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-8.0.4.tgz#eca86236320802c7c7d0f7500573ebab679d607d"
   integrity sha512-MUxsXa/cukBa4+8waUS7rQcVz0CKt7UufU9nXcUGh1FR85urqh42dz+3bM2klg51P5Mhove2mecQGeFwOhFYBQ==
   dependencies:
     "@formatjs/ecma402-abstract" "1.5.2"
+    tslib "^2.0.1"
+
+"@formatjs/intl-relativetimeformat@^8.0.5":
+  version "8.0.5"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-8.0.5.tgz#45bebfc0055e8bb0fe2bf292be48e5336ff916b9"
+  integrity sha512-061+cSR0/utsAf3fdcr787ck7KAgrtbeq06ENdR4A7x6aYq1CqchoJ8e7WOtqz0oSrj6Zmoaca1b/pDr+hM8/w==
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.5.3"
     tslib "^2.0.1"
 
 "@formatjs/intl-unified-numberformat@^3.2.0":
