@@ -132,7 +132,7 @@ export const useTaskContributionAPI = (
           backendToQueryConversion,
         );
         const result = await axios({
-          url: `${API_URL}users/${user_id}/tasks/`,
+          url: `${API_URL}users/${user_id}/tasks/?sort_by=-action_date`,
           method: 'get',
           params: remappedParams,
           headers: { Authorization: `Token ${token}` },
