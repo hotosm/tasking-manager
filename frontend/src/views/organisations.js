@@ -148,7 +148,6 @@ export function CreateOrganisation() {
 }
 
 export function EditOrganisation(props) {
-  useSetTitleTag('Edit organization');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [initManagers, setInitManagers] = useState(false);
@@ -159,6 +158,7 @@ export function EditOrganisation(props) {
     `projects/?organisationId=${props.id}&omitMapResults=true`,
     props.id,
   );
+  useSetTitleTag(`Edit ${organisation.name}`);
 
   useEffect(() => {
     if (!initManagers && organisation && organisation.managers) {

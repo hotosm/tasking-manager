@@ -106,10 +106,10 @@ export const ListInterests = () => {
 };
 
 export const EditInterest = (props) => {
-  useSetTitleTag('Edit category');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, interest] = useFetch(`interests/${props.id}/`);
+  useSetTitleTag(`Edit ${interest.name}`);
 
   const [projectsError, projectsLoading, projects] = useFetch(
     `projects/?interests=${props.id}&omitMapResults=true`,
