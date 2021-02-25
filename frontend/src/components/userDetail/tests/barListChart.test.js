@@ -12,7 +12,8 @@ test('BarChartItem with link address', () => {
         name={'Test project'}
         link={'/projects/1/'}
         percentValue={0.54}
-        tasksNumber={10}
+        number={10}
+        numberUnit={'tasks'}
       />
     </ReduxIntlProviders>,
   );
@@ -29,11 +30,11 @@ test('BarChartItem with link address', () => {
 test('BarChartItem without link address', () => {
   const { container } = render(
     <ReduxIntlProviders>
-      <BarChartItem name={'Test project'} percentValue={0.65} tasksNumber={23} />
+      <BarChartItem name={'Test project'} percentValue={0.65} number={23} numberUnit={'tasks'} />
     </ReduxIntlProviders>,
   );
 
-  expect(screen.getByText('Test project').className).toBe('ma0 f7 b');
+  expect(screen.getByText('Test project').className).toBe('di ma0 f7 b fl');
   expect(container.querySelector('a')).not.toBeInTheDocument();
   const progressBar = container.querySelector('div.bg-red.br-pill.absolute');
   expect(progressBar.style.height).toBe('0.5em');

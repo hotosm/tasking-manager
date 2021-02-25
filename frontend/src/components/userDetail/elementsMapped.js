@@ -1,7 +1,7 @@
 import React from 'react';
 import humanizeDuration from 'humanize-duration';
 import ReactTooltip from 'react-tooltip';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, FormattedNumber } from 'react-intl';
 
 import messages from './messages';
 import {
@@ -50,18 +50,16 @@ const getFieldData = (field) => {
   }
 };
 
-const Element = ({ field, value }) => {
+export const Element = ({ field, value }) => {
   const elements = getFieldData(field);
   return (
     <div className={`w-20-ns w-100 ph2-ns fl`}>
       <div
-        className={`cf shadow-4 pt3 pb3 ph2 ${
-          field === 'time' ? 'bg-red white' : 'bg-white blue-dark'
-        }`}
+        className={`cf shadow-4 pt3 pb3 ph2 ${field === 'time' ? 'bg-red white' : 'bg-white red'}`}
       >
         <div className="w-30 w-100-m fl tc">{elements.icon}</div>
         <StatsCardContent
-          value={field === 'time' ? value : Math.trunc(value)}
+          value={field === 'time' ? value : <FormattedNumber value={Math.trunc(value)} />}
           label={elements.message}
           className="w-70 w-100-m pt3-m mb1 fl tc"
           invertColors={field === 'time'}
@@ -91,9 +89,7 @@ export const TaskStats = ({ userStats, username }) => {
             </div>
             <div className="cf w-100 pt4">
               <div className="cf w-33 fl tc">
-                <p className="ma0 mb2 barlow-condensed f2 b red">
-                  {userStats.tasksMapped}
-                </p>
+                <p className="ma0 mb2 barlow-condensed f2 b red">{userStats.tasksMapped}</p>
                 <p className="mb3 ttl">
                   <FormattedMessage {...messages.tasks} />
                 </p>
@@ -139,21 +135,17 @@ export const TaskStats = ({ userStats, username }) => {
                   {userStats.tasksValidated + userStats.tasksInvalidated || 0}
                 </p>
                 <p className="mb3 ttl">
-                  <FormattedMessage {...messages.tasks}  />
+                  <FormattedMessage {...messages.tasks} />
                 </p>
               </div>
               <div className="cf w-33 fl tc">
-                <p className="ma0 mb2 barlow-condensed f2 b red">
-                  {userStats.tasksValidated}
-                </p>
+                <p className="ma0 mb2 barlow-condensed f2 b red">{userStats.tasksValidated}</p>
                 <p className="mb3 ttl">
                   <FormattedMessage {...messages.finished} />
                 </p>
               </div>
               <div className="cf w-33 fl tc">
-                <p className="ma0 mb2 barlow-condensed f2 b red">
-                  {userStats.tasksInvalidated}
-                </p>
+                <p className="ma0 mb2 barlow-condensed f2 b red">{userStats.tasksInvalidated}</p>
                 <p className="mb3 ttl">
                   <FormattedMessage {...messages.invalidated} />
                 </p>
@@ -197,7 +189,7 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
         <Element field={'buildings'} value={osmStats.total_building_count_add || 0} />
         <Element field={'road'} value={osmStats.total_road_km_add || 0} />
         <Element field={'poi'} value={osmStats.total_poi_count_add || 0} />
-        <Element field={'waterways'} value={osmStats.total_waterway_count_add || 0} />
+        <Element field={'waterways'} value={osmStats.total_waterway_km_add || 0} />
       </div>
       <div className="cf w-100 relative tr pt3 pr3">
         <FormattedMessage {...messages.delayPopup}>

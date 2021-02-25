@@ -381,4 +381,26 @@ export default defineMessages({
     id: 'management.organisation.teams.no_found',
     defaultMessage: 'No teams found.',
   },
+  newUsersOnLastMonth: {
+    id: 'management.stats.new_users.month',
+    defaultMessage:
+      '{number, plural, one {# user registered on last month} other {# users registered on last month}}',
+  },
+  newUsersOnLastWeek: {
+    id: 'management.stats.new_users.week',
+    defaultMessage:
+      '{number, plural, one {# user registered on last week} other {# users registered on last week}}',
+  },
+  activeNewUsers: {
+    id: 'management.stats.new_users.active',
+    defaultMessage: 'Mapped at least one task',
+  },
+  emailVerified: {
+    id: 'management.stats.new_users.email_verified',
+    defaultMessage: 'Confirmed email address',
+  },
+  statistics: {
+    id: 'management.stats.title',
+    defaultMessage: 'Statistics',
+  },
 });
