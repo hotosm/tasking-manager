@@ -38,7 +38,7 @@ export default defineMessages({
   },
   waterwaysMapped: {
     id: 'users.detail.waterwaysMapped',
-    defaultMessage: 'Waterways mapped',
+    defaultMessage: 'Km waterways mapped',
   },
   userMapped: {
     id: 'users.detail.tasksMapped',

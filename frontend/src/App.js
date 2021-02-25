@@ -37,6 +37,7 @@ import { MyTeams, ManageTeams, CreateTeam, EditTeam, TeamDetail } from './views/
 import { ListCampaigns, CreateCampaign, EditCampaign } from './views/campaigns';
 import { ListInterests, CreateInterest, EditInterest } from './views/interests';
 import { ListLicenses, CreateLicense, EditLicense } from './views/licenses';
+import { Stats } from './views/stats';
 import { UsersList } from './views/users';
 import { NotFound } from './views/notFound';
 import { SelectTask } from './views/taskSelection';
@@ -108,6 +109,7 @@ let App = (props) => {
                   <Welcome path="welcome" />
                   <Settings path="settings" />
                   <EmailVerification path="verify-email" />
+                  <Stats path="stats/" />
                   <ManagementSection path="manage">
                     <ManagementPageIndex path="/" />
                     <ListOrganisations path="organisations/" />

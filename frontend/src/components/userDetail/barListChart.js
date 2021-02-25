@@ -13,10 +13,10 @@ const ProgressBar = ({ percent }) => (
   </div>
 );
 
-export const BarChartItem = ({ name, link, percentValue, tasksNumber }: Object) => (
-  <li className="w-100 flex pv3">
-    <div className="w-100 mr4">
-      <p className="ma0 f7 b">
+export const BarChartItem = ({ name, link, percentValue, number, numberUnit }: Object) => (
+  <li className="w-100 cf list pv3">
+    <div className="w-100 cf mr4">
+      <div className="di ma0 f7 b fl">
         {link ? (
           <Link className="link blue-dark" to={link}>
             {name}
@@ -24,16 +24,14 @@ export const BarChartItem = ({ name, link, percentValue, tasksNumber }: Object) 
         ) : (
           name
         )}
-      </p>
-      <ProgressBar percent={percentValue} />
+      </div>
+      <div className="di ma0 f7 fr">
+        <span className="b mr1">{number}</span>
+        {numberUnit && <span className="blue-grey">{numberUnit}</span>}
+      </div>
     </div>
-    <div className="w-30 tl self-end">
-      <p className="ma0 f7">
-        <span className="b mr1">{tasksNumber}</span>
-        <span className="blue-grey">
-          <FormattedMessage {...messages.tasks} />
-        </span>
-      </p>
+    <div className="w-100 cf">
+      <ProgressBar percent={percentValue} />
     </div>
   </li>
 );
@@ -47,7 +45,8 @@ export const BarListChart = ({ data, valueField, nameField, linkBase, linkField 
           name={p[nameField]}
           link={linkBase ? `${linkBase}${p[linkField]}` : null}
           percentValue={p.percent}
-          tasksNumber={p[valueField]}
+          number={p[valueField]}
+          numberUnit={<FormattedMessage {...messages.tasks} />}
         />
       ))}
     </ol>
