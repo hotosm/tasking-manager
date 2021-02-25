@@ -77,10 +77,22 @@ describe('usePredictLevel hook', () => {
     expect(predictedLevel).toEqual({ level: 2, tier: 'low', minActions: 1000, fee: 0 });
   });
 
+  it('returns level 2 object for a full fee org with 1,200 predicted actions', () => {
+    const { result } = renderHook(() => usePredictLevel(1200, 'FULL_FEE'));
+    const predictedLevel = result.current;
+    expect(predictedLevel).toEqual({ level: 2, tier: 'low', minActions: 1000, fee: 2500 });
+  });
+
   it('returns level 3 object with a 2500 fee for a discounted org with 14,000 predicted actions', () => {
     const { result } = renderHook(() => usePredictLevel(14000, 'DISCOUNTED'));
     const predictedLevel = result.current;
     expect(predictedLevel).toEqual({ level: 3, tier: 'medium', minActions: 10000, fee: 2500 });
+  });
+
+  it('returns level 3 object for a full fee org with 14,000 predicted actions', () => {
+    const { result } = renderHook(() => usePredictLevel(14000, 'FULL_FEE'));
+    const predictedLevel = result.current;
+    expect(predictedLevel).toEqual({ level: 3, tier: 'medium', minActions: 10000, fee: 7500 });
   });
 
   it('returns level 4 object with a 7500 fee for a discounted org with 30,000 predicted actions', () => {
@@ -89,13 +101,19 @@ describe('usePredictLevel hook', () => {
     expect(predictedLevel).toEqual({ level: 4, tier: 'high', minActions: 25000, fee: 7500 });
   });
 
+  it('returns level 4 object for a full fee org with 30,000 predicted actions', () => {
+    const { result } = renderHook(() => usePredictLevel(30000, 'FULL_FEE'));
+    const predictedLevel = result.current;
+    expect(predictedLevel).toEqual({ level: 4, tier: 'high', minActions: 25000, fee: 20000 });
+  });
+
   it('returns level 5 object with a 20000 fee for a discounted org with 65000 predicted actions', () => {
     const { result } = renderHook(() => usePredictLevel(65000, 'DISCOUNTED'));
     const predictedLevel = result.current;
     expect(predictedLevel).toEqual({ level: 5, tier: 'veryHigh', minActions: 50000, fee: 20000 });
   });
 
-  it('returns level 5 object with a 35000 fee for a non-discounted org with 65000 predicted actions', () => {
+  it('returns level 5 object for a full fee org with 65000 predicted actions', () => {
     const { result } = renderHook(() => usePredictLevel(65000, 'FULL_FEE'));
     const predictedLevel = result.current;
     expect(predictedLevel).toEqual({ level: 5, tier: 'veryHigh', minActions: 50000, fee: 35000 });

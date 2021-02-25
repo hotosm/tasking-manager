@@ -103,9 +103,9 @@ export function OrganisationUsageLevel({ completedActions, orgName, type, userIs
                         currency="USD"
                       />
                       {showDiscountLabel ? (
-                        <span className="f4">
+                        <span className="f4 ttl">
                           {' '}
-                          (<FormattedMessage {...messages.discountedLabel} />)
+                          (<FormattedMessage {...messages.discounted} />)
                         </span>
                       ) : (
                         ''
