@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
 import ReactPlaceholder from 'react-placeholder';
 import { Link, redirectTo } from '@reach/router';
@@ -17,6 +18,7 @@ export const EditLicense = (props) => {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, license] = useFetch(`licenses/${props.id}/`);
+  useSetTitleTag(`Edit ${license.name}`);
 
   const updateLicense = (payload) => {
     pushToLocalJSONAPI(`licenses/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
@@ -43,6 +45,7 @@ export const EditLicense = (props) => {
 };
 
 export const ListLicenses = () => {
+  useSetTitleTag('Manage licenses');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   // TO DO: filter teams of current user
   const [error, loading, licenses] = useFetch(`licenses/`);
@@ -70,6 +73,7 @@ export const ListLicenses = () => {
 };
 
 export const CreateLicense = () => {
+  useSetTitleTag('Create new license');
   const token = useSelector((state) => state.auth.get('token'));
   const [newLicenseId, setNewLicenseId] = useState(null);
 

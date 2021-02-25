@@ -224,7 +224,6 @@ export function CreateTeam() {
 }
 
 export function EditTeam(props) {
-  useSetTitleTag('Edit team');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, team] = useFetch(`teams/${props.id}/`);
@@ -241,6 +240,7 @@ export function EditTeam(props) {
       setInitManagers(true);
     }
   }, [team, managers, initManagers]);
+  useSetTitleTag(`Edit ${team.name}`);
 
   const addManagers = (values) => {
     const newValues = values
