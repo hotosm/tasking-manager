@@ -13,7 +13,7 @@ RUN apt-get update \
 RUN pip install --upgrade pip
 
 ARG branch=develop
-RUN git clone --depth=1 git://github.com/hotosm/tasking-manager.git \
+RUN git clone --depth=1 https://gitlab.com/gokaart/tasking-manager.git \
 	--branch $branch /usr/src/app
 
 ## API/SERVER CONFIGURATION
@@ -34,4 +34,4 @@ RUN cd client && npm link gulp && \
 	npm install && gulp build
 
 EXPOSE 5000
-CMD ["python", "manage.py", "runserver", "-h", "0.0.0.0"]
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "--worker-class", "gevent", "--workers", "2", "--threads", "2", "manage:application"]

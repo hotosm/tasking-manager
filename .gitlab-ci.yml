@@ -1,0 +1,81 @@
+image_updates:
+  image: docker:20.10.3
+  services:
+    - docker:20.10.3-dind
+  before_script:
+    - docker info
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+  tags:
+    - docker
+  script:
+    - docker pull ${CI_REGISTRY_IMAGE}/tasking-manager || true
+    - docker build --build-arg branch=${CI_COMMIT_REF_NAME} --cache-from ${CI_REGISTRY_IMAGE}/tasking-manager -t ${CI_REGISTRY_IMAGE}/tasking-manager:${CI_COMMIT_REF_NAME} devops/docker/tasking-manager
+    - docker push ${CI_REGISTRY_IMAGE}/tasking-manager:${CI_COMMIT_REF_NAME}
+    - |
+      if [[ ${CI_COMMIT_REF_PROTECTED} ]]; then
+        docker pull ${CI_REGISTRY_IMAGE}/ci || true
+        docker pull ${CI_REGISTRY_IMAGE}/buildah || true
+        docker build --cache-from ${CI_REGISTRY_IMAGE}/ci -t ${CI_REGISTRY_IMAGE}/ci devops/docker/ci
+        docker build --cache-from ${CI_REGISTRY_IMAGE}/buildah -t ${CI_REGISTRY_IMAGE}/buildah devops/docker/buildah
+        docker tag ${CI_REGISTRY_IMAGE}/tasking-manager:${CI_COMMIT_REF_NAME} ${CI_REGISTRY_IMAGE}/tasking-manager:latest
+        docker push ${CI_REGISTRY_IMAGE}/tasking-manager:latest
+        docker push ${CI_REGISTRY_IMAGE}/ci:latest
+        docker push ${CI_REGISTRY_IMAGE}/buildah:latest
+      fi
+  interruptible: true
+
+
+
+build:
+  image: registry.gitlab.com/gokaart/tasking-manager/ci:latest
+  cache:
+    key: "cached-dependencies"
+    paths:
+      - client/node_modules
+      - env
+  script:
+    - |
+      echo "Install requirements"
+      # Install NPM packages and build client from gulpfile
+      cd $CI_PROJECT_DIR/client
+      npm install
+      ./node_modules/.bin/gulp build
+      cd $CI_PROJECT_DIR
+      # Install Python dependencies
+      pip install virtualenv
+      virtualenv env
+      $CI_PROJECT_DIR/env/bin/pip install --upgrade pip
+      $CI_PROJECT_DIR/env/bin/pip install -r requirements.txt
+      # Install python gdal -- it MUST match the version of gdal installed
+      $CI_PROJECT_DIR/env/bin/pip install gdal==$(gdalinfo --version | awk '{print $2}' | awk -F, '{print $1}')
+    - |
+      echo "Run JS Unit tests"
+      # JS Unit Tests
+      cd $CI_PROJECT_DIR/tests/client
+      mkdir $CI_PROJECT_DIR/tests/client/junit
+      export OPENSSL_CONF=/etc/ssl/
+      JUNIT_REPORT_PATH="${CI_PROJECT_DIR}/tests/client/junit" \
+        JUNIT_REPORT_NAME="test-results.xml"
+        $CI_PROJECT_DIR/client/node_modules/.bin/karma start ./karma.conf.js \
+        --single-run --browsers FirefoxHeadless,ChromeHeadless --reporters junit
+    - |
+      echo "Run Python Tests"
+      # Run Python tests
+      cd $CI_PROJECT_DIR
+      mkdir $CI_PROJECT_DIR/tests/server/results
+      find ./tests/server -name "test*.py" -exec chmod -x {} \;
+      env/bin/nosetests ./tests/server --with-xunit \
+        --xunit-file $CI_PROJECT_DIR/tests/server/results/unitresults.xml \
+        --with-coverage --cover-erase --cover-package=./server
+      env/bin/coverage xml -o $CI_PROJECT_DIR/tests/server/results/coverage.xml
+  interruptible: true
+  artifacts:
+    paths:
+      - test/client/junit
+      - test/server/results/
+    reports:
+      junit:
+        - tests/client/junit/test-results.xml
+        - tests/server/results/unitresults.xml
+      cobertura:
+        - tests/server/results/coverage.xml
