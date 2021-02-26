@@ -21,6 +21,7 @@ export function TaskCard({
   autoUnlockSeconds,
   lastUpdated,
   lastUpdatedBy,
+  numberOfComments,
 }: Object) {
   const [isHovered, setHovered] = useState(false);
   const taskLink = `/projects/${projectId}/tasks?search=${taskId}`;
@@ -79,6 +80,11 @@ export function TaskCard({
             </div>
           </div>
           <div className="w-third-ns w-100 fr">
+            {numberOfComments ? (
+              <span className="w-10 tc fl mv2 pa1 br3 bg-red white">{numberOfComments}</span>
+            ) : (
+              ''
+            )}
             <Popup
               trigger={
                 <ListIcon className="pointer fr h1 w1 mv1 pv2 v-mid pr3 blue-light hover-blue-grey" />

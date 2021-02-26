@@ -90,6 +90,7 @@ class TaskDTO(Model):
     last_updated = UTCDateTimeType(
         serialized_name="lastUpdated", serialize_when_none=False
     )
+    comments_number = IntType(serialized_name="numberOfComments")
 
 
 class TaskDTOs(Model):
