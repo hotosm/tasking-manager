@@ -2715,10 +2715,10 @@
   resolved "https://registry.yarnpkg.com/@mapbox/jsonlint-lines-primitives/-/jsonlint-lines-primitives-2.0.2.tgz#ce56e539f83552b58d10d672ea4d6fc9adc7b234"
   integrity sha1-zlblOfg1UrWNENZy6k1vya3HsjQ=
 
-"@mapbox/mapbox-gl-draw@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-draw/-/mapbox-gl-draw-1.2.1.tgz#a56828bcbe7ada80ab6de331ab590cdf8005ce5f"
-  integrity sha512-ct6gmOrjlSTbwmEKuIlGaitQDDaI4rImo4mNu2vyuMGMQi30WvXu2aiQ5Gm2OVc176/uFB/QJI3NfDddWrzMEg==
+"@mapbox/mapbox-gl-draw@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-draw/-/mapbox-gl-draw-1.2.2.tgz#1293db9912464128daa58335fc989defa9f90eda"
+  integrity sha512-CmMSe6siErQD/LOPoF6DNBsSvIEfLEFvSjocBcXbBLgbnevhWjwQd1BJ/DYt1y9bGlPiSjowQ4s4JBg9y2L8Gw==
   dependencies:
     "@mapbox/geojson-area" "^0.2.1"
     "@mapbox/geojson-extent" "^0.3.2"
