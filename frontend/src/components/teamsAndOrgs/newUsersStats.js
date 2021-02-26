@@ -10,8 +10,8 @@ import { useFetch } from '../../hooks/UseFetch';
 export const NewUsersStats = ({ datePeriod }) => {
   const queryParam = useDateRangeQueryParams(datePeriod);
   const [errorStats, loadingStats, stats] = useFetch(`users/statistics/?${queryParam}`, queryParam);
-  const activeUsers = stats.contributed / stats.total;
-  const emailVerifiedUsers = stats.emailVerified / stats.total;
+  const activeUsers = stats.total > 0 ? stats.contributed / stats.total : 0;
+  const emailVerifiedUsers = stats.total > 0 ? stats.emailVerified / stats.total : 0;
 
   return (
     <div className="pv2 ph3 bg-white blue-dark shadow-4">
