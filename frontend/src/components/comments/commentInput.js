@@ -22,7 +22,7 @@ export const CommentInputField = ({ comment, setComment, enableHashtagPaste = fa
   return (
     <div {...getRootProps()}>
       <UserFetchTextarea
-        {...getInputProps()}
+        inputProps={getInputProps}
         value={comment}
         setValueFn={(e) => setComment(e.target.value)}
         token={token}
@@ -40,7 +40,7 @@ export const CommentInputField = ({ comment, setComment, enableHashtagPaste = fa
   );
 };
 
-export const UserFetchTextarea = ({ value, setValueFn, token }) => {
+export const UserFetchTextarea = ({ value, setValueFn, token, inputProps }) => {
   const fetchUsers = async (user) => {
     const url = `users/queries/filter/${user}/`;
     let userItems;
@@ -59,6 +59,7 @@ export const UserFetchTextarea = ({ value, setValueFn, token }) => {
 
   return (
     <ReactTextareaAutocomplete
+      {...inputProps}
       value={value}
       listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey overflow-y-scroll base-font f5 relative z-5"
       listStyle={{ maxHeight: '16rem' }}

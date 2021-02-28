@@ -22,3 +22,7 @@ export const ReduxIntlProviders = ({
     <IntlProvider {...props}>{children}</IntlProvider>
   </Provider>
 );
+
+export const IntlProviders = ({ children, props = { locale: 'en' } }: Object) => (
+  <IntlProvider {...props}>{children}</IntlProvider>
+);
