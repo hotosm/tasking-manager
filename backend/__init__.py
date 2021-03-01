@@ -217,6 +217,7 @@ def add_api_endpoints(app):
     from backend.api.organisations.resources import (
         OrganisationsStatsAPI,
         OrganisationsRestAPI,
+        OrganisationBySlugRestAPI,
         OrganisationsAllAPI,
     )
     from backend.api.organisations.campaigns import OrganisationsCampaignsAPI
@@ -609,6 +610,12 @@ def add_api_endpoints(app):
         OrganisationsRestAPI,
         format_url("organisations/<int:organisation_id>/"),
         endpoint="get_organisation",
+        methods=["GET"],
+    )
+    api.add_resource(
+        OrganisationBySlugRestAPI,
+        format_url("organisations/<string:slug>/"),
+        endpoint="get_organisation_by_slug",
         methods=["GET"],
     )
     api.add_resource(

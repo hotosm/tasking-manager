@@ -45,17 +45,22 @@ class OrganisationService:
         organisation_id: int, user_id: int, abbreviated: bool
     ):
         org = Organisation.get(organisation_id)
+        return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
 
+    @staticmethod
+    def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool):
+        org = Organisation.query.filter_by(slug=slug).first()
+        return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
+
+    @staticmethod
+    def get_organisation_dto(org, user_id: int, abbreviated: bool):
         if org is None:
             raise NotFound()
-
         organisation_dto = org.as_dto(abbreviated)
 
         if user_id != 0:
             organisation_dto.is_manager = (
-                OrganisationService.can_user_manage_organisation(
-                    organisation_id, user_id
-                )
+                OrganisationService.can_user_manage_organisation(org.id, user_id)
             )
         else:
             organisation_dto.is_manager = False
