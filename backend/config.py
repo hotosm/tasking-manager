@@ -120,6 +120,7 @@ class EnvironmentConfig:
     # Sentry backend DSN
     SENTRY_BACKEND_DSN = os.getenv("TM_SENTRY_BACKEND_DSN", None)
 
+
 class TestEnvironmentConfig(EnvironmentConfig):
     POSTGRES_USER = os.getenv("POSTGRES_USER", None)
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", None)
