@@ -179,7 +179,6 @@ export function EditCampaign(props) {
           campaign={{ name: campaign.name }}
           updateCampaign={updateCampaign}
           disabledForm={error || loading}
-          saveError={nameError}
         />
         <ErrorMessage nameError={nameError} />
       </div>
