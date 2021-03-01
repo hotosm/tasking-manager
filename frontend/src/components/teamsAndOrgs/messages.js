@@ -152,6 +152,10 @@ export default defineMessages({
     id: 'management.organisations.type',
     defaultMessage: 'Type',
   },
+  publicUrl: {
+    id: 'management.organisations.publicUrl',
+    defaultMessage: 'Public URL',
+  },
   selectType: {
     id: 'management.organisations.type.select',
     defaultMessage: 'Select type',

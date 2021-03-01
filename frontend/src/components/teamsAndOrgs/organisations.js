@@ -10,6 +10,7 @@ import messages from './messages';
 import { IMAGE_UPLOAD_SERVICE } from '../../config';
 import { useUploadImage } from '../../hooks/UseUploadImage';
 import { Management } from './management';
+import { InternalLinkIcon } from '../svgIcons';
 import { Button } from '../button';
 import { UserAvatarList } from '../user/avatar';
 
@@ -153,6 +154,21 @@ export function OrgInformation(props) {
           <FormattedMessage {...messages.name} />
         </label>
         <Field name="name" component="input" type="text" className={fieldClasses} required />
+      </div>
+      <div className="cf">
+        <label className={labelClasses}>
+          <FormattedMessage {...messages.publicUrl} />
+        </label>
+        <Field name="slug" component="input" className={fieldClasses} required>
+          {(props) => (
+            <>
+              <pre className="f6 di bg-tan blue-grey pa2">/organisations/{props.input.value}</pre>
+              <Link to={`/organisations/${props.input.value}/`} className="link blue-light ph2">
+                <InternalLinkIcon className="h1 w1 v-mid" />
+              </Link>
+            </>
+          )}
+        </Field>
       </div>
       <div className="cf">
         <label className={labelClasses}>
