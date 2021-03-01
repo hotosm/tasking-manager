@@ -6,10 +6,15 @@ import messages from './messages';
 import { StatsCardContent } from '../statsCardContent';
 import { ProgressBar } from '../progressBar';
 import { usePredictYearlyTasks } from '../../hooks/UsePredictYearlyTasks';
-import { useOrganisationLevel, usePredictLevel } from '../../hooks/UseOrganisationLevel';
+import {
+  useOrganisationLevel,
+  usePredictLevel,
+  useGetLevel,
+} from '../../hooks/UseOrganisationLevel';
 
 export function OrganisationUsageLevel({ completedActions, orgName, type, userIsOrgManager }) {
   const [currentLevel, nextLevelThreshold] = useOrganisationLevel(completedActions);
+  const nextLevel = useGetLevel(nextLevelThreshold);
   const percent = parseInt((completedActions / nextLevelThreshold) * 100);
   const yearPrediction = usePredictYearlyTasks(completedActions, new Date());
   const levelPrediction = usePredictLevel(yearPrediction, type);
@@ -51,7 +56,7 @@ export function OrganisationUsageLevel({ completedActions, orgName, type, userIs
                     percent: percent,
                     nextTier: (
                       <strong>
-                        <FormattedMessage {...messages[`${levelPrediction.tier}Tier`]} />
+                        <FormattedMessage {...messages[`${nextLevel.tier}Tier`]} />
                       </strong>
                     ),
                     nextLevel: <strong>{currentLevel.level + 1}</strong>,
