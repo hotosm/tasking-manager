@@ -53,11 +53,11 @@ export function TeamsManagement({
   );
 }
 
-export function Teams({ teams, viewAllQuery, showAddButton = false, isReady }: Object) {
+export function Teams({ teams, viewAllQuery, showAddButton = false, isReady, border = true }) {
   return (
-    <div className="bg-white b--grey-light ba pa4">
+    <div className={`bg-white ${border ? 'b--grey-light ba pa4' : ''}`}>
       <div className="cf db">
-        <h3 className="f3 blue-dark mv0 fw6 dib v-mid">
+        <h3 className="f3 barlow-condensed ttu blue-dark mv0 fw6 dib v-mid">
           <FormattedMessage {...messages.teams} />
         </h3>
         {showAddButton && (
@@ -65,7 +65,7 @@ export function Teams({ teams, viewAllQuery, showAddButton = false, isReady }: O
             <AddButton />
           </Link>
         )}
-        <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />
+        {viewAllQuery && <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />}
         <div className="cf pt4">
           <ReactPlaceholder
             showLoadingAnimation={true}

@@ -48,6 +48,10 @@ export default defineMessages({
     id: 'loginPage.title',
     defaultMessage: 'Login or register an account',
   },
+  managers: {
+    id: 'management.managers',
+    defaultMessage: 'Managers',
+  },
   manageUsers: {
     id: 'management.users.title',
     defaultMessage: 'Manage users',
@@ -63,6 +67,10 @@ export default defineMessages({
   newOrganisation: {
     id: 'teamsAndOrgs.management.organisation.creation',
     defaultMessage: 'Create new organization',
+  },
+  editOrganisation: {
+    id: 'teamsAndOrgs.management.organisation.edit',
+    defaultMessage: 'Edit organization',
   },
   newTeam: {
     id: 'teamsAndOrgs.management.team.creation',

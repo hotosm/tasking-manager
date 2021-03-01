@@ -222,6 +222,7 @@ export function EditOrganisation(props) {
               organisation={{
                 name: organisation.name,
                 url: organisation.url,
+                slug: organisation.slug,
                 logo: organisation.logo,
                 description: organisation.description,
                 type: organisation.type,
