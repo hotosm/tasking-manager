@@ -694,7 +694,7 @@
   "management.filter.buttons.myOrganisations": "My Organizations",
   "management.filter.buttons.all": "All",
   "management.myTeams": "My teams",
-  "management.buttons.add": "Add",
+  "management.buttons.new": "New",
   "management.buttons.delete": "Delete",
   "management.buttons.accept": "Accept",
   "management.buttons.reject": "Reject",

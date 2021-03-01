@@ -11,8 +11,8 @@ export const UsersList = () => {
   const [filters, setFilters] = useState(initialFilters);
 
   return (
-    <div className="ph1 blue-dark">
-      <h3 className="barlow-condensed f2 ma0 pv3 mt1 v-mid dib ttu pl2 pl0-l">
+    <div className="pv4 blue-dark">
+      <h3 className="barlow-condensed f2 ma0 v-mid dib ttu pl2 pl0-l">
         <FormattedMessage {...messages.manageUsers} />
       </h3>
       <SearchNav filters={filters} setFilters={setFilters} initialFilters={initialFilters} />

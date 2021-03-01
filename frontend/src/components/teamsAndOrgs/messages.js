@@ -120,9 +120,9 @@ export default defineMessages({
     id: 'management.myTeams',
     defaultMessage: 'My teams',
   },
-  add: {
-    id: 'management.buttons.add',
-    defaultMessage: 'Add',
+  new: {
+    id: 'management.buttons.new',
+    defaultMessage: 'New',
   },
   delete: {
     id: 'management.buttons.delete',

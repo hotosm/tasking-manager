@@ -27,7 +27,7 @@ export const EditLicense = (props) => {
   return (
     <div className="cf pv4 bg-tan">
       <div className="cf">
-        <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">
+        <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib">
           <FormattedMessage {...messages.manageLicense} />
         </h3>
         <DeleteModal id={license.licenseId} name={license.name} type="licenses" />

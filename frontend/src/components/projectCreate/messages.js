@@ -6,7 +6,7 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   createProject: {
     id: 'management.projects.create.title',
-    defaultMessage: 'Create project',
+    defaultMessage: 'Create new project',
   },
   cloneProject: {
     id: 'management.projects.clone.message',
