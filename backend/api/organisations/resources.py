@@ -42,6 +42,9 @@ class OrganisationsRestAPI(Resource):
                     name:
                         type: string
                         default: HOT
+                    slug:
+                        type: string
+                        default: hot
                     logo:
                         type: string
                         default: https://cdn.hotosm.org/tasking-manager/uploads/1588741335578_hot-logo.png
@@ -226,6 +229,9 @@ class OrganisationsRestAPI(Resource):
               schema:
                 properties:
                     name:
+                        type: string
+                        default: HOT
+                    slug:
                         type: string
                         default: HOT
                     logo:

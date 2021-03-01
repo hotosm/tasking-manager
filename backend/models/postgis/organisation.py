@@ -1,11 +1,11 @@
-from backend import db
+from slugify import slugify
 
+from backend import db
 from backend.models.dtos.organisation_dto import (
     OrganisationDTO,
     NewOrganisationDTO,
     OrganisationManagerDTO,
 )
-
 from backend.models.postgis.user import User
 from backend.models.postgis.campaign import Campaign, campaign_organisations
 from backend.models.postgis.utils import NotFound
@@ -36,6 +36,7 @@ class Organisation(db.Model):
     # Columns
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(512), nullable=False, unique=True)
+    slug = db.Column(db.String(255), nullable=False, unique=True)
     logo = db.Column(db.String)  # URL of a logo
     description = db.Column(db.String)
     url = db.Column(db.String)
@@ -61,6 +62,7 @@ class Organisation(db.Model):
         new_org = cls()
 
         new_org.name = new_organisation_dto.name
+        new_org.slug = new_organisation_dto.slug or slugify(new_organisation_dto.name)
         new_org.logo = new_organisation_dto.logo
         new_org.description = new_organisation_dto.description
         new_org.url = new_organisation_dto.url
@@ -166,6 +168,7 @@ class Organisation(db.Model):
         organisation_dto = OrganisationDTO()
         organisation_dto.organisation_id = self.id
         organisation_dto.name = self.name
+        organisation_dto.slug = self.slug
         organisation_dto.logo = self.logo
         organisation_dto.description = self.description
         organisation_dto.url = self.url
