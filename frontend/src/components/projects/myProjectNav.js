@@ -30,8 +30,8 @@ export const MyProjectNav = (props) => {
 
   return (
     <header className="bt bb b--tan">
-      <div className="cf">
-        <h3 className="barlow-condensed blue-dark f2 ma0 pv3 dib v-mid ttu pl2 pl0-l">
+      <div className="cf pt4">
+        <h3 className="barlow-condensed blue-dark f2 ma0 pb2 dib v-mid ttu pl2 pl0-l">
           {props.management ? (
             <FormattedMessage {...messages.manageProjects} />
           ) : (

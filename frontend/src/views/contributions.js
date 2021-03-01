@@ -59,7 +59,7 @@ export const ContributionsPage = (props) => {
 export const ContributionsPageIndex = (props) => {
   return (
     <div className="bg-tan w-100 cf">
-      <div className="w-100 cf pb3">
+      <div className="w-100 cf">
         <HeaderProfile selfProfile={true} />
       </div>
       <div className="w-100 ph5-l ph2 cf pb3">{props.children}</div>

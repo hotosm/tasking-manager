@@ -107,8 +107,8 @@ export function CreateOrganisation() {
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
-            <div className="cf pb5">
-              <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
+            <div className="cf pv4 pb5">
+              <h3 className="f2 mb3 ttu blue-dark fw7 ma0 barlow-condensed">
                 <FormattedMessage {...messages.newOrganisation} />
               </h3>
               <div className="w-40-l w-100">
@@ -197,20 +197,24 @@ export function EditOrganisation(props) {
       {isUserAllowed ? (
         <div className="cf">
           <div className="cf pv4 w-100">
-            <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib">
-              <FormattedMessage {...messages.manageOrganisation} />
-            </h3>
-            <DeleteModal
-              id={organisation.organisationId}
-              name={organisation.name}
-              type="organisations"
-            />
-            <Link to={`/organisations/${organisation.organisationId}/stats/`}>
-              <CustomButton className="bg-tan ba b--blue-light blue-light pv2 ph3 fr">
-                <ChartLineIcon className="pr1 pb1 h1 v-mid" />
-                <FormattedMessage {...messages.statistics} />
-              </CustomButton>
-            </Link>
+            <div className="w-auto fl">
+              <h3 className="f2 ttu blue-dark fw7 ma0 barlow-condensed v-mid dib">
+                <FormattedMessage {...messages.manageOrganisation} />
+              </h3>
+              <DeleteModal
+                id={organisation.organisationId}
+                name={organisation.name}
+                type="organisations"
+              />
+            </div>
+            <div className="w-auto fr">
+              <Link to={`/organisations/${organisation.organisationId}/stats/`}>
+                <CustomButton className="bg-tan ba b--blue-light blue-light pv2 ph3">
+                  <ChartLineIcon className="pr1 pb1 h1 v-mid" />
+                  <FormattedMessage {...messages.statistics} />
+                </CustomButton>
+              </Link>
+            </div>
           </div>
           <div className="w-40-l w-100 mt4 fl">
             <OrganisationForm
