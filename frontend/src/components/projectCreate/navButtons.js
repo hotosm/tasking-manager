@@ -86,7 +86,7 @@ const NavButtons = (props) => {
       )}
       {props.index === 4 ? (
       <Button
-          onClick={() => props.handleCreate()}
+          onClick={props.handleCreate}
           className="white bg-red"
         >
           {props.cloneProjectData.name === null ? (

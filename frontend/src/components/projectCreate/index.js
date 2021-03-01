@@ -297,7 +297,7 @@ const ProjectCreate = (props) => {
     draw: new MapboxDraw(drawOptions),
   });
 
-  const handleCreate = useCallback(() => {
+  const handleCreate = useCallback((cloneProjectData) => {
       if (!metadata.geom) {
         setErr({error: true, message: intl.formatMessage(messages.noGeometry)});
         return;
@@ -320,7 +320,6 @@ const ProjectCreate = (props) => {
         projectParams.projectName = '';
         projectParams.cloneFromProjectId = cloneProjectData.id;
       }
-      console.log("here");
       pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
         .then((res) => navigate(`/manage/projects/${res.projectId}`))
         .catch((e) => setErr({
@@ -403,7 +402,7 @@ const ProjectCreate = (props) => {
             maxArea={MAX_AOI_AREA}
             setErr={setErr}
             cloneProjectData={cloneProjectData}
-            handleCreate={handleCreate}
+            handleCreate={() => handleCreate(cloneProjectData)}
           />
         </div>
         <div className="cf absolute" style={{ bottom: '3.5rem', left: '0.6rem' }}>
