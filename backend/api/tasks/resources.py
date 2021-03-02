@@ -119,7 +119,7 @@ class TasksQueriesJsonAPI(Resource):
                     io.BytesIO(tasks_json),
                     mimetype="application/json",
                     as_attachment=True,
-                    attachment_filename=f"{str(project_id)}-tasks.geoJSON",
+                    attachment_filename=f"{str(project_id)}-tasks.geojson",
                 )
 
             return tasks_json, 200

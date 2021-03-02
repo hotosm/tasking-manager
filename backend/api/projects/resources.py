@@ -1085,7 +1085,7 @@ class ProjectsQueriesAoiAPI(Resource):
                     io.BytesIO(geojson.dumps(project_aoi).encode("utf-8")),
                     mimetype="application/json",
                     as_attachment=True,
-                    attachment_filename=f"{str(project_id)}.geoJSON",
+                    attachment_filename=f"{str(project_id)}.geojson",
                 )
 
             return project_aoi, 200
