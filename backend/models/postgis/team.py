@@ -215,7 +215,7 @@ class Team(db.Model):
                     "username": mem.member.username,
                     "pictureUrl": mem.member.picture_url,
                     "function": TeamMemberFunctions(mem.function).name,
-                    "pictureURL": mem.member.picture_url,
+                    "active": mem.active,
                 }
             )
 
