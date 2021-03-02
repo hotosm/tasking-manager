@@ -26,7 +26,7 @@ def upgrade():
     )
     orgs = conn.execute("select name from organisations;")
     for org in orgs:
-        name = org[0]
+        name = handle_special_chars(org[0])
         query = (
             f"UPDATE organisations SET slug = '{slugify(name)}' WHERE name = '{name}';"
         )
@@ -41,3 +41,10 @@ def downgrade():
     op.drop_constraint("organisations_slug_key", "organisations", type_="unique")
     op.drop_column("organisations", "slug")
     # ### end Alembic commands ###
+
+
+def handle_special_chars(name: str):
+    special_char = name.find("'")
+    if special_char >= 0:
+        name = name[:special_char] + "'" + name[special_char:]
+    return name
