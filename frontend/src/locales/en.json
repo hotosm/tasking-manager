@@ -670,6 +670,7 @@
   "management.fields.managers": "Managers",
   "management.link.manage": "Manage {entity}",
   "management.link.edit.team": "Edit team",
+  "management.members.edit": "Edit",
   "management.members": "Members",
   "management.teams.mapping": "Mapping teams",
   "management.teams.validation": "Validation teams",
