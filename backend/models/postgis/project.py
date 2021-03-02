@@ -842,6 +842,7 @@ class Project(db.Model):
         if self.organisation_id:
             summary.organisation = self.organisation_id
             summary.organisation_name = self.organisation.name
+            summary.organisation_slug = self.organisation.slug
             summary.organisation_logo = self.organisation.logo
 
         if self.campaign:
@@ -1108,6 +1109,7 @@ class Project(db.Model):
             project_dto.organisation = project.organisation.id
             project_dto.organisation_name = project.organisation.name
             project_dto.organisation_logo = project.organisation.logo
+            project_dto.organisation_slug = project.organisation.slug
 
         project_dto.project_info_locales = ProjectInfo.get_dto_for_all_locales(self.id)
         return project_dto
