@@ -52,11 +52,11 @@ class ValidatorService:
 
             if TaskStatus(task.task_status) not in [
                 TaskStatus.MAPPED,
-                TaskStatus.VALIDATED,
+                TaskStatus.INVALIDATED,
                 TaskStatus.BADIMAGERY,
             ]:
                 raise ValidatorServiceError(
-                    f"Task {task_id} is not MAPPED, BADIMAGERY or VALIDATED"
+                    f"Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
                 )
             user_can_validate = ValidatorService._user_can_validate_task(
                 validation_dto.user_id, task.mapped_by

@@ -78,7 +78,6 @@ class StatsService:
 
         # Make sure you are aware that users table has it as incrementing counters,
         # while projects table reflect the actual state, and both increment and decrement happens
-
         if new_state == last_state:
             return project, user
 
