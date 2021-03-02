@@ -215,6 +215,7 @@ class ProjectDTO(Model):
     campaigns = ListType(ModelType(CampaignDTO), default=[])
     organisation = IntType(required=True)
     organisation_name = StringType(serialized_name="organisationName")
+    organisation_slug = StringType(serialized_name="organisationSlug")
     organisation_logo = StringType(serialized_name="organisationLogo")
     country_tag = ListType(StringType, serialized_name="countryTag")
 
@@ -457,6 +458,7 @@ class ProjectSummary(Model):
     campaigns = ListType(ModelType(CampaignDTO), default=[])
     organisation = IntType()
     organisation_name = StringType(serialized_name="organisationName")
+    organisation_slug = StringType(serialized_name="organisationSlug")
     organisation_logo = StringType(serialized_name="organisationLogo")
     country_tag = ListType(StringType, serialized_name="countryTag")
     osmcha_filter_id = StringType(serialized_name="osmchaFilterId")
