@@ -22,17 +22,9 @@ const Parameters = {
     Type: 'String',
     Description: 'Path to database dump on S3; Ex: s3://my-bkt/tm.sql'
   },
-  NewRelicLicense: {
-    Type: 'String',
-    Description: 'NEW_RELIC_LICENSE'
-  },
   PostgresDB: {
     Type: 'String',
     Description: 'POSTGRES_DB'
-  },
-  PostgresPassword: {
-    Type: 'String',
-    Description: 'POSTGRES_PASSWORD'
   },
   PostgresUser: {
     Type: 'String',
@@ -59,14 +51,6 @@ const Parameters = {
   },
   TaskingManagerConsumerKey: {
     Description: 'TM_CONSUMER_KEY',
-    Type: 'String'
-  },
-  TaskingManagerConsumerSecret: {
-      Description: 'TM_CONSUMER_SECRET',
-      Type: 'String'
-  },
-  TaskingManagerSecret: {
-    Description: 'TM_SECRET',
     Type: 'String'
   },
   TaskingManagerAppBaseUrl: {
@@ -96,10 +80,6 @@ const Parameters = {
   },
   TaskingManagerSMTPHost: {
     Description: 'TM_SMTP_HOST environment variable',
-    Type: 'String'
-  },
-  TaskingManagerSMTPPassword: {
-    Description: 'TM_SMTP_PASSWORD environment variable',
     Type: 'String'
   },
   TaskingManagerSMTPUser: {
@@ -273,7 +253,7 @@ const Resources = {
     Type: 'AWS::ECS::TaskDefinition',
     Properties: {
       ContainerDefinitions: [{
-        Name: 'TM4_Backend_Service',
+        Name: 'Backend_Service',
         Environment: [
           { 'Name': 'POSTGRES_ENDPOINT', 'Value': cf.getAtt('TaskingManagerRDS','Endpoint.Address') },
           { 'Name': 'POSTGRES_DB', 'Value': 'dummy' },
@@ -292,12 +272,30 @@ const Resources = {
           { 'Name': 'TM_SENTRY_BACKEND_DSN', 'Value': cf.ref('SentryBackendDSN') },
         ],
         Secrets: [
-          { 'Name': 'POSTGRES_PASSWORD', 'ValueFrom': cf.ref('PostgresPasswordManagedSecret') },
-          { 'Name': 'TM_SMTP_PASSWORD', 'ValueFrom': cf.ref('SMTPPassword') },
-          { 'Name': 'TM_SECRET', 'ValueFrom': cf.ref('TaskingManagerManagedSecret') },
-          { 'Name': 'TM_CONSUMER_SECRET', 'ValueFrom': cf.ref('OAuth2ConsumerSecret') },
-          { 'Name': 'NEW_RELIC_LICENSE_KEY', 'ValueFrom': cf.ref('NewRelicLicenseKey') },
-          { 'Name': 'TM_IMAGE_UPLOAD_API_KEY', 'ValueFrom': cf.ref('ImageUploadAPIKey') }
+          { 
+            'Name': 'POSTGRES_PASSWORD',
+            'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('PostgresPasswordManagedSecret') ] ) 
+          },
+          { 
+            'Name': 'TM_SMTP_PASSWORD',
+            'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('SMTPPassword') ] ) 
+          },
+          { 
+            'Name': 'TM_SECRET',
+            'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('TaskingManagerManagedSecret') ] ) 
+          },
+          { 
+            'Name': 'TM_CONSUMER_SECRET',
+            'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('OAuth2ConsumerSecret') ] ) 
+          },
+          { 
+            'Name': 'NEW_RELIC_LICENSE_KEY',
+              'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('NewRelicLicenseKey') ] ) 
+          },
+          { 
+            'Name': 'TM_IMAGE_UPLOAD_API_KEY',
+            'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('ImageUploadAPIKey') ] ) 
+          }
         ],
         EnvironmentFiles: [],
         Essential: true,
@@ -305,10 +303,22 @@ const Resources = {
           // Need more input from Yogesh
         // },
         Image: 'quay.io/hotosm/taskingmanager:develop', //configure this properly
+        PortMappings: [
+          {
+            ContainerPort: 5000,
+            HostPort: 5000,
+            Protocol: 'tcp'
+          },
+          {
+            ContainerPort: 8080,
+            HostPort: 8080,
+            Protocol: 'tcp'
+          }
+        ],
       }],
       Cpu: '1024', 
       ExecutionRoleArn: cf.ref('TaskingManagerECSExecutionRole'),
-      Family: cf.stackName,
+      Family: Tasking_Manager,
       Memory: '4096',
       NetworkMode: 'awsvpc',
       RequiresCompatibilities: ['FARGATE'],
@@ -338,12 +348,13 @@ const Resources = {
       HealthCheckGracePeriodSeconds: 300,
       LaunchType: 'FARGATE',
       LoadBalancers: [{
-        ContainerName: cf.stackName,
+        ContainerName: 'Backend_Service',
         ContainerPort: 8080,
         TargetGroupArn: cf.ref('TaskingManagerTargetGroup')
       }],
       NetworkConfiguration: {
         AwsvpcConfiguration: {
+          AssignPublicIp: 'ENABLED',
           SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
           Subnets: cf.split(',', cf.ref('ELBSubnets')) // private subnets on vpc + nat gateway
         }
@@ -554,7 +565,7 @@ const Resources = {
       LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
       Port: 443,
       Protocol: 'HTTPS',
-      SslPolicy: 'ELBSecurityPolicy-FS-1-2-2019-08'
+      SslPolicy: 'ELBSecurityPolicy-FS-1-2-Res-2020-10'
     }
   },
   TaskingManagerLoadBalancerHTTPListener: {
@@ -594,17 +605,17 @@ const Resources = {
     Properties: {
         Engine: 'postgres',
         DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresDB')),
-        EngineVersion: '11.10',
+        EngineVersion: '11.8',
         MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSSecret'), 'SecretString:username}}'])),
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSSecret'), 'SecretString:password}}'])),
         AllocatedStorage: cf.ref('DatabaseSize'),
         BackupRetentionPeriod: 10,
         StorageType: 'gp2',
-        DBParameterGroupName: 'tm3-logging-postgres11',
         EnableCloudwatchLogsExports: ['postgresql'],
         DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.t3.2xlarge', 'db.t2.small'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
+        MonitoringInterval: 0
     }
   },
   SecretRDSInstanceAttachment: {
@@ -666,7 +677,8 @@ const Resources = {
           Id: cf.join('-', [cf.stackName, 'react-app']),
           DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
           CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only'
+            OriginProtocolPolicy: 'https-only',
+            OriginSSLProtocols: [ 'TLSv1.2' ]
           }
         }],
         CustomErrorResponses: [{
@@ -696,9 +708,10 @@ const Resources = {
         },
         ViewerCertificate: {
           AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
-          MinimumProtocolVersion: 'TLSv1.2_2018',
+          MinimumProtocolVersion: 'TLSv1.2_2019',
           SslSupportMethod: 'sni-only'
-        }
+        },
+        HttpVersion: 'http2'
       }
     }
   },
