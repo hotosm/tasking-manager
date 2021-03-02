@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, redirectTo } from '@reach/router';
+import { Link, useNavigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
 import { FormattedMessage } from 'react-intl';
@@ -111,23 +111,17 @@ const leaveTeamRequest = (team_id, username, role, token) => {
 
 export function CreateTeam() {
   useSetTitleTag('Create new team');
+  const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
-  const [newTeamId, setNewTeamId] = useState(null);
 
   useEffect(() => {
     if (userDetails && userDetails.username && managers.length === 0) {
       setManagers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
     }
   }, [userDetails, managers]);
-
-  useEffect(() => {
-    if (newTeamId) {
-      redirectTo(`/manage/teams/${newTeamId}`);
-    }
-  }, [newTeamId]);
 
   const addManagers = (values) => {
     const newValues = values.filter(
@@ -154,7 +148,7 @@ export function CreateTeam() {
         .filter((user) => user.username !== userDetails.username)
         .map((user) => joinTeamRequest(result.teamId, user.username, 'MANAGER', token));
       members.map((user) => joinTeamRequest(result.teamId, user.username, 'MEMBER', token));
-      setNewTeamId(result.teamId);
+      navigate(`/manage/teams/${result.teamId}`);
     });
   };
 

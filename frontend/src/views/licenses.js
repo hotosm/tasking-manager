@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
 import ReactPlaceholder from 'react-placeholder';
-import { Link, redirectTo } from '@reach/router';
+import { Link, useNavigate } from '@reach/router';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
 
@@ -74,18 +74,12 @@ export const ListLicenses = () => {
 
 export const CreateLicense = () => {
   useSetTitleTag('Create new license');
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.get('token'));
-  const [newLicenseId, setNewLicenseId] = useState(null);
-
-  useEffect(() => {
-    if (newLicenseId) {
-      redirectTo(`/manage/licenses/${newLicenseId}`);
-    }
-  }, [newLicenseId]);
 
   const createLicense = (payload) => {
     pushToLocalJSONAPI('licenses/', JSON.stringify(payload), token, 'POST').then((result) =>
-      setNewLicenseId(result.licenseId),
+      navigate(`/manage/licenses/${result.licenseId}`),
     );
   };
 

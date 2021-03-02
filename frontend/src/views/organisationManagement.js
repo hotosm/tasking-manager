@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, redirectTo } from '@reach/router';
+import { Link, useNavigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import { RectShape } from 'react-placeholder/lib/placeholders';
 import { FormattedMessage } from 'react-intl';
@@ -68,22 +68,16 @@ export function ListOrganisations() {
 
 export function CreateOrganisation() {
   useSetTitleTag('Create new organization');
+  const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [managers, setManagers] = useState([]);
-  const [newOrgId, setNewOrgId] = useState(null);
 
   useEffect(() => {
     if (userDetails && userDetails.username && managers.length === 0) {
       setManagers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
     }
   }, [userDetails, managers]);
-
-  useEffect(() => {
-    if (newOrgId) {
-      redirectTo(`/manage/organisations/${newOrgId}`);
-    }
-  }, [newOrgId]);
 
   const addManagers = (values) => {
     const newValues = values.filter(
@@ -97,7 +91,7 @@ export function CreateOrganisation() {
   const createOrg = (payload) => {
     payload.managers = managers.map((user) => user.username);
     pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST').then((result) =>
-      setNewOrgId(result.organisationId),
+      navigate(`/manage/organisations/${result.organisationId}`),
     );
   };
 
