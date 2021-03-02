@@ -109,9 +109,9 @@ let App = (props) => {
                   <Welcome path="welcome" />
                   <Settings path="settings" />
                   <EmailVerification path="verify-email" />
-                  <Stats path="stats/" />
                   <ManagementSection path="manage">
                     <ManagementPageIndex path="/" />
+                    <Stats path="stats/" />
                     <ListOrganisations path="organisations/" />
                     <CreateOrganisation path="organisations/new/" />
                     <EditOrganisation path="organisations/:id/" />

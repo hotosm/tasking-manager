@@ -12,7 +12,7 @@ describe('ManagementMenu items for', () => {
         <ManagementMenu isAdmin={true} />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText('Statistics').href).toContain('/stats');
+    expect(screen.getByText('Statistics').closest('a').href).toContain('/stats');
     expect(screen.getByText('Users').closest('a').href).toContain('/users');
     expect(screen.getByText('Licenses').closest('a').href).toContain('/licenses');
     expect(screen.getByText('Campaigns').closest('a').href).toContain('/campaigns');
@@ -28,7 +28,7 @@ describe('ManagementMenu items for', () => {
         <ManagementMenu isAdmin={false} />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText('Statistics').href).toContain('/stats');
+    expect(screen.getByText('Statistics').closest('a').href).toContain('/stats');
     expect(screen.getByText('Projects').closest('a').href).toContain('/projects');
     expect(screen.getByText('Organizations').closest('a').href).toContain('/organisations');
     expect(screen.getByText('Teams').closest('a').href).toContain('/teams');

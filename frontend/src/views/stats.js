@@ -30,22 +30,24 @@ export const Stats = () => {
 
   if (token) {
     return (
-      <div className="w-100 cf pv3 ph2 ph4-ns bg-white blue-dark">
+      <div className="w-100 cf pv4">
         <div className="w-100 fl cf">
-          <h3 className="f2 fw6 mv2 ttu barlow-condensed blue-dark dib v-mid">
+          <h3 className="f2 ma0 ttu barlow-condensed blue-dark dib v-mid">
             <FormattedMessage {...messages.statistics} />
           </h3>
           <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
             <FormattedMessage {...messages.tasksStatistics} />
           </h4>
-          <TasksStats
-            query={query}
-            setQuery={setQuery}
-            stats={apiState.stats}
-            error={apiState.isError}
-            loading={apiState.isLoading}
-            retryFn={forceUpdate}
-          />
+          <div className="pv3 ph2 bg-white blue-dark">
+            <TasksStats
+              query={query}
+              setQuery={setQuery}
+              stats={apiState.stats}
+              error={apiState.isError}
+              loading={apiState.isLoading}
+              retryFn={forceUpdate}
+            />
+          </div>
         </div>
         <div className="w-100 fl cf mt3">
           <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb3">
