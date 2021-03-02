@@ -16,6 +16,7 @@ trans.hu = frontend/src/locales/hu.json
 trans.id = frontend/src/locales/id.json
 trans.it = frontend/src/locales/it.json
 trans.ja = frontend/src/locales/ja.json
+trans.ko = frontend/src/locales/ko.json
 trans.mg = frontend/src/locales/mg.json
 trans.ml = frontend/src/locales/ml.json
 trans.nl_NL = frontend/src/locales/nl_NL.json

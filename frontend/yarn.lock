@@ -2413,10 +2413,10 @@
     whatwg-fetch "^3.4.1"
     which-polygon "2.2.0"
 
-"@hotosm/iso-countries-languages@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@hotosm/iso-countries-languages/-/iso-countries-languages-1.0.2.tgz#dfbf4c9c841906129a323074547d25bf847142e6"
-  integrity sha512-IvnERUvj256YBAKBB52Ox/USASqZWK+Jh7m2woZCg1IND26foixPom3wjOVyB5nw+Q4Kbp0h+9f7JC26Snyh0w==
+"@hotosm/iso-countries-languages@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@hotosm/iso-countries-languages/-/iso-countries-languages-1.1.0.tgz#57fff9dc8c1f3ac4959c4a5464c41b627e8644ab"
+  integrity sha512-8LOD2XjMu8Y2bk1mQQ2BuNQqv2Tu8JmvzrWCvBGb4bX5ex7CRkJ/j63cU8tifYNkoBflfkvzdgyb9MKM9S0KCA==
   dependencies:
     prettier "^2.0.5"
 
