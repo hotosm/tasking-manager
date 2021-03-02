@@ -16,7 +16,7 @@ from backend.models.postgis.statuses import OrganisationType
 from backend.services.users.authentication_service import token_auth
 
 
-class OrganisationBySlugRestAPI(Resource):
+class OrganisationsBySlugRestAPI(Resource):
     def get(self, slug):
         """
         Retrieves an organisation
@@ -33,7 +33,7 @@ class OrganisationBySlugRestAPI(Resource):
               default: Token sessionTokenHere==
             - name: slug
               in: path
-              description: The unique organisation ID
+              description: The unique organisation slug
               required: true
               type: string
               default: hot
