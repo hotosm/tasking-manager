@@ -206,7 +206,7 @@ const ProjectCreate = (props) => {
     if (mapObj.map.getSource(layer_name)) {
       mapObj.map.removeSource(layer_name);
     }
-    updateMetadata({ ...metadata, area: 0, geom: null });
+    updateMetadata({ ...metadata, area: 0, geom: null, arbitraryTasks: false });
   };
 
   const drawHandler = () => {
@@ -264,7 +264,7 @@ const ProjectCreate = (props) => {
   const [metadata, updateMetadata] = useState({
     geom: null,
     area: 0,
-    tasksNo: 0,
+    tasksNumber: 0,
     taskGrid: null,
     projectName: '',
     zoomLevel: 9,
@@ -384,7 +384,7 @@ const ProjectCreate = (props) => {
           <p className="fl bg-blue-light white mr2 pa1 f7-ns">
             <FormattedMessage
               {...messages.taskNumber}
-              values={{ n: <FormattedNumber value={metadata.tasksNo} /> }}
+              values={{ n: <FormattedNumber value={metadata.tasksNumber} /> }}
             />
           </p>
         </div>

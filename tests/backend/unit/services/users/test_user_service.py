@@ -1,10 +1,10 @@
-import unittest
 from unittest.mock import patch
 from backend.models.postgis.user import User
 from backend.services.users.user_service import UserService, UserServiceError, UserRole
+from tests.backend.base import BaseTestCase
 
 
-class TestUserService(unittest.TestCase):
+class TestUserService(BaseTestCase):
     @patch.object(UserService, "get_user_by_id")
     def test_mapper_role_is_not_recognized_as_a_validator(self, mock_user):
         # Arrange

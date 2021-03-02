@@ -16,6 +16,7 @@ import hu from '../locales/hu.json';
 import id from '../locales/id.json';
 import it from '../locales/it.json';
 import ja from '../locales/ja.json';
+import ko from '../locales/ko.json';
 import mg from '../locales/mg.json';
 import ml from '../locales/ml.json';
 import nl_NL from '../locales/nl_NL.json';
@@ -62,6 +63,7 @@ const translatedMessages = {
   id: id,
   it: it,
   ja: ja,
+  ko: ko,
   mg: mg,
   ml: ml,
   nl: nl_NL,
@@ -91,6 +93,7 @@ const supportedLocales = [
   { value: 'id', label: 'Indonesia' },
   { value: 'it', label: 'Italiano' },
   { value: 'ja', label: '日本語' },
+  { value: 'ko', label: '한국어' },
   // { value: 'mg', label: 'Malagasy' },
   // { value: 'ml', label: 'Malayalam' },
   { value: 'nl', label: 'Nederlands' },

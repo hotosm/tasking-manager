@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, redirectTo } from '@reach/router';
+import { Link, useNavigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import { RectShape } from 'react-placeholder/lib/placeholders';
 import { FormattedMessage } from 'react-intl';
@@ -68,22 +68,16 @@ export function ListOrganisations() {
 
 export function CreateOrganisation() {
   useSetTitleTag('Create new organization');
+  const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [managers, setManagers] = useState([]);
-  const [newOrgId, setNewOrgId] = useState(null);
 
   useEffect(() => {
     if (userDetails && userDetails.username && managers.length === 0) {
       setManagers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
     }
   }, [userDetails, managers]);
-
-  useEffect(() => {
-    if (newOrgId) {
-      redirectTo(`/manage/organisations/${newOrgId}`);
-    }
-  }, [newOrgId]);
 
   const addManagers = (values) => {
     const newValues = values.filter(
@@ -97,7 +91,7 @@ export function CreateOrganisation() {
   const createOrg = (payload) => {
     payload.managers = managers.map((user) => user.username);
     pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST').then((result) =>
-      setNewOrgId(result.organisationId),
+      navigate(`/manage/organisations/${result.organisationId}`),
     );
   };
 
@@ -107,8 +101,8 @@ export function CreateOrganisation() {
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
-            <div className="cf pb5">
-              <h3 className="f2 mb3 ttu blue-dark fw7 barlow-condensed">
+            <div className="cf pv4 pb5">
+              <h3 className="f2 mb3 ttu blue-dark fw7 ma0 barlow-condensed">
                 <FormattedMessage {...messages.newOrganisation} />
               </h3>
               <div className="w-40-l w-100">
@@ -148,7 +142,6 @@ export function CreateOrganisation() {
 }
 
 export function EditOrganisation(props) {
-  useSetTitleTag('Edit organization');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [initManagers, setInitManagers] = useState(false);
@@ -159,6 +152,7 @@ export function EditOrganisation(props) {
     `projects/?organisationId=${props.id}&omitMapResults=true`,
     props.id,
   );
+  useSetTitleTag(`Edit ${organisation.name}`);
 
   useEffect(() => {
     if (!initManagers && organisation && organisation.managers) {
@@ -197,20 +191,24 @@ export function EditOrganisation(props) {
       {isUserAllowed ? (
         <div className="cf">
           <div className="cf pv4 w-100">
-            <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib">
-              <FormattedMessage {...messages.manageOrganisation} />
-            </h3>
-            <DeleteModal
-              id={organisation.organisationId}
-              name={organisation.name}
-              type="organisations"
-            />
-            <Link to={`/organisations/${organisation.organisationId}/stats/`}>
-              <CustomButton className="bg-tan ba b--blue-light blue-light pv2 ph3 fr">
-                <ChartLineIcon className="pr1 pb1 h1 v-mid" />
-                <FormattedMessage {...messages.statistics} />
-              </CustomButton>
-            </Link>
+            <div className="w-auto fl">
+              <h3 className="f2 ttu blue-dark fw7 ma0 barlow-condensed v-mid dib">
+                <FormattedMessage {...messages.manageOrganisation} />
+              </h3>
+              <DeleteModal
+                id={organisation.organisationId}
+                name={organisation.name}
+                type="organisations"
+              />
+            </div>
+            <div className="w-auto fr">
+              <Link to={`/organisations/${organisation.organisationId}/stats/`}>
+                <CustomButton className="bg-tan ba b--blue-light blue-light pv2 ph3">
+                  <ChartLineIcon className="pr1 pb1 h1 v-mid" />
+                  <FormattedMessage {...messages.statistics} />
+                </CustomButton>
+              </Link>
+            </div>
           </div>
           <div className="w-40-l w-100 mt4 fl">
             <OrganisationForm
@@ -218,6 +216,7 @@ export function EditOrganisation(props) {
               organisation={{
                 name: organisation.name,
                 url: organisation.url,
+                slug: organisation.slug,
                 logo: organisation.logo,
                 description: organisation.description,
                 type: organisation.type,

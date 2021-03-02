@@ -91,6 +91,7 @@ describe('OrganisationUsageLevel', () => {
     expect(screen.getByText('Actions to reach the next tier')).toBeInTheDocument();
     expect(screen.getByText(`Estimated tier by the end of ${currentYear}`)).toBeInTheDocument();
     expect(screen.getByText(`Estimated cost by the end of ${currentYear}`)).toBeInTheDocument();
+    expect(screen.queryByText('(discounted)')).not.toBeInTheDocument();
   });
 
   it('with level 2', () => {
@@ -208,6 +209,7 @@ describe('OrganisationUsageLevel', () => {
     expect(
       screen.queryByText(/It is the highest level an organization can be on Tasking Manager!/),
     ).not.toBeInTheDocument();
+    expect(screen.queryByText(/(Discounted)/)).not.toBeInTheDocument();
   });
 
   it('with level 5, under tier, but accessed by a normal user', () => {
@@ -230,5 +232,59 @@ describe('OrganisationUsageLevel', () => {
     expect(
       screen.getByText(/It is the highest level an organization can be on Tasking Manager!/),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/(Discounted)/)).not.toBeInTheDocument();
+  });
+
+  it('shows the $0 cost and a discounted label for an organization on the level 2 tier ', () => {
+    const { container } = render(
+      <ReduxIntlProviders>
+        <OrganisationUsageLevel
+          completedActions={1100}
+          orgName="My organization"
+          type="DISCOUNTED"
+          userIsOrgManager={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(container.querySelector('h1').className).toBe(
+      'relative f1 tc w-100 dib ttu red barlow-condensed ma0 pv2 mt3',
+    );
+    expect(within(container.querySelector('h1')).getByText('Low')).toBeTruthy();
+    expect(screen.getAllByRole('progressbar')[1].style.width).toBe('11%');
+    expect(screen.getByText('8,900')).toBeInTheDocument();
+    expect(screen.getByText('Actions to reach the next tier')).toBeInTheDocument();
+    expect(screen.getByText(`Estimated tier by the end of ${currentYear}`)).toBeInTheDocument();
+    expect(screen.getByText(`Estimated cost by the end of ${currentYear}`)).toBeInTheDocument();
+    expect(screen.getByText(/(Discounted)/)).toBeInTheDocument();
+  });
+
+  it('does not show the discounted label for a discounted level 1 org', () => {
+    render(
+      <ReduxIntlProviders>
+        <OrganisationUsageLevel
+          completedActions={1}
+          orgName="My organization"
+          type="DISCOUNTED"
+          userIsOrgManager={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText('$0.00')).toBeInTheDocument();
+    expect(screen.queryByText(/(Discounted)/)).not.toBeInTheDocument();
+  });
+
+  it('shows the discounted cost 20000 for a discounted level 5 org', () => {
+    render(
+      <ReduxIntlProviders>
+        <OrganisationUsageLevel
+          completedActions={80000}
+          orgName="My organization"
+          type="DISCOUNTED"
+          userIsOrgManager={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText('$20,000.00')).toBeInTheDocument();
+    expect(screen.getByText(/(Discounted)/)).toBeInTheDocument();
   });
 });

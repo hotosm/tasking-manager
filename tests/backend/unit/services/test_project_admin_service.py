@@ -1,5 +1,4 @@
 import json
-import unittest
 from unittest.mock import MagicMock, patch
 from backend.services.project_admin_service import (
     ProjectAdminService,
@@ -16,18 +15,10 @@ from backend.models.postgis.statuses import ProjectPriority, MappingLevel
 from backend.models.dtos.project_dto import ProjectInfoDTO
 from backend.models.postgis.task import Task
 from backend.models.postgis.user import User, UserRole
-from backend import create_app
+from tests.backend.base import BaseTestCase
 
 
-class TestProjectAdminService(unittest.TestCase):
-    def setUp(self):
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
-    def tearDown(self):
-        self.ctx.pop()
-
+class TestProjectAdminService(BaseTestCase):
     def test_cant_add_tasks_if_geojson_not_feature_collection(self):
         # Arrange
         invalid_feature = (

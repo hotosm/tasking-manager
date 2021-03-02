@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
 
 import messages from './messages';
 import { Management } from './management';
-import { EditModeControl } from './editMode';
 import { Button } from '../button';
 import { HashtagIcon } from '../svgIcons';
 
@@ -66,46 +65,42 @@ export function CampaignInformation(props) {
 }
 
 export function CampaignForm(props) {
-  const [editMode, setEditMode] = useState(false);
-
-  useEffect(() => {
-    if (props.saveError) setEditMode(true);
-  }, [props.saveError]);
-
   return (
     <Form
       onSubmit={(values) => props.updateCampaign(values)}
       initialValues={props.campaign}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({
+        handleSubmit,
+        dirty,
+        submitSucceeded,
+        dirtySinceLastSubmit,
+        form,
+        submitting,
+        values,
+      }) => {
+        const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         return (
           <div className="blue-grey mb3">
-            <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
+            <div className={`bg-white b--grey-light pa4 ${dirtyForm ? 'bt bl br' : 'ba'}`}>
               <h3 className="f3 fw6 dib blue-dark mv0">
                 <FormattedMessage {...messages.campaignInfo} />
               </h3>
-              <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
               <form id="campaign-form" onSubmit={handleSubmit}>
-                <fieldset
-                  className="bn pa0"
-                  disabled={submitting || props.disabledForm || !editMode}
-                >
+                <fieldset className="bn pa0" disabled={submitting}>
                   <CampaignInformation />
                 </fieldset>
               </form>
             </div>
-            {editMode && (
+            {dirtyForm && (
               <div className="cf pt0 h3">
                 <div className="w-70-l w-50 fl tr dib bg-grey-light">
-                  <Button className="blue-dark bg-grey-light h3" onClick={() => setEditMode(false)}>
+                  <Button className="blue-dark bg-grey-light h3" onClick={() => form.restart()}>
                     <FormattedMessage {...messages.cancel} />
                   </Button>
                 </div>
                 <div className="w-30-l w-50 h-100 fr dib">
                   <Button
-                    onClick={() => {
-                      handleSubmit();
-                      setEditMode(false);
-                    }}
+                    onClick={() => handleSubmit()}
                     className="w-100 h-100 bg-red white"
                     disabledClassName="bg-red o-50 white w-100 h-100"
                   >

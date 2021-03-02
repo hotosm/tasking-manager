@@ -31,12 +31,18 @@ import { Login } from './views/login';
 import { Welcome } from './views/welcome';
 import { Settings } from './views/settings';
 import { ManagementPageIndex, ManagementSection } from './views/management';
-import { ListOrganisations, CreateOrganisation, EditOrganisation } from './views/organisations';
+import {
+  ListOrganisations,
+  CreateOrganisation,
+  EditOrganisation,
+} from './views/organisationManagement';
+import { OrganisationDetail } from './views/organisationDetail';
 import { OrganisationStats } from './views/organisationStats';
 import { MyTeams, ManageTeams, CreateTeam, EditTeam, TeamDetail } from './views/teams';
 import { ListCampaigns, CreateCampaign, EditCampaign } from './views/campaigns';
 import { ListInterests, CreateInterest, EditInterest } from './views/interests';
 import { ListLicenses, CreateLicense, EditLicense } from './views/licenses';
+import { Stats } from './views/stats';
 import { UsersList } from './views/users';
 import { NotFound } from './views/notFound';
 import { SelectTask } from './views/taskSelection';
@@ -88,6 +94,7 @@ let App = (props) => {
                   <ValidateTask path="projects/:id/validate" />
                   <ProjectStats path="projects/:id/stats" />
                   <OrganisationStats path="organisations/:id/stats/" />
+                  <OrganisationDetail path="organisations/:slug/" />
                   <LearnPage path="learn" />
                   <QuickstartPage path="learn/quickstart" />
                   <AboutPage path="about" />
@@ -110,6 +117,7 @@ let App = (props) => {
                   <EmailVerification path="verify-email" />
                   <ManagementSection path="manage">
                     <ManagementPageIndex path="/" />
+                    <Stats path="stats/" />
                     <ListOrganisations path="organisations/" />
                     <CreateOrganisation path="organisations/new/" />
                     <EditOrganisation path="organisations/:id/" />

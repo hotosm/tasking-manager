@@ -24,6 +24,10 @@ export default defineMessages({
     id: 'management.link.edit.team',
     defaultMessage: 'Edit team',
   },
+  edit: {
+    id: 'management.members.edit',
+    defaultMessage: 'Edit',
+  },
   members: {
     id: 'management.members',
     defaultMessage: 'Members',
@@ -120,9 +124,9 @@ export default defineMessages({
     id: 'management.myTeams',
     defaultMessage: 'My teams',
   },
-  add: {
-    id: 'management.buttons.add',
-    defaultMessage: 'Add',
+  new: {
+    id: 'management.buttons.new',
+    defaultMessage: 'New',
   },
   delete: {
     id: 'management.buttons.delete',
@@ -151,6 +155,14 @@ export default defineMessages({
   type: {
     id: 'management.organisations.type',
     defaultMessage: 'Type',
+  },
+  publicUrl: {
+    id: 'management.organisations.publicUrl',
+    defaultMessage: 'Public URL',
+  },
+  copyPublicUrl: {
+    id: 'management.organisations.publicUrl.copy',
+    defaultMessage: 'Copy public URL',
   },
   selectType: {
     id: 'management.organisations.type.select',
@@ -380,5 +392,27 @@ export default defineMessages({
   noTeamsFound: {
     id: 'management.organisation.teams.no_found',
     defaultMessage: 'No teams found.',
+  },
+  newUsersOnLastMonth: {
+    id: 'management.stats.new_users.month',
+    defaultMessage:
+      '{number, plural, one {# user registered in the last 30 days} other {# users registered in the last 30 days}}',
+  },
+  newUsersOnLastWeek: {
+    id: 'management.stats.new_users.week',
+    defaultMessage:
+      '{number, plural, one {# user registered in the last 7 days} other {# users registered in the last 7 days}}',
+  },
+  activeNewUsers: {
+    id: 'management.stats.new_users.active',
+    defaultMessage: 'Mapped at least one task',
+  },
+  emailVerified: {
+    id: 'management.stats.new_users.email_verified',
+    defaultMessage: 'Confirmed email address',
+  },
+  statistics: {
+    id: 'management.stats.title',
+    defaultMessage: 'Statistics',
   },
 });

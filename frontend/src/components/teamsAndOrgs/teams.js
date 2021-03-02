@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
@@ -10,7 +10,6 @@ import { useEditTeamAllowed } from '../../hooks/UsePermissions';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
 import { SwitchToggle, RadioField, OrganisationSelectInput } from '../formInputs';
-import { EditModeControl } from './editMode';
 import { Button, EditButton } from '../button';
 
 export function TeamsManagement({
@@ -54,11 +53,11 @@ export function TeamsManagement({
   );
 }
 
-export function Teams({ teams, viewAllQuery, showAddButton = false, isReady }: Object) {
+export function Teams({ teams, viewAllQuery, showAddButton = false, isReady, border = true }) {
   return (
-    <div className="bg-white b--grey-light ba pa4">
+    <div className={`bg-white ${border ? 'b--grey-light ba pa4' : ''}`}>
       <div className="cf db">
-        <h3 className="f3 blue-dark mv0 fw6 dib v-mid">
+        <h3 className="f3 barlow-condensed ttu blue-dark mv0 fw6 dib v-mid">
           <FormattedMessage {...messages.teams} />
         </h3>
         {showAddButton && (
@@ -66,7 +65,7 @@ export function Teams({ teams, viewAllQuery, showAddButton = false, isReady }: O
             <AddButton />
           </Link>
         )}
-        <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />
+        {viewAllQuery && <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />}
         <div className="cf pt4">
           <ReactPlaceholder
             showLoadingAnimation={true}
@@ -201,42 +200,42 @@ export function TeamInformation(props) {
 }
 
 export function TeamForm(props) {
-  const [editMode, setEditMode] = useState(false);
-
   return (
     <Form
       onSubmit={(values) => props.updateTeam(values)}
       initialValues={props.team}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({
+        handleSubmit,
+        dirty,
+        submitSucceeded,
+        dirtySinceLastSubmit,
+        form,
+        submitting,
+        values,
+      }) => {
+        const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         return (
           <div className="blue-grey mb3">
-            <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
+            <div className={`bg-white b--grey-light pa4 ${dirtyForm ? 'bt bl br' : 'ba'}`}>
               <h3 className="f3 fw6 dib blue-dark mv0">
                 <FormattedMessage {...messages.teamInfo} />
               </h3>
-              <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
               <form id="team-form" onSubmit={handleSubmit}>
-                <fieldset
-                  className="bn pa0"
-                  disabled={submitting || props.disabledForm || !editMode}
-                >
+                <fieldset className="bn pa0" disabled={submitting}>
                   <TeamInformation />
                 </fieldset>
               </form>
             </div>
-            {editMode && (
+            {dirtyForm && (
               <div className="cf pt0 h3">
                 <div className="w-70-l w-50 fl tr dib bg-grey-light">
-                  <Button className="blue-dark bg-grey-light h3" onClick={() => setEditMode(false)}>
+                  <Button className="blue-dark bg-grey-light h3" onClick={() => form.restart()}>
                     <FormattedMessage {...messages.cancel} />
                   </Button>
                 </div>
                 <div className="w-30-l w-50 h-100 fr dib">
                   <Button
-                    onClick={() => {
-                      handleSubmit();
-                      setEditMode(false);
-                    }}
+                    onClick={() => handleSubmit()}
                     className="w-100 h-100 bg-red white"
                     disabledClassName="bg-red o-50 white w-100 h-100"
                   >

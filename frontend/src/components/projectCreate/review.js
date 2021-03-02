@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { navigate } from '@reach/router';
+import truncate from '@turf/truncate';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
@@ -27,10 +28,10 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
 
       store.dispatch(createProject(metadata));
       let projectParams = {
-        areaOfInterest: metadata.geom,
+        areaOfInterest: truncate(metadata.geom, { precision: 6 }),
         projectName: metadata.projectName,
         organisation: metadata.organisation || cloneProjectData.organisation,
-        tasks: metadata.taskGrid,
+        tasks: truncate(metadata.taskGrid, { precision: 6 }),
         arbitraryTasks: metadata.arbitraryTasks,
       };
 
@@ -56,7 +57,10 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
         <FormattedMessage {...messages.step4} />
       </h3>
       <p className="pt2">
-        <FormattedMessage {...messages.reviewTaskNumberMessage} values={{ n: metadata.tasksNo }} />
+        <FormattedMessage
+          {...messages.reviewTaskNumberMessage}
+          values={{ n: metadata.tasksNumber }}
+        />
       </p>
 
       {cloneProjectData.name === null ? (

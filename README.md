@@ -34,3 +34,4 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 * [OpenStreetMap US](https://tasks.openstreetmap.us/)
 * [Map My Kerala](https://mapmykerala.in/)
 * [OpenHistoricalMap](https://tasks.openhistoricalmap.org)
+* [Oceania Tasking Manager](https://tasks.smartcitiestransport.com/)

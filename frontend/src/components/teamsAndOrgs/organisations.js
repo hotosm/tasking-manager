@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from '@reach/router';
+import { Link, useLocation } from '@reach/router';
 import { Form, Field } from 'react-final-form';
+import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
 import Select from 'react-select';
 import ReactPlaceholder from 'react-placeholder';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { IMAGE_UPLOAD_SERVICE } from '../../config';
 import { useUploadImage } from '../../hooks/UseUploadImage';
-import { EditModeControl } from './editMode';
 import { Management } from './management';
+import { InternalLinkIcon, ClipboardIcon } from '../svgIcons';
 import { Button } from '../button';
 import { UserAvatarList } from '../user/avatar';
 
@@ -80,42 +81,42 @@ export function OrganisationCard({ details }: Object) {
 }
 
 export function OrganisationForm(props) {
-  const [editMode, setEditMode] = useState(false);
-
   return (
     <Form
       onSubmit={(values) => props.updateOrg(values)}
       initialValues={props.organisation}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({
+        handleSubmit,
+        dirty,
+        submitSucceeded,
+        dirtySinceLastSubmit,
+        form,
+        submitting,
+        values,
+      }) => {
+        const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         return (
           <div className="blue-grey mb3">
-            <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
+            <div className={`bg-white b--grey-light pa4 ${dirtyForm ? 'bt bl br' : 'ba'}`}>
               <h3 className="f3 fw6 dib blue-dark mv0">
                 <FormattedMessage {...messages.orgInfo} />
               </h3>
-              <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
               <form id="org-form" onSubmit={handleSubmit}>
-                <fieldset
-                  className="bn pa0"
-                  disabled={submitting || props.disabledForm || !editMode}
-                >
-                  <OrgInformation />
+                <fieldset className="bn pa0" disabled={submitting}>
+                  <OrgInformation hasSlug={props.organisation && props.organisation.slug} />
                 </fieldset>
               </form>
             </div>
-            {editMode && (
+            {dirtyForm && (
               <div className="cf pt0 h3">
                 <div className="w-70-l w-50 fl tr dib bg-grey-light">
-                  <Button className="blue-dark bg-grey-light h3" onClick={() => setEditMode(false)}>
+                  <Button className="blue-dark bg-grey-light h3" onClick={() => form.restart()}>
                     <FormattedMessage {...messages.cancel} />
                   </Button>
                 </div>
                 <div className="w-30-l w-50 h-100 fr dib">
                   <Button
-                    onClick={() => {
-                      handleSubmit();
-                      setEditMode(false);
-                    }}
+                    onClick={() => handleSubmit()}
                     className="w-100 h-100 bg-red white"
                     disabledClassName="bg-red o-50 white w-100 h-100"
                   >
@@ -131,10 +132,14 @@ export function OrganisationForm(props) {
   );
 }
 
-export function OrgInformation(props) {
+export function OrgInformation({ hasSlug }) {
   const token = useSelector((state) => state.auth.get('token'));
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const [uploadError, uploading, uploadImg] = useUploadImage();
+  const location = useLocation();
+  const intl = useIntl();
+  //eslint-disable-next-line
+  const [isCopied, setCopied] = useCopyClipboard();
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
   const typeOptions = [
@@ -155,6 +160,39 @@ export function OrgInformation(props) {
         </label>
         <Field name="name" component="input" type="text" className={fieldClasses} required />
       </div>
+      {hasSlug ? (
+        <div className="cf">
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.publicUrl} />
+          </label>
+          <Field name="slug" component="input" className={fieldClasses} required>
+            {(props) => (
+              <>
+                <pre className="f6 di bg-tan blue-grey pa2">/organisations/{props.input.value}</pre>
+                <Link
+                  to={`/organisations/${props.input.value}/`}
+                  className="link blue-light ph2 hover-blue-dark"
+                >
+                  <InternalLinkIcon className="h1 w1 v-mid" />
+                </Link>
+                <span
+                  className="pointer blue-light hover-blue-dark"
+                  title={intl.formatMessage(messages.copyPublicUrl)}
+                >
+                  <ClipboardIcon
+                    className="h1 w1 ph1 v-mid"
+                    onClick={() =>
+                      setCopied(`${location.origin}/organisations/${props.input.value}/`)
+                    }
+                  />
+                </span>
+              </>
+            )}
+          </Field>
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="cf">
         <label className={labelClasses}>
           <FormattedMessage {...messages.website} />
@@ -167,25 +205,26 @@ export function OrgInformation(props) {
         </label>
         <Field name="description" component="textarea" className={fieldClasses} />
       </div>
-      {userDetails.role === 'ADMIN' && ( // only admin users can edit the org type
-        <div className="cf">
-          <label className={labelClasses}>
-            <FormattedMessage {...messages.type} />
-          </label>
-          <Field name="type" className={fieldClasses} required>
-            {(props) => (
-              <Select
-                classNamePrefix="react-select"
-                isClearable={false}
-                options={typeOptions}
-                placeholder={getTypePlaceholder(props.input.value)}
-                onChange={(value) => props.input.onChange(value.value)}
-                className="z-5"
-              />
-            )}
-          </Field>
-        </div>
-      )}
+      {userDetails &&
+        userDetails.role === 'ADMIN' && ( // only admin users can edit the org type
+          <div className="cf">
+            <label className={labelClasses}>
+              <FormattedMessage {...messages.type} />
+            </label>
+            <Field name="type" className={fieldClasses} required>
+              {(props) => (
+                <Select
+                  classNamePrefix="react-select"
+                  isClearable={false}
+                  options={typeOptions}
+                  placeholder={getTypePlaceholder(props.input.value)}
+                  onChange={(value) => props.input.onChange(value.value)}
+                  className="z-5"
+                />
+              )}
+            </Field>
+          </div>
+        )}
       <div className="cf">
         <label className={labelClasses}>
           <FormattedMessage {...messages.image} />
@@ -225,13 +264,13 @@ export function OrgInformation(props) {
   );
 }
 
-export function CreateOrgInfo(props) {
+export function CreateOrgInfo() {
   return (
     <div className="bg-white b--grey-light ba pa4 mb3">
       <h3 className="f3 blue-dark mv0 fw6">
         <FormattedMessage {...messages.orgInfo} />
       </h3>
-      <OrgInformation {...props} />
+      <OrgInformation hasSlug={false} />
     </div>
   );
 }

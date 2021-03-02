@@ -1,6 +1,4 @@
 import geojson
-import unittest
-from backend import create_app
 from backend.models.postgis.task import (
     InvalidGeoJson,
     InvalidData,
@@ -11,16 +9,10 @@ from backend.models.postgis.task import (
 from backend.models.postgis.statuses import TaskStatus
 from unittest.mock import patch, MagicMock
 
+from tests.backend.base import BaseTestCase
 
-class TestTask(unittest.TestCase):
-    def setUp(self):
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
 
-    def tearDown(self):
-        self.ctx.pop()
-
+class TestTask(BaseTestCase):
     @patch.object(Task, "update")
     @patch.object(Task, "set_task_history")
     def test_reset_task_sets_to_ready_status(self, mock_set_task_history, mock_update):
@@ -63,7 +55,6 @@ class TestTask(unittest.TestCase):
             Task.from_geojson_feature(1, invalid_feature)
 
     def test_cant_add_task_if_feature_has_missing_properties(self):
-        # Arrange
         # Missing zoom
         invalid_properties = geojson.loads(
             '{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],'

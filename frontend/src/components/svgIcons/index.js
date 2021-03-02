@@ -63,6 +63,7 @@ export { ProfilePictureIcon, UserIcon } from './profilePicture';
 export { HashtagIcon } from './hashtag';
 export { CopyrightIcon } from './copyright';
 export { RefreshIcon } from './refresh';
+export { LoadingIcon } from './loading';
 export { EnvelopeIcon } from './envelope';
 export { LinkedinIcon } from './linkedin';
 export { MarkerIcon } from './marker';

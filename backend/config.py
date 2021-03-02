@@ -89,11 +89,11 @@ class EnvironmentConfig:
     SUPPORTED_LANGUAGES = {
         "codes": os.getenv(
             "TM_SUPPORTED_LANGUAGES_CODES",
-            "ar, cs, de, el, en, es, fa_IR, fr, he, hu, id, it, ja, mg, ml, nl_NL, pt, pt_BR, ru, sv, sw, tl, tr, uk, zh_TW",  # noqa
+            "ar, cs, de, el, en, es, fa_IR, fr, he, hu, id, it, ja, ko, mg, ml, nl_NL, pt, pt_BR, ru, sv, sw, tl, tr, uk, zh_TW",  # noqa
         ),
         "languages": os.getenv(
             "TM_SUPPORTED_LANGUAGES",
-            "عربى, Česky, Deutsch, Ελληνικά, English, Español, فارسی, Français, עברית, Magyar, Indonesia, Italiano, 日本語, Malagasy, Malayalam, Nederlands, Português, Português (Brasil), Русский язык, Svenska, Kiswahili, Filipino (Tagalog), Türkçe, Українська, 中国台湾",  # noqa
+            "عربى, Česky, Deutsch, Ελληνικά, English, Español, فارسی, Français, עברית, Magyar, Indonesia, Italiano, 日本語, 한국어, Malagasy, Malayalam, Nederlands, Português, Português (Brasil), Русский язык, Svenska, Kiswahili, Filipino (Tagalog), Türkçe, Українська, 中国台湾",  # noqa
         ),
     }
 
@@ -119,3 +119,18 @@ class EnvironmentConfig:
 
     # Sentry backend DSN
     SENTRY_BACKEND_DSN = os.getenv("TM_SENTRY_BACKEND_DSN", None)
+
+
+class TestEnvironmentConfig(EnvironmentConfig):
+    POSTGRES_USER = os.getenv("POSTGRES_USER", None)
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", None)
+    POSTGRES_ENDPOINT = os.getenv("POSTGRES_ENDPOINT", "localhost")
+    POSTGRES_DB = os.getenv("POSTGRES_DB", None)
+    POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+    SQLALCHEMY_DATABASE_URI = (
+        f"postgresql://{POSTGRES_USER}"
+        + f":{POSTGRES_PASSWORD}"
+        + f"@{POSTGRES_ENDPOINT}:"
+        + f"{POSTGRES_PORT}"
+        + f"/test_{POSTGRES_DB}"
+    )

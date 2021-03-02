@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { redirectTo } from '@reach/router';
+import { useNavigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import Popup from 'reactjs-popup';
 
@@ -11,21 +11,22 @@ import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
 
 export function DeleteModal({ id, name, type, className }: Object) {
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.get('token'));
   const [deleteStatus, setDeleteStatus] = useState(null);
   const [error, setErrorMessage] = useState(null);
-  useEffect(() => {
-    if (deleteStatus === 'success' && type === 'notifications') {
-      redirectTo(`/inbox`);
-    }
-    if (deleteStatus === 'success') {
-      redirectTo(`/manage/${type}/`);
-    }
-  }, [deleteStatus, type]);
+
   const deleteEntity = () => {
     setDeleteStatus('started');
     fetchLocalJSONAPI(`${type}/${id}/`, token, 'DELETE')
-      .then((success) => setDeleteStatus('success'))
+      .then((success) => {
+        setDeleteStatus('success');
+        if (type === 'notifications') {
+          navigate(`/inbox`);
+        } else {
+          navigate(`/manage/${type}`);
+        }
+      })
       .catch((e) => {
         setDeleteStatus('failure');
         setErrorMessage(e.message);

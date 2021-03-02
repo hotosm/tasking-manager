@@ -16,6 +16,62 @@ from backend.models.postgis.statuses import OrganisationType
 from backend.services.users.authentication_service import token_auth
 
 
+class OrganisationsBySlugRestAPI(Resource):
+    def get(self, slug):
+        """
+        Retrieves an organisation
+        ---
+        tags:
+            - organisations
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              default: Token sessionTokenHere==
+            - name: slug
+              in: path
+              description: The unique organisation slug
+              required: true
+              type: string
+              default: hot
+            - in: query
+              name: omitManagerList
+              type: boolean
+              description: Set it to true if you don't want the managers list on the response.
+              default: False
+        responses:
+            200:
+                description: Organisation found
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: Organisation not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            authenticated_user_id = token_auth.current_user()
+            if authenticated_user_id is None:
+                user_id = 0
+            else:
+                user_id = authenticated_user_id
+            # Validate abbreviated.
+            omit_managers = strtobool(request.args.get("omitManagerList", "false"))
+            organisation_dto = OrganisationService.get_organisation_by_slug_as_dto(
+                slug, user_id, omit_managers
+            )
+            return organisation_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Organisation Not Found"}, 404
+        except Exception as e:
+            error_msg = f"Organisation GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg}, 500
+
+
 class OrganisationsRestAPI(Resource):
     @token_auth.login_required
     def post(self):
@@ -42,6 +98,9 @@ class OrganisationsRestAPI(Resource):
                     name:
                         type: string
                         default: HOT
+                    slug:
+                        type: string
+                        default: hot
                     logo:
                         type: string
                         default: https://cdn.hotosm.org/tasking-manager/uploads/1588741335578_hot-logo.png
@@ -226,6 +285,9 @@ class OrganisationsRestAPI(Resource):
               schema:
                 properties:
                     name:
+                        type: string
+                        default: HOT
+                    slug:
                         type: string
                         default: HOT
                     logo:

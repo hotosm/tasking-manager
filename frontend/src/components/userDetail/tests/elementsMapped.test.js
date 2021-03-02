@@ -26,7 +26,7 @@ describe('ElementsMapped & TaskStats components', () => {
     expect(getByText('Buildings mapped')).toBeInTheDocument();
     expect(getByText('Km road mapped')).toBeInTheDocument();
     expect(getByText('Points of interests mapped')).toBeInTheDocument();
-    expect(getByText('Waterways mapped')).toBeInTheDocument();
+    expect(getByText('Km waterways mapped')).toBeInTheDocument();
     //total road mapped
     expect(getByText('229')).toBeInTheDocument();
   });

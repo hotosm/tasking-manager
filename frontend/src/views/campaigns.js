@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, redirectTo } from '@reach/router';
+import { Link, useNavigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
 import { FormattedMessage } from 'react-intl';
@@ -50,19 +50,13 @@ export function ListCampaigns() {
 
 export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
-  const [newCampaignId, setNewCampaignId] = useState(null);
-
-  useEffect(() => {
-    if (newCampaignId) {
-      redirectTo(`/manage/campaigns/${newCampaignId}`);
-    }
-  }, [newCampaignId]);
 
   const createCampaign = (payload) => {
     pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
-      .then((result) => setNewCampaignId(result.campaignId))
+      .then((result) => navigate(`/manage/campaigns/${result.campaignId}`))
       .catch((e) => setError(e));
   };
 
@@ -130,10 +124,10 @@ export function CreateCampaign() {
 }
 
 export function EditCampaign(props) {
-  useSetTitleTag('Edit campaign');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`, props.id);
+  useSetTitleTag(`Edit ${campaign.name}`);
   const [projectsError, projectsLoading, projects] = useFetch(
     `projects/?campaign=${encodeURIComponent(campaign.name)}&omitMapResults=true`,
     campaign.name !== undefined,
@@ -179,7 +173,6 @@ export function EditCampaign(props) {
           campaign={{ name: campaign.name }}
           updateCampaign={updateCampaign}
           disabledForm={error || loading}
-          saveError={nameError}
         />
         <ErrorMessage nameError={nameError} />
       </div>

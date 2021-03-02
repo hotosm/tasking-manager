@@ -27,8 +27,8 @@ export const MyTasksNav = (props) => {
     /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
     <header className="w-100">
       <div className="cf">
-        <div className="w-75-l w-60 fl">
-          <h3 className="barlow-condensed blue-dark f2 ma0 pv3 mt1 v-mid dib ttu pl2 pl0-l">
+        <div className="w-75-l w-60 fl mt4">
+          <h3 className="barlow-condensed blue-dark f2 ma0 v-mid dib ttu pl2 pl0-l">
             <FormattedMessage {...messages.myTasks} />
           </h3>
         </div>

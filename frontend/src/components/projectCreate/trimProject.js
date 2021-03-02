@@ -18,7 +18,7 @@ const clipProject = (clip, metadata, map, updateMetadata, token) => {
   });
 
   pushToLocalJSONAPI(url, body, token).then((grid) => {
-    updateMetadata({ ...metadata, tasksNo: grid.features.length, taskGrid: grid });
+    updateMetadata({ ...metadata, tasksNumber: grid.features.length, taskGrid: grid });
   });
 };
 

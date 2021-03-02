@@ -6,15 +6,21 @@ import messages from './messages';
 import { StatsCardContent } from '../statsCardContent';
 import { ProgressBar } from '../progressBar';
 import { usePredictYearlyTasks } from '../../hooks/UsePredictYearlyTasks';
-import { useOrganisationLevel, useGetLevel } from '../../hooks/UseOrganisationLevel';
+import {
+  useOrganisationLevel,
+  usePredictLevel,
+  useGetLevel,
+} from '../../hooks/UseOrganisationLevel';
 
 export function OrganisationUsageLevel({ completedActions, orgName, type, userIsOrgManager }) {
   const [currentLevel, nextLevelThreshold] = useOrganisationLevel(completedActions);
+  const nextLevel = useGetLevel(nextLevelThreshold);
   const percent = parseInt((completedActions / nextLevelThreshold) * 100);
   const yearPrediction = usePredictYearlyTasks(completedActions, new Date());
-  const levelPrediction = useGetLevel(yearPrediction);
+  const levelPrediction = usePredictLevel(yearPrediction, type);
 
   const showTierInfo = ['DISCOUNTED', 'FULL_FEE'].includes(type) && userIsOrgManager;
+  const showDiscountLabel = levelPrediction.tier !== 'free' && type === 'DISCOUNTED';
   const currentYear = getYear(new Date());
 
   return (
@@ -50,7 +56,7 @@ export function OrganisationUsageLevel({ completedActions, orgName, type, userIs
                     percent: percent,
                     nextTier: (
                       <strong>
-                        <FormattedMessage {...messages[`${levelPrediction.tier}Tier`]} />
+                        <FormattedMessage {...messages[`${nextLevel.tier}Tier`]} />
                       </strong>
                     ),
                     nextLevel: <strong>{currentLevel.level + 1}</strong>,
@@ -94,8 +100,22 @@ export function OrganisationUsageLevel({ completedActions, orgName, type, userIs
                   }
                   className="tc"
                   value={
-                    // eslint-disable-next-line
-                    <FormattedNumber value={levelPrediction.fee} style="currency" currency="USD" />
+                    <>
+                      <FormattedNumber
+                        value={levelPrediction.fee}
+                        // eslint-disable-next-line
+                        style="currency"
+                        currency="USD"
+                      />
+                      {showDiscountLabel ? (
+                        <span className="f4 ttl">
+                          {' '}
+                          (<FormattedMessage {...messages.discounted} />)
+                        </span>
+                      ) : (
+                        ''
+                      )}
+                    </>
                   }
                 />
               </div>

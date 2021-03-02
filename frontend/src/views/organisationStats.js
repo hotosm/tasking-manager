@@ -27,7 +27,7 @@ export const OrganisationStats = ({ id }) => {
   const [forceUpdated, forceUpdate] = useForceUpdate();
   useEffect(() => {
     if (!query.startDate) {
-      setQuery({ ...query, startDate: format(startOfYear(Date.now()), 'yyyy-MM-dd') });
+      setQuery({ ...query, startDate: format(startOfYear(Date.now()), 'yyyy-MM-dd') }, 'replaceIn');
     }
   });
   const [apiState] = useTasksStatsQueryAPI(
