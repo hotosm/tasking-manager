@@ -1,4 +1,3 @@
-import unittest
 from unittest.mock import patch
 from backend.services.project_service import (
     ProjectService,
@@ -12,9 +11,10 @@ from backend.services.project_service import (
 from backend.services.project_service import ProjectAdminService
 from backend.models.dtos.project_dto import LockedTasksForUser
 from backend.models.postgis.task import Task
+from tests.backend.base import BaseTestCase
 
 
-class TestProjectService(unittest.TestCase):
+class TestProjectService(BaseTestCase):
     @patch.object(Project, "get")
     def test_project_service_raises_error_if_project_not_found(self, mock_project):
         mock_project.return_value = None

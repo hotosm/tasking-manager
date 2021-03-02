@@ -1,43 +1,13 @@
-import os
-import unittest
-from backend import create_app
 from backend.services.project_service import ProjectService
 from backend.models.postgis.utils import NotFound
+
 from tests.backend.helpers.test_helpers import create_canned_project
+from tests.backend.base import BaseTestCase
 
 
-class TestFeaturedProjectService(unittest.TestCase):
-    skip_tests = False
-
-    @classmethod
-    def setUpClass(cls):
-        env = os.getenv("CI", "false")
-
-        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == "true":
-            cls.skip_tests = True
-
-    def setUp(self):
-        if self.skip_tests:
-            return
-
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
-        self.test_project, self.test_user = create_canned_project()
-
-    def tearDown(self):
-        if self.skip_tests:
-            return
-
-        self.test_project.delete()
-        self.test_user.delete()
-        self.ctx.pop()
-
+class TestFeaturedProjectService(BaseTestCase):
     def test_featured_projects_service(self):
-        if self.skip_tests:
-            return
+        self.test_project, self.test_user = create_canned_project()
 
         # Featured a not created project.
         with self.assertRaises(NotFound):

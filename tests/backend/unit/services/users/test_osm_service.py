@@ -1,10 +1,10 @@
-import unittest
 from backend.services.users.osm_service import OSMService, OSMServiceError
+from tests.backend.base import BaseTestCase
 
 from tests.backend.helpers.test_helpers import get_canned_simplified_osm_user_details
 
 
-class TestOSMService(unittest.TestCase):
+class TestOSMService(BaseTestCase):
     def test_osm_service_can_parse_oms_user_details_xml(self):
         # Arrange
         osm_response = get_canned_simplified_osm_user_details()

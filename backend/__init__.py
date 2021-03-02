@@ -40,7 +40,7 @@ osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
 from backend.models.postgis import *  # noqa
 
 
-def create_app(env=None):
+def create_app(env="backend.config.EnvironmentConfig"):
     """
     Bootstrap function to initialise the Flask app and config
     :return: Initialised Flask app
@@ -52,8 +52,7 @@ def create_app(env=None):
     app = Flask(__name__, template_folder="services/messaging/templates/")
 
     # Load configuration options from environment
-    app.config.from_object("backend.config.EnvironmentConfig")
-
+    app.config.from_object(env)
     # Enable logging to files
     initialise_logger(app)
     app.logger.info("Starting up a new Tasking Manager application")

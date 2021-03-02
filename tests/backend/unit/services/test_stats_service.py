@@ -1,10 +1,10 @@
-import unittest
 from backend.services.stats_service import StatsService, TaskStatus
 from backend.models.postgis.project import Project
 from backend.models.postgis.user import User
+from tests.backend.base import BaseTestCase
 
 
-class TestStatsService(unittest.TestCase):
+class TestStatsService(BaseTestCase):
     def test_update_after_mapping_increments_counter(self):
         # Arrange
         test_project = Project()
@@ -158,7 +158,7 @@ class TestStatsService(unittest.TestCase):
             test_project, test_validator, TaskStatus.MAPPED, TaskStatus.BADIMAGERY
         )
 
-        # Admin undos marking task as bad imagery
+        # Admin undo marking task as bad imagery
         test_project, test_admin = StatsService._update_tasks_stats(
             test_project, test_admin, TaskStatus.BADIMAGERY, TaskStatus.MAPPED, "undo"
         )
@@ -173,7 +173,7 @@ class TestStatsService(unittest.TestCase):
             test_project, test_mapper, TaskStatus.INVALIDATED, TaskStatus.MAPPED
         )
 
-        # Admin undos marking task as mapped (test_mapper is given to the function though, as the author of the
+        # Admin undo marking task as mapped (test_mapper is given to the function though, as the author of the
         # last_change - compare with MappingServer.undo_mapping() method)
         test_project, test_mapper = StatsService._update_tasks_stats(
             test_project, test_mapper, TaskStatus.MAPPED, TaskStatus.INVALIDATED, "undo"

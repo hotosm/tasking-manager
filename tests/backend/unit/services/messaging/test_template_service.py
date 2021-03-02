@@ -1,5 +1,3 @@
-import unittest
-
 from backend.services.messaging.template_service import (
     template_var_replacing,
     get_template,
@@ -7,9 +5,10 @@ from backend.services.messaging.template_service import (
     format_username_link,
 )
 from flask import current_app
+from tests.backend.base import BaseTestCase
 
 
-class TestTemplateService(unittest.TestCase):
+class TestTemplateService(BaseTestCase):
     def test_variable_replacing(self):
         # Act
         content = get_template("email_verification_en.html")

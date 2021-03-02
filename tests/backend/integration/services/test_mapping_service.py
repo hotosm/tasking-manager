@@ -1,44 +1,20 @@
 import datetime
 import hashlib
-import os
-import unittest
 from unittest.mock import patch
-from backend import create_app
 from backend.services.mapping_service import MappingService, Task
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
 
 
-class TestMappingService(unittest.TestCase):
+class TestMappingService(BaseTestCase):
 
     skip_tests = False
     test_project = None
     test_user = None
 
-    @classmethod
-    def setUpClass(cls):
-        env = os.getenv("CI", "false")
-
-        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == "true":
-            cls.skip_tests = True
-
     def setUp(self):
-        if self.skip_tests:
-            return
-
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
+        super().setUp()
         self.test_project, self.test_user = create_canned_project()
-
-    def tearDown(self):
-        if self.skip_tests:
-            return
-
-        self.test_project.delete()
-        self.test_user.delete()
-        self.ctx.pop()
 
     @patch.object(Task, "get_tasks")
     def test_gpx_xml_file_generated_correctly(self, mock_task):
