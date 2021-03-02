@@ -384,12 +384,12 @@ export default defineMessages({
   newUsersOnLastMonth: {
     id: 'management.stats.new_users.month',
     defaultMessage:
-      '{number, plural, one {# user registered on last month} other {# users registered on last month}}',
+      '{number, plural, one {# user registered in the last 30 days} other {# users registered in the last 30 days}}',
   },
   newUsersOnLastWeek: {
     id: 'management.stats.new_users.week',
     defaultMessage:
-      '{number, plural, one {# user registered on last week} other {# users registered on last week}}',
+      '{number, plural, one {# user registered in the last 7 days} other {# users registered in the last 7 days}}',
   },
   activeNewUsers: {
     id: 'management.stats.new_users.active',

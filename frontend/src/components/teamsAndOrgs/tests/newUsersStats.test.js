@@ -17,7 +17,7 @@ describe('NewUsersStats', () => {
     expect(screen.getByText('36%')).toBeInTheDocument();
     expect(screen.getByText('Confirmed email address')).toBeInTheDocument();
     expect(screen.getByText('26%')).toBeInTheDocument();
-    expect(screen.getByText('1,044 users registered on last week')).toBeInTheDocument();
+    expect(screen.getByText('1,044 users registered in the last 7 days')).toBeInTheDocument();
   });
 
   it('render month stats', async () => {
@@ -30,6 +30,6 @@ describe('NewUsersStats', () => {
     expect(screen.getByText('36%')).toBeInTheDocument();
     expect(screen.getByText('Confirmed email address')).toBeInTheDocument();
     expect(screen.getByText('26%')).toBeInTheDocument();
-    expect(screen.getByText('1,044 users registered on last month')).toBeInTheDocument();
+    expect(screen.getByText('1,044 users registered in the last 30 days')).toBeInTheDocument();
   });
 });
