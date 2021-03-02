@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
 import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
 import ReactPlaceholder from 'react-placeholder';
-import { Link, redirectTo } from '@reach/router';
+import { Link, useNavigate } from '@reach/router';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
 
@@ -17,18 +17,12 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export const CreateInterest = () => {
   useSetTitleTag('Create new category');
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.get('token'));
-  const [newInterestId, setNewInterestId] = useState(null);
-
-  useEffect(() => {
-    if (newInterestId) {
-      redirectTo(`/manage/categories/${newInterestId}`);
-    }
-  }, [newInterestId]);
 
   const createInterest = (payload) => {
     pushToLocalJSONAPI('interests/', JSON.stringify(payload), token, 'POST').then((result) =>
-      setNewInterestId(result.id),
+      navigate(`/manage/categories/${result.id}`),
     );
   };
 
