@@ -24,6 +24,10 @@ export default defineMessages({
     id: 'management.link.edit.team',
     defaultMessage: 'Edit team',
   },
+  edit: {
+    id: 'management.members.edit',
+    defaultMessage: 'Edit',
+  },
   members: {
     id: 'management.members',
     defaultMessage: 'Members',
