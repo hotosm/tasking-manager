@@ -534,7 +534,7 @@ class Task(db.Model):
         """
         Constructs and validates a task from a GeoJson feature object
         :param task_id: Unique ID for the task
-        :param task_feature: A geoJSON feature object
+        :param task_feature: A geojson feature object
         :raises InvalidGeoJson, InvalidData
         """
         if type(task_feature) is not geojson.Feature:
