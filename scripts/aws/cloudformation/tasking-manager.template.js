@@ -22,21 +22,21 @@ const Parameters = {
     Type: 'String',
     Description: 'Path to database dump on S3; Ex: s3://my-bkt/tm.sql'
   },
-  PostgresDB: {
+  DatabaseName: {
     Type: 'String',
-    Description: 'POSTGRES_DB'
+    Description: 'Database Name'
   },
-  PostgresUser: {
+  DatabaseUser: {
     Type: 'String',
-    Description: 'POSTGRES_USER'
+    Description: 'Database User'
   },
   DatabaseSize: {
-    Description: 'Database size in GB',
+    Description: 'Database disk size in GB',
     Type: 'String',
     Default: '100'
   },
   ELBSubnets: {
-    Description: 'ELB subnets',
+    Description: 'Comma separated list of ELB subnets',
     Type: 'String',
     Default: 'ex: subnet-a1b2c3,subnet-d4e5f6,..'
   },
@@ -249,15 +249,16 @@ const Resources = {
       KeyName: 'mbtiles'
     }
   },
-  TaskingManagerECSTaskDefinition: {
+  TaskingManagerECSTaskDefinition: { // cf.ref returns ARN with version
     Type: 'AWS::ECS::TaskDefinition',
+    DependsOn: 'SecretRDSInstanceAttachment',  // Wait for RDS credentials to be ready
     Properties: {
       ContainerDefinitions: [{
         Name: 'Backend_Service',
         Environment: [
           { 'Name': 'POSTGRES_ENDPOINT', 'Value': cf.getAtt('TaskingManagerRDS','Endpoint.Address') },
-          { 'Name': 'POSTGRES_DB', 'Value': 'dummy' },
-          { 'Name': 'POSTGRES_USER', 'Value': cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSSecret'), 'SecretString:username}}']) },
+          { 'Name': 'POSTGRES_DB', 'Value': cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:dbname}}']) },
+          { 'Name': 'POSTGRES_USER', 'Value': cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:username}}']) },
           { 'Name': 'TM_APP_BASE_URL', 'Value': cf.ref('TaskingManagerAppBaseUrl') },
           { 'Name': 'TM_CONSUMER_KEY', 'Value': cf.ref('TaskingManagerConsumerKey') },
           { 'Name': 'TM_SMTP_HOST', 'Value': cf.ref('TaskingManagerSMTPHost') },
@@ -274,7 +275,7 @@ const Resources = {
         Secrets: [
           { 
             'Name': 'POSTGRES_PASSWORD',
-            'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('PostgresPasswordManagedSecret') ] ) 
+            'ValueFrom': cf.ref('TaskingManagerRDSManagedPassword')  
           },
           { 
             'Name': 'TM_SMTP_PASSWORD',
@@ -315,19 +316,31 @@ const Resources = {
             Protocol: 'tcp'
           }
         ],
+        LogConfiguration: {
+          Logdriver: 'awslogs',
+          Options: {
+            'awslogs-create-group': true,
+            'awslogs-region': cf.region,
+            'awslogs-group': '/ecs/tm4-backend',
+            'awslogs-stream-prefix': 'tm4-ecs'
+          }
+        },
       }],
       Cpu: '1024', 
       ExecutionRoleArn: cf.ref('TaskingManagerECSExecutionRole'),
-      Family: Tasking_Manager,
+      Family: 'Tasking_Manager',
       Memory: '4096',
       NetworkMode: 'awsvpc',
       RequiresCompatibilities: ['FARGATE'],
       Tags: [{
-        Key: 'Project',
+        Key: 'Tool',
         Value: 'TaskingManager'
       }, {
         Key: 'Name',
         Value: cf.stackName
+      }, {
+        Key: 'Deployment_Environment',
+        Value: cf.ref('AutoscalingPolicy') 
       }],
       TaskRoleArn:cf.ref('TaskingManagerECSTaskRole'), // s3 bucket access, secrets manager 
     }
@@ -337,13 +350,17 @@ const Resources = {
     Properties: {
       Cluster: cf.ref('TaskingManagerECSCluster'),
       DeploymentConfiguration: {
+      //  DeploymentCircuitBreaker: {
+      //    Enable: true,
+      //    Rollback: true,
+      //  },
         MaximumPercent: 200,
         MinimumHealthyPercent: 50
       },
       DeploymentController: {
         'Type': 'ECS'
       },
-      DesiredCount: cf.if('IsTaskingManagerProduction', 3, 1),
+      DesiredCount: cf.if('IsTaskingManagerProduction', 3, 2),
       EnableECSManagedTags: true,
       HealthCheckGracePeriodSeconds: 300,
       LaunchType: 'FARGATE',
@@ -354,7 +371,7 @@ const Resources = {
       }],
       NetworkConfiguration: {
         AwsvpcConfiguration: {
-          AssignPublicIp: 'ENABLED',
+          // AssignPublicIp: 'ENABLED',
           SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
           Subnets: cf.split(',', cf.ref('ELBSubnets')) // private subnets on vpc + nat gateway
         }
@@ -364,16 +381,20 @@ const Resources = {
       SchedulingStrategy: 'REPLICA',
       ServiceName: cf.stackName,
       Tags: [{
-        Key: 'Project',
+        Key: 'Tool',
         Value: 'TaskingManager'
       }, {
         Key: 'Name',
         Value: cf.stackName
-      }],
-      TaskDefinition: cf.ref('TaskingManagerECSTaskDefinition')
+      }, {
+        Key: 'Deployment_Environment',
+        Value: cf.ref('AutoscalingPolicy') 
+      }
+      ],
+      TaskDefinition: cf.ref('TaskingManagerECSTaskDefinition') // !!! WILL NOT STABILIZE UNLESS version is specified
     }
   },
-  TaskingManagerECSTaskRole: {  //  grants containers in the task permission to call AWS APIs - s3
+  TaskingManagerECSTaskRole: {  //  grants processes in the containers permission to call AWS APIs - s3
     Type: 'AWS::IAM::Role',
     Properties: {
       AssumeRolePolicyDocument: {
@@ -418,7 +439,7 @@ const Resources = {
       RoleName: cf.join('-', [cf.stackName, 'ecs', 'role'])
     }
   }, 
-  TaskingManagerECSExecutionRole: { 
+  TaskingManagerECSExecutionRole: { // Grants access to AWS services for the ECS agent 
     Type: 'AWS::IAM::Role',
     Properties: {
       AssumeRolePolicyDocument: {
@@ -432,48 +453,54 @@ const Resources = {
         }]
       },
       ManagedPolicyArns: [
-          'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy'
+        'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy',
+        'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
       ],
-      Policies: [{
-        PolicyName: "SecretsPolicy",
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Effect: "Allow",
-              Action: [
-                "secretsmanager:GetSecretValue",
-                "kms:Decrypt",
-                // "logs:CreateLogStream",
-                // "logs:PutLogEvents"
-              ],
-              Resource: [
-              cf.join(':', ['arn:aws:secretsmanager:', cf.region, cf.accountId, 'secret:*']),
-              cf.join(':', ['arn:aws:kms:', cf.region, cf.accountId, 'key/<key_id>'])
-              ]
-            }
-          ]
+      Policies: [
+        {
+          PolicyName: "SecretsPolicy",
+          PolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Effect: "Allow",
+                Action: "secretsmanager:GetSecretValue",
+                Resource: [
+                  cf.ref('TaskingManagerRDSManagedPassword'),
+                  cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('DatabaseManagedPassword')]),
+                  cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('SMTPPassword')]),
+                  cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('OAuth2ConsumerSecret')]),
+                  cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('NewRelicLicenseKey')]),
+                  cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('ImageUploadAPIKey')]),
+                  cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('TaskingManagerManagedSecret')]),
+                ]
+              },
+              {
+                Effect: "Allow",
+                Action: "secretsmanager:ListSecrets",
+                Resource: "*"
+              }
+            ]
+          } 
+        },
+        {
+          PolicyName: 'AutoCreateLogGroup',
+          PolicyDocument: {
+           Version: "2012-10-17",
+           Statement: [
+             {
+               Effect: "Allow",
+               Action: [
+                 "logs:CreateLogStream",
+                 "logs:DescribeLogStreams",
+                 "logs:CreateLogGroup",
+                 "logs:PutLogEvents"
+               ],
+               Resource: "*"
+             }
+           ]
+          }
         }
-      },
-      {
-        PolicyName: "secretspolicy2",
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Effect: "Allow",
-              Action: "secretsmanager:GetSecretValue",
-              Resource: [
-                cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('PostgresPasswordManagedSecret')])
-              ]
-            },
-            {
-              Effect: "Allow",
-              Action: "secretsmanager:ListSecrets",
-              Resource: "*"
-            }
-         ]
-      } }
       ],
       RoleName: cf.join('-', [cf.stackName, 'ecs', 'execution-role'])
     }
@@ -546,7 +573,10 @@ const Resources = {
       Protocol: 'HTTP',
       TargetType: 'ip', //what else might this change?
       VpcId: cf.importValue(cf.join('-', ['hotosm-network-production', 'default-vpc', cf.region])),
-      Tags: [ { "Key": "stack_name", "Value": cf.stackName } ],
+      Tags: [ 
+        { Key: 'stack_name', Value: cf.stackName }, 
+        { Key: 'Tool', Value: 'TaskingManager' },
+        { Key: 'Deployment_Environment', Value: cf.ref('AutoscalingPolicy') }],
       Matcher: {
         HttpCode: '200,202,302,304'
       }
@@ -587,41 +617,49 @@ const Resources = {
       Protocol: 'HTTP'
     }
   },
-  TaskingManagerRDSSecret: {
+  TaskingManagerRDSManagedPassword: {
     Type: 'AWS::SecretsManager::Secret',
     Properties: {
       Description: 'Experiment to create a secret via template',
-      Name: 'demo/tm-rds-secret',
+      Name: 'demo/taskingmanager-backend/database',
       GenerateSecretString: {
         PasswordLength: 32,
         ExcludePunctuation: true,
         SecretStringTemplate: '{"username": "taskingmanager", "engine": "postgres", "port": 5432}',
         GenerateStringKey: 'password'
-      }
+      },
+      Tags: [
+        { Key: 'Tool', Value: 'TaskingManager' },
+        { Key: 'Deployment_Environment', Value: cf.ref('AutoscalingPolicy') },
+      ]
     }
   },
   TaskingManagerRDS: {
     Type: 'AWS::RDS::DBInstance',
     Properties: {
-        Engine: 'postgres',
-        DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresDB')),
-        EngineVersion: '11.8',
-        MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSSecret'), 'SecretString:username}}'])),
-        MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSSecret'), 'SecretString:password}}'])),
-        AllocatedStorage: cf.ref('DatabaseSize'),
-        BackupRetentionPeriod: 10,
-        StorageType: 'gp2',
-        EnableCloudwatchLogsExports: ['postgresql'],
-        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.t3.2xlarge', 'db.t2.small'),
-        DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
-        VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
-        MonitoringInterval: 0
+      Engine: 'postgres',
+      DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('DatabaseName')),
+      EngineVersion: '11.8',
+      MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:username}}'])),
+      MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:password}}'])),
+      AllocatedStorage: cf.ref('DatabaseSize'),
+      BackupRetentionPeriod: 10,
+      StorageType: 'gp2',
+      EnableCloudwatchLogsExports: ['postgresql'],
+      DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.t3.2xlarge', 'db.t2.small'),
+      DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
+      VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
+      MonitoringInterval: 0,
+      Tags: [
+        { Key: 'Tool', Value: 'TaskingManager' },
+        { Key: 'Deployment_Environment', Value: cf.ref('AutoscalingPolicy') }
+      ]
     }
   },
   SecretRDSInstanceAttachment: {
     Type: 'AWS::SecretsManager::SecretTargetAttachment',
     Properties: {
-      SecretId: cf.ref('TaskingManagerRDSSecret'),
+      SecretId: cf.ref('TaskingManagerRDSManagedPassword'),
       TargetId: cf.ref('TaskingManagerRDS'),
       TargetType: 'AWS::RDS::DBInstance'
     }
