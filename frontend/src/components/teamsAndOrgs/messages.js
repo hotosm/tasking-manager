@@ -16,6 +16,10 @@ export default defineMessages({
     id: 'management.fields.managers',
     defaultMessage: 'Managers',
   },
+  noManagers: {
+    id: 'management.fields.managers.empty',
+    defaultMessage: 'There are no managers yet.',
+  },
   manage: {
     id: 'management.link.manage',
     defaultMessage: 'Manage {entity}',
@@ -31,6 +35,10 @@ export default defineMessages({
   members: {
     id: 'management.members',
     defaultMessage: 'Members',
+  },
+  noMembers: {
+    id: 'management.members.empty',
+    defaultMessage: 'There are no members yet.',
   },
   mappingTeams: {
     id: 'management.teams.mapping',
