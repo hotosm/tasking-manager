@@ -129,6 +129,31 @@ const Conditions = {
     , 'hotosm')
 };
 
+/*
+ * Resources
+ *
+ * ECS Cluster
+ * ECS Definition
+ * ECS Service
+ * Secrets Policy :- Secrets Manager Secrets
+ * TaskingManagerECSTaskRole :-
+ * TaskingManagerECSExecutionRole
+ * TaskingManagerASG
+ * TaskingManagerASGPolicy
+ * TaskingManager Load Balancer
+ * Load Balancer Route 53
+ * Target Group
+ * ALB HTTPS Listener
+ * ALB HTTP Listener
+ * RDS Managed Password
+ * RDS Instance
+ * RDS Secret attachment
+ * React Bucket S3
+ * React Bucket Policy
+ * React CloudFront
+ * Route 53
+ *
+ */
 const Resources = {
   TaskingManagerECSCluster: {
     Type: 'AWS::ECS::Cluster',
@@ -251,58 +276,62 @@ const Resources = {
   },
   TaskingManagerECSTaskDefinition: { // cf.ref returns ARN with version
     Type: 'AWS::ECS::TaskDefinition',
-    DependsOn: 'SecretRDSInstanceAttachment',  // Wait for RDS credentials to be ready
+    DependsOn: [ 'SecretsPolicy', 'SecretRDSInstanceAttachment'],  // Wait for RDS credentials to be ready
     Properties: {
+      RequiresCompatibilities: ['FARGATE'],
       ContainerDefinitions: [{
         Name: 'Backend_Service',
+        // Command: ['/bin/sh', '-c', 'echo $POSTGRES_ENDPOINT'],
         Environment: [
-          { 'Name': 'POSTGRES_ENDPOINT', 'Value': cf.getAtt('TaskingManagerRDS','Endpoint.Address') },
-          { 'Name': 'POSTGRES_DB', 'Value': cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:dbname}}']) },
-          { 'Name': 'POSTGRES_USER', 'Value': cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:username}}']) },
-          { 'Name': 'TM_APP_BASE_URL', 'Value': cf.ref('TaskingManagerAppBaseUrl') },
-          { 'Name': 'TM_CONSUMER_KEY', 'Value': cf.ref('TaskingManagerConsumerKey') },
-          { 'Name': 'TM_SMTP_HOST', 'Value': cf.ref('TaskingManagerSMTPHost') },
-          { 'Name': 'TM_SMTP_PORT', 'Value': cf.ref('TaskingManagerSMTPPort') },
-          { 'Name': 'TM_SMTP_USER', 'Value': cf.ref('TaskingManagerSMTPUser') },
-          { 'Name': 'TM_EMAIL_FROM_ADDRESS', 'Value': cf.ref('TaskingManagerEmailFromAddress') },
-          { 'Name': 'TM_EMAIL_CONTACT_ADDRESS', 'Value': cf.ref('TaskingManagerEmailContactAddress') },
-          { 'Name': 'TM_ORG_NAME', 'Value': cf.ref('TaskingManagerOrgName') },
-          { 'Name': 'TM_ORG_CODE', 'Value': cf.ref('TaskingManagerOrgCode') },
-          { 'Name': 'TM_ORG_LOGO', 'Value': cf.ref('TaskingManagerLogo') },
-          { 'Name': 'TM_IMAGE_UPLOAD_API_URL', 'Value': cf.ref('TaskingManagerImageUploadAPIURL') },
-          { 'Name': 'TM_SENTRY_BACKEND_DSN', 'Value': cf.ref('SentryBackendDSN') },
+          { Name: 'POSTGRES_ENDPOINT', Value: cf.getAtt('TaskingManagerRDS','Endpoint.Address') },
+          { Name: 'POSTGRES_DB', Value: cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:dbname}}']) },
+          { Name: 'POSTGRES_USER', Value: cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:username}}']) },
+          { Name: 'TM_APP_BASE_URL', Value: cf.ref('TaskingManagerAppBaseUrl') },
+          { Name: 'TM_CONSUMER_KEY', Value: cf.ref('TaskingManagerConsumerKey') },
+          { Name: 'TM_SMTP_HOST', Value: cf.ref('TaskingManagerSMTPHost') },
+          { Name: 'TM_SMTP_PORT', Value: cf.ref('TaskingManagerSMTPPort') },
+          { Name: 'TM_SMTP_USER', Value: cf.ref('TaskingManagerSMTPUser') },
+          { Name: 'TM_EMAIL_FROM_ADDRESS', Value: cf.ref('TaskingManagerEmailFromAddress') },
+          { Name: 'TM_EMAIL_CONTACT_ADDRESS', Value: cf.ref('TaskingManagerEmailContactAddress') },
+          { Name: 'TM_ORG_NAME', Value: cf.ref('TaskingManagerOrgName') },
+          { Name: 'TM_ORG_CODE', Value: cf.ref('TaskingManagerOrgCode') },
+          { Name: 'TM_ORG_LOGO', Value: cf.ref('TaskingManagerLogo') },
+          { Name: 'TM_IMAGE_UPLOAD_API_URL', Value: cf.ref('TaskingManagerImageUploadAPIURL') },
+          { Name: 'TM_SENTRY_BACKEND_DSN', Value: cf.ref('SentryBackendDSN') },
         ],
         Secrets: [
           { 
-            'Name': 'POSTGRES_PASSWORD',
-            'ValueFrom': cf.ref('TaskingManagerRDSManagedPassword')  
+            Name: 'POSTGRES_PASSWORD',
+            ValueFrom: cf.ref('TaskingManagerRDSManagedPassword')
           },
           { 
-            'Name': 'TM_SMTP_PASSWORD',
-            'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('SMTPPassword') ] ) 
+            Name: 'TM_SMTP_PASSWORD',
+            ValueFrom: cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('SMTPPassword') ] )
           },
           { 
-            'Name': 'TM_SECRET',
-            'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('TaskingManagerManagedSecret') ] ) 
+            Name: 'TM_SECRET',
+            ValueFrom: cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('TaskingManagerManagedSecret') ] )
           },
           { 
-            'Name': 'TM_CONSUMER_SECRET',
-            'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('OAuth2ConsumerSecret') ] ) 
+            Name: 'TM_CONSUMER_SECRET',
+            ValueFrom: cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('OAuth2ConsumerSecret') ] )
           },
           { 
-            'Name': 'NEW_RELIC_LICENSE_KEY',
-              'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('NewRelicLicenseKey') ] ) 
+            Name: 'NEW_RELIC_LICENSE_KEY',
+            ValueFrom: cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('NewRelicLicenseKey') ] )
           },
           { 
-            'Name': 'TM_IMAGE_UPLOAD_API_KEY',
-            'ValueFrom': cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('ImageUploadAPIKey') ] ) 
+            Name: 'TM_IMAGE_UPLOAD_API_KEY',
+            ValueFrom: cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('ImageUploadAPIKey') ] )
           }
         ],
         EnvironmentFiles: [],
         Essential: true,
-        // HealthCheck: {
-          // Need more input from Yogesh
-        // },
+        //HealthCheck: {
+        //  Command: ['/bin/sh', '-c', "echo $POSTGRES_ENDPOINT || exit 1"],
+        //  Interval: 10,
+        //  Retries: 3
+        //},
         Image: 'quay.io/hotosm/taskingmanager:develop', //configure this properly
         PortMappings: [
           {
@@ -347,6 +376,7 @@ const Resources = {
   },
   TaskingManagerECSService: {
     Type: 'AWS::ECS::Service',
+    DependsOn: 'SecretsPolicy',
     Properties: {
       Cluster: cf.ref('TaskingManagerECSCluster'),
       DeploymentConfiguration: {
@@ -458,7 +488,25 @@ const Resources = {
       ],
       Policies: [
         {
-          PolicyName: "SecretsPolicy",
+          PolicyName: 'AutoCreateLogGroup',
+          PolicyDocument: {
+           Version: "2012-10-17",
+           Statement: [
+             {
+               Effect: "Allow",
+               Action: [
+                 "logs:CreateLogStream",
+                 "logs:DescribeLogStreams",
+                 "logs:CreateLogGroup",
+                 "logs:PutLogEvents"
+               ],
+               Resource: "*"
+             }
+           ]
+          }
+        },
+        {
+          PolicyName: 'SecretsPolicy',
           PolicyDocument: {
             Version: "2012-10-17",
             Statement: [
@@ -481,26 +529,8 @@ const Resources = {
                 Resource: "*"
               }
             ]
-          } 
-        },
-        {
-          PolicyName: 'AutoCreateLogGroup',
-          PolicyDocument: {
-           Version: "2012-10-17",
-           Statement: [
-             {
-               Effect: "Allow",
-               Action: [
-                 "logs:CreateLogStream",
-                 "logs:DescribeLogStreams",
-                 "logs:CreateLogGroup",
-                 "logs:PutLogEvents"
-               ],
-               Resource: "*"
-             }
-           ]
-          }
-        }
+          },
+
       ],
       RoleName: cf.join('-', [cf.stackName, 'ecs', 'execution-role'])
     }
