@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import DatePicker from 'react-datepicker';
@@ -9,6 +9,7 @@ import { InputLocale } from './inputLocale';
 
 export const DescriptionForm = ({ languages }) => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
+  const intl = useIntl();
 
   const projectStatusOptions = [
     { value: 'PUBLISHED', label: 'PUBLISHED' },
@@ -108,6 +109,7 @@ export const DescriptionForm = ({ languages }) => {
           className={styleClasses.inputClass}
           showYearDropdown
           scrollableYearDropdown
+          locale={intl.locale.slice(0, 2)}
         />
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.dueDateDescription} />

@@ -54,6 +54,39 @@ import {
 } from './views/notifications';
 import { Banner } from './components/banner/index';
 
+import { registerLocale } from  "react-datepicker";
+import cs from "date-fns/locale/cs";
+import de from "date-fns/locale/de";
+import el from "date-fns/locale/el";
+import es from "date-fns/locale/es";
+import fr from "date-fns/locale/fr";
+import he from "date-fns/locale/he";
+import hu from "date-fns/locale/hu";
+import id from "date-fns/locale/id";
+import it from "date-fns/locale/it";
+import ja from "date-fns/locale/ja";
+import nl from "date-fns/locale/nl";
+import pt from "date-fns/locale/pt";
+import sv from "date-fns/locale/sv";
+import tr from "date-fns/locale/tr";
+import uk from "date-fns/locale/uk";
+
+registerLocale("cs", cs);
+registerLocale("de", de);
+registerLocale("el", el);
+registerLocale("es", es);
+registerLocale("fr", fr);
+registerLocale("he", he);
+registerLocale("hu", hu);
+registerLocale("id", id);
+registerLocale("it", it);
+registerLocale("ja", ja);
+registerLocale("nl", nl);
+registerLocale("pt", pt);
+registerLocale("sv", sv);
+registerLocale("tr", tr);
+registerLocale("uk", uk);
+
 const ProjectEdit = React.lazy(() =>
   import('./views/projectEdit' /* webpackChunkName: "projectEdit" */),
 );
