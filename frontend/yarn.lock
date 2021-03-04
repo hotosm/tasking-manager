@@ -2384,10 +2384,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@^2.19.5":
-  version "2.19.5"
-  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.5.tgz#1e014e67ba550b1e483712ba1751385fde8374ae"
-  integrity sha512-ypx0U0GmkAgkXKTISFe+xCJ9tAX/MNGmIUwGIsGLRr+rmeDAwkfVqRG/YDk/jcCx+vpZ+0HYuDrEwmKkrnaLng==
+"@hotosm/id@^2.19.6":
+  version "2.19.6"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.6.tgz#2c984cda76b3223533cd7aee5f4b99a7cd08ea08"
+  integrity sha512-cl5ZuJ29nCmRnhj+p+FT/GIsdTZ7JmBnuWdIJcGFxQaDVEXogkFs6M5iuOpAEDP6qbvMmDmwkqdXCmCUL1bzdA==
   dependencies:
     "@ideditor/country-coder" "^3.2.0"
     "@ideditor/location-conflation" "~0.5.0"
