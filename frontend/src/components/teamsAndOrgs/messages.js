@@ -255,7 +255,7 @@ export default defineMessages({
   },
   actionsToNextTier: {
     id: 'management.organisations.stats.next_tier.actions',
-    defaultMessage: 'Actions to reach the next tier',
+    defaultMessage: 'Actions to move to the next tier',
   },
   freeTier: {
     id: 'management.organisations.tier.free',

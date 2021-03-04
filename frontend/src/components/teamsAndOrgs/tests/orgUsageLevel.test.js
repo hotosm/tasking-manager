@@ -66,7 +66,7 @@ describe('OrganisationUsageLevel', () => {
     expect(within(container.querySelector('h1')).getByText('Free')).toBeTruthy();
     expect(screen.getAllByRole('progressbar')[1].style.width).toBe('10%');
     expect(screen.getByText('900')).toBeInTheDocument();
-    expect(screen.getByText('Actions to reach the next tier')).toBeInTheDocument();
+    expect(screen.getByText('Actions to move to the next tier')).toBeInTheDocument();
     expect(screen.getByText(`Estimated tier by the end of ${currentYear}`)).toBeInTheDocument();
     expect(screen.getByText(`Estimated cost by the end of ${currentYear}`)).toBeInTheDocument();
   });
@@ -88,7 +88,7 @@ describe('OrganisationUsageLevel', () => {
     expect(within(container.querySelector('h1')).getByText('Free')).toBeTruthy();
     expect(screen.getAllByRole('progressbar')[1].style.width).toBe('10%');
     expect(screen.getByText('900')).toBeInTheDocument();
-    expect(screen.getByText('Actions to reach the next tier')).toBeInTheDocument();
+    expect(screen.getByText('Actions to move to the next tier')).toBeInTheDocument();
     expect(screen.getByText(`Estimated tier by the end of ${currentYear}`)).toBeInTheDocument();
     expect(screen.getByText(`Estimated cost by the end of ${currentYear}`)).toBeInTheDocument();
     expect(screen.queryByText('(discounted)')).not.toBeInTheDocument();
@@ -118,7 +118,7 @@ describe('OrganisationUsageLevel', () => {
       </ReduxIntlProviders>,
     );
     expect(within(container.querySelector('h1')).getByText('Low')).toBeTruthy();
-    expect(screen.getByText('Actions to reach the next tier')).toBeInTheDocument();
+    expect(screen.getByText('Actions to move to the next tier')).toBeInTheDocument();
     expect(screen.getByText(/Estimated cost by the end of/)).toBeInTheDocument();
     expect(screen.getByText(/Estimated tier by the end of/)).toBeInTheDocument();
   });
@@ -204,7 +204,7 @@ describe('OrganisationUsageLevel', () => {
       </ReduxIntlProviders>,
     );
     expect(within(container.querySelector('h1')).getByText('Very High')).toBeTruthy();
-    expect(screen.queryByText('Actions to reach the next tier')).not.toBeInTheDocument();
+    expect(screen.queryByText('Actions to move to the next tier')).not.toBeInTheDocument();
     expect(screen.queryByText(/Another organization/)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/It is the highest level an organization can be on Tasking Manager!/),
@@ -227,7 +227,7 @@ describe('OrganisationUsageLevel', () => {
     expect(screen.queryByText(/tier/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Very High/)).not.toBeInTheDocument();
     expect(screen.queryByText(/reach the level/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/reach the next tier/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/move to the next tier/)).not.toBeInTheDocument();
     expect(screen.getByText(/Another organization/)).toBeInTheDocument();
     expect(
       screen.getByText(/It is the highest level an organization can be on Tasking Manager!/),
@@ -252,7 +252,7 @@ describe('OrganisationUsageLevel', () => {
     expect(within(container.querySelector('h1')).getByText('Low')).toBeTruthy();
     expect(screen.getAllByRole('progressbar')[1].style.width).toBe('11%');
     expect(screen.getByText('8,900')).toBeInTheDocument();
-    expect(screen.getByText('Actions to reach the next tier')).toBeInTheDocument();
+    expect(screen.getByText('Actions to move to the next tier')).toBeInTheDocument();
     expect(screen.getByText(`Estimated tier by the end of ${currentYear}`)).toBeInTheDocument();
     expect(screen.getByText(`Estimated cost by the end of ${currentYear}`)).toBeInTheDocument();
     expect(screen.getByText(/(Discounted)/)).toBeInTheDocument();
