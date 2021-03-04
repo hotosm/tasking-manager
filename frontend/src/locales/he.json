@@ -727,7 +727,7 @@
   "management.organisations.stats.tier.estimation": "שכבה משוערכת עד סוף {year}",
   "management.organisations.stats.cost.estimation": "עלות משוערכת עד לסוף {year}",
   "management.organisations.stats.next_level.actions": "פעולות כדי להגיע לשלב {n}",
-  "management.organisations.stats.next_tier.actions": "פעולות כדי להגיע לשכבה הבאה",
+  "management.organisations.stats.next_tier.actions": "",
   "management.organisations.tier.free": "בחינם",
   "management.organisations.tier.low": "נמוכה",
   "management.organisations.tier.medium": "בינונית",

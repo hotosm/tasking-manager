@@ -727,7 +727,7 @@
   "management.organisations.stats.tier.estimation": "Прогнозований рівень до кінця {year} року",
   "management.organisations.stats.cost.estimation": "Орієнтовна вартість до кінця {year} року",
   "management.organisations.stats.next_level.actions": "Дій залишилось до рівня {n}",
-  "management.organisations.stats.next_tier.actions": "Дій залишилось до наступного рівня",
+  "management.organisations.stats.next_tier.actions": "",
   "management.organisations.tier.free": "Вільно",
   "management.organisations.tier.low": "Неважливий",
   "management.organisations.tier.medium": "Середній",

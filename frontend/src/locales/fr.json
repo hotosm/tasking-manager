@@ -727,7 +727,7 @@
   "management.organisations.stats.tier.estimation": "Palier estimé à la fin de {year}",
   "management.organisations.stats.cost.estimation": "Coût estimé à la fin de {year}",
   "management.organisations.stats.next_level.actions": "Actions pour atteindre le niveau {n}",
-  "management.organisations.stats.next_tier.actions": "Actions pour atteindre le palier suivant",
+  "management.organisations.stats.next_tier.actions": "",
   "management.organisations.tier.free": "Libre",
   "management.organisations.tier.low": "Bas",
   "management.organisations.tier.medium": "Moyen",
