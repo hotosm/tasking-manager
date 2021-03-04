@@ -62,7 +62,7 @@ export default defineMessages({
   },
   noRequests: {
     id: 'management.teams.join_requests.empty',
-    defaultMessage: "There isn't requests to join the team.",
+    defaultMessage: "There aren't any requests to join the team.",
   },
   teams: {
     id: 'management.teams',

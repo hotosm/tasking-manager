@@ -679,7 +679,7 @@
   "management.teams.members.send_message.button": "Send",
   "management.teams.members.send_message.subject": "Subject",
   "management.teams.join_requests": "Join requests",
-  "management.teams.join_requests.empty": "There isn't requests to join the team.",
+  "management.teams.join_requests.empty": "There aren't any requests to join the team.",
   "management.teams": "Teams",
   "management.team": "Team",
   "management.projects": "Projects",

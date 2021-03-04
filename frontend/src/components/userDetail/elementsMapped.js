@@ -53,7 +53,7 @@ const getFieldData = (field) => {
 export const Element = ({ field, value }) => {
   const elements = getFieldData(field);
   return (
-    <div className={`w-20-ns w-100 ph2-ns fl`}>
+    <div className={`w-25-ns w-100 w-50-m ph2-ns fl`}>
       <div
         className={`cf shadow-4 pt3 pb3 ph2 ${field === 'time' ? 'bg-red white' : 'bg-white red'}`}
       >
