@@ -33,7 +33,7 @@
     "date-fns": "^2.19.0",
     "dompurify": "^2.2.6",
     "downshift-hooks": "^0.8.1",
-    "final-form": "^4.20.1",
+    "final-form": "^4.20.2",
     "fromentries": "^1.3.2",
     "humanize-duration": "^3.25.1",
     "immutable": "^4.0.0-rc.12",
