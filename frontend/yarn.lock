@@ -12507,10 +12507,10 @@ react-select-event@^5.2.0:
   dependencies:
     "@testing-library/dom" ">=7"
 
-react-select@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/react-select/-/react-select-4.2.0.tgz#7688e35075b96f84f6263db8a1f80820c8402f71"
-  integrity sha512-T1X7Jsj7a7N/klOq2i8dyyRe2zlMZxRM5DupxMLqu4qGOGKHEDV62KtQiL/6cEWSPQ/0b7Xyz9hv8NAfZvc7KQ==
+react-select@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/react-select/-/react-select-4.2.1.tgz#15c4837dffc1c23e91b7fde606c468cc10000a06"
+  integrity sha512-JwwZjsR10AD5RXmx4iEkN0Ndim/uSaQ8j8cxMwOg8SJFeyXwu/m+sdSQ0ds0AWFm7hhXG9kusC3CQ/s4UNcOIg==
   dependencies:
     "@babel/runtime" "^7.12.0"
     "@emotion/cache" "^11.0.0"
