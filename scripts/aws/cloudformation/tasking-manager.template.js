@@ -276,7 +276,7 @@ const Resources = {
   },
   TaskingManagerECSTaskDefinition: { // cf.ref returns ARN with version
     Type: 'AWS::ECS::TaskDefinition',
-    DependsOn: [ 'SecretsPolicy', 'SecretRDSInstanceAttachment'],  // Wait for RDS credentials to be ready
+    DependsOn: ['SecretRDSInstanceAttachment'],  // Wait for RDS credentials to be ready
     Properties: {
       RequiresCompatibilities: ['FARGATE'],
       ContainerDefinitions: [{
@@ -332,7 +332,10 @@ const Resources = {
         //  Interval: 10,
         //  Retries: 3
         //},
-        Image: 'quay.io/hotosm/taskingmanager:develop', //configure this properly
+        Image: 'quay.io/hotosm/taskingmanager:feature_containerize-backend-cfn', //configure this properly
+        RepositoryCredentials: {
+          CredentialsParameter: 'arn:aws:secretsmanager:us-east-1:670261699094:secret:prod/tasking-manager/quay-image-pull-access-WdfayD'
+        },
         PortMappings: [
           {
             ContainerPort: 5000,
@@ -346,7 +349,7 @@ const Resources = {
           }
         ],
         LogConfiguration: {
-          Logdriver: 'awslogs',
+          LogDriver: 'awslogs',
           Options: {
             'awslogs-create-group': true,
             'awslogs-region': cf.region,
@@ -376,7 +379,6 @@ const Resources = {
   },
   TaskingManagerECSService: {
     Type: 'AWS::ECS::Service',
-    DependsOn: 'SecretsPolicy',
     Properties: {
       Cluster: cf.ref('TaskingManagerECSCluster'),
       DeploymentConfiguration: {
@@ -401,7 +403,7 @@ const Resources = {
       }],
       NetworkConfiguration: {
         AwsvpcConfiguration: {
-          // AssignPublicIp: 'ENABLED',
+          AssignPublicIp: 'ENABLED',
           SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
           Subnets: cf.split(',', cf.ref('ELBSubnets')) // private subnets on vpc + nat gateway
         }
@@ -515,7 +517,7 @@ const Resources = {
                 Action: "secretsmanager:GetSecretValue",
                 Resource: [
                   cf.ref('TaskingManagerRDSManagedPassword'),
-                  cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('DatabaseManagedPassword')]),
+                  'arn:aws:secretsmanager:us-east-1:670261699094:secret:prod/tasking-manager/quay-image-pull-access-WdfayD',
                   cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('SMTPPassword')]),
                   cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('OAuth2ConsumerSecret')]),
                   cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('NewRelicLicenseKey')]),
@@ -529,8 +531,8 @@ const Resources = {
                 Resource: "*"
               }
             ]
-          },
-
+          }
+        }    
       ],
       RoleName: cf.join('-', [cf.stackName, 'ecs', 'execution-role'])
     }
