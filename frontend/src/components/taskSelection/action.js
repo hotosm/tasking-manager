@@ -340,10 +340,10 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
               )}
             </FormattedMessage>
             <div className="db">
-              <h3 className="blue-dark">#{project.projectId}</h3>
+              <h3 className="blue-dark f5">#{project.projectId}</h3>
               <div>
                 {tasksIds.map((task, n) => (
-                  <span key={n} className="red fw5 db pb2">{`#${task}`}</span>
+                  <span key={n} className="red fw8 f5 db pb2">{`#${task}`}</span>
                 ))}
               </div>
             </div>
