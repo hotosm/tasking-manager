@@ -180,6 +180,10 @@ export default defineMessages({
     id: 'management.organisations.type.defaultFee',
     defaultMessage: 'Default fee',
   },
+  noOrganisationsFound: {
+    id: 'management.organisations.list.empty',
+    defaultMessage: 'No organizations were found.',
+  },
   retry: {
     id: 'management.organisations.stats.retry',
     defaultMessage: 'Try again',

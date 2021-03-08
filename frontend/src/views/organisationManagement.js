@@ -31,7 +31,7 @@ export function ListOrganisations() {
     (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
   );
   const [organisations, setOrganisations] = useState(null);
-  const [userOrgsOnly, setUserOrgsOnly] = useState(true);
+  const [userOrgsOnly, setUserOrgsOnly] = useState(userDetails.role === 'ADMIN' ? false : true);
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
       const queryParam = `${userOrgsOnly ? `?manager_user_id=${userDetails.id}` : ''}`;
