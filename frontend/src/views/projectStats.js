@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 import { useTasksByStatus } from '../hooks/UseProjectCompletenessCalc';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
@@ -29,13 +30,19 @@ export function ProjectStats({ id }: Object) {
     `projects/${id}/contributions/queries/day/`,
     id,
   );
-  // To fix: set this URL with an ENV VAR later
-  const [errorEdits, loadingEdits, edits] = useFetch(
-    `https://osm-stats-production-api.azurewebsites.net/stats/${
-      project && project.changesetComment && project.changesetComment.replace('#', '').split(' ')[0]
-    }`,
-    project && project.changesetComment !== undefined,
-  );
+  const [edits, setEdits] = useState({});
+  useEffect(() => {
+    if (project && project.changesetComment !== undefined) {
+      // To fix: set this URL with an ENV VAR later
+      fetchExternalJSONAPI(
+        `https://osm-stats-production-api.azurewebsites.net/stats/${
+          project.changesetComment.replace('#', '').split(' ')[0]
+        }`,
+      )
+        .then((res) => setEdits(res))
+        .catch((e) => console.log(e));
+    }
+  }, [project]);
 
   return (
     <ReactPlaceholder
@@ -59,7 +66,7 @@ export function ProjectStats({ id }: Object) {
               showLoadingAnimation={true}
               rows={5}
               delay={500}
-              ready={!errorEdits && !loadingEdits}
+              ready={edits && edits.hashtag}
             >
               <EditsStats data={edits} />
             </ReactPlaceholder>
