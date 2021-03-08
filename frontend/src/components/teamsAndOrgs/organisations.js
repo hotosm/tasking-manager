@@ -38,7 +38,13 @@ export function OrgsManagement({
       isAdmin={isAdmin}
     >
       {isOrgManager ? (
-        organisations.map((org, n) => <OrganisationCard details={org} key={n} />)
+        organisations.length ? (
+          organisations.map((org, n) => <OrganisationCard details={org} key={n} />)
+        ) : (
+          <div className="pb5">
+            <FormattedMessage {...messages.noOrganisationsFound} />
+          </div>
+        )
       ) : (
         <div>
           <FormattedMessage {...messages.notAllowed} />
