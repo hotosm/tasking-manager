@@ -293,7 +293,12 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
               <img src={team.logo} alt="organisation logo" className="mw4" />
             )}
           </p>
-          <p>{team.organisation}</p>
+          <Link
+            className="link blue-dark fw5 mr2 underline"
+            to={`/organisations/${team.organisationSlug}`}
+          >
+            {team.organisation}
+          </Link>
         </div>
         <div className="w-100 w-50-m fl">
           <h4>

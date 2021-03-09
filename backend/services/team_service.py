@@ -303,6 +303,7 @@ class TeamService:
         team_dto.logo = team.organisation.logo
         team_dto.organisation = team.organisation.name
         team_dto.organisation_id = team.organisation.id
+        team_dto.organisation_slug = team.organisation.slug
 
         if user_id != 0:
             if UserService.is_user_an_admin(user_id):

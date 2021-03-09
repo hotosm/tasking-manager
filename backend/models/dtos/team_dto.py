@@ -71,6 +71,7 @@ class TeamDetailsDTO(Model):
     team_id = IntType(serialized_name="teamId")
     organisation_id = IntType(required=True)
     organisation = StringType(required=True)
+    organisation_slug = StringType(serialized_name="organisationSlug")
     name = StringType(required=True)
     logo = StringType()
     description = StringType()
