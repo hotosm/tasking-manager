@@ -16,11 +16,12 @@ export function BigProjectTeaser({
   return (
     <div className="cf bg-white blue-dark">
       <div className={`fl ${outerDivStyles} ${className}`}>
-        <span className={`${littleFont} blue-light`}>
+        <span className={littleFont}>
           <FormattedMessage
-            {...messages['projectTotalContributors']}
+            {...messages.projectTotalContributors}
             values={{
-              number: <span className={`blue-dark b ${bigFont}`}>{totalContributors || 0}</span>,
+              number: totalContributors,
+              b: (chunks) => <span className="blue-dark b">{chunks}</span>,
             }}
           />
         </span>

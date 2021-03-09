@@ -243,7 +243,7 @@
   "project.detail.coordination": "Coordination",
   "project.detail.coordination.description": "This project is coordinated by {organisation} and was created by {user}.",
   "project.detail.createdBy": "Project created by {user}.",
-  "project.detail.contributorCount": "{number} total contributors",
+  "project.detail.contributorCount": "{number, plural, =0 {No contributors yet} one {<b>#</b> total contributor} other {<b>#</b> total contributors}}",
   "project.detail.lastContribution": "Last contribution",
   "project.detail.percentMapped": "Mapped",
   "project.detail.percentValidated": "Validated",
