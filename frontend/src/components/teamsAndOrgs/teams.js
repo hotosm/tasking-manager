@@ -4,13 +4,22 @@ import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import { Form, Field } from 'react-final-form';
+import { useQueryParams, StringParam } from 'use-query-params';
 
 import messages from './messages';
 import { useEditTeamAllowed } from '../../hooks/UsePermissions';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
-import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
+import {
+  AddButton,
+  ViewAllLink,
+  Management,
+  VisibilityBox,
+  InviteOnlyBox,
+  TeamFilter,
+} from './management';
 import { SwitchToggle, RadioField, OrganisationSelectInput } from '../formInputs';
 import { Button, EditButton } from '../button';
+import ClearFilters from '../projects/clearFilters';
 
 export function TeamsManagement({
   teams,
@@ -22,6 +31,12 @@ export function TeamsManagement({
   const isOrgManager = useSelector(
     (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
   );
+
+  const [query, setQuery] = useQueryParams({ organisation: StringParam });
+
+  const filteredTeams = query.organisation
+    ? teams.filter((t) => t.organisation === query.organisation)
+    : teams;
 
   return (
     <Management
@@ -42,8 +57,15 @@ export function TeamsManagement({
       setUserOnly={setUserTeamsOnly}
       userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
     >
-      {teams.length ? (
-        teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)
+      <div>
+        <TeamFilter query={query} setQuery={setQuery} />
+        <ClearFilters url={'/manage/teams/'} className="v-top mh1 mt1 mt2-ns dib" />
+      </div>
+
+      {filteredTeams.length ? (
+        filteredTeams.map((team, n) => (
+          <TeamCard team={team} key={n} managementView={managementView} />
+        ))
       ) : (
         <div className="pb3 pt2">
           <FormattedMessage {...messages.noTeams} />
