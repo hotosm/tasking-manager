@@ -22,7 +22,8 @@ export default defineMessages({
   },
   projectTotalContributors: {
     id: 'project.detail.contributorCount',
-    defaultMessage: '{number} total contributors',
+    defaultMessage:
+      '{number, plural, =0 {No contributors yet} one {<b>#</b> total contributor} other {<b>#</b> total contributors}}',
   },
   projectLastContribution: {
     id: 'project.detail.lastContribution',
