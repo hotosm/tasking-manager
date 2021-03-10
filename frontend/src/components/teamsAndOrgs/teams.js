@@ -9,17 +9,9 @@ import { useQueryParams, StringParam } from 'use-query-params';
 import messages from './messages';
 import { useEditTeamAllowed } from '../../hooks/UsePermissions';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
-import {
-  AddButton,
-  ViewAllLink,
-  Management,
-  VisibilityBox,
-  InviteOnlyBox,
-  TeamFilter,
-} from './management';
+import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
 import { SwitchToggle, RadioField, OrganisationSelectInput } from '../formInputs';
 import { Button, EditButton } from '../button';
-import ClearFilters from '../projects/clearFilters';
 
 export function TeamsManagement({
   teams,
@@ -56,12 +48,10 @@ export function TeamsManagement({
       userOnly={userTeamsOnly}
       setUserOnly={setUserTeamsOnly}
       userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
+      section={'teams'}
+      query={query}
+      setQuery={setQuery}
     >
-      <div>
-        <TeamFilter query={query} setQuery={setQuery} />
-        <ClearFilters url={'/manage/teams/'} className="v-top mh1 mt1 mt2-ns dib" />
-      </div>
-
       {filteredTeams.length ? (
         filteredTeams.map((team, n) => (
           <TeamCard team={team} key={n} managementView={managementView} />

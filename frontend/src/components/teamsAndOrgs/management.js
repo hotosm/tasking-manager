@@ -8,6 +8,7 @@ import { useFetch } from '../../hooks/UseFetch';
 import { CustomButton } from '../button';
 import { PlusIcon, WasteIcon } from '../svgIcons';
 import { ProjectFilterSelect } from '../projects/filterSelectFields';
+import ClearFilters from '../projects/clearFilters';
 
 export const ViewAllLink = ({ link }: Object) => (
   <Link to={link} className="dib mt2 fr red link">
@@ -114,6 +115,14 @@ export function Management(props) {
               {props.userOnlyLabel}
             </CustomButton>
           </div>
+        )}
+        {props.section === 'teams' ? (
+          <div>
+            <TeamFilter query={props.query} setQuery={props.setQuery} />
+            <ClearFilters url={'/manage/teams/'} className="v-top mh1 mt1 mt2-ns dib" />
+          </div>
+        ) : (
+          ''
         )}
       </div>
       <div className="w-100 cf dib">{props.children}</div>
