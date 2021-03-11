@@ -288,15 +288,15 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
           <h4>
             <FormattedMessage {...messages.organisation} />
           </h4>
-          <p>
-            {typeof team.logo === 'string' && (
-              <img src={team.logo} alt="organisation logo" className="mw4" />
-            )}
-          </p>
           <Link
             className="link blue-dark fw5 mr2 underline"
             to={`/organisations/${team.organisationSlug}`}
           >
+            <p>
+              {typeof team.logo === 'string' && (
+                <img src={team.logo} alt="organisation logo" className="mw4" />
+              )}
+            </p>
             {team.organisation}
           </Link>
         </div>
