@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
-import { ListIcon, ResumeIcon, ClockIcon } from '../svgIcons';
+import { ListIcon, ResumeIcon, ClockIcon, CommentIcon } from '../svgIcons';
 import { TaskStatus } from '../taskSelection/taskList';
 import { TaskActivity } from '../taskSelection/taskActivity';
 
@@ -81,7 +81,10 @@ export function TaskCard({
           </div>
           <div className="w-third-ns w-100 fr">
             {numberOfComments ? (
-              <span className="w-10 tc fl mv2 pa1 br3 bg-red white">{numberOfComments}</span>
+              <span className="w-auto tr fl mv1 pv2 f6 blue-grey">
+                <CommentIcon className="pr2 v-mid" height="19px" width="13px" />
+                {numberOfComments}
+              </span>
             ) : (
               ''
             )}
