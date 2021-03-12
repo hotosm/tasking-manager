@@ -84,7 +84,17 @@ const NavButtons = (props) => {
           <FormattedMessage {...messages.backToPrevious} />
         </Button>
       )}
-      {props.index === 4 ? null : (
+      {props.index === 4 ? (
+      <Button
+          onClick={props.handleCreate}
+          className="white bg-red"
+        >
+          {props.cloneProjectData.name === null ? (
+            <FormattedMessage {...messages.create} />
+          ) : (
+            <FormattedMessage {...messages.clone} />
+          )}
+        </Button>) : (
         <Button onClick={stepHandler} className="white bg-red">
           <FormattedMessage {...messages.next} />
         </Button>

@@ -7,10 +7,12 @@ import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
 import lineToPolygon from '@turf/line-to-polygon';
 import { useQueryParam, NumberParam } from 'use-query-params';
-import { FormattedMessage, FormattedNumber } from 'react-intl';
+import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-
+import { createProject } from '../../store/actions/project';
+import { store } from '../../store';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import messages from './messages';
 import SetAOI from './setAOI';
 import SetTaskSizes from './setTaskSizes';
@@ -20,7 +22,8 @@ import Review from './review';
 import { AlertMessage } from './alertMessage';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { MAX_AOI_AREA } from '../../config';
-
+import { navigate } from '@reach/router';
+import truncate from '@turf/truncate';
 import { makeGrid } from './setTaskSizes';
 import { MAX_FILESIZE } from '../../config';
 
@@ -68,6 +71,8 @@ export const addLayer = (layerName, data, map) => {
 };
 
 const ProjectCreate = (props) => {
+    const intl = useIntl();
+
   const token = useSelector((state) => state.auth.get('token'));
   const [drawModeIsActive, setDrawModeIsActive] = useState(false);
   const layer_name = 'aoi';
@@ -292,6 +297,38 @@ const ProjectCreate = (props) => {
     draw: new MapboxDraw(drawOptions),
   });
 
+  const handleCreate = useCallback((cloneProjectData) => {
+      if (!metadata.geom) {
+        setErr({error: true, message: intl.formatMessage(messages.noGeometry)});
+        return;
+      }
+      if (!metadata.organisation && !cloneProjectData.organisation) {
+        setErr({error: true, message:intl.formatMessage(messages.noOrganization)});
+        return;
+      }
+
+      store.dispatch(createProject(metadata));
+      let projectParams = {
+        areaOfInterest: truncate(metadata.geom, { precision: 6 }),
+        projectName: metadata.projectName,
+        organisation: metadata.organisation || cloneProjectData.organisation,
+        tasks: truncate(metadata.taskGrid, { precision: 6 }),
+        arbitraryTasks: metadata.arbitraryTasks,
+      };
+
+      if (cloneProjectData.name !== null) {
+        projectParams.projectName = '';
+        projectParams.cloneFromProjectId = cloneProjectData.id;
+      }
+      pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
+        .then((res) => navigate(`/manage/projects/${res.projectId}`))
+        .catch((e) => setErr({
+              error: true,
+              message: <FormattedMessage {...messages.creationFailed} values={{ error: e }} />,
+            }) );
+    }, [metadata, setErr, intl, token]);
+
+
   if (!token) {
     return <Redirect to={'/login'} noThrow />;
   }
@@ -356,7 +393,6 @@ const ProjectCreate = (props) => {
           )}
           {renderCurrentStep()}
           <AlertMessage error={err} />
-
           <NavButtons
             index={step}
             setStep={setStep}
@@ -365,6 +401,8 @@ const ProjectCreate = (props) => {
             updateMetadata={updateMetadata}
             maxArea={MAX_AOI_AREA}
             setErr={setErr}
+            cloneProjectData={cloneProjectData}
+            handleCreate={() => handleCreate(cloneProjectData)}
           />
         </div>
         <div className="cf absolute" style={{ bottom: '3.5rem', left: '0.6rem' }}>
