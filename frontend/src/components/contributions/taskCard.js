@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from '@reach/router';
 import Popup from 'reactjs-popup';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
@@ -25,6 +25,7 @@ export function TaskCard({
 }: Object) {
   const [isHovered, setHovered] = useState(false);
   const taskLink = `/projects/${projectId}/tasks?search=${taskId}`;
+  const intl = useIntl();
 
   const timeToAutoUnlock =
     lastUpdated &&
@@ -81,7 +82,10 @@ export function TaskCard({
           </div>
           <div className="w-third-ns w-100 fr">
             {numberOfComments ? (
-              <span className="w-auto tr fl mv1 pv2 f6 blue-grey">
+              <span
+                className="w-auto tr fl mv1 pv2 f6 blue-grey"
+                title={intl.formatMessage(messages.commentsNumber, { number: numberOfComments })}
+              >
                 <CommentIcon className="pr2 v-mid" height="19px" width="13px" />
                 {numberOfComments}
               </span>
