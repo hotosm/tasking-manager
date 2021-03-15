@@ -415,20 +415,4 @@ export default defineMessages({
     id: 'management.stats.title',
     defaultMessage: 'Statistics',
   },
-  buildingsMapped: {
-    id: 'management.stats.buildingsMapped',
-    defaultMessage: 'Buildings mapped',
-  },
-  roadMapped: {
-    id: 'management.stats.roadMapped',
-    defaultMessage: 'Km road mapped',
-  },
-  poiMapped: {
-    id: 'management.stats.poiMapped',
-    defaultMessage: 'Points of interest mapped',
-  },
-  waterwaysMapped: {
-    id: 'management.stats.waterwaysMapped',
-    defaultMessage: 'Km waterways mapped',
-  },
 });

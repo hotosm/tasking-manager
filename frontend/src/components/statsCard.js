@@ -1,18 +1,18 @@
 import React from 'react';
 import { FormattedNumber } from 'react-intl';
 
-export const StatsCard = ({ field, icon, description, value, className }) => {
+export const StatsCard = ({ icon, description, value, className, invertColors = false }) => {
   return (
     <div className={`${className} ph2-ns fl`}>
-      <div
-        className={`cf shadow-4 pt3 pb3 ph2 ${field === 'time' ? 'bg-red white' : 'bg-white red'}`}
-      >
+      <div className={`cf shadow-4 pt3 pb3 ph2 ${invertColors ? 'bg-red white' : 'bg-white red'}`}>
         <div className="w-30 w-100-m fl tc">{icon}</div>
         <StatsCardContent
-          value={field === 'time' ? value : <FormattedNumber value={Math.trunc(value)} />}
+          value={
+            Number(value) || value === 0 ? <FormattedNumber value={Math.trunc(value)} /> : value
+          }
           label={description}
           className="w-70 w-100-m pt3-m mb1 fl tc"
-          invertColors={field === 'time'}
+          invertColors={invertColors}
         />
       </div>
     </div>

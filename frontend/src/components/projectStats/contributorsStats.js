@@ -7,7 +7,7 @@ import userMessages from '../user/messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 import { useContributorStats } from '../../hooks/UseContributorStats';
-import { StatsCardContent } from '../statsCardContent';
+import { StatsCardContent } from '../statsCard';
 
 export default function ContributorsStats({ contributors }) {
   const intl = useIntl();
@@ -70,17 +70,17 @@ export default function ContributorsStats({ contributors }) {
           <StatsCardContent
             value={stats.mappers}
             label={<FormattedMessage {...messages.mappers} />}
-            className="pv3-l pv2 mb3 shadow-4 bg-white"
+            className="pv3-l pv2 mb3-l mb2 shadow-4 bg-white"
           />
           <StatsCardContent
             value={stats.validators}
             label={<FormattedMessage {...messages.validators} />}
-            className="pv3-l pv2 mb3 shadow-4 bg-white"
+            className="pv3-l pv2 mb3-l mb2 shadow-4 bg-white"
           />
           <StatsCardContent
             value={contributors.userContributions.length}
             label={<FormattedMessage {...messages.totalContributors} />}
-            className="pv3-l pv2 mb3 shadow-4 bg-white"
+            className="pv3-l pv2 mb3-l mb2 shadow-4 bg-white"
           />
         </div>
       </div>

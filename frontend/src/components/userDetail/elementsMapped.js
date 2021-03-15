@@ -14,7 +14,7 @@ import {
   MappedIcon,
   ValidatedIcon,
 } from '../svgIcons';
-import { StatsCard } from '../statsCardContent';
+import { StatsCard } from '../statsCard';
 
 export const TaskStats = ({ userStats, username }) => {
   return (
@@ -136,39 +136,35 @@ export const ElementsMapped = ({ userStats, osmStats }) => {
     <div>
       <div className="cf w-100 relative">
         <StatsCard
-          field={'time'}
+          invertColors={true}
           icon={<ClockIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.timeSpentMapping} />}
           value={duration}
-          className={'w-20-ns w-100 w-50-m'}
+          className={'w-20-l w-50-m w-100 mv1'}
         />
         <StatsCard
-          field={'buildings'}
           icon={<HomeIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.buildingsMapped} />}
           value={osmStats.total_building_count_add || 0}
-          className={'w-20-ns w-100 w-50-m'}
+          className={'w-20-l w-50-m w-100 mv1'}
         />
         <StatsCard
-          field={'road'}
           icon={<RoadIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.roadMapped} />}
           value={osmStats.total_road_km_add || 0}
-          className={'w-20-ns w-100 w-50-m'}
+          className={'w-20-l w-50-m w-100 mv1'}
         />
         <StatsCard
-          field={'poi'}
           icon={<MarkerIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.poiMapped} />}
           value={osmStats.total_poi_count_add || 0}
-          className={'w-20-ns w-100 w-50-m'}
+          className={'w-20-l w-50-m w-100 mv1'}
         />
         <StatsCard
-          field={'waterways'}
           icon={<WavesIcon className={iconClass} style={iconStyle} />}
           description={<FormattedMessage {...messages.waterwaysMapped} />}
           value={osmStats.total_waterway_km_add || 0}
-          className={'w-20-ns w-100 w-50-m'}
+          className={'w-20-l w-50-m w-100 mv1'}
         />
       </div>
       <div className="cf w-100 relative tr pt3 pr3">
