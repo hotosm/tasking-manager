@@ -58,7 +58,7 @@ export function Management(props) {
   return (
     <div className="pull-center cf bg-tan">
       <div className="cf pv4">
-        <h3 className="barlow-condensed f2 ma0 dib v-mid ttu pl2 pl0-l">{props.title}</h3>
+        <h3 className="barlow-condensed f2 ma0 dib v-mid ttu">{props.title}</h3>
         {props.showAddButton && (
           <Link to={'new/'} className="dib ml3">
             <AddButton />

@@ -6,7 +6,7 @@ import statusMessages from '../taskSelection/messages';
 import messages from './messages';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 import { TASK_COLOURS } from '../../config';
-import { StatsCardContent } from '../statsCardContent';
+import { StatsCardContent } from '../statsCard';
 
 const TasksByStatus = ({ stats }) => {
   const intl = useIntl();

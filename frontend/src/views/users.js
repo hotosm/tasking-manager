@@ -12,7 +12,7 @@ export const UsersList = () => {
 
   return (
     <div className="pv4 blue-dark">
-      <h3 className="barlow-condensed f2 ma0 v-mid dib ttu pl2 pl0-l">
+      <h3 className="barlow-condensed f2 ma0 v-mid dib ttu">
         <FormattedMessage {...messages.manageUsers} />
       </h3>
       <SearchNav filters={filters} setFilters={setFilters} initialFilters={initialFilters} />
