@@ -70,7 +70,7 @@
     "webfontloader": "^1.6.28",
     "workbox-core": "^6.1.1",
     "workbox-expiration": "^6.1.1",
-    "workbox-precaching": "^6.1.1",
+    "workbox-precaching": "^6.1.2",
     "workbox-recipes": "^6.1.1",
     "workbox-routing": "^6.1.1",
     "workbox-strategies": "^6.1.1"
