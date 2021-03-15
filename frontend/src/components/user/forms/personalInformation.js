@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
+import ReactTooltip from 'react-tooltip';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from '../messages';
 import { FormSubmitButton } from '../../button';
+import { InfoIcon } from '../../svgIcons';
 import { UserCountrySelect } from '../../formInputs';
 import { RadioField } from '../../formInputs';
 import { pushUserDetails } from '../../../store/actions/auth';
@@ -32,6 +34,7 @@ const mapStateToProps = (state) => ({
 const RequiredIndicator = () => <span className="ml1 b red">*</span>;
 
 function _PersonalInformationForm(props) {
+  const intl = useIntl();
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
   const formFields = PROFILE_RELEVANT_FIELDS.concat(['selfDescriptionGender']);
@@ -89,6 +92,11 @@ function _PersonalInformationForm(props) {
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.email} />
                   <RequiredIndicator />
+                  <InfoIcon
+                    className="blue-grey h1 w1 v-mid pb1 ml2"
+                    data-tip={intl.formatMessage(messages.emailPrivacy)}
+                  />
+                  <ReactTooltip place="bottom" className="mw6" effect="solid" />
                 </label>
                 <Field
                   name="emailAddress"
@@ -129,9 +137,6 @@ function _PersonalInformationForm(props) {
                     </div>
                   )}
                 </Field>
-                <p className="f6 mv2">
-                  <RequiredIndicator /> <FormattedMessage {...messages.required} />
-                </p>
               </div>
               <div className="cf">
                 <div className="w-100 w-50-ns fl pr3-ns">
@@ -153,7 +158,7 @@ function _PersonalInformationForm(props) {
                   <UserCountrySelect className={fieldClasses} />
                 </div>
               </div>
-              <div className="cf pt3">
+              <div className="cf">
                 <div className="w-100 w-50-ns fl pr3-ns">
                   <label className={labelClasses}>
                     <FormattedMessage {...messages.slackUsername} values={{ org: ORG_CODE }} />
@@ -227,6 +232,11 @@ function _PersonalInformationForm(props) {
                 <div>
                   <label className={labelClasses}>
                     <FormattedMessage {...messages.gender} />
+                    <InfoIcon
+                      className="blue-grey h1 w1 v-mid pb1 ml2"
+                      data-tip={intl.formatMessage(messages.genderPrivacy)}
+                    />
+                    <ReactTooltip place="bottom" className="mw6" effect="solid" />
                   </label>
                   <div className="pv2">
                     <RadioField name="gender" value="FEMALE" />
@@ -268,6 +278,9 @@ function _PersonalInformationForm(props) {
                   <FormattedMessage {...messages.save} />
                 </FormSubmitButton>
               </div>
+              <p className="f6 mt2 tr mb0">
+                <RequiredIndicator /> <FormattedMessage {...messages.required} />
+              </p>
             </fieldset>
           </form>
         )}

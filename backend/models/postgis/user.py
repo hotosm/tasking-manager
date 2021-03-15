@@ -372,16 +372,16 @@ class User(db.Model):
         user_dto.comments_notifications = self.comments_notifications
         user_dto.tasks_notifications = self.tasks_notifications
         user_dto.teams_notifications = self.teams_notifications
-        gender = None
-        if self.gender is not None:
-            gender = UserGender(self.gender).name
-        user_dto.gender = gender
-        user_dto.self_description_gender = self.self_description_gender
 
         if self.username == logged_in_username:
-            # Only return email address when logged in user is looking at their own profile
+            # Only return email address and gender information when logged in user is looking at their own profile
             user_dto.email_address = self.email_address
             user_dto.is_email_verified = self.is_email_verified
+            gender = None
+            if self.gender is not None:
+                gender = UserGender(self.gender).name
+                user_dto.gender = gender
+                user_dto.self_description_gender = self.self_description_gender
         return user_dto
 
     def create_or_update_interests(self, interests_ids):
