@@ -28,6 +28,9 @@ describe('EditsStats component', () => {
     expect(getByText('Buildings mapped')).toBeInTheDocument();
     expect(getByText('Km road mapped')).toBeInTheDocument();
     expect(getByText('Total map edits')).toBeInTheDocument();
-    expect(getByText('310483')).toBeInTheDocument();
+    expect(getByText('310,483')).toBeInTheDocument();
+    expect(getByText('22,153')).toBeInTheDocument();
+    expect(getByText('2,739')).toBeInTheDocument();
+    expect(getByText('269,809')).toBeInTheDocument();
   });
 });

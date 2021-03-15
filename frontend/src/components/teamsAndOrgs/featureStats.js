@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
+import userDetailMessages from '../userDetail/messages';
 import { HOMEPAGE_STATS_API_URL } from '../../config';
 import { RoadIcon, HomeIcon, WavesIcon, MarkerIcon } from '../svgIcons';
 import { StatsCard } from '../statsCardContent';
@@ -36,28 +36,28 @@ export const FeatureStats = () => {
       <StatsCard
         field={'buildings'}
         icon={<HomeIcon className={iconClass} style={iconStyle} />}
-        description={<FormattedMessage {...messages.buildingsMapped} />}
+        description={<FormattedMessage {...userDetailMessages.buildingsMapped} />}
         value={stats.buildings || 0}
         className={'w-25-ns w-100 w-50-m'}
       />
       <StatsCard
         field={'road'}
         icon={<RoadIcon className={iconClass} style={iconStyle} />}
-        description={<FormattedMessage {...messages.roadMapped} />}
+        description={<FormattedMessage {...userDetailMessages.roadMapped} />}
         value={stats.roads || 0}
         className={'w-25-ns w-100 w-50-m'}
       />
       <StatsCard
         field={'poi'}
         icon={<MarkerIcon className={iconClass} style={iconStyle} />}
-        description={<FormattedMessage {...messages.poiMapped} />}
+        description={<FormattedMessage {...userDetailMessages.poiMapped} />}
         value={stats.pois || 0}
         className={'w-25-ns w-100 w-50-m'}
       />
       <StatsCard
         field={'waterways'}
         icon={<WavesIcon className={iconClass} style={iconStyle} />}
-        description={<FormattedMessage {...messages.waterwaysMapped} />}
+        description={<FormattedMessage {...userDetailMessages.waterwaysMapped} />}
         value={stats.waterways || 0}
         className={'w-25-ns w-100 w-50-m'}
       />
