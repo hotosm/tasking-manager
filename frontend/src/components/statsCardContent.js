@@ -1,4 +1,23 @@
 import React from 'react';
+import { FormattedNumber } from 'react-intl';
+
+export const StatsCard = ({ field, icon, description, value, className }) => {
+  return (
+    <div className={`${className} ph2-ns fl`}>
+      <div
+        className={`cf shadow-4 pt3 pb3 ph2 ${field === 'time' ? 'bg-red white' : 'bg-white red'}`}
+      >
+        <div className="w-30 w-100-m fl tc">{icon}</div>
+        <StatsCardContent
+          value={field === 'time' ? value : <FormattedNumber value={Math.trunc(value)} />}
+          label={description}
+          className="w-70 w-100-m pt3-m mb1 fl tc"
+          invertColors={field === 'time'}
+        />
+      </div>
+    </div>
+  );
+};
 
 export const StatsCardContent = ({ value, label, className, invertColors = false }: Object) => (
   <div className={className}>
