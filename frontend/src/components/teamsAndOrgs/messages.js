@@ -273,9 +273,9 @@ export default defineMessages({
     id: 'management.organisations.stats.next_level.actions',
     defaultMessage: 'Actions to reach the level {n}',
   },
-  actionsToNextTier: {
-    id: 'management.organisations.stats.next_tier.actions',
-    defaultMessage: 'Actions to move to the next tier',
+  actionsRemaining: {
+    id: 'management.organisations.stats.tier.actions_remaining',
+    defaultMessage: 'Actions remaining on the {name} tier',
   },
   freeTier: {
     id: 'management.organisations.tier.free',
