@@ -106,7 +106,7 @@ export function CreateOrganisation() {
                 <FormattedMessage {...messages.newOrganisation} />
               </h3>
               <div className="w-40-l w-100">
-                <CreateOrgInfo userDetails={userDetails} managers={managers} />
+                <CreateOrgInfo formState={values} />
                 <Members
                   addMembers={addManagers}
                   removeMembers={removeManagers}
@@ -220,6 +220,7 @@ export function EditOrganisation(props) {
                 logo: organisation.logo,
                 description: organisation.description,
                 type: organisation.type,
+                subscriptionTier: organisation.subscriptionTier,
               }}
               updateOrg={updateOrg}
               disabledForm={error || loading}

@@ -10,6 +10,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import messages from './messages';
 import { IMAGE_UPLOAD_SERVICE } from '../../config';
 import { useUploadImage } from '../../hooks/UseUploadImage';
+import { levels } from '../../hooks/UseOrganisationLevel';
 import { Management } from './management';
 import { InternalLinkIcon, ClipboardIcon } from '../svgIcons';
 import { Button } from '../button';
@@ -109,7 +110,10 @@ export function OrganisationForm(props) {
               </h3>
               <form id="org-form" onSubmit={handleSubmit}>
                 <fieldset className="bn pa0" disabled={submitting}>
-                  <OrgInformation hasSlug={props.organisation && props.organisation.slug} />
+                  <OrgInformation
+                    hasSlug={props.organisation && props.organisation.slug}
+                    formState={values}
+                  />
                 </fieldset>
               </form>
             </div>
@@ -138,7 +142,17 @@ export function OrganisationForm(props) {
   );
 }
 
-export function OrgInformation({ hasSlug }) {
+const TYPE_OPTIONS = [
+  { label: <FormattedMessage {...messages.free} />, value: 'FREE' },
+  { label: <FormattedMessage {...messages.discounted} />, value: 'DISCOUNTED' },
+  { label: <FormattedMessage {...messages.defaultFee} />, value: 'FULL_FEE' },
+];
+const TIER_OPTIONS = levels.map((level) => ({
+  label: <FormattedMessage {...messages[`${level.tier}Tier`]} />,
+  value: level.level,
+}));
+
+export function OrgInformation({ hasSlug, formState }) {
   const token = useSelector((state) => state.auth.get('token'));
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const [uploadError, uploading, uploadImg] = useUploadImage();
@@ -148,14 +162,15 @@ export function OrgInformation({ hasSlug }) {
   const [isCopied, setCopied] = useCopyClipboard();
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
-  const typeOptions = [
-    { label: <FormattedMessage {...messages.free} />, value: 'FREE' },
-    { label: <FormattedMessage {...messages.discounted} />, value: 'DISCOUNTED' },
-    { label: <FormattedMessage {...messages.defaultFee} />, value: 'FULL_FEE' },
-  ];
+
   const getTypePlaceholder = (value) => {
-    const selected = typeOptions.filter((type) => value === type.value);
+    const selected = TYPE_OPTIONS.filter((type) => value === type.value);
     return selected.length ? selected[0].label : <FormattedMessage {...messages.selectType} />;
+  };
+
+  const getTierPlaceholder = (value) => {
+    const selected = TIER_OPTIONS.filter((tier) => value === tier.value);
+    return selected.length ? selected[0].label : <FormattedMessage {...messages.selectTier} />;
   };
 
   return (
@@ -212,24 +227,45 @@ export function OrgInformation({ hasSlug }) {
         <Field name="description" component="textarea" className={fieldClasses} />
       </div>
       {userDetails &&
-        userDetails.role === 'ADMIN' && ( // only admin users can edit the org type
-          <div className="cf">
-            <label className={labelClasses}>
-              <FormattedMessage {...messages.type} />
-            </label>
-            <Field name="type" className={fieldClasses} required>
-              {(props) => (
-                <Select
-                  classNamePrefix="react-select"
-                  isClearable={false}
-                  options={typeOptions}
-                  placeholder={getTypePlaceholder(props.input.value)}
-                  onChange={(value) => props.input.onChange(value.value)}
-                  className="z-5"
-                />
-              )}
-            </Field>
-          </div>
+        userDetails.role === 'ADMIN' && ( // only admin users can edit the org type and subscribed tier
+          <>
+            <div className="cf">
+              <label className={labelClasses}>
+                <FormattedMessage {...messages.type} />
+              </label>
+              <Field name="type" className={fieldClasses} required>
+                {(props) => (
+                  <Select
+                    classNamePrefix="react-select"
+                    isClearable={false}
+                    options={TYPE_OPTIONS}
+                    placeholder={getTypePlaceholder(props.input.value)}
+                    onChange={(value) => props.input.onChange(value.value)}
+                    className="z-5"
+                  />
+                )}
+              </Field>
+            </div>
+            {['DISCOUNTED', 'FULL_FEE'].includes(formState.type) && (
+              <div className="cf">
+                <label className={labelClasses}>
+                  <FormattedMessage {...messages.subscribedTier} />
+                </label>
+                <Field name="subscriptionTier" className={fieldClasses} required>
+                  {(props) => (
+                    <Select
+                      classNamePrefix="react-select"
+                      isClearable={false}
+                      options={TIER_OPTIONS}
+                      placeholder={getTierPlaceholder(props.input.value)}
+                      onChange={(value) => props.input.onChange(value.value)}
+                      className="z-4"
+                    />
+                  )}
+                </Field>
+              </div>
+            )}
+          </>
         )}
       <div className="cf">
         <label className={labelClasses}>
@@ -270,13 +306,13 @@ export function OrgInformation({ hasSlug }) {
   );
 }
 
-export function CreateOrgInfo() {
+export function CreateOrgInfo({ formState }) {
   return (
     <div className="bg-white b--grey-light ba pa4 mb3">
       <h3 className="f3 blue-dark mv0 fw6">
         <FormattedMessage {...messages.orgInfo} />
       </h3>
-      <OrgInformation hasSlug={false} />
+      <OrgInformation hasSlug={false} formState={formState} />
     </div>
   );
 }

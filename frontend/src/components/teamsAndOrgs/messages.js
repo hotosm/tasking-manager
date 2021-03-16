@@ -172,6 +172,10 @@ export default defineMessages({
     id: 'management.organisations.publicUrl.copy',
     defaultMessage: 'Copy public URL',
   },
+  selectTier: {
+    id: 'management.organisations.tier.select',
+    defaultMessage: 'Select tier',
+  },
   selectType: {
     id: 'management.organisations.type.select',
     defaultMessage: 'Select type',
@@ -236,6 +240,10 @@ export default defineMessages({
     id: 'management.organisations.stats.actions_needed.help',
     defaultMessage:
       'Action means a mapping or validation operation. As each task needs to be mapped and validated, this is the number of actions needed to finish all the published projects of that organization.',
+  },
+  subscribedTier: {
+    id: 'management.organisations.stats.tier.subscribed',
+    defaultMessage: 'Subscribed tier',
   },
   levelTooltip: {
     id: 'management.organisations.stats.level.tooltip',
