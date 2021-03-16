@@ -288,41 +288,58 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
           <h4>
             <FormattedMessage {...messages.organisation} />
           </h4>
-          <p>
-            {typeof team.logo === 'string' && (
-              <img src={team.logo} alt="organisation logo" className="mw4" />
-            )}
-          </p>
-          <p>{team.organisation}</p>
+          <Link
+            className="link blue-dark fw5 mr2 underline"
+            to={`/organisations/${team.organisationSlug}`}
+          >
+            <p>
+              {typeof team.logo === 'string' && (
+                <img src={team.logo} alt="organisation logo" className="mw4" />
+              )}
+            </p>
+            {team.organisation}
+          </Link>
         </div>
         <div className="w-100 w-50-m fl">
           <h4>
             <FormattedMessage {...messages.managers} />
           </h4>
-          <div className="cf db mt3">
-            {managers.map((user, n) => (
-              <UserAvatar
-                key={n}
-                username={user.username}
-                picture={user.pictureUrl}
-                size="large"
-                colorClasses="white bg-blue-grey mv1"
-              />
-            ))}
-          </div>
+          {managers.length === 0 ? (
+            <span className="f6 blue-grey">
+              <FormattedMessage {...messages.noManagers} />
+            </span>
+          ) : (
+            <div className="cf db mt3">
+              {managers.map((user, n) => (
+                <UserAvatar
+                  key={n}
+                  username={user.username}
+                  picture={user.pictureUrl}
+                  size="large"
+                  colorClasses="white bg-blue-grey mv1"
+                />
+              ))}
+            </div>
+          )}
           <h4>
             <FormattedMessage {...messages.members} />
           </h4>
-          <div className="cf db mt3">
-            {members.map((user, n) => (
-              <UserAvatar
-                key={n}
-                username={user.username}
-                picture={user.pictureUrl}
-                colorClasses="white bg-blue-grey mv1"
-              />
-            ))}
-          </div>
+          {members.length === 0 ? (
+            <span className="f6 blue-grey">
+              <FormattedMessage {...messages.noMembers} />
+            </span>
+          ) : (
+            <div className="cf db mt3">
+              {members.map((user, n) => (
+                <UserAvatar
+                  key={n}
+                  username={user.username}
+                  picture={user.pictureUrl}
+                  colorClasses="white bg-blue-grey mv1"
+                />
+              ))}
+            </div>
+          )}
           <div className="cf db mt3">
             {requestedToJoin && (
               <span className="red pr5-ns">

@@ -3,7 +3,7 @@ import ReactTooltip from 'react-tooltip';
 import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
 import messages from './messages';
-import { StatsCardContent } from '../statsCardContent';
+import { StatsCardContent } from '../statsCard';
 import { InfoIcon } from '../svgIcons';
 
 const ActionsNeededLabel = () => {

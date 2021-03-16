@@ -31,7 +31,7 @@ export function ListOrganisations() {
     (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
   );
   const [organisations, setOrganisations] = useState(null);
-  const [userOrgsOnly, setUserOrgsOnly] = useState(true);
+  const [userOrgsOnly, setUserOrgsOnly] = useState(userDetails.role === 'ADMIN' ? false : true);
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
       const queryParam = `${userOrgsOnly ? `?manager_user_id=${userDetails.id}` : ''}`;
@@ -106,7 +106,7 @@ export function CreateOrganisation() {
                 <FormattedMessage {...messages.newOrganisation} />
               </h3>
               <div className="w-40-l w-100">
-                <CreateOrgInfo userDetails={userDetails} managers={managers} />
+                <CreateOrgInfo formState={values} />
                 <Members
                   addMembers={addManagers}
                   removeMembers={removeManagers}
@@ -220,6 +220,7 @@ export function EditOrganisation(props) {
                 logo: organisation.logo,
                 description: organisation.description,
                 type: organisation.type,
+                subscriptionTier: organisation.subscriptionTier,
               }}
               updateOrg={updateOrg}
               disabledForm={error || loading}

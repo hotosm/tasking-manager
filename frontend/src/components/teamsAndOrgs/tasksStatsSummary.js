@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage, FormattedNumber } from 'react-intl';
 
 import messages from './messages';
-import { StatsCardContent } from '../statsCardContent';
+import { StatsCardContent } from '../statsCard';
 import { useTotalTasksStats } from '../../hooks/UseTotalTasksStats';
 
 export function TasksStatsSummary({ stats }) {

@@ -181,11 +181,12 @@ class UserService:
         return requested_user.as_dto(logged_in_user.username)
 
     @staticmethod
-    def get_user_dto_by_id(requested_user: int) -> UserDTO:
+    def get_user_dto_by_id(requested_user: int, logged_in_user: int) -> UserDTO:
         """Gets user DTO for supplied user id """
         requested_user = UserService.get_user_by_id(requested_user)
+        logged_in_user = UserService.get_user_by_id(logged_in_user)
 
-        return requested_user.as_dto(requested_user.username)
+        return requested_user.as_dto(logged_in_user.username)
 
     @staticmethod
     def get_interests_stats(user_id):
@@ -237,9 +238,9 @@ class UserService:
     ) -> UserTaskDTOs:
         base_query = (
             TaskHistory.query.with_entities(
-                TaskHistory.project_id,
-                TaskHistory.task_id,
-                func.max(TaskHistory.action_date),
+                TaskHistory.project_id.label("project_id"),
+                TaskHistory.task_id.label("task_id"),
+                func.max(TaskHistory.action_date).label("max"),
             )
             .filter(TaskHistory.user_id == user_id)
             .group_by(TaskHistory.task_id, TaskHistory.project_id)
@@ -264,14 +265,37 @@ class UserService:
         user_task_dtos = UserTaskDTOs()
         task_id_list = base_query.subquery()
 
+        comments_query = (
+            TaskHistory.query.with_entities(
+                TaskHistory.project_id,
+                TaskHistory.task_id,
+                func.count(TaskHistory.action).label("count"),
+            )
+            .filter(TaskHistory.action == "COMMENT")
+            .group_by(TaskHistory.task_id, TaskHistory.project_id)
+        ).subquery()
+
+        sq = (
+            db.session.query(
+                func.coalesce(comments_query.c.count, 0).label("comments"), task_id_list
+            )
+            .select_from(task_id_list)
+            .outerjoin(
+                comments_query,
+                (comments_query.c.task_id == task_id_list.c.task_id)
+                & (comments_query.c.project_id == task_id_list.c.project_id),
+            )
+            .subquery()
+        )
+
         tasks = Task.query.join(
-            task_id_list,
+            sq,
             and_(
-                Task.id == task_id_list.c.task_id,
-                Task.project_id == task_id_list.c.project_id,
+                Task.id == sq.c.task_id,
+                Task.project_id == sq.c.project_id,
             ),
         )
-        tasks = tasks.add_column("max_1")
+        tasks = tasks.add_columns("max", "comments")
 
         if project_status:
             tasks = tasks.filter(
@@ -286,8 +310,8 @@ class UserService:
 
         task_list = []
 
-        for task, action_date in results.items:
-            task_list.append(task.as_dto(last_updated=action_date))
+        for task, action_date, comments in results.items:
+            task_list.append(task.as_dto(last_updated=action_date, comments=comments))
 
         user_task_dtos.user_tasks = task_list
         user_task_dtos.pagination = Pagination(results)

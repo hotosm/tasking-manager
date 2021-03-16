@@ -92,4 +92,8 @@ export default defineMessages({
     id: 'mytasks.tasks.button.retry',
     defaultMessage: 'Retry',
   },
+  commentsNumber: {
+    id: 'mytasks.tasks.comments.number',
+    defaultMessage: '{number, plural, one {# comment} other {# comments}}',
+  },
 });

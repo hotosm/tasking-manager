@@ -20,7 +20,7 @@ class UsersRestAPI(Resource):
         parameters:
             - in: header
               name: Authorization
-              description: Base64 encoded sesesion token
+              description: Base64 encoded session token
               required: true
               type: string
               default: Token sessionTokenHere==
@@ -41,7 +41,9 @@ class UsersRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_dto = UserService.get_user_dto_by_id(user_id)
+            user_dto = UserService.get_user_dto_by_id(
+                user_id, token_auth.current_user()
+            )
             return user_dto.to_primitive(), 200
         except NotFound:
             return {"Error": "User not found"}, 404

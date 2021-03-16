@@ -16,6 +16,10 @@ export default defineMessages({
     id: 'management.fields.managers',
     defaultMessage: 'Managers',
   },
+  noManagers: {
+    id: 'management.fields.managers.empty',
+    defaultMessage: 'There are no managers yet.',
+  },
   manage: {
     id: 'management.link.manage',
     defaultMessage: 'Manage {entity}',
@@ -31,6 +35,10 @@ export default defineMessages({
   members: {
     id: 'management.members',
     defaultMessage: 'Members',
+  },
+  noMembers: {
+    id: 'management.members.empty',
+    defaultMessage: 'There are no members yet.',
   },
   mappingTeams: {
     id: 'management.teams.mapping',
@@ -62,7 +70,7 @@ export default defineMessages({
   },
   noRequests: {
     id: 'management.teams.join_requests.empty',
-    defaultMessage: "There isn't requests to join the team.",
+    defaultMessage: "There aren't any requests to join the team.",
   },
   teams: {
     id: 'management.teams',
@@ -164,6 +172,10 @@ export default defineMessages({
     id: 'management.organisations.publicUrl.copy',
     defaultMessage: 'Copy public URL',
   },
+  selectTier: {
+    id: 'management.organisations.tier.select',
+    defaultMessage: 'Select tier',
+  },
   selectType: {
     id: 'management.organisations.type.select',
     defaultMessage: 'Select type',
@@ -179,6 +191,10 @@ export default defineMessages({
   defaultFee: {
     id: 'management.organisations.type.defaultFee',
     defaultMessage: 'Default fee',
+  },
+  noOrganisationsFound: {
+    id: 'management.organisations.list.empty',
+    defaultMessage: 'No organizations were found.',
   },
   retry: {
     id: 'management.organisations.stats.retry',
@@ -225,6 +241,10 @@ export default defineMessages({
     defaultMessage:
       'Action means a mapping or validation operation. As each task needs to be mapped and validated, this is the number of actions needed to finish all the published projects of that organization.',
   },
+  subscribedTier: {
+    id: 'management.organisations.stats.tier.subscribed',
+    defaultMessage: 'Subscribed tier',
+  },
   levelTooltip: {
     id: 'management.organisations.stats.level.tooltip',
     defaultMessage: '{n} of {total} ({percent}%) completed to move to level {nextLevel}',
@@ -255,7 +275,7 @@ export default defineMessages({
   },
   actionsToNextTier: {
     id: 'management.organisations.stats.next_tier.actions',
-    defaultMessage: 'Actions to reach the next tier',
+    defaultMessage: 'Actions to move to the next tier',
   },
   freeTier: {
     id: 'management.organisations.tier.free',
