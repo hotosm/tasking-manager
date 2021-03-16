@@ -33,6 +33,7 @@
   "mytasks.unlock": "unlock {time}",
   "mytasks.tasks.title": "Task #{task} · Project #{project}",
   "mytasks.tasks.button.retry": "Retry",
+  "mytasks.tasks.comments.number": "{number, plural, one {# comment} other {# comments}}",
   "deleteModal.status.processing": "Processing",
   "deleteModal.status.success": "{type} deleted successfully.",
   "deleteModal.status.failure.projects": "An error occurred when trying to delete this project.",
