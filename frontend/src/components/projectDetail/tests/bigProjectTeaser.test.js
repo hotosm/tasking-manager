@@ -19,7 +19,7 @@ describe('BigProjectTeaser component', () => {
       </IntlProviders>,
     );
     expect(screen.queryByText('5')).toBeInTheDocument();
-    expect(screen.getByText(/total contributors/)).toBeInTheDocument();
+    expect(screen.getByText(/contributors/)).toBeInTheDocument();
     expect(screen.getByText(/Last contribution 1 minute ago/)).toBeInTheDocument();
   });
 
@@ -36,7 +36,7 @@ describe('BigProjectTeaser component', () => {
       </IntlProviders>,
     );
     expect(screen.queryByText('1')).toBeInTheDocument();
-    expect(screen.getByText(/total contributor/)).toBeInTheDocument();
+    expect(screen.getByText(/contributor/)).toBeInTheDocument();
     expect(screen.getByText(/Last contribution 1 second ago/)).toBeInTheDocument();
   });
 

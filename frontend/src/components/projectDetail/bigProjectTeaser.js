@@ -17,13 +17,17 @@ export function BigProjectTeaser({
     <div className="cf bg-white blue-dark">
       <div className={`fl ${outerDivStyles} ${className}`}>
         <span className={littleFont}>
-          <FormattedMessage
-            {...messages.projectTotalContributors}
-            values={{
-              number: totalContributors,
-              b: (chunks) => <span className="blue-dark b">{chunks}</span>,
-            }}
-          />
+          {totalContributors ? (
+            <FormattedMessage
+              {...messages.projectTotalContributors}
+              values={{
+                number: totalContributors,
+                b: (chunks) => <span className="blue-dark b">{chunks}</span>,
+              }}
+            />
+          ) : (
+            <FormattedMessage {...messages.noProjectContributors} />
+          )}
         </span>
       </div>
       <div title={lastUpdated} className={`fr ${outerDivStyles} ${className || ''}`}>
