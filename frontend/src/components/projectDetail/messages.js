@@ -20,10 +20,13 @@ export default defineMessages({
     id: 'project.detail.createdBy',
     defaultMessage: 'Project created by {user}.',
   },
+  noProjectContributors: {
+    id: 'project.detail.contributorCount.zero',
+    defaultMessage: 'No contributors yet',
+  },
   projectTotalContributors: {
     id: 'project.detail.contributorCount',
-    defaultMessage:
-      '{number, plural, =0 {No contributors yet} one {<b>#</b> total contributor} other {<b>#</b> total contributors}}',
+    defaultMessage: '{number, plural, one {<b>#</b> contributor} other {<b>#</b> contributors}}',
   },
   projectLastContribution: {
     id: 'project.detail.lastContribution',

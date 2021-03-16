@@ -98,7 +98,7 @@ describe('if projectInfoPanel', () => {
     expect(screen.getByText('Imagery')).toBeInTheDocument();
     expect(screen.queryByText('Any available source')).toBeInTheDocument();
     expect(screen.queryByText('1')).toBeInTheDocument();
-    expect(screen.queryByText('total contributor')).toBeInTheDocument();
+    expect(screen.queryByText('contributor')).toBeInTheDocument();
     expect(screen.queryByText('Last contribution 1 hour ago')).toBeInTheDocument();
     expect(screen.queryByText('Beginner mapper')).toBeInTheDocument();
   });
