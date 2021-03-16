@@ -269,7 +269,7 @@ class UserService:
             TaskHistory.query.with_entities(
                 TaskHistory.project_id,
                 TaskHistory.task_id,
-                func.count(TaskHistory.action).label("cnt"),
+                func.count(TaskHistory.action).label("count"),
             )
             .filter(TaskHistory.action == "COMMENT")
             .group_by(TaskHistory.task_id, TaskHistory.project_id)
@@ -277,7 +277,7 @@ class UserService:
 
         sq = (
             db.session.query(
-                func.coalesce(comments_query.c.cnt, 0).label("comments"), task_id_list
+                func.coalesce(comments_query.c.count, 0).label("comments"), task_id_list
             )
             .select_from(task_id_list)
             .outerjoin(
