@@ -323,12 +323,11 @@ class OrganisationsRestAPI(Resource):
         try:
             organisation_dto = UpdateOrganisationDTO(request.get_json())
             organisation_dto.organisation_id = organisation_id
-            # Don't update organisation type if user is not admin
+            # Don't update organisation type and subscription_tier if request user is not an admin
             if User.get_by_id(token_auth.current_user()).role != 1:
-                org_type = OrganisationService.get_organisation_by_id(
-                    organisation_id
-                ).type
-                organisation_dto.type = OrganisationType(org_type).name
+                org = OrganisationService.get_organisation_by_id(organisation_id)
+                organisation_dto.type = OrganisationType(org.type).name
+                organisation_dto.subscription_tier = org.subscription_tier
             organisation_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")

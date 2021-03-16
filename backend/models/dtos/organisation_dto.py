@@ -56,6 +56,7 @@ class OrganisationDTO(Model):
     teams = ListType(ModelType(OrganisationTeamsDTO))
     campaigns = ListType(ListType(StringType))
     type = StringType(validators=[is_known_organisation_type])
+    subscription_tier = IntType(serialized_name="subscriptionTier")
 
 
 class ListOrganisationsDTO(Model):
@@ -77,6 +78,7 @@ class NewOrganisationDTO(Model):
     description = StringType()
     url = StringType()
     type = StringType(validators=[is_known_organisation_type])
+    subscription_tier = IntType(serialized_name="subscriptionTier")
 
 
 class UpdateOrganisationDTO(OrganisationDTO):

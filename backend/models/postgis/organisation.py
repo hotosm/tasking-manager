@@ -41,6 +41,7 @@ class Organisation(db.Model):
     description = db.Column(db.String)
     url = db.Column(db.String)
     type = db.Column(db.Integer, default=OrganisationType.FREE.value, nullable=False)
+    subscription_tier = db.Column(db.Integer)
 
     managers = db.relationship(
         User,
@@ -67,6 +68,7 @@ class Organisation(db.Model):
         new_org.description = new_organisation_dto.description
         new_org.url = new_organisation_dto.url
         new_org.type = OrganisationType[new_organisation_dto.type].value
+        new_org.subscription_tier = new_organisation_dto.subscription_tier
 
         for manager in new_organisation_dto.managers:
             user = User.get_by_username(manager)
@@ -174,6 +176,7 @@ class Organisation(db.Model):
         organisation_dto.url = self.url
         organisation_dto.managers = []
         organisation_dto.type = OrganisationType(self.type).name
+        organisation_dto.subscription_tier = self.subscription_tier
 
         if omit_managers:
             return organisation_dto
