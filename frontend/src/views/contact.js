@@ -77,8 +77,8 @@ export const ContactPage = (props) => {
   return (
     <div className="pt180 pull-center">
       <TopBar pageName={<FormattedMessage {...messages.contactUs} />} />
-      <div className="pl6-l ph4 mr4-l pt4 f5 w-60-l">
-        <div className="cf ttu barlow-condensed f3 pv2 blue-dark">
+      <div className="pl6-l ph4-ns ph2 mr4-l f5 w-60-l">
+        <div className="cf f5 blue-dark">
           <ContactForm submitMessage={sendContactUs} />
           {popups}
         </div>

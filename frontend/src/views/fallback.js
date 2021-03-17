@@ -1,5 +1,5 @@
 import React from 'react';
-import { navigate } from '@reach/router';
+import { navigate, Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -17,11 +17,11 @@ export const FallbackComponent = (props) => {
             <FormattedMessage {...messages.errorFallbackMessage} />
           </p>
           <p className="pt2">
-            <a href="/contact">
+            <Link to="/contact">
               <Button className="dib tc bg-red white mh1">
                 <FormattedMessage {...messages.contactUs} />
               </Button>
-            </a>
+            </Link>
             <Button className="dib tc bg-red white mh1" onClick={() => navigate(-1)}>
               <FormattedMessage {...messages.return} />
             </Button>

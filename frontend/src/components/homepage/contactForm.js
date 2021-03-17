@@ -4,13 +4,13 @@ import { Form, Field } from 'react-final-form';
 import messages from './messages';
 import { FormSubmitButton } from '../button';
 
-export const ContactForm = props => {
+export const ContactForm = (props) => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
   return (
     <Form
-      onSubmit={values => props.submitMessage(values)}
+      onSubmit={(values) => props.submitMessage(values)}
       initialValues={props.contactUsValues}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
@@ -19,7 +19,7 @@ export const ContactForm = props => {
               <h3 className="f3 fw6 dib blue-dark mv0">
                 <FormattedMessage {...messages.contacterTitle} />
               </h3>
-              <div>
+              <div className="pt3">
                 <FormattedMessage {...messages.contacterHeaderText} />
               </div>
               <form id="contact-form" onSubmit={handleSubmit}>
