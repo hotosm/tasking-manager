@@ -181,12 +181,13 @@ class UserService:
         return requested_user.as_dto(logged_in_user.username)
 
     @staticmethod
-    def get_user_dto_by_id(requested_user: int, logged_in_user: int) -> UserDTO:
+    def get_user_dto_by_id(user: int, request_user: int) -> UserDTO:
         """Gets user DTO for supplied user id """
-        requested_user = UserService.get_user_by_id(requested_user)
-        logged_in_user = UserService.get_user_by_id(logged_in_user)
-
-        return requested_user.as_dto(logged_in_user.username)
+        user = UserService.get_user_by_id(user)
+        if request_user:
+            request_username = UserService.get_user_by_id(request_user).username
+            return user.as_dto(request_username)
+        return user.as_dto()
 
     @staticmethod
     def get_interests_stats(user_id):

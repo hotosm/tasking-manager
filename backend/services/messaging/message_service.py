@@ -245,7 +245,7 @@ class MessageService:
             messages = []
             for user_id in contributed_users:
                 try:
-                    user = UserService.get_user_dto_by_id(user_id)
+                    user = UserService.get_user_dto_by_id(user_id, comment_from)
                     # if user was mentioned, a message has already been sent to them,
                     # so we can skip
                     if user.username in usernames:
@@ -430,7 +430,7 @@ class MessageService:
                 messages = []
                 for user_id in users_to_notify:
                     try:
-                        user = UserService.get_user_dto_by_id(user_id)
+                        user = UserService.get_user_dto_by_id(user_id, chat_from)
                     except NotFound:
                         continue  # If we can't find the user, keep going no need to fail
                     message = Message()
@@ -468,7 +468,7 @@ class MessageService:
                 > datetime.date.today() - datetime.timedelta(days=300)
             )
         )
-        user = UserService.get_user_dto_by_id(user_id)
+        user = UserService.get_user_dto_by_id(user_id, None)
         messages = []
         for project in recently_updated_projects:
             activity_message = []
