@@ -51,6 +51,14 @@ const Parameters = {
     Type: 'String',
     Description: 'SSL certificate for HTTPS protocol'
   },
+  FrontendSSLCertID: {
+    Type: 'String',
+    Description: 'Cloudfront SSL certificate for frontend'
+  },
+  BackendSSLCertID: {
+    Type: 'String',
+    Description: 'ELB SSL certificate for backend'
+  },
   TaskingManagerLogDirectory: {
     Description: 'TM_LOG_DIR environment variable',
     Type: 'String'
@@ -580,7 +588,7 @@ const Resources = {
     Type: 'AWS::ElasticLoadBalancingV2::Listener',
     Properties: {
       Certificates: [ {
-        CertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier'))
+        CertificateArn: cf.arn('acm', cf.ref('BackendSSLCertID'))
       }],
       DefaultActions: [{
         Type: 'forward',
@@ -709,7 +717,7 @@ const Resources = {
           ViewerProtocolPolicy: "redirect-to-https"
         },
         ViewerCertificate: {
-          AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
+          AcmCertificateArn: cf.arn('acm', cf.ref('FrontendSSLCertID')),
           MinimumProtocolVersion: 'TLSv1.2_2018',
           SslSupportMethod: 'sni-only'
         }
