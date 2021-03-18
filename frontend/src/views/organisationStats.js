@@ -102,7 +102,7 @@ export const OrganisationStats = ({ id }) => {
                 <OrganisationTier
                   type={organisation.type}
                   subscriptionTier={organisation.subscriptionTier}
-                  completedActions={7000}
+                  completedActions={completedActions}
                 />
               ) : (
                 <OrganisationUsageLevel
