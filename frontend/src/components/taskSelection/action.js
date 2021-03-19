@@ -148,7 +148,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                 setDisable={setDisable}
                 comment={project.changesetComment}
                 presets={project.idPresets}
-                imageryUrl={formatImageryUrlCallback(project.imagery)}
+                imagery={formatImageryUrlCallback(project.imagery)}
                 gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
               />
             </React.Suspense>

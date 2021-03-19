@@ -205,4 +205,9 @@ describe('formatImageryUrl', () => {
       'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     );
   });
+  it('in case the imagery is not an URL, return the same string', () => {
+    expect(formatImageryUrl('Bing')).toBe('Bing');
+    expect(formatImageryUrl('EsriWorldImageryClarity')).toBe('EsriWorldImageryClarity');
+    expect(formatImageryUrl('Maxar-Premium')).toBe('Maxar-Premium');
+  });
 });

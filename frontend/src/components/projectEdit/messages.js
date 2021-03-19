@@ -38,6 +38,10 @@ export default defineMessages({
     defaultMessage:
       'Organization that is coordinating the project, if there is any. The managers of that organization will have administration rights over the project.',
   },
+  selectImagery: {
+    id: 'projects.formInputs.imagery.select',
+    defaultMessage: 'Select imagery',
+  },
   selectLicense: {
     id: 'projects.formInputs.license.select',
     defaultMessage: 'Select license',
@@ -335,9 +339,9 @@ export default defineMessages({
     defaultMessage:
       'If checked, users must edit tasks at random for the initial editing stage (managers and admins are exempt).',
   },
-  imageryURL: {
+  imagery: {
     id: 'projects.formInputs.imagery',
-    defaultMessage: 'Imagery URL',
+    defaultMessage: 'Imagery',
   },
   imageryURLNote: {
     id: 'projects.formInputs.imagery.note',
