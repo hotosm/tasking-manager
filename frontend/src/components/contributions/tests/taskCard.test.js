@@ -84,7 +84,8 @@ describe('TaskCard', () => {
           taskStatus={'LOCKED_FOR_VALIDATION'}
           lockHolder={'user_1'}
           taskHistory={[]}
-          lastUpdated={'2021-01-22T12:59:37.238281Z'}
+          lastUpdated={new Date()}
+          autoUnlockSeconds={120 * 60}
         />
       </ReduxIntlProviders>,
     );
