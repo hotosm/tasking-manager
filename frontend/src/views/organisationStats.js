@@ -13,7 +13,7 @@ import { useCurrentYearStats } from '../hooks/UseOrgYearStats';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { RemainingTasksStats } from '../components/teamsAndOrgs/remainingTasksStats';
-import { OrganisationUsageLevel } from '../components/teamsAndOrgs/orgUsageLevel';
+import { OrganisationUsageLevel, OrganisationTier } from '../components/teamsAndOrgs/orgUsageLevel';
 import { TasksStats } from '../components/teamsAndOrgs/tasksStats';
 
 export const OrganisationStats = ({ id }) => {
@@ -44,7 +44,10 @@ export const OrganisationStats = ({ id }) => {
   const currentYearStats = useCurrentYearStats(id, query, apiState.stats);
   const totalStats = useTotalTasksStats(currentYearStats);
   const completedActions = totalStats.mapped + totalStats.validated;
-  const showTierInfo = ['DISCOUNTED', 'FULL_FEE'].includes(organisation.type) && isOrgManager;
+  const showTierInfo =
+    ['DISCOUNTED', 'FULL_FEE'].includes(organisation.type) &&
+    organisation.subscriptionTier &&
+    isOrgManager;
   useSetTitleTag(`${organisation.name || 'Organization'} stats`);
 
   if (token) {
@@ -95,12 +98,18 @@ export const OrganisationStats = ({ id }) => {
               )}
             </h4>
             <ReactPlaceholder showLoadingAnimation={true} rows={5} delay={500} ready={totalStats}>
-              <OrganisationUsageLevel
-                orgName={organisation.name}
-                type={organisation.type}
-                completedActions={completedActions}
-                userIsOrgManager={isOrgManager}
-              />
+              {showTierInfo ? (
+                <OrganisationTier
+                  type={organisation.type}
+                  subscriptionTier={organisation.subscriptionTier}
+                  completedActions={completedActions}
+                />
+              ) : (
+                <OrganisationUsageLevel
+                  orgName={organisation.name}
+                  completedActions={completedActions}
+                />
+              )}
             </ReactPlaceholder>
           </div>
         </div>
