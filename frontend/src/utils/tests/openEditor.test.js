@@ -89,12 +89,13 @@ describe('test if getIdUrl', () => {
     const testProject = {
       changesetComment: '#hotosm-project-5522',
       projectId: 1234,
-      imagery: 'Bing',
+      imagery: 'Maxar-Premium',
     };
     expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1, 2])).toBe(
       'https://www.openstreetmap.org/edit?editor=id&' +
         '#map=18/-9.663953/120.25684' +
         '&comment=%23hotosm-project-5522' +
+        '&background=Maxar-Premium' +
         '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2',
     );
   });
