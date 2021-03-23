@@ -734,7 +734,7 @@
   "management.organisations.stats.tier.estimation": "{year}년 말의 예상 티어",
   "management.organisations.stats.cost.estimation": "{year}년 말의 예상 비용",
   "management.organisations.stats.next_level.actions": "레벨 {n}에 도달하는 데 필요한 행동 수",
-  "management.organisations.stats.next_tier.actions": "",
+  "management.organisations.stats.tier.actions_remaining": "",
   "management.organisations.tier.free": "없음",
   "management.organisations.tier.low": "낮음",
   "management.organisations.tier.medium": "중간",

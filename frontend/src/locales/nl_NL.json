@@ -734,7 +734,7 @@
   "management.organisations.stats.tier.estimation": "Geschatte fase aan het einde van {year}",
   "management.organisations.stats.cost.estimation": "Geschatte kosten aan het einde van {year}",
   "management.organisations.stats.next_level.actions": "Acties om het niveau {n} te bereiken",
-  "management.organisations.stats.next_tier.actions": "Acties om door te gaan naar de volgende fase",
+  "management.organisations.stats.tier.actions_remaining": "",
   "management.organisations.tier.free": "Vrij",
   "management.organisations.tier.low": "Laag",
   "management.organisations.tier.medium": "Normaal",

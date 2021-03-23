@@ -734,7 +734,7 @@
   "management.organisations.stats.tier.estimation": "Nível estimado até o final de {year}",
   "management.organisations.stats.cost.estimation": "Custo estimado até o final de {year}",
   "management.organisations.stats.next_level.actions": "Ações para atingir o nível {n}",
-  "management.organisations.stats.next_tier.actions": "Ações para passar ao próximo nível",
+  "management.organisations.stats.tier.actions_remaining": "Ações restantes no nível {name}",
   "management.organisations.tier.free": "Grátis",
   "management.organisations.tier.low": "Baixo",
   "management.organisations.tier.medium": "Média",

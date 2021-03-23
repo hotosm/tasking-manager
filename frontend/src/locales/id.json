@@ -734,7 +734,7 @@
   "management.organisations.stats.tier.estimation": "",
   "management.organisations.stats.cost.estimation": "",
   "management.organisations.stats.next_level.actions": "",
-  "management.organisations.stats.next_tier.actions": "",
+  "management.organisations.stats.tier.actions_remaining": "",
   "management.organisations.tier.free": "",
   "management.organisations.tier.low": "Rendah",
   "management.organisations.tier.medium": "Sedang",
