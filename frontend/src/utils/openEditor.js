@@ -80,8 +80,12 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl)
     if (project.changesetComment) {
       url += '&comment=' + encodeURIComponent(project.changesetComment);
     }
-    if (project.imagery && project.imagery.includes('http')) {
-      url += '&background=custom:' + encodeURIComponent(formatImageryUrl(project.imagery));
+    if (project.imagery) {
+      if (project.imagery.includes('http')) {
+        url += '&background=custom:' + encodeURIComponent(formatImageryUrl(project.imagery));
+      } else {
+        url += '&background=' + encodeURIComponent(formatImageryUrl(project.imagery));
+      }
     }
     // add GPX
     if (project.projectId && selectedTasks) {
