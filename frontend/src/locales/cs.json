@@ -734,7 +734,7 @@
   "management.organisations.stats.tier.estimation": "Odhadovaná úroveň do konce {year}",
   "management.organisations.stats.cost.estimation": "Odhadované náklady do konce {year}",
   "management.organisations.stats.next_level.actions": "Akce k dosažení stupně {n}",
-  "management.organisations.stats.next_tier.actions": "Akce pro přechod na další úroveň",
+  "management.organisations.stats.tier.actions_remaining": "",
   "management.organisations.tier.free": "Zdarma",
   "management.organisations.tier.low": "Nízká",
   "management.organisations.tier.medium": "Střední",
