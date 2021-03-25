@@ -2,12 +2,18 @@ import React, { useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { featureCollection } from '@turf/helpers';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
-import { addLayer } from './index';
-import { MAPBOX_TOKEN, BASEMAP_OPTIONS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
+import {
+  MAPBOX_TOKEN,
+  BASEMAP_OPTIONS,
+  MAP_STYLE,
+  CHART_COLOURS,
+  MAPBOX_RTL_PLUGIN_URL,
+} from '../../config';
 import { useDropzone } from 'react-dropzone';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -89,18 +95,71 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     }
 
     setMapObj({ ...mapObj, map: map });
-
     return () => {
       mapObj.map && mapObj.map.remove();
     };
     // eslint-disable-next-line
   }, []);
 
+  const addMapLayers = (map) => {
+    if (map.getSource('aoi') === undefined) {
+      map.addSource('aoi', {
+        type: 'geojson',
+        data: featureCollection([]),
+      });
+      map.addLayer({
+        id: 'aoi',
+        type: 'fill',
+        source: 'aoi',
+        paint: {
+          'fill-color': CHART_COLOURS.orange,
+          'fill-outline-color': '#929db3',
+          'fill-opacity': 0.3,
+        },
+      });
+    }
+
+    if (map.getSource('grid') === undefined) {
+      map.addSource('grid', {
+        type: 'geojson',
+        data: featureCollection([]),
+      });
+      map.addLayer({
+        id: 'grid',
+        type: 'fill',
+        source: 'grid',
+        paint: {
+          'fill-color': '#68707f',
+          'fill-outline-color': '#00f',
+          'fill-opacity': 0.3,
+        },
+      });
+    }
+
+    if (map.getSource('tiny-tasks') === undefined) {
+      map.addSource('tiny-tasks', {
+        type: 'geojson',
+        data: featureCollection([]),
+      });
+      map.addLayer({
+        id: 'tiny-tasks',
+        type: 'fill',
+        source: 'tiny-tasks',
+        paint: {
+          'fill-color': '#f0f',
+          'fill-outline-color': '#f0f',
+          'fill-opacity': 0.3,
+        },
+      });
+    }
+  };
+
   useLayoutEffect(() => {
     if (mapObj.map !== null) {
       mapObj.map.on('load', () => {
         mapObj.map.addControl(new mapboxgl.NavigationControl());
         mapObj.map.addControl(mapObj.draw);
+        addMapLayers(mapObj.map);
       });
 
       // Remove area and geometry when aoi is deleted.
@@ -112,15 +171,17 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
         if (!MAPBOX_TOKEN) {
           return;
         }
+        addMapLayers(mapObj.map);
         const features = mapObj.draw.getAll();
-        if (features.features.length === 0) {
-          addLayer('aoi', metadata.geom, mapObj.map);
+        if (features.features.length === 0 && mapObj.map.getSource('aoi') !== undefined) {
+          mapObj.map.getSource('aoi').setData(metadata.geom);
         }
 
-        if (metadata.taskGrid && step !== 1) {
-          addLayer('grid', metadata.taskGrid, mapObj.map);
+        if (metadata.taskGrid && step !== 1 && mapObj.map.getSource('grid') !== undefined) {
+          mapObj.map.getSource('grid').setData(metadata.taskGrid);
         } else {
-          mapObj.map.removeLayer('grid');
+          mapObj.map.getSource('grid') &&
+            mapObj.map.getSource('grid').setData(featureCollection([]));
         }
       });
     }
