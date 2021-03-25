@@ -28,6 +28,9 @@ const clearParamsStep = (props) => {
   // If task is arbitrary. Jump to review.
   if (props.metadata.arbitraryTasks === true) {
     props.updateMetadata({ ...props.metadata, tasksNumber: 0 });
+    if (props.metadata.geom.features) {
+      props.updateMetadata({ ...props.metadata, tasksNumber: props.metadata.geom.features.length });
+    }
     prevStep = 1;
   }
   props.setStep(prevStep);
@@ -51,7 +54,9 @@ const NavButtons = (props) => {
           props.mapObj.map.getSource('aoi').setData(props.metadata.geom);
           props.updateMetadata({
             ...props.metadata,
-            tasksNumber: props.metadata.taskGrid.features.length,
+            tasksNumber: props.metadata.arbitraryTasks
+              ? props.metadata.geom.features.length
+              : props.metadata.taskGrid.features.length,
           });
         }
 

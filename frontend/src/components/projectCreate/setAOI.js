@@ -59,7 +59,12 @@ export default function SetAOI({
             labelPosition="right"
             isChecked={metadata.arbitraryTasks}
             onChange={() =>
-              updateMetadata({ ...metadata, arbitraryTasks: !metadata.arbitraryTasks })
+              updateMetadata({
+                ...metadata,
+                arbitraryTasks: !metadata.arbitraryTasks,
+                tasksNumber:
+                  metadata.geom && metadata.geom.features ? metadata.geom.features.length : 0,
+              })
             }
           />
         )}

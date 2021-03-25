@@ -169,7 +169,7 @@ const ProjectCreate = (props) => {
     if (mapObj.map.getSource('aoi')) {
       mapObj.map.getSource('aoi').setData(featureCollection([]));
     }
-    updateMetadata({ ...metadata, area: 0, geom: null, arbitraryTasks: false });
+    updateMetadata({ ...metadata, area: 0, geom: null, arbitraryTasks: false, tasksNumber: 0 });
   };
 
   const drawHandler = () => {
