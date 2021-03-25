@@ -1,19 +1,21 @@
 import React, { useState, useLayoutEffect, useCallback, Suspense } from 'react';
 import { useSelector } from 'react-redux';
-import { Redirect } from '@reach/router';
+import { Redirect, navigate } from '@reach/router';
+import { useQueryParam, NumberParam } from 'use-query-params';
+import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import area from '@turf/area';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
 import lineToPolygon from '@turf/line-to-polygon';
-import { useQueryParam, NumberParam } from 'use-query-params';
-import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
+import truncate from '@turf/truncate';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+
+import messages from './messages';
 import { createProject } from '../../store/actions/project';
 import { store } from '../../store';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
-import messages from './messages';
 import SetAOI from './setAOI';
 import SetTaskSizes from './setTaskSizes';
 import TrimProject from './trimProject';
@@ -21,11 +23,8 @@ import NavButtons from './navButtons';
 import Review from './review';
 import { AlertMessage } from './alertMessage';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { MAX_AOI_AREA } from '../../config';
-import { navigate } from '@reach/router';
-import truncate from '@turf/truncate';
 import { makeGrid } from './setTaskSizes';
-import { MAX_FILESIZE } from '../../config';
+import { MAX_AOI_AREA, MAX_FILESIZE } from '../../config';
 
 const ProjectCreationMap = React.lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
@@ -35,64 +34,26 @@ var toGeojson = require('@mapbox/togeojson');
 var osmToGeojson = require('osmtogeojson');
 var shpjs = require('shpjs');
 
-const aoiPaintOptions = {
-  'fill-color': '#00004d',
-  'fill-opacity': 0.3,
-};
-
-const taskGridPaintOptions = {
-  'fill-color': '#fff',
-  'fill-outline-color': '#00f',
-  'fill-opacity': 0.5,
-};
-
-export const addLayer = (layerName, data, map) => {
-  if (map.getLayer(layerName)) {
-    map.removeLayer(layerName);
-  }
-  if (map.getSource(layerName)) {
-    map.removeSource(layerName);
-  }
-
-  let options = aoiPaintOptions;
-  if (layerName === 'grid') {
-    options = taskGridPaintOptions;
-  }
-
-  map.addLayer({
-    id: layerName,
-    type: 'fill',
-    source: {
-      type: 'geojson',
-      data: data,
-    },
-    paint: options,
-  });
-};
-
 const ProjectCreate = (props) => {
-    const intl = useIntl();
-
+  const intl = useIntl();
   const token = useSelector((state) => state.auth.get('token'));
   const [drawModeIsActive, setDrawModeIsActive] = useState(false);
-  const layer_name = 'aoi';
 
   const setDataGeom = (geom, display) => {
-    mapObj.map.fitBounds(bbox(geom), { padding: 20 });
-    const geomArea = area(geom) / 1e6;
+    mapObj.map.fitBounds(bbox(geom), { padding: 200 });
     const zoomLevel = 11;
     const grid = makeGrid(geom, zoomLevel, {});
     updateMetadata({
       ...metadata,
       geom: geom,
-      area: geomArea.toFixed(2),
+      area: (area(geom) / 1e6).toFixed(2),
       zoomLevel: zoomLevel,
       taskGrid: grid,
       tempTaskGrid: grid,
     });
 
     if (display === true) {
-      addLayer('aoi', geom, mapObj.map);
+      mapObj.map.getSource('aoi').setData(geom);
     }
   };
 
@@ -205,11 +166,8 @@ const ProjectCreate = (props) => {
       mapObj.draw.delete(id);
     }
 
-    if (mapObj.map.getLayer(layer_name)) {
-      mapObj.map.removeLayer(layer_name);
-    }
-    if (mapObj.map.getSource(layer_name)) {
-      mapObj.map.removeSource(layer_name);
+    if (mapObj.map.getSource('aoi')) {
+      mapObj.map.getSource('aoi').setData(featureCollection([]));
     }
     updateMetadata({ ...metadata, area: 0, geom: null, arbitraryTasks: false });
   };
@@ -297,13 +255,14 @@ const ProjectCreate = (props) => {
     draw: new MapboxDraw(drawOptions),
   });
 
-  const handleCreate = useCallback((cloneProjectData) => {
+  const handleCreate = useCallback(
+    (cloneProjectData) => {
       if (!metadata.geom) {
-        setErr({error: true, message: intl.formatMessage(messages.noGeometry)});
+        setErr({ error: true, message: intl.formatMessage(messages.noGeometry) });
         return;
       }
       if (!metadata.organisation && !cloneProjectData.organisation) {
-        setErr({error: true, message:intl.formatMessage(messages.noOrganization)});
+        setErr({ error: true, message: intl.formatMessage(messages.noOrganization) });
         return;
       }
 
@@ -322,12 +281,15 @@ const ProjectCreate = (props) => {
       }
       pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
         .then((res) => navigate(`/manage/projects/${res.projectId}`))
-        .catch((e) => setErr({
-              error: true,
-              message: <FormattedMessage {...messages.creationFailed} values={{ error: e }} />,
-            }) );
-    }, [metadata, setErr, intl, token]);
-
+        .catch((e) =>
+          setErr({
+            error: true,
+            message: <FormattedMessage {...messages.creationFailed} values={{ error: e }} />,
+          }),
+        );
+    },
+    [metadata, setErr, intl, token],
+  );
 
   if (!token) {
     return <Redirect to={'/login'} noThrow />;

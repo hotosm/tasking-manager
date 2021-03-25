@@ -85,6 +85,15 @@ export default defineMessages({
     id: 'management.projects.create.trim_tasks.trim_to_aoi',
     defaultMessage: 'Trim the tasks to define the exact Area of Interest for mapping.',
   },
+  tinyTasks: {
+    id: 'management.projects.create.trim_tasks.tiny_tasks',
+    defaultMessage:
+      '{number, plural, one {There is # task smaller than {area}m². Would you like to discard them?} other {There are # tasks smaller than {area}m². Would you like to discard them?}}',
+  },
+  discard: {
+    id: 'management.projects.create.trim_tasks.tiny_tasks.discard',
+    defaultMessage: 'Discard',
+  },
   taskSizes: {
     id: 'management.projects.create.task_sizes.description',
     defaultMessage: 'General task size',
