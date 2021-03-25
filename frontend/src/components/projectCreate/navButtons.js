@@ -27,6 +27,7 @@ const clearParamsStep = (props) => {
 
   // If task is arbitrary. Jump to review.
   if (props.metadata.arbitraryTasks === true) {
+    props.updateMetadata({ ...props.metadata, tasksNumber: 0 });
     prevStep = 1;
   }
   props.setStep(prevStep);
