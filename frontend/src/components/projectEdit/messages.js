@@ -359,6 +359,10 @@ export default defineMessages({
     id: 'projects.formInputs.priority_areas.action.clear',
     defaultMessage: 'Clear all',
   },
+  selectFile: {
+    id: 'projects.formInputs.priority_areas.action.selectFile',
+    defaultMessage: 'Select File',
+  },
   name: {
     id: 'projects.formInputs.name',
     defaultMessage: 'Name of the project',
@@ -396,7 +400,7 @@ export default defineMessages({
   priorityAreasDescription: {
     id: 'projects.formInputs.priority_areas.description',
     defaultMessage:
-      'If you want mappers to work on the highest priority areas first, draw one or more polygons within the project area.',
+      'If you want mappers to work on the highest priority areas first, draw one or more polygons within the project area or import a file.',
   },
   mappingTypes: {
     id: 'projects.formInputs.mapping_types',

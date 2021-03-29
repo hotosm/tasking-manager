@@ -2789,7 +2789,7 @@
   resolved "https://registry.yarnpkg.com/@mapbox/tiny-sdf/-/tiny-sdf-1.1.1.tgz#16a20c470741bfe9191deb336f46e194da4a91ff"
   integrity sha512-Ihn1nZcGIswJ5XGbgFAvVumOgWpvIjBX9jiRlIl46uQG9vJOF51ViBYHF95rEZupuyQbEmhLaDPLQlU7fUTsBg==
 
-"@mapbox/togeojson@0.16.0", "@mapbox/togeojson@^0.16.0":
+"@mapbox/togeojson@0.16.0":
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/@mapbox/togeojson/-/togeojson-0.16.0.tgz#5b283001078431821dc74e287acaf56a11ceb37c"
   integrity sha1-WygwAQeEMYIdx04oesr1ahHOs3w=
@@ -3181,6 +3181,11 @@
   integrity sha512-B4roX+0mpXKGj8ndd38YoIo3IV9pmTTWxr/2cOke5apTtrNabEUE0KMBccpcAcYlfPcr7uMu+dxeeC3HdXd9qQ==
   dependencies:
     "@babel/runtime" "^7.12.5"
+
+"@tmcw/togeojson@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-4.4.0.tgz#88d2dfd10ddecf204d180a344da88447ab1f6bec"
+  integrity sha512-QA0Yk/i1D2tmbuQ/fPtB+opKxEvRagdNG0pfk6JbVd6oiI90XG0SZPQwuPlORRZ5SQFT7Kv6nQ9ptDJuTXC3kA==
 
 "@turf/area@^6.3.0":
   version "6.3.0"
