@@ -22,6 +22,7 @@ import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { CommentInputField } from '../comments/commentInput';
 import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedTasks';
+import { useAsync } from '../../hooks/UseAsync';
 
 export function CompletionTabForMapping({
   project,
@@ -46,7 +47,7 @@ export function CompletionTabForMapping({
 
   const splitTask = () => {
     if (!disabled) {
-      fetchLocalJSONAPI(
+      return fetchLocalJSONAPI(
         `projects/${project.projectId}/tasks/actions/split/${tasksIds[0]}/`,
         token,
         'POST',
@@ -59,13 +60,18 @@ export function CompletionTabForMapping({
           setSplitTaskError(true);
         });
     } else {
-      setShowMapChangesModal('split');
+      // we need to return a promise in order to be called by useAsync
+      return new Promise((resolve, reject) => {
+        setShowMapChangesModal('split');
+        resolve();
+      });
     }
   };
+  const splitTaskAsync = useAsync(splitTask);
 
   const stopMapping = () => {
     if (!disabled) {
-      pushToLocalJSONAPI(
+      return pushToLocalJSONAPI(
         `projects/${project.projectId}/tasks/actions/stop-mapping/${tasksIds[0]}/`,
         JSON.stringify({ comment: taskComment }),
         token,
@@ -74,9 +80,13 @@ export function CompletionTabForMapping({
         navigate(`/projects/${project.projectId}/tasks/`);
       });
     } else {
-      setShowMapChangesModal('unlock');
+      return new Promise((resolve, reject) => {
+        setShowMapChangesModal('unlock');
+        resolve();
+      });
     }
   };
+  const stopMappingAsync = useAsync(stopMapping);
 
   const submitTask = () => {
     if (!disabled && selectedStatus) {
@@ -93,12 +103,13 @@ export function CompletionTabForMapping({
         url = `projects/${project.projectId}/tasks/actions/unlock-after-mapping/${tasksIds[0]}/`;
         payload.status = 'BADIMAGERY';
       }
-      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
+      return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
         navigate(`/projects/${project.projectId}/tasks/`);
       });
     }
   };
+  const submitTaskAsync = useAsync(submitTask);
 
   return (
     <div>
@@ -210,17 +221,32 @@ export function CompletionTabForMapping({
       <div className="cf mv2">
         <Button
           className="bg-red white w-100 fl"
-          onClick={() => submitTask()}
-          disabled={disabled || !selectedStatus}
+          onClick={() => submitTaskAsync.execute()}
+          disabled={
+            disabled ||
+            !selectedStatus ||
+            [stopMappingAsync.status, splitTaskAsync.status].includes('pending')
+          }
+          loading={submitTaskAsync.status === 'pending'}
         >
           <FormattedMessage {...messages.submitTask} />
         </Button>
       </div>
       <div className="cf pb1">
-        <Button className="bg-blue-dark white w-50 fl" onClick={() => splitTask()}>
+        <Button
+          className="bg-blue-dark white w-50 fl"
+          onClick={() => splitTaskAsync.execute()}
+          loading={splitTaskAsync.status === 'pending'}
+          disabled={[submitTaskAsync.status, stopMappingAsync.status].includes('pending')}
+        >
           <FormattedMessage {...messages.splitTask} />
         </Button>
-        <Button className="blue-dark bg-white w-50 fl" onClick={() => stopMapping()}>
+        <Button
+          className="blue-dark bg-white w-50 fl"
+          onClick={() => stopMappingAsync.execute()}
+          loading={stopMapping.status === 'pending'}
+          disabled={[submitTaskAsync.status, splitTaskAsync.status].includes('pending')}
+        >
           <FormattedMessage {...messages.selectAnotherTask} />
         </Button>
       </div>
@@ -247,7 +273,7 @@ export function CompletionTabForValidation({
 
   const stopValidation = () => {
     if (!disabled) {
-      pushToLocalJSONAPI(
+      return pushToLocalJSONAPI(
         `projects/${project.projectId}/tasks/actions/stop-validation/`,
         JSON.stringify({
           resetTasks: tasksIds.map((taskId) => ({ taskId: taskId, comment: taskComment })),
@@ -258,9 +284,13 @@ export function CompletionTabForValidation({
         navigate(`../tasks/`);
       });
     } else {
-      setShowMapChangesModal('unlock');
+      return new Promise((resolve, reject) => {
+        setShowMapChangesModal('unlock');
+        resolve();
+      });
     }
   };
+  const stopValidationAsync = useAsync(stopValidation);
 
   const submitTask = () => {
     if (!disabled && selectedStatus) {
@@ -278,12 +308,13 @@ export function CompletionTabForValidation({
       if (selectedStatus === 'INVALIDATED') {
         url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
       }
-      pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
+      return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
         navigate(`../tasks/?filter=readyToValidate`);
       });
     }
   };
+  const submitTaskAsync = useAsync(submitTask);
 
   return (
     <div>
@@ -348,14 +379,20 @@ export function CompletionTabForValidation({
       <div className="cf mb3">
         <Button
           className="bg-red white w-100 fl"
-          onClick={() => submitTask()}
-          disabled={disabled || !selectedStatus}
+          onClick={() => submitTaskAsync.execute()}
+          disabled={disabled || !selectedStatus || stopValidationAsync.status === 'pending'}
+          loading={submitTaskAsync.status === 'pending'}
         >
           <FormattedMessage {...messages[tasksIds.length > 1 ? 'submitTasks' : 'submitTask']} />
         </Button>
       </div>
       <div className="cf">
-        <Button className="blue-dark bg-white w-100 fl" onClick={() => stopValidation()}>
+        <Button
+          className="blue-dark bg-white w-100 fl"
+          onClick={() => stopValidationAsync.execute()}
+          loading={stopValidationAsync.status === 'pending'}
+          disabled={submitTaskAsync.status === 'pending'}
+        >
           <FormattedMessage {...messages.stopValidation} />
         </Button>
       </div>
