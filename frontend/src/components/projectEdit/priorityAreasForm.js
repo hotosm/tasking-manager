@@ -8,13 +8,18 @@ import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { featureCollection } from '@turf/helpers';
 import { FormattedMessage } from 'react-intl';
+import { useDropzone } from 'react-dropzone';
 
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
-import { CustomButton } from '../button';
+import { CustomButton, Button } from '../button';
 import { MappedIcon, WasteIcon, MappedSquareIcon } from '../svgIcons';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL, CHART_COLOURS } from '../../config';
 import { BasemapMenu } from '../basemapMenu';
+import { readGeoFile, verifyGeometry, verifyFileSize } from '../projectCreate/index';
+import { AlertMessage } from '../projectCreate/alertMessage';
+
+var shpjs = require('shpjs');
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -27,6 +32,7 @@ export const PriorityAreasForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const locale = useSelector((state) => state.preferences['locale']);
   const mapRef = React.createRef();
+  const [error, setError] = useState({ error: false, message: null });
 
   const modes = MapboxDraw.modes;
   modes.draw_rectangle = DrawRectangle;
@@ -62,11 +68,73 @@ export const PriorityAreasForm = () => {
 
   let priorityAreas = projectInfo.priorityAreas ? projectInfo.priorityAreas : [];
   // update priority areas as features
-  const drawPriorityAreas = priorityAreas.map((a) => ({
+  let drawPriorityAreas = priorityAreas.map((a) => ({
     type: 'Feature',
     properties: {},
     geometry: a,
   }));
+
+  const setAndRenderPriorityArea = (geom) => {
+    // set priority areas
+    priorityAreas = geom.features.map((g) => g.geometry);
+    setProjectInfo({ ...projectInfo, priorityAreas: priorityAreas });
+   // render priority areas from file
+    drawPriorityAreas = geom.features
+    addMapLayers(mapObj.map);
+    if (mapObj.map.getSource('priority_areas') !== undefined) {
+    mapObj.map
+      .getSource('priority_areas')
+      .setData({ type: 'FeatureCollection', features: drawPriorityAreas });
+    }
+  };
+
+  const uploadFile = (files) => {
+    try {
+      let file = files[0];
+      if (!file) return;
+
+      let error = { error: false, message: null };
+      setError(error); //reset error
+
+      const supportedGeoms = ['Polygon'];
+
+      verifyFileSize(file, error);
+
+      const format = file.name.split('.')[1].toLowerCase();
+
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          let geom = readGeoFile(e, format, error);
+
+          if (format === 'zip') {
+            shpjs(e.target.result).then((geom) => {
+              let validGeometry = verifyGeometry(geom, error, supportedGeoms);
+              setAndRenderPriorityArea(validGeometry);
+            });
+          } else {
+            let validGeometry = verifyGeometry(geom, error, supportedGeoms);
+            setAndRenderPriorityArea(validGeometry);
+          }
+        } catch (err) {
+          setError({ error: true, message: err.message });
+        }
+      };
+      if (format === 'zip') {
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.readAsText(file);
+      }
+    } catch (e) {
+      setError({ error: true, message: e.message });
+    }
+  };
+
+  const { getRootProps, getInputProps, open } = useDropzone({
+    onDrop: uploadFile,
+    noClick: true,
+    noKeyboard: true,
+  });
 
   useLayoutEffect(() => {
     const map = new mapboxgl.Map({
@@ -202,7 +270,7 @@ export const PriorityAreasForm = () => {
   };
 
   return (
-    <div className="w-100">
+    <div className="w-100"  {...getRootProps()}>
       <div className="relative">
         <div className="cf absolute bg-white o-90 top-1 left-1 pa3 mw6 z-4 br1">
           <p className={styleClasses.pClass}>
@@ -228,6 +296,10 @@ export const PriorityAreasForm = () => {
               <MappedSquareIcon className="h1 w1 pb1 v-mid mr2" />
               <FormattedMessage {...messages.drawRectangle} />
             </CustomButton>
+            <input {...getInputProps()} />
+            <Button onClick={open} className={`ml2 ${styleClasses.buttonClass}`}>
+              <FormattedMessage {...messages.selectFile} />
+            </Button>
             <p className="f5 mb0">
               <CustomButton
                 onClick={clearAll}
@@ -238,6 +310,7 @@ export const PriorityAreasForm = () => {
               </CustomButton>
             </p>
           </div>
+          <AlertMessage error={error} />
         </div>
         <div className="absolute top-0 right-0 z-5 mr2">
           <BasemapMenu map={mapObj.map} />

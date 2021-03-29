@@ -30,9 +30,79 @@ const ProjectCreationMap = React.lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
 );
 
-var toGeojson = require('@mapbox/togeojson');
+var toGeojson = require('@tmcw/togeojson');
 var osmToGeojson = require('osmtogeojson');
 var shpjs = require('shpjs');
+
+export const readGeoFile = (e, format, error) => {
+  const supportedFormats = ['json', 'geojson', 'kml', 'osm', 'xml', 'zip'];
+
+  if (supportedFormats.includes(format) === false) {
+    error.message = <FormattedMessage {...messages.invalidFile} />;
+    throw error;
+  }
+
+  let geom = null;
+  switch (format) {
+    case 'json':
+    case 'geojson':
+      geom = JSON.parse(e.target.result);
+      break;
+    case 'kml':
+      let kml = new DOMParser().parseFromString(e.target.result, 'text/xml');
+      geom = toGeojson.kml(kml);
+      break;
+    case 'osm':
+      let osm = new DOMParser().parseFromString(e.target.result, 'text/xml');
+      geom = osmToGeojson(osm);
+      break;
+    case 'xml':
+      let xml = new DOMParser().parseFromString(e.target.result, 'text/xml');
+      geom = osmToGeojson(xml);
+      break;
+    default:
+      break;
+  }
+  return geom;
+};
+
+const validateFeature = (e, supportedGeoms, err) => {
+  if (supportedGeoms.includes(e.geometry.type) === false) {
+    err.message = (
+      <FormattedMessage {...messages.unsupportedGeom} values={{ geometry: e.geometry.type }} />
+    );
+    throw err;
+  }
+  // Transform lineString to polygon
+  if (e.geometry.type === 'LineString') {
+    const coords = e.geometry.coordinates;
+    if (JSON.stringify(coords[0]) !== JSON.stringify(coords[coords.length - 1])) {
+      err.message = <FormattedMessage {...messages.closedLinestring} />;
+      throw err;
+    }
+    return lineToPolygon(e);
+  }
+  return e;
+};
+
+export const verifyFileSize = (file, error) => {
+  if (file.size >= MAX_FILESIZE) {
+    error.message = (
+      <FormattedMessage {...messages.fileSize} values={{ fileSize: MAX_FILESIZE / 1000000 }} />
+    );
+    throw error;
+  }
+};
+
+export const verifyGeometry = (geom, error, supportedGeoms) => {
+  if (geom.type !== 'FeatureCollection') {
+    error.message = <FormattedMessage {...messages.noFeatureCollection} />;
+    throw error;
+  }
+  // Validate geometry for each feature.
+  geom.features = geom.features.map((g) => validateFeature(g, supportedGeoms, error));
+  return geom;
+};
 
 const ProjectCreate = (props) => {
   const intl = useIntl();
@@ -57,105 +127,44 @@ const ProjectCreate = (props) => {
     }
   };
 
-  const validateFeature = (e, supportedGeoms, err) => {
-    if (supportedGeoms.includes(e.geometry.type) === false) {
-      err.message = (
-        <FormattedMessage {...messages.unsupportedGeom} values={{ geometry: e.geometry.type }} />
-      );
-      throw err;
-    }
-    // Transform lineString to polygon
-    if (e.geometry.type === 'LineString') {
-      const coords = e.geometry.coordinates;
-      if (JSON.stringify(coords[0]) !== JSON.stringify(coords[coords.length - 1])) {
-        err.message = <FormattedMessage {...messages.closedLinestring} />;
-        throw err;
-      }
-      return lineToPolygon(e);
-    }
-    return e;
-  };
-
-  const verifyAndSetData = (event) => {
-    let err = { code: 403, message: null };
-    try {
-      if (event.type !== 'FeatureCollection') {
-        err.message = <FormattedMessage {...messages.noFeatureCollection} />;
-        throw err;
-      }
-      // Validate geometry for each feature.
-      const supportedGeoms = ['Polygon', 'MultiPolygon', 'LineString'];
-      event.features = event.features.map((e) => validateFeature(e, supportedGeoms, err));
-      setDataGeom(event, true);
-    } catch (e) {
-      deleteHandler();
-      setErr({ error: true, message: e.message });
-    }
-  };
-
   const uploadFile = (files) => {
     let file = files[0];
-    if (!file) {
-      return null;
-    }
-    if (file.size >= MAX_FILESIZE) {
-      setErr({
-        error: true,
-        message: (
-          <FormattedMessage {...messages.fileSize} values={{ fileSize: MAX_FILESIZE / 1000000 }} />
-        ),
-      });
-      return null;
-    }
+    if (!file) return null;
 
-    const format = file.name.split('.')[1].toLowerCase();
+    try {
+      let error = { code: 403, message: null };
+      const supportedGeoms = ['Polygon', 'LineString'];
 
-    const readFile = (e) => {
-      let geom = null;
-      switch (format) {
-        case 'json':
-        case 'geojson':
-          geom = JSON.parse(e.target.result);
-          break;
-        case 'kml':
-          let kml = new DOMParser().parseFromString(e.target.result, 'text/xml');
-          geom = toGeojson.kml(kml);
-          break;
-        case 'osm':
-          let osm = new DOMParser().parseFromString(e.target.result, 'text/xml');
-          geom = osmToGeojson(osm);
-          break;
-        case 'xml':
-          let xml = new DOMParser().parseFromString(e.target.result, 'text/xml');
-          geom = osmToGeojson(xml);
-          break;
-        case 'zip':
-          shpjs(e.target.result).then((geom) => verifyAndSetData(geom));
-          break;
-        default:
-          break;
+      verifyFileSize(file, error);
+
+      const format = file.name.split('.')[1].toLowerCase();
+
+      let fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        try {
+          let geom = readGeoFile(e, format, error);
+
+          if (format === 'zip') {
+            shpjs(e.target.result).then((geom) => {
+              let validGeometry = verifyGeometry(geom, error, supportedGeoms);
+              setDataGeom(validGeometry, true);
+            });
+          } else {
+            let validGeometry = verifyGeometry(geom, error, supportedGeoms);
+            setDataGeom(validGeometry, true);
+          }
+        } catch (err) {
+          deleteHandler();
+          setErr({ error: true, message: err.message });
+        }
+      };
+      if (format === 'zip') {
+        fileReader.readAsArrayBuffer(file);
+      } else {
+        fileReader.readAsText(file);
       }
-      if (format !== 'zip') {
-        verifyAndSetData(geom);
-      }
-    };
-
-    let fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      try {
-        readFile(e);
-      } catch (err) {
-        setErr({
-          error: true,
-          message: <FormattedMessage {...messages.invalidFile} />,
-        });
-      }
-    };
-
-    if (format === 'zip') {
-      fileReader.readAsArrayBuffer(file);
-    } else {
-      fileReader.readAsText(file);
+    } catch (e) {
+      setErr({ error: true, message: e.message });
     }
   };
 
