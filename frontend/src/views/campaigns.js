@@ -18,7 +18,7 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { CloseIcon } from '../components/svgIcons';
+import { ErrorMessage } from '../components/responseMessages';
 
 export function ListCampaigns() {
   useSetTitleTag('Manage campaigns');
@@ -60,24 +60,6 @@ export function CreateCampaign() {
       .catch((e) => setError(e));
   };
 
-  const ServerMessage = () => {
-    return (
-      <div className="red ba b--red pa2 br1 dib pa2">
-        <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
-        <FormattedMessage {...messages.duplicateCampaign} />
-      </div>
-    );
-  };
-
-  const ErrorMessage = ({ error, success }) => {
-    let message = null;
-    if (error !== null) {
-      message = <ServerMessage />;
-    }
-
-    return <div className="db mt3">{message}</div>;
-  };
-
   return (
     <Form
       onSubmit={(values) => createCampaign(values)}
@@ -94,7 +76,9 @@ export function CreateCampaign() {
                     <FormattedMessage {...messages.campaignInfo} />
                   </h3>
                   <CampaignInformation />
-                  <ErrorMessage error={error} />
+                  <ErrorMessage error={error}>
+                    <FormattedMessage {...messages.duplicateCampaign} />
+                  </ErrorMessage>
                 </div>
               </div>
             </div>
@@ -132,33 +116,13 @@ export function EditCampaign(props) {
     `projects/?campaign=${encodeURIComponent(campaign.name)}&omitMapResults=true`,
     campaign.name !== undefined,
   );
-  const [nameError, setNameError] = useState(null);
+  const [errors, setErrors] = useState(null);
 
   const updateCampaign = (payload) => {
     pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then((res) => setNameError(null))
-      .catch((e) => setNameError(e));
+      .then((res) => setErrors(null))
+      .catch((e) => setErrors(e));
   };
-
-  const ServerMessage = () => {
-    return (
-      <div className="red ba b--red pa2 br1 dib pa2">
-        <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
-        <FormattedMessage {...messages.duplicateCampaign} />
-      </div>
-    );
-  };
-
-  const ErrorMessage = ({ nameError, success }) => {
-    let message = null;
-    console.log(nameError);
-    if (nameError !== null) {
-      message = <ServerMessage />;
-    }
-
-    return <div className="db mt3">{message}</div>;
-  };
-
   return (
     <div className="cf pv4 bg-tan">
       <div className="cf">
@@ -174,7 +138,9 @@ export function EditCampaign(props) {
           updateCampaign={updateCampaign}
           disabledForm={error || loading}
         />
-        <ErrorMessage nameError={nameError} />
+        <ErrorMessage error={errors}>
+          <FormattedMessage {...messages.duplicateCampaign} />
+        </ErrorMessage>
       </div>
 
       <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
