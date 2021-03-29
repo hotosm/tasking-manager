@@ -16,7 +16,7 @@ export function Login({ redirectTo }: Object) {
     return (
       <div className="cf w-100 bg-white blue-dark pv5">
         <div className="cf w-100 tc">
-          <img src={ORG_LOGO || logo} alt={`${ORG_NAME} logo`} className="h2 ml2 v-mid pb2" />
+          <img src={ORG_LOGO || logo} alt={`${ORG_NAME} logo`} className="h3 v-mid pb3" />
         </div>
         <h3 className="f2 fw6 barlow-condensed tc mt3">
           <FormattedMessage {...messages.loginRequired} values={{ org: ORG_CODE }} />
