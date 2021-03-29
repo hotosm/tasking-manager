@@ -220,7 +220,14 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   }, [metadata, updateMetadata]);
 
   useLayoutEffect(() => {
-    mapObj.map.getSource('grid').setData(metadata.taskGrid);
+    if (mapObj.map.getSource('grid') !== undefined) {
+      mapObj.map.getSource('grid').setData(metadata.taskGrid);
+    } else {
+      mapObj.map.addSource('grid', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: metadata.taskGrid },
+      });
+    }
     return () => {
       // remove the split on click function when leaving the page
       mapObj.map.off('click', 'grid', splitHandler);
@@ -293,13 +300,17 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
           />
         </p>
         <p className="f6 blue-grey lh-title mt1">
-          <FormattedMessage
-            {...messages.taskAreaMessage}
-            values={{
-              area: <strong>{(area(metadata.taskGrid.features[0]) / 1e6).toFixed(2) || 0}</strong>,
-              sq: <sup>2</sup>,
-            }}
-          />
+          {metadata.taskGrid && metadata.taskGrid.features && (
+            <FormattedMessage
+              {...messages.taskAreaMessage}
+              values={{
+                area: (
+                  <strong>{(area(metadata.taskGrid.features[0]) / 1e6).toFixed(2) || 0}</strong>
+                ),
+                sq: <sup>2</sup>,
+              }}
+            />
+          )}
         </p>
       </div>
     </>
