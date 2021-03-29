@@ -1,16 +1,21 @@
 import React from 'react';
 import { Link } from '@reach/router';
 
-export function Button({ onClick, children, className, disabled }: Object) {
+import { LoadingIcon } from './svgIcons';
+
+export function Button({ onClick, children, className, disabled, loading = false }: Object) {
   return (
     <button
       onClick={onClick}
       aria-pressed="false"
       focusindex="0"
-      className={`${className || ''} br1 f5 bn ${disabled ? 'o-50' : 'pointer'}`}
+      className={`${className || ''} br1 f5 bn ${disabled || loading ? 'o-50' : 'pointer'}`}
       style={{ padding: '.75rem 1.5rem' }}
-      disabled={disabled}
+      disabled={disabled || loading}
     >
+      {loading && (
+        <LoadingIcon className="h1 w1 v-mid mr2" style={{ animation: 'spin 1s linear infinite' }} />
+      )}
       {children}
     </button>
   );
@@ -33,15 +38,18 @@ export function FormSubmitButton({ children, className, disabledClassName, disab
   );
 }
 
-export function CustomButton({ onClick, children, className, disabled }: Object) {
+export function CustomButton({ onClick, children, className, disabled, loading = false }: Object) {
   return (
     <button
       onClick={onClick}
       aria-pressed="false"
       focusindex="0"
-      className={`${className || ''} br1 f5 ${disabled ? 'o-50' : 'pointer'}`}
-      disabled={disabled}
+      className={`${className || ''} br1 f5 ${disabled || loading ? 'o-50' : 'pointer'}`}
+      disabled={disabled || loading}
     >
+      {loading && (
+        <LoadingIcon className="h1 w1 v-mid mr2" style={{ animation: 'spin 1s linear infinite' }} />
+      )}
       {children}
     </button>
   );
