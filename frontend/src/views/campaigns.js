@@ -116,12 +116,12 @@ export function EditCampaign(props) {
     `projects/?campaign=${encodeURIComponent(campaign.name)}&omitMapResults=true`,
     campaign.name !== undefined,
   );
-  const [errors, setErrors] = useState(null);
+  const [nameError, setNameError] = useState(null);
 
   const updateCampaign = (payload) => {
     pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
-      .then((res) => setErrors(null))
-      .catch((e) => setErrors(e));
+      .then((res) => setNameError(null))
+      .catch((e) => setNameError(e));
   };
   return (
     <div className="cf pv4 bg-tan">
@@ -138,7 +138,7 @@ export function EditCampaign(props) {
           updateCampaign={updateCampaign}
           disabledForm={error || loading}
         />
-        <ErrorMessage error={errors}>
+        <ErrorMessage error={nameError}>
           <FormattedMessage {...messages.duplicateCampaign} />
         </ErrorMessage>
       </div>
