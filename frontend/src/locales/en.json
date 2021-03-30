@@ -216,7 +216,7 @@
   "management.projects.create.trim_tasks.description.1": "Trim the task grid to the area of interest (optional).",
   "management.projects.create.trim_tasks.description.2": "You can keep the current tasks or trim the area for your project. This can take some time to execute.",
   "management.projects.create.trim_tasks.trim_to_aoi": "Trim the tasks to define the exact Area of Interest for mapping.",
-  "management.projects.create.trim_tasks.tiny_tasks": "{number, plural, one {There is # task smaller than {area}m². Would you like to discard them?} other {There are # tasks smaller than {area}m². Would you like to discard them?}}",
+  "management.projects.create.trim_tasks.tiny_tasks": "{number, plural, one {There is # task smaller than {area}m². Would you like to discard it?} other {There are # tasks smaller than {area}m². Would you like to discard them?}}",
   "management.projects.create.trim_tasks.tiny_tasks.discard": "Discard",
   "management.projects.create.task_sizes.description": "General task size",
   "management.projects.create.task_sizes.smaller": "Smaller",
