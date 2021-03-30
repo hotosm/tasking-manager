@@ -88,7 +88,7 @@ export default defineMessages({
   tinyTasks: {
     id: 'management.projects.create.trim_tasks.tiny_tasks',
     defaultMessage:
-      '{number, plural, one {There is # task smaller than {area}m². Would you like to discard them?} other {There are # tasks smaller than {area}m². Would you like to discard them?}}',
+      '{number, plural, one {There is # task smaller than {area}m². Would you like to discard it?} other {There are # tasks smaller than {area}m². Would you like to discard them?}}',
   },
   discard: {
     id: 'management.projects.create.trim_tasks.tiny_tasks.discard',
