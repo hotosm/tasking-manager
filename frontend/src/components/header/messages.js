@@ -31,6 +31,10 @@ export default defineMessages({
     id: 'header.buttons.signUp',
     defaultMessage: 'Sign up',
   },
+  createAccount: {
+    id: 'header.buttons.createAccount',
+    defaultMessage: 'Create an account',
+  },
   authorize: {
     id: 'header.buttons.authorize',
     defaultMessage: 'Log in',
@@ -67,7 +71,7 @@ export default defineMessages({
   proceedOSMPart1: {
     id: 'signup.proceed_osm.text1',
     defaultMessage:
-      "The Tasking Manager works with OpenStreetMap, a collaborative, open-source map of the world. Everything you map on the Tasking Manager is going to be available on OpenStreetMap.",
+      'The Tasking Manager works with OpenStreetMap, a collaborative, open-source map of the world. Everything you map on the Tasking Manager is going to be available on OpenStreetMap.',
   },
   proceedOSMPart2: {
     id: 'signup.proceed_osm.text2',
@@ -75,7 +79,7 @@ export default defineMessages({
   },
   proceedOSMLogin: {
     id: 'signup.proceed_osm.login',
-    defaultMessage: "I already have an OpenStreetMap account",
+    defaultMessage: 'I already have an OpenStreetMap account',
   },
   emailPlaceholder: {
     id: 'input.placeholder.email_address',
@@ -119,7 +123,7 @@ export default defineMessages({
   },
   submitProceedOSM: {
     id: 'signup.button.submit_osm',
-    defaultMessage: "Create OpenStreetMap account",
+    defaultMessage: 'Create OpenStreetMap account',
   },
   signUpQuestion: {
     id: 'signup.modal.question',

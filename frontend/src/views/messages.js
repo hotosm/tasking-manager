@@ -46,7 +46,15 @@ export default defineMessages({
   },
   loginRequired: {
     id: 'loginPage.title',
-    defaultMessage: 'Login or register an account',
+    defaultMessage: 'Sign in to {org} Tasking Manager',
+  },
+  loginWithOSM: {
+    id: 'loginPage.text.login',
+    defaultMessage: 'You can log in with an OpenStreetMap account.',
+  },
+  createAccount: {
+    id: 'loginPage.text.create_account',
+    defaultMessage: 'Or create a new one to start mapping.',
   },
   managers: {
     id: 'management.managers',
