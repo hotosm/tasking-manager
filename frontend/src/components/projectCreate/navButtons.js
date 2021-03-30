@@ -1,16 +1,18 @@
 import React from 'react';
+import { featureCollection } from '@turf/helpers';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { addLayer } from './index';
+
 import messages from './messages';
 import { Button } from '../button';
 
 const clearParamsStep = (props) => {
   switch (props.index) {
     case 2: //clear Tasks
-      props.mapObj.map.removeLayer('grid');
+      props.mapObj.map.getSource('grid').setData(featureCollection([]));
       props.updateMetadata({ ...props.metadata, tasksNumber: 0 });
       break;
     case 3:
+      props.mapObj.map.getSource('tiny-tasks').setData(featureCollection([]));
       props.updateMetadata({
         ...props.metadata,
         taskGrid: props.metadata.tempTaskGrid,
@@ -25,6 +27,10 @@ const clearParamsStep = (props) => {
 
   // If task is arbitrary. Jump to review.
   if (props.metadata.arbitraryTasks === true) {
+    props.updateMetadata({ ...props.metadata, tasksNumber: 0 });
+    if (props.metadata.geom.features) {
+      props.updateMetadata({ ...props.metadata, tasksNumber: props.metadata.geom.features.length });
+    }
     prevStep = 1;
   }
   props.setStep(prevStep);
@@ -45,10 +51,12 @@ const NavButtons = (props) => {
         } else {
           const id = props.metadata.geom.features[0].id;
           props.mapObj.draw.delete(id);
-          addLayer('aoi', props.metadata.geom, props.mapObj.map);
+          props.mapObj.map.getSource('aoi').setData(props.metadata.geom);
           props.updateMetadata({
             ...props.metadata,
-            tasksNumber: props.metadata.taskGrid.features.length,
+            tasksNumber: props.metadata.arbitraryTasks
+              ? props.metadata.geom.features.length
+              : props.metadata.taskGrid.features.length,
           });
         }
 
@@ -85,16 +93,14 @@ const NavButtons = (props) => {
         </Button>
       )}
       {props.index === 4 ? (
-      <Button
-          onClick={props.handleCreate}
-          className="white bg-red"
-        >
+        <Button onClick={props.handleCreate} className="white bg-red">
           {props.cloneProjectData.name === null ? (
             <FormattedMessage {...messages.create} />
           ) : (
             <FormattedMessage {...messages.clone} />
           )}
-        </Button>) : (
+        </Button>
+      ) : (
         <Button onClick={stepHandler} className="white bg-red">
           <FormattedMessage {...messages.next} />
         </Button>

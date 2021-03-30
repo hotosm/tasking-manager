@@ -107,7 +107,7 @@ describe('if projectInfoPanel', () => {
     render(
       <IntlProviders>
         <ProjectInfoPanel
-          project={{ ...project, mapperLevel: 'INTERMEDIATE', imagery: 'Custom' }}
+          project={{ ...project, mapperLevel: 'INTERMEDIATE', imagery: 'Mapbox' }}
           tasks={tasks}
           contributors={[]}
           type={'detail'}
@@ -116,7 +116,7 @@ describe('if projectInfoPanel', () => {
     );
     expect(screen.getByText('Types of Mapping')).toBeInTheDocument();
     expect(screen.getByText('Imagery')).toBeInTheDocument();
-    expect(screen.queryByText('Custom')).toBeInTheDocument();
+    expect(screen.queryByText('Mapbox Satellite')).toBeInTheDocument();
     expect(screen.queryByText(/No contributors yet/)).toBeInTheDocument();
     expect(screen.queryByText('Last contribution 1 hour ago')).toBeInTheDocument();
     expect(screen.queryByText('Intermediate mapper')).toBeInTheDocument();

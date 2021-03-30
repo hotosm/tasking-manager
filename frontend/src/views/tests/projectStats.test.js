@@ -47,10 +47,10 @@ describe('ProjectStats dashboard', () => {
     expect(screen.getByText('Changesets')).toBeInTheDocument();
     expect(screen.getByText('Total map edits')).toBeInTheDocument();
     expect(screen.getByText('Tasks by status')).toBeInTheDocument();
-    expect(screen.getByText('Contributors')).toBeInTheDocument();
     expect(screen.getByText('Project timeline')).toBeInTheDocument();
-
     await waitFor(() => screen.getByText('Time statistics'));
     expect(screen.getByText('Time statistics')).toBeInTheDocument();
-  }, 10000);
+    await waitFor(() => screen.getByText('Contributors'));
+    expect(screen.getByText('Contributors')).toBeInTheDocument();
+  });
 });

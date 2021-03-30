@@ -16,7 +16,6 @@ import {
   FourCellsGridIcon,
   NineCellsGridIcon,
 } from '../svgIcons';
-import { addLayer } from './index';
 
 // Maximum resolution of OSM
 const MAXRESOLUTION = 156543.0339;
@@ -122,6 +121,9 @@ const splitTaskGrid = (taskGrid, geom) => {
 export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   const [splitMode, setSplitMode] = useState(null);
 
+  // center the map view on the AoI
+  useEffect(() => mapObj.map.fitBounds(bbox(metadata.geom), { padding: 200 }));
+
   const splitHandler = useCallback(
     (event) => {
       const taskGrid = mapObj.map.getSource('grid')._data;
@@ -221,7 +223,7 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
   }, [metadata, updateMetadata]);
 
   useLayoutEffect(() => {
-    addLayer('grid', metadata.taskGrid, mapObj.map);
+    mapObj.map.getSource('grid').setData(metadata.taskGrid);
     return () => {
       // remove the split on click function when leaving the page
       mapObj.map.off('click', 'grid', splitHandler);

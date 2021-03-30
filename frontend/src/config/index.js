@@ -69,7 +69,7 @@ export const TASK_COLOURS = {
 export const CHART_COLOURS = {
   red: '#d73f3f',
   green: '#3e9c67',
-  blue: '#1757c4',
+  blue: '#3389D6',
   orange: '#f09733',
 };
 

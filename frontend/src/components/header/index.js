@@ -57,8 +57,7 @@ const UserDisplay = ({ username }) => {
   );
 };
 
-const AuthButtons = (props) => {
-  const { logInStyle, signUpStyle, redirectTo } = props;
+const AuthButtons = ({ logInStyle, signUpStyle, redirectTo, alternativeSignUpText = false }) => {
   const [debouncedCreateLoginWindow] = useDebouncedCallback(
     (redirectToPass) => createLoginWindow(redirectToPass),
     3000,
@@ -73,7 +72,11 @@ const AuthButtons = (props) => {
       <Popup
         trigger={
           <Button className={signUpStyle}>
-            <FormattedMessage {...messages.signUp} />
+            {alternativeSignUpText ? (
+              <FormattedMessage {...messages.createAccount} />
+            ) : (
+              <FormattedMessage {...messages.signUp} />
+            )}
           </Button>
         }
         modal
@@ -207,7 +210,6 @@ class Header extends React.Component {
       <div className="dib">
         <LocaleSelector className="bn dn dib-66rem" />
         <AuthButtons
-          aStyle="mh1 v-mid dn dib-ns"
           logInStyle="blue-dark bg-white"
           signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
           redirectTo={this.props.location.pathname}

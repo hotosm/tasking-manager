@@ -80,8 +80,12 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl)
     if (project.changesetComment) {
       url += '&comment=' + encodeURIComponent(project.changesetComment);
     }
-    if (project.imagery && project.imagery.includes('http')) {
-      url += '&background=custom:' + encodeURIComponent(formatImageryUrl(project.imagery));
+    if (project.imagery) {
+      if (project.imagery.includes('http')) {
+        url += '&background=custom:' + encodeURIComponent(formatImageryUrl(project.imagery));
+      } else {
+        url += '&background=' + encodeURIComponent(formatImageryUrl(project.imagery));
+      }
     }
     // add GPX
     if (project.projectId && selectedTasks) {
@@ -145,17 +149,21 @@ export function getImageryInfo(url) {
 }
 
 function loadImageryonJosm(project) {
-  if (project.imagery && project.imagery.includes('http')) {
-    const [type, minZoom, maxZoom] = getImageryInfo(project.imagery);
-    const imageryParams = {
-      title: project.imagery,
-      type: type,
-    };
-    if (minZoom) imageryParams.min_zoom = minZoom;
-    if (maxZoom) imageryParams.max_zoom = maxZoom;
-    imageryParams.url = project.imagery.substr(project.imagery.indexOf('http'));
+  if (project.imagery) {
+    if (project.imagery.includes('http')) {
+      const [type, minZoom, maxZoom] = getImageryInfo(project.imagery);
+      const imageryParams = {
+        title: project.imagery,
+        type: type,
+      };
+      if (minZoom) imageryParams.min_zoom = minZoom;
+      if (maxZoom) imageryParams.max_zoom = maxZoom;
+      imageryParams.url = project.imagery.substr(project.imagery.indexOf('http'));
 
-    return callJosmRemoteControl(formatJosmUrl('imagery', imageryParams));
+      return callJosmRemoteControl(formatJosmUrl('imagery', imageryParams));
+    } else {
+      return callJosmRemoteControl(formatJosmUrl('imagery', { id: project.imagery }));
+    }
   }
 }
 

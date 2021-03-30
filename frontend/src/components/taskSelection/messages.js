@@ -191,6 +191,10 @@ export default defineMessages({
     id: 'project.imagery.noDefined',
     defaultMessage: 'Any available source',
   },
+  copyImageryURL: {
+    id: 'project.imagery.copy',
+    defaultMessage: 'Copy imagery URL',
+  },
   mapATask: {
     id: 'project.selectTask.footer.button.mapRandomTask',
     defaultMessage: 'Map a task',

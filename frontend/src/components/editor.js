@@ -5,7 +5,7 @@ import '@hotosm/id/dist/iD.css';
 
 import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET, OSM_SERVER_URL } from '../config';
 
-export default function Editor({ setDisable, comment, presets, imageryUrl, gpxUrl }) {
+export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }) {
   const dispatch = useDispatch();
   const session = useSelector((state) => state.auth.get('session'));
   const iDContext = useSelector((state) => state.editor.context);
@@ -16,13 +16,20 @@ export default function Editor({ setDisable, comment, presets, imageryUrl, gpxUr
     iDContext && iDContext.background() && iDContext.background().findSource('custom');
 
   useEffect(() => {
-    if (!customImageryIsSet && imageryUrl && customSource) {
-      iDContext.background().baseLayerSource(customSource.template(imageryUrl));
-      setCustomImageryIsSet(true);
-      // this line is needed to update the value on the custom background dialog
-      window.iD.prefs('background-custom-template', imageryUrl);
+    if (!customImageryIsSet && imagery && customSource) {
+      if (imagery.startsWith('http')) {
+        iDContext.background().baseLayerSource(customSource.template(imagery));
+        setCustomImageryIsSet(true);
+        // this line is needed to update the value on the custom background dialog
+        window.iD.prefs('background-custom-template', imagery);
+      } else {
+        const imagerySource = iDContext.background().findSource(imagery);
+        if (imagerySource) {
+          iDContext.background().baseLayerSource(imagerySource);
+        }
+      }
     }
-  }, [customImageryIsSet, imageryUrl, iDContext, customSource]);
+  }, [customImageryIsSet, imagery, iDContext, customSource]);
 
   useEffect(() => {
     return () => {
