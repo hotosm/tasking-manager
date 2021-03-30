@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react-hooks';
 
 import { useAsync } from '../UseAsync';
 
@@ -10,13 +10,12 @@ describe('useAsync', () => {
         mockFn();
         resolve();
       });
-    const { result, waitForNextUpdate } = renderHook(() => useAsync(testFn));
+    const { result } = renderHook(() => useAsync(testFn));
     expect(result.current.status).toBe('idle');
-    result.current.execute();
+    await act(async () => await result.current.execute());
     expect(mockFn).toHaveBeenCalled();
-    expect(result.current.status).toBe('pending');
-    await waitForNextUpdate();
     expect(result.current.status).toBe('success');
+    expect(result.current.error).toBeNull();
   });
   it('with unsuccessful result', async () => {
     const mockFn = jest.fn();
@@ -25,12 +24,11 @@ describe('useAsync', () => {
         mockFn();
         reject();
       });
-    const { result, waitForNextUpdate } = renderHook(() => useAsync(testFn));
+    const { result } = renderHook(() => useAsync(testFn));
     expect(result.current.status).toBe('idle');
-    result.current.execute();
+    await act(async () => await result.current.execute());
     expect(mockFn).toHaveBeenCalled();
-    expect(result.current.status).toBe('pending');
-    await waitForNextUpdate();
     expect(result.current.status).toBe('error');
+    expect(result.current.error).not.toBeNull();
   });
 });
