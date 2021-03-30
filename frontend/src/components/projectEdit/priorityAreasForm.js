@@ -49,8 +49,18 @@ export const PriorityAreasForm = () => {
           id: 'gl-draw-polygon-fill-inactive',
           type: 'fill',
           paint: {
-            'fill-color': '#00004d',
-            'fill-opacity': 0.6,
+            'fill-color': '#d73f3f',
+            'fill-opacity': 0.3,
+          },
+        },
+        {
+          id: 'gl-draw-polygon-line-inactive',
+          type: 'line',
+          paint: {
+            'line-color': '#d73f3f',
+            'line-dasharray': [2, 2],
+            'line-width': 2,
+            'line-opacity': 0.7,
           },
         },
       ],
@@ -91,7 +101,7 @@ export const PriorityAreasForm = () => {
         paint: {
           'fill-color': CHART_COLOURS.orange,
           'fill-outline-color': '#929db3',
-          'fill-opacity': 0.3,
+          'fill-opacity': 0.4,
         },
       });
     }
@@ -125,7 +135,7 @@ export const PriorityAreasForm = () => {
         paint: {
           'fill-color': '#d73f3f',
           'fill-outline-color': '#d73f3f',
-          'fill-opacity': 0.4,
+          'fill-opacity': 0.3,
         },
         layout: {
           visibility: 'visible',
