@@ -543,30 +543,24 @@ class TeamService:
         team_id: int, team_name: str, message_dto: MessageDTO
     ):
         """Sends supplied message to all contributors in a team.  Message all team members can take
-        over a minute to run, so this method is expected to be called on its own thread"""
-        app = (
-            create_app()
-        )  # Because message-all run on background thread it needs it's own app context
+        over a minute to run, so this method can be handled by Celery"""
+        from celery_tasks import send_email
 
-        with app.app_context():
-            team_members = TeamService._get_active_team_members(team_id)
-            sender = UserService.get_user_by_id(message_dto.from_user_id).username
+        team_members = TeamService._get_active_team_members(team_id)
+        sender = UserService.get_user_by_id(message_dto.from_user_id).username
 
-            message_dto.message = (
-                "A message from {}, manager of {} team:<br/><br/>{}".format(
-                    MessageService.get_user_profile_link(sender),
-                    MessageService.get_team_link(team_name, team_id, False),
-                    markdown(message_dto.message, output_format="html"),
-                )
+        message_dto.message = (
+            "A message from {}, manager of {} team:<br/><br/>{}".format(
+                MessageService.get_user_profile_link(sender),
+                MessageService.get_team_link(team_name, team_id, False),
+                markdown(message_dto.message, output_format="html"),
             )
+        )
+        print(message_dto.message)
+        print(list(team_members))
 
-            messages = []
-            for team_member in team_members:
-                if team_member.user_id != message_dto.from_user_id:
-                    message = Message.from_dto(team_member.user_id, message_dto)
-                    message.message_type = MessageType.TEAM_BROADCAST.value
-                    message.save()
-                    user = UserService.get_user_by_id(team_member.user_id)
-                    messages.append(dict(message=message, user=user))
-
-            MessageService._push_messages(messages)
+        team_members_dto = [
+            Team().as_dto_team_member(member) for member in team_members
+        ]
+        print(team_members_dto)
+        send_email.apply_async(args=[team_members_dto, message_dto])

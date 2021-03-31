@@ -119,6 +119,8 @@ class EnvironmentConfig:
 
     # Sentry backend DSN
     SENTRY_BACKEND_DSN = os.getenv("TM_SENTRY_BACKEND_DSN", None)
+    BROKER_URL = ("redis://localhost:6379",)
+    RESULT_BACKEND = "redis://localhost:6379"
 
 
 class TestEnvironmentConfig(EnvironmentConfig):
