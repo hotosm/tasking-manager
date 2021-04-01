@@ -19,6 +19,7 @@ import { Button } from '../components/button';
 import { Dropdown } from '../components/dropdown';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { useFetch } from '../hooks/UseFetch';
 import { useEditProjectAllowed } from '../hooks/UsePermissions';
 import { CheckIcon, CloseIcon } from '../components/svgIcons';
 
@@ -51,11 +52,11 @@ export const handleCheckButton = (event, arrayElement) => {
 
 export default function ProjectEdit({ id }) {
   useSetTitleTag(`Edit project #${id}`);
+  const [errorLanguages, loadingLanguages, languages] = useFetch('system/languages/');
   const mandatoryFields = ['name', 'shortDescription', 'description', 'instructions'];
   const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [languages, setLanguages] = useState(null);
   const [option, setOption] = useState('description');
   const [projectInfo, setProjectInfo] = useState({
     mappingTypes: [],
@@ -75,19 +76,13 @@ export default function ProjectEdit({ id }) {
     ],
   });
   const [userCanEditProject] = useEditProjectAllowed(projectInfo);
+  const supportedLanguages =
+    !errorLanguages && !loadingLanguages ? languages.supportedLanguages : [];
 
   useLayoutEffect(() => {
     setSuccess(false);
     setError(null);
   }, [projectInfo, option]);
-
-  useLayoutEffect(() => {
-    async function getSupportedLanguages() {
-      const res = await fetchLocalJSONAPI(`system/languages/`);
-      setLanguages(res.supportedLanguages);
-    }
-    getSupportedLanguages();
-  }, []);
 
   useLayoutEffect(() => {
     async function fetchData() {
@@ -153,9 +148,9 @@ export default function ProjectEdit({ id }) {
   const renderForm = (option) => {
     switch (option) {
       case 'description':
-        return <DescriptionForm languages={languages} />;
+        return <DescriptionForm languages={supportedLanguages} />;
       case 'instructions':
-        return <InstructionsForm languages={languages} />;
+        return <InstructionsForm languages={supportedLanguages} />;
       case 'metadata':
         return <MetadataForm />;
       case 'imagery':
@@ -163,7 +158,9 @@ export default function ProjectEdit({ id }) {
       case 'permissions':
         return <PermissionsForm />;
       case 'settings':
-        return <SettingsForm languages={languages} defaultLocale={projectInfo.defaultLocale} />;
+        return (
+          <SettingsForm languages={supportedLanguages} defaultLocale={projectInfo.defaultLocale} />
+        );
       case 'priority_areas':
         return <PriorityAreasForm />;
       case 'actions':
@@ -174,7 +171,12 @@ export default function ProjectEdit({ id }) {
           />
         );
       case 'custom_editor':
-        return <CustomEditorForm languages={languages} defaultLocale={projectInfo.defaultLocale} />;
+        return (
+          <CustomEditorForm
+            languages={supportedLanguages}
+            defaultLocale={projectInfo.defaultLocale}
+          />
+        );
       default:
         return null;
     }
