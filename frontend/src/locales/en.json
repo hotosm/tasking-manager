@@ -386,6 +386,8 @@
   "projects.formInputs.priority": "Priority",
   "projects.formInputs.license": "Required license",
   "projects.formInputs.language": "Default language",
+  "projects.formInputs.language.translations": "Translations",
+  "projects.formInputs.language.select": "Select a language above to translate.",
   "projects.formInputs.mapping_editors": "Editors for mapping",
   "projects.formInputs.validation_editors": "Editors for validation",
   "projects.formInputs.editors.options.custom": "Custom editor",

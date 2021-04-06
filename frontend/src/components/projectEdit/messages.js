@@ -314,6 +314,14 @@ export default defineMessages({
     id: 'projects.formInputs.language',
     defaultMessage: 'Default language',
   },
+  translations: {
+    id: 'projects.formInputs.language.translations',
+    defaultMessage: 'Translations',
+  },
+  selectLanguage: {
+    id: 'projects.formInputs.language.select',
+    defaultMessage: 'Select a language above to translate.',
+  },
   mappingEditors: {
     id: 'projects.formInputs.mapping_editors',
     defaultMessage: 'Editors for mapping',
