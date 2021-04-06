@@ -25,6 +25,7 @@ from backend.models.dtos.project_dto import (
     ProjectUserStatsDTO,
     ProjectSearchDTO,
     ProjectTeamDTO,
+    ProjectInfoDTO,
 )
 from backend.models.dtos.interests_dto import InterestDTO
 
@@ -361,6 +362,10 @@ class Project(db.Model):
         """ Updates project from DTO """
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
+        if self.default_locale != project_dto.default_locale:
+            new_locale_dto = ProjectInfoDTO()
+            new_locale_dto.locale = project_dto.default_locale
+            project_dto.project_info_locales.append(new_locale_dto)
         self.default_locale = project_dto.default_locale
         self.enforce_random_task_selection = project_dto.enforce_random_task_selection
         self.private = project_dto.private
@@ -426,9 +431,7 @@ class Project(db.Model):
 
         # Set Project Info for all returned locales
         for dto in project_dto.project_info_locales:
-
             project_info = self.project_info.filter_by(locale=dto.locale).one_or_none()
-
             if project_info is None:
                 new_info = ProjectInfo.create_from_dto(
                     dto
