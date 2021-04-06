@@ -1717,7 +1717,7 @@
             }
 
             //load aerial photography if present
-            var changesetSource = "Kaart Ground Survey 2020";
+            var changesetSource = "Kaart Ground Survey 2021";
             var hasImagery = false;
             if (imageryUrl && typeof imageryUrl != "undefined" && imageryUrl !== '') {
                 changesetSource = imageryUrl;
