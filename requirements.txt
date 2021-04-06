@@ -48,7 +48,7 @@ python-editor==1.0.4
 python-slugify==4.0.1
 pytz==2020.1
 PyYAML==5.4
-requests==2.24.0
+requests==2.25.1
 requests-oauthlib==1.0.0
 schematics==2.1.0
 sentry-sdk[flask]==0.19.3
