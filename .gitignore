@@ -46,3 +46,4 @@ ehthumbs.db
 Thumbs.db
 .elasticbeanstalk/
 venv_aws/
+node_modules/

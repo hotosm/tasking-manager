@@ -1,54 +1,32 @@
 const cf = require('@mapbox/cloudfriend');
 
 const Parameters = {
+  CloudformationVPCStackName: {
+    Type: 'String',
+    Description: 'Name of VPC Cloudformation Stack'
+  },
+  ApplicationPort: {
+    Description: 'Port on which the application listens',
+    Type: 'Number',
+    Default: 5000,
+  },
   GitSha: {
     Type: 'String'
   },
-  NetworkEnvironment: {
-    Type :'String',
-    AllowedValues: ['staging', 'production']
-  },
-  AutoscalingPolicy: {
+  DeploymentEnvironment: {
     Type: 'String',
     AllowedValues: ['development', 'demo', 'production'],
     Description: "development: min 1, max 1 instance; demo: min 1 max 3 instances; production: min 2 max 9 instances"
-  },
-  DBSnapshot: {
-    Type: 'String',
-    Description: 'Specify an RDS snapshot ID, if you want to create the DB from a snapshot.',
-    Default: ''
-  },
-  DatabaseDump: {
-    Type: 'String',
-    Description: 'Path to database dump on S3; Ex: s3://my-bkt/tm.sql'
-  },
-  DatabaseName: {
-    Type: 'String',
-    Description: 'Database Name'
-  },
-  DatabaseUser: {
-    Type: 'String',
-    Description: 'Database User'
-  },
-  DatabaseSize: {
-    Description: 'Database disk size in GB',
-    Type: 'String',
-    Default: '100'
-  },
-  ELBSubnets: {
-    Description: 'Comma separated list of ELB subnets',
-    Type: 'String',
-    Default: 'ex: subnet-a1b2c3,subnet-d4e5f6,..'
   },
   SSLCertificateIdentifier: {
     Type: 'String',
     Description: 'SSL certificate for HTTPS protocol',
     Default: 'ex: certificate/bb59df0a-ff8d-416c-bfb2-cc3a2e97c8ec'
   },
-  TaskingManagerLogDirectory: {
-    Description: 'TM_LOG_DIR environment variable',
-    Type: 'String'
-  },
+  // TaskingManagerLogDirectory: {
+  //   Description: 'TM_LOG_DIR environment variable',
+  //   Type: 'String'
+  // },
   TaskingManagerConsumerKey: {
     Description: 'TM_CONSUMER_KEY',
     Type: 'String'
@@ -65,19 +43,19 @@ const Parameters = {
     Description: 'TM_EMAIL_CONTACT_ADDRESS',
     Type: 'String'
   },
-  TaskingManagerLogLevel: {
-    Description: 'TM_LOG_LEVEL',
-    Type: 'String',
-    Default: 'INFO'
-  },
+  // TaskingManagerLogLevel: {
+  //   Description: 'TM_LOG_LEVEL',
+  //   Type: 'String',
+  //   Default: 'INFO'
+  // },
   TaskingManagerImageUploadAPIURL: {
     Description: 'URL for image upload service',
     Type: 'String'
   },
-  TaskingManagerImageUploadAPIKey: {
-    Description: 'API Key for image upload service',
-    Type: 'String'
-  },
+  // TaskingManagerImageUploadAPIKey: {
+  //   Description: 'API Key for image upload service',
+  //   Type: 'String'
+  // },
   TaskingManagerSMTPHost: {
     Description: 'TM_SMTP_HOST environment variable',
     Type: 'String'
@@ -120,10 +98,10 @@ const Parameters = {
 };
 
 const Conditions = {
-  UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
-  DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
-  IsTaskingManagerProduction: cf.equals(cf.ref('AutoscalingPolicy'), 'production'),
-  IsTaskingManagerDemo: cf.equals(cf.ref('AutoscalingPolicy'), 'Demo (max 3)'),
+  // UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
+  // DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
+  IsTaskingManagerProduction: cf.equals(cf.ref('DeploymentEnvironment'), 'production'),
+  IsTaskingManagerDemo: cf.equals(cf.ref('DeploymentEnvironment'), 'demo'),
   IsHOTOSMUrl: cf.equals(
     cf.select('1', cf.split('.', cf.ref('TaskingManagerURL')))
     , 'hotosm')
@@ -136,8 +114,8 @@ const Conditions = {
  * ECS Definition
  * ECS Service
  * Secrets Policy :- Secrets Manager Secrets
- * TaskingManagerECSTaskRole :-
- * TaskingManagerECSExecutionRole
+ * ECSTaskRole :-
+ * ECSTaskExecutionRole
  * TaskingManagerASG
  * TaskingManagerASGPolicy
  * TaskingManager Load Balancer
@@ -155,14 +133,14 @@ const Conditions = {
  *
  */
 const Resources = {
-  TaskingManagerECSCluster: {
+  ECSCluster: {
     Type: 'AWS::ECS::Cluster',
     Properties: {
       CapacityProviders: [
         'FARGATE',
         'FARGATE_SPOT'
       ],
-      ClusterName: cf.stackName,
+      ClusterName: cf.stackName, // TODO: Change this
       ClusterSettings: [{
         Name: 'containerInsights',
         Value: 'enabled'
@@ -274,18 +252,15 @@ const Resources = {
       KeyName: 'mbtiles'
     }
   },
-  TaskingManagerECSTaskDefinition: { // cf.ref returns ARN with version
+  ECSTaskDefinition: { // cf.ref returns ARN with version
     Type: 'AWS::ECS::TaskDefinition',
-    DependsOn: ['SecretRDSInstanceAttachment'],  // Wait for RDS credentials to be ready
     Properties: {
       RequiresCompatibilities: ['FARGATE'],
       ContainerDefinitions: [{
         Name: 'Backend_Service',
         // Command: ['/bin/sh', '-c', 'echo $POSTGRES_ENDPOINT'],
         Environment: [
-          { Name: 'POSTGRES_ENDPOINT', Value: cf.getAtt('TaskingManagerRDS','Endpoint.Address') },
-          { Name: 'POSTGRES_DB', Value: cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:dbname}}']) },
-          { Name: 'POSTGRES_USER', Value: cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:username}}']) },
+          { Name: 'POSTGRES_ENDPOINT', Value: cf.importValue(cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-endpoint-address'] )) },
           { Name: 'TM_APP_BASE_URL', Value: cf.ref('TaskingManagerAppBaseUrl') },
           { Name: 'TM_CONSUMER_KEY', Value: cf.ref('TaskingManagerConsumerKey') },
           { Name: 'TM_SMTP_HOST', Value: cf.ref('TaskingManagerSMTPHost') },
@@ -298,11 +273,25 @@ const Resources = {
           { Name: 'TM_ORG_LOGO', Value: cf.ref('TaskingManagerLogo') },
           { Name: 'TM_IMAGE_UPLOAD_API_URL', Value: cf.ref('TaskingManagerImageUploadAPIURL') },
           { Name: 'TM_SENTRY_BACKEND_DSN', Value: cf.ref('SentryBackendDSN') },
+          {
+            Name: 'POSTGRES_DB',
+            Value: cf.join(':', [
+              '{{resolve:secretsmanager',
+              cf.importValue(cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-password-arn'])),
+              'SecretString:dbname}}'])
+          },
+          {
+            Name: 'POSTGRES_USER',
+            Value: cf.join(':', [
+              '{{resolve:secretsmanager',
+              cf.importValue(cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-password-arn'])),
+              'SecretString:username}}'])
+          },
         ],
         Secrets: [
           { 
             Name: 'POSTGRES_PASSWORD',
-            ValueFrom: cf.ref('TaskingManagerRDSManagedPassword')
+            ValueFrom: cf.importValue(cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-password-arn']))
           },
           { 
             Name: 'TM_SMTP_PASSWORD',
@@ -325,62 +314,53 @@ const Resources = {
             ValueFrom: cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('ImageUploadAPIKey') ] )
           }
         ],
-        EnvironmentFiles: [],
         Essential: true,
         //HealthCheck: {
         //  Command: ['/bin/sh', '-c', "echo $POSTGRES_ENDPOINT || exit 1"],
         //  Interval: 10,
         //  Retries: 3
         //},
-        Image: 'quay.io/hotosm/taskingmanager:feature_containerize-backend-cfn', //configure this properly
-        RepositoryCredentials: {
-          CredentialsParameter: 'arn:aws:secretsmanager:us-east-1:670261699094:secret:prod/tasking-manager/quay-image-pull-access-WdfayD'
-        },
+        // Image: 'quay.io/hotosm/tasking-manager:feature_containerize-backend-cfn', //configure this properly
+        Image: cf.join('', [cf.accountId, '.dkr.ecr.', cf.region, '.amazonaws.com/taskingmanager:latest']),
+        // RepositoryCredentials: {
+        //   CredentialsParameter: 'arn:aws:secretsmanager:us-east-1:670261699094:secret:prod/tasking-manager/quay-image-pull-access-WdfayD'
+        // },
         PortMappings: [
           {
-            ContainerPort: 5000,
-            HostPort: 5000,
+            ContainerPort: cf.ref('ApplicationPort'),
+            HostPort: cf.ref('ApplicationPort'),
             Protocol: 'tcp'
           },
-          {
-            ContainerPort: 8080,
-            HostPort: 8080,
-            Protocol: 'tcp'
-          }
         ],
         LogConfiguration: {
           LogDriver: 'awslogs',
-          Options: {
+          Options: { // TODO: Figure out expiry
             'awslogs-create-group': true,
             'awslogs-region': cf.region,
-            'awslogs-group': '/ecs/tm4-backend',
-            'awslogs-stream-prefix': 'tm4-ecs'
+            'awslogs-group': cf.join('', ['/', cf.ref('DeploymentEnvironment'), 'tasking-manager/backend']),
+            'awslogs-stream-prefix': 'tasking-manager'
           }
         },
       }],
       Cpu: '1024', 
-      ExecutionRoleArn: cf.ref('TaskingManagerECSExecutionRole'),
+      ExecutionRoleArn: cf.getAtt('ECSTaskExecutionRole', 'Arn'),
       Family: 'Tasking_Manager',
       Memory: '4096',
       NetworkMode: 'awsvpc',
       RequiresCompatibilities: ['FARGATE'],
-      Tags: [{
-        Key: 'Tool',
-        Value: 'TaskingManager'
-      }, {
-        Key: 'Name',
-        Value: cf.stackName
-      }, {
-        Key: 'Deployment_Environment',
-        Value: cf.ref('AutoscalingPolicy') 
-      }],
-      TaskRoleArn:cf.ref('TaskingManagerECSTaskRole'), // s3 bucket access, secrets manager 
+      Tags: [
+        { Key: 'Tool', Value: 'TaskingManager' },
+        { Key: 'Name', Value: cf.stackName },
+        { Key: 'Deployment_Environment', Value: cf.ref('DeploymentEnvironment') }
+      ],
+      TaskRoleArn: cf.getAtt('ECSTaskRole', 'Arn'), // s3 bucket access, secrets manager 
     }
   },
-  TaskingManagerECSService: {
+  ECSService: {
     Type: 'AWS::ECS::Service',
+    DependsOn: ['LoadBalancerHTTPSListener', 'LoadBalancerHTTPListener'],
     Properties: {
-      Cluster: cf.ref('TaskingManagerECSCluster'),
+      Cluster: cf.ref('ECSCluster'),
       DeploymentConfiguration: {
       //  DeploymentCircuitBreaker: {
       //    Enable: true,
@@ -398,35 +378,32 @@ const Resources = {
       LaunchType: 'FARGATE',
       LoadBalancers: [{
         ContainerName: 'Backend_Service',
-        ContainerPort: 8080,
-        TargetGroupArn: cf.ref('TaskingManagerTargetGroup')
+        ContainerPort: cf.ref('ApplicationPort'),
+        TargetGroupArn: cf.ref('ELBTargetGroup')
       }],
       NetworkConfiguration: {
         AwsvpcConfiguration: {
-          AssignPublicIp: 'ENABLED',
-          SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
-          Subnets: cf.split(',', cf.ref('ELBSubnets')) // private subnets on vpc + nat gateway
+          AssignPublicIp: 'DISABLED', // ENABLED or DISABLED
+          SecurityGroups: [ 
+            cf.importValue(cf.join('-', [cf.ref('CloudformationVPCStackName'), 'backend-firewall'])),
+            cf.importValue(cf.join('-', [cf.ref('CloudformationVPCStackName'), 'load-balancer-firewall']))
+          ],
+          Subnets: cf.split(',', cf.importValue(cf.join('-', [cf.ref('CloudformationVPCStackName'), 'private-subnets'])))
         }
       },
       PlatformVersion: '1.4.0',
       PropagateTags: 'SERVICE',
       SchedulingStrategy: 'REPLICA',
       ServiceName: cf.stackName,
-      Tags: [{
-        Key: 'Tool',
-        Value: 'TaskingManager'
-      }, {
-        Key: 'Name',
-        Value: cf.stackName
-      }, {
-        Key: 'Deployment_Environment',
-        Value: cf.ref('AutoscalingPolicy') 
-      }
+      Tags: [
+        { Key: 'Tool', Value: 'TaskingManager' }, 
+        { Key: 'Name', Value: cf.stackName },
+        { Key: 'Deployment_Environment', Value: cf.ref('DeploymentEnvironment') }
       ],
-      TaskDefinition: cf.ref('TaskingManagerECSTaskDefinition') // !!! WILL NOT STABILIZE UNLESS version is specified
+      TaskDefinition: cf.ref('ECSTaskDefinition') // !!! WILL NOT STABILIZE UNLESS version is specified
     }
   },
-  TaskingManagerECSTaskRole: {  //  grants processes in the containers permission to call AWS APIs - s3
+  ECSTaskRole: {  //  grants processes in the containers permission to call AWS APIs - s3
     Type: 'AWS::IAM::Role',
     Properties: {
       AssumeRolePolicyDocument: {
@@ -468,10 +445,15 @@ const Resources = {
         }
       }
       ],
-      RoleName: cf.join('-', [cf.stackName, 'ecs', 'role'])
+      Tags: [
+        { Key: 'Tool', Value: 'TaskingManager' },
+        { Key: 'Deployment_Environment', Value: cf.ref('DeploymentEnvironment') }
+      ],
+      RoleName: 'task-role',
+      Path: cf.join('', ['/', cf.ref('DeploymentEnvironment'), '/tasking-manager/'])
     }
   }, 
-  TaskingManagerECSExecutionRole: { // Grants access to AWS services for the ECS agent 
+  ECSTaskExecutionRole: { // Grants access to AWS services for the ECS agent 
     Type: 'AWS::IAM::Role',
     Properties: {
       AssumeRolePolicyDocument: {
@@ -516,8 +498,7 @@ const Resources = {
                 Effect: "Allow",
                 Action: "secretsmanager:GetSecretValue",
                 Resource: [
-                  cf.ref('TaskingManagerRDSManagedPassword'),
-                  'arn:aws:secretsmanager:us-east-1:670261699094:secret:prod/tasking-manager/quay-image-pull-access-WdfayD',
+                  cf.importValue(cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-password-arn'])),
                   cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('SMTPPassword')]),
                   cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('OAuth2ConsumerSecret')]),
                   cf.join(':', ['arn:aws:secretsmanager', cf.region, cf.accountId, 'secret', cf.ref('NewRelicLicenseKey')]),
@@ -534,7 +515,12 @@ const Resources = {
           }
         }    
       ],
-      RoleName: cf.join('-', [cf.stackName, 'ecs', 'execution-role'])
+      Tags: [
+        { Key: 'Tool', Value: 'TaskingManager' },
+        { Key: 'Deployment_Environment', Value: cf.ref('DeploymentEnvironment') }
+      ],
+      RoleName: 'task-execution-role',
+      Path: cf.join('', ['/', cf.ref('DeploymentEnvironment'), '/tasking-manager/'])
     }
       // grants the Amazon ECS container agent permission to make AWS API calls - cloudwatch logs, secrets
   }, 
@@ -543,7 +529,7 @@ const Resources = {
     Properties: {
       MinCapacity: cf.if('IsTaskingManagerProduction', 3, 1),
       MaxCapacity: cf.if('IsTaskingManagerProduction', 9, cf.if('IsTaskingManagerDemo', 3, 1)),
-      ResourceId: cf.join('/', ['service', cf.ref('TaskingManagerECSCluster'), cf.getAtt('TaskingManagerECSService', 'Name')]),
+      ResourceId: cf.join('/', ['service', cf.ref('ECSCluster'), cf.getAtt('ECSService', 'Name')]),
       RoleARN: cf.join('', ['arn:aws:iam::', cf.accountId, ':role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService']),
       ScalableDimension: 'ecs:service:DesiredCount',
       ServiceNamespace: 'ecs'
@@ -560,8 +546,8 @@ const Resources = {
         PredefinedMetricSpecification: {
           PredefinedMetricType: 'ALBRequestCountPerTarget',
           ResourceLabel: cf.join('/', [
-            cf.getAtt('TaskingManagerLoadBalancer', 'LoadBalancerFullName'),
-            cf.getAtt('TaskingManagerTargetGroup', 'TargetGroupFullName')
+            cf.getAtt('LoadBalancer', 'LoadBalancerFullName'),
+            cf.getAtt('ELBTargetGroup', 'TargetGroupFullName')
             ])
         },
         ScaleInCooldown: 300,
@@ -570,51 +556,59 @@ const Resources = {
       }
     }
   },
-  TaskingManagerLoadBalancer: {
+  LoadBalancer: {
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
     Properties: {
       Name: cf.stackName,
-      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
-      Subnets: cf.split(',', cf.ref('ELBSubnets')),
-      Type: 'application'
+      SecurityGroups: [
+        cf.importValue(cf.join('-', [cf.ref('CloudformationVPCStackName'), 'load-balancer-firewall']))
+      ],
+      Subnets: cf.split(',', cf.importValue(cf.join('-', [cf.ref('CloudformationVPCStackName'), 'public-subnets']))), // The load balancer sits on this public subnet
+      Type: 'application',
+      Tags: [
+        { Key: 'Tool', Value: 'TaskingManager' },
+        { Key: 'Deployment_Environment', Value: cf.ref('DeploymentEnvironment') }
+      ]
     }
   },
-  TaskingManagerLoadBalancerRoute53: {
+  LoadBalancerRoute53: {
     Type: 'AWS::Route53::RecordSet',
     Properties: {
       Name: cf.join('-', [cf.stackName, 'api.hotosm.org']),
       Type: 'A',
       AliasTarget: {
-        DNSName: cf.getAtt('TaskingManagerLoadBalancer', 'DNSName'),
-        HostedZoneId: cf.getAtt('TaskingManagerLoadBalancer', 'CanonicalHostedZoneID')
+        DNSName: cf.getAtt('LoadBalancer', 'DNSName'),
+        HostedZoneId: cf.getAtt('LoadBalancer', 'CanonicalHostedZoneID')
       },
       HostedZoneId: 'Z2O929GW6VWG99',
     }
   },
-  TaskingManagerTargetGroup: {
+  ELBTargetGroup: {
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup',
     Properties: {
+      Name: cf.join('-', ['tm4', cf.ref('DeploymentEnvironment') ]),
       HealthCheckIntervalSeconds: 60,
-      HealthCheckPort: 8000,
+      HealthCheckPort: cf.ref('ApplicationPort'),
       HealthCheckProtocol: 'HTTP',
       HealthCheckTimeoutSeconds: 10,
       HealthyThresholdCount: 3,
       UnhealthyThresholdCount: 3,
       HealthCheckPath: '/api/v2/system/heartbeat/',
-      Port: 8000,
+      Port: cf.ref('ApplicationPort'),
       Protocol: 'HTTP',
       TargetType: 'ip', //what else might this change?
-      VpcId: cf.importValue(cf.join('-', ['hotosm-network-production', 'default-vpc', cf.region])),
+      VpcId: cf.importValue(cf.join('-', [cf.ref('CloudformationVPCStackName'), 'vpc-id'])),
       Tags: [ 
         { Key: 'stack_name', Value: cf.stackName }, 
         { Key: 'Tool', Value: 'TaskingManager' },
-        { Key: 'Deployment_Environment', Value: cf.ref('AutoscalingPolicy') }],
+        { Key: 'Deployment_Environment', Value: cf.ref('DeploymentEnvironment') },
+      ],
       Matcher: {
         HttpCode: '200,202,302,304'
       }
     }
   },
-  TaskingManagerLoadBalancerHTTPSListener: {
+  LoadBalancerHTTPSListener: {
     Type: 'AWS::ElasticLoadBalancingV2::Listener',
     Properties: {
       Certificates: [ {
@@ -622,15 +616,15 @@ const Resources = {
       }],
       DefaultActions: [{
         Type: 'forward',
-        TargetGroupArn: cf.ref('TaskingManagerTargetGroup')
+        TargetGroupArn: cf.ref('ELBTargetGroup')
       }],
-      LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
+      LoadBalancerArn: cf.ref('LoadBalancer'),
       Port: 443,
       Protocol: 'HTTPS',
       SslPolicy: 'ELBSecurityPolicy-FS-1-2-Res-2020-10'
     }
   },
-  TaskingManagerLoadBalancerHTTPListener: {
+  LoadBalancerHTTPListener: {
     Type: 'AWS::ElasticLoadBalancingV2::Listener',
     Properties: {
       DefaultActions: [{
@@ -644,62 +638,16 @@ const Resources = {
           StatusCode: 'HTTP_301'
         }
       }],
-      LoadBalancerArn: cf.ref('TaskingManagerLoadBalancer'),
+      LoadBalancerArn: cf.ref('LoadBalancer'),
       Port: 80,
       Protocol: 'HTTP'
     }
   },
-  TaskingManagerRDSManagedPassword: {
-    Type: 'AWS::SecretsManager::Secret',
-    Properties: {
-      Description: 'Experiment to create a secret via template',
-      Name: 'demo/taskingmanager-backend/database',
-      GenerateSecretString: {
-        PasswordLength: 32,
-        ExcludePunctuation: true,
-        SecretStringTemplate: '{"username": "taskingmanager", "engine": "postgres", "port": 5432}',
-        GenerateStringKey: 'password'
-      },
-      Tags: [
-        { Key: 'Tool', Value: 'TaskingManager' },
-        { Key: 'Deployment_Environment', Value: cf.ref('AutoscalingPolicy') },
-      ]
-    }
-  },
-  TaskingManagerRDS: {
-    Type: 'AWS::RDS::DBInstance',
-    Properties: {
-      Engine: 'postgres',
-      DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('DatabaseName')),
-      EngineVersion: '11.8',
-      MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:username}}'])),
-      MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.join(':', ['{{resolve:secretsmanager', cf.ref('TaskingManagerRDSManagedPassword'), 'SecretString:password}}'])),
-      AllocatedStorage: cf.ref('DatabaseSize'),
-      BackupRetentionPeriod: 10,
-      StorageType: 'gp2',
-      EnableCloudwatchLogsExports: ['postgresql'],
-      DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.t3.2xlarge', 'db.t2.small'),
-      DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
-      VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
-      MonitoringInterval: 0,
-      Tags: [
-        { Key: 'Tool', Value: 'TaskingManager' },
-        { Key: 'Deployment_Environment', Value: cf.ref('AutoscalingPolicy') }
-      ]
-    }
-  },
-  SecretRDSInstanceAttachment: {
-    Type: 'AWS::SecretsManager::SecretTargetAttachment',
-    Properties: {
-      SecretId: cf.ref('TaskingManagerRDSManagedPassword'),
-      TargetId: cf.ref('TaskingManagerRDS'),
-      TargetType: 'AWS::RDS::DBInstance'
-    }
-  },
-  TaskingManagerReactBucket: {
+  FrontEndS3Bucket: {
     Type: 'AWS::S3::Bucket',
     Properties: {
-      BucketName: cf.join('-', [cf.stackName, 'react-app']),
+      BucketName: cf.join('-', ['tasking-manager', cf.ref('DeploymentEnvironment'), 'frontend-app']),
+      // BucketName: cf.join('-', [cf.stackName, 'react-app']), // TODO: Remove
       AccessControl: "PublicRead",
       PublicAccessBlockConfiguration: {
         BlockPublicAcls: false,
@@ -710,13 +658,17 @@ const Resources = {
       WebsiteConfiguration: {
         ErrorDocument: 'index.html',
         IndexDocument: 'index.html'
-      }
+      },
+      Tags: [
+        { Key: 'Tool', Value: 'TaskingManager' },
+        { Key: 'Deployment_Environment', Value: cf.ref('DeploymentEnvironment') }
+      ]
     }
   },
-  TaskingManagerReactBucketPolicy: {
+  FrontEndS3BucketPolicy: {
     Type: 'AWS::S3::BucketPolicy',
     Properties: {
-      Bucket : cf.ref('TaskingManagerReactBucket'),
+      Bucket : cf.ref('FrontEndS3Bucket'),
       PolicyDocument: {
         Version: "2012-10-17",
         Statement:[{
@@ -725,7 +677,7 @@ const Resources = {
           Principal: '*',
           Resource: [ cf.join('',
             [
-              cf.getAtt('TaskingManagerReactBucket', 'Arn'), 
+              cf.getAtt('FrontEndS3Bucket', 'Arn'), 
               '/*'
             ]
           )],
@@ -734,7 +686,7 @@ const Resources = {
       }
     }
   },
-  TaskingManagerReactCloudfront: {
+  FrontEndCDN: {
     Type: "AWS::CloudFront::Distribution",
     Properties: {
       DistributionConfig: {
@@ -745,7 +697,7 @@ const Resources = {
         Enabled: true,
         Origins: [{
           Id: cf.join('-', [cf.stackName, 'react-app']),
-          DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
+          DomainName: cf.getAtt('FrontEndS3Bucket', 'DomainName'),
           CustomOriginConfig: {
             OriginProtocolPolicy: 'https-only',
             OriginSSLProtocols: [ 'TLSv1.2' ]
@@ -782,17 +734,21 @@ const Resources = {
           SslSupportMethod: 'sni-only'
         },
         HttpVersion: 'http2'
-      }
+      },
+      Tags: [
+        { Key: 'Tool', Value: 'TaskingManager' },
+        { Key: 'Deployment_Environment', Value: cf.ref('DeploymentEnvironment') }
+      ]
     }
   },
-  TaskingManagerRoute53: {
+  DNSRecord: {
     Type: 'AWS::Route53::RecordSet',
     Condition: 'IsHOTOSMUrl',
     Properties: {
       Name: cf.ref('TaskingManagerURL'),
       Type: 'A',
       AliasTarget: {
-        DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
+        DNSName: cf.getAtt('FrontEndCDN', 'DomainName'),
         HostedZoneId: 'Z2FDTNDATAQYW2'
       },
       HostedZoneId: 'Z2O929GW6VWG99',
@@ -802,11 +758,27 @@ const Resources = {
 
 const Outputs = {
   CloudfrontDistributionID: {
-    Value: cf.ref('TaskingManagerReactCloudfront'),
+    Description: "Distribution ID for Cloudfront",
+    Value: cf.ref('FrontEndCDN'),
     Export: {
-      Name: cf.join('-', [cf.stackName, 'cloudfront-id', cf.region])
+      // Name: cf.join('-', ['tasking-manager', cf.stackName, 'cloudfront-id']) // TODO: Remove
+      Name: cf.join('-', ['tasking-manager', cf.ref('DeploymentEnvironment'), 'cloudfront-id'])
+    },
+  },
+  TaskingManagerECSClusterName: {
+    Description: "Name of the Tasking Manager ECS Cluster",
+    Value: cf.stackName,
+    Export: {
+      Name: cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'ecs-cluster'])
     }
-  }
+  },
+  TaskingManagerECSServiceName: {
+    Description: "Name of the Tasking Manager ECS Service",
+    Value: cf.stackName,
+    Export: {
+      Name: cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'ecs-service'])
+    }
+  },
 }
 
 module.exports = { Parameters, Resources, Conditions, Outputs }

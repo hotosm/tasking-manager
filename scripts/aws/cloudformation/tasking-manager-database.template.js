@@ -218,6 +218,13 @@ const Outputs = {
     Export: {
       Name: cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-endpoint-address'])
     }
+  },
+  DatabaseInstanceIdentifier: {
+    Value: cf.join('-', ['TM4', cf.ref('DeploymentEnvironment')]),
+    Description: "Instance Identifier for Tasking Manager",
+    Export: {
+      Name: cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-instance-identifier'])
+    }
   }
 }
 
