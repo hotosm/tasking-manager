@@ -7,7 +7,6 @@ import ReactPlaceholder from 'react-placeholder';
 import area from '@turf/area';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
-import lineToPolygon from '@turf/line-to-polygon';
 import truncate from '@turf/truncate';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
@@ -24,85 +23,14 @@ import Review from './review';
 import { AlertMessage } from './alertMessage';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { makeGrid } from './setTaskSizes';
-import { MAX_AOI_AREA, MAX_FILESIZE } from '../../config';
+import { MAX_AOI_AREA } from '../../config';
+import { verifyFileSize, readGeoFile, verifyGeometry } from '../../utils/fileFunctions';
 
 const ProjectCreationMap = React.lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
 );
 
-var toGeojson = require('@tmcw/togeojson');
-var osmToGeojson = require('osmtogeojson');
 var shpjs = require('shpjs');
-
-export const readGeoFile = (e, format, error) => {
-  const supportedFormats = ['json', 'geojson', 'kml', 'osm', 'xml', 'zip'];
-
-  if (supportedFormats.includes(format) === false) {
-    error.message = <FormattedMessage {...messages.invalidFile} />;
-    throw error;
-  }
-
-  let geom = null;
-  switch (format) {
-    case 'json':
-    case 'geojson':
-      geom = JSON.parse(e.target.result);
-      break;
-    case 'kml':
-      let kml = new DOMParser().parseFromString(e.target.result, 'text/xml');
-      geom = toGeojson.kml(kml);
-      break;
-    case 'osm':
-      let osm = new DOMParser().parseFromString(e.target.result, 'text/xml');
-      geom = osmToGeojson(osm);
-      break;
-    case 'xml':
-      let xml = new DOMParser().parseFromString(e.target.result, 'text/xml');
-      geom = osmToGeojson(xml);
-      break;
-    default:
-      break;
-  }
-  return geom;
-};
-
-const validateFeature = (e, supportedGeoms, err) => {
-  if (supportedGeoms.includes(e.geometry.type) === false) {
-    err.message = (
-      <FormattedMessage {...messages.unsupportedGeom} values={{ geometry: e.geometry.type }} />
-    );
-    throw err;
-  }
-  // Transform lineString to polygon
-  if (e.geometry.type === 'LineString') {
-    const coords = e.geometry.coordinates;
-    if (JSON.stringify(coords[0]) !== JSON.stringify(coords[coords.length - 1])) {
-      err.message = <FormattedMessage {...messages.closedLinestring} />;
-      throw err;
-    }
-    return lineToPolygon(e);
-  }
-  return e;
-};
-
-export const verifyFileSize = (file, error) => {
-  if (file.size >= MAX_FILESIZE) {
-    error.message = (
-      <FormattedMessage {...messages.fileSize} values={{ fileSize: MAX_FILESIZE / 1000000 }} />
-    );
-    throw error;
-  }
-};
-
-export const verifyGeometry = (geom, error, supportedGeoms) => {
-  if (geom.type !== 'FeatureCollection') {
-    error.message = <FormattedMessage {...messages.noFeatureCollection} />;
-    throw error;
-  }
-  // Validate geometry for each feature.
-  geom.features = geom.features.map((g) => validateFeature(g, supportedGeoms, error));
-  return geom;
-};
 
 const ProjectCreate = (props) => {
   const intl = useIntl();
@@ -133,7 +61,6 @@ const ProjectCreate = (props) => {
 
     try {
       let error = { code: 403, message: null };
-      const supportedGeoms = ['Polygon', 'LineString'];
 
       verifyFileSize(file, error);
 
@@ -143,6 +70,7 @@ const ProjectCreate = (props) => {
       fileReader.onload = (e) => {
         try {
           let geom = readGeoFile(e, format, error);
+          const supportedGeoms = ['Polygon', 'MultiPolygon', 'LineString'];
 
           if (format === 'zip') {
             shpjs(e.target.result).then((geom) => {

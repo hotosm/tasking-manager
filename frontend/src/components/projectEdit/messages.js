@@ -363,6 +363,11 @@ export default defineMessages({
     id: 'projects.formInputs.priority_areas.action.selectFile',
     defaultMessage: 'Select File',
   },
+  importDescription: {
+    id: 'projects.formInputs.priority_areas.upload.description',
+    defaultMessage:
+      'The supported file formats are: GeoJSON, KML, OSM or zipped Shapefile. You can drag and drop a file over the map to import it.',
+  },
   name: {
     id: 'projects.formInputs.name',
     defaultMessage: 'Name of the project',

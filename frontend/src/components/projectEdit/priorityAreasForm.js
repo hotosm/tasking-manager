@@ -12,11 +12,11 @@ import { useDropzone } from 'react-dropzone';
 
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
-import { CustomButton, Button } from '../button';
-import { MappedIcon, WasteIcon, MappedSquareIcon } from '../svgIcons';
+import { CustomButton } from '../button';
+import { MappedIcon, WasteIcon, MappedSquareIcon, FileImportIcon } from '../svgIcons';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL, CHART_COLOURS } from '../../config';
 import { BasemapMenu } from '../basemapMenu';
-import { readGeoFile, verifyGeometry, verifyFileSize } from '../projectCreate/index';
+import { readGeoFile, verifyGeometry, verifyFileSize } from '../../utils/fileFunctions';
 import { AlertMessage } from '../projectCreate/alertMessage';
 
 var shpjs = require('shpjs');
@@ -68,25 +68,11 @@ export const PriorityAreasForm = () => {
 
   let priorityAreas = projectInfo.priorityAreas ? projectInfo.priorityAreas : [];
   // update priority areas as features
-  let drawPriorityAreas = priorityAreas.map((a) => ({
+  const drawPriorityAreas = priorityAreas.map((a) => ({
     type: 'Feature',
     properties: {},
     geometry: a,
   }));
-
-  const setAndRenderPriorityArea = (geom) => {
-    // set priority areas
-    priorityAreas = geom.features.map((g) => g.geometry);
-    setProjectInfo({ ...projectInfo, priorityAreas: priorityAreas });
-   // render priority areas from file
-    drawPriorityAreas = geom.features
-    addMapLayers(mapObj.map);
-    if (mapObj.map.getSource('priority_areas') !== undefined) {
-    mapObj.map
-      .getSource('priority_areas')
-      .setData({ type: 'FeatureCollection', features: drawPriorityAreas });
-    }
-  };
 
   const uploadFile = (files) => {
     try {
@@ -94,9 +80,7 @@ export const PriorityAreasForm = () => {
       if (!file) return;
 
       let error = { error: false, message: null };
-      setError(error); //reset error
-
-      const supportedGeoms = ['Polygon'];
+      setError(error); //reset error on new file upload
 
       verifyFileSize(file, error);
 
@@ -106,15 +90,14 @@ export const PriorityAreasForm = () => {
       reader.onload = (e) => {
         try {
           let geom = readGeoFile(e, format, error);
+          const supportedGeoms = ['Polygon'];
 
           if (format === 'zip') {
             shpjs(e.target.result).then((geom) => {
-              let validGeometry = verifyGeometry(geom, error, supportedGeoms);
-              setAndRenderPriorityArea(validGeometry);
+              verifyAndRenderPriorityArea(geom, error, supportedGeoms);
             });
           } else {
-            let validGeometry = verifyGeometry(geom, error, supportedGeoms);
-            setAndRenderPriorityArea(validGeometry);
+            verifyAndRenderPriorityArea(geom, error, supportedGeoms);
           }
         } catch (err) {
           setError({ error: true, message: err.message });
@@ -128,6 +111,15 @@ export const PriorityAreasForm = () => {
     } catch (e) {
       setError({ error: true, message: e.message });
     }
+  };
+
+  const verifyAndRenderPriorityArea = (geom, error, supportedGeoms) => {
+    let validGeometry = verifyGeometry(geom, error, supportedGeoms);
+    priorityAreas = validGeometry.features.map((g) => g.geometry);
+    // validGeometry.features.forEach((g) => priorityAreas.push(g.geometry))
+
+    setProjectInfo({ ...projectInfo, priorityAreas: priorityAreas });
+    mapObj.map.getSource('priority_areas').setData(validGeometry);
   };
 
   const { getRootProps, getInputProps, open } = useDropzone({
@@ -261,7 +253,7 @@ export const PriorityAreasForm = () => {
       });
     }
     // eslint-disable-next-line
-  }, [mapObj.map, mapObj.draw, projectInfo, setProjectInfo]);
+  }, [mapObj.map, mapObj.draw, projectInfo, setProjectInfo, drawPriorityAreas]);
 
   const clearAll = () => {
     mapObj.draw.deleteAll();
@@ -270,7 +262,7 @@ export const PriorityAreasForm = () => {
   };
 
   return (
-    <div className="w-100"  {...getRootProps()}>
+    <div className="w-100" {...getRootProps()}>
       <div className="relative">
         <div className="cf absolute bg-white o-90 top-1 left-1 pa3 mw6 z-4 br1">
           <p className={styleClasses.pClass}>
@@ -296,10 +288,14 @@ export const PriorityAreasForm = () => {
               <MappedSquareIcon className="h1 w1 pb1 v-mid mr2" />
               <FormattedMessage {...messages.drawRectangle} />
             </CustomButton>
-            <input {...getInputProps()} />
-            <Button onClick={open} className={`ml2 ${styleClasses.buttonClass}`}>
+            <CustomButton className="bg-white blue-dark ba b--grey-light ph3 pv2" onClick={open}>
+              <FileImportIcon className="h1 w1 v-mid mr2" />
               <FormattedMessage {...messages.selectFile} />
-            </Button>
+            </CustomButton>
+            <input {...getInputProps()} />
+            <p className="f6 blue-grey lh-title mt3">
+              <FormattedMessage {...messages.importDescription} />
+            </p>
             <p className="f5 mb0">
               <CustomButton
                 onClick={clearAll}
