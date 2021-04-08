@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -6,15 +6,10 @@ import { featureCollection } from '@turf/helpers';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-
-import {
-  MAPBOX_TOKEN,
-  BASEMAP_OPTIONS,
-  MAP_STYLE,
-  CHART_COLOURS,
-  MAPBOX_RTL_PLUGIN_URL,
-} from '../../config';
 import { useDropzone } from 'react-dropzone';
+
+import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS, MAPBOX_RTL_PLUGIN_URL } from '../../config';
+import { BasemapMenu } from '../basemapMenu';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -22,44 +17,6 @@ try {
 } catch {
   console.log('RTLTextPlugin is loaded');
 }
-
-const BasemapMenu = ({ map }) => {
-  // Remove elements that require mapbox token;
-  let styles = BASEMAP_OPTIONS;
-  if (!MAPBOX_TOKEN) {
-    styles = BASEMAP_OPTIONS.filter((s) => typeof s.value === 'object');
-  }
-
-  const [basemap, setBasemap] = useState(styles[0].label);
-
-  const handleClick = (style) => {
-    let styleValue = style.value;
-
-    if (typeof style.value === 'string') {
-      styleValue = 'mapbox://styles/mapbox/' + style.value;
-    }
-    map.setStyle(styleValue);
-    setBasemap(style.label);
-  };
-
-  return (
-    <div className="bg-white blue-dark flex mt2 ml2 f7 br1 shadow-1">
-      {styles.map((style, k) => {
-        return (
-          <div
-            key={k}
-            onClick={() => handleClick(style)}
-            className={`ttc pv2 ph3 pointer link + ${
-              basemap === style.label ? 'bg-grey-light fw6' : ''
-            }`}
-          >
-            {style.label}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
 
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step, uploadFile }) => {
   const mapRef = React.createRef();

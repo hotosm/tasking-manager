@@ -347,11 +347,11 @@ export default defineMessages({
     id: 'projects.formInputs.imagery.note',
     defaultMessage: 'Follow this format for TMS URLs: {exampleUrl}',
   },
-  priorityAreas_draw_polygon: {
+  drawPolygon: {
     id: 'projects.formInputs.priority_areas.options.polygon',
     defaultMessage: 'Draw polygon',
   },
-  priorityAreas_draw_rectangle: {
+  drawRectangle: {
     id: 'projects.formInputs.priority_areas.options.rectangle',
     defaultMessage: 'Draw rectangle',
   },
