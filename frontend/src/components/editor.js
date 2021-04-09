@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import * as iD from '@hotosm/id';
-import '@hotosm/id/dist/iD.css';
+import * as iD from '@openhistoricalmap/id';
+import '@openhistoricalmap/id/dist/iD.css';
 
 import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET, OSM_SERVER_URL } from '../config';
 
