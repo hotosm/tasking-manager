@@ -22,6 +22,17 @@ The following dependencies must be available _globally_ on your system:
 * Download and install [NodeJS LTS v12+](https://nodejs.org/en/) and [yarn](https://classic.yarnpkg.com/en/docs/install)
 * Go into the `frontend` directory and execute `yarn`.
 
+
+**Quick Start: Set environment variables and launch**
+
+```
+export TM_APP_API_URL='https://tm-api.openhistoricalmap.org/'
+export REACT_APP_OSM_SERVER_URL="https://openhistoricalmap.org"
+export REACT_APP_ID_EDITOR_URL="https://openhistoricalmap.org/edit"
+export POTLATCH2_EDITOR_URL="https://www.openhistoricalmap.org/edit?editor=potlatch2"
+yarn start
+```
+
 #### Available Scripts
 
 In the project directory, you can run:
