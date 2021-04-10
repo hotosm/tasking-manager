@@ -85,6 +85,7 @@ export const DateFilterPicker = ({
         placeholderText={intl.formatMessage(messages[`${fieldsetName}Placeholder`])}
         showYearDropdown
         scrollableYearDropdown
+        locale={intl.locale.slice(0, 2)}
       />
     </fieldset>
   );
