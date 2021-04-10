@@ -15,7 +15,7 @@ jobs:
         node-version: '12'
     - name: Yarn Install
       run: |
-        cd frontend && yarn install
+        cd frontend && yarn cache clean && yarn install
     - name: Build
       env:
         TM_APP_BASE_URL: ${{ secrets.STAGING_TM_APP_BASE_URL }}
