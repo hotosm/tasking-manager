@@ -340,6 +340,22 @@ export default defineMessages({
     id: 'project.tasks.history.stateChanges',
     defaultMessage: 'Activities',
   },
+  copyComment: {
+    id: 'project.tasks.action.comments.copy',
+    defaultMessage: 'Copy comment',
+  },
+  copyCommentToAll: {
+    id: 'project.tasks.action.comments.copy_to_all',
+    defaultMessage: 'To all tasks',
+  },
+  copyCommentToINVALIDATED: {
+    id: 'project.tasks.action.comments.copy_to_invalidated',
+    defaultMessage: 'To tasks marked as "No"',
+  },
+  copyCommentToVALIDATED: {
+    id: 'project.tasks.action.comments.copy_to_validated',
+    defaultMessage: 'To tasks marked as "Yes"',
+  },
   resources: {
     id: 'project.tasks.action.resources',
     defaultMessage: 'Resources',
@@ -410,7 +426,8 @@ export default defineMessages({
   },
   validatedQuestion: {
     id: 'project.tasks.action.options.validated_question',
-    defaultMessage: 'Is this task well mapped?',
+    defaultMessage:
+      '{number, plural, one {Is this task well mapped?} other {Are these tasks well mapped?}}',
   },
   complete: {
     id: 'project.tasks.action.options.complete',

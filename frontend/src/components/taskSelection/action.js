@@ -46,6 +46,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [disabled, setDisable] = useState(false);
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
+  const [validationComments, setValidationComments] = useState({});
+  const [validationStatus, setValidationStatus] = useState({});
   const [historyTabChecked, setHistoryTabChecked] = useState(false);
   const [multipleTasksInfo, setMultipleTasksInfo] = useState({});
   const intl = useIntl();
@@ -251,10 +253,10 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                             : null
                         }
                         disabled={disabled}
-                        taskComment={taskComment}
-                        setTaskComment={setTaskComment}
-                        selectedStatus={selectedStatus}
-                        setSelectedStatus={setSelectedStatus}
+                        validationComments={validationComments}
+                        setValidationComments={setValidationComments}
+                        validationStatus={validationStatus}
+                        setValidationStatus={setValidationStatus}
                       />
                     )}
                     <div className="pt3">
