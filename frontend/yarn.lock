@@ -2222,6 +2222,13 @@
   dependencies:
     tslib "^2.1.0"
 
+"@formatjs/ecma402-abstract@1.6.5":
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.6.5.tgz#ab461b6a284278ffe051ddd817537be4092e71be"
+  integrity sha512-dhRWSoPPw8PhB5tSOEP9Gi5XZNFC2IkfP95Va70ouIuED0wBlsU1WmO4jDHITL7/kSNqvzKFTT+2S+6jHPq6jw==
+  dependencies:
+    tslib "^2.1.0"
+
 "@formatjs/icu-messageformat-parser@1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@formatjs/icu-messageformat-parser/-/icu-messageformat-parser-1.1.2.tgz#e0d41edcfd031c0627b0f40dfcce5883d765df5d"
@@ -2273,12 +2280,12 @@
     cldr-core "38"
     tslib "^2.1.0"
 
-"@formatjs/intl-pluralrules@^4.0.12":
-  version "4.0.12"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.12.tgz#acd0e5e79b12a29b8189faa645a6abf50a4d17d2"
-  integrity sha512-jXXsWGQbBMvuhvxuG1AXBMMNMS1ZphSt/rWsGo6bE3KyWmddJnnVokeUD8E2sTtXoCJZoGUQkOxxjFa/gGLyxw==
+"@formatjs/intl-pluralrules@^4.0.14":
+  version "4.0.14"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.14.tgz#6563356955e995e4d4eab3889d6a697e6c487894"
+  integrity sha512-smfNDGaVZwFqKKqQlJfuKO45+RJs+UqyMD/8OJpIRpnYSss29T6T4jM5jzI9ZcbuTc79axI4no8wyViLBuGFMQ==
   dependencies:
-    "@formatjs/ecma402-abstract" "1.6.3"
+    "@formatjs/ecma402-abstract" "1.6.5"
     tslib "^2.1.0"
 
 "@formatjs/intl-relativetimeformat@^8.1.3":
