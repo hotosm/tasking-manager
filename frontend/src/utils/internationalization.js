@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { IntlProvider } from 'react-intl';
-import { shouldPolyfill } from '@formatjs/intl-locale/should-polyfill';
+import { polyfill } from './polyfill';
 
 import ar from '../locales/ar.json';
 import cs from '../locales/cs.json';
@@ -32,22 +32,6 @@ import zh_TW from '../locales/zh_TW.json';
 
 import { setLocale } from '../store/actions/userPreferences';
 import * as config from '../config';
-
-async function polyfill() {
-  // This platform already supports Intl.Locale
-  if (shouldPolyfill()) {
-    await import('@formatjs/intl-locale/polyfill');
-  }
-  /* Safari 12- and IE */
-  if (!Intl.PluralRules) {
-    await import('@formatjs/intl-pluralrules/polyfill-locales');
-  }
-  /* Safari 13- and IE */
-  if (!Intl.RelativeTimeFormat) {
-    await import('@formatjs/intl-relativetimeformat/polyfill-locales');
-  }
-}
-polyfill();
 
 const translatedMessages = {
   ar: ar,
@@ -138,6 +122,9 @@ let ConnectedIntl = (props) => {
       props.setLocale(getSupportedLocale(navigator.language).value);
     }
   }, [props]);
+
+  polyfill(props.locale ? props.locale.substr(0, 2) : config.DEFAULT_LOCALE);
+
   return (
     <IntlProvider
       key={props.locale || config.DEFAULT_LOCALE}
