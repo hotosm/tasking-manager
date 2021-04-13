@@ -15,7 +15,5 @@ describe('BaseMapMenu component', () => {
     expect(screen.getByText(/humanitarian/)).toBeInTheDocument();
     expect(screen.getByText(/bing/)).toBeInTheDocument();
     expect(screen.getByText(/density/)).toBeInTheDocument();
-    expect(screen.queryByText(/mapbox satellite/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/default/)).not.toBeInTheDocument();
   });
 });
