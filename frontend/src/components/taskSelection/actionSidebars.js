@@ -5,17 +5,20 @@ import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { Button } from '../button';
+import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { CheckCircle } from '../checkCircle';
 import {
   CloseIcon,
+  ClipboardIcon,
   SidebarIcon,
   AlertIcon,
   QuestionCircleIcon,
   ChevronRightIcon,
   ChevronDownIcon,
   InfoIcon,
+  CommentIcon,
+  PlusIcon,
 } from '../svgIcons';
 import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
@@ -260,23 +263,41 @@ export function CompletionTabForValidation({
   tasksIds,
   taskInstructions,
   disabled,
-  taskComment,
-  setTaskComment,
-  selectedStatus,
-  setSelectedStatus,
+  validationStatus,
+  setValidationStatus,
+  validationComments,
+  setValidationComments,
 }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const fetchLockedTasks = useFetchLockedTasks();
   const clearLockedTasks = useClearLockedTasks();
-  const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
+
+  const updateStatus = (id, newStatus) =>
+    setValidationStatus({ ...validationStatus, [id]: newStatus });
+  const updateComment = (id, newComment) =>
+    setValidationComments({ ...validationComments, [id]: newComment });
+  const copyCommentToTasks = (id, statusFilter) => {
+    const comment = validationComments[id];
+    let tasks = tasksIds.filter((task) => task !== id);
+    if (statusFilter) {
+      tasks = tasks.filter((task) => validationStatus[task] === statusFilter);
+    }
+    let payload = {};
+    tasks.forEach((task) => (payload[task] = comment));
+    setValidationComments({ ...validationComments, ...payload });
+  };
+  const areAllTasksVerified = Object.keys(validationStatus).length === tasksIds.length;
 
   const stopValidation = () => {
     if (!disabled) {
       return pushToLocalJSONAPI(
         `projects/${project.projectId}/tasks/actions/stop-validation/`,
         JSON.stringify({
-          resetTasks: tasksIds.map((taskId) => ({ taskId: taskId, comment: taskComment })),
+          resetTasks: tasksIds.map((taskId) => ({
+            taskId: taskId,
+            comment: validationComments[taskId],
+          })),
         }),
         token,
       ).then((r) => {
@@ -293,21 +314,15 @@ export function CompletionTabForValidation({
   const stopValidationAsync = useAsync(stopValidation);
 
   const submitTask = () => {
-    if (!disabled && selectedStatus) {
-      let url;
+    if (!disabled && areAllTasksVerified) {
+      const url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
       let payload = {
         validatedTasks: tasksIds.map((taskId) => ({
           taskId: taskId,
-          comment: taskComment,
-          status: selectedStatus,
+          comment: validationComments[taskId],
+          status: validationStatus[taskId],
         })),
       };
-      if (selectedStatus === 'VALIDATED') {
-        url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
-      }
-      if (selectedStatus === 'INVALIDATED') {
-        url = `projects/${project.projectId}/tasks/actions/unlock-after-validation/`;
-      }
       return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
         navigate(`../tasks/?filter=readyToValidate`);
@@ -336,51 +351,27 @@ export function CompletionTabForValidation({
         <h4 className="ttu blue-grey f5">
           <FormattedMessage {...messages.editStatus} />
         </h4>
-        <p className="b">
-          <FormattedMessage {...messages.validatedQuestion} />
+        <p className="b mb2">
+          <FormattedMessage {...messages.validatedQuestion} values={{ number: tasksIds.length }} />
         </p>
-        <p>
-          <input
-            type="radio"
-            value="VALIDATED"
-            className={radioInput}
-            checked={selectedStatus === 'VALIDATED'}
-            onClick={() => setSelectedStatus('VALIDATED')}
+        {tasksIds.map((id) => (
+          <TaskValidationSelector
+            key={id}
+            id={id}
+            currentStatus={validationStatus[id]}
+            updateStatus={updateStatus}
+            comment={validationComments[id]}
+            updateComment={updateComment}
+            copyCommentToTasks={copyCommentToTasks}
+            isValidatingMultipleTasks={tasksIds.length > 1}
           />
-          <label for="VALIDATED">
-            <FormattedMessage {...messages.complete} />
-          </label>
-        </p>
-        <p>
-          <input
-            type="radio"
-            value="INVALIDATED"
-            className={radioInput}
-            checked={selectedStatus === 'INVALIDATED'}
-            onClick={() => setSelectedStatus('INVALIDATED')}
-          />
-          <label for="INVALIDATED">
-            <FormattedMessage {...messages.incomplete} />
-          </label>
-        </p>
+        ))}
       </div>
-      <div className="cf">
-        <h4 className="ttu blue-grey f5">
-          <FormattedMessage {...messages.comment} />
-        </h4>
-        <p>
-          <CommentInputField
-            comment={taskComment}
-            setComment={setTaskComment}
-            enableHashtagPaste={true}
-          />
-        </p>
-      </div>
-      <div className="cf mb3">
+      <div className="cf mv3">
         <Button
           className="bg-red white w-100 fl"
           onClick={() => submitTaskAsync.execute()}
-          disabled={disabled || !selectedStatus || stopValidationAsync.status === 'pending'}
+          disabled={disabled || !areAllTasksVerified || stopValidationAsync.status === 'pending'}
           loading={submitTaskAsync.status === 'pending'}
         >
           <FormattedMessage {...messages[tasksIds.length > 1 ? 'submitTasks' : 'submitTask']} />
@@ -400,6 +391,116 @@ export function CompletionTabForValidation({
     </div>
   );
 }
+
+const TaskValidationSelector = ({
+  id,
+  currentStatus,
+  comment,
+  updateComment,
+  updateStatus,
+  copyCommentToTasks,
+  isValidatingMultipleTasks,
+}) => {
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [enableCopy, setEnableCopy] = useState(false);
+  const setComment = (newComment) => updateComment(id, newComment);
+
+  return (
+    <div className="cf w-100 db pt1 pv2 blue-dark">
+      <div className="cf w-100">
+        <div className="fw8 f5 w-10 dib">#{id}</div>
+        <div className="w-auto dib">
+          <input
+            type="radio"
+            value="VALIDATED"
+            className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
+            checked={currentStatus === 'VALIDATED'}
+            onChange={() => updateStatus(id, 'VALIDATED')}
+          />
+          <label htmlFor="VALIDATED">
+            <FormattedMessage {...messages.complete} />
+          </label>
+          <input
+            type="radio"
+            value="INVALIDATED"
+            className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
+            checked={currentStatus === 'INVALIDATED'}
+            onChange={() => updateStatus(id, 'INVALIDATED')}
+          />
+          <label htmlFor="INVALIDATED">
+            <FormattedMessage {...messages.incomplete} />
+          </label>
+          {currentStatus && (
+            <CustomButton
+              className={`${
+                showCommentInput ? 'b--red red' : 'b--grey-light blue-dark'
+              } bg-white ba br1 ml3 pv2 ph3`}
+              onClick={() => setShowCommentInput(!showCommentInput)}
+            >
+              {comment ? (
+                <CommentIcon className="h1 w1 v-mid mr1" />
+              ) : (
+                <PlusIcon className="h1 w1 mr1 v-mid" />
+              )}
+              <FormattedMessage {...messages.comment} />
+            </CustomButton>
+          )}
+        </div>
+      </div>
+      {showCommentInput && (
+        <>
+          <div className="cf w-100 db pt2">
+            <CommentInputField
+              comment={comment}
+              setComment={setComment}
+              enableHashtagPaste={false}
+            />
+          </div>
+          {isValidatingMultipleTasks && comment && (
+            <div className="fw5 tr bb b--grey-light bw1 pb2">
+              {enableCopy ? (
+                <>
+                  <CustomButton
+                    className="bg-white ba b--grey-light blue-dark br1 ml1 pv2 ph2 mb1"
+                    onClick={() => {
+                      copyCommentToTasks(id);
+                      setEnableCopy(false);
+                    }}
+                  >
+                    <FormattedMessage {...messages.copyCommentToAll} />
+                  </CustomButton>
+                  <CustomButton
+                    className="bg-white ba b--grey-light blue-dark br1 ml1 pv2 ph2 mb1"
+                    onClick={() => {
+                      copyCommentToTasks(id, currentStatus);
+                      setEnableCopy(false);
+                    }}
+                  >
+                    <FormattedMessage {...messages[`copyCommentTo${currentStatus}`]} />
+                  </CustomButton>
+                  <CustomButton
+                    className="red bn bg-white br1 ml2 ph2 pv2"
+                    onClick={() => setEnableCopy(false)}
+                  >
+                    <FormattedMessage {...messages.cancel} />
+                  </CustomButton>
+                </>
+              ) : (
+                <CustomButton
+                  className="bg-white ba b--grey-light blue-dark br1 ml1 pv2 ph3"
+                  onClick={() => setEnableCopy(true)}
+                >
+                  <ClipboardIcon className="h1 w1 v-top pr1" />
+                  <FormattedMessage {...messages.copyComment} />
+                </CustomButton>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
 
 function CompletionInstructions({ setVisibility }: Object) {
   return (
