@@ -69,7 +69,7 @@
     "use-query-params": "^1.2.2",
     "webfontloader": "^1.6.28",
     "workbox-core": "^6.1.2",
-    "workbox-expiration": "^6.1.2",
+    "workbox-expiration": "^6.1.5",
     "workbox-precaching": "^6.1.2",
     "workbox-recipes": "^6.1.2",
     "workbox-routing": "^6.1.2",
