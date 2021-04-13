@@ -363,7 +363,7 @@ export function CompletionTabForValidation({
             comment={validationComments[id]}
             updateComment={updateComment}
             copyCommentToTasks={copyCommentToTasks}
-            isValidatingMultipleTasks={tasksIds.lenght > 1}
+            isValidatingMultipleTasks={tasksIds.length > 1}
           />
         ))}
       </div>
@@ -407,42 +407,46 @@ const TaskValidationSelector = ({
 
   return (
     <div className="cf w-100 db pt1 pv2 blue-dark">
-      <span className="fw6 f5">#{id}</span>
-      <input
-        type="radio"
-        value="VALIDATED"
-        className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
-        checked={currentStatus === 'VALIDATED'}
-        onChange={() => updateStatus(id, 'VALIDATED')}
-      />
-      <label htmlFor="VALIDATED">
-        <FormattedMessage {...messages.complete} />
-      </label>
-      <input
-        type="radio"
-        value="INVALIDATED"
-        className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
-        checked={currentStatus === 'INVALIDATED'}
-        onChange={() => updateStatus(id, 'INVALIDATED')}
-      />
-      <label htmlFor="INVALIDATED">
-        <FormattedMessage {...messages.incomplete} />
-      </label>
-      {currentStatus && (
-        <CustomButton
-          className={`${
-            showCommentInput ? 'b--red red' : 'b--grey-light blue-dark'
-          } bg-white ba br1 ml3 pv2 ph3`}
-          onClick={() => setShowCommentInput(!showCommentInput)}
-        >
-          {comment ? (
-            <CommentIcon className="h1 w1 v-mid mr1" />
-          ) : (
-            <PlusIcon className="h1 w1 mr1 v-mid" />
+      <div className="cf w-100">
+        <div className="fw8 f5 w-10 dib">#{id}</div>
+        <div className="w-auto dib">
+          <input
+            type="radio"
+            value="VALIDATED"
+            className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
+            checked={currentStatus === 'VALIDATED'}
+            onChange={() => updateStatus(id, 'VALIDATED')}
+          />
+          <label htmlFor="VALIDATED">
+            <FormattedMessage {...messages.complete} />
+          </label>
+          <input
+            type="radio"
+            value="INVALIDATED"
+            className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
+            checked={currentStatus === 'INVALIDATED'}
+            onChange={() => updateStatus(id, 'INVALIDATED')}
+          />
+          <label htmlFor="INVALIDATED">
+            <FormattedMessage {...messages.incomplete} />
+          </label>
+          {currentStatus && (
+            <CustomButton
+              className={`${
+                showCommentInput ? 'b--red red' : 'b--grey-light blue-dark'
+              } bg-white ba br1 ml3 pv2 ph3`}
+              onClick={() => setShowCommentInput(!showCommentInput)}
+            >
+              {comment ? (
+                <CommentIcon className="h1 w1 v-mid mr1" />
+              ) : (
+                <PlusIcon className="h1 w1 mr1 v-mid" />
+              )}
+              <FormattedMessage {...messages.comment} />
+            </CustomButton>
           )}
-          <FormattedMessage {...messages.comment} />
-        </CustomButton>
-      )}
+        </div>
+      </div>
       {showCommentInput && (
         <>
           <div className="cf w-100 db pt2">
