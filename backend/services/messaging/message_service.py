@@ -39,14 +39,16 @@ class MessageServiceError(Exception):
 class MessageService:
     @staticmethod
     def send_welcome_message(user: User):
-        """ Sends welcome message to all new users at Sign up"""
+        """Sends welcome message to new user at Sign up"""
         org_code = current_app.config["ORG_CODE"]
         text_template = get_txt_template("welcome_message_en.txt")
+        hot_welcome_section = get_txt_template("hot_welcome_section_en.txt")
         replace_list = [
             ["[USERNAME]", user.username],
             ["[ORG_CODE]", org_code],
             ["[ORG_NAME]", current_app.config["ORG_NAME"]],
             ["[SETTINGS_LINK]", MessageService.get_user_settings_link()],
+            ["[HOT_WELCOME]", hot_welcome_section if org_code == "HOT" else ""],
         ]
         text_template = template_var_replacing(text_template, replace_list)
 
