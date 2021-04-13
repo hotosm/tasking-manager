@@ -67,7 +67,7 @@ export function CampaignInformation(props) {
 export function CampaignForm(props) {
   return (
     <Form
-      onSubmit={(values) => props.updateCampaign(values)}
+      onSubmit={(values) => props.updateCampaignAsync.execute(values)}
       initialValues={props.campaign}
       render={({
         handleSubmit,
@@ -103,6 +103,8 @@ export function CampaignForm(props) {
                     onClick={() => handleSubmit()}
                     className="w-100 h-100 bg-red white"
                     disabledClassName="bg-red o-50 white w-100 h-100"
+                    loading={props.updateCampaignAsync.status === 'pending'}
+                    disabled={props.updateCampaignAsync.status === 'pending'}
                   >
                     <FormattedMessage {...messages.save} />
                   </Button>

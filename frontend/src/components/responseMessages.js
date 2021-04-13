@@ -11,11 +11,13 @@ const ServerMessage = ({ children }) => {
   );
 };
 
-export const ErrorMessage = ({ error, success, children }) => {
-  let message = null;
+export const ErrorMessage = ({ error, children }) => {
   if (error !== null) {
-    message = <ServerMessage>{children}</ServerMessage>;
+    return (
+      <div className="db mt3">
+        <ServerMessage>{children}</ServerMessage>
+      </div>
+    );
   }
-
-  return <div className="db mt3">{message}</div>;
+  return null;
 };

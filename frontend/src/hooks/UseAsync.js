@@ -11,21 +11,24 @@ export const useAsync = (asyncFunction, immediate = false) => {
   // handles setting state for pending, value, and error.
   // useCallback ensures the below useEffect is not called
   // on every render, but only if asyncFunction changes.
-  const execute = useCallback(() => {
-    setStatus('pending');
-    setValue(null);
-    setError(null);
+  const execute = useCallback(
+    (param = null) => {
+      setStatus('pending');
+      setValue(null);
+      setError(null);
 
-    return asyncFunction()
-      .then((response) => {
-        setValue(response);
-        setStatus('success');
-      })
-      .catch((error) => {
-        setError(error);
-        setStatus('error');
-      });
-  }, [asyncFunction]);
+      return asyncFunction(param)
+        .then((response) => {
+          setValue(response);
+          setStatus('success');
+        })
+        .catch((error) => {
+          setError(error);
+          setStatus('error');
+        });
+    },
+    [asyncFunction],
+  );
 
   // Call execute if we want to fire it right away.
   // Otherwise execute can be called later, such as

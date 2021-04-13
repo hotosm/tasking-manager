@@ -19,6 +19,7 @@ import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { ErrorMessage } from '../components/responseMessages';
+import { useAsync } from '../hooks/UseAsync';
 
 export function ListCampaigns() {
   useSetTitleTag('Manage campaigns');
@@ -55,14 +56,19 @@ export function CreateCampaign() {
   const [error, setError] = useState(null);
 
   const createCampaign = (payload) => {
-    pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
-      .then((result) => navigate(`/manage/campaigns/${result.campaignId}`))
+    return pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
+      .then((result) => {
+        setError(null);
+        navigate(`/manage/campaigns/${result.campaignId}`);
+      })
       .catch((e) => setError(e));
   };
 
+  const createCampaignAsync = useAsync(createCampaign);
+
   return (
     <Form
-      onSubmit={(values) => createCampaign(values)}
+      onSubmit={(values) => createCampaignAsync.execute(values)}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
@@ -92,7 +98,8 @@ export function CreateCampaign() {
               </div>
               <div className="w-20-l w-40-m w-50 h-100 fr">
                 <FormSubmitButton
-                  disabled={submitting || pristine}
+                  disabled={submitting || pristine || createCampaignAsync.status === 'pending'}
+                  loading={submitting || createCampaignAsync.status === 'pending'}
                   className="w-100 h-100 bg-red white"
                   disabledClassName="bg-red o-50 white w-100 h-100"
                 >
@@ -119,10 +126,13 @@ export function EditCampaign(props) {
   const [nameError, setNameError] = useState(null);
 
   const updateCampaign = (payload) => {
-    pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
+    return pushToLocalJSONAPI(`campaigns/${189}/`, JSON.stringify(payload), token, 'PATCH')
       .then((res) => setNameError(null))
       .catch((e) => setNameError(e));
   };
+
+  const updateCampaignAsync = useAsync(updateCampaign);
+
   return (
     <div className="cf pv4 bg-tan">
       <div className="cf">
@@ -135,7 +145,7 @@ export function EditCampaign(props) {
         <CampaignForm
           userDetails={userDetails}
           campaign={{ name: campaign.name }}
-          updateCampaign={updateCampaign}
+          updateCampaignAsync={updateCampaignAsync}
           disabledForm={error || loading}
         />
         <ErrorMessage error={nameError}>
