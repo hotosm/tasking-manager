@@ -314,6 +314,14 @@ export default defineMessages({
     id: 'projects.formInputs.language',
     defaultMessage: 'Default language',
   },
+  translations: {
+    id: 'projects.formInputs.language.translations',
+    defaultMessage: 'Translations',
+  },
+  selectLanguage: {
+    id: 'projects.formInputs.language.select',
+    defaultMessage: 'Select a language above to translate.',
+  },
   mappingEditors: {
     id: 'projects.formInputs.mapping_editors',
     defaultMessage: 'Editors for mapping',
@@ -347,17 +355,26 @@ export default defineMessages({
     id: 'projects.formInputs.imagery.note',
     defaultMessage: 'Follow this format for TMS URLs: {exampleUrl}',
   },
-  priorityAreas_draw_polygon: {
+  drawPolygon: {
     id: 'projects.formInputs.priority_areas.options.polygon',
     defaultMessage: 'Draw polygon',
   },
-  priorityAreas_draw_rectangle: {
+  drawRectangle: {
     id: 'projects.formInputs.priority_areas.options.rectangle',
     defaultMessage: 'Draw rectangle',
   },
   clearAll: {
     id: 'projects.formInputs.priority_areas.action.clear',
     defaultMessage: 'Clear all',
+  },
+  selectFile: {
+    id: 'projects.formInputs.priority_areas.action.selectFile',
+    defaultMessage: 'Select File',
+  },
+  importDescription: {
+    id: 'projects.formInputs.priority_areas.upload.description',
+    defaultMessage:
+      'The supported file formats are: GeoJSON, KML, OSM or zipped Shapefile. You can drag and drop a file over the map to import it.',
   },
   name: {
     id: 'projects.formInputs.name',
@@ -396,7 +413,7 @@ export default defineMessages({
   priorityAreasDescription: {
     id: 'projects.formInputs.priority_areas.description',
     defaultMessage:
-      'If you want mappers to work on the highest priority areas first, draw one or more polygons within the project area.',
+      'If you want mappers to work on the highest priority areas first, draw one or more polygons within the project area or import a file.',
   },
   mappingTypes: {
     id: 'projects.formInputs.mapping_types',
