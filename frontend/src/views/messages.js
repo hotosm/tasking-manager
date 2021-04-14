@@ -681,4 +681,8 @@ export default defineMessages({
     id: 'pages.create_campaign.duplicate',
     defaultMessage: 'A campaign with the same name already exists',
   },
+  campaignError: {
+    id: 'pages.create_campaign.error',
+    defaultMessage: 'There was an error creating this campaign.',
+  },
 });

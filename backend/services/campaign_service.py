@@ -1,6 +1,7 @@
 from backend import db
 from flask import current_app
 from sqlalchemy.exc import IntegrityError
+from psycopg2.errors import UniqueViolation, NotNullViolation
 from backend.models.dtos.campaign_dto import (
     CampaignDTO,
     NewCampaignDTO,
@@ -100,8 +101,10 @@ class CampaignService:
                 db.session.commit()
         except IntegrityError as e:
             current_app.logger.info("Integrity error: {}".format(e.args[0]))
-            raise ValueError()
-
+            if isinstance(e.orig, UniqueViolation):
+                raise ValueError("Campaign name already exists") from e
+            if isinstance(e.orig, NotNullViolation):
+                raise ValueError("Campaign name cannot be null") from e
         return campaign
 
     @staticmethod

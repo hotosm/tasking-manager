@@ -21,6 +21,18 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { ErrorMessage } from '../components/responseMessages';
 import { useAsync } from '../hooks/UseAsync';
 
+const CampaignError = ({ error }) => {
+  return (
+    <>
+      {error && (
+        <ErrorMessage>
+          <FormattedMessage {...messages.campaignError} />
+        </ErrorMessage>
+      )}
+    </>
+  );
+};
+
 export function ListCampaigns() {
   useSetTitleTag('Manage campaigns');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
@@ -53,15 +65,15 @@ export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
   const navigate = useNavigate();
   const token = useSelector((state) => state.auth.get('token'));
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(false);
 
   const createCampaign = (payload) => {
     return pushToLocalJSONAPI('campaigns/', JSON.stringify(payload), token, 'POST')
       .then((result) => {
-        setError(null);
+        setError(false);
         navigate(`/manage/campaigns/${result.campaignId}`);
       })
-      .catch((e) => setError(e));
+      .catch((e) => setError(true));
   };
 
   const createCampaignAsync = useAsync(createCampaign);
@@ -82,9 +94,7 @@ export function CreateCampaign() {
                     <FormattedMessage {...messages.campaignInfo} />
                   </h3>
                   <CampaignInformation />
-                  <ErrorMessage error={error}>
-                    <FormattedMessage {...messages.duplicateCampaign} />
-                  </ErrorMessage>
+                  <CampaignError error={error} />
                 </div>
               </div>
             </div>
@@ -123,12 +133,12 @@ export function EditCampaign(props) {
     `projects/?campaign=${encodeURIComponent(campaign.name)}&omitMapResults=true`,
     campaign.name !== undefined,
   );
-  const [nameError, setNameError] = useState(null);
+  const [nameError, setNameError] = useState(false);
 
   const updateCampaign = (payload) => {
-    return pushToLocalJSONAPI(`campaigns/${189}/`, JSON.stringify(payload), token, 'PATCH')
-      .then((res) => setNameError(null))
-      .catch((e) => setNameError(e));
+    return pushToLocalJSONAPI(`campaigns/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
+      .then((res) => setNameError(false))
+      .catch((e) => setNameError(true));
   };
 
   const updateCampaignAsync = useAsync(updateCampaign);
@@ -148,11 +158,8 @@ export function EditCampaign(props) {
           updateCampaignAsync={updateCampaignAsync}
           disabledForm={error || loading}
         />
-        <ErrorMessage error={nameError}>
-          <FormattedMessage {...messages.duplicateCampaign} />
-        </ErrorMessage>
+        <CampaignError error={nameError} />
       </div>
-
       <div className="w-60-l w-100 mt4 pl5-l pl0 fl">
         <Projects
           projects={!projectsLoading && !projectsError && projects}
