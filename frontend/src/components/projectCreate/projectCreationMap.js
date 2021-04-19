@@ -148,7 +148,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     <div className="w-100 h-100-l relative" {...getRootProps()}>
       <div className="absolute top-0 right-0 z-5 mr2">
         <BasemapMenu map={mapObj.map} />
-        <input style={{ display: 'null' }} {...getInputProps()} />
+        <input className="dn" {...getInputProps()} />
       </div>
       <div id="project-creation-map" className="vh-50 h-100-l w-100" ref={mapRef}></div>
     </div>
