@@ -22,7 +22,7 @@ import NavButtons from './navButtons';
 import Review from './review';
 import { Alert } from '../alert';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { makeGrid } from './setTaskSizes';
+import { makeGrid } from '../../utils/taskGrid';
 import { MAX_AOI_AREA } from '../../config';
 import { verifyFileSize, readGeoFile, verifyGeometry } from '../../utils/fileFunctions';
 
@@ -40,7 +40,7 @@ const ProjectCreate = (props) => {
   const setDataGeom = (geom, display) => {
     mapObj.map.fitBounds(bbox(geom), { padding: 200 });
     const zoomLevel = 11;
-    const grid = makeGrid(geom, zoomLevel, {});
+    const grid = makeGrid(geom, zoomLevel);
     updateMetadata({
       ...metadata,
       geom: geom,
