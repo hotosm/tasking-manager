@@ -7,6 +7,7 @@ from shapely.geometry import Polygon, box
 from cachetools import TTLCache, cached
 
 from backend import db
+from backend.api.utils import validate_date_input
 from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectSearchResultsDTO,
@@ -320,7 +321,8 @@ class ProjectSearchService:
             ).filter(Project.id == sq.c.id)
 
         if search_dto.last_updated:
-            query = query.filter(Project.last_updated > search_dto.last_updated)
+            last_updated = validate_date_input(search_dto.last_updated)
+            query = query.filter(Project.last_updated > last_updated)
 
         order_by = search_dto.order_by
         if search_dto.order_by_type == "DESC":
