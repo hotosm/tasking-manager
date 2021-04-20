@@ -18,16 +18,18 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { ErrorAlert } from '../components/alerts/error';
+import { Alert } from '../components/alert';
 import { useAsync } from '../hooks/UseAsync';
 
 const CampaignError = ({ error }) => {
   return (
     <>
       {error && (
-        <ErrorAlert>
-          <FormattedMessage {...messages.campaignError} />
-        </ErrorAlert>
+        <div className="cf pv2">
+          <Alert type="error">
+            <FormattedMessage {...messages.campaignError} />
+          </Alert>
+        </div>
       )}
     </>
   );
