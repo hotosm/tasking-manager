@@ -1,4 +1,5 @@
 export { AlertIcon } from './alert';
+export { BanIcon } from './ban';
 export { AsteriskIcon } from './asterisk';
 export { ListIcon } from './list';
 export { InstagramIcon } from './instagram';

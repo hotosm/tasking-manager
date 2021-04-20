@@ -21,18 +21,27 @@ export function Button({ onClick, children, className, disabled, loading = false
   );
 }
 
-export function FormSubmitButton({ children, className, disabledClassName, disabled }: Object) {
+export function FormSubmitButton({
+  children,
+  className,
+  disabledClassName,
+  disabled,
+  loading = false,
+}: Object) {
   return (
     <button
       type="submit"
       aria-pressed="false"
       focusindex="0"
       className={`${disabled ? disabledClassName : className} br1 f5 bn ${
-        disabled ? '' : 'pointer'
+        disabled || loading ? '' : 'pointer'
       }`}
       style={{ padding: '.75rem 2.5rem' }}
-      disabled={disabled}
+      disabled={disabled || loading}
     >
+      {loading && (
+        <LoadingIcon className="h1 w1 v-mid mr2" style={{ animation: 'spin 1s linear infinite' }} />
+      )}
       {children}
     </button>
   );
