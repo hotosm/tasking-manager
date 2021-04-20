@@ -400,6 +400,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Draw rectangle",
   "projects.formInputs.priority_areas.action.clear": "Clear all",
   "projects.formInputs.priority_areas.action.selectFile": "Select File",
+  "projects.formInputs.priority_areas.upload.description": "The supported file formats are: GeoJSON, KML, OSM or zipped Shapefile. You can drag and drop a file over the map to import it.",
   "projects.formInputs.name": "Name of the project",
   "projects.formInputs.dueDate": "Due date",
   "projects.formInputs.dueDate.description": "Define the ideal date to have the project finished. The date format is day/month/year.",
@@ -1060,5 +1061,6 @@
   "pages.edit_project.sections.settings": "Settings",
   "pages.edit_project.sections.actions": "Actions",
   "pages.edit_project.sections.custom_editor": "Custom Editor",
-  "pages.create_campaign.duplicate": "A campaign with the same name already exists"
+  "pages.create_campaign.duplicate": "A campaign with the same name already exists",
+  "pages.create_campaign.error": "There was an error saving this campaign."
 }

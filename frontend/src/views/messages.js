@@ -683,6 +683,6 @@ export default defineMessages({
   },
   campaignError: {
     id: 'pages.create_campaign.error',
-    defaultMessage: 'There was an error creating this campaign.',
+    defaultMessage: 'There was an error saving this campaign.',
   },
 });

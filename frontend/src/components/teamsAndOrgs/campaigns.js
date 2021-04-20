@@ -64,11 +64,17 @@ export function CampaignInformation(props) {
   );
 }
 
-export function CampaignForm(props) {
+export function CampaignForm({
+  userDetails,
+  campaign,
+  updateCampaignAsync,
+  disabled,
+  disableErrorAlert,
+}) {
   return (
     <Form
-      onSubmit={(values) => props.updateCampaignAsync.execute(values)}
-      initialValues={props.campaign}
+      onSubmit={(values) => updateCampaignAsync.execute(values)}
+      initialValues={campaign}
       render={({
         handleSubmit,
         dirty,
@@ -79,6 +85,9 @@ export function CampaignForm(props) {
         values,
       }) => {
         const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
+        if (dirtySinceLastSubmit) {
+          disableErrorAlert();
+        }
         return (
           <div className="blue-grey mb3">
             <div className={`bg-white b--grey-light pa4 ${dirtyForm ? 'bt bl br' : 'ba'}`}>
@@ -86,7 +95,7 @@ export function CampaignForm(props) {
                 <FormattedMessage {...messages.campaignInfo} />
               </h3>
               <form id="campaign-form" onSubmit={handleSubmit}>
-                <fieldset className="bn pa0" disabled={submitting}>
+                <fieldset className="bn pa0" disabled={submitting || disabled}>
                   <CampaignInformation />
                 </fieldset>
               </form>
@@ -103,8 +112,8 @@ export function CampaignForm(props) {
                     onClick={() => handleSubmit()}
                     className="w-100 h-100 bg-red white"
                     disabledClassName="bg-red o-50 white w-100 h-100"
-                    loading={props.updateCampaignAsync.status === 'pending'}
-                    disabled={props.updateCampaignAsync.status === 'pending'}
+                    loading={updateCampaignAsync.status === 'pending'}
+                    disabled={updateCampaignAsync.status === 'pending'}
                   >
                     <FormattedMessage {...messages.save} />
                   </Button>

@@ -18,16 +18,16 @@ import { Projects } from '../components/teamsAndOrgs/projects';
 import { FormSubmitButton, CustomButton } from '../components/button';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { ErrorMessage } from '../components/responseMessages';
+import { ErrorAlert } from '../components/alerts/error';
 import { useAsync } from '../hooks/UseAsync';
 
 const CampaignError = ({ error }) => {
   return (
     <>
       {error && (
-        <ErrorMessage>
+        <ErrorAlert>
           <FormattedMessage {...messages.campaignError} />
-        </ErrorMessage>
+        </ErrorAlert>
       )}
     </>
   );
@@ -156,7 +156,8 @@ export function EditCampaign(props) {
           userDetails={userDetails}
           campaign={{ name: campaign.name }}
           updateCampaignAsync={updateCampaignAsync}
-          disabledForm={error || loading}
+          disabled={error || loading}
+          disableErrorAlert={() => nameError && setNameError(false)}
         />
         <CampaignError error={nameError} />
       </div>
