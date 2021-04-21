@@ -20,7 +20,7 @@ import SetTaskSizes from './setTaskSizes';
 import TrimProject from './trimProject';
 import NavButtons from './navButtons';
 import Review from './review';
-import { AlertMessage } from './alertMessage';
+import { Alert } from '../alert';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { makeGrid } from './setTaskSizes';
 import { MAX_AOI_AREA } from '../../config';
@@ -196,11 +196,11 @@ const ProjectCreate = (props) => {
     (cloneProjectData) => {
       if (!metadata.geom) {
         setErr({ error: true, message: intl.formatMessage(messages.noGeometry) });
-        return;
+        throw new Error('Missing geom.');
       }
       if (!metadata.organisation && !cloneProjectData.organisation) {
         setErr({ error: true, message: intl.formatMessage(messages.noOrganization) });
-        return;
+        throw new Error('Missing organization information.');
       }
 
       store.dispatch(createProject(metadata));
@@ -290,8 +290,8 @@ const ProjectCreate = (props) => {
               />
             </p>
           )}
-          {renderCurrentStep()}
-          <AlertMessage error={err} />
+          <div className="pb2">{renderCurrentStep()}</div>
+          {err.error === true && <Alert type="error">{err.message}</Alert>}
           <NavButtons
             index={step}
             setStep={setStep}
