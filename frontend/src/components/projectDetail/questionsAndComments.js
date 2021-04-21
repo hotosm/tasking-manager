@@ -4,8 +4,10 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
+import { useAsync } from '../../hooks/UseAsync';
 import { PaginatorLine } from '../paginator';
 import { Button } from '../button';
+import { Alert } from '../alert';
 import { CommentInputField } from '../comments/commentInput';
 import { MessageStatus } from '../comments/status';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
@@ -13,50 +15,44 @@ import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMar
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import '@webscopeio/react-textarea-autocomplete/style.css';
 
-const PostProjectComment = ({ token, projectId, updateComments }) => {
+const PostProjectComment = ({ projectId, updateComments }) => {
+  const token = useSelector((state) => state.auth.get('token'));
   const [comment, setComment] = useState('');
-  const [status, setStatus] = useState('ready');
-
-  useEffect(() => {
-    setStatus('ready');
-  }, [comment]);
 
   const saveComment = () => {
-    if (comment) {
-      setStatus('sending');
-      pushToLocalJSONAPI(
-        `projects/${projectId}/comments/`,
-        JSON.stringify({ message: comment }),
-        token,
-      )
-        .then((res) => {
-          updateComments(res);
-          setComment('');
-          setStatus('messageSent');
-        })
-        .catch((e) => setStatus('error'));
-    }
+    return pushToLocalJSONAPI(
+      `projects/${projectId}/comments/`,
+      JSON.stringify({ message: comment }),
+      token,
+    ).then((res) => {
+      updateComments(res);
+      setComment('');
+    });
   };
+  const saveCommentAsync = useAsync(saveComment);
 
   return (
     <div className="w-90-ns w-100 cf pv4 bg-white center">
-      <div className="fl w-10-ns w-20 pt2">
-        <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
-      </div>
-      <div className="fl w-70-ns w-80 ph1 h-100">
-        <CommentInputField comment={comment} setComment={setComment} enableHashtagPaste={true} />
-      </div>
-      <div className="fl w-20-ns w-100 tc-ns tr pt3 pr0-ns pr1">
-        <Button
-          onClick={saveComment}
-          className="bg-red white f5"
-          disabled={comment === '' || status === 'sending'}
-        >
-          <FormattedMessage {...messages.post} />
-        </Button>
-        <div className="pv2">
-          <MessageStatus status={status} />
+      <div className="cf w-100">
+        <div className="fl w-10-ns w-20 pt2">
+          <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
         </div>
+        <div className="fl w-70-ns w-80 ph1 h-100">
+          <CommentInputField comment={comment} setComment={setComment} enableHashtagPaste={true} />
+        </div>
+        <div className="fl w-20-ns w-100 tc-ns tr pt3 pr0-ns pr1">
+          <Button
+            onClick={() => saveCommentAsync.execute()}
+            className="bg-red white f5"
+            disabled={comment === '' || saveCommentAsync.status === 'pending'}
+            loading={saveCommentAsync.status === 'pending'}
+          >
+            <FormattedMessage {...messages.post} />
+          </Button>
+        </div>
+      </div>
+      <div className="cf w-100 fr tr pr2">
+        <MessageStatus status={saveCommentAsync.status} comment={comment} />
       </div>
     </div>
   );
@@ -100,10 +96,12 @@ export const QuestionsAndComments = ({ projectId }) => {
           />
         )}
         {token ? (
-          <PostProjectComment projectId={projectId} token={token} updateComments={setComments} />
+          <PostProjectComment projectId={projectId} updateComments={setComments} />
         ) : (
-          <div>
-            <p>You need to log in to be able to post comments.</p>
+          <div className="w-90 center pa3">
+            <Alert type="info">
+              <FormattedMessage {...messages.loginTocomment} />
+            </Alert>
           </div>
         )}
       </div>

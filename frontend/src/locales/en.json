@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Add to Favorites",
   "project.detail.removeFromFavorites": "Remove from Favorites",
   "project.detail.questionsAndComments.none": "There are currently no questions or comments on this project. Be the first to post one!",
+  "project.detail.questionsAndComments.login": "Log in to be able to post comments.",
   "project.detail.questionsAndComments.button": "Post",
   "project.detail.share": "Share",
   "project.detail.team": "Team",

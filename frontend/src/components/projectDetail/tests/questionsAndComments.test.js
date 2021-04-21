@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
@@ -9,14 +8,12 @@ import { QuestionsAndComments } from '../questionsAndComments';
 
 describe('test if QuestionsAndComments component', () => {
   it('only renders text asking user to log in for non-logged in user', () => {
-    const { container } = render(
+    render(
       <ReduxIntlProviders store={store}>
         <QuestionsAndComments projectId={1} />
       </ReduxIntlProviders>,
     );
-    expect(container.querySelector('p').textContent).toBe(
-      'You need to log in to be able to post comments.',
-    );
+    expect(screen.getByText('Log in to be able to post comments.')).toBeInTheDocument();
   });
 
   it('enables logged in user to post and view comments', async () => {
@@ -76,7 +73,6 @@ describe('test if QuestionsAndComments component', () => {
 
     // click button to post comment
     fireEvent.click(button);
-    expect(screen.getByText('Sending message...')).toBeInTheDocument();
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(2);
     });

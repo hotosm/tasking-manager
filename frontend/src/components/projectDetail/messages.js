@@ -125,6 +125,10 @@ export default defineMessages({
     defaultMessage:
       'There are currently no questions or comments on this project. Be the first to post one!',
   },
+  loginTocomment: {
+    id: 'project.detail.questionsAndComments.login',
+    defaultMessage: 'Log in to be able to post comments.',
+  },
   post: {
     id: 'project.detail.questionsAndComments.button',
     defaultMessage: 'Post',
