@@ -4,6 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { Button } from '../button';
+import { useAsync } from '../../hooks/UseAsync';
 
 const clearParamsStep = (props) => {
   switch (props.index) {
@@ -18,6 +19,9 @@ const clearParamsStep = (props) => {
         taskGrid: props.metadata.tempTaskGrid,
         tasksNumber: props.metadata.tempTaskGrid.features.length,
       });
+      break;
+    case 4:
+      props.setErr({ error: false, message: '' });
       break;
     default:
       break;
@@ -38,6 +42,11 @@ const clearParamsStep = (props) => {
 
 const NavButtons = (props) => {
   const intl = useIntl();
+
+  const createProjectFn = () => {
+    return new Promise((resolve, reject) => props.handleCreate());
+  };
+  const createProjectAsync = useAsync(createProjectFn);
 
   const validateStep = (props) => {
     switch (props.index) {
@@ -86,14 +95,18 @@ const NavButtons = (props) => {
   };
 
   return (
-    <div className="pt3">
+    <div className="pt2">
       {props.index === 1 ? null : (
         <Button onClick={() => clearParamsStep(props)} className="blue-dark bg-white mr3">
           <FormattedMessage {...messages.backToPrevious} />
         </Button>
       )}
       {props.index === 4 ? (
-        <Button onClick={props.handleCreate} className="white bg-red">
+        <Button
+          onClick={() => createProjectAsync.execute()}
+          className="white bg-red"
+          loading={createProjectAsync.status === 'pending'}
+        >
           {props.cloneProjectData.name === null ? (
             <FormattedMessage {...messages.create} />
           ) : (

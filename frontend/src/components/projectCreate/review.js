@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { AlertMessage } from './alertMessage';
+import { Alert } from '../alert';
 
 import { OrganisationSelect } from '../formInputs';
 
@@ -57,14 +57,9 @@ export default function Review({ metadata, updateMetadata, token, projectId, clo
       ) : null}
 
       {error && (
-        <div className="mt3 red">
-          <AlertMessage
-            error={{
-              error: true,
-              message: <FormattedMessage {...messages.creationFailed} values={{ error: error }} />,
-            }}
-          />
-        </div>
+        <Alert type="error">
+          <FormattedMessage {...messages.creationFailed} values={{ error: error }} />
+        </Alert>
       )}
     </>
   );

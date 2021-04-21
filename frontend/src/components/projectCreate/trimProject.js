@@ -9,16 +9,17 @@ import { CustomButton } from '../button';
 import { SwitchToggle } from '../formInputs';
 import { CutIcon, WasteIcon } from '../svgIcons';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { useAsync } from '../../hooks/UseAsync';
 
-const clipProject = (clip, metadata, map, updateMetadata, token) => {
-  const url = 'projects/actions/intersecting-tiles/';
+const trimTaskGrid = (params) => {
+  const { clipStatus, metadata, updateMetadata, token } = params;
   const body = JSON.stringify({
     areaOfInterest: metadata.geom,
-    clipToAoi: clip,
+    clipToAoi: clipStatus,
     grid: metadata.tempTaskGrid,
   });
 
-  pushToLocalJSONAPI(url, body, token).then((grid) => {
+  return pushToLocalJSONAPI('projects/actions/intersecting-tiles/', body, token).then((grid) => {
     updateMetadata({ ...metadata, tasksNumber: grid.features.length, taskGrid: grid });
   });
 };
@@ -38,6 +39,8 @@ export default function TrimProject({ metadata, mapObj, updateMetadata }) {
   const token = useSelector((state) => state.auth.get('token'));
   const [clipStatus, setClipStatus] = useState(false);
   const [tinyTasksNumber, setTinyTasksNumber] = useState(0);
+
+  const trimTaskGridAsync = useAsync(trimTaskGrid);
 
   useEffect(() => {
     mapObj.map
@@ -70,10 +73,13 @@ export default function TrimProject({ metadata, mapObj, updateMetadata }) {
             />
             <div className="pt3">
               <CustomButton
-                onClick={() => clipProject(clipStatus, metadata, mapObj.map, updateMetadata, token)}
+                onClick={() =>
+                  trimTaskGridAsync.execute({ clipStatus, metadata, updateMetadata, token })
+                }
                 className="bg-white blue-dark ba b--grey-light ph3 pv2"
+                loading={trimTaskGridAsync.status === 'pending'}
+                icon={<CutIcon className="h1 w1 v-mid" />}
               >
-                <CutIcon className="h1 w1 v-mid mr2" />
                 <FormattedMessage {...messages.trim} />
               </CustomButton>
             </div>
@@ -94,8 +100,8 @@ export default function TrimProject({ metadata, mapObj, updateMetadata }) {
             <CustomButton
               onClick={() => removeTinyTasks(metadata, updateMetadata)}
               className="bg-white blue-dark ba b--grey-light ph3 pv2"
+              icon={<WasteIcon className="h1 w1 v-mid" />}
             >
-              <WasteIcon className="h1 w1 v-mid mr2" />
               <FormattedMessage {...messages.discard} />
             </CustomButton>
           </div>
