@@ -1,9 +1,15 @@
-import React from 'react';
 import { Link } from '@reach/router';
 
 import { LoadingIcon } from './svgIcons';
 
-export function Button({ onClick, children, className, disabled, loading = false }: Object) {
+const IconSpace = ({ children }) => <span className="mr2">{children}</span>;
+const AnimatedLoadingIcon = () => (
+  <IconSpace>
+    <LoadingIcon className="h1 w1 v-mid" style={{ animation: 'spin 1s linear infinite' }} />
+  </IconSpace>
+);
+
+export function Button({ onClick, children, icon, className, disabled, loading = false }: Object) {
   return (
     <button
       onClick={onClick}
@@ -13,9 +19,7 @@ export function Button({ onClick, children, className, disabled, loading = false
       style={{ padding: '.75rem 1.5rem' }}
       disabled={disabled || loading}
     >
-      {loading && (
-        <LoadingIcon className="h1 w1 v-mid mr2" style={{ animation: 'spin 1s linear infinite' }} />
-      )}
+      {loading ? <AnimatedLoadingIcon /> : icon && <IconSpace>{icon}</IconSpace>}
       {children}
     </button>
   );
@@ -24,6 +28,7 @@ export function Button({ onClick, children, className, disabled, loading = false
 export function FormSubmitButton({
   children,
   className,
+  icon,
   disabledClassName,
   disabled,
   loading = false,
@@ -39,15 +44,20 @@ export function FormSubmitButton({
       style={{ padding: '.75rem 2.5rem' }}
       disabled={disabled || loading}
     >
-      {loading && (
-        <LoadingIcon className="h1 w1 v-mid mr2" style={{ animation: 'spin 1s linear infinite' }} />
-      )}
+      {loading ? <AnimatedLoadingIcon /> : icon && <IconSpace>{icon}</IconSpace>}
       {children}
     </button>
   );
 }
 
-export function CustomButton({ onClick, children, className, disabled, loading = false }: Object) {
+export function CustomButton({
+  onClick,
+  children,
+  icon,
+  className,
+  disabled,
+  loading = false,
+}: Object) {
   return (
     <button
       onClick={onClick}
@@ -56,9 +66,7 @@ export function CustomButton({ onClick, children, className, disabled, loading =
       className={`${className || ''} br1 f5 ${disabled || loading ? 'o-50' : 'pointer'}`}
       disabled={disabled || loading}
     >
-      {loading && (
-        <LoadingIcon className="h1 w1 v-mid mr2" style={{ animation: 'spin 1s linear infinite' }} />
-      )}
+      {loading ? <AnimatedLoadingIcon /> : icon && <IconSpace>{icon}</IconSpace>}
       {children}
     </button>
   );
