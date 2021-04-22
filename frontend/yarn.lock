@@ -10219,10 +10219,10 @@ ms@2.1.2, ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-msw@^0.28.1:
-  version "0.28.1"
-  resolved "https://registry.yarnpkg.com/msw/-/msw-0.28.1.tgz#7fe487582221f7cca68dcc868511723f65bbd768"
-  integrity sha512-vkq1Oh7CZlQjdrVZdDJ0L5hPnUakwRKYXWRtTLh9uaD4sCzckEStSgqAgcvM7nxb3ViakcRu0BXKU6JQM1KxbA==
+msw@^0.28.2:
+  version "0.28.2"
+  resolved "https://registry.yarnpkg.com/msw/-/msw-0.28.2.tgz#5179df2c2f8c65e31b2043b8ec9cbe245ad0bd48"
+  integrity sha512-WHfRd+Zwfy8yNPAx4PDJ0PnaEqUw5QOjWbCk5MmgpHMl51R3FJ2yIC694RdqR1bInqoaV94wW9Irv9eSyh65lQ==
   dependencies:
     "@mswjs/cookies" "^0.1.4"
     "@mswjs/interceptors" "^0.8.0"
@@ -10240,7 +10240,7 @@ msw@^0.28.1:
     node-fetch "^2.6.1"
     node-match-path "^0.6.1"
     statuses "^2.0.0"
-    strict-event-emitter "^0.1.0"
+    strict-event-emitter "^0.2.0"
     yargs "^16.2.0"
 
 multicast-dns-service-types@^1.1.0:
@@ -13826,11 +13826,6 @@ stream-shift@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/stream-shift/-/stream-shift-1.0.1.tgz#d7088281559ab2778424279b0877da3c392d5a3d"
   integrity sha512-AiisoFqQ0vbGcZgQPY1cdP2I76glaVA/RauYR4G4thNFgkTqr90yXTo4LYX60Jl+sIlPNHHdGSwo01AvbKUSVQ==
-
-strict-event-emitter@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/strict-event-emitter/-/strict-event-emitter-0.1.0.tgz#fd742c1fb7e3852f0b964ecdae2d7666a6fb7ef8"
-  integrity sha512-8hSYfU+WKLdNcHVXJ0VxRXiPESalzRe7w1l8dg9+/22Ry+iZQUoQuoJ27R30GMD1TiyYINWsIEGY05WrskhSKw==
 
 strict-event-emitter@^0.2.0:
   version "0.2.0"
