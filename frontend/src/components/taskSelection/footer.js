@@ -20,6 +20,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
   const locale = useSelector((state) => state.preferences.locale);
   const [editor, setEditor] = useState(defaultUserEditor);
   const [editorOptions, setEditorOptions] = useState([]);
+  const [isPending, setIsPending] = useState(false);
   const [lockError, setLockError] = useState(null);
   const dispatch = useDispatch();
   const fetchLockedTasks = useFetchLockedTasks();
@@ -35,6 +36,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       locale,
     );
     updateReduxState(selectedTasks, project.projectId, status);
+    setIsPending(false);
     navigate(`/projects/${project.projectId}/${endpoint}/${urlParams}`);
   };
 
@@ -45,6 +47,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
     }
     fetchLockedTasks();
     setLockError(message);
+    setIsPending(false);
   };
 
   const updateReduxState = (tasks, project, status) => {
@@ -81,6 +84,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       if (!mappedTasks.length) {
         setLockError('No mapped tasks selected');
       } else {
+        setIsPending(true);
         pushToLocalJSONAPI(
           `projects/${project.projectId}/tasks/actions/lock-for-validation/`,
           JSON.stringify({ taskIds: mappedTasks }),
@@ -93,6 +97,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       }
     }
     if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(taskAction)) {
+      setIsPending(true);
       fetchLocalJSONAPI(
         `projects/${project.projectId}/tasks/actions/lock-for-mapping/${selectedTasks[0]}/`,
         token,
@@ -205,7 +210,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       </div>
       <div className="w-30-ns w-60 fl tr">
         <div className="mt3">
-          <Button className="white bg-red" onClick={() => lockTasks()}>
+          <Button className="white bg-red" onClick={() => lockTasks()} loading={isPending}>
             {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(
               taskAction,
             ) ? (
