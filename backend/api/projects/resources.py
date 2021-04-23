@@ -497,7 +497,10 @@ class ProjectSearchBase(Resource):
         search_dto.omit_map_results = strtobool(
             request.args.get("omitMapResults", "false")
         )
-        search_dto.last_updated = request.args.get("lastUpdated")
+        search_dto.last_updated_gte = request.args.get("lastUpdatedFrom")
+        search_dto.last_updated_lte = request.args.get("lastUpdatedTo")
+        search_dto.created_gte = request.args.get("createdFrom")
+        search_dto.created_lte = request.args.get("createdTo")
 
         # See https://github.com/hotosm/tasking-manager/pull/922 for more info
         try:
@@ -614,8 +617,20 @@ class ProjectsAllAPI(ProjectSearchBase):
               description: Authenticated PMs can search for archived or draft statuses
               type: string
             - in: query
-              name: lastUpdated
-              description: Filter projects updated after a date
+              name: lastUpdatedFrom
+              description: Filter projects whose last update date is equal or greater than a date
+              type: string
+            - in: query
+              name: lastUpdatedTo
+              description: Filter projects whose last update date is equal or lower than a date
+              type: string
+            - in: query
+              name: createdFrom
+              description: Filter projects whose creation date is equal or greater than a date
+              type: string
+            - in: query
+              name: createdTo
+              description: Filter projects whose creation date is equal or lower than a date
               type: string
             - in: query
               name: interests

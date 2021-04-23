@@ -320,9 +320,21 @@ class ProjectSearchService:
                 sq.c.country.ilike("%{}%".format(search_dto.country))
             ).filter(Project.id == sq.c.id)
 
-        if search_dto.last_updated:
-            last_updated = validate_date_input(search_dto.last_updated)
-            query = query.filter(Project.last_updated > last_updated)
+        if search_dto.last_updated_gte:
+            last_updated_gte = validate_date_input(search_dto.last_updated_gte)
+            query = query.filter(Project.last_updated >= last_updated_gte)
+
+        if search_dto.last_updated_lte:
+            last_updated_lte = validate_date_input(search_dto.last_updated_lte)
+            query = query.filter(Project.last_updated <= last_updated_lte)
+
+        if search_dto.created_gte:
+            created_gte = validate_date_input(search_dto.created_gte)
+            query = query.filter(Project.created >= created_gte)
+
+        if search_dto.created_lte:
+            created_lte = validate_date_input(search_dto.created_lte)
+            query = query.filter(Project.created <= created_lte)
 
         order_by = search_dto.order_by
         if search_dto.order_by_type == "DESC":
