@@ -17,11 +17,12 @@ import { ActionsForm } from '../components/projectEdit/actionsForm';
 import { CustomEditorForm } from '../components/projectEdit/customEditorForm';
 import { Button } from '../components/button';
 import { Dropdown } from '../components/dropdown';
+import { Alert } from '../components/alert';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { useFetch } from '../hooks/UseFetch';
+import { useAsync } from '../hooks/UseAsync';
 import { useEditProjectAllowed } from '../hooks/UsePermissions';
-import { CheckIcon, CloseIcon } from '../components/svgIcons';
 
 export const StateContext = React.createContext();
 
@@ -93,6 +94,50 @@ export default function ProjectEdit({ id }) {
     }
     fetchData();
   }, [id, token]);
+
+  const saveChanges = (resolve, reject) => {
+    // Remove locales with less than 3 fields.
+    const locales = projectInfo.projectInfoLocales;
+    // Get data for default locale.
+    const filtered = locales
+      .filter((l) => l.locale === projectInfo.defaultLocale)
+      .map((l) => {
+        return {
+          locale: l.locale,
+          fields: mandatoryFields.filter(
+            (m) => Object.keys(l).includes(m) === false || l[m] === '',
+          ),
+        };
+      })
+      .filter((l) => l.fields.length > 0);
+
+    const nonLocaleMissingFields = { locale: null, fields: [] };
+
+    if (projectInfo.mappingTypes.length === 0) {
+      nonLocaleMissingFields.fields = [...nonLocaleMissingFields.fields, 'mappingTypes'];
+    }
+
+    if (!projectInfo.organisation) {
+      nonLocaleMissingFields.fields = [...nonLocaleMissingFields.fields, 'organisation'];
+    }
+
+    if (nonLocaleMissingFields.fields.length > 0) {
+      filtered.push(nonLocaleMissingFields);
+    }
+
+    if (filtered.length > 0) {
+      setError(filtered);
+      return new Promise((resolve, reject) => reject());
+    } else {
+      return pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')
+        .then((res) => {
+          setSuccess(true);
+          setError(null);
+        })
+        .catch((e) => setError('SERVER'));
+    }
+  };
+  const saveChangesAsync = useAsync(saveChanges);
 
   if (!token) {
     return <Redirect to={'/login'} noThrow />;
@@ -182,129 +227,6 @@ export default function ProjectEdit({ id }) {
     }
   };
 
-  const saveChanges = () => {
-    const updateProject = () => {
-      pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')
-        .then((res) => {
-          setSuccess(true);
-          setError(null);
-        })
-        .catch((e) => setError('SERVER'));
-    };
-
-    // Remove locales with less than 3 fields.
-    const locales = projectInfo.projectInfoLocales;
-    // Get data for default locale.
-    const filtered = locales
-      .filter((l) => l.locale === projectInfo.defaultLocale)
-      .map((l) => {
-        return {
-          locale: l.locale,
-          fields: mandatoryFields.filter(
-            (m) => Object.keys(l).includes(m) === false || l[m] === '',
-          ),
-        };
-      })
-      .filter((l) => l.fields.length > 0);
-
-    const nonLocaleMissingFields = { locale: null, fields: [] };
-
-    if (projectInfo.mappingTypes.length === 0) {
-      nonLocaleMissingFields.fields = [...nonLocaleMissingFields.fields, 'mappingTypes'];
-    }
-
-    if (!projectInfo.organisation) {
-      nonLocaleMissingFields.fields = [...nonLocaleMissingFields.fields, 'organisation'];
-    }
-
-    if (nonLocaleMissingFields.fields.length > 0) {
-      filtered.push(nonLocaleMissingFields);
-    }
-
-    if (filtered.length > 0) {
-      setError(filtered);
-    } else {
-      updateProject();
-    }
-  };
-
-  const ServerMessage = () => {
-    return (
-      <div className="red ba b--red pa2 br1 dib pa2">
-        <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
-        <FormattedMessage {...messages.updateError} />
-      </div>
-    );
-  };
-
-  const SuccessMessage = () => {
-    return (
-      <div className="blue-grey b--blue-grey ba br1 dib pa2">
-        <CheckIcon className="h1 w1 mr2" />
-        <FormattedMessage {...messages.updateSuccess} />
-      </div>
-    );
-  };
-
-  const MissingField = (locale) => {
-    if (locale === null) {
-      return <FormattedMessage {...messages.missingFields} />;
-    }
-
-    return (
-      <FormattedMessage
-        {...messages.missingFieldsForLocale}
-        values={{ locale: <span className="b f5">"{locale}"</span> }}
-      />
-    );
-  };
-
-  const ErrorMessage = ({ e }) => {
-    return (
-      <ul className="mt2 mb0">
-        {e.fields.map((f, i) => {
-          return (
-            <li className="b" key={i}>
-              {<FormattedMessage {...projectEditMessages[f]} />}
-              {i === e.fields.length - 1 ? null : ','}
-            </li>
-          );
-        })}
-      </ul>
-    );
-  };
-
-  const ErrorMessages = ({ error }) => {
-    return (
-      <div className="mr4 red ba b--red pa2 br1 dib pa2">
-        {error.map((e, i) => {
-          return (
-            <div className="pv2" key={i}>
-              <CloseIcon className="h1 w1 v-mid pb1 red mr2" />
-              {MissingField(e.locale)}
-              <ErrorMessage e={e} />
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
-  const UpdateMessage = ({ error, success }) => {
-    let message = null;
-    if (success === true) {
-      message = <SuccessMessage />;
-    }
-    if (error !== null && error !== 'SERVER') {
-      message = <ErrorMessages error={error} />;
-    }
-    if (error !== null && error === 'SERVER') {
-      message = <ServerMessage />;
-    }
-
-    return <div className="db mv3">{message}</div>;
-  };
-
   return (
     <div className="cf pv3 blue-dark">
       <h2 className="pb2 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
@@ -318,11 +240,15 @@ export default function ProjectEdit({ id }) {
           className="pr3"
         >
           {renderList()}
-          <Button onClick={saveChanges} className="db bg-red white pa3 bn">
+          <Button
+            onClick={() => saveChangesAsync.execute()}
+            className="db bg-red white pa3 bn"
+            loading={saveChangesAsync.status === 'pending'}
+          >
             <FormattedMessage {...messages.save} />
           </Button>
           <div style={{ minHeight: '3rem' }}>
-            <UpdateMessage error={error} success={success} />
+            {(error || success) && <SaveStatus error={error} success={success} />}
           </div>
           <span className="db">
             <Dropdown
@@ -375,3 +301,61 @@ export default function ProjectEdit({ id }) {
     </div>
   );
 }
+
+const ErrorTitle = ({ locale, numberOfMissingFields }) => {
+  if (locale === null) {
+    return (
+      <FormattedMessage {...messages.missingFields} values={{ number: numberOfMissingFields }} />
+    );
+  }
+
+  return <FormattedMessage {...messages.missingFieldsForLocale} values={{ locale: locale }} />;
+};
+
+const ErrorMessage = ({ errors }) => {
+  return (
+    <>
+      <span className="fw6">
+        <FormattedMessage {...messages.saveProjectError} />
+      </span>
+      {errors.map((error, i) => {
+        return (
+          <div className="cf w-100 pt2 ml3 pl2" key={i}>
+            <span>
+              <ErrorTitle locale={error.locale} numberOfMissingFields={error.fields.length || 0} />
+            </span>
+            <ul className="mt2 mb0">
+              {error.fields.map((f, i) => {
+                return (
+                  <li key={i}>
+                    {<FormattedMessage {...projectEditMessages[f]} />}
+                    {i === error.fields.length - 1 ? '' : ','}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })}
+    </>
+  );
+};
+
+const SaveStatus = ({ error, success }) => {
+  let message = null;
+  if (success === true) {
+    message = <FormattedMessage {...messages.updateSuccess} />;
+  }
+  if (error !== null && error !== 'SERVER') {
+    message = <ErrorMessage errors={error} />;
+  }
+  if (error !== null && error === 'SERVER') {
+    message = <FormattedMessage {...messages.serverError} />;
+  }
+
+  return (
+    <div className="pv3 pr3">
+      <Alert type={success ? 'success' : 'error'}>{message}</Alert>
+    </div>
+  );
+};
