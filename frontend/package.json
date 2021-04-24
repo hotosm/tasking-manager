@@ -54,7 +54,7 @@
     "react-intl": "^5.15.8",
     "react-meta-elements": "^1.0.0",
     "react-placeholder": "^4.1.0",
-    "react-redux": "^7.2.3",
+    "react-redux": "^7.2.4",
     "react-scripts": "^4.0.3",
     "react-select": "^4.3.0",
     "react-tooltip": "^4.2.17",
