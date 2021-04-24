@@ -59,7 +59,7 @@
     "react-select": "^4.3.0",
     "react-tooltip": "^4.2.17",
     "reactjs-popup": "^1.5.0",
-    "redux": "^4.0.5",
+    "redux": "^4.1.0",
     "redux-thunk": "^2.3.0",
     "sass": "^1.32.10",
     "short-number": "^1.0.7",
