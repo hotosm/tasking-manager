@@ -34,6 +34,7 @@ export const TasksMap = ({
   zoomedTaskId,
   navigate,
   animateZoom = true,
+  showTaskIds = false,
   selected: selectedOnMap,
 }) => {
   const mapRef = React.createRef();
@@ -131,11 +132,16 @@ export const TasksMap = ({
         }
         taskStatusCondition = [...taskStatusCondition, ...[locked, 'lock', '']];
 
+        const lockedTaskIds = showTaskIds ? ['case', locked, ['get', 'taskId'], ''] : '';
+
         map.addLayer({
           id: 'tasks-icon',
           type: 'symbol',
           source: 'tasks',
           layout: {
+            'text-field': ['format', lockedTaskIds, { 'font-scale': 0.9 }],
+            'text-variable-anchor': ['bottom-right'],
+            'text-radial-offset': 1.5,
             'icon-image': taskStatusCondition,
             'icon-size': 0.7,
           },
@@ -414,6 +420,7 @@ export const TasksMap = ({
     navigate,
     animateZoom,
     authDetails.id,
+    showTaskIds,
   ]);
 
   return <div id="map" className={className} ref={mapRef}></div>;
