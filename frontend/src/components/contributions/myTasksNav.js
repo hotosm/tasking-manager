@@ -57,7 +57,7 @@ export const MyTasksNav = (props) => {
           </div>
         </div>
       </div>
-      <div className="mv2">
+      <div className="mv2" style={{ lineHeight: "200%" }}>
         <Link to="" className={`di mh1 ${isActiveButton('All', contributionsQuery)} ${linkCombo}`}>
           <FormattedMessage {...messages.all} />
         </Link>
