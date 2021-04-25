@@ -15,6 +15,7 @@ import { Home } from './views/home';
 import { FallbackComponent } from './views/fallback';
 import { AboutPage } from './views/about';
 import { LearnPage } from './views/learn';
+import { TutorialPage} from "./views/tutorial";
 import { QuickstartPage } from './views/quickstart';
 import { UserDetail } from './views/userDetail';
 import {
@@ -97,6 +98,7 @@ let App = (props) => {
                   <OrganisationDetail path="organisations/:slug/" />
                   <LearnPage path="learn" />
                   <QuickstartPage path="learn/quickstart" />
+                  <TutorialPage path="learn/tutorial" />
                   <AboutPage path="about" />
                   <ContactPage path="contact/" />
                   <ContributionsPageIndex path="contributions">
