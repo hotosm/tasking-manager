@@ -330,6 +330,7 @@ export const TasksMap = ({
       });
 
       map.on('mousemove', 'tasks-fill', function (e) {
+        // when the user hover on a task they are validating, enable the task id dialog
         if (showTaskIds && e.features[0].properties.lockedBy === authDetails.id) {
           setHoveredTaskId(e.features[0].properties.taskId);
         } else {
@@ -337,6 +338,7 @@ export const TasksMap = ({
         }
       });
       map.on('mouseleave', 'tasks-fill', function (e) {
+        // disable the task id dialog when the mouse go outside the task grid
         if (showTaskIds) {
           setHoveredTaskId(null);
         }
