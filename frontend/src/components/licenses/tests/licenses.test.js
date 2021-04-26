@@ -57,9 +57,10 @@ describe('Licenses Management', () => {
 
 describe('LicenseForm', () => {
   it('renders a form containing different editable license fields for a given license', () => {
+    const updateLicense = jest.fn();
     render(
       <IntlProviders>
-        <LicenseForm license={license} updateLicense={() => jest.fn()} />
+        <LicenseForm license={license} updateLicense={updateLicense} />
       </IntlProviders>,
     );
 
@@ -93,6 +94,7 @@ describe('LicenseForm', () => {
     // save license name
     fireEvent.click(saveBtn);
     expect(inputs[0].value).toBe('license A');
+    expect(updateLicense).toHaveBeenCalledWith({ ...license, name: 'license A' });
   });
 
   it('renders an empty form if licence is null', () => {
