@@ -6,26 +6,32 @@ import { IntlProviders } from '../../../utils/testWithIntl';
 import { LicenseCard, LicensesManagement, LicenseForm } from '../index';
 
 const license = {
-  licenseId: '01',
-  name: 'license-1',
+  licenseId: 1,
+  name: 'HOT Licence',
+  description: 'This data is licensed for use under the HOT licence.',
+  plainText: 'HOT is allowing access to this imagery for creating data in OSM',
 };
 
 const licenses = [
   {
-    licenseId: '01',
-    name: 'license-1',
+    licenseId: 1,
+    name: 'HOT Licence',
+    description: 'This data is licensed for use under the HOT licence.',
+    plainText: 'HOT is allowing access to this imagery for creating data in OSM',
   },
   {
-    licenseId: '02',
-    name: 'license-2',
+    licenseId: 2,
+    name: 'NextView',
+    description: 'This data is licensed for use under the NextView licence.',
+    plainText: 'Only use NextView imagery for digitizing OSM data for humanitarian purposes.',
   },
 ];
 
 describe('License Card', () => {
   it('renders a license card given valid license information', () => {
     const { container } = render(<LicenseCard license={license} />);
-    expect(screen.getByText('license-1')).toBeInTheDocument();
-    expect(container.querySelector('a').href).toContain('/01');
+    expect(screen.getByText('HOT Licence')).toBeInTheDocument();
+    expect(container.querySelector('a').href).toContain('/1');
     expect(container.querySelectorAll('svg').length).toBe(1); //copyright icon
   });
 });
@@ -42,10 +48,10 @@ describe('Licenses Management', () => {
     expect(newLink.href).toContain('/new');
     const button = newLink.firstChild;
     expect(button.textContent).toBe('New');
-    const license1 = screen.getByText(/license-1/);
-    expect(license1.closest('a').href).toContain('/01');
-    const license2 = screen.getByText(/license-2/);
-    expect(license2.closest('a').href).toContain('/02');
+    const license1 = screen.getByText(/HOT Licence/);
+    expect(license1.closest('a').href).toContain('/1');
+    const license2 = screen.getByText(/NextView/);
+    expect(license2.closest('a').href).toContain('/2');
   });
 });
 
@@ -63,13 +69,18 @@ describe('LicenseForm', () => {
     expect(screen.getByText('Plain Text')).toBeInTheDocument();
     expect(screen.queryByText('Save')).not.toBeInTheDocument();
     expect(screen.queryByText('Cancel')).not.toBeInTheDocument();
-    // expect(screen.findByRole('form').id).toBe('license-form');
+
     // test form inputs
     const inputs = screen.getAllByRole('textbox');
+    //Name input
     expect(inputs[0].name).toBe('name');
-    expect(inputs[0].value).toBe('license-1');
+    expect(inputs[0].value).toBe('HOT Licence');
+    //Description input
     expect(inputs[1].name).toBe('description');
+    expect(inputs[1].value).toBe('This data is licensed for use under the HOT licence.');
+    // plainText input
     expect(inputs[2].name).toBe('plainText');
+    expect(inputs[2].value).toBe('HOT is allowing access to this imagery for creating data in OSM');
 
     // change license name
     fireEvent.change(inputs[0], { target: { value: 'license A' } });
