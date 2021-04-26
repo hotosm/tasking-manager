@@ -10,6 +10,7 @@ import { CheckBox } from '../formInputs';
 import { ProjectInterests } from './projectInterests';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { ID_PRESETS } from '../../config/presets';
+import { getFilterId } from '../../utils/osmchaLink';
 
 export const MetadataForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -213,6 +214,12 @@ export const MetadataForm = () => {
           type="text"
           name="osmchaFilterId"
           value={projectInfo.osmchaFilterId}
+          onChange={(e) => {
+            setProjectInfo({
+              ...projectInfo,
+              osmchaFilterId: getFilterId(e.target.value),
+            });
+          }}
         />
       </div>
     </div>
