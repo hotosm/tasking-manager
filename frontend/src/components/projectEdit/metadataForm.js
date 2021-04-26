@@ -213,7 +213,7 @@ export const MetadataForm = () => {
           className={styleClasses.inputClass}
           type="text"
           name="osmchaFilterId"
-          value={projectInfo.osmchaFilterId}
+          value={projectInfo.osmchaFilterId || ''}
           onChange={(e) => {
             setProjectInfo({
               ...projectInfo,
