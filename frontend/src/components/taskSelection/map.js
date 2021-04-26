@@ -4,7 +4,9 @@ import bbox from '@turf/bbox';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
 import redlock from '../../assets/img/red-lock.png';
@@ -40,6 +42,7 @@ export const TasksMap = ({
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const authDetails = useSelector((state) => state.auth.get('userDetails'));
+  const [hoveredTaskId, setHoveredTaskId] = useState(null);
 
   const [map, setMapObj] = useState(null);
 
@@ -132,16 +135,11 @@ export const TasksMap = ({
         }
         taskStatusCondition = [...taskStatusCondition, ...[locked, 'lock', '']];
 
-        const lockedTaskIds = showTaskIds ? ['case', locked, ['get', 'taskId'], ''] : '';
-
         map.addLayer({
           id: 'tasks-icon',
           type: 'symbol',
           source: 'tasks',
           layout: {
-            'text-field': ['format', lockedTaskIds, { 'font-scale': 0.9 }],
-            'text-variable-anchor': ['bottom-right'],
-            'text-radial-offset': 1.5,
             'icon-image': taskStatusCondition,
             'icon-size': 0.7,
           },
@@ -331,6 +329,19 @@ export const TasksMap = ({
         }
       });
 
+      map.on('mousemove', 'tasks-fill', function (e) {
+        if (showTaskIds && e.features[0].properties.lockedBy === authDetails.id) {
+          setHoveredTaskId(e.features[0].properties.taskId);
+        } else {
+          setHoveredTaskId(null);
+        }
+      });
+      map.on('mouseleave', 'tasks-fill', function (e) {
+        if (showTaskIds) {
+          setHoveredTaskId(null);
+        }
+      });
+
       if (taskBordersOnly && navigate) {
         map.on('mouseenter', 'point-tasks-centroid', function (e) {
           map.getCanvas().style.cursor = 'pointer';
@@ -423,5 +434,14 @@ export const TasksMap = ({
     showTaskIds,
   ]);
 
-  return <div id="map" className={className} ref={mapRef}></div>;
+  return (
+    <>
+      {showTaskIds && hoveredTaskId && (
+        <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 ">
+          <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
+        </div>
+      )}
+      <div id="map" className={className} ref={mapRef}></div>
+    </>
+  );
 };
