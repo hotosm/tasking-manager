@@ -145,15 +145,15 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
             <CustomButton
               className="bg-white blue-dark ba b--grey-light ph3 pv2 mr2"
               onClick={smallerSize}
+              icon={<NineCellsGridIcon className="h1 w1 v-mid" />}
             >
-              <NineCellsGridIcon className="h1 w1 v-mid mr2" />
               <FormattedMessage {...messages.smaller} />
             </CustomButton>
             <CustomButton
               className="bg-white blue-dark ba b--grey-light ph3 pv2"
               onClick={largerSize}
+              icon={<FourCellsGridIcon className="h1 w1 v-mid" />}
             >
-              <FourCellsGridIcon className="h1 w1 v-mid mr2" />
               <FormattedMessage {...messages.larger} />
             </CustomButton>
           </div>
@@ -168,8 +168,8 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
                 splitMode === 'click' ? 'red b--red' : 'blue-dark b--grey-light'
               }`}
               onClick={() => setSplitMode(splitMode === 'click' ? null : 'click')}
+              icon={<CircleIcon className="v-mid" style={{ width: '0.5rem' }} />}
             >
-              <CircleIcon className="v-mid mr2" style={{ width: '0.5rem' }} />
               <FormattedMessage {...messages.splitByClicking} />
             </CustomButton>
             <CustomButton
@@ -177,15 +177,15 @@ export default function SetTaskSizes({ metadata, mapObj, updateMetadata }) {
                 splitMode === 'draw' ? 'red b--red' : 'blue-dark b--grey-light'
               }`}
               onClick={splitDrawing}
+              icon={<MappedIcon className="h1 w1 v-mid" />}
             >
-              <MappedIcon className="h1 w1 v-mid mr2" />
               <FormattedMessage {...messages.splitByDrawing} />
             </CustomButton>
             <CustomButton
               className="bg-white blue-dark ba b--grey-light ph3 pv2"
               onClick={resetGrid}
+              icon={<UndoIcon className="w1 h1 v-mid" />}
             >
-              <UndoIcon className="w1 h1 v-mid mr2" />
               <FormattedMessage {...messages.reset} />
             </CustomButton>
           </div>
