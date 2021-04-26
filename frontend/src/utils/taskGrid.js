@@ -25,7 +25,7 @@ export const meters2degress = (x, y) => {
   return [lon, lat];
 };
 
-export const createTaskFeature_ = (step, x, y, zoomLevel) => {
+export const createTaskFeature = (step, x, y, zoomLevel) => {
   const xmin = x * step - AXIS_OFFSET;
   const ymin = y * step - AXIS_OFFSET;
   const xmax = (x + 1) * step - AXIS_OFFSET;
@@ -65,7 +65,7 @@ export const createTaskGrid = (areaOfInterestExtent, zoomLevel) => {
   // Generate an array of task features
   for (let x = xminstep; x < xmaxstep; x++) {
     for (let y = yminstep; y < ymaxstep; y++) {
-      let taskFeature = createTaskFeature_(step, x, y, zoomLevel);
+      let taskFeature = createTaskFeature(step, x, y, zoomLevel);
       taskFeatures.push(taskFeature);
     }
   }

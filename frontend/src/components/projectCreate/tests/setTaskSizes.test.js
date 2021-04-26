@@ -57,6 +57,7 @@ describe('setTaskSizes Component', () => {
     expect(screen.getByText(/Reset/)).toBeInTheDocument();
 
     // source: https://polvara.me/posts/five-things-you-didnt-know-about-testing-library tip-4
+    // test for the text displaying the number of tasks a project is created with
     screen.getByText((content, node) => {
       const hasText = (node) => node.textContent === 'A new project will be created with 0 tasks.';
       const nodeHasText = hasText(node);
@@ -64,5 +65,6 @@ describe('setTaskSizes Component', () => {
       return nodeHasText && childrenDontHaveText;
     });
   });
+
   // To do: simulate splitting and making the task grid smaller/bigger
 });

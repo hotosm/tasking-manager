@@ -2,7 +2,7 @@ import {
   createTaskGrid,
   makeGrid,
   splitTaskGrid,
-  createTaskFeature_,
+  createTaskFeature,
   AXIS_OFFSET,
 } from '../taskGrid';
 import { AOI } from './snippets/AOI';
@@ -17,7 +17,7 @@ describe('createTaskFeature function', () => {
   let step = AXIS_OFFSET / Math.pow(2, 11 - 1); //19567.8792375
 
   it('creates tasks at zoom level 11', () => {
-    let result = createTaskFeature_(step, 0, 0, 11);
+    let result = createTaskFeature(step, 0, 0, 11);
     expect(result.type).toBe('Feature');
     expect(result.properties['isSquare']).toBe(true);
     expect(result.properties['x']).toBe(0);
