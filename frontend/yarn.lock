@@ -2215,6 +2215,13 @@
   dependencies:
     tslib "^2.1.0"
 
+"@formatjs/ecma402-abstract@1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.7.0.tgz#440b341ba18451d53d9172e3110d96ca420b3760"
+  integrity sha512-0IQF4oDZdO8ruyrNJZuRle3F/YiGgRwTNrZyMI1N1X8GERZusOrXU9Stw+j/lyyfDWaJK44b+Qnri/qfLPCtGQ==
+  dependencies:
+    tslib "^2.1.0"
+
 "@formatjs/icu-messageformat-parser@1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@formatjs/icu-messageformat-parser/-/icu-messageformat-parser-1.1.5.tgz#0c0dae9878329a26a4df6c74d1d3a59de08d4df9"
@@ -2256,12 +2263,12 @@
     "@formatjs/ecma402-abstract" "1.6.5"
     tslib "^2.1.0"
 
-"@formatjs/intl-locale@^2.4.22":
-  version "2.4.22"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-locale/-/intl-locale-2.4.22.tgz#9dd0692bc24bf0f389023058950df5ace5d0ae27"
-  integrity sha512-/GECNZDORaz1sHsnhUZHTCmoPRux5w1D2dX1vHb2QY/f3YENsA4U/WqmIBHk+77RU/KTFbTQgxGcfejneAOPoA==
+"@formatjs/intl-locale@^2.4.23":
+  version "2.4.23"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-locale/-/intl-locale-2.4.23.tgz#b1d27c9ad8cc653c9371cde9d848f4e9af2fe090"
+  integrity sha512-5G0SjOsVxmX79dPaYk6KWxtdQ18UNK+E2JtAXvGxP8rSMqbJ/7cpDg95CU+YBXVKn6pRWefwqBsbjT5l+kK3yQ==
   dependencies:
-    "@formatjs/ecma402-abstract" "1.6.5"
+    "@formatjs/ecma402-abstract" "1.7.0"
     "@formatjs/intl-getcanonicallocales" "1.5.9"
     cldr-core "38"
     tslib "^2.1.0"
