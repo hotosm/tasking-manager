@@ -2208,13 +2208,6 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@formatjs/ecma402-abstract@1.6.5":
-  version "1.6.5"
-  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.6.5.tgz#ab461b6a284278ffe051ddd817537be4092e71be"
-  integrity sha512-dhRWSoPPw8PhB5tSOEP9Gi5XZNFC2IkfP95Va70ouIuED0wBlsU1WmO4jDHITL7/kSNqvzKFTT+2S+6jHPq6jw==
-  dependencies:
-    tslib "^2.1.0"
-
 "@formatjs/ecma402-abstract@1.7.0":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.7.0.tgz#440b341ba18451d53d9172e3110d96ca420b3760"
@@ -2268,17 +2261,17 @@
     "@formatjs/ecma402-abstract" "1.7.0"
     tslib "^2.1.0"
 
-"@formatjs/intl-locale@^2.4.22":
-  version "2.4.22"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-locale/-/intl-locale-2.4.22.tgz#9dd0692bc24bf0f389023058950df5ace5d0ae27"
-  integrity sha512-/GECNZDORaz1sHsnhUZHTCmoPRux5w1D2dX1vHb2QY/f3YENsA4U/WqmIBHk+77RU/KTFbTQgxGcfejneAOPoA==
+"@formatjs/intl-locale@^2.4.23":
+  version "2.4.23"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-locale/-/intl-locale-2.4.23.tgz#b1d27c9ad8cc653c9371cde9d848f4e9af2fe090"
+  integrity sha512-5G0SjOsVxmX79dPaYk6KWxtdQ18UNK+E2JtAXvGxP8rSMqbJ/7cpDg95CU+YBXVKn6pRWefwqBsbjT5l+kK3yQ==
   dependencies:
-    "@formatjs/ecma402-abstract" "1.6.5"
+    "@formatjs/ecma402-abstract" "1.7.0"
     "@formatjs/intl-getcanonicallocales" "1.5.9"
     cldr-core "38"
     tslib "^2.1.0"
 
-"@formatjs/intl-pluralrules@^4.0.15":
+"@formatjs/intl-pluralrules@^4.0.16":
   version "4.0.16"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.16.tgz#ba336dcc07f9aaed9f648f1073cfadb3c2433f36"
   integrity sha512-zVMz0vN1FgnyRmGHRkIGp77RCriEKb5mAXFt/t3PGGN4hVQn1CKvfVZyZWRGhHp0lLR17YaKADprkRuZ9EN74A==
@@ -2286,12 +2279,12 @@
     "@formatjs/ecma402-abstract" "1.7.0"
     tslib "^2.1.0"
 
-"@formatjs/intl-relativetimeformat@^8.1.5":
-  version "8.1.5"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-8.1.5.tgz#a947b28db47f4454319c6ef844e85e528ca211f0"
-  integrity sha512-vCZ54nn2sPfIie7KQwbwT2xjRurvdGfJ036wPQFnOpICdqe8/vFKaS/kYRSw42fREGh1sefVcH0DZAz/GZczyw==
+"@formatjs/intl-relativetimeformat@^8.1.6":
+  version "8.1.6"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-8.1.6.tgz#993bd3d0b7f104b458a0f65a6a60d5b51a93afcc"
+  integrity sha512-8WVD9KzuDSboOIjlS7su8q8zSde5NuXVqjE/JrEuaEsqe/C6+i8xdhn5IQEAW90RCUGq6y3TReQZwZZ8rTuYJg==
   dependencies:
-    "@formatjs/ecma402-abstract" "1.6.5"
+    "@formatjs/ecma402-abstract" "1.7.0"
     tslib "^2.1.0"
 
 "@formatjs/intl-unified-numberformat@^3.2.0":
@@ -2966,7 +2959,7 @@
     "@sentry/types" "6.3.1"
     tslib "^1.9.3"
 
-"@sentry/react@^6.3.0":
+"@sentry/react@^6.3.1":
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/@sentry/react/-/react-6.3.1.tgz#5082aa145972eec38cc8ceea8e5d8ee3f7f5f86a"
   integrity sha512-3eFSqdS0QAb4RFNxS0gzVm05q8c5KQp+3TlmqBjoovqWL/FvGvDoqaBmFT+arvPZ88qngveMEk1v6445L0gFTg==
@@ -12319,7 +12312,7 @@ react-input-autosize@^3.0.0:
   dependencies:
     prop-types "^15.5.8"
 
-react-intl@^5.17.0:
+react-intl@^5.17.1:
   version "5.17.1"
   resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-5.17.1.tgz#7b436c119bce19bcc2c6e019eed3421ddf4eaeb0"
   integrity sha512-ti7pcsxE3crNVD4S7wD9XiipvH+lSIkXA2DHWS6XA5WGGlGfi36U+5FYrouJp+av3d0fFwkvqw918blknNtFHA==
