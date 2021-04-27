@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Zu Favoriten hinzufügen",
   "project.detail.removeFromFavorites": "Aus Favoriten entfernen",
   "project.detail.questionsAndComments.none": "Derzeit gibt es keine Fragen oder Kommentare zu diesem Projekt. Verfassen Sie doch den ersten Beitrag!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Veröffentlichen",
   "project.detail.share": "Teilen",
   "project.detail.team": "Gruppe",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Rechteck zeichnen",
   "projects.formInputs.priority_areas.action.clear": "Alles löschen",
   "projects.formInputs.priority_areas.action.selectFile": "Datei auswählen",
+  "projects.formInputs.priority_areas.upload.description": "Es werden folgende Dateiformate unterstützt: GeoJSON, KML, OSM oder gezipptes Shapefile. Sie können eine Datei auf die Karte ziehen um sie zu importieren.",
   "projects.formInputs.name": "Name des Projektes",
   "projects.formInputs.dueDate": "Zieldatum",
   "projects.formInputs.dueDate.description": "Definiere das ideale Datum zum Projekt Abschluss. Das Datumsformat ist Tag/Monat/Jahr.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Aufgabe Auswahlseite",
   "pages.edit_project.buttons.project_stats": "Projekt Statistiken",
   "pages.edit_project.actions.update.success": "Projekt wurde erfolgreich aktualisiert.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "Das Speichern des Projekts ist aufgrund eines Serverfehlers fehlgeschlagen. Versuchen Sie es später noch einmal oder wenden Sie sich an den Administrator, falls das Problem weiterhin besteht.",
-  "pages.edit_project.actions.missing_fields": "Das Speichern des Projekts ist fehlgeschlagen, da Sie Informationen für die folgenden Pflichtfelder angeben müssen:",
-  "pages.edit_project.actions.missing_fields_for_locale": "Das Speichern des Projekts ist fehlgeschlagen, da Sie Informationen für diese Felder in der Standardsprache angeben müssen ({locale}):",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Beschreibung",
   "pages.edit_project.sections.instructions": "Anweisungen",
   "pages.edit_project.sections.metadata": "Metadaten",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Einstellungen",
   "pages.edit_project.sections.actions": "Aktionen",
   "pages.edit_project.sections.custom_editor": "Benutzerdefinierter Editor",
-  "pages.create_campaign.duplicate": "Eine Kampagne mit demselben Namen existiert bereits"
+  "pages.create_campaign.duplicate": "Eine Kampagne mit demselben Namen existiert bereits",
+  "pages.create_campaign.error": ""
 }

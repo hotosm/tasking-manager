@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Hozzáadás a kedvencekhez",
   "project.detail.removeFromFavorites": "Eltávolítás a kedvencek közül",
   "project.detail.questionsAndComments.none": "A projekthez jelenleg nincs kérdés vagy megjegyzés. Legyen Ön az első, aki ír egyet!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Küldés",
   "project.detail.share": "Megosztás",
   "project.detail.team": "Csoport",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Téglalap rajzolása",
   "projects.formInputs.priority_areas.action.clear": "Minden törlése",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "",
   "projects.formInputs.name": "Projekt neve",
   "projects.formInputs.dueDate": "Határidő",
   "projects.formInputs.dueDate.description": "Határozza meg az ideális időpontot a projekt befejezéséhez. Dátumformátum: nap/hónap/év.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Feladatkijelölő oldal",
   "pages.edit_project.buttons.project_stats": "Projektstatisztika",
   "pages.edit_project.actions.update.success": "A projekt sikeresen frissült.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "A projekt mentése kiszolgálóhiba miatt nem sikerült. Kérjük, próbálja újra később, vagy lépjen kapcsolatba a rendszergazdával, ha a probléma továbbra is fennáll.",
-  "pages.edit_project.actions.missing_fields": "A projekt mentése nem sikerült, mert az alábbi kötelező mezőkre vonatkozó információkat meg kell adnia:",
-  "pages.edit_project.actions.missing_fields_for_locale": "A projekt mentése nem sikerült, mert ezekbe a mezőkbe az alapértelmezett nyelven ({locale}) kell írnia:",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Leírás",
   "pages.edit_project.sections.instructions": "Utasítások",
   "pages.edit_project.sections.metadata": "Metaadatok",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Beállítások",
   "pages.edit_project.sections.actions": "Műveletek",
   "pages.edit_project.sections.custom_editor": "Egyedi szerkesztő",
-  "pages.create_campaign.duplicate": "Már létezik azonos nevű kampány"
+  "pages.create_campaign.duplicate": "Már létezik azonos nevű kampány",
+  "pages.create_campaign.error": ""
 }

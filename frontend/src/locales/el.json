@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Προσθέστε στα Αγαπημένα",
   "project.detail.removeFromFavorites": "Αφαιρέστε από τα Αγαπημένα",
   "project.detail.questionsAndComments.none": "Δεν υπάρχουν, επί του παρόντος, ερωτήσεις ή σχόλια σχετικά με αυτό το έργο. Γίνετε οι πρώτοι που θα δημοσιεύσουν κάτι!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Δημοσιεύστε",
   "project.detail.share": "Μοιραστείτε",
   "project.detail.team": "Ομάδα",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Σχεδιάστε ορθογώνιο",
   "projects.formInputs.priority_areas.action.clear": "Καθαρίστε τα όλα",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "",
   "projects.formInputs.name": "Ονομασία του έργου",
   "projects.formInputs.dueDate": "",
   "projects.formInputs.dueDate.description": "",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Σελίδα επιλογής εργασίας",
   "pages.edit_project.buttons.project_stats": "Στατιστικά του έργου",
   "pages.edit_project.actions.update.success": "Το έργο ενημερώθηκε με επιτυχία.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "Η αποθήκευση του έργου απέτυχε εξαιτίας ενός σφάλματος διακομιστή. Δοκιμάστε ξανά αργότερα ή επικοινωνήστε με το διαχειριστή αν το πρόβλημα παραμένει.",
-  "pages.edit_project.actions.missing_fields": "Η αποθήκευση του έργου απέτυχε επειδή πρέπει να δώσετε πληροφορίες για αυτά τα απαιτούμενα πεδία:",
-  "pages.edit_project.actions.missing_fields_for_locale": "Η αποθήκευση του έργου απέτυχε επειδή πρέπει να δώσετε πληροφορίες για αυτά τα πεδία στην προεπιλεγμένη γλώσσα σας ({locale}):",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Περιγραφή",
   "pages.edit_project.sections.instructions": "Οδηγίες",
   "pages.edit_project.sections.metadata": "Μεταδεδομένα",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Ρυθμίσεις",
   "pages.edit_project.sections.actions": "Δράσεις",
   "pages.edit_project.sections.custom_editor": "Προσαρμοσμένος επεξεργαστής",
-  "pages.create_campaign.duplicate": "Υπάρχει ήδη μια καμπάνια με το ίδιο όνομα"
+  "pages.create_campaign.duplicate": "Υπάρχει ήδη μια καμπάνια με το ίδιο όνομα",
+  "pages.create_campaign.error": ""
 }

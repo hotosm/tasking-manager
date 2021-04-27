@@ -638,11 +638,11 @@ export default defineMessages({
   missingFields: {
     id: 'pages.edit_project.actions.missing_fields',
     defaultMessage:
-      '{number, plural, one {One required field is missing:} plural {Some required fields are missing:}}',
+      '{number, plural, one {One required field is missing:} other {Some required fields are missing:}}',
   },
   missingFieldsForLocale: {
     id: 'pages.edit_project.actions.missing_fields_for_locale',
-    defaultMessage: "Missing information on the project's default language ({locale}):",
+    defaultMessage: "Missing information in the project's default language ({locale}):",
   },
   projectEditSection_description: {
     id: 'pages.edit_project.sections.description',

@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "",
   "project.detail.removeFromFavorites": "",
   "project.detail.questionsAndComments.none": "",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "",
   "project.detail.share": "",
   "project.detail.team": "",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "",
   "projects.formInputs.priority_areas.action.clear": "",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "",
   "projects.formInputs.name": "",
   "projects.formInputs.dueDate": "",
   "projects.formInputs.dueDate.description": "",
@@ -1048,8 +1050,9 @@
   "pages.edit_project.buttons.task_selection_page": "",
   "pages.edit_project.buttons.project_stats": "",
   "pages.edit_project.actions.update.success": "",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "",
-  "pages.edit_project.actions.missing_fields": "",
+  "pages.edit_project.actions.missing_fields": "{number, plural, zero {} one {} two {} few {} many {} other {}}",
   "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "",
   "pages.edit_project.sections.instructions": "",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "",
   "pages.edit_project.sections.actions": "",
   "pages.edit_project.sections.custom_editor": "",
-  "pages.create_campaign.duplicate": ""
+  "pages.create_campaign.duplicate": "",
+  "pages.create_campaign.error": ""
 }

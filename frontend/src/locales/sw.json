@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Ongeza kwenye unayopendelea",
   "project.detail.removeFromFavorites": "Ondoa kutoka kwenye unayopendelea",
   "project.detail.questionsAndComments.none": "Kwa sasa hakuna maswali au maoni juu ya mradi huu. Kuwa wa kwanza kuchapisha moja!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Chapisho",
   "project.detail.share": "Shirikisha",
   "project.detail.team": "Timu",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Chora umbo la mstatili",
   "projects.formInputs.priority_areas.action.clear": "Futa zote",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "",
   "projects.formInputs.name": "Jina la mradi",
   "projects.formInputs.dueDate": "",
   "projects.formInputs.dueDate.description": "",
@@ -1048,8 +1050,9 @@
   "pages.edit_project.buttons.task_selection_page": "",
   "pages.edit_project.buttons.project_stats": "",
   "pages.edit_project.actions.update.success": "Mradi umesasishwa kikamilifu.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "",
-  "pages.edit_project.actions.missing_fields": "",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} other {}}",
   "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Maelezo",
   "pages.edit_project.sections.instructions": "Maelekezo",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Mipangilio",
   "pages.edit_project.sections.actions": "Vitendo",
   "pages.edit_project.sections.custom_editor": "",
-  "pages.create_campaign.duplicate": ""
+  "pages.create_campaign.duplicate": "",
+  "pages.create_campaign.error": ""
 }

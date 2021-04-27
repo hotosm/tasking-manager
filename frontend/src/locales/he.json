@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "הוספה למועדפים",
   "project.detail.removeFromFavorites": "הסרה מהמועדפים",
   "project.detail.questionsAndComments.none": "אין שאלות או הערות במיזם הזה. מזמינים אותך להתחיל בזה!",
+  "project.detail.questionsAndComments.login": "יש להיכנס כדי שיתאפשר לך לפרסם תגובות.",
   "project.detail.questionsAndComments.button": "פרסום",
   "project.detail.share": "שיתוף",
   "project.detail.team": "צוות",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "ציור ריבוע",
   "projects.formInputs.priority_areas.action.clear": "לפנות הכול",
   "projects.formInputs.priority_areas.action.selectFile": "בחירת קובץ",
+  "projects.formInputs.priority_areas.upload.description": "תצורות הקבצים הנתמכות הן: GeoJSON,‏ KML,‏ OSM או Shapefile בתוך zip. ניתן לגרור קובץ על המפה כדי לייבא אותו.",
   "projects.formInputs.name": "מתן שם למיזם",
   "projects.formInputs.dueDate": "יעד לסיום",
   "projects.formInputs.dueDate.description": "נא להגדיר את היעד הרצוי לסיום המיזם. תבנית התאריך היא: יום/חודש/שנה.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "עמוד בחירת משימה",
   "pages.edit_project.buttons.project_stats": "סטטיסטיקת המיזם",
   "pages.edit_project.actions.update.success": "המיזם עודכן בהצלחה.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "שמירת המיזם נכשלה עקב שגיאת שרת. נא לנסות שוב מאוחר יותר או ליצור קשר עם ההנהלה אם הבעיה נמשכת.",
-  "pages.edit_project.actions.missing_fields": "שמירת המיזם נכשלה כיוון שעליך לספר מידע לשדות הנדרשים הבאים:",
-  "pages.edit_project.actions.missing_fields_for_locale": "שמירת המיזם נכשלה כיוון שעליך לספר מידע לשדות הנדרשים הבאים בשפת בררת המחדל שלך ({locale}):",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} two {} many {} other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "תיאור",
   "pages.edit_project.sections.instructions": "הנחיות",
   "pages.edit_project.sections.metadata": "נתוני על",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "הגדרות",
   "pages.edit_project.sections.actions": "פעולות",
   "pages.edit_project.sections.custom_editor": "עורך מותאם אישית",
-  "pages.create_campaign.duplicate": "כבר קיים מסע פרסום באותו השם"
+  "pages.create_campaign.duplicate": "כבר קיים מסע פרסום באותו השם",
+  "pages.create_campaign.error": "אירעה שגיאה בשמירת מסע הפרסום הזה."
 }

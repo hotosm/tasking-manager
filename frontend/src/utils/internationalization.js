@@ -89,7 +89,7 @@ const supportedLocales = [
   // { value: 'tl', label: 'Filipino (Tagalog)' },
   { value: 'tr', label: 'Türkçe' },
   { value: 'uk', label: 'Українська' },
-  // { value: 'zh-TW', label: '中国台湾' },
+  { value: 'zh', label: '中国台湾' },
 ];
 
 function getSupportedLocale(locale) {

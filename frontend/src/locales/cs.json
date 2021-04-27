@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Přidat k oblíbeným",
   "project.detail.removeFromFavorites": "Odstranit z oblíbených",
   "project.detail.questionsAndComments.none": "U tohoto projektu nejsou žádné dotazy nebo komentáře. Napište první!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Příspěvek",
   "project.detail.share": "Sdílet",
   "project.detail.team": "Tým",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Nakreslit obdélník",
   "projects.formInputs.priority_areas.action.clear": "Smazat vše",
   "projects.formInputs.priority_areas.action.selectFile": "Vybrat soubor",
+  "projects.formInputs.priority_areas.upload.description": "Podporované formáty souborů jsou: GeoJSON, KML, OSM nebo zip Shapefile. Soubor můžete importovat přetažením přes mapu.",
   "projects.formInputs.name": "Název projektu",
   "projects.formInputs.dueDate": "Datum ukončení",
   "projects.formInputs.dueDate.description": "Definujte ideální datum pro dokončení projektu. Formát data je den / měsíc / rok.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Strana výběru úloh",
   "pages.edit_project.buttons.project_stats": "Statistiky projektu",
   "pages.edit_project.actions.update.success": "Projekt úspěšně aktualizován.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "Uložení projektu se nezdařilo z důvodu chyby serveru. Zkuste to znovu později nebo kontaktujte správce, pokud problém přetrvává.",
-  "pages.edit_project.actions.missing_fields": "Uložení projektu se nezdařilo, protože potřebujete poskytnout informace pro tato povinná pole:",
-  "pages.edit_project.actions.missing_fields_for_locale": "Uložení projektu se nezdařilo, protože pro tato pole musíte poskytnout informace ve výchozím jazyce ({locale}):",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} few {} many {} other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Popis",
   "pages.edit_project.sections.instructions": "Instrukce",
   "pages.edit_project.sections.metadata": "Metadata",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Nastavení",
   "pages.edit_project.sections.actions": "Akce",
   "pages.edit_project.sections.custom_editor": "Vlastní editor",
-  "pages.create_campaign.duplicate": "Kampaň se stejným názvem již existuje"
+  "pages.create_campaign.duplicate": "Kampaň se stejným názvem již existuje",
+  "pages.create_campaign.error": ""
 }
