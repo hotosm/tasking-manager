@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "선호 프로젝트 추가",
   "project.detail.removeFromFavorites": "선호 프로젝트에서 제거",
   "project.detail.questionsAndComments.none": "현재 이 프로젝트에 요청 또는 코멘트가 없습니다. 첫 번째 요청/코멘트를 달아 보세요!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "게시",
   "project.detail.share": "공유",
   "project.detail.team": "팀",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "직사각형 그리기",
   "projects.formInputs.priority_areas.action.clear": "초기화",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "지원하는 파일 포맷은 GeoJSON, KML, OSM, 압축 Shapefile입니다. 파일을 불러오려면 지도 위로 파일을 드래그하세요.",
   "projects.formInputs.name": "프로젝트명",
   "projects.formInputs.dueDate": "마감일",
   "projects.formInputs.dueDate.description": "희망하는 프로젝트 마감일을 설정합니다. 날짜 양식은 '일/월/년'입니다.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "작업 선택 페이지",
   "pages.edit_project.buttons.project_stats": "프로젝트 통계",
   "pages.edit_project.actions.update.success": "프로젝트를 성공적으로 업데이트했습니다.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "서버 오류로 인해 프로젝트를 저장하는 데 실패했습니다. 다시 시도하세요.  문제가 지속되면 관리자에게 연락하세요.",
-  "pages.edit_project.actions.missing_fields": "필수로 채워야 하는 칸을 채우지 않았습니다. 프로젝트를 생성할 수 없습니다.",
-  "pages.edit_project.actions.missing_fields_for_locale": "프로젝트를 생성할 수 없습니다. 본인의 기본 언어({locale})로 채워야 하는 칸을 채우지 않았습니다:",
+  "pages.edit_project.actions.missing_fields": "{number, plural, other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "설명",
   "pages.edit_project.sections.instructions": "지시",
   "pages.edit_project.sections.metadata": "메타데이터",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "설정",
   "pages.edit_project.sections.actions": "행동",
   "pages.edit_project.sections.custom_editor": "사용자 지정 편집기",
-  "pages.create_campaign.duplicate": "동일한 명칭의 캠페인이 이미 존재합니다"
+  "pages.create_campaign.duplicate": "동일한 명칭의 캠페인이 이미 존재합니다",
+  "pages.create_campaign.error": ""
 }

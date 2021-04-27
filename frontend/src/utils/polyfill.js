@@ -72,6 +72,9 @@ export const polyfill = async (locale) => {
       case 'uk':
         await import('@formatjs/intl-pluralrules/locale-data/uk');
         break;
+      case 'zh':
+        await import('@formatjs/intl-pluralrules/locale-data/zh');
+        break;
     }
   }
 
@@ -134,6 +137,9 @@ export const polyfill = async (locale) => {
         break;
       case 'uk':
         await import('@formatjs/intl-relativetimeformat/locale-data/uk');
+        break;
+      case 'zh':
+        await import('@formatjs/intl-relativetimeformat/locale-data/zh');
         break;
     }
   }

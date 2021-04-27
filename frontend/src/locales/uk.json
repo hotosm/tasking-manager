@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Додати в закладки",
   "project.detail.removeFromFavorites": "Вилучити із закладок",
   "project.detail.questionsAndComments.none": "Зараз немає коментарів чи запитань щодо цього проєкту. Будьте першим!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Надіслати",
   "project.detail.share": "Поділитись",
   "project.detail.team": "Команда",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Накреслити прямокутник",
   "projects.formInputs.priority_areas.action.clear": "Очистити все",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "Підтримуються формати  GeoJSON, KML, OSM заархівований файл SHP. Ви можете перетягнути та кинути файл на мапу для його імпортування.",
   "projects.formInputs.name": "Назва проєкту",
   "projects.formInputs.dueDate": "Дата закінчення",
   "projects.formInputs.dueDate.description": "Визначте ідеальну дату завершення проєкту. Формат дати - день/місяць/рік.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Сторінка вибору завдань",
   "pages.edit_project.buttons.project_stats": "Статистика проєкту",
   "pages.edit_project.actions.update.success": "Проєкт оновлено",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "Збереження проєкту не відбулося через помилку на сервері. Спробуйте ще раз згодом або зв'яжіться з адміністратором у разі постійних помилок.",
-  "pages.edit_project.actions.missing_fields": "Збереження проєкту не відбулося через незаповнені обов'язкові поля:",
-  "pages.edit_project.actions.missing_fields_for_locale": "Збереження проєкту не відбулося через незаповнені вашою типовою мовою ({locale}) поля:",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} few {} many {} other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Опис",
   "pages.edit_project.sections.instructions": "Інструкції",
   "pages.edit_project.sections.metadata": "Метадані",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Налаштування",
   "pages.edit_project.sections.actions": "Дії",
   "pages.edit_project.sections.custom_editor": "Власний редактор",
-  "pages.create_campaign.duplicate": "Кампанія з такою назвою вже існує"
+  "pages.create_campaign.duplicate": "Кампанія з такою назвою вже існує",
+  "pages.create_campaign.error": ""
 }

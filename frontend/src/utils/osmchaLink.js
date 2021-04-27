@@ -42,5 +42,12 @@ function buildFilterValue(value) {
 
 function buildFilter(values) {
   const valuesArray = Array.isArray(values) ? values : [values];
-  return valuesArray.map(values => buildFilterValue(values));
+  return valuesArray.map((values) => buildFilterValue(values));
 }
+
+export const getFilterId = (value) => {
+  if (value.startsWith('https://osmcha.org/') && value.search('aoi=') !== -1) {
+    return value.split('aoi=')[1];
+  }
+  return value;
+};

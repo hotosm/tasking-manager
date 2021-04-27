@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Aggiungi ai favoriti",
   "project.detail.removeFromFavorites": "Rimuovi dai favoriti",
   "project.detail.questionsAndComments.none": "Al momento non ci sono domande o commenti su questo progetto. Sii il primo a scrivere!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Scrivi",
   "project.detail.share": "Condividi",
   "project.detail.team": "Gruppo",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Disegna rettangolo",
   "projects.formInputs.priority_areas.action.clear": "Annulla tutto",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "I formati di file supportati sono: GeoJSON, KML, OSM o Shapefile compresso. È possibile trascinare un file sulla mappa per importarlo.",
   "projects.formInputs.name": "Nome del progetto",
   "projects.formInputs.dueDate": "Data di scadenza",
   "projects.formInputs.dueDate.description": "Definire la data ideale per completare il progetto. Il formato della data è giorno/mese/anno.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Pagina di selezione dei compito",
   "pages.edit_project.buttons.project_stats": "Statistiche del progetto",
   "pages.edit_project.actions.update.success": "Progetto aggiornato correttamente.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "Salvataggio del progetto non riuscito a causa di un errore del server. Riprova più tardi o contatta l'amministratore se il problema persiste.",
-  "pages.edit_project.actions.missing_fields": "Salvataggio del progetto non riuscito perché è necessario fornire informazioni per questi campi obbligatori:",
-  "pages.edit_project.actions.missing_fields_for_locale": "Salvataggio del progetto non riuscito perché è necessario fornire informazioni per questi campi nella tua lingua predefinita ({locale}):",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Descrizione",
   "pages.edit_project.sections.instructions": "Istruzioni",
   "pages.edit_project.sections.metadata": "Metadati",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Impostazioni",
   "pages.edit_project.sections.actions": "Azioni",
   "pages.edit_project.sections.custom_editor": "Editor personalizzato",
-  "pages.create_campaign.duplicate": "Una campagna con lo stesso nome esiste già"
+  "pages.create_campaign.duplicate": "Una campagna con lo stesso nome esiste già",
+  "pages.create_campaign.error": ""
 }

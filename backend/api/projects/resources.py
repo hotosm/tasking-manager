@@ -478,7 +478,7 @@ class ProjectsRestAPI(Resource):
 
 class ProjectSearchBase(Resource):
     @token_auth.login_required(optional=True)
-    def setup_search_dto(self):
+    def setup_search_dto(self) -> ProjectSearchDTO:
         search_dto = ProjectSearchDTO()
         search_dto.preferred_locale = request.environ.get("HTTP_ACCEPT_LANGUAGE")
         search_dto.mapper_level = request.args.get("mapperLevel")
@@ -497,6 +497,10 @@ class ProjectSearchBase(Resource):
         search_dto.omit_map_results = strtobool(
             request.args.get("omitMapResults", "false")
         )
+        search_dto.last_updated_gte = request.args.get("lastUpdatedFrom")
+        search_dto.last_updated_lte = request.args.get("lastUpdatedTo")
+        search_dto.created_gte = request.args.get("createdFrom")
+        search_dto.created_lte = request.args.get("createdTo")
 
         # See https://github.com/hotosm/tasking-manager/pull/922 for more info
         try:
@@ -613,6 +617,22 @@ class ProjectsAllAPI(ProjectSearchBase):
               description: Authenticated PMs can search for archived or draft statuses
               type: string
             - in: query
+              name: lastUpdatedFrom
+              description: Filter projects whose last update date is equal or greater than a date
+              type: string
+            - in: query
+              name: lastUpdatedTo
+              description: Filter projects whose last update date is equal or lower than a date
+              type: string
+            - in: query
+              name: createdFrom
+              description: Filter projects whose creation date is equal or greater than a date
+              type: string
+            - in: query
+              name: createdTo
+              description: Filter projects whose creation date is equal or lower than a date
+              type: string
+            - in: query
               name: interests
               type: string
               description: Filter by interest on project
@@ -666,8 +686,11 @@ class ProjectsAllAPI(ProjectSearchBase):
             return results_dto.to_primitive(), 200
         except NotFound:
             return {"mapResults": {}, "results": []}, 200
+        except (KeyError, ValueError) as e:
+            error_msg = f"Projects GET - {str(e)}"
+            return {"Error": error_msg}, 400
         except Exception as e:
-            error_msg = f"Project GET - unhandled error: {str(e)}"
+            error_msg = f"Projects GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {"Error": "Unable to fetch projects"}, 500
 

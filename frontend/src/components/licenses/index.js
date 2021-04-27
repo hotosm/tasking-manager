@@ -38,7 +38,7 @@ export const LicensesManagement = ({ licenses, userDetails }) => {
       managementView
     >
       {licenses.length ? (
-        licenses.map((i, n) => <LicenseCard license={i} />)
+        licenses.map((i, n) => <LicenseCard key={n} license={i} />)
       ) : (
         <div className="pv3">
           <FormattedMessage {...messages.noLicenses} />

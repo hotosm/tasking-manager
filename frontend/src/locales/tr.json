@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Favorilere ekle",
   "project.detail.removeFromFavorites": "Favorilerden çıkar",
   "project.detail.questionsAndComments.none": "Bu projede hiç yorum ya da soru yok. İlk sen ol!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Gönder",
   "project.detail.share": "Paylaş",
   "project.detail.team": "Ekip",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Dikdörtgen çiz",
   "projects.formInputs.priority_areas.action.clear": "Hepsini temizle",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "",
   "projects.formInputs.name": "Proje adı",
   "projects.formInputs.dueDate": "",
   "projects.formInputs.dueDate.description": "",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "",
   "pages.edit_project.buttons.project_stats": "",
   "pages.edit_project.actions.update.success": "Proje başarıyla güncellendi.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "Proje, bir sunucu hatası nedeniyle kaydedilemedi. Sorun devam ederse lütfen tekrar deneyin veya sistem yöneticisiyle iletişime geçin.",
-  "pages.edit_project.actions.missing_fields": "Proje kaydedilemedi. Şu gerekli alanları doldurmanız gerekmektedir. ",
-  "pages.edit_project.actions.missing_fields_for_locale": "Proje kaydedilemedi. Varsayılan dilinize ({locale}) ait şu gerekli alanları doldurmanız gerekmektedir:",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Tanım",
   "pages.edit_project.sections.instructions": "Talimatlar",
   "pages.edit_project.sections.metadata": "Metaveri",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Ayarlar",
   "pages.edit_project.sections.actions": "İşlemler",
   "pages.edit_project.sections.custom_editor": "Özel Düzenleyici",
-  "pages.create_campaign.duplicate": ""
+  "pages.create_campaign.duplicate": "",
+  "pages.create_campaign.error": ""
 }

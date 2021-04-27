@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Add to Favorites",
   "project.detail.removeFromFavorites": "Remove from Favorites",
   "project.detail.questionsAndComments.none": "There are currently no questions or comments on this project. Be the first to post one!",
+  "project.detail.questionsAndComments.login": "Log in to be able to post comments.",
   "project.detail.questionsAndComments.button": "Post",
   "project.detail.share": "Share",
   "project.detail.team": "Team",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Draw rectangle",
   "projects.formInputs.priority_areas.action.clear": "Clear all",
   "projects.formInputs.priority_areas.action.selectFile": "Select File",
+  "projects.formInputs.priority_areas.upload.description": "The supported file formats are: GeoJSON, KML, OSM or zipped Shapefile. You can drag and drop a file over the map to import it.",
   "projects.formInputs.name": "Name of the project",
   "projects.formInputs.dueDate": "Due date",
   "projects.formInputs.dueDate.description": "Define the ideal date to have the project finished. The date format is day/month/year.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Task selection page",
   "pages.edit_project.buttons.project_stats": "Project statistics",
   "pages.edit_project.actions.update.success": "Project updated successfully.",
+  "pages.edit_project.actions.update.data_error": "It was not possible to save the project.",
   "pages.edit_project.actions.update.error": "Saving the project failed because of a Server Error. Please try again later or contact the administrator if problem persists.",
-  "pages.edit_project.actions.missing_fields": "Saving the project failed because you need to provide information for these required fields:",
-  "pages.edit_project.actions.missing_fields_for_locale": "Saving the project failed because you need to provide information for these fields in your default language ({locale}):",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {One required field is missing:} other {Some required fields are missing:}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "Missing information in the project's default language ({locale}):",
   "pages.edit_project.sections.description": "Description",
   "pages.edit_project.sections.instructions": "Instructions",
   "pages.edit_project.sections.metadata": "Metadata",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Settings",
   "pages.edit_project.sections.actions": "Actions",
   "pages.edit_project.sections.custom_editor": "Custom Editor",
-  "pages.create_campaign.duplicate": "A campaign with the same name already exists"
+  "pages.create_campaign.duplicate": "A campaign with the same name already exists",
+  "pages.create_campaign.error": "There was an error saving this campaign."
 }

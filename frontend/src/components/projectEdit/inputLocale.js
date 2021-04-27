@@ -105,7 +105,7 @@ export const InputLocale = ({ children, name, type, maxLength, languages }) => {
 
 const LocalizedInputField = ({ type, maxLength, name, locale, updateContext }) => {
   const { projectInfo, success, setSuccess, error, setError } = useContext(StateContext);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState('');
   const [preview, setPreview] = useState(null);
   const appendImgToComment = (url) => setValue(`${value}\n![image](${url})\n`);
   const [uploadError, uploading, onDrop] = useOnDrop(appendImgToComment);

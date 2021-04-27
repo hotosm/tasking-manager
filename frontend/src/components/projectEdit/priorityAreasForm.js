@@ -17,7 +17,7 @@ import { MappedIcon, WasteIcon, MappedSquareIcon, FileImportIcon } from '../svgI
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL, CHART_COLOURS } from '../../config';
 import { BasemapMenu } from '../basemapMenu';
 import { readGeoFile, verifyGeometry, verifyFileSize } from '../../utils/fileFunctions';
-import { AlertMessage } from '../projectCreate/alertMessage';
+import { Alert } from '../alert';
 
 var shpjs = require('shpjs');
 
@@ -306,7 +306,7 @@ export const PriorityAreasForm = () => {
               </CustomButton>
             </p>
           </div>
-          <AlertMessage error={error} />
+          {error.error === true && <Alert type="error">{error.message}</Alert>}
         </div>
         <div className="absolute top-0 right-0 z-5 mr2">
           <BasemapMenu map={mapObj.map} />
