@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Lägg till i Favoriter",
   "project.detail.removeFromFavorites": "Ta bort från favoriter",
   "project.detail.questionsAndComments.none": "Det finns för närvarande inga frågor eller kommentarer om detta projekt. Bli den första att posta en!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Post",
   "project.detail.share": "Dela",
   "project.detail.team": "Team",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Rita rektangel",
   "projects.formInputs.priority_areas.action.clear": "",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "",
   "projects.formInputs.name": "",
   "projects.formInputs.dueDate": "",
   "projects.formInputs.dueDate.description": "",
@@ -1048,8 +1050,9 @@
   "pages.edit_project.buttons.task_selection_page": "",
   "pages.edit_project.buttons.project_stats": "",
   "pages.edit_project.actions.update.success": "",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "",
-  "pages.edit_project.actions.missing_fields": "",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} other {}}",
   "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Beskrivning",
   "pages.edit_project.sections.instructions": "Instruktioner",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Inställningar",
   "pages.edit_project.sections.actions": "Hantera",
   "pages.edit_project.sections.custom_editor": "Anpassad redaktör",
-  "pages.create_campaign.duplicate": ""
+  "pages.create_campaign.duplicate": "",
+  "pages.create_campaign.error": ""
 }

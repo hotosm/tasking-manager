@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "お気に入りに追加",
   "project.detail.removeFromFavorites": "お気に入りから削除",
   "project.detail.questionsAndComments.none": "現在、このプロジェクトに関する質問やコメントはありません。 最初の投稿をしましょう。",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "投稿",
   "project.detail.share": "共有",
   "project.detail.team": "チーム",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "四角形を描く",
   "projects.formInputs.priority_areas.action.clear": "選択解除",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "",
   "projects.formInputs.name": "プロジェクト名",
   "projects.formInputs.dueDate": "期限",
   "projects.formInputs.dueDate.description": "プロジェクトが終了する理想的な日付を定義します。日付の形式は日/月/年です。",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "タスク選択ページ",
   "pages.edit_project.buttons.project_stats": "プロジェクト統計",
   "pages.edit_project.actions.update.success": "プロジェクトが正常に更新されました。",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "サーバエラーのため、プロジェクトの保存に失敗しました。時間をおいてもう一度試していただくか、問題が継続するようであれば管理者までご連絡ください。",
-  "pages.edit_project.actions.missing_fields": "プロジェクトを保存するには、必要項目を入力してください。",
-  "pages.edit_project.actions.missing_fields_for_locale": "プロジェクトを保存するには、標準の言語（ {locale} ）の必要項目を入力してください。",
+  "pages.edit_project.actions.missing_fields": "{number, plural, other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "説明",
   "pages.edit_project.sections.instructions": "マッピング方法解説",
   "pages.edit_project.sections.metadata": "メタデータ",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "設定",
   "pages.edit_project.sections.actions": "アクション",
   "pages.edit_project.sections.custom_editor": "カスタムエディタ",
-  "pages.create_campaign.duplicate": "この名前の項目はすでに存在します"
+  "pages.create_campaign.duplicate": "この名前の項目はすでに存在します",
+  "pages.create_campaign.error": ""
 }

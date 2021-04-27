@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Ajouter aux favoris",
   "project.detail.removeFromFavorites": "Retirer des favoris",
   "project.detail.questionsAndComments.none": "Il n'y a actuellement aucune question ou commentaire sur ce projet. Soyez le premier à en poster!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Poster",
   "project.detail.share": "Partager",
   "project.detail.team": "Équipe",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Dessiner un rectangle",
   "projects.formInputs.priority_areas.action.clear": "Tout effacer",
   "projects.formInputs.priority_areas.action.selectFile": "Sélectionner un fichier",
+  "projects.formInputs.priority_areas.upload.description": "Les formats de fichiers acceptés sont : GeoJSON, KML, OSM ou Shapefile zippés. Vous pouvez importer un fichier par glisser-déposer sur la carte.  ",
   "projects.formInputs.name": "Nom du projet",
   "projects.formInputs.dueDate": "Date limite",
   "projects.formInputs.dueDate.description": "Indiquez la date limite idéale pour que le projet soit fini. Le format de la date est européen (jj/mm/aaaa).",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Page de sélection des tâches",
   "pages.edit_project.buttons.project_stats": "Statistiques du projet",
   "pages.edit_project.actions.update.success": "Projet mis à jour.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "L'enregistrement du projet a échoué à cause d'une erreur de serveur. Veuillez réessayer ultérieurement. Si le problème persiste vous pouvez contacter l'administrateur.",
-  "pages.edit_project.actions.missing_fields": "L'enregistrement du projet a échoué car vous devez fournir des informations pour les champs obligatoires suivants:",
-  "pages.edit_project.actions.missing_fields_for_locale": "L'enregistrement du projet a échoué car vous devez fournir des informations pour ces champs dans votre langue par défaut ({locale}):",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Description",
   "pages.edit_project.sections.instructions": "Instructions",
   "pages.edit_project.sections.metadata": "Métadonnées",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Paramètres",
   "pages.edit_project.sections.actions": "Actions",
   "pages.edit_project.sections.custom_editor": "Éditeur personnalisé",
-  "pages.create_campaign.duplicate": "Ce nom est déjà utilisé par une campagne"
+  "pages.create_campaign.duplicate": "Ce nom est déjà utilisé par une campagne",
+  "pages.create_campaign.error": ""
 }

@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Agregar a los favoritos",
   "project.detail.removeFromFavorites": "Quitar de favoritos",
   "project.detail.questionsAndComments.none": "Actualmente no hay preguntas o comentarios sobre este proyecto. ¡Sé el primero en publicar uno!",
+  "project.detail.questionsAndComments.login": "Inicie sesión para poder publicar comentarios.",
   "project.detail.questionsAndComments.button": "Enviar",
   "project.detail.share": "Compartir",
   "project.detail.team": "Equipo",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Dibujar rectángulo",
   "projects.formInputs.priority_areas.action.clear": "Borrar todo",
   "projects.formInputs.priority_areas.action.selectFile": "Seleccionar archivo",
+  "projects.formInputs.priority_areas.upload.description": "Los formatos de archivo compatibles son: GeoJSON, KML, OSM o Shapefile comprimido. Puede arrastrar y soltar un archivo sobre el mapa para importarlo.",
   "projects.formInputs.name": "Nombre del proyecto",
   "projects.formInputs.dueDate": "Fecha límite para finalizar",
   "projects.formInputs.dueDate.description": "Defina la fecha ideal para terminar el proyecto. El formato de fecha es día/mes/año.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Página de selección de tareas",
   "pages.edit_project.buttons.project_stats": "Estadísticas del proyecto",
   "pages.edit_project.actions.update.success": "Proyecto actualizado correctamente.",
+  "pages.edit_project.actions.update.data_error": "No fue posible guardar el proyecto.",
   "pages.edit_project.actions.update.error": "No se pudo guardar el proyecto debido a un error del servidor. Vuelva a intentarlo más tarde o póngase en contacto con el administrador si el problema persiste.",
-  "pages.edit_project.actions.missing_fields": "No se pudo guardar el proyecto porque debe proporcionar información para estos campos obligatorios:",
-  "pages.edit_project.actions.missing_fields_for_locale": "No se pudo guardar el proyecto porque debe proporcionar información para estos campos en su idioma predeterminado ({locale}):",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {Falta un campo obligatorio:} other {Faltan algunos campos obligatorios:}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "Falta información en el idioma predeterminado del proyecto ({locale}):",
   "pages.edit_project.sections.description": "Descripción",
   "pages.edit_project.sections.instructions": "Instrucciones",
   "pages.edit_project.sections.metadata": "Metadatos",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Ajustes",
   "pages.edit_project.sections.actions": "Acciones",
   "pages.edit_project.sections.custom_editor": "Editor Personalizado",
-  "pages.create_campaign.duplicate": "Ya existe una campaña con el mismo nombre"
+  "pages.create_campaign.duplicate": "Ya existe una campaña con el mismo nombre",
+  "pages.create_campaign.error": "Se ha producido un error al guardar esta campaña."
 }

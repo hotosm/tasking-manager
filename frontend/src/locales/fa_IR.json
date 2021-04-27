@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "افزودن به علاقه مندی ها",
   "project.detail.removeFromFavorites": "حذف از علاقه مندی ها",
   "project.detail.questionsAndComments.none": "",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "",
   "project.detail.share": "اشتراک",
   "project.detail.team": "تیم",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "رسم مستطیل",
   "projects.formInputs.priority_areas.action.clear": "پاک کردن همه",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "",
   "projects.formInputs.name": "نام پروژه",
   "projects.formInputs.dueDate": "",
   "projects.formInputs.dueDate.description": "",
@@ -1048,8 +1050,9 @@
   "pages.edit_project.buttons.task_selection_page": "",
   "pages.edit_project.buttons.project_stats": "",
   "pages.edit_project.actions.update.success": "پروژه با موفقیت آپدیت شد.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "",
-  "pages.edit_project.actions.missing_fields": "",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} other {}}",
   "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "توضیح",
   "pages.edit_project.sections.instructions": "دستورالعمل‌ها",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "تنظیمات",
   "pages.edit_project.sections.actions": "اقدامات",
   "pages.edit_project.sections.custom_editor": "",
-  "pages.create_campaign.duplicate": ""
+  "pages.create_campaign.duplicate": "",
+  "pages.create_campaign.error": ""
 }

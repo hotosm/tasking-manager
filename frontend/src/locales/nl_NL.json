@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Toevoegen aan Favorieten",
   "project.detail.removeFromFavorites": "Verwijderen uit Favorieten",
   "project.detail.questionsAndComments.none": "Er zijn momenteel geen vragen of opmerkingen voor dit project. Wees de eerste om iets te posten!",
+  "project.detail.questionsAndComments.login": "Log in om opmerkingen te kunnen plaatsen.",
   "project.detail.questionsAndComments.button": "Posten",
   "project.detail.share": "Delen",
   "project.detail.team": "Team",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Rechthoek tekenen",
   "projects.formInputs.priority_areas.action.clear": "Alles leegmaken",
   "projects.formInputs.priority_areas.action.selectFile": "Bestand selecteren",
+  "projects.formInputs.priority_areas.upload.description": "De ondersteunde bestandsindelingen zijn: GeoJSON, KML, OSM of gezipte Shapefile. U kunt een bestand over de kaart slepen en neerzetten om het te importeren.",
   "projects.formInputs.name": "Projectnaam",
   "projects.formInputs.dueDate": "Datum te voltooien",
   "projects.formInputs.dueDate.description": "Definieer de ideale datum waarop het project voltooid zou moeten zijn. De indeling voor de datum is dag/maand/jaar.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Pagina voor selecteren van taken",
   "pages.edit_project.buttons.project_stats": "Projectstatistieken",
   "pages.edit_project.actions.update.success": "Project met succes bijgewerkt.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "Opslaan van het project mislukte vanwege een serverfout. Probeer het later opnieuw of neem contact op met de beheerder als het probleem blijft bestaan.",
-  "pages.edit_project.actions.missing_fields": "Opslaan van het project mislukte, omdat u informatie dient op te geven voor deze vereiste velden:",
-  "pages.edit_project.actions.missing_fields_for_locale": "Opslaan van het project mislukte, omdat u informatie dient op te geven voor deze velden in uw standaard taal ({locale}):",
+  "pages.edit_project.actions.missing_fields": "{number, plural, one {} other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Omschrijving",
   "pages.edit_project.sections.instructions": "Instructies",
   "pages.edit_project.sections.metadata": "Metadata",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Instellingen",
   "pages.edit_project.sections.actions": "Acties",
   "pages.edit_project.sections.custom_editor": "Aangepaste bewerker",
-  "pages.create_campaign.duplicate": "Er bestaat al een campagne met dezelfde naam"
+  "pages.create_campaign.duplicate": "Er bestaat al een campagne met dezelfde naam",
+  "pages.create_campaign.error": "Er trad een fout op bij het opslaan van deze campagne."
 }

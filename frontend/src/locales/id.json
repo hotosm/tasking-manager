@@ -273,6 +273,7 @@
   "project.detail.addToFavorites": "Tambahkan ke favorit",
   "project.detail.removeFromFavorites": "Hapus dari favorit",
   "project.detail.questionsAndComments.none": "Saat ini tidak ada pertanyaan atau komentar pada proyek ini. Jadilah yang pertama untuk mengirimkan pertanyaan atau komentar!",
+  "project.detail.questionsAndComments.login": "",
   "project.detail.questionsAndComments.button": "Kirim",
   "project.detail.share": "Bagikan",
   "project.detail.team": "Tim",
@@ -400,6 +401,7 @@
   "projects.formInputs.priority_areas.options.rectangle": "Gambar segi empat",
   "projects.formInputs.priority_areas.action.clear": "Hapus semua",
   "projects.formInputs.priority_areas.action.selectFile": "",
+  "projects.formInputs.priority_areas.upload.description": "",
   "projects.formInputs.name": "Nama proyek",
   "projects.formInputs.dueDate": "Batas waktu",
   "projects.formInputs.dueDate.description": "Tentukan tanggal ideal untuk menyelesaikan proyek. Format tanggalnya adalah hari/ bulan/tahun.",
@@ -1048,9 +1050,10 @@
   "pages.edit_project.buttons.task_selection_page": "Halaman pemilihan task",
   "pages.edit_project.buttons.project_stats": "Statistik Proyek",
   "pages.edit_project.actions.update.success": "Proyek berhasil diperbarui.",
+  "pages.edit_project.actions.update.data_error": "",
   "pages.edit_project.actions.update.error": "Proses penyimpanan proyek gagal karena Server Error/Gagal. Silahkan coba lagi nanti atau hubungi administrator jika masalah masih ditemukan.",
-  "pages.edit_project.actions.missing_fields": "Proses menyimpan proyek gagal karena Anda harus menyediakan informasi untuk bagian penting berikut:",
-  "pages.edit_project.actions.missing_fields_for_locale": "Proses menyimpan proyek gagal karena Anda harus menyediakan informasi untuk bagian ini sesuai bahasa bawaan Anda ({locale}):",
+  "pages.edit_project.actions.missing_fields": "{number, plural, other {}}",
+  "pages.edit_project.actions.missing_fields_for_locale": "",
   "pages.edit_project.sections.description": "Deskripsi",
   "pages.edit_project.sections.instructions": "Petunjuk",
   "pages.edit_project.sections.metadata": "Metadata",
@@ -1060,5 +1063,6 @@
   "pages.edit_project.sections.settings": "Pengaturan",
   "pages.edit_project.sections.actions": "Aksi",
   "pages.edit_project.sections.custom_editor": "Editor kustom",
-  "pages.create_campaign.duplicate": "Campaign dengan nama yang sama sudah ada"
+  "pages.create_campaign.duplicate": "Campaign dengan nama yang sama sudah ada",
+  "pages.create_campaign.error": ""
 }
