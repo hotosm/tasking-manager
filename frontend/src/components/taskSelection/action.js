@@ -168,6 +168,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                 taskBordersOnly={false}
                 animateZoom={false}
                 selected={tasksIds}
+                showTaskIds={action === 'VALIDATION'}
               />
             </ReactPlaceholder>
           )}
@@ -287,6 +288,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                                 taskBordersOnly={false}
                                 animateZoom={false}
                                 selected={tasksIds}
+                                showTaskIds={action === 'VALIDATION'}
                               />
                             </div>
                           )}
