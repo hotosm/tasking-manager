@@ -322,27 +322,20 @@ export const TasksMap = ({
         );
       }
 
-      map.on('mouseenter', 'tasks-fill', function (e) {
-        if (selectTask) {
-          // Change the cursor style as a UI indicator.
-          map.getCanvas().style.cursor = 'pointer';
-        }
-      });
-
-      map.on('mousemove', 'tasks-fill', function (e) {
-        // when the user hover on a task they are validating, enable the task id dialog
-        if (showTaskIds && e.features[0].properties.lockedBy === authDetails.id) {
-          setHoveredTaskId(e.features[0].properties.taskId);
-        } else {
+      if (showTaskIds) {
+        map.on('mousemove', 'tasks-fill', function (e) {
+          // when the user hover on a task they are validating, enable the task id dialog
+          if (e.features[0].properties.lockedBy === authDetails.id) {
+            setHoveredTaskId(e.features[0].properties.taskId);
+          } else {
+            setHoveredTaskId(null);
+          }
+        });
+        map.on('mouseleave', 'tasks-fill', function (e) {
+          // disable the task id dialog when the mouse go outside the task grid
           setHoveredTaskId(null);
-        }
-      });
-      map.on('mouseleave', 'tasks-fill', function (e) {
-        // disable the task id dialog when the mouse go outside the task grid
-        if (showTaskIds) {
-          setHoveredTaskId(null);
-        }
-      });
+        });
+      }
 
       if (taskBordersOnly && navigate) {
         map.on('mouseenter', 'point-tasks-centroid', function (e) {
@@ -355,6 +348,12 @@ export const TasksMap = ({
         map.on('click', 'point-tasks-centroid-inner', () => navigate('./tasks'));
       }
 
+      map.on('mouseenter', 'tasks-fill', function (e) {
+        if (selectTask) {
+          // Change the cursor style as a UI indicator.
+          map.getCanvas().style.cursor = 'pointer';
+        }
+      });
       map.on('click', 'tasks-fill', onSelectTaskClick);
       map.on('mouseleave', 'tasks-fill', function (e) {
         // Change the cursor style as a UI indicator.
