@@ -58,7 +58,7 @@
     "react-scripts": "^4.0.3",
     "react-select": "^4.3.0",
     "react-tooltip": "^4.2.18",
-    "reactjs-popup": "^1.5.0",
+    "reactjs-popup": "^2.0.4",
     "redux": "^4.1.0",
     "redux-thunk": "^2.3.0",
     "sass": "^1.32.10",
