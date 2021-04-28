@@ -3180,10 +3180,10 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
 
-"@tmcw/togeojson@^4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-4.4.0.tgz#88d2dfd10ddecf204d180a344da88447ab1f6bec"
-  integrity sha512-QA0Yk/i1D2tmbuQ/fPtB+opKxEvRagdNG0pfk6JbVd6oiI90XG0SZPQwuPlORRZ5SQFT7Kv6nQ9ptDJuTXC3kA==
+"@tmcw/togeojson@^4.4.1":
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-4.4.1.tgz#1733f6b3ab64a907b7c2954046f9083b227a50dd"
+  integrity sha512-R4f8fYzXPGKjW+que03/UOtHEsMe3Tb4wOBOQi8KaZwJEX7RGOIoxUis//k2CrLL7f+6QX1Z4nb1dDozO2/LYA==
 
 "@turf/area@^6.3.0":
   version "6.3.0"
