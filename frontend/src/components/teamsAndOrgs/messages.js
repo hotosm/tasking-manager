@@ -202,7 +202,7 @@ export default defineMessages({
   },
   errorLoadingStats: {
     id: 'management.organisations.stats.error',
-    defaultMessage: 'An error ocurred while loading stats.',
+    defaultMessage: 'An error occurred while loading stats.',
   },
   badStartDate: {
     id: 'management.organisations.stats.error.start_date',

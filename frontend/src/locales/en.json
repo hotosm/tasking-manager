@@ -730,7 +730,7 @@
   "management.organisations.type.defaultFee": "Default fee",
   "management.organisations.list.empty": "No organizations were found.",
   "management.organisations.stats.retry": "Try again",
-  "management.organisations.stats.error": "An error ocurred while loading stats.",
+  "management.organisations.stats.error": "An error occurred while loading stats.",
   "management.organisations.stats.error.start_date": "Start date should not be later than end date.",
   "management.organisations.stats.error.date_range": "Date range is longer than one year.",
   "management.organisations.stats.to_be_mapped": "Tasks to be mapped",
