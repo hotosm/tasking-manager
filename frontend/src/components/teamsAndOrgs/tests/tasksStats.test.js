@@ -61,7 +61,7 @@ describe('TasksStats', () => {
         />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText('An error ocurred while loading stats.')).toBeInTheDocument();
+    expect(screen.getByText('An error occurred while loading stats.')).toBeInTheDocument();
     expect(screen.getByText('Date range is longer than one year.')).toBeInTheDocument();
   });
   it('show error message if start date is after end date', async () => {
@@ -75,7 +75,7 @@ describe('TasksStats', () => {
         />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText('An error ocurred while loading stats.')).toBeInTheDocument();
+    expect(screen.getByText('An error occurred while loading stats.')).toBeInTheDocument();
     expect(screen.getByText('Start date should not be later than end date.')).toBeInTheDocument();
   });
   it('render "Try again" button case the error is not on the dates', async () => {
@@ -90,7 +90,7 @@ describe('TasksStats', () => {
         />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText('An error ocurred while loading stats.')).toBeInTheDocument();
+    expect(screen.getByText('An error occurred while loading stats.')).toBeInTheDocument();
     expect(screen.getByText('Try again')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Try again'));
     expect(retryFn).toHaveBeenCalled();
