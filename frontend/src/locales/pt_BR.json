@@ -730,7 +730,7 @@
   "management.organisations.type.defaultFee": "Taxa padrão",
   "management.organisations.list.empty": "Nenhuma organização foi encontrada.",
   "management.organisations.stats.retry": "Tente novamente",
-  "management.organisations.stats.error": "Ocorreu um erro durante o carregamento de estatísticas.",
+  "management.organisations.stats.error": "Ocorreu um erro durante o carregamento das estatísticas.",
   "management.organisations.stats.error.start_date": "A data de início não deve ser posterior à data de término.",
   "management.organisations.stats.error.date_range": "O intervalo entre as datas é superior a um ano.",
   "management.organisations.stats.to_be_mapped": "Tarefas a serem mapeadas",
