@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+echo "Running DB Migrations.."
+# python manage.py db upgrade
+gunicorn -c python:backend.gunicorn manage:db upgrade
+exit_status=$?
+if [[ $exit_status -eq 0 ]]; then
+    echo "Migrations complete."
+else
+    echo "Migrations failed.."
+fi
+
+echo "Running application.."
+gunicorn -c python:backend.gunicorn manage:application
