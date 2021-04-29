@@ -14,10 +14,6 @@ const Parameters = {
     AllowedValues: ['development', 'demo', 'production'],
     Description: ""
   },
-  // DatabaseDump: {
-  //   Type: 'String',
-  //   Description: 'Path to database dump on S3; Ex: s3://my-bkt/tm.sql'
-  // },
   DatabaseName: {
     Type: 'String',
     Description: 'Database Name'
@@ -30,7 +26,6 @@ const Parameters = {
 };
 
 const Conditions = {
-  // DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
   IsProduction: cf.equals(cf.ref('DeploymentEnvironment'), 'production'),
 };
 
@@ -101,6 +96,11 @@ const Resources = {
       ]
     }
   },
+  ////////////////////////////
+  //
+  // !!! RDS Aurora WIP !!!
+  //
+  ///////////////////////////
   // DatabaseClusterManagedPassword: {
   //   Type: 'AWS::SecretsManager::Secret',
   //   Properties: {

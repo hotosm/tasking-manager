@@ -10,9 +10,6 @@ const Parameters = {
     Type: 'Number',
     Default: 5000,
   },
-  GitSha: {
-    Type: 'String'
-  },
   DeploymentEnvironment: {
     Type: 'String',
     AllowedValues: ['development', 'demo', 'production'],
@@ -23,10 +20,6 @@ const Parameters = {
     Description: 'SSL certificate for HTTPS protocol',
     Default: 'ex: certificate/bb59df0a-ff8d-416c-bfb2-cc3a2e97c8ec'
   },
-  // TaskingManagerLogDirectory: {
-  //   Description: 'TM_LOG_DIR environment variable',
-  //   Type: 'String'
-  // },
   TaskingManagerConsumerKey: {
     Description: 'TM_CONSUMER_KEY',
     Type: 'String'
@@ -43,19 +36,10 @@ const Parameters = {
     Description: 'TM_EMAIL_CONTACT_ADDRESS',
     Type: 'String'
   },
-  // TaskingManagerLogLevel: {
-  //   Description: 'TM_LOG_LEVEL',
-  //   Type: 'String',
-  //   Default: 'INFO'
-  // },
   TaskingManagerImageUploadAPIURL: {
     Description: 'URL for image upload service',
     Type: 'String'
   },
-  // TaskingManagerImageUploadAPIKey: {
-  //   Description: 'API Key for image upload service',
-  //   Type: 'String'
-  // },
   TaskingManagerSMTPHost: {
     Description: 'TM_SMTP_HOST environment variable',
     Type: 'String'
@@ -69,7 +53,7 @@ const Parameters = {
     Type: 'String',
     Default: '587'
   },
-  TaskingManagerDefaultChangesetComment: {
+  TaskingManagerDefaultChangesetComment: { // TODO: What happened to this variable?
     Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
     Type: 'String'
   },
@@ -110,19 +94,15 @@ const Conditions = {
 /*
  * Resources
  *
- * ECS Cluster
- * ECS Definition
- * ECS Service
+ * ECS Cluster, ECS Definition, ECS Service
  * Secrets Policy :- Secrets Manager Secrets
  * ECSTaskRole :-
  * ECSTaskExecutionRole
- * TaskingManagerASG
- * TaskingManagerASGPolicy
+ * TaskingManagerASG, TaskingManagerASGPolicy
  * TaskingManager Load Balancer
  * Load Balancer Route 53
  * Target Group
- * ALB HTTPS Listener
- * ALB HTTP Listener
+ * ALB HTTPS Listener, ALB HTTP Listener
  * RDS Managed Password
  * RDS Instance
  * RDS Secret attachment
@@ -154,102 +134,7 @@ const Resources = {
           Key: 'Project',
           Value: 'TaskingManager'
         }
-      }
-    },
-    Properties: {
-      IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: 'ami-0565af6e282977273',
-      InstanceType: 'c5d.large',
-      SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
-      UserData: cf.userData([
-        '#!/bin/bash',
-        'set -x',
-        'export DEBIAN_FRONTEND=noninteractive',
-        'export LC_ALL="en_US.UTF-8"',
-        'export LC_CTYPE="en_US.UTF-8"',
-        'dpkg-reconfigure --frontend=noninteractive locales',
-        'sudo apt-get -y update',
-        'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
-        'sudo add-apt-repository ppa:deadsnakes/ppa -y',
-        'sudo apt-get update',
-        'sudo apt-get -y install python3.6',
-        'sudo apt-get -y install python3.6-dev',
-        'sudo apt-get -y install python3.6-venv',
-        'sudo apt-get -y install curl',
-        'wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -',
-        'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
-        'sudo apt-get update -y',
-        'sudo apt-get install -y postgresql-11',
-        'sudo apt-get -y install postgresql-11-postgis',
-        'sudo apt-get -y install postgresql-11-postgis-scripts',
-        'sudo apt-get -y install postgis',
-        'sudo apt-get -y install libpq-dev',
-        'sudo apt-get -y install libxml2',
-        'sudo apt-get -y install wget libxml2-dev',
-        'sudo apt-get -y install libgeos-3.5.0',
-        'sudo apt-get -y install libgeos-dev',
-        'sudo apt-get -y install libproj9',
-        'sudo apt-get -y install libproj-dev',
-        'sudo apt-get -y install python-pip libgdal1-dev',
-        'sudo apt-get -y install libjson-c-dev',
-        'sudo apt-get -y install git',
-        'sudo apt-get -y install awscli',
-        'sudo apt-get -y install ruby',
-        'pushd /home/ubuntu',
-        'wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install',
-        'chmod +x ./install && sudo ./install auto',
-        'sudo systemctl start codedeploy-agent',
-        'popd',
-        'git clone --recursive https://github.com/hotosm/tasking-manager.git',
-        'cd tasking-manager/',
-        cf.sub('git reset --hard ${GitSha}'),
-        'python3.6 -m venv ./venv',
-        '. ./venv/bin/activate',
-        'pip install --upgrade pip',
-        'pip install -r requirements.txt',
-        'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf',
-        'export LC_ALL=C',
-        'wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
-        'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
-        'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz',
-        'pip2 install aws-cfn-bootstrap-latest.tar.gz',
-        'echo "Exporting environment variables:"',
-        cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
-        cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
-        cf.sub('export POSTGRES_DB=${PostgresDB}'),
-        cf.sub('export POSTGRES_PASSWORD="${PostgresPassword}"'),
-        cf.sub('export POSTGRES_USER="${PostgresUser}"'),
-        cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
-        cf.sub('export TM_ENVIRONMENT="${AWS::StackName}"'),
-        cf.sub('export TM_CONSUMER_KEY="${TaskingManagerConsumerKey}"'),
-        cf.sub('export TM_CONSUMER_SECRET="${TaskingManagerConsumerSecret}"'),
-        cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
-        cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
-        cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),
-        cf.sub('export TM_SMTP_PORT="${TaskingManagerSMTPPort}"'),
-        cf.sub('export TM_SMTP_USER="${TaskingManagerSMTPUser}"'),
-        cf.sub('export TM_DEFAULT_CHANGESET_COMMENT="${TaskingManagerDefaultChangesetComment}"'),
-        cf.sub('export TM_EMAIL_FROM_ADDRESS="${TaskingManagerEmailFromAddress}"'),
-        cf.sub('export TM_EMAIL_CONTACT_ADDRESS="${TaskingManagerEmailContactAddress}"'),
-        cf.sub('export TM_LOG_LEVEL="${TaskingManagerLogLevel}"'),
-        cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
-        cf.sub('export TM_ORG_NAME="${TaskingManagerOrgName}"'),
-        cf.sub('export TM_ORG_CODE="${TaskingManagerOrgCode}"'),
-        cf.sub('export TM_ORG_LOGO="${TaskingManagerLogo}"'),
-        cf.sub('export TM_IMAGE_UPLOAD_API_URL="${TaskingManagerImageUploadAPIURL}"'),
-        cf.sub('export TM_IMAGE_UPLOAD_API_KEY="${TaskingManagerImageUploadAPIKey}"'),
-        'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
-        cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
-        './venv/bin/python3.6 manage.py db upgrade',
-        'echo "------------------------------------------------------------"',
-        cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
-        cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
-        'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
-        cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
-        cf.sub('sudo cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
-        cf.sub('cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
-      ]),
-      KeyName: 'mbtiles'
+      ]
     }
   },
   ECSTaskDefinition: { // cf.ref returns ARN with version
@@ -320,8 +205,8 @@ const Resources = {
         //  Interval: 10,
         //  Retries: 3
         //},
-        // Image: 'quay.io/hotosm/tasking-manager:feature_containerize-backend-cfn', //configure this properly
-        Image: cf.join('', [cf.accountId, '.dkr.ecr.', cf.region, '.amazonaws.com/taskingmanager:latest']),
+        Image: 'quay.io/hotosm/tasking-manager:feature_containerize-backend-cfn', //configure this properly
+        // Image: cf.join('', [cf.accountId, '.dkr.ecr.', cf.region, '.amazonaws.com/taskingmanager:latest']),
         // RepositoryCredentials: {
         //   CredentialsParameter: 'arn:aws:secretsmanager:us-east-1:670261699094:secret:prod/tasking-manager/quay-image-pull-access-WdfayD'
         // },
