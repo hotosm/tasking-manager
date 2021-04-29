@@ -93,7 +93,7 @@ class EnvironmentConfig:
         ),
         "languages": os.getenv(
             "TM_SUPPORTED_LANGUAGES",
-            "عربى, Česky, Deutsch, Ελληνικά, English, Español, فارسی, Français, עברית, Magyar, Indonesia, Italiano, 日本語, 한국어, Malagasy, Malayalam, Nederlands, Português, Português (Brasil), Русский язык, Svenska, Kiswahili, Filipino (Tagalog), Türkçe, Українська, 中国台湾",  # noqa
+            "عربى, Čeština, Deutsch, Ελληνικά, English, Español, فارسی, Français, עברית, Magyar, Indonesia, Italiano, 日本語, 한국어, Malagasy, Malayalam, Nederlands, Português, Português (Brasil), Русский язык, Svenska, Kiswahili, Filipino (Tagalog), Türkçe, Українська, 繁體中文",  # noqa
         ),
     }
 
