@@ -55,7 +55,8 @@ const Parameters = {
   },
   TaskingManagerDefaultChangesetComment: { // TODO: What happened to this variable?
     Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
-    Type: 'String'
+    Type: 'String',
+    Default: '#hotosm-project'
   },
   TaskingManagerURL: {
     Description: 'URL for setting CNAME in Distribution; Ex: example.hotosm.org',
@@ -176,6 +177,7 @@ const Resources = {
           { Name: 'TM_ORG_LOGO', Value: cf.ref('TaskingManagerLogo') },
           { Name: 'TM_IMAGE_UPLOAD_API_URL', Value: cf.ref('TaskingManagerImageUploadAPIURL') },
           { Name: 'TM_SENTRY_BACKEND_DSN', Value: cf.ref('SentryBackendDSN') },
+          { Name: 'TM_DEFAULT_CHANGESET_COMMENT', Value: cf.ref('TaskingManagerDefaultChangesetComment') },
           {
             Name: 'POSTGRES_DB',
             Value: cf.join(':', [
