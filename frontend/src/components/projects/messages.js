@@ -128,6 +128,10 @@ export default defineMessages({
     id: 'project.nav.active',
     defaultMessage: 'Active',
   },
+  stale: {
+    id: 'project.nav.stale',
+    defaultMessage: 'Stale',
+  },
   managed: {
     id: 'project.nav.managed',
     defaultMessage: 'Managed by me',

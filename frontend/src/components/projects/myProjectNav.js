@@ -146,17 +146,29 @@ export const MyProjectNav = (props) => {
               <>
                 <FilterButton
                   query={fullProjectsQuery}
-                  newQueryParams={{ status: 'PUBLISHED', managedByMe: 1, createdByMe: undefined }}
+                  newQueryParams={{
+                    status: 'PUBLISHED',
+                    managedByMe: 1,
+                    createdByMe: undefined,
+                    stale: undefined,
+                  }}
                   setQuery={setQuery}
                   isActive={
-                    fullProjectsQuery.managedByMe && fullProjectsQuery.status === 'PUBLISHED'
+                    fullProjectsQuery.managedByMe &&
+                    fullProjectsQuery.status === 'PUBLISHED' &&
+                    !fullProjectsQuery.stale
                   }
                 >
                   <FormattedMessage {...messages.active} />
                 </FilterButton>
                 <FilterButton
                   query={fullProjectsQuery}
-                  newQueryParams={{ status: 'DRAFT', managedByMe: 1, createdByMe: undefined }}
+                  newQueryParams={{
+                    status: 'DRAFT',
+                    managedByMe: 1,
+                    createdByMe: undefined,
+                    stale: undefined,
+                  }}
                   setQuery={setQuery}
                   isActive={isActiveButton('DRAFT', fullProjectsQuery)}
                 >
@@ -164,7 +176,12 @@ export const MyProjectNav = (props) => {
                 </FilterButton>
                 <FilterButton
                   query={fullProjectsQuery}
-                  newQueryParams={{ status: 'ARCHIVED', managedByMe: 1, createdByMe: undefined }}
+                  newQueryParams={{
+                    status: 'ARCHIVED',
+                    managedByMe: 1,
+                    createdByMe: undefined,
+                    stale: undefined,
+                  }}
                   setQuery={setQuery}
                   isActive={isActiveButton('ARCHIVED', fullProjectsQuery)}
                 >
@@ -172,7 +189,25 @@ export const MyProjectNav = (props) => {
                 </FilterButton>
                 <FilterButton
                   query={fullProjectsQuery}
-                  newQueryParams={{ status: undefined, managedByMe: undefined, createdByMe: 1 }}
+                  newQueryParams={{
+                    status: 'PUBLISHED',
+                    managedByMe: 1,
+                    createdByMe: undefined,
+                    stale: 1,
+                  }}
+                  setQuery={setQuery}
+                  isActive={isActiveButton('stale', fullProjectsQuery)}
+                >
+                  <FormattedMessage {...messages.stale} />
+                </FilterButton>
+                <FilterButton
+                  query={fullProjectsQuery}
+                  newQueryParams={{
+                    status: undefined,
+                    managedByMe: undefined,
+                    createdByMe: 1,
+                    stale: undefined,
+                  }}
                   setQuery={setQuery}
                   isActive={isActiveButton('createdByMe', fullProjectsQuery)}
                 >
