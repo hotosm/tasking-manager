@@ -78,12 +78,30 @@ const Parameters = {
   TaskingManagerLogo: {
     Description: "URL for logo",
     Type: "String"
-  }
+  },
+  SMTPPassword: {
+    Description: "Secrets Manager entry for SMTP Password",
+    Type: "String"
+  },
+  OAuth2ConsumerSecret: {
+    Description: "Secrets Manager entry for OAuth2 Consumer Secret",
+    Type: "String"
+  },
+  NewRelicLicenseKey: {
+    Description: "Secrets Manager entry for NewRelic License Key",
+    Type: "String"
+  },
+  ImageUploadAPIKey: {
+    Description: "Secrets Manager entry for Image Upload API Key",
+    Type: "String"
+  },
+  TaskingManagerManagedSecret: {
+    Description: "Secrets Manager entry for Tasking Manager Secret",
+    Type: "String"
+  },
 };
 
 const Conditions = {
-  // UseASnapshot: cf.notEquals(cf.ref('DBSnapshot'), ''),
-  // DatabaseDumpFileGiven: cf.notEquals(cf.ref('DatabaseDump'), ''),
   IsTaskingManagerProduction: cf.equals(cf.ref('DeploymentEnvironment'), 'production'),
   IsTaskingManagerDemo: cf.equals(cf.ref('DeploymentEnvironment'), 'demo'),
   IsHOTOSMUrl: cf.equals(
@@ -222,7 +240,7 @@ const Resources = {
           Options: { // TODO: Figure out expiry
             'awslogs-create-group': true,
             'awslogs-region': cf.region,
-            'awslogs-group': cf.join('', ['/', cf.ref('DeploymentEnvironment'), 'tasking-manager/backend']),
+            'awslogs-group': cf.join('', ['/', cf.ref('DeploymentEnvironment'), '/', 'tasking-manager/backend']),
             'awslogs-stream-prefix': 'tasking-manager'
           }
         },
