@@ -2279,10 +2279,10 @@
     "@formatjs/ecma402-abstract" "1.7.0"
     tslib "^2.1.0"
 
-"@formatjs/intl-relativetimeformat@^8.1.6":
-  version "8.1.6"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-8.1.6.tgz#993bd3d0b7f104b458a0f65a6a60d5b51a93afcc"
-  integrity sha512-8WVD9KzuDSboOIjlS7su8q8zSde5NuXVqjE/JrEuaEsqe/C6+i8xdhn5IQEAW90RCUGq6y3TReQZwZZ8rTuYJg==
+"@formatjs/intl-relativetimeformat@^8.1.7":
+  version "8.1.7"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-8.1.7.tgz#40d4f5e9c0fc201ae3cf06006c20e759c7ecb160"
+  integrity sha512-S8OoqOwiSqU/T0umkjB2lZcyWS4Dh8sWd4m8V+MsSnraeijNho/wSXQhJAuHx0b2Xvnlddt7a5RwyUnLADUepA==
   dependencies:
     "@formatjs/ecma402-abstract" "1.7.0"
     tslib "^2.1.0"
