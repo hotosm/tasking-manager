@@ -47,7 +47,7 @@ if (
   ENABLE_SERVICEWORKER === 'true' ||
   ENABLE_SERVICEWORKER === true
 ) {
-  serviceWorkerRegistration.register();
+  serviceWorkerRegistration.register({ onUpdate: serviceWorkerRegistration.onServiceWorkerUpdate });
 } else {
   serviceWorkerRegistration.unregister();
 }
