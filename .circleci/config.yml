@@ -301,6 +301,10 @@ jobs:
           aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-frontend-app --delete
           export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id'].Value"`
           aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+        # TODO: Remove the following
+        environment:
+          TM_APP_API_URL: https://tm4-demo-api.hotosm.org
+          TM_APP_BASE_URL: https://tasks-demo.hotosm.org
 
 workflows:
   version: 2
@@ -432,7 +436,7 @@ workflows:
               only:
                 - feature/containerize-backend-cfn
           stack_name: "demo"
-            #          context: tm4-containers
+            # context: tm4-containers
 
       - backend_deploy_containers:
           name: containers-backend
@@ -442,6 +446,6 @@ workflows:
                 - feature/containerize-backend-cfn
           stack_name: "demo"
           deployment_environment: "demo"
-            #         context: tm4-containers
+            # context: tm4-containers
 
   
