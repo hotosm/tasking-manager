@@ -56,6 +56,21 @@ class EnvironmentConfig:
     # Assamble the database uri
     if os.getenv("TM_DB", False):
         SQLALCHEMY_DATABASE_URI = os.getenv("TM_DB", None)
+    elif os.getenv("TM_DB_CONNECT_PARAM_JSON", False):
+        """
+        This section reads JSON formatted Database connection parameters passed
+        from AWS Secrets Manager with the ENVVAR key `TM_DB_CONNECT_PARAM_JSON`
+        and forms a valid SQLALCHEMY DATABASE URI
+        """
+        import json
+        _params = json.loads(os.getenv("TM_DB_CONNECT_PARAM_JSON", None))
+        SQLALCHEMY_DATABASE_URI = (
+            f"postgresql://{_params.get('username')}"
+            + f":{_params.get('password')}"
+            + f"@{_params.get('host')}"
+            + f":{_params.get('port')}"
+            + f"/{_params.get('dbname')}"
+        )
     else:
         SQLALCHEMY_DATABASE_URI = (
             f"postgresql://{POSTGRES_USER}"

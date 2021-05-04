@@ -164,7 +164,6 @@ const Resources = {
         Name: 'Backend_Service',
         // Command: ['/bin/sh', '-c', 'echo $POSTGRES_ENDPOINT'],
         Environment: [
-          { Name: 'POSTGRES_ENDPOINT', Value: cf.importValue(cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-endpoint-address'] )) },
           { Name: 'TM_APP_BASE_URL', Value: cf.ref('TaskingManagerAppBaseUrl') },
           { Name: 'TM_CONSUMER_KEY', Value: cf.ref('TaskingManagerConsumerKey') },
           { Name: 'TM_SMTP_HOST', Value: cf.ref('TaskingManagerSMTPHost') },
@@ -178,24 +177,10 @@ const Resources = {
           { Name: 'TM_IMAGE_UPLOAD_API_URL', Value: cf.ref('TaskingManagerImageUploadAPIURL') },
           { Name: 'TM_SENTRY_BACKEND_DSN', Value: cf.ref('SentryBackendDSN') },
           { Name: 'TM_DEFAULT_CHANGESET_COMMENT', Value: cf.ref('TaskingManagerDefaultChangesetComment') },
-          {
-            Name: 'POSTGRES_DB',
-            Value: cf.join(':', [
-              '{{resolve:secretsmanager',
-              cf.importValue(cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-password-arn'])),
-              'SecretString:dbname}}'])
-          },
-          {
-            Name: 'POSTGRES_USER',
-            Value: cf.join(':', [
-              '{{resolve:secretsmanager',
-              cf.importValue(cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-password-arn'])),
-              'SecretString:username}}'])
-          },
         ],
         Secrets: [
-          { 
-            Name: 'POSTGRES_PASSWORD',
+          {
+            Name: 'TM_DB_CONNECT_PARAM_JSON',
             ValueFrom: cf.importValue(cf.join('-', ['TaskingManager', cf.ref('DeploymentEnvironment'), 'database-password-arn']))
           },
           { 
