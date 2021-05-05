@@ -7,7 +7,7 @@ import { StatsCardContent } from '../statsCard';
 export const OrganisationProjectStats = ({ projects }) => {
   return (
     <>
-      {projects ? (
+      {projects && (
         <>
           <div className="pa2 w-25-l w-50-m w-100 fl">
             <div className="cf pa3 bg-white shadow-4">
@@ -37,8 +37,6 @@ export const OrganisationProjectStats = ({ projects }) => {
             </div>
           </div>
         </>
-      ) : (
-        ''
       )}
     </>
   );
