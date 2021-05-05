@@ -30,7 +30,7 @@
     "@webscopeio/react-textarea-autocomplete": "^4.7.3",
     "axios": "^0.21.1",
     "chart.js": "^2.9.4",
-    "date-fns": "^2.21.1",
+    "date-fns": "^2.21.2",
     "dompurify": "^2.2.7",
     "downshift-hooks": "^0.8.1",
     "final-form": "^4.20.2",
