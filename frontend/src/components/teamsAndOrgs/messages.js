@@ -241,6 +241,18 @@ export default defineMessages({
     defaultMessage:
       'Action means a mapping or validation operation. As each task needs to be mapped and validated, this is the number of actions needed to finish all the published projects of that organization.',
   },
+  currentProjects: {
+    id: 'management.organisations.stats.current_projects',
+    defaultMessage: 'Projects created this year',
+  },
+  publishedProjects: {
+    id: 'management.organisations.stats.published_projects',
+    defaultMessage: 'Projects published',
+  },
+  staleProjects: {
+    id: 'management.organisations.stats.stale_projects',
+    defaultMessage: 'Stale projects in the last 6 months',
+  },
   subscribedTier: {
     id: 'management.organisations.stats.tier.subscribed',
     defaultMessage: 'Subscribed tier',

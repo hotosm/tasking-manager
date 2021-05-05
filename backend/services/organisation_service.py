@@ -1,5 +1,9 @@
+from datetime import datetime
 from flask import current_app
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func
+from sqlalchemy.sql import extract
+from dateutil.relativedelta import relativedelta
 
 from backend import db
 from backend.models.dtos.organisation_dto import (
@@ -180,9 +184,9 @@ class OrganisationService:
 
     @staticmethod
     def get_organisation_stats(organisation_id: int) -> OrganizationStatsDTO:
-        projects = db.session.query(Project.id, Project.status).filter(
-            Project.organisation_id == organisation_id
-        )
+        projects = db.session.query(
+            Project.id, Project.status, Project.last_updated, Project.created
+        ).filter(Project.organisation_id == organisation_id)
         published_projects = projects.filter(
             Project.status == ProjectStatus.PUBLISHED.value
         )
@@ -198,6 +202,13 @@ class OrganisationService:
         projects_dto.published = published_projects.count()
         projects_dto.archived = projects.filter(
             Project.status == ProjectStatus.ARCHIVED.value
+        ).count()
+        # projects created in the current year
+        projects_dto.recent = projects.filter(
+            extract("year", Project.created) == datetime.now().year
+        ).count()
+        projects_dto.stale = projects.filter(
+            func.DATE(Project.last_updated) < datetime.now() + relativedelta(months=-6)
         ).count()
 
         # populate tasks stats
