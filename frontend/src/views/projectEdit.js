@@ -96,37 +96,38 @@ export default function ProjectEdit({ id }) {
   }, [id, token]);
 
   const saveChanges = (resolve, reject) => {
-    // Remove locales with less than 3 fields.
-    const locales = projectInfo.projectInfoLocales;
+    const [defaultLocaleInfo] = projectInfo.projectInfoLocales.filter(
+      (l) => l.locale === projectInfo.defaultLocale,
+    );
     // Get data for default locale.
-    const filtered = locales
-      .filter((l) => l.locale === projectInfo.defaultLocale)
-      .map((l) => {
-        return {
-          locale: l.locale,
-          fields: mandatoryFields.filter(
-            (m) => Object.keys(l).includes(m) === false || l[m] === '',
-          ),
-        };
-      })
-      .filter((l) => l.fields.length > 0);
-
-    const nonLocaleMissingFields = { locale: null, fields: [] };
-
-    if (projectInfo.mappingTypes.length === 0) {
-      nonLocaleMissingFields.fields = [...nonLocaleMissingFields.fields, 'mappingTypes'];
+    let missingFields = [];
+    if (defaultLocaleInfo === undefined) {
+      missingFields.push({
+        locale: projectInfo.defaultLocale,
+        fields: mandatoryFields,
+      });
+    } else {
+      const mandatoryFieldsMissing = mandatoryFields.filter(
+        (m) => Object.keys(defaultLocaleInfo).includes(m) === false || defaultLocaleInfo[m] === '',
+      );
+      if (mandatoryFieldsMissing.length) {
+        missingFields.push({
+          locale: defaultLocaleInfo.locale,
+          fields: mandatoryFieldsMissing,
+        });
+      }
     }
 
-    if (!projectInfo.organisation) {
-      nonLocaleMissingFields.fields = [...nonLocaleMissingFields.fields, 'organisation'];
+    const nonLocaleMissingFields = [];
+    if (projectInfo.mappingTypes.length === 0) nonLocaleMissingFields.push('mappingTypes');
+    if (!projectInfo.organisation) nonLocaleMissingFields.push('organisation');
+
+    if (nonLocaleMissingFields.length) {
+      missingFields.push({ locale: null, fields: nonLocaleMissingFields });
     }
 
-    if (nonLocaleMissingFields.fields.length > 0) {
-      filtered.push(nonLocaleMissingFields);
-    }
-
-    if (filtered.length > 0) {
-      setError(filtered);
+    if (missingFields.length > 0) {
+      setError(missingFields);
       return new Promise((resolve, reject) => reject());
     } else {
       return pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')

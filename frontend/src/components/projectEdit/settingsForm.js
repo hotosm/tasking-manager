@@ -30,7 +30,7 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
         </label>
         <select name="defaultLocale" onChange={updateDefaultLocale} className="pa2">
           {languages.map((l) => (
-            <option selected={l.code === defaultLocale ? true : false} value={l.code}>
+            <option key={l.code} selected={l.code === defaultLocale ? true : false} value={l.code}>
               {l.language} ({l.code})
             </option>
           ))}
