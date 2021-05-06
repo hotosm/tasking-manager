@@ -2271,10 +2271,10 @@
     cldr-core "38"
     tslib "^2.1.0"
 
-"@formatjs/intl-pluralrules@^4.0.16":
-  version "4.0.16"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.16.tgz#ba336dcc07f9aaed9f648f1073cfadb3c2433f36"
-  integrity sha512-zVMz0vN1FgnyRmGHRkIGp77RCriEKb5mAXFt/t3PGGN4hVQn1CKvfVZyZWRGhHp0lLR17YaKADprkRuZ9EN74A==
+"@formatjs/intl-pluralrules@^4.0.17":
+  version "4.0.17"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.17.tgz#33b1799035e07db08bedd6e68edc7fc0e06c216b"
+  integrity sha512-SOX7lRrM1DQXZSzqoCztT+Gc6lnnoqGAVrX/YivQ7J8miPfxN8vgZhZN0MiEGPSLV0HJdO+AA+Xu0hUNJPlpnQ==
   dependencies:
     "@formatjs/ecma402-abstract" "1.7.0"
     tslib "^2.1.0"
