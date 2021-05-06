@@ -55,6 +55,9 @@ it('exports OSM_CONSUMER_SECRET', () => {
 it('exports MATOMO_ID', () => {
   expect(typeof config.MATOMO_ID).toBe('string');
 });
+it('exports SERVICE_DESK', () => {
+  expect(typeof config.SERVICE_DESK).toBe('string');
+});
 it('exports HOMEPAGE_VIDEO_URL', () => {
   expect(typeof config.HOMEPAGE_VIDEO_URL).toBe('string');
 });
