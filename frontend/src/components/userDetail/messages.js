@@ -76,6 +76,10 @@ export default defineMessages({
     id: 'users.detail.topCausesTitle',
     defaultMessage: 'Top causes contributed to',
   },
+  others: {
+    id: 'users.detail.others',
+    defaultMessage: 'Others',
+  },
   noProjectsData: {
     id: 'users.detail.projects.noData',
     defaultMessage: 'Information is not available because no projects were mapped until now.',

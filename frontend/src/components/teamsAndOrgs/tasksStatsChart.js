@@ -8,7 +8,7 @@ import { formatTasksStatsData, formatTimelineTooltip } from '../../utils/formatC
 const TasksStatsChart = ({ stats }) => {
   const unit = useTimeDiff(stats);
   const options = {
-    legend: { position: 'top', align: 'end', labels: { boxWidth: 12 } },
+    plugins: { legend: { position: 'top', align: 'end', labels: { boxWidth: 12 } } },
     tooltips: {
       callbacks: { label: (tooltip, data) => formatTimelineTooltip(tooltip, data, false) },
     },
