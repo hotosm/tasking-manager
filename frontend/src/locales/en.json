@@ -895,6 +895,7 @@
   "users.detail.topProjectsMappedTitle": "Top 5 projects contributed",
   "users.detail.topProjectsMapped.error": "No projects mapped until now.",
   "users.detail.topCausesTitle": "Top causes contributed to",
+  "users.detail.others": "Others",
   "users.detail.projects.noData": "Information is not available because no projects were mapped until now.",
   "users.detail.editsTitle": "Edits by numbers",
   "users.detail.edits.error": "No data to show yet. OpenStreetMap edits stats are updated with a delay of one hour.",
