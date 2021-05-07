@@ -1,43 +1,55 @@
 import React from 'react';
-import { FormattedMessage, FormattedNumber } from 'react-intl';
+// import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
-import { StatsCardContent } from '../statsCard';
+// import messages from './messages';
+import { BarChartItem } from '../userDetail/barListChart';
 
 export const OrganisationProjectStats = ({ projects }) => {
+  const totalProjects = projects ? projects.draft + projects.published + projects.archived : 0;
   return (
-    <>
+    <div className="pv2 ph3 bg-white blue-dark shadow-4">
       {projects && (
         <>
-          <div className="pa2 w-25-l w-50-m w-100 fl">
-            <div className="cf pa3 bg-white shadow-4">
-              <StatsCardContent
-                label={<FormattedMessage {...messages.publishedProjects} />}
-                className="tc"
-                value={<FormattedNumber value={projects.published} />}
+          <h3 className="f4 mv0 fw6 pt3">{totalProjects} created projects</h3>
+          <ol className="pa0 mt1 mb2">
+            {projects.published > 0 && (
+              <BarChartItem
+                name={'Published'}
+                percentValue={projects.published / totalProjects}
+                number={`${projects.published} projects`}
               />
-            </div>
-          </div>
-          <div className="pa2 w-25-l w-50-m w-100 fl">
-            <div className="cf pa3 bg-white shadow-4">
-              <StatsCardContent
-                label={<FormattedMessage {...messages.currentProjects} />}
-                className="tc"
-                value={<FormattedNumber value={projects.recent} />}
+            )}
+            {projects.archived > 0 && (
+              <BarChartItem
+                name={'Archived'}
+                percentValue={projects.archived / totalProjects}
+                number={`${projects.archived} projects`}
               />
-            </div>
-          </div>
-          <div className="pa2 w-25-l w-50-m w-100 fl">
-            <div className="cf pa3 bg-white shadow-4">
-              <StatsCardContent
-                label={<FormattedMessage {...messages.staleProjects} />}
-                className="tc"
-                value={<FormattedNumber value={projects.stale} />}
+            )}
+            {projects.draft > 0 && (
+              <BarChartItem
+                name={'Draft'}
+                percentValue={projects.draft / totalProjects}
+                number={`${projects.draft} projects`}
               />
-            </div>
-          </div>
+            )}
+            {projects.stale > 0 && (
+              <BarChartItem
+                name={'Stale'}
+                percentValue={projects.stale / totalProjects}
+                number={`${projects.stale} projects`}
+              />
+            )}
+            {projects.recent > 0 && (
+              <BarChartItem
+                name={'Recent'}
+                percentValue={projects.recent / totalProjects}
+                number={`${projects.recent} projects`}
+              />
+            )}
+          </ol>
         </>
       )}
-    </>
+    </div>
   );
 };
