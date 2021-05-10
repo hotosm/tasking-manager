@@ -2278,12 +2278,12 @@
     cldr-core "38"
     tslib "^2.1.0"
 
-"@formatjs/intl-pluralrules@^4.0.17":
-  version "4.0.17"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.17.tgz#33b1799035e07db08bedd6e68edc7fc0e06c216b"
-  integrity sha512-SOX7lRrM1DQXZSzqoCztT+Gc6lnnoqGAVrX/YivQ7J8miPfxN8vgZhZN0MiEGPSLV0HJdO+AA+Xu0hUNJPlpnQ==
+"@formatjs/intl-pluralrules@^4.0.18":
+  version "4.0.18"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.18.tgz#da4bda058cce5217691836c4f46ba3e9f25b0eeb"
+  integrity sha512-qRFITPsNoeXfsiGc97pp8mVgqcC7aQNuXsiJjY9LpXVTkYNfjUP4ZpbYXflM4xoWCXMJNz3ilsrQhZWXy9td5g==
   dependencies:
-    "@formatjs/ecma402-abstract" "1.7.0"
+    "@formatjs/ecma402-abstract" "1.7.1"
     tslib "^2.1.0"
 
 "@formatjs/intl-relativetimeformat@^8.1.8":
