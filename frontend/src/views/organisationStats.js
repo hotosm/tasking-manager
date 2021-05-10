@@ -90,14 +90,6 @@ export const OrganisationStats = ({ id }) => {
               <RemainingTasksStats tasks={orgStats && orgStats.activeTasks} />
             </ReactPlaceholder>
           </div>
-          <div className="w-75-l fl cf">
-            <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
-              <FormattedMessage {...messages.orgProjectStats} />
-            </h4>
-            <div>
-              <OrganisationProjectStats projects={orgStats && orgStats.projects} />
-            </div>
-          </div>
           <div className="w-100 fl cf">
             <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
               {showTierInfo ? (
@@ -120,6 +112,17 @@ export const OrganisationStats = ({ id }) => {
                 />
               )}
             </ReactPlaceholder>
+          </div>
+          <div className="w-40-l w-100 fl cf">
+            <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
+              <FormattedMessage {...messages.orgProjectStats} />
+            </h4>
+            <div className="pa2">
+              <OrganisationProjectStats
+                projects={orgStats && orgStats.projects}
+                orgName={organisation.name}
+              />
+            </div>
           </div>
         </div>
       </ReactPlaceholder>

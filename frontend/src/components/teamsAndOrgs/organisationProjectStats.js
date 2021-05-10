@@ -1,52 +1,61 @@
 import React from 'react';
-// import { FormattedMessage } from 'react-intl';
+import { setDayOfYear, format } from 'date-fns';
+import { FormattedMessage } from 'react-intl';
 
-// import messages from './messages';
+import statusMessages from '../projectEdit/messages';
+import messages from './messages';
 import { BarChartItem } from '../userDetail/barListChart';
+import { compareByPropertyDescending } from '../../utils/sorting';
 
-export const OrganisationProjectStats = ({ projects }) => {
+export const OrganisationProjectStats = ({ projects, orgName }) => {
   const totalProjects = projects ? projects.draft + projects.published + projects.archived : 0;
+  const firstDayOfYear = format(setDayOfYear(new Date(), 1), 'yyyy-MM-dd');
+  const chartItems = [
+    {
+      name: <FormattedMessage {...statusMessages.statusPUBLISHED} />,
+      value: projects ? projects.published : 0,
+      link: `/manage/projects/?managedByMe=1&status=PUBLISHED&organisation=${orgName}`,
+    },
+    {
+      name: <FormattedMessage {...statusMessages.statusDRAFT} />,
+      value: projects ? projects.draft : 0,
+      link: `/manage/projects/?status=DRAFT&organisation=${orgName}`,
+    },
+    {
+      name: <FormattedMessage {...messages.stale} />,
+      value: projects ? projects.stale : 0,
+      link: `/manage/projects/?stale=1&organisation=${orgName}`,
+    },
+    {
+      name: <FormattedMessage {...messages.createdThisYear} />,
+      value: projects ? projects.recent : 0,
+      link: `/manage/projects/?createdFrom=${firstDayOfYear}&status=ARCHIVED,PUBLISHED&organisation=${orgName}`,
+    },
+  ];
+  const stats = chartItems.sort((a, b) => compareByPropertyDescending(a, b, 'value'));
+
   return (
     <div className="pv2 ph3 bg-white blue-dark shadow-4">
       {projects && (
         <>
-          <h3 className="f4 mv0 fw6 pt3">{totalProjects} created projects</h3>
+          <h3 className="f4 mv0 fw6 pt3">
+            <FormattedMessage {...messages.projectsCreated} values={{ number: totalProjects }} />
+          </h3>
           <ol className="pa0 mt1 mb2">
-            {projects.published > 0 && (
+            {stats.map((item, n) => (
               <BarChartItem
-                name={'Published'}
-                percentValue={projects.published / totalProjects}
-                number={`${projects.published} projects`}
+                key={n}
+                name={item.name}
+                link={item.link}
+                percentValue={item.value / stats[0].value}
+                number={
+                  <FormattedMessage
+                    {...messages.numberOfProjects}
+                    values={{ number: item.value }}
+                  />
+                }
               />
-            )}
-            {projects.archived > 0 && (
-              <BarChartItem
-                name={'Archived'}
-                percentValue={projects.archived / totalProjects}
-                number={`${projects.archived} projects`}
-              />
-            )}
-            {projects.draft > 0 && (
-              <BarChartItem
-                name={'Draft'}
-                percentValue={projects.draft / totalProjects}
-                number={`${projects.draft} projects`}
-              />
-            )}
-            {projects.stale > 0 && (
-              <BarChartItem
-                name={'Stale'}
-                percentValue={projects.stale / totalProjects}
-                number={`${projects.stale} projects`}
-              />
-            )}
-            {projects.recent > 0 && (
-              <BarChartItem
-                name={'Recent'}
-                percentValue={projects.recent / totalProjects}
-                number={`${projects.recent} projects`}
-              />
-            )}
+            ))}
           </ol>
         </>
       )}

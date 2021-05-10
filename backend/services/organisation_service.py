@@ -203,12 +203,15 @@ class OrganisationService:
         projects_dto.archived = projects.filter(
             Project.status == ProjectStatus.ARCHIVED.value
         ).count()
-        # projects created in the current year
         projects_dto.recent = projects.filter(
-            extract("year", Project.created) == datetime.now().year
+            Project.status.in_(
+                [ProjectStatus.ARCHIVED.value, ProjectStatus.PUBLISHED.value]
+            ),
+            extract("year", Project.created) == datetime.now().year,
         ).count()
         projects_dto.stale = projects.filter(
-            func.DATE(Project.last_updated) < datetime.now() + relativedelta(months=-6)
+            Project.status == ProjectStatus.PUBLISHED.value,
+            func.DATE(Project.last_updated) < datetime.now() + relativedelta(months=-6),
         ).count()
 
         # populate tasks stats

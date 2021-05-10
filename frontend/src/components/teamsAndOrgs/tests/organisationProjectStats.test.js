@@ -1,4 +1,5 @@
 import React from 'react';
+import { setDayOfYear, format } from 'date-fns';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
@@ -6,6 +7,7 @@ import { IntlProviders } from '../../../utils/testWithIntl';
 import { OrganisationProjectStats } from '../organisationProjectStats';
 
 describe('OrganisationProjectStats', () => {
+  const firstDayOfYear = format(setDayOfYear(new Date(), 1), 'yyyy-MM-dd');
   it('renders correct values and labels', () => {
     let projects = {
       draft: 6,
@@ -16,19 +18,23 @@ describe('OrganisationProjectStats', () => {
     };
     render(
       <IntlProviders>
-        <OrganisationProjectStats projects={projects} />
+        <OrganisationProjectStats projects={projects} orgName="HOT" />
       </IntlProviders>,
     );
-    expect(screen.getByText(/30 created projects/)).toBeInTheDocument();
-    expect(screen.getByText(/Published/)).toBeInTheDocument();
+    expect(screen.getByText('30 projects created')).toBeInTheDocument();
+    expect(screen.getByText('Published').href).toContain(
+      '/manage/projects/?managedByMe=1&status=PUBLISHED&organisation=HOT',
+    );
     expect(screen.getByText(/20 projects/)).toBeInTheDocument();
-    expect(screen.getByText(/Archived/)).toBeInTheDocument();
-    expect(screen.getByText(/4 projects/)).toBeInTheDocument();
-    expect(screen.getByText(/Draft/)).toBeInTheDocument();
+    expect(screen.getByText(/Draft/).href).toContain(
+      '/manage/projects/?status=DRAFT&organisation=HOT',
+    );
     expect(screen.getByText(/6 projects/)).toBeInTheDocument();
-    expect(screen.getByText(/Stale/)).toBeInTheDocument();
+    expect(screen.getByText(/Stale/).href).toContain('/manage/projects/?stale=1&organisation=HOT');
     expect(screen.getByText(/12 projects/)).toBeInTheDocument();
-    expect(screen.getByText(/Recent/)).toBeInTheDocument();
+    expect(screen.getByText(/Created this year/)).toBeInTheDocument(
+      `/manage/projects/?createdFrom=${firstDayOfYear}&status=ARCHIVED,PUBLISHED&organisation=HOT`,
+    );
     expect(screen.getByText(/9 projects/)).toBeInTheDocument();
   });
 
@@ -42,17 +48,24 @@ describe('OrganisationProjectStats', () => {
     };
     render(
       <IntlProviders>
-        <OrganisationProjectStats projects={projects} />
+        <OrganisationProjectStats projects={projects} orgName="Another Org" />
       </IntlProviders>,
     );
-    expect(screen.getByText(/10 created projects/)).toBeInTheDocument();
-    expect(screen.getByText(/Published/)).toBeInTheDocument();
+    expect(screen.getByText(/10 projects created/)).toBeInTheDocument();
+    expect(screen.getByText('Published').href).toContain(
+      '/manage/projects/?managedByMe=1&status=PUBLISHED&organisation=Another%20Org',
+    );
     expect(screen.getByText(/9 projects/)).toBeInTheDocument();
-    expect(screen.queryByText(/Archived/)).not.toBeInTheDocument();
-    expect(screen.getByText(/Draft/)).toBeInTheDocument();
-    expect(screen.getByText(/1 projects/)).toBeInTheDocument();
-    expect(screen.queryByText(/Stale/)).not.toBeInTheDocument();
-    expect(screen.getByText(/Recent/)).toBeInTheDocument();
-    expect(screen.getByText(/10 projects/)).toBeInTheDocument();
+    expect(screen.getByText(/Draft/).href).toContain(
+      '/manage/projects/?status=DRAFT&organisation=Another%20Org',
+    );
+    expect(screen.getByText(/1 project/)).toBeInTheDocument();
+    expect(screen.getByText(/Stale/).href).toContain(
+      '/manage/projects/?stale=1&organisation=Another%20Org',
+    );
+    expect(screen.getByText(/Created this year/)).toBeInTheDocument(
+      `/manage/projects/?createdFrom=${firstDayOfYear}&status=ARCHIVED,PUBLISHED&organisation=Another%20Org`,
+    );
+    expect(screen.getByText('10 projects')).toBeInTheDocument();
   });
 });

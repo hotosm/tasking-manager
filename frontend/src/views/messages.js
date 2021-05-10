@@ -139,7 +139,7 @@ export default defineMessages({
   },
   orgProjectStats: {
     id: 'teamsAndOrgs.management.organisation.project_stats',
-    defaultMessage: 'Project Statistics',
+    defaultMessage: 'Projects Statistics',
   },
   tier: {
     id: 'teamsAndOrgs.management.organisation.usage_tier',

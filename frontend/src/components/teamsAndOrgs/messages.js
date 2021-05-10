@@ -84,6 +84,22 @@ export default defineMessages({
     id: 'management.projects',
     defaultMessage: 'Projects',
   },
+  stale: {
+    id: 'management.projects.stale',
+    defaultMessage: 'Stale',
+  },
+  createdThisYear: {
+    id: 'management.projects.created_this_year',
+    defaultMessage: 'Created this year',
+  },
+  projectsCreated: {
+    id: 'management.projects.created.total',
+    defaultMessage: '{number, plural, one {# project created} other {# projects created}}',
+  },
+  numberOfProjects: {
+    id: 'management.projects.stats',
+    defaultMessage: '{number, plural, one {# project} other {# projects}}',
+  },
   campaigns: {
     id: 'management.campaigns',
     defaultMessage: 'Campaigns',
@@ -240,18 +256,6 @@ export default defineMessages({
     id: 'management.organisations.stats.actions_needed.help',
     defaultMessage:
       'Action means a mapping or validation operation. As each task needs to be mapped and validated, this is the number of actions needed to finish all the published projects of that organization.',
-  },
-  currentProjects: {
-    id: 'management.organisations.stats.current_projects',
-    defaultMessage: 'Projects created this year',
-  },
-  publishedProjects: {
-    id: 'management.organisations.stats.published_projects',
-    defaultMessage: 'Projects published',
-  },
-  staleProjects: {
-    id: 'management.organisations.stats.stale_projects',
-    defaultMessage: 'Stale projects in the last 6 months',
   },
   subscribedTier: {
     id: 'management.organisations.stats.tier.subscribed',
