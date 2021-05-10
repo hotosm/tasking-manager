@@ -2215,6 +2215,13 @@
   dependencies:
     tslib "^2.1.0"
 
+"@formatjs/ecma402-abstract@1.7.1":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.7.1.tgz#1459a9dad654d5d5ec34765965b8e4f22ad6ff81"
+  integrity sha512-FjewVLB2DVEVCvvC7IMffzXVhysvi442i6ed0H7qcrT6xtUpO4vr0oZgpOmsv6D9I4Io0GVebIuySwteS/k3gg==
+  dependencies:
+    tslib "^2.1.0"
+
 "@formatjs/fast-memoize@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@formatjs/fast-memoize/-/fast-memoize-1.1.1.tgz#3006b58aca1e39a98aca213356b42da5d173f26b"
@@ -2279,12 +2286,12 @@
     "@formatjs/ecma402-abstract" "1.7.0"
     tslib "^2.1.0"
 
-"@formatjs/intl-relativetimeformat@^8.1.7":
-  version "8.1.7"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-8.1.7.tgz#40d4f5e9c0fc201ae3cf06006c20e759c7ecb160"
-  integrity sha512-S8OoqOwiSqU/T0umkjB2lZcyWS4Dh8sWd4m8V+MsSnraeijNho/wSXQhJAuHx0b2Xvnlddt7a5RwyUnLADUepA==
+"@formatjs/intl-relativetimeformat@^8.1.8":
+  version "8.1.8"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-8.1.8.tgz#9d5e61b2224afec84143d863e85c806c894a8d8f"
+  integrity sha512-MIVrsgG7hvYrnes6TxJLflXhhTuxIaWCIdf6p5Iv6HguTtDJqqAFOCNRCqUnYQeYcNbgIQBgLb0Kh7djS0GU+w==
   dependencies:
-    "@formatjs/ecma402-abstract" "1.7.0"
+    "@formatjs/ecma402-abstract" "1.7.1"
     tslib "^2.1.0"
 
 "@formatjs/intl-unified-numberformat@^3.2.0":

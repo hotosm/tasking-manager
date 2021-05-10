@@ -6,7 +6,7 @@
   "dependencies": {
     "@formatjs/intl-locale": "^2.4.23",
     "@formatjs/intl-pluralrules": "^4.0.17",
-    "@formatjs/intl-relativetimeformat": "^8.1.7",
+    "@formatjs/intl-relativetimeformat": "^8.1.8",
     "@formatjs/macro": "^0.2.8",
     "@hotosm/id": "^2.19.6",
     "@hotosm/iso-countries-languages": "^1.1.1",
