@@ -65,7 +65,7 @@ const translatedMessages = {
 // commented values doesn't have a good amount of strings translated
 const supportedLocales = [
   // { value: 'ar', label: 'عربى' },
-  { value: 'cs', label: 'Česky' },
+  { value: 'cs', label: 'Čeština' },
   { value: 'de', label: 'Deutsch' },
   { value: 'el', label: 'Ελληνικά' },
   { value: 'en', label: 'English' },
@@ -89,7 +89,7 @@ const supportedLocales = [
   // { value: 'tl', label: 'Filipino (Tagalog)' },
   { value: 'tr', label: 'Türkçe' },
   { value: 'uk', label: 'Українська' },
-  { value: 'zh', label: '中国台湾' },
+  { value: 'zh', label: '繁體中文' },
 ];
 
 function getSupportedLocale(locale) {

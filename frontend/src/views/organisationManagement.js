@@ -203,8 +203,10 @@ export function EditOrganisation(props) {
             </div>
             <div className="w-auto fr">
               <Link to={`/organisations/${organisation.organisationId}/stats/`}>
-                <CustomButton className="bg-tan ba b--blue-light blue-light pv2 ph3">
-                  <ChartLineIcon className="pr1 pb1 h1 v-mid" />
+                <CustomButton
+                  className="bg-red ba b--red white pv2 ph3"
+                  icon={<ChartLineIcon className="h1 v-mid" />}
+                >
                   <FormattedMessage {...messages.statistics} />
                 </CustomButton>
               </Link>

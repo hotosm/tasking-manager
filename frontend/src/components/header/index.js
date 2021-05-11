@@ -11,6 +11,7 @@ import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { LocaleSelector } from '../localeSelect';
 import { Button } from '../button';
+import { UpdateDialog } from './updateDialog';
 import { BurgerMenu } from './burgerMenu';
 import { TopNavLink } from './NavLink';
 import { SignUp } from './signUp';
@@ -222,6 +223,7 @@ class Header extends React.Component {
     return (
       // Validate that user has set is email.
       <header className="w-100 bb b--grey-light">
+        <UpdateDialog />
         {this.checkUserEmail()}
         {this.props.showOrgBar && (
           <div className="cf ph2 red pt3 pb2 bb b--grey-light">

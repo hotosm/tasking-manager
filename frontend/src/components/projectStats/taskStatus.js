@@ -67,7 +67,8 @@ const TasksByStatus = ({ stats }) => {
           <Doughnut
             data={data}
             options={{
-              legend: { position: 'right', labels: { boxWidth: 12 } },
+              aspectRatio: 2,
+              plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } },
               tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
             }}
           />

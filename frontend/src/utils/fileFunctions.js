@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import lineToPolygon from '@turf/line-to-polygon';
+import area from '@turf/area';
 import { kml } from '@tmcw/togeojson';
 
 import messages from '../components/projectCreate/messages';
@@ -47,19 +48,19 @@ export const verifyFileSize = (file, error) => {
   }
 };
 
-const validateFeature = (e, supportedGeoms, err) => {
+const validateFeature = (e, supportedGeoms, error) => {
   if (supportedGeoms.includes(e.geometry.type) === false) {
-    err.message = (
+    error.message = (
       <FormattedMessage {...messages.unsupportedGeom} values={{ geometry: e.geometry.type }} />
     );
-    throw err;
+    throw error;
   }
   // Transform lineString to polygon
   if (e.geometry.type === 'LineString') {
     const coords = e.geometry.coordinates;
     if (JSON.stringify(coords[0]) !== JSON.stringify(coords[coords.length - 1])) {
-      err.message = <FormattedMessage {...messages.closedLinestring} />;
-      throw err;
+      error.message = <FormattedMessage {...messages.closedLinestring} />;
+      throw error;
     }
     return lineToPolygon(e);
   }
@@ -72,6 +73,8 @@ export const verifyGeometry = (geom, error, supportedGeoms) => {
     throw error;
   }
   // Validate geometry for each feature.
-  geom.features = geom.features.map((g) => validateFeature(g, supportedGeoms, error));
+  geom.features = geom.features
+    .map((feature) => validateFeature(feature, supportedGeoms, error))
+    .filter((feature) => area(feature) > 0);
   return geom;
 };

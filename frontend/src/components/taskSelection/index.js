@@ -389,7 +389,7 @@ export function TaskSelection({ project, type, loading }: Object) {
           </ReactPlaceholder>
         </div>
       </div>
-      <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-5">
+      <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-4">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={3}
