@@ -8,7 +8,9 @@ All team members are encouraged to regularly review Pull Requests. Within the te
 1. Check naming convention of the PR branch
    For all team Pull Requests make sure they follow the established naming schema:
    * `feature/ISSUENUMBER-SOME-DESCRIPTION` for all new features
-   * `fix/ISSUENUMBER-SOME-DESCRIPTION` for urgent bugs
+   * `fix/ISSUENUMBER-SOME-DESCRIPTION` for all bug fixes
+   * `translations/yyyy-mm-dd` when updating translations from transifex
+   * `dependencies/yyyy-mm-dd` or `dependencies/PKGNAME` for updates on dependencies
 
   In case the branch name doesn’t fit. Ask the PR contributor to adjust the naming to our
 git flow model.
