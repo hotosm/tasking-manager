@@ -8,7 +8,7 @@ All team members are encouraged to regularly review Pull Requests. Within the te
 1. Check naming convention of the PR branch
    For all team Pull Requests make sure they follow the established naming schema:
    * `feature/ISSUENUMBER-SOME-DESCRIPTION` for all new features
-   * `hotfix/ISSUENUMBER-SOME-DESCRIPTION` for urgent bugs
+   * `fix/ISSUENUMBER-SOME-DESCRIPTION` for urgent bugs
 
   In case the branch name doesn’t fit. Ask the PR contributor to adjust the naming to our
 git flow model.
@@ -20,7 +20,7 @@ the next step.
 
   Team PRs: `git fetch origin && git checkout BRANCHNAME`
 
-  Outside collaboration PRs: `git fetch origin pull/PRNUMBER/head:feature/PRNUMBER-SOME-DISCRIPTION git checkout BRANCHNAME`
+  Outside collaboration PRs: `git fetch origin pull/PRNUMBER/head:<feature/PRNUMBER-SOME-DESCRIPTION> && git checkout BRANCHNAME`
 
 3. Check whether PR is up-to-date with `develop`
 
