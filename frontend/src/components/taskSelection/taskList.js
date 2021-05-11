@@ -394,10 +394,12 @@ function PaginatedList({
 }: Object) {
   const [page, setPage] = useQueryParam('page', NumberParam);
   const lastPage = howManyPages(items.length, pageSize);
-  // change page to 1 if the page number is not valid
-  if (items && page && page > lastPage) {
-    setPage(1);
-  }
+  // reset page number to 1 if it is not valid any more
+  useEffect(() => {
+    if (items && page > 1 && page > lastPage) {
+      setPage(1);
+    }
+  }, [items, page, lastPage, setPage]);
 
   const latestItems = useRef(items);
   useEffect(() => {
