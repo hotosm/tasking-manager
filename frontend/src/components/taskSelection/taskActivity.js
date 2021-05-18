@@ -70,7 +70,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
   const [shownHistory, setShownHistory] = useState([]);
 
   useEffect(() => {
-    if (commentPayload) {
+    if (commentPayload && commentPayload.taskHistory) {
       setHistory(commentPayload.taskHistory);
       setTaskComments(commentPayload.taskHistory.filter((t) => t.action === 'COMMENT'));
       setTaskChanges(commentPayload.taskHistory.filter((t) => t.action !== 'COMMENT'));
