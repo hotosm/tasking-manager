@@ -58,10 +58,17 @@ describe('TaskHistory', () => {
     expect(screen.getByText('User01')).toBeInTheDocument();
     expect(screen.getByText('commented 1 hour ago')).toBeInTheDocument();
     expect(screen.getByText('missing buildings')).toBeInTheDocument();
+    expect(
+      screen.queryByText('marked as more mapping needed 1 minute ago'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('locked for validation 2 hours ago')).not.toBeInTheDocument();
 
     fireEvent.click(historyCheckBoxes[1]); // check activities checkbox
     expect(screen.getByText('marked as more mapping needed 1 minute ago')).toBeInTheDocument();
     expect(screen.getByText('locked for validation 2 hours ago')).toBeInTheDocument();
+    fireEvent.click(historyCheckBoxes[0]); // uncheck comments checkbox
+    expect(screen.queryByText('commented 1 hour ago')).not.toBeInTheDocument();
+    expect(screen.queryByText('missing buildings')).not.toBeInTheDocument();
   });
 
   it('does not render any task history when not provided', () => {
