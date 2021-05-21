@@ -239,9 +239,8 @@ export const PriorityAreasForm = () => {
       mapObj.map.on('load', () => {
         mapObj.map.addControl(mapObj.draw);
         addMapLayers(mapObj.map);
+        mapObj.map.fitBounds(projectInfo.aoiBBOX, { duration: 0, padding: 100 });
       });
-
-      mapObj.map.fitBounds(projectInfo.aoiBBOX, { duration: 0, padding: 100 });
 
       mapObj.map.on('styledata', () => {
         addMapLayers(mapObj.map);
