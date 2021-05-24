@@ -9791,10 +9791,10 @@ mapbox-gl@^1.13.1:
     tinyqueue "^2.0.3"
     vt-pbf "^3.1.1"
 
-marked@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-2.0.3.tgz#3551c4958c4da36897bda2a16812ef1399c8d6b0"
-  integrity sha512-5otztIIcJfPc2qGTN8cVtOJEjNJZ0jwa46INMagrYfk0EvqtRuEHLsEe0LrFS0/q+ZRKT0+kXK7P2T1AN5lWRA==
+marked@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-2.0.5.tgz#2d15c759b9497b0e7b5b57f4c2edabe1002ef9e7"
+  integrity sha512-yfCEUXmKhBPLOzEC7c+tc4XZdIeTdGoRCZakFMkCxodr7wDXqoapIME4wjcpBPJLNyUnKJ3e8rb8wlAgnLnaDw==
 
 marked@~1.2.3:
   version "1.2.9"
