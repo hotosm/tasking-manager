@@ -430,21 +430,21 @@ const TaskValidationSelector = ({
           <label htmlFor="INVALIDATED">
             <FormattedMessage {...messages.incomplete} />
           </label>
-          {currentStatus && (
-            <CustomButton
-              className={`${
-                showCommentInput ? 'b--red red' : 'b--grey-light blue-dark'
-              } bg-white ba br1 ml3 pv2 ph3`}
-              onClick={() => setShowCommentInput(!showCommentInput)}
-            >
-              {comment ? (
-                <CommentIcon className="h1 w1 v-mid mr1" />
+          <CustomButton
+            className={`${
+              showCommentInput ? 'b--red red' : 'b--grey-light blue-dark'
+            } bg-white ba br1 ml3 pv2 ph3`}
+            onClick={() => setShowCommentInput(!showCommentInput)}
+            icon={
+              comment ? (
+                <CommentIcon className="h1 w1 v-mid" />
               ) : (
-                <PlusIcon className="h1 w1 mr1 v-mid" />
-              )}
-              <FormattedMessage {...messages.comment} />
-            </CustomButton>
-          )}
+                <PlusIcon className="h1 w1 v-mid" />
+              )
+            }
+          >
+            <FormattedMessage {...messages.comment} />
+          </CustomButton>
         </div>
       </div>
       {showCommentInput && (
@@ -454,6 +454,7 @@ const TaskValidationSelector = ({
               comment={comment}
               setComment={setComment}
               enableHashtagPaste={false}
+              autoFocus={true}
             />
           </div>
           {isValidatingMultipleTasks && comment && (
