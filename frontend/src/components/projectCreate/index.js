@@ -24,11 +24,7 @@ import { Alert } from '../alert';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { makeGrid } from '../../utils/taskGrid';
 import { MAX_AOI_AREA } from '../../config';
-import {
-  verifyGeometry,
-  readGeoFile,
-  getErrorMsg,
-} from '../../utils/geoFileFunctions/fileFunctions';
+import { verifyGeometry, readGeoFile, getErrorMsg } from '../../utils/geoFileFunctions';
 
 const ProjectCreationMap = React.lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
@@ -39,7 +35,7 @@ const ProjectCreate = (props) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [drawModeIsActive, setDrawModeIsActive] = useState(false);
 
-  const setDataGeom = (geom, display = true) => {
+  const setDataGeom = (geom, display) => {
     const supportedGeoms = ['Polygon', 'MultiPolygon', 'LineString'];
 
     try {
@@ -61,7 +57,7 @@ const ProjectCreate = (props) => {
         mapObj.map.getSource('aoi').setData(validGeometry);
       }
     } catch (err) {
-      setErr({ error: true, message: getErrorMsg(err.message) });
+      setErr({ error: true, message: getErrorMsg(err.message) || err.message });
     }
   };
 
@@ -69,11 +65,18 @@ const ProjectCreate = (props) => {
     let file = files[0];
     if (!file) return null;
     try {
-      setErr({ code: 403, message: null });
-      readGeoFile(file, setDataGeom);
+      setErr({ code: 403, message: null }); //reset error on new file upload
+
+      readGeoFile(file)
+        .then((geometry) => {
+          setDataGeom(geometry, true);
+        })
+        .catch((error) =>
+          setErr({ error: true, message: getErrorMsg(error.message) || error.message }),
+        );
     } catch (e) {
       deleteHandler();
-      setErr({ error: true, message: getErrorMsg(e.message) });
+      setErr({ error: true, message: getErrorMsg(e.message) || e.message });
     }
   };
 

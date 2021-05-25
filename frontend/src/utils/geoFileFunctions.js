@@ -4,8 +4,8 @@ import lineToPolygon from '@turf/line-to-polygon';
 import area from '@turf/area';
 import { kml } from '@tmcw/togeojson';
 
-import messages from '../../components/projectCreate/messages';
-import { MAX_FILESIZE } from '../../config';
+import messages from '../components/projectCreate/messages';
+import { MAX_FILESIZE } from '../config';
 import shpjs from 'shpjs';
 
 var osmToGeojson = require('osmtogeojson');
@@ -42,7 +42,25 @@ export const verifyGeometry = (geom, supportedGeoms) => {
   return geom;
 };
 
-export const readGeoFile = (file, renderFn) => {
+function readFileAsync(file, format) {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+
+    reader.onerror = reject;
+
+    if (format === 'zip') {
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.readAsText(file);
+    }
+  });
+}
+
+export const readGeoFile = async (file) => {
   const supportedFormats = ['json', 'geojson', 'kml', 'osm', 'xml', 'zip'];
   const format = file.name.split('.')[1].toLowerCase();
 
@@ -52,44 +70,29 @@ export const readGeoFile = (file, renderFn) => {
 
   verifyFileSize(file);
 
-  let fileReader = new FileReader();
-
-  if (format === 'zip') {
-    fileReader.readAsArrayBuffer(file);
-  } else {
-    fileReader.readAsText(file);
+  let fileContent = await readFileAsync(file, format);
+  switch (format) {
+    case 'json':
+    case 'geojson':
+      return JSON.parse(fileContent);
+    case 'kml':
+      return kml(new DOMParser().parseFromString(fileContent, 'text/xml'));
+    case 'osm':
+      let osm = new DOMParser().parseFromString(fileContent, 'text/xml');
+      return osmToGeojson(osm);
+    case 'xml':
+      let xml = new DOMParser().parseFromString(fileContent, 'text/xml');
+      return osmToGeojson(xml);
+    case 'zip':
+      return shpjs(fileContent).then((geom) => geom);
+    default:
+      break;
   }
-
-  fileReader.onload = () => {
-    let geometry = null;
-
-    switch (format) {
-      case 'json':
-      case 'geojson':
-        geometry = JSON.parse(fileReader.result);
-        break;
-      case 'kml':
-        geometry = kml(new DOMParser().parseFromString(fileReader.result, 'text/xml'));
-        break;
-      case 'osm':
-        let osm = new DOMParser().parseFromString(fileReader.result, 'text/xml');
-        geometry = osmToGeojson(osm);
-        break;
-      case 'xml':
-        let xml = new DOMParser().parseFromString(fileReader.result, 'text/xml');
-        geometry = osmToGeojson(xml);
-        break;
-      case 'zip':
-        shpjs(fileReader.result).then((geom) => renderFn(geom));
-        break;
-      default:
-        break;
-    }
-    if (format !== 'zip') renderFn(geometry);
-  };
 };
 
 export const getErrorMsg = (msg) => {
+  let intlMessageExists = !!messages[msg];
+
   if (msg === 'fileSize') {
     return <FormattedMessage {...messages[msg]} values={{ fileSize: MAX_FILESIZE / 1000000 }} />;
   }
@@ -101,5 +104,5 @@ export const getErrorMsg = (msg) => {
       />
     );
   }
-  return <FormattedMessage {...messages[msg]} />;
+  return intlMessageExists ? <FormattedMessage {...messages[msg]} /> : null;
 };

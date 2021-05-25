@@ -16,11 +16,7 @@ import { CustomButton } from '../button';
 import { MappedIcon, WasteIcon, MappedSquareIcon, FileImportIcon } from '../svgIcons';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL, CHART_COLOURS } from '../../config';
 import { BasemapMenu } from '../basemapMenu';
-import {
-  verifyGeometry,
-  readGeoFile,
-  getErrorMsg,
-} from '../../utils/geoFileFunctions/fileFunctions';
+import { verifyGeometry, readGeoFile, getErrorMsg } from '../../utils/geoFileFunctions';
 import { Alert } from '../alert';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -79,11 +75,19 @@ export const PriorityAreasForm = () => {
   const uploadFile = (files) => {
     let file = files[0];
     if (!file) return;
+
     try {
       setError({ error: false, message: null }); //reset error on new file upload
-      readGeoFile(file, verifyAndRenderPriorityArea);
+
+      readGeoFile(file)
+        .then((geometry) => {
+          verifyAndRenderPriorityArea(geometry);
+        })
+        .catch((error) =>
+          setError({ error: true, message: getErrorMsg(error.message) || error.message }),
+        );
     } catch (err) {
-      setError({ error: true, message: getErrorMsg(err.message) });
+      setError({ error: true, message: getErrorMsg(err.message) || err.message });
     }
   };
 
@@ -96,7 +100,7 @@ export const PriorityAreasForm = () => {
       setProjectInfo({ ...projectInfo, priorityAreas: priorityAreas });
       mapObj.map.getSource('priority_areas').setData(validGeometry);
     } catch (err) {
-      setError({ error: true, message: getErrorMsg(err.message) });
+      setError({ error: true, message: getErrorMsg(err.message) || err.message });
     }
   };
 
