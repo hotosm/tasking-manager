@@ -174,7 +174,7 @@ export function CompletionTabForMapping({
             value="MAPPED"
             className={radioInput}
             checked={selectedStatus === 'MAPPED'}
-            onClick={() => setSelectedStatus('MAPPED')}
+            onChange={() => setSelectedStatus('MAPPED')}
           />
           <label htmlFor="MAPPED">
             <FormattedMessage {...messages.complete} />
@@ -187,7 +187,7 @@ export function CompletionTabForMapping({
             value="READY"
             className={radioInput}
             checked={selectedStatus === 'READY'}
-            onClick={() => setSelectedStatus('READY')}
+            onChange={() => setSelectedStatus('READY')}
           />
           <label htmlFor="READY">
             <FormattedMessage {...messages.incomplete} />
@@ -201,7 +201,7 @@ export function CompletionTabForMapping({
               value="BADIMAGERY"
               className={radioInput}
               checked={selectedStatus === 'BADIMAGERY'}
-              onClick={() => setSelectedStatus('BADIMAGERY')}
+              onChange={() => setSelectedStatus('BADIMAGERY')}
             />
             <label htmlFor="BADIMAGERY">
               <FormattedMessage {...messages.badImagery} />
