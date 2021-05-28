@@ -11,6 +11,7 @@ import { DeleteModal } from '../deleteModal';
 import { styleClasses } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useOnDrop } from '../../hooks/UseUploadImage';
+import { useAsync } from '../../hooks/UseAsync';
 import FileRejections from '../comments/fileRejections';
 import DropzoneUploadStatus from '../comments/uploadStatus';
 import { DROPZONE_SETTINGS } from '../../config';
@@ -78,15 +79,13 @@ const ResetTasksModal = ({ projectId, close }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
 
-  const fn = () => {
-    fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/reset-all/`, token, 'POST')
+  const resetTasks = () => {
+    return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/reset-all/`, token, 'POST')
       .then((res) => setError(false))
       .catch((e) => setError(true));
   };
 
-  const handlerButton = (e) => {
-    fn();
-  };
+  const resetTasksAsync = useAsync(resetTasks);
 
   return (
     <div className={styleClasses.modalClass}>
@@ -103,7 +102,12 @@ const ResetTasksModal = ({ projectId, close }: Object) => {
         <Button className={styleClasses.whiteButtonClass} onClick={close}>
           <FormattedMessage {...messages.cancel} />
         </Button>
-        <Button className={styleClasses.redButtonClass} onClick={handlerButton}>
+        <Button
+          className={styleClasses.redButtonClass}
+          onClick={() => resetTasksAsync.execute()}
+          loading={resetTasksAsync.status === 'pending'}
+          disabled={resetTasksAsync.status === 'pending'}
+        >
           <FormattedMessage {...messages.taskResetButton} />
         </Button>
       </p>
@@ -115,15 +119,17 @@ const ResetBadImageryModal = ({ projectId, close }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
 
-  const fn = () => {
-    fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/reset-all-badimagery/`, token, 'POST')
+  const resetBadImagery = () => {
+    return fetchLocalJSONAPI(
+      `projects/${projectId}/tasks/actions/reset-all-badimagery/`,
+      token,
+      'POST',
+    )
       .then((res) => setError(false))
       .catch((e) => setError(true));
   };
 
-  const handlerButton = (e) => {
-    fn();
-  };
+  const resetBadImageryAsync = useAsync(resetBadImagery);
 
   return (
     <div className={styleClasses.modalClass}>
@@ -142,7 +148,12 @@ const ResetBadImageryModal = ({ projectId, close }: Object) => {
       <Button className={styleClasses.whiteButtonClass} onClick={close}>
         <FormattedMessage {...messages.cancel} />
       </Button>
-      <Button className={styleClasses.redButtonClass} onClick={handlerButton}>
+      <Button
+        className={styleClasses.redButtonClass}
+        onClick={() => resetBadImageryAsync.execute()}
+        loading={resetBadImageryAsync.status === 'pending'}
+        disabled={resetBadImageryAsync.status === 'pending'}
+      >
         <FormattedMessage {...messages.resetBadImageryButton} />
       </Button>
     </div>
@@ -153,15 +164,13 @@ const ValidateAllTasksModal = ({ projectId, close }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
 
-  const fn = () => {
-    fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/validate-all/`, token, 'POST')
+  const validateAllTasks = () => {
+    return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/validate-all/`, token, 'POST')
       .then((res) => setError(false))
       .catch((e) => setError(true));
   };
 
-  const handlerButton = (e) => {
-    fn();
-  };
+  const validateAllTasksAsync = useAsync(validateAllTasks);
 
   return (
     <div className={styleClasses.modalClass}>
@@ -180,7 +189,12 @@ const ValidateAllTasksModal = ({ projectId, close }: Object) => {
       <Button className={styleClasses.whiteButtonClass} onClick={close}>
         <FormattedMessage {...messages.cancel} />
       </Button>
-      <Button className={styleClasses.redButtonClass} onClick={handlerButton}>
+      <Button
+        className={styleClasses.redButtonClass}
+        onClick={() => validateAllTasksAsync.execute()}
+        loading={validateAllTasksAsync.status === 'pending'}
+        disabled={validateAllTasksAsync.status === 'pending'}
+      >
         <FormattedMessage {...messages.validateAllTasks} />
       </Button>
     </div>
@@ -191,15 +205,13 @@ const InvalidateAllTasksModal = ({ projectId, close }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
 
-  const fn = () => {
-    fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/invalidate-all/`, token, 'POST')
+  const invalidateAllTasks = () => {
+    return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/invalidate-all/`, token, 'POST')
       .then((res) => setError(false))
       .catch((e) => setError(true));
   };
 
-  const handlerButton = (e) => {
-    fn();
-  };
+  const invalidateAllTasksAsync = useAsync(invalidateAllTasks);
 
   return (
     <div className={styleClasses.modalClass}>
@@ -218,7 +230,12 @@ const InvalidateAllTasksModal = ({ projectId, close }: Object) => {
       <Button className={styleClasses.whiteButtonClass} onClick={close}>
         <FormattedMessage {...messages.cancel} />
       </Button>
-      <Button className={styleClasses.redButtonClass} onClick={handlerButton}>
+      <Button
+        className={styleClasses.redButtonClass}
+        onClick={() => invalidateAllTasksAsync.execute()}
+        loading={invalidateAllTasksAsync.status === 'pending'}
+        disabled={invalidateAllTasksAsync.status === 'pending'}
+      >
         <FormattedMessage {...messages.invalidateAll} />
       </Button>
     </div>
@@ -229,15 +246,13 @@ const MapAllTasksModal = ({ projectId, close }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [error, setError] = useState(null);
 
-  const fn = () => {
-    fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/map-all/`, token, 'POST')
+  const mapAllTasks = () => {
+    return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/map-all/`, token, 'POST')
       .then((res) => setError(false))
       .catch((e) => setError(true));
   };
 
-  const handlerButton = (e) => {
-    fn();
-  };
+  const mapAllTasksAsync = useAsync(mapAllTasks);
 
   return (
     <div className={styleClasses.modalClass}>
@@ -254,7 +269,12 @@ const MapAllTasksModal = ({ projectId, close }: Object) => {
       <Button className={styleClasses.whiteButtonClass} onClick={close}>
         <FormattedMessage {...messages.cancel} />
       </Button>
-      <Button className={styleClasses.redButtonClass} onClick={handlerButton}>
+      <Button
+        className={styleClasses.redButtonClass}
+        onClick={() => mapAllTasksAsync.execute()}
+        loading={mapAllTasksAsync.status === 'pending'}
+        disabled={mapAllTasksAsync.status === 'pending'}
+      >
         <FormattedMessage {...messages.mapAll} />
       </Button>
     </div>
@@ -273,8 +293,8 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
   });
   const [error, setError] = useState(null);
 
-  const fn = () => {
-    pushToLocalJSONAPI(
+  const messageAllContributors = () => {
+    return pushToLocalJSONAPI(
       `projects/${projectId}/actions/message-contributors/`,
       JSON.stringify(data),
       token,
@@ -284,12 +304,10 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
       .catch((e) => setError(true));
   };
 
+  const messageAllContributorsAsync = useAsync(messageAllContributors);
+
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
-  };
-
-  const handlerButton = (e) => {
-    fn();
   };
 
   return (
@@ -342,7 +360,12 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
       <Button className={styleClasses.whiteButtonClass} onClick={close}>
         <FormattedMessage {...messages.cancel} />
       </Button>
-      <Button className={styleClasses.redButtonClass} onClick={handlerButton}>
+      <Button
+        className={styleClasses.redButtonClass}
+        onClick={() => messageAllContributorsAsync.execute()}
+        loading={messageAllContributorsAsync.status === 'pending'}
+        disabled={messageAllContributorsAsync.status === 'pending'}
+      >
         <FormattedMessage {...messages.messageContributors} />
       </Button>
     </div>
@@ -366,8 +389,8 @@ const TransferProject = ({ projectId }: Object) => {
     fetchUsers(user);
   };
 
-  const fn = () => {
-    pushToLocalJSONAPI(
+  const transferOwnership = () => {
+    return pushToLocalJSONAPI(
       `projects/${projectId}/actions/transfer-ownership/`,
       JSON.stringify({ username: username }),
       token,
@@ -377,9 +400,7 @@ const TransferProject = ({ projectId }: Object) => {
       .catch((e) => setError(true));
   };
 
-  const handlerButton = (e) => {
-    fn();
-  };
+  const transferOwnershipAsync = useAsync(transferOwnership);
 
   // Redirect on success.
   if (error === false) {
@@ -419,7 +440,12 @@ const TransferProject = ({ projectId }: Object) => {
           ))}
         </div>
       </Popup>
-      <Button onClick={handlerButton} className={styleClasses.buttonClass}>
+      <Button
+        onClick={() => transferOwnershipAsync.execute()}
+        loading={transferOwnershipAsync.status === 'pending'}
+        disabled={transferOwnershipAsync.status === 'pending'}
+        className={styleClasses.buttonClass}
+      >
         <FormattedMessage {...messages.transferProject} />
       </Button>
       {checkError(error, 'TRANSFER_PROJECT')}
