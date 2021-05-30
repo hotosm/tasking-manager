@@ -40,9 +40,18 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
-  const tasksIds = useMemo(() => (activeTasks ? activeTasks.map((task) => task.taskId) : []), [
-    activeTasks,
-  ]);
+  const tasksIds = useMemo(
+    () =>
+      activeTasks
+        ? activeTasks
+            .map((task) => task.taskId)
+            .sort((n1, n2) => {
+              // in ascending order
+              return n1 - n2;
+            })
+        : [],
+    [activeTasks],
+  );
   const [disabled, setDisable] = useState(false);
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
