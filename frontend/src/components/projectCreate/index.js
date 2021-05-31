@@ -24,7 +24,13 @@ import { Alert } from '../alert';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { makeGrid } from '../../utils/taskGrid';
 import { MAX_AOI_AREA } from '../../config';
-import { verifyGeometry, readGeoFile, getErrorMsg } from '../../utils/geoFileFunctions';
+import {
+  verifyGeometry,
+  readGeoFile,
+  verifyFileFormat,
+  verifyFileSize,
+} from '../../utils/geoFileFunctions';
+import { getErrorMsg } from './fileErrors';
 
 const ProjectCreationMap = React.lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
@@ -66,6 +72,9 @@ const ProjectCreate = (props) => {
     if (!file) return null;
     try {
       setErr({ code: 403, message: null }); //reset error on new file upload
+
+      verifyFileFormat(file);
+      verifyFileSize(file);
 
       readGeoFile(file)
         .then((geometry) => {

@@ -17,7 +17,8 @@ import {
   verifyFileSize,
   validateFeature,
   readGeoFile,
-} from '../geoFileFunctions/fileFunctions';
+  verifyFileFormat,
+} from '../geoFileFunctions';
 
 describe('verifyGeometry', () => {
   const supportedGeoms = ['Polygon', 'MultiPolygon'];
@@ -80,10 +81,36 @@ describe('validateFeature', () => {
   });
 });
 
-describe('readGeoFile', () => {
-  let renderFn = jest.fn();
+describe('verifyFileFormat', () => {
   it('throws an error for an invalid geometry file type - .txt', () => {
     let file = new File([new ArrayBuffer(1024)], 'file.txt');
-    expect(() => readGeoFile(file, renderFn)).toThrow('invalidFile');
+    expect(() => verifyFileFormat(file)).toThrow('invalidFile');
+  });
+
+  it('does not throw an error for a valid file format - .json', () => {
+    let file = new File([new ArrayBuffer(1024)], 'file.json');
+    expect(() => verifyFileFormat(file)).not.toThrow('invalidFile');
+  });
+
+  it('does not throw an error for a valid file format - .kml', () => {
+    let file = new File([new ArrayBuffer(1024)], 'file.kml');
+    expect(() => verifyFileFormat(file)).not.toThrow('invalidFile');
+  });
+
+  it('does not throw an error for a valid file format - .xml', () => {
+    let file = new File([new ArrayBuffer(1024)], 'file.xml');
+    expect(() => verifyFileFormat(file)).not.toThrow('invalidFile');
+  });
+
+  it('does not throw an error for a valid file format - .osm', () => {
+    let file = new File([new ArrayBuffer(1024)], 'file.osm');
+    expect(() => verifyFileFormat(file)).not.toThrow('invalidFile');
+  });
+
+  it('does not throw an error for a valid file format - .zip', () => {
+    let file = new File([new ArrayBuffer(1024)], 'file.zip');
+    expect(() => verifyFileFormat(file)).not.toThrow('invalidFile');
   });
 });
+
+describe('readGeoFile', () => {});

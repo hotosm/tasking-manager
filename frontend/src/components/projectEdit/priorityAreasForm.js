@@ -16,7 +16,13 @@ import { CustomButton } from '../button';
 import { MappedIcon, WasteIcon, MappedSquareIcon, FileImportIcon } from '../svgIcons';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL, CHART_COLOURS } from '../../config';
 import { BasemapMenu } from '../basemapMenu';
-import { verifyGeometry, readGeoFile, getErrorMsg } from '../../utils/geoFileFunctions';
+import {
+  verifyGeometry,
+  readGeoFile,
+  verifyFileFormat,
+  verifyFileSize,
+} from '../../utils/geoFileFunctions';
+import { getErrorMsg } from '../projectCreate/fileErrors';
 import { Alert } from '../alert';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -78,6 +84,9 @@ export const PriorityAreasForm = () => {
 
     try {
       setError({ error: false, message: null }); //reset error on new file upload
+
+      verifyFileSize(file);
+      verifyFileFormat(file);
 
       readGeoFile(file)
         .then((geometry) => {
