@@ -263,6 +263,7 @@ export function CompletionTabForValidation({
   tasksIds,
   taskInstructions,
   disabled,
+  contributors,
   validationStatus,
   setValidationStatus,
   validationComments,
@@ -358,6 +359,7 @@ export function CompletionTabForValidation({
           <TaskValidationSelector
             key={id}
             id={id}
+            contributors={contributors}
             currentStatus={validationStatus[id]}
             updateStatus={updateStatus}
             comment={validationComments[id]}
@@ -397,6 +399,7 @@ const TaskValidationSelector = ({
   currentStatus,
   comment,
   updateComment,
+  contributors,
   updateStatus,
   copyCommentToTasks,
   isValidatingMultipleTasks,
@@ -453,6 +456,7 @@ const TaskValidationSelector = ({
             <CommentInputField
               comment={comment}
               setComment={setComment}
+              contributors={contributors}
               enableHashtagPaste={false}
               autoFocus={true}
             />
