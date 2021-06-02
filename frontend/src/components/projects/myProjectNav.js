@@ -143,42 +143,52 @@ export const MyProjectNav = (props) => {
               </>
             )}
             {props.management && (userDetails.role === 'ADMIN' || isOrgManager) && (
-              <>
-                <FilterButton
-                  query={fullProjectsQuery}
-                  newQueryParams={{ status: 'PUBLISHED', managedByMe: 1, createdByMe: undefined }}
-                  setQuery={setQuery}
-                  isActive={
-                    fullProjectsQuery.managedByMe && fullProjectsQuery.status === 'PUBLISHED'
-                  }
-                >
-                  <FormattedMessage {...messages.active} />
-                </FilterButton>
-                <FilterButton
-                  query={fullProjectsQuery}
-                  newQueryParams={{ status: 'DRAFT', managedByMe: 1, createdByMe: undefined }}
-                  setQuery={setQuery}
-                  isActive={isActiveButton('DRAFT', fullProjectsQuery)}
-                >
-                  <FormattedMessage {...messages.draft} />
-                </FilterButton>
-                <FilterButton
-                  query={fullProjectsQuery}
-                  newQueryParams={{ status: 'ARCHIVED', managedByMe: 1, createdByMe: undefined }}
-                  setQuery={setQuery}
-                  isActive={isActiveButton('ARCHIVED', fullProjectsQuery)}
-                >
-                  <FormattedMessage {...messages.archived} />
-                </FilterButton>
-                <FilterButton
-                  query={fullProjectsQuery}
-                  newQueryParams={{ status: undefined, managedByMe: undefined, createdByMe: 1 }}
-                  setQuery={setQuery}
-                  isActive={isActiveButton('createdByMe', fullProjectsQuery)}
-                >
-                  <FormattedMessage {...messages.created} />
-                </FilterButton>
-              </>
+              <div>
+                <div className="dib pr4">
+                  <FilterButton
+                    query={fullProjectsQuery}
+                    newQueryParams={{ status: 'PUBLISHED' }}
+                    setQuery={setQuery}
+                    isActive={isActiveButton('PUBLISHED', fullProjectsQuery)}
+                  >
+                    <FormattedMessage {...messages.active} />
+                  </FilterButton>
+                  <FilterButton
+                    query={fullProjectsQuery}
+                    newQueryParams={{ status: 'DRAFT' }}
+                    setQuery={setQuery}
+                    isActive={isActiveButton('DRAFT', fullProjectsQuery)}
+                  >
+                    <FormattedMessage {...messages.draft} />
+                  </FilterButton>
+                  <FilterButton
+                    query={fullProjectsQuery}
+                    newQueryParams={{ status: 'ARCHIVED' }}
+                    setQuery={setQuery}
+                    isActive={isActiveButton('ARCHIVED', fullProjectsQuery)}
+                  >
+                    <FormattedMessage {...messages.archived} />
+                  </FilterButton>
+                </div>
+                <div className="dib">
+                  <FilterButton
+                    query={fullProjectsQuery}
+                    newQueryParams={{ managedByMe: undefined, createdByMe: 1 }}
+                    setQuery={setQuery}
+                    isActive={isActiveButton('createdByMe', fullProjectsQuery)}
+                  >
+                    <FormattedMessage {...messages.created} />
+                  </FilterButton>
+                  <FilterButton
+                    query={fullProjectsQuery}
+                    newQueryParams={{ managedByMe: 1, createdByMe: undefined }}
+                    setQuery={setQuery}
+                    isActive={isActiveButton('managedByMe', fullProjectsQuery)}
+                  >
+                    <FormattedMessage {...messages.managed} />
+                  </FilterButton>
+                </div>
+              </div>
             )}
           </div>
         </div>
