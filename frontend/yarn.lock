@@ -2226,6 +2226,13 @@
   dependencies:
     tslib "^2.1.0"
 
+"@formatjs/ecma402-abstract@1.9.2":
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.9.2.tgz#90618ec54701e6a8ee38688df8fc2436b9953d23"
+  integrity sha512-sZ4GHcitIBz837RSatMDr/6GkYT8hUDffvW+bo2N5lRrBmLk37i0IGSmsxZ6QcxLu2GuymN/4gATEyL/50z3Bg==
+  dependencies:
+    tslib "^2.1.0"
+
 "@formatjs/fast-memoize@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@formatjs/fast-memoize/-/fast-memoize-1.1.1.tgz#3006b58aca1e39a98aca213356b42da5d173f26b"
@@ -2272,12 +2279,12 @@
     "@formatjs/ecma402-abstract" "1.9.1"
     tslib "^2.1.0"
 
-"@formatjs/intl-locale@^2.4.28":
-  version "2.4.28"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-locale/-/intl-locale-2.4.28.tgz#064bb50764393669803aa777b74a18b81d6566b5"
-  integrity sha512-z20qVhgtHFTCGLDCl/pWs3cdnxGT4whsbjxwfrhyF2Qf0TNYWrJ/y88f3vINJ19iGVY3GJ6bxaRI5d+uyQ/7ig==
+"@formatjs/intl-locale@^2.4.29":
+  version "2.4.29"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-locale/-/intl-locale-2.4.29.tgz#3b97fd21d368cc92a28ce318532c65cf2c77a25e"
+  integrity sha512-pzcnJi7CP/29aFLm8cch00r0kRWIYliyxRCUIOwdwVmCtQxbMBlxExzP/xPmyJgoAuONy42Ol1Y9Cabgy6r8XA==
   dependencies:
-    "@formatjs/ecma402-abstract" "1.9.1"
+    "@formatjs/ecma402-abstract" "1.9.2"
     "@formatjs/intl-getcanonicallocales" "1.7.0"
     cldr-core "38"
     tslib "^2.1.0"
