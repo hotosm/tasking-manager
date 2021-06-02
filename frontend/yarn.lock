@@ -2226,6 +2226,13 @@
   dependencies:
     tslib "^2.1.0"
 
+"@formatjs/ecma402-abstract@1.9.2":
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.9.2.tgz#90618ec54701e6a8ee38688df8fc2436b9953d23"
+  integrity sha512-sZ4GHcitIBz837RSatMDr/6GkYT8hUDffvW+bo2N5lRrBmLk37i0IGSmsxZ6QcxLu2GuymN/4gATEyL/50z3Bg==
+  dependencies:
+    tslib "^2.1.0"
+
 "@formatjs/fast-memoize@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@formatjs/fast-memoize/-/fast-memoize-1.1.1.tgz#3006b58aca1e39a98aca213356b42da5d173f26b"
@@ -2282,12 +2289,12 @@
     cldr-core "38"
     tslib "^2.1.0"
 
-"@formatjs/intl-pluralrules@^4.0.22":
-  version "4.0.22"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.22.tgz#2a56baef93ef4deac7957ee1d945a6f5332c1261"
-  integrity sha512-4pSxb31AsjZXUjQHid9eJuUJrXqLOH3tgfiryvBfgNoS76cqk0cFUAuTGdC07YQZlVuJ4c3K4rqBlRpFJwn4Mg==
+"@formatjs/intl-pluralrules@^4.0.24":
+  version "4.0.24"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.24.tgz#c79ec3869b70d281f8f9d13b0bad580ce5d97a8f"
+  integrity sha512-IcCzjuKMBCd3fCcvoQJBsVrfFFcyNgyihS0wdZip9Cv8r41eOGS6oT0haQvbWoAI9ANRh/q3MtqG3Qh9QT1RGw==
   dependencies:
-    "@formatjs/ecma402-abstract" "1.9.1"
+    "@formatjs/ecma402-abstract" "1.9.2"
     tslib "^2.1.0"
 
 "@formatjs/intl-relativetimeformat@^9.1.2":
