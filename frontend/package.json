@@ -61,7 +61,7 @@
     "reactjs-popup": "^1.5.0",
     "redux": "^4.1.0",
     "redux-thunk": "^2.3.0",
-    "sass": "^1.34.0",
+    "sass": "^1.34.1",
     "short-number": "^1.0.7",
     "shpjs": "^3.6.3",
     "slug": "^5.0.1",
