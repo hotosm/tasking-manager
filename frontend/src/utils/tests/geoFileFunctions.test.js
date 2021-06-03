@@ -1,3 +1,4 @@
+import fs from 'fs';
 import {
   twoFeaturesOneInvalid,
   validMultiPolygonAoi,
@@ -11,6 +12,8 @@ import {
   closedLinestringFeature,
   convertedLineStringToPolygonFeature,
 } from './snippets/feature';
+
+import { parsedGeometry } from './snippets/parsedGeometry';
 
 import {
   verifyGeometry,
@@ -113,4 +116,20 @@ describe('verifyFileFormat', () => {
   });
 });
 
-describe('readGeoFile', () => {});
+describe('readGeoFile', () => {
+  it('parses geojson file content and returns geometry', () => {
+    let data = fs.readFileSync('src/utils/tests/snippets/testFiles/testFile.geojson');
+    let file = new File([data], 'file.geojson', { type: 'text/GeoJSON' });
+    return readGeoFile(file).then((geom) => {
+      expect(geom).toEqual(parsedGeometry);
+    });
+  });
+
+  it('parses kml file content and returns geometry', () => {
+    let data = fs.readFileSync('src/utils/tests/snippets/testFiles/testFile.kml');
+    let file = new File([data], 'file.kml', { type: 'text/kml' });
+    return readGeoFile(file).then((geom) => {
+      expect(geom).toEqual(parsedGeometry);
+    });
+  });
+});
