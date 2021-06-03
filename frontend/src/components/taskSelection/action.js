@@ -13,6 +13,7 @@ import { Button } from '../button';
 import Portal from '../portal';
 import { SidebarIcon } from '../svgIcons';
 import { openEditor, getTaskGpxUrl, formatImageryUrl } from '../../utils/openEditor';
+import { getTaskContributors } from '../../utils/getTaskContributors';
 import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
@@ -72,12 +73,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
 
   const contributors =
     taskHistory && taskHistory.taskHistory
-      ? taskHistory.taskHistory.reduce((acc, history) => {
-          if (!acc.includes(history.actionBy)) {
-            acc.push(history.actionBy);
-          }
-          return acc;
-        }, [])
+      ? getTaskContributors(taskHistory.taskHistory, userDetails.username)
       : [];
 
   const readTaskComments = useReadTaskComments(taskHistory);
