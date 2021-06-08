@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "Download AOI",
   "projects.data.download.taskGrid": "Download Tasks Grid",
   "projects.link.stats": "More statistics",
+  "projects.stats.mapped": "Mapped tasks",
+  "projects.stats.validated": "Validated tasks",
   "project.share.twitter": "Contribute mapping the project #{id} on {site}",
   "project.share.facebook": "Post on Facebook",
   "project.share.linkedin": "Share on LinkedIn",

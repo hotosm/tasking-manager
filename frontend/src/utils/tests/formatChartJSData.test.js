@@ -51,7 +51,13 @@ describe('formatChartData', () => {
 
 describe('formatTimelineData', () => {
   it('return the correct information about the datasets', () => {
-    expect(formatTimelineData(projectContributionsByDay.stats, '#fff', '#092')).toEqual({
+    expect(
+      formatTimelineData(
+        projectContributionsByDay.stats,
+        { color: '#fff', label: 'Mapped tasks' },
+        { color: '#092', label: 'Validated tasks' },
+      ),
+    ).toEqual({
       datasets: [
         {
           data: [0, 6, 19],
@@ -74,16 +80,6 @@ describe('formatTimelineData', () => {
 });
 
 describe('formatTimelineTooltip', () => {
-  const tooltipItem = {
-    xLabel: '2020-06-26',
-    yLabel: 18,
-    label: '2020-06-26',
-    value: '18',
-    index: 2,
-    datasetIndex: 1,
-    x: 1074.8309643713924,
-    y: 78.45394354462593,
-  };
   const data = {
     datasets: [
       {
@@ -103,9 +99,21 @@ describe('formatTimelineTooltip', () => {
     ],
     labels: ['2020-05-19', '2020-06-01', '2020-06-26'],
   };
+  const tooltipItem = {
+    xLabel: '2020-06-26',
+    yLabel: 18,
+    label: 'Mapped tasks',
+    value: '18',
+    dataIndex: 2,
+    datasetIndex: 1,
+    x: 1074.8309643713924,
+    y: 78.45394354462593,
+    dataset: data.datasets[1],
+  };
   it('returns correct information for Mapped tasks', () => {
-    expect(formatTimelineTooltip(tooltipItem, data, true)).toBe('Mapped tasks: 31%');
-    expect(formatTimelineTooltip(tooltipItem, data)).toBe('Mapped tasks: 31');
+    expect(formatTimelineTooltip(tooltipItem, true)).toBe('Mapped tasks: 31%');
+    expect(formatTimelineTooltip(tooltipItem, false)).toBe('Mapped tasks: 31');
+    expect(formatTimelineTooltip(tooltipItem)).toBe('Mapped tasks: 31');
   });
   it('returns correct information for Validated tasks', () => {
     const tooltipItem2 = {
@@ -113,27 +121,19 @@ describe('formatTimelineTooltip', () => {
       yLabel: 18,
       label: '2020-06-26',
       value: '18',
-      index: 0,
+      dataIndex: 0,
       datasetIndex: 0,
       x: 1074.8309643713924,
       y: 78.45394354462593,
+      dataset: data.datasets[0],
     };
-    expect(formatTimelineTooltip(tooltipItem2, data, true)).toBe('Validated tasks: 0%');
-    expect(formatTimelineTooltip(tooltipItem2, data)).toBe('Validated tasks: 0');
+    expect(formatTimelineTooltip(tooltipItem2, true)).toBe('Validated tasks: 0%');
+    expect(formatTimelineTooltip(tooltipItem2, false)).toBe('Validated tasks: 0');
+    expect(formatTimelineTooltip(tooltipItem2)).toBe('Validated tasks: 0');
   });
 });
 
 describe('formatTooltip', () => {
-  const tooltipItem = {
-    xLabel: '',
-    yLabel: '',
-    label: '',
-    value: '',
-    index: 1,
-    datasetIndex: 0,
-    x: 173.3499984741211,
-    y: 124,
-  };
   const data = {
     datasets: [
       {
@@ -148,20 +148,32 @@ describe('formatTooltip', () => {
     ],
     labels: ['Building', 'Roads', 'Points of interests', 'Waterways'],
   };
+  const tooltipItem = {
+    xLabel: '',
+    yLabel: '',
+    label: 'Roads',
+    value: '',
+    dataIndex: 1,
+    datasetIndex: 0,
+    x: 173.3499984741211,
+    y: 124,
+    dataset: data.datasets[0],
+  };
   it('returns correct text with 30 percent', () => {
-    expect(formatTooltip(tooltipItem, data)).toBe('Roads: 30%');
+    expect(formatTooltip(tooltipItem)).toBe('Roads: 30%');
   });
   it('returns correct text with 42 percent', () => {
     const tooltipItem = {
       xLabel: '',
       yLabel: '',
-      label: '',
+      label: 'Waterways',
       value: '',
-      index: 3,
+      dataIndex: 3,
       datasetIndex: 0,
       x: 173.3499984741211,
       y: 124,
+      dataset: data.datasets[0],
     };
-    expect(formatTooltip(tooltipItem, data)).toBe('Waterways: 42%');
+    expect(formatTooltip(tooltipItem)).toBe('Waterways: 42%');
   });
 });

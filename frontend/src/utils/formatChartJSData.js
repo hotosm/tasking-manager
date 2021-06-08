@@ -11,20 +11,20 @@ export const formatChartData = (reference, stats) => {
   return data;
 };
 
-export const formatTimelineData = (stats, mappedColour, validatedColour) => {
+export const formatTimelineData = (stats, mappedTasksConfig, validatedTasksConfig) => {
   let mapped = {
     data: [],
-    backgroundColor: mappedColour,
-    borderColor: mappedColour,
+    backgroundColor: mappedTasksConfig.color,
+    borderColor: mappedTasksConfig.color,
     fill: false,
-    label: 'Mapped tasks',
+    label: mappedTasksConfig.label,
   };
   let validated = {
     data: [],
-    backgroundColor: validatedColour,
-    borderColor: validatedColour,
+    backgroundColor: validatedTasksConfig.color,
+    borderColor: validatedTasksConfig.color,
     fill: false,
-    label: 'Validated tasks',
+    label: validatedTasksConfig.label,
   };
 
   const labels = stats.map((entry) => entry.date);
@@ -38,16 +38,16 @@ export const formatTimelineData = (stats, mappedColour, validatedColour) => {
   return { datasets: [validated, mapped], labels: labels };
 };
 
-export const formatTasksStatsData = (stats, mappedColour, validatedColour) => {
+export const formatTasksStatsData = (stats, mappedTasksConfig, validatedTasksConfig) => {
   let mapped = {
     data: [],
-    backgroundColor: mappedColour,
-    label: 'Mapped tasks',
+    backgroundColor: mappedTasksConfig.color,
+    label: mappedTasksConfig.label,
   };
   let validated = {
     data: [],
-    backgroundColor: validatedColour,
-    label: 'Validated tasks',
+    backgroundColor: validatedTasksConfig.color,
+    label: validatedTasksConfig.label,
   };
 
   const labels = stats.map((entry) => entry.date);
@@ -57,18 +57,18 @@ export const formatTasksStatsData = (stats, mappedColour, validatedColour) => {
   return { datasets: [mapped, validated], labels: labels };
 };
 
-export const formatTooltip = (tooltipItem, data) => {
-  var label = data.labels[tooltipItem.index] || '';
+export const formatTooltip = (context) => {
+  var label = context.label;
   if (label) label += ': ';
-  label += data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+  label += context.dataset.data[context.dataIndex];
 
-  return (label += '%');
+  return `${label}%`;
 };
 
-export const formatTimelineTooltip = (tooltipItem, data, isPercent) => {
-  var label = data.datasets[tooltipItem.datasetIndex].label || '';
+export const formatTimelineTooltip = (context, isPercent) => {
+  var label = context.dataset.label || '';
   if (label) label += ': ';
-  label += data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+  label += context.dataset.data[context.dataIndex];
 
   return `${label}${isPercent ? '%' : ''}`;
 };
