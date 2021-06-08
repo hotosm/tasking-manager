@@ -607,7 +607,7 @@
   "project.tasks.action.history": "Storico",
   "project.tasks.history.comments": "Commenti",
   "project.tasks.history.stateChanges": "Attività",
-  "project.tasks.action.comments.copy": "",
+  "project.tasks.action.comments.copy": "Copia commento",
   "project.tasks.action.comments.copy_to_all": "",
   "project.tasks.action.comments.copy_to_invalidated": "",
   "project.tasks.action.comments.copy_to_validated": "",
