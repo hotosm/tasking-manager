@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import Popup from 'reactjs-popup';
@@ -22,6 +22,7 @@ import {
 } from '../svgIcons';
 import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
+import { getTaskContributors } from '../../utils/getTaskContributors';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { CommentInputField } from '../comments/commentInput';
 import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedTasks';
@@ -35,6 +36,7 @@ export function CompletionTabForMapping({
   historyTabSwitch,
   taskInstructions,
   disabled,
+  contributors,
   taskComment,
   setTaskComment,
   selectedStatus,
@@ -217,6 +219,7 @@ export function CompletionTabForMapping({
           <CommentInputField
             comment={taskComment}
             setComment={setTaskComment}
+            contributors={contributors}
             enableHashtagPaste={true}
           />
         </p>
@@ -263,6 +266,7 @@ export function CompletionTabForValidation({
   tasksIds,
   taskInstructions,
   disabled,
+  contributors,
   validationStatus,
   setValidationStatus,
   validationComments,
@@ -358,6 +362,8 @@ export function CompletionTabForValidation({
           <TaskValidationSelector
             key={id}
             id={id}
+            projectId={project.projectId}
+            contributors={contributors}
             currentStatus={validationStatus[id]}
             updateStatus={updateStatus}
             comment={validationComments[id]}
@@ -394,16 +400,37 @@ export function CompletionTabForValidation({
 
 const TaskValidationSelector = ({
   id,
+  projectId,
   currentStatus,
   comment,
   updateComment,
+  contributors,
   updateStatus,
   copyCommentToTasks,
   isValidatingMultipleTasks,
 }) => {
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [enableCopy, setEnableCopy] = useState(false);
   const setComment = (newComment) => updateComment(id, newComment);
+  const [contributorsList, setContributorsList] = useState([]);
+
+  // the contributors is filled only on the case of single task validation,
+  // so we need to fetch the task history in the case of multiple task validation
+  useEffect(() => {
+    if (showCommentInput && isValidatingMultipleTasks && !contributors.length) {
+      fetchLocalJSONAPI(`projects/${projectId}/tasks/${id}/`).then((response) =>
+        setContributorsList(getTaskContributors(response.taskHistory, userDetails.username)),
+      );
+    }
+  }, [
+    isValidatingMultipleTasks,
+    showCommentInput,
+    contributors,
+    id,
+    projectId,
+    userDetails.username,
+  ]);
 
   return (
     <div className="cf w-100 db pt1 pv2 blue-dark">
@@ -453,6 +480,7 @@ const TaskValidationSelector = ({
             <CommentInputField
               comment={comment}
               setComment={setComment}
+              contributors={contributors.length ? contributors : contributorsList}
               enableHashtagPaste={false}
               autoFocus={true}
             />

@@ -13,6 +13,7 @@ import { Button } from '../button';
 import Portal from '../portal';
 import { SidebarIcon } from '../svgIcons';
 import { openEditor, getTaskGpxUrl, formatImageryUrl } from '../../utils/openEditor';
+import { getTaskContributors } from '../../utils/getTaskContributors';
 import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
@@ -69,6 +70,11 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     `projects/${project.projectId}/tasks/${tasksIds[0]}/`,
     project.projectId && tasksIds && tasksIds.length === 1,
   );
+
+  const contributors =
+    taskHistory && taskHistory.taskHistory
+      ? getTaskContributors(taskHistory.taskHistory, userDetails.username)
+      : [];
 
   const readTaskComments = useReadTaskComments(taskHistory);
   const disableBadImagery = useDisableBadImagery(taskHistory);
@@ -240,6 +246,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                         disableBadImagery={
                           userDetails.mappingLevel !== 'ADVANCED' && disableBadImagery
                         }
+                        contributors={contributors}
                         historyTabSwitch={historyTabSwitch}
                         taskInstructions={
                           activeTasks && activeTasks.length === 1
@@ -263,6 +270,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                             : null
                         }
                         disabled={disabled}
+                        contributors={contributors}
                         validationComments={validationComments}
                         setValidationComments={setValidationComments}
                         validationStatus={validationStatus}

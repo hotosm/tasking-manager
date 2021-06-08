@@ -13,6 +13,7 @@ import { DROPZONE_SETTINGS } from '../../config';
 export const CommentInputField = ({
   comment,
   setComment,
+  contributors,
   enableHashtagPaste = false,
   autoFocus,
 }: Object) => {
@@ -28,6 +29,7 @@ export const CommentInputField = ({
       <UserFetchTextarea
         inputProps={getInputProps}
         value={comment}
+        contributors={contributors}
         setValueFn={(e) => setComment(e.target.value)}
         autoFocus={autoFocus}
       />
@@ -44,10 +46,11 @@ export const CommentInputField = ({
   );
 };
 
-export const UserFetchTextarea = ({ value, setValueFn, inputProps, autoFocus }) => {
+export const UserFetchTextarea = ({ value, setValueFn, inputProps, contributors, autoFocus }) => {
   const token = useSelector((state) => state.auth.get('token'));
   const fetchUsers = async (user) => {
     try {
+      if (!user) return contributors.map((u) => ({ name: u }));
       const res = await fetchLocalJSONAPI(`users/queries/filter/${user}/`, token);
       return res.usernames.map((u) => ({ name: u }));
     } catch (e) {
@@ -63,6 +66,7 @@ export const UserFetchTextarea = ({ value, setValueFn, inputProps, autoFocus }) 
       listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey overflow-y-scroll base-font f5 relative z-5"
       listStyle={{ maxHeight: '16rem' }}
       onChange={setValueFn}
+      minChar={0}
       className="w-100 f5 pa2"
       style={{ fontSize: '1rem' }}
       loadingComponent={() => <span></span>}
