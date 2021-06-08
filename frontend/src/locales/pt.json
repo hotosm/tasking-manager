@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "Transferir AOI",
   "projects.data.download.taskGrid": "Transferir Grelha de Tarefas",
   "projects.link.stats": "Mais estatísticas",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "Contribui com o mapeamento do projeto #{id} em {site}",
   "project.share.facebook": "Publicar no Facebook",
   "project.share.linkedin": "Partilhar no LinkedIn",

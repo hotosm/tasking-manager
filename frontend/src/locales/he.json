@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "הורד AOI",
   "projects.data.download.taskGrid": "הורד טבלת משימות",
   "projects.link.stats": "סטטיסטיקה נוספת",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "המשך למפות#{id} ב{site}",
   "project.share.facebook": "שתף בפייסבוק",
   "project.share.linkedin": "שתף בלינקדין",

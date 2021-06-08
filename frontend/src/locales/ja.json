@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "AOIをダウンロード",
   "projects.data.download.taskGrid": "タスクグリッドをダウンロード",
   "projects.link.stats": "追加の統計",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "{site}のプロジェクト#{id}のマッピングに貢献する",
   "project.share.facebook": "フェイスブックで投稿する",
   "project.share.linkedin": "LinkedInで共有",

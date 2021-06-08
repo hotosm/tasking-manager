@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "Scarica area d'interesse",
   "projects.data.download.taskGrid": "Scarica griglia dei task",
   "projects.link.stats": "Più statistiche",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "Contribuisci a mappare il progetto #{id} su {site}",
   "project.share.facebook": "Pubblica su Facebook",
   "project.share.linkedin": "Condividi su LinkedIn",

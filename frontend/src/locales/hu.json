@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "AOI letöltése",
   "projects.data.download.taskGrid": "Feladatrács letöltése",
   "projects.link.stats": "További statisztika",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "Közreműködés a(z) #{id} projekt feltérképezésében a(z) {site} oldalon",
   "project.share.facebook": "Bejegyzés közzététele a Facebookon",
   "project.share.linkedin": "Megosztás a LinkedIn-en",

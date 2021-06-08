@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "Завантажити зону зацікавленості проєкту",
   "projects.data.download.taskGrid": "Завантажити решітку завдань",
   "projects.link.stats": "Докладна статистика",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "Зробіть свій внесок в мапінг проєкту #{id} на {site}",
   "project.share.facebook": "Оприлюднити на Facebook",
   "project.share.linkedin": "Поділитись на LinkedIn",

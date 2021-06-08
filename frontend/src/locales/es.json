@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "Descargar AOI",
   "projects.data.download.taskGrid": "Descargar cuadrícula de tareas",
   "projects.link.stats": "Más estadísticas",
+  "projects.stats.mapped": "Tareas mapeadas",
+  "projects.stats.validated": "Tareas validadas",
   "project.share.twitter": "Contribuya mapeando el proyecto #{id} en {site}",
   "project.share.facebook": "Publicar en Facebook",
   "project.share.linkedin": "Compartir en LinkedIn",
