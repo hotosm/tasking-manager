@@ -275,6 +275,14 @@ export default defineMessages({
     id: 'projects.link.stats',
     defaultMessage: 'More statistics',
   },
+  mappedTasks: {
+    id: 'projects.stats.mapped',
+    defaultMessage: 'Mapped tasks',
+  },
+  validatedTasks: {
+    id: 'projects.stats.validated',
+    defaultMessage: 'Validated tasks',
+  },
   shareMessage: {
     id: 'project.share.twitter',
     defaultMessage: 'Contribute mapping the project #{id} on {site}',

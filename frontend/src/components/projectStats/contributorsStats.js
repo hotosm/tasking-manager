@@ -95,8 +95,10 @@ export default function ContributorsStats({ contributors }) {
           <Bar
             data={formatChartData(userExperienceReference, stats)}
             options={{
-              plugins: { legend: { display: false } },
-              tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
+              plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+              },
             }}
           />
         </div>
@@ -110,8 +112,10 @@ export default function ContributorsStats({ contributors }) {
             data={formatChartData(userLevelsReference, stats)}
             options={{
               aspectRatio: 2,
-              plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } },
-              tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
+              plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12 } },
+                tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+              },
             }}
           />
         </div>
