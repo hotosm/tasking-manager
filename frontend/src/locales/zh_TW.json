@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "下載 AOI",
   "projects.data.download.taskGrid": "下載任務網格",
   "projects.link.stats": "更多統計數據",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "為{site}上的#{id}專案做出繪制地圖貢獻。",
   "project.share.facebook": "貼文至 Facebook",
   "project.share.linkedin": "在 LinkedIn 上分享",

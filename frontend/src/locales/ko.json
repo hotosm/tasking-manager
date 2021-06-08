@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "프로젝트 영역 다운로드",
   "projects.data.download.taskGrid": "모든 작업 사각형 다운로드",
   "projects.link.stats": "통계 더 보기",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "{site}에서 프로젝트 #{id}에 기여하기",
   "project.share.facebook": "페이스북에 게시",
   "project.share.linkedin": "링크드인에 공유",

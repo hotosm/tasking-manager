@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "Stáhnout oblast zájmu",
   "projects.data.download.taskGrid": "Stáhnout seznam úkolů",
   "projects.link.stats": "Více statistik",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "Mapovat projekt #{id} na stránce {site}",
   "project.share.facebook": "Příspěvek na Facebook",
   "project.share.linkedin": "Sdílet na Linkedln",

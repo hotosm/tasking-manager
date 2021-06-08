@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "Unduh area yang diinginkan",
   "projects.data.download.taskGrid": "Unduh grid task",
   "projects.link.stats": "Lebih banyak statistik",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "Berkontribusi memetakan proyek #{id} pada {site}",
   "project.share.facebook": "Post di Facebook",
   "project.share.linkedin": "Membagikan di LinkedIn",

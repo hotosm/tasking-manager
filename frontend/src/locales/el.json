@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "Κατεβάστε το AOI",
   "projects.data.download.taskGrid": "Κατεβάστε το Πλέγμα Εργασιών",
   "projects.link.stats": "Περισσότερα στατιστικά",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "Συμβάλλετε στη χαρτογράφηση του έργου # {id} στο/στη {site}",
   "project.share.facebook": "Δημοσιεύστε στο Facebook",
   "project.share.linkedin": "Μοιραστείτε στο LinkedIn",

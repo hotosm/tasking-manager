@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "Interessegebied (AOI) downloaden",
   "projects.data.download.taskGrid": "Raster met taken downloaden",
   "projects.link.stats": "Meer statistieken",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "Deelnemen aan in kaart brengen voor het project #{id} op {site}",
   "project.share.facebook": "Posten op Facebook",
   "project.share.linkedin": "Delen op LinkedIn",
