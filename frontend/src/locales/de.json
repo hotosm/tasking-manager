@@ -315,6 +315,8 @@
   "projects.data.download.aoi": "Geodaten des Projektgebietes herunterladen",
   "projects.data.download.taskGrid": "Geodaten zu Aufgaben herunterladen",
   "projects.link.stats": "Mehr Statistiken",
+  "projects.stats.mapped": "",
+  "projects.stats.validated": "",
   "project.share.twitter": "Leiste deinen Beitrag zur Kartierung des Projekt #{id} auf {site}",
   "project.share.facebook": "Auf Facebook posten",
   "project.share.linkedin": "Auf LinkedIn teilen",

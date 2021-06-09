@@ -11,6 +11,7 @@ import useGetContributors from '../../hooks/UseGetContributors';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
+import { getTaskContributors } from '../../utils/getTaskContributors';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -22,7 +23,7 @@ import { Dropdown } from '../dropdown';
 import { CommentInputField } from '../comments/commentInput';
 import { CheckBoxInput } from '../formInputs';
 
-const PostComment = ({ projectId, taskId, setCommentPayload }) => {
+const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [comment, setComment] = useState('');
 
@@ -49,7 +50,12 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
         <CurrentUserAvatar className="h2 w2 fr mr2 br-100" />
       </div>
       <div className="fl w-70 f6">
-        <CommentInputField comment={comment} setComment={setComment} enableHashtagPaste={true} />
+        <CommentInputField
+          comment={comment}
+          setComment={setComment}
+          enableHashtagPaste={true}
+          contributors={contributors}
+        />
       </div>
       <div className="w-20 fr pt3 tr">
         <Button onClick={() => saveComment()} className="bg-red white f6">
@@ -266,6 +272,7 @@ export const TaskActivity = ({
   userCanValidate,
 }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   // use it to hide the reset task action button
   const [resetSuccess, setResetSuccess] = useState(false);
   const [commentPayload, setCommentPayload] = useState(null);
@@ -351,6 +358,11 @@ export const TaskActivity = ({
         projectId={project.projectId}
         taskId={taskId}
         setCommentPayload={setCommentPayload}
+        contributors={
+          commentPayload && commentPayload.taskHistory
+            ? getTaskContributors(commentPayload.taskHistory, userDetails.username)
+            : []
+        }
       />
     </div>
   );
