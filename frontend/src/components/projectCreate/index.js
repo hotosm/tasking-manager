@@ -36,6 +36,7 @@ const ProjectCreate = (props) => {
   const intl = useIntl();
   const token = useSelector((state) => state.auth.get('token'));
   const [drawModeIsActive, setDrawModeIsActive] = useState(false);
+  const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(false);
 
   const setDataGeom = (geom, display) => {
     mapObj.map.fitBounds(bbox(geom), { padding: 200 });
@@ -243,6 +244,8 @@ const ProjectCreate = (props) => {
             drawHandler={drawHandler}
             deleteHandler={deleteHandler}
             drawIsActive={drawModeIsActive}
+            showProjectsAOILayer={showProjectsAOILayer}
+            setShowProjectsAOILayer={setShowProjectsAOILayer}
           />
         );
       case 2:
@@ -279,6 +282,7 @@ const ProjectCreate = (props) => {
             setMapObj={setMapObj}
             step={step}
             uploadFile={uploadFile}
+            showProjectsAOILayer={showProjectsAOILayer}
           />
         </Suspense>
         <div className="cf absolute bg-white o-90 top-1 left-1 pa3 mw6">
