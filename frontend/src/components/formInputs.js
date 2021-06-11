@@ -122,16 +122,25 @@ export function UserCountrySelect({ className }: Object) {
   );
 }
 
-export const CheckBoxInput = ({ isActive, changeState, className = '' }) => (
+export const CheckBoxInput = ({ isActive, changeState, className = '', disabled }) => (
   <div
     role="checkbox"
+    disabled={disabled}
     aria-checked={isActive}
-    onClick={changeState}
-    onKeyPress={changeState}
+    onClick={disabled ? () => {} : changeState}
+    onKeyPress={disabled ? () => {} : changeState}
     tabIndex="0"
-    className={`bg-white w1 h1 ma1 ba bw1 b--red br1 relative pointer ${className}`}
+    className={`bg-white w1 h1 ma1 ba bw1 ${
+      disabled ? 'b--grey-light' : 'b--red'
+    } br1 relative pointer ${className}`}
   >
-    {isActive ? <div className="bg-red ba b--white bw1 br1 w-100 h-100"></div> : <></>}
+    {isActive ? (
+      <div
+        className={`${disabled ? 'bg-grey-light' : 'bg-red'} ba b--white bw1 br1 w-100 h-100`}
+      ></div>
+    ) : (
+      <></>
+    )}
   </div>
 );
 

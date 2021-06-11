@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useEffect, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -8,8 +8,17 @@ import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import { useDropzone } from 'react-dropzone';
 
-import { MAPBOX_TOKEN, MAP_STYLE, CHART_COLOURS, MAPBOX_RTL_PLUGIN_URL } from '../../config';
+import {
+  MAPBOX_TOKEN,
+  MAP_STYLE,
+  CHART_COLOURS,
+  MAPBOX_RTL_PLUGIN_URL,
+  TASK_COLOURS,
+} from '../../config';
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { useDebouncedCallback } from '../../hooks/UseThrottle';
 import { BasemapMenu } from '../basemapMenu';
+import { ProjectsAOILayerCheckBox } from './projectsAOILayerCheckBox';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -21,11 +30,40 @@ try {
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step, uploadFile }) => {
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
+  const token = useSelector((state) => state.auth.get('token'));
+  const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(false);
+  const [aoiCanBeActivated, setAOICanBeActivated] = useState(false);
+  const [debouncedGetProjectsAOI] = useDebouncedCallback(() => getProjectsAOI(), 1500);
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: step === 1 ? uploadFile : () => {}, // drag&drop is activated only on the first step
     noClick: true,
     noKeyboard: true,
   });
+  const minZoomLevelToAOIVisualization = 11;
+
+  const getProjectsAOI = () => {
+    if (aoiCanBeActivated && showProjectsAOILayer && step === 1) {
+      let bounds = mapObj.map.getBounds();
+      let bbox = `${bounds._sw.lng},${bounds._sw.lat},${bounds._ne.lng},${bounds._ne.lat}`;
+      fetchLocalJSONAPI(`projects/queries/bbox/?bbox=${bbox}&srid=4326`, token).then((res) =>
+        mapObj.map.getSource('otherProjects').setData(res),
+      );
+    }
+  };
+
+  const clearProjectsAOI = useCallback(() => {
+    if (mapObj && mapObj.map && mapObj.map.getSource('otherProjects')) {
+      mapObj.map.getSource('otherProjects').setData(featureCollection([]));
+    }
+  }, [mapObj]);
+
+  useEffect(() => {
+    if (showProjectsAOILayer && step === 1) {
+      debouncedGetProjectsAOI();
+    } else {
+      clearProjectsAOI();
+    }
+  }, [showProjectsAOILayer, debouncedGetProjectsAOI, clearProjectsAOI, step]);
 
   useLayoutEffect(() => {
     const map = new mapboxgl.Map({
@@ -109,7 +147,51 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
         },
       });
     }
+    if (map.getSource('otherProjects') === undefined) {
+      const colorByStatus = [
+        'match',
+        ['get', 'projectStatus'],
+        'DRAFT',
+        TASK_COLOURS.MAPPED,
+        'PUBLISHED',
+        TASK_COLOURS.VALIDATED,
+        'ARCHIVED',
+        TASK_COLOURS.BADIMAGERY,
+        'rgba(0,0,0,0)', // fallback option required by mapbox-gl
+      ];
+      map.addSource('otherProjects', {
+        type: 'geojson',
+        data: featureCollection([]),
+      });
+      map.addLayer({
+        id: 'otherProjectsLine',
+        type: 'line',
+        source: 'otherProjects',
+        paint: {
+          'line-color': colorByStatus,
+          'line-width': 2,
+          'line-opacity': 1,
+        },
+      });
+      map.addLayer({
+        id: 'otherProjectsFill',
+        type: 'fill',
+        source: 'otherProjects',
+        paint: {
+          'fill-color': colorByStatus,
+          'fill-opacity': ['match', ['get', 'projectStatus'], 'PUBLISHED', 0.1, 0.3],
+        },
+      });
+    }
   };
+
+  useLayoutEffect(() => {
+    if (mapObj.map !== null) {
+      mapObj.map.on('moveend', (event) => {
+        debouncedGetProjectsAOI();
+      });
+    }
+  });
 
   useLayoutEffect(() => {
     if (mapObj.map !== null) {
@@ -122,6 +204,14 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
       // Remove area and geometry when aoi is deleted.
       mapObj.map.on('draw.delete', (event) => {
         updateMetadata({ ...metadata, geom: null, area: 0 });
+      });
+      // enable disable the project AOI visualization checkbox
+      mapObj.map.on('zoomend', (event) => {
+        if (mapObj.map.getZoom() < minZoomLevelToAOIVisualization) {
+          setAOICanBeActivated(false);
+        } else {
+          setAOICanBeActivated(true);
+        }
       });
 
       mapObj.map.on('style.load', (event) => {
@@ -147,6 +237,13 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   return (
     <div className="w-100 h-100-l relative" {...getRootProps()}>
       <div className="absolute top-0 right-0 z-5 mr2">
+        {step === 1 && (
+          <ProjectsAOILayerCheckBox
+            isActive={showProjectsAOILayer}
+            setActive={setShowProjectsAOILayer}
+            disabled={!aoiCanBeActivated}
+          />
+        )}
         <BasemapMenu map={mapObj.map} />
         <input className="dn" {...getInputProps()} />
       </div>
