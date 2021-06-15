@@ -21,10 +21,10 @@ In the project's top level directory, initialize Transifex service: `tx init`. T
 
 The .tx folder contains the Transifex config file. This is where you can find the mappings to local translation files.
 
-### Updates translation strings
+### Update translation strings
 
 * ```yarn build_locales``` -  Execute that command in the `frontend` folder to get the new translatable strings from all the `messages.js` files in the frontend code. The changes in the strings will be pushed to `frontend/src/locales/en.json` file. The ideal is to execute that command before every pull request that change something in the translatable strings.
-* After the pull request is merged to the `develop` branch, the command `tx push -s` needs to be executed in order to push the changes to Transifex.
+* After the pull request is merged to the `develop` branch, the command `tx push -s` needs to be executed in order to push the changes to Transifex. The translators receive a notification every time we push changes to Transifex.
 
 ### Update with latest translations
 
