@@ -33,11 +33,15 @@ The .tx folder contains the Transifex config file. This is where you can find th
 
 ### Adding a new language
 
-In this example we are adding support for German.
+The steps required to add a new language support to Tasking Manager are the following:
 
-* Add a new .json file with the appropriate language code as the name of the file, so in this case `de.json`.
-* Configure local mapping by using Transifex's set command: ```tx set -r tasking-manager.master -l de frontend/src/locales/de.json```
-* Add the new language and language code to the config file so it shows up in dropdowns etc. in backend/config.py
+* Add the language support using the [Transifex dashboard](https://www.transifex.com/hotosm/tasking-manager/dashboard/);
+* Edit `.tx/config` and add a line like: `trans.ml = frontend/src/locales/ml.json`
+* Add the new language and language code to:
+  * The `SUPPORTED_LANGUAGES` dictionary in the config file `backend/config.py`;
+  * The `supportedLocales` array on `frontend/src/utils/internationalization.js`;
+  * The polyfills in `frontend/src/utils/polyfill.js`;
+  * If the new language is not yet supported by [iso-countries-languages](https://github.com/hotosm/iso-countries-languages), we need to update it and publish a new version.
 
 ### Pushing translations
 
