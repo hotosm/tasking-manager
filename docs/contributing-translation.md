@@ -21,14 +21,15 @@ In the project's top level directory, initialize Transifex service: `tx init`. T
 
 The .tx folder contains the Transifex config file. This is where you can find the mappings to local translation files.
 
-### Extract strings for translation
+### Updates translation strings
 
-* ```python manage.py build_locales``` -  Collects translatable strings and moves them into `frontend/src/locales/en.json`, and updates the new keys on the other languages supported by TM.
-* Push to the `develop` branch and it will be automatically picked up by Transifex (twice a day).
+* ```yarn build_locales``` -  Execute that command in the `frontend` folder to get the new translatable strings from all the `messages.js` files in the frontend code. The changes in the strings will be pushed to `frontend/src/locales/en.json` file. The ideal is to execute that command before every pull request that change something in the translatable strings.
+* After the pull request is merged to the `develop` branch, the command `tx push -s` needs to be executed in order to push the changes to Transifex.
 
 ### Update with latest translations
 
-* Before a release new translations need to be pulled in: ```tx pull -af --mode translator``` -  Gets all translations from Transifex and puts them into `frontend/locale`.
+* Before a release, new translations need to be pulled in: ```tx pull -af --mode translator``` -  Gets all translations from Transifex and puts them into `frontend/src/locales/`.
+* The [Transifex dashboard](https://www.transifex.com/hotosm/tasking-manager/dashboard/) can be used to check the status of the translations. If a language is not enabled in the `.tx/config` file, the translation updates will be downloaded to the `.tx/tasking-manager.version-4/` folder.
 
 ### Adding a new language
 
