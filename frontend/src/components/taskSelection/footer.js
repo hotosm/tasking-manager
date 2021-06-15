@@ -204,8 +204,6 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
           className="bg-white bn"
           toTop={true}
           onChange={updateEditor}
-          onAdd={() => {}}
-          onRemove={() => {}}
         />
       </div>
       <div className="w-30-ns w-60 fl tr">

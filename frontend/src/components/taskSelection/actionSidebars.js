@@ -582,8 +582,6 @@ export function ReopenEditor({ project, action, editor, callEditor }: Object) {
         display={<FormattedMessage {...messages.reloadEditor} />}
         className="bg-white b--grey-light ba pa2 di"
         onChange={callEditor}
-        onAdd={() => {}}
-        onRemove={() => {}}
         toTop={true}
       />
     </div>

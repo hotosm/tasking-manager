@@ -40,8 +40,6 @@ function _EditorDropdown(props) {
 
   return (
     <Dropdown
-      onAdd={() => {}}
-      onRemove={() => {}}
       onChange={onEditorSelect}
       value={value}
       options={getEditors()}
