@@ -27,7 +27,7 @@ class DropdownContent extends React.PureComponent {
       for (let x = 0; x < value.length; x++) {
         if (value[x].label === label) {
           isRemove = true;
-          this.props.onRemove(ourObj);
+          this.props.onRemove && this.props.onRemove(ourObj);
           this.props.onChange(value.slice(0, x).concat(value.slice(x + 1)));
         }
       }
@@ -38,7 +38,7 @@ class DropdownContent extends React.PureComponent {
           newArray = [];
         }
         newArray.push(ourObj);
-        this.props.onAdd(ourObj);
+        this.props.onAdd && this.props.onAdd(ourObj);
         this.props.onChange(newArray);
       }
     }

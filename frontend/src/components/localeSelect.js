@@ -23,8 +23,6 @@ function LocaleSelect({ userPreferences, setLocale, className }) {
   };
   return (
     <Dropdown
-      onAdd={() => {}}
-      onRemove={() => {}}
       onChange={onLocaleSelect}
       value={getActiveLanguageNames()}
       options={supportedLocales}

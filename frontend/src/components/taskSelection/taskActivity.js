@@ -238,9 +238,6 @@ export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) =>
   if (history && history.taskHistory && history.taskHistory.length > 0) {
     return (
       <Dropdown
-        onAdd={() => {}}
-        onRemove={() => {}}
-        onChange={() => {}}
         value={null}
         options={[
           { label: <FormattedMessage {...messages.taskOnOSMCha} />, href: osmchaLink },
@@ -396,8 +393,6 @@ function EditorDropdown({ project, taskId, bbox }: Object) {
       display={<FormattedMessage {...messages.openEditor} />}
       className="bg-white b--grey-light ba pa2 dib v-mid"
       onChange={loadTaskOnEditor}
-      onAdd={() => {}}
-      onRemove={() => {}}
     />
   );
 }

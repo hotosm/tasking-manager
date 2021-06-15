@@ -72,8 +72,6 @@ const RoleFilter = ({ filters, setFilters, updateFilters }) => {
   return (
     <div>
       <Dropdown
-        onAdd={() => {}}
-        onRemove={() => {}}
         onChange={(n) => {
           const value = n && n[0] && n[0].value;
           updateFilters('role', value);
@@ -96,8 +94,6 @@ const MapperLevelFilter = ({ filters, setFilters, updateFilters }) => {
   return (
     <div>
       <Dropdown
-        onAdd={() => {}}
-        onRemove={() => {}}
         onChange={(n) => {
           const value = n && n[0] && n[0].value;
           updateFilters('level', value);
