@@ -253,8 +253,6 @@ export default function ProjectEdit({ id }) {
           </div>
           <span className="db">
             <Dropdown
-              onAdd={() => {}}
-              onRemove={() => {}}
               value={null}
               options={[
                 {

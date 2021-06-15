@@ -198,8 +198,6 @@ class Header extends React.Component {
       <>
         <NotificationBell />
         <Dropdown
-          onAdd={() => {}}
-          onRemove={() => {}}
           onChange={this.onUserMenuSelect}
           value={[]}
           display={<UserDisplay username={this.props.userDetails.username} />}

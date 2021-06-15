@@ -37,7 +37,7 @@ export function NotificationOrderBySelector(props) {
       sort: 'ASC',
     },
   ];
-  const onSortSelect = arr => {
+  const onSortSelect = (arr) => {
     if (arr.length === 1) {
       props.setQuery(
         {
@@ -54,8 +54,6 @@ export function NotificationOrderBySelector(props) {
   };
   return (
     <Dropdown
-      onAdd={() => {}}
-      onRemove={() => {}}
       onChange={onSortSelect}
       value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}` || []}
       options={options}

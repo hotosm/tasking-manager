@@ -287,8 +287,6 @@ export function TaskList({
         </div>
         <div className="w-60-l w-50-m w-100 dib pv1">
           <Dropdown
-            onAdd={() => {}}
-            onRemove={() => {}}
             onChange={updateSortingOption}
             value={sortBy || 'date'}
             options={sortingOptions}

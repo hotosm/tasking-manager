@@ -52,8 +52,6 @@ export const ProjetListViewToggle = (props) => {
 const DifficultyDropdown = (props) => {
   return (
     <Dropdown
-      onAdd={() => {}}
-      onRemove={() => {}}
       onChange={(n) => {
         const value = n && n[0] && n[0].value;
         props.setQuery(

@@ -23,8 +23,6 @@ export const ProjectsActionFilter = ({ setQuery, fullProjectsQuery }) => {
 
   return (
     <Dropdown
-      onAdd={() => {}}
-      onRemove={() => {}}
       onChange={(n) => {
         const value = n && n[0] && n[0].value;
         // clean the action query param if it was set on the URL,
