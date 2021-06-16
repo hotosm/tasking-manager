@@ -298,7 +298,7 @@ export default defineMessages({
   },
   sortByMostRecentlyUpdate: {
     id: 'project.tasks.sorting.date',
-    defaultMessage: 'Mostly recently updated',
+    defaultMessage: 'Most recently updated',
   },
   sortByLeastRecentlyUpdate: {
     id: 'project.tasks.sorting.date.reverse',
