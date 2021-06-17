@@ -21,7 +21,6 @@ import { ID_EDITOR_URL } from '../../config';
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { CommentInputField } from '../comments/commentInput';
-import { CheckBoxInput } from '../formInputs';
 
 const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => {
   const token = useSelector((state) => state.auth.get('token'));
@@ -69,10 +68,9 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
 export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
   const token = useSelector((state) => state.auth.get('token'));
   const [history, setHistory] = useState([]);
-  const [showTaskComments, setShowTaskComments] = useState(true);
   const [taskComments, setTaskComments] = useState([]);
-  const [showTaskChanges, setShowTaskChanges] = useState(false);
   const [taskChanges, setTaskChanges] = useState([]);
+  const [historyOption, setHistoryOption] = useState('Comments');
   const [shownHistory, setShownHistory] = useState([]);
 
   useEffect(() => {
@@ -100,16 +98,14 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
   }, [projectId, taskId, token, commentPayload, getTaskInfo]);
 
   useEffect(() => {
-    if (showTaskComments && showTaskChanges) {
-      setShownHistory(history);
-    } else if (showTaskComments) {
+    if (historyOption === 'Comments') {
       setShownHistory(taskComments);
-    } else if (showTaskChanges) {
+    } else if (historyOption === 'Activities') {
       setShownHistory(taskChanges);
     } else {
       setShownHistory(history);
     }
-  }, [showTaskComments, showTaskChanges, taskComments, taskChanges, history]);
+  }, [historyOption, taskComments, taskChanges, history]);
 
   const getTaskActionMessage = (action, actionText) => {
     let message = '';
@@ -162,33 +158,33 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
     }
   };
 
+  const taskHistoryOptions = [
+    { value: 'Comments', label: 'Comments' },
+    { value: 'Activities', label: 'Activities' },
+    { value: 'All', label: 'All' },
+  ];
+
   if (!history) {
     return null;
   } else {
     return (
       <>
         <div
-          className="ml3 pl1 pb3 blue-dark flex flex-wrap"
+          className="ml3 pl1 pv2 blue-dark flex flex-wrap"
           aria-label="view task history options"
         >
-          <div className="pt1 fl w-15" aria-labelledby="comments">
-            <CheckBoxInput
-              isActive={showTaskComments}
-              changeState={() => setShowTaskComments(!showTaskComments)}
-            />
-          </div>
-          <span className="fl pt2 mr1 ph2" id="comments">
-            <FormattedMessage {...messages.taskComments} />
-          </span>
-          <div className="pt1 fl w-15" aria-labelledby="changes">
-            <CheckBoxInput
-              isActive={showTaskChanges}
-              changeState={() => setShowTaskChanges(!showTaskChanges)}
-            />
-          </div>
-          <span className="fl pt2 mr1 ph2" id="changes">
-            <FormattedMessage {...messages.taskStateChanges} />
-          </span>
+          {taskHistoryOptions.map((option) => (
+            <label className="pt1 pr3 fl w-15" key={option.value}>
+              <input
+                value={option.value}
+                checked={historyOption === option.value}
+                onChange={() => setHistoryOption(option.value)}
+                type="radio"
+                className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
+              />
+              <FormattedMessage {...messages[`taskHistory${option.label}`]} />
+            </label>
+          ))}
         </div>
         {shownHistory.map((t, n) => (
           <div className="w-90 mh3 pv3 bt b--grey-light f6 cf blue-dark" key={n}>
