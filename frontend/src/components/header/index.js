@@ -53,7 +53,7 @@ const UserDisplay = ({ username }) => {
   return (
     <span>
       <CurrentUserAvatar className="br-100 v-mid red h2 w2 dib" />
-      <span className="pl2">{username}</span>
+      <span className="pl2 mw5 dib v-mid truncate">{username}</span>
     </span>
   );
 };
