@@ -48,14 +48,16 @@ describe('TaskHistory', () => {
         <TaskHistory projectId={2} taskId={15} commentPayload={history} />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText(/Activities/)).toBeInTheDocument();
     expect(screen.getByText(/Comments/)).toBeInTheDocument();
+    expect(screen.getByText(/Activities/)).toBeInTheDocument();
+    expect(screen.getByText(/All/)).toBeInTheDocument();
 
-    // retrieve checkboxes
-    const historyCheckBoxes = screen.getAllByRole('checkbox');
-    expect(historyCheckBoxes[0]).toBeChecked(); // initial value of comments checkbox is checked
-    expect(historyCheckBoxes[1]).not.toBeChecked(); // initial value of activities checkbox is unchecked
-    expect(screen.getByText('User01')).toBeInTheDocument();
+    // retrieve radio buttons
+    const historyRadioButtons = screen.getAllByRole('radio'); //3 radio options: Comments, Activities and All
+
+    expect(historyRadioButtons[0]).toBeChecked(); // initial value of 'Comments' radio option is checked
+    expect(historyRadioButtons[1]).not.toBeChecked(); // initial value of 'Activities' radio option is unchecked
+    expect(historyRadioButtons[2]).not.toBeChecked(); // initial value of 'All' radio option is unchecked
     expect(screen.getByText('commented 1 hour ago')).toBeInTheDocument();
     expect(screen.getByText('missing buildings')).toBeInTheDocument();
     expect(
@@ -63,12 +65,21 @@ describe('TaskHistory', () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByText('locked for validation 2 hours ago')).not.toBeInTheDocument();
 
-    fireEvent.click(historyCheckBoxes[1]); // check activities checkbox
+    fireEvent.click(historyRadioButtons[1]); // check activities radio option
+    expect(historyRadioButtons[0]).not.toBeChecked();
+    expect(historyRadioButtons[2]).not.toBeChecked();
     expect(screen.getByText('marked as more mapping needed 1 minute ago')).toBeInTheDocument();
     expect(screen.getByText('locked for validation 2 hours ago')).toBeInTheDocument();
-    fireEvent.click(historyCheckBoxes[0]); // uncheck comments checkbox
     expect(screen.queryByText('commented 1 hour ago')).not.toBeInTheDocument();
     expect(screen.queryByText('missing buildings')).not.toBeInTheDocument();
+
+    fireEvent.click(historyRadioButtons[2]); // check All radio option
+    expect(historyRadioButtons[0]).not.toBeChecked();
+    expect(historyRadioButtons[1]).not.toBeChecked();
+    expect(screen.getByText('marked as more mapping needed 1 minute ago')).toBeInTheDocument();
+    expect(screen.getByText('locked for validation 2 hours ago')).toBeInTheDocument();
+    expect(screen.getByText('commented 1 hour ago')).toBeInTheDocument();
+    expect(screen.getByText('missing buildings')).toBeInTheDocument();
   });
 
   it('does not render any task history when not provided', () => {
@@ -82,11 +93,23 @@ describe('TaskHistory', () => {
         <TaskHistory projectId={2} taskId={15} commentPayload={history} />
       </ReduxIntlProviders>,
     );
-    const historyCheckBoxes = screen.getAllByRole('checkbox');
-    fireEvent.click(historyCheckBoxes[1]); // check activities checkbox
-    expect(screen.getByText(/Activities/)).toBeInTheDocument();
+
     expect(screen.getByText(/Comments/)).toBeInTheDocument();
-    expect(historyCheckBoxes[0]).toBeChecked();
-    expect(historyCheckBoxes[1]).toBeChecked();
+    expect(screen.getByText(/Activities/)).toBeInTheDocument();
+    expect(screen.getByText(/All/)).toBeInTheDocument();
+
+    const historyRadioButtons = screen.getAllByRole('radio'); //3 radio options: Comments, Activities and All
+
+    expect(historyRadioButtons[0]).toBeChecked(); // Comments radio option
+    expect(historyRadioButtons[1]).not.toBeChecked();
+    expect(historyRadioButtons[2]).not.toBeChecked();
+
+    fireEvent.click(historyRadioButtons[1]); // check activities radio option
+    expect(historyRadioButtons[0]).not.toBeChecked();
+    expect(historyRadioButtons[2]).not.toBeChecked();
+
+    fireEvent.click(historyRadioButtons[2]); // check All radio option
+    expect(historyRadioButtons[0]).not.toBeChecked();
+    expect(historyRadioButtons[1]).not.toBeChecked();
   });
 });
