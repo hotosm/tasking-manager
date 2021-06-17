@@ -170,7 +170,7 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
     return (
       <>
         <div
-          className="ml3 pl1 pb3 blue-dark flex flex-wrap"
+          className="ml3 pl1 pv2 blue-dark flex flex-wrap"
           aria-label="view task history options"
         >
           {taskHistoryOptions.map((option) => (
