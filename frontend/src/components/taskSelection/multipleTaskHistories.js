@@ -23,7 +23,7 @@ export const MultipleTaskHistoriesAccordion = ({ handleChange, tasks, projectId 
                 <FormattedMessage {...messages.taskActivity} values={{ n: t.taskId }} />
               </AccordionItemButton>
             </AccordionItemHeading>
-            <AccordionItemPanel className="pa2 accordion_panel">
+            <AccordionItemPanel className="ph2 pb2 accordion_panel">
               <TaskHistory projectId={projectId} taskId={t.taskId} commentPayload={undefined} />
             </AccordionItemPanel>
           </AccordionItem>
