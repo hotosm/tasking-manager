@@ -68,26 +68,22 @@ function readFileAsync(file, format) {
 export const readGeoFile = async (file) => {
   const format = file.name.split('.')[1].toLowerCase();
 
-  try {
-    let fileContent = await readFileAsync(file, format);
-    switch (format) {
-      case 'json':
-      case 'geojson':
-        return JSON.parse(fileContent);
-      case 'kml':
-        return kml(new DOMParser().parseFromString(fileContent, 'text/xml'));
-      case 'osm':
-        let osm = new DOMParser().parseFromString(fileContent, 'text/xml');
-        return osmToGeojson(osm);
-      case 'xml':
-        let xml = new DOMParser().parseFromString(fileContent, 'text/xml');
-        return osmToGeojson(xml);
-      case 'zip':
-        return shpjs(fileContent).then((geom) => geom);
-      default:
-        break;
-    }
-  } catch (e) {
-    throw e;
+  let fileContent = await readFileAsync(file, format);
+  switch (format) {
+    case 'json':
+    case 'geojson':
+      return JSON.parse(fileContent);
+    case 'kml':
+      return kml(new DOMParser().parseFromString(fileContent, 'text/xml'));
+    case 'osm':
+      let osm = new DOMParser().parseFromString(fileContent, 'text/xml');
+      return osmToGeojson(osm);
+    case 'xml':
+      let xml = new DOMParser().parseFromString(fileContent, 'text/xml');
+      return osmToGeojson(xml);
+    case 'zip':
+      return shpjs(fileContent).then((geom) => geom);
+    default:
+      break;
   }
 };

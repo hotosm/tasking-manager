@@ -92,9 +92,7 @@ export const PriorityAreasForm = () => {
         .then((geometry) => {
           verifyAndRenderPriorityArea(geometry);
         })
-        .catch((error) =>
-          setError({ error: true, message: getErrorMsg(error.message) || error.message }),
-        );
+        .catch((e) => setError({ error: true, message: getErrorMsg(e.message) || e.message }));
     } catch (err) {
       setError({ error: true, message: getErrorMsg(err.message) || err.message });
     }
