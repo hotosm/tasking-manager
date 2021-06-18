@@ -129,6 +129,12 @@ a:active {
     background-color: $white; // @extend .bg-moon-gray;
     border-color: $red;
   }
+
+  .checkbox-toggle-sm {
+    left: 1rem; // @extend .left-1;
+    background-color: $white; // @extend .bg-moon-gray;
+    border-color: $red;
+  }
 }
 .checkbox-toggle:hover {
   border: dashed red !important;
@@ -287,5 +293,28 @@ div.messageBodyLinks {
 #project-creation-map, #priority-area-map {
   .mapboxgl-ctrl-top-right {
     top: 2.5rem;
+  }
+}
+
+.rapid-beta {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #eee;
+  margin: 0 10px;
+  width: 1.8em;
+  height: 1.8em;
+  border: 1px solid #909;
+  border-radius: 5px;
+  background: rgb(203,16,237);
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(6%, rgba(108,1,167,1)), color-stop(50%, rgba(203,16,237,1)), color-stop(90%, rgb(229, 140, 253)), to(rgb(201, 42, 251)));
+  background: -o-linear-gradient(bottom, rgba(108,1,167,1) 6%, rgba(203,16,237,1) 50%, rgb(229, 140, 253) 90%, rgb(201, 42, 251) 100%);
+  background: linear-gradient(0deg, rgba(108,1,167,1) 6%, rgba(203,16,237,1) 50%, rgb(229, 140, 253) 90%, rgb(201, 42, 251) 100%);
+
+  &:before {
+    content: '\03b2';
+    font-size: 1.2em;
+    vertical-align: middle;
   }
 }
