@@ -3236,38 +3236,26 @@
   dependencies:
     "@turf/helpers" "^6.3.0"
 
-"@turf/helpers@6.x":
-  version "6.1.4"
-  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.1.4.tgz#d6fd7ebe6782dd9c87dca5559bda5c48ae4c3836"
-  integrity sha512-vJvrdOZy1ngC7r3MDA7zIGSoIgyrkWcGnNIEaqn/APmw+bVLF2gAW7HIsdTxd12s5wQMqEpqIQrmrbRRZ0xC7g==
+"@turf/helpers@6.x", "@turf/helpers@^6.3.0", "@turf/helpers@^6.4.0":
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.4.0.tgz#e263d960ab1caed3bfe86a7f2f4b2096dbbf0635"
+  integrity sha512-7vVpWZwHP0Qn8DDSlM++nhs3/6zfPt+GODjvLVZ+sWIG4S3vOtUUOfO5eIjRzxsUHHqhgiIL0QA17u79uLM+mQ==
 
-"@turf/helpers@^6.3.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.3.0.tgz#87f90f806c3f8ad6385ef8d2041d3662bf3c9fb1"
-  integrity sha512-kr6KuD4Z0GZ30tblTEvi90rvvVNlKieXuMC8CTzE/rVQb0/f/Cb29zCXxTD7giQTEQY/P2nRW23wEqqyNHulCg==
-
-"@turf/intersect@^6.3.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@turf/intersect/-/intersect-6.3.0.tgz#b22b3e888e762ae4336e085eb6f21215d06652ea"
-  integrity sha512-1YCIkyKjuTlX7HaTjtyE7ZRxLCmcu0BYr6jqoVl7TjyF2NUiNpPm3m4X1ZrSF6MfjIt5NFSGYCdNMEPgREq19w==
+"@turf/intersect@^6.4.0":
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/@turf/intersect/-/intersect-6.4.0.tgz#bd2e409f3495f01f46d74749513ee20056641d9b"
+  integrity sha512-+vGjy/TDS9PXuTPu5Flh/zcjPmC1lluBqtYO03hqB673Ly1Zk9SBcnNoZQjlpyjFdUkutYM2McYgIKsumTbd1Q==
   dependencies:
-    "@turf/helpers" "^6.3.0"
-    "@turf/invariant" "^6.3.0"
+    "@turf/helpers" "^6.4.0"
+    "@turf/invariant" "^6.4.0"
     polygon-clipping "^0.15.2"
 
-"@turf/invariant@6.x":
-  version "6.1.2"
-  resolved "https://registry.yarnpkg.com/@turf/invariant/-/invariant-6.1.2.tgz#6013ed6219f9ac2edada9b31e1dfa5918eb0a2f7"
-  integrity sha512-WU08Ph8j0J2jVGlQCKChXoCtI50BB3yEH21V++V0T4cR1T27HKCxkehV2sYMwTierfMBgjwSwDIsxnR4/2mWXg==
+"@turf/invariant@6.x", "@turf/invariant@^6.3.0", "@turf/invariant@^6.4.0":
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/@turf/invariant/-/invariant-6.4.0.tgz#bedef5a55e6dc867eabbc5660f3df754b5709d4b"
+  integrity sha512-ncAiOLkL6Ul6NnyOZSSmEbTwcZZ8PTx7O1IzB89Ed/mAe1g5PvFnyFieWbcnERGmuqH1ftzgtWMFFHFi2PQLsg==
   dependencies:
-    "@turf/helpers" "6.x"
-
-"@turf/invariant@^6.3.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@turf/invariant/-/invariant-6.3.0.tgz#04a22b26c5503146c03fa6198176b72bd591eadf"
-  integrity sha512-2OFOi9p+QOrcIMySEnr+WlOiKaFZ1bY56jA98YyECewJHfhPFWUBZEhc4nWGRT0ahK08Vus9+gcuBX8QIpCIIw==
-  dependencies:
-    "@turf/helpers" "^6.3.0"
+    "@turf/helpers" "^6.4.0"
 
 "@turf/line-to-polygon@^6.3.0":
   version "6.3.0"
@@ -11120,19 +11108,12 @@ pnp-webpack-plugin@1.6.4:
   dependencies:
     ts-pnp "^1.1.6"
 
-polygon-clipping@^0.15.2:
+polygon-clipping@^0.15.2, polygon-clipping@~0.15.1:
   version "0.15.2"
   resolved "https://registry.yarnpkg.com/polygon-clipping/-/polygon-clipping-0.15.2.tgz#076199182bf23a4a6cf6c7003f3b81ecf30b2cb8"
   integrity sha512-qsUFQSY4nA++1/b76dy0BJGwL0FZAk05Y4hZprctLIhAddE8KUUr3TxIF4sAxIQtjH9xvaBe3raaRQrcSI4wlA==
   dependencies:
     splaytree "^3.1.0"
-
-polygon-clipping@~0.15.1:
-  version "0.15.1"
-  resolved "https://registry.yarnpkg.com/polygon-clipping/-/polygon-clipping-0.15.1.tgz#df231c280e0d337a5854eb45be5ccc59a218bb91"
-  integrity sha512-6tvqlvuSu+CLe0RtS51sG43iU31h4zwyLAESMW/Kv+iNb62lSwxvGJhlLNduS4JTtX3mtBrg8Bbl/QCpC2I+hA==
-  dependencies:
-    splaytree "^3.0.1"
 
 portfinder@^1.0.26:
   version "1.0.28"
@@ -13674,11 +13655,6 @@ splaytree@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/splaytree/-/splaytree-0.1.4.tgz#fc35475248edcc29d4938c9b67e43c6b7e55a659"
   integrity sha512-D50hKrjZgBzqD3FT2Ek53f2dcDLAQT8SSGrzj3vidNH5ISRgceeGVJ2dQIthKOuayqFXfFjXheHNo4bbt9LhRQ==
-
-splaytree@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/splaytree/-/splaytree-3.0.1.tgz#038d8e6d597a3a1893e8e82693a0f4413b3559f7"
-  integrity sha512-WvQIHRDXLSVn72xjlIG/WGhv/4QO3m+iY2TpVdFRaXd1+/vkNlpkpw1QaNH5taghF9eWXDHWMWnzXyicR8d6ig==
 
 splaytree@^3.1.0:
   version "3.1.0"
