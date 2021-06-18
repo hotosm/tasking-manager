@@ -22,7 +22,7 @@ import {
   verifyFileFormat,
   verifyFileSize,
 } from '../../utils/geoFileFunctions';
-import { getErrorMsg } from '../projectCreate/fileErrors';
+import { getErrorMsg } from '../projectCreate/fileUploadErrors';
 import { Alert } from '../alert';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -79,7 +79,7 @@ export const PriorityAreasForm = () => {
   }));
 
   const uploadFile = (files) => {
-    let file = files[0];
+    const file = files[0];
     if (!file) return;
 
     try {

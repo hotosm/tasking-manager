@@ -14,6 +14,7 @@ import {
 } from './snippets/feature';
 
 import { parsedGeometry } from './snippets/parsedGeometry';
+import { MAX_FILESIZE } from '../../config';
 
 import {
   verifyGeometry,
@@ -45,12 +46,12 @@ describe('verifyGeometry', () => {
 
 describe('verifyFileSize', () => {
   it('throws an error when the file is too large', () => {
-    let file = new File([new ArrayBuffer(1048576)], 'file.json');
+    let file = new File([new ArrayBuffer(MAX_FILESIZE)], 'file.json');
     expect(() => verifyFileSize(file)).toThrow('fileSize');
   });
 
   it('does not throw an error when file is expected size or below', () => {
-    let file = new File([new ArrayBuffer(1024)], 'file.json');
+    let file = new File([new ArrayBuffer(MAX_FILESIZE - 10)], 'file.json');
     expect(() => verifyFileSize(file)).not.toThrow('fileSize');
   });
 });

@@ -30,7 +30,7 @@ import {
   verifyFileFormat,
   verifyFileSize,
 } from '../../utils/geoFileFunctions';
-import { getErrorMsg } from './fileErrors';
+import { getErrorMsg } from './fileUploadErrors';
 
 const ProjectCreationMap = React.lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
@@ -68,7 +68,7 @@ const ProjectCreate = (props) => {
   };
 
   const uploadFile = (files) => {
-    let file = files[0];
+    const file = files[0];
     if (!file) return null;
     try {
       setErr({ code: 403, message: null }); //reset error on new file upload
