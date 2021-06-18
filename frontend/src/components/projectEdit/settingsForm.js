@@ -28,7 +28,11 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.language} />
         </label>
-        <select name="defaultLocale" onChange={updateDefaultLocale} className="pa2">
+        <select
+          name="defaultLocale"
+          onChange={updateDefaultLocale}
+          className="pa2 bg-white ba ba--grey-light"
+        >
           {languages.map((l) => (
             <option key={l.code} selected={l.code === defaultLocale ? true : false} value={l.code}>
               {l.language} ({l.code})

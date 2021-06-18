@@ -30,7 +30,7 @@ export const styleClasses = {
   divClass: 'w-70-l w-100 pb4 mb3',
   labelClass: 'f4 fw6 db mb3',
   pClass: 'db mb3 f5',
-  inputClass: 'w-80 pa2 db mb2',
+  inputClass: 'w-80 pa2 db mb2 ba b--grey-light',
   numRows: '4',
   buttonClass: 'bg-blue-dark dib white',
   modalTitleClass: 'f3 pb3 mv0 bb',

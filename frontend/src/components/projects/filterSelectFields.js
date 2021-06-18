@@ -81,7 +81,7 @@ export const DateFilterPicker = ({
           )
         }
         dateFormat={dateFormat}
-        className="w-auto pv2 ph1"
+        className="w-auto pv2 ph1 ba b--grey-light"
         placeholderText={intl.formatMessage(messages[`${fieldsetName}Placeholder`])}
         showYearDropdown
         scrollableYearDropdown
