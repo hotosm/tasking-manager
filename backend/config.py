@@ -63,6 +63,7 @@ class EnvironmentConfig:
         and forms a valid SQLALCHEMY DATABASE URI
         """
         import json
+
         _params = json.loads(os.getenv("TM_DB_CONNECT_PARAM_JSON", None))
         SQLALCHEMY_DATABASE_URI = (
             f"postgresql://{_params.get('username')}"

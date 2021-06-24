@@ -237,7 +237,6 @@ const Resources = {
       Family: 'Tasking_Manager',
       Memory: '4096',
       NetworkMode: 'awsvpc',
-      RequiresCompatibilities: ['FARGATE'],
       Tags: [
         { Key: 'Tool', Value: 'TaskingManager' },
         { Key: 'Name', Value: cf.stackName },
