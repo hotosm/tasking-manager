@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@reach/router';
+import { navigate } from '@reach/router';
 import onClickOutside from 'react-click-outside';
 
 import { ChevronDownIcon, CheckIcon } from './svgIcons';
@@ -18,7 +18,13 @@ class DropdownContent extends React.PureComponent {
   handleClick = (data: Object) => {
     if (data) {
       var label = data.label;
-      if (!label || !this.props.value || !this.props.onChange) return;
+      if (!this.props.value || !this.props.onChange) {
+        if (!label) return;
+        if (data.href && data.internalLink) {
+          navigate(data.href)
+        }
+        return
+      }
       const value = this.props.value;
       let ourObj = data;
       if (!ourObj) return;
@@ -71,10 +77,10 @@ class DropdownContent extends React.PureComponent {
             )}
             {i.href ? (
               i.internalLink ? (
-                <Link to={i.href} className="link blue-grey">
+                <>
                   {i.label}
                   {this.isActive(i) && <CheckIcon className="red pl4" />}
-                </Link>
+                </>
               ) : (
                 <a
                   target={'_blank'}
