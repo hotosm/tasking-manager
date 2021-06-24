@@ -536,11 +536,6 @@ class MessageService:
         team_members = [item for sublist in team_members for item in sublist]
         project_managers.extend(team_members)
 
-        # Add organization managers.
-        if project.organisation is not None:
-            org_usernames = [u.username for u in project.organisation.managers]
-            project_managers.extend(org_usernames)
-
         return project_managers
 
     @staticmethod

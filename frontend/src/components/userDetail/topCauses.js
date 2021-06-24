@@ -1,12 +1,13 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 
 const TopCauses = ({ userStats }) => {
+  const intl = useIntl();
   const sliceVal = 3;
   const colours = [
     CHART_COLOURS.green,
@@ -18,16 +19,22 @@ const TopCauses = ({ userStats }) => {
 
   let interests = userStats.ContributionsByInterest.slice(0, sliceVal).map((c, i) => {
     stats[c.name] = c.countProjects;
-    return { label: c.name, field: c.name, backgroundColor: colours[i] };
+    return {
+      label: c.name,
+      field: c.name,
+      backgroundColor: colours[i],
+      borderColor: CHART_COLOURS.white,
+    };
   });
   stats.Others = userStats.ContributionsByInterest.slice(sliceVal)
     .map((c) => c.countProjects)
     .reduce((a, b) => a + b, 0);
 
   interests.push({
-    label: 'Others',
+    label: intl.formatMessage(messages.others),
     field: 'Others',
     backgroundColor: colours[colours.length - 1],
+    borderColor: CHART_COLOURS.white,
   });
   const data = formatChartData(interests, stats);
 
@@ -40,8 +47,11 @@ const TopCauses = ({ userStats }) => {
         <Doughnut
           data={data}
           options={{
-            legend: { position: 'right', labels: { boxWidth: 12 } },
-            tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
+            aspectRatio: 2,
+            plugins: {
+              legend: { position: 'right', labels: { boxWidth: 12 } },
+              tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+            },
           }}
         />
       ) : (

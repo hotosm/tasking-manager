@@ -298,7 +298,7 @@ export default defineMessages({
   },
   sortByMostRecentlyUpdate: {
     id: 'project.tasks.sorting.date',
-    defaultMessage: 'Mostly recently updated',
+    defaultMessage: 'Most recently updated',
   },
   sortByLeastRecentlyUpdate: {
     id: 'project.tasks.sorting.date.reverse',
@@ -332,13 +332,17 @@ export default defineMessages({
     id: 'project.tasks.action.history',
     defaultMessage: 'History',
   },
-  taskComments: {
+  taskHistoryComments: {
     id: 'project.tasks.history.comments',
     defaultMessage: 'Comments',
   },
-  taskStateChanges: {
-    id: 'project.tasks.history.stateChanges',
+  taskHistoryActivities: {
+    id: 'project.tasks.history.activities',
     defaultMessage: 'Activities',
+  },
+  taskHistoryAll: {
+    id: 'project.tasks.history.all',
+    defaultMessage: 'All',
   },
   copyComment: {
     id: 'project.tasks.action.comments.copy',

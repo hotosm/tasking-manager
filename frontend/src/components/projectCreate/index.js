@@ -24,75 +24,69 @@ import { Alert } from '../alert';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { makeGrid } from '../../utils/taskGrid';
 import { MAX_AOI_AREA } from '../../config';
-import { verifyFileSize, readGeoFile, verifyGeometry } from '../../utils/fileFunctions';
+import {
+  verifyGeometry,
+  readGeoFile,
+  verifyFileFormat,
+  verifyFileSize,
+} from '../../utils/geoFileFunctions';
+import { getErrorMsg } from './fileUploadErrors';
 
 const ProjectCreationMap = React.lazy(() =>
   import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
 );
 
-var shpjs = require('shpjs');
-
 const ProjectCreate = (props) => {
   const intl = useIntl();
   const token = useSelector((state) => state.auth.get('token'));
   const [drawModeIsActive, setDrawModeIsActive] = useState(false);
+  const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(false);
 
   const setDataGeom = (geom, display) => {
-    mapObj.map.fitBounds(bbox(geom), { padding: 200 });
-    const zoomLevel = 11;
-    const grid = makeGrid(geom, zoomLevel);
-    updateMetadata({
-      ...metadata,
-      geom: geom,
-      area: (area(geom) / 1e6).toFixed(2),
-      zoomLevel: zoomLevel,
-      taskGrid: grid,
-      tempTaskGrid: grid,
-    });
+    const supportedGeoms = ['Polygon', 'MultiPolygon', 'LineString'];
 
-    if (display === true) {
-      mapObj.map.getSource('aoi').setData(geom);
+    try {
+      let validGeometry = verifyGeometry(geom, supportedGeoms);
+
+      mapObj.map.fitBounds(bbox(validGeometry), { padding: 200 });
+      const zoomLevel = 11;
+      const grid = makeGrid(validGeometry, zoomLevel);
+      updateMetadata({
+        ...metadata,
+        geom: validGeometry,
+        area: (area(validGeometry) / 1e6).toFixed(2),
+        zoomLevel: zoomLevel,
+        taskGrid: grid,
+        tempTaskGrid: grid,
+      });
+
+      if (display === true) {
+        mapObj.map.getSource('aoi').setData(validGeometry);
+      }
+    } catch (err) {
+      setErr({ error: true, message: getErrorMsg(err.message) || err.message });
     }
   };
 
   const uploadFile = (files) => {
-    let file = files[0];
+    const file = files[0];
     if (!file) return null;
-
     try {
-      let error = { code: 403, message: null };
+      setErr({ code: 403, message: null }); //reset error on new file upload
 
-      verifyFileSize(file, error);
+      verifyFileFormat(file);
+      verifyFileSize(file);
 
-      const format = file.name.split('.')[1].toLowerCase();
-
-      let fileReader = new FileReader();
-      fileReader.onload = (e) => {
-        try {
-          let geom = readGeoFile(e, format, error);
-          const supportedGeoms = ['Polygon', 'MultiPolygon', 'LineString'];
-
-          if (format === 'zip') {
-            shpjs(e.target.result).then((geom) => {
-              let validGeometry = verifyGeometry(geom, error, supportedGeoms);
-              setDataGeom(validGeometry, true);
-            });
-          } else {
-            let validGeometry = verifyGeometry(geom, error, supportedGeoms);
-            setDataGeom(validGeometry, true);
-          }
-        } catch (err) {
-          deleteHandler();
-          setErr({ error: true, message: err.message });
-        }
-      };
-      if (format === 'zip') {
-        fileReader.readAsArrayBuffer(file);
-      } else {
-        fileReader.readAsText(file);
-      }
+      readGeoFile(file)
+        .then((geometry) => {
+          setDataGeom(geometry, true);
+        })
+        .catch((error) =>
+          setErr({ error: true, message: getErrorMsg(error.message) || error.message }),
+        );
     } catch (e) {
-      setErr({ error: true, message: e.message });
+      deleteHandler();
+      setErr({ error: true, message: getErrorMsg(e.message) || e.message });
     }
   };
 
@@ -243,6 +237,8 @@ const ProjectCreate = (props) => {
             drawHandler={drawHandler}
             deleteHandler={deleteHandler}
             drawIsActive={drawModeIsActive}
+            showProjectsAOILayer={showProjectsAOILayer}
+            setShowProjectsAOILayer={setShowProjectsAOILayer}
           />
         );
       case 2:
@@ -279,6 +275,7 @@ const ProjectCreate = (props) => {
             setMapObj={setMapObj}
             step={step}
             uploadFile={uploadFile}
+            showProjectsAOILayer={showProjectsAOILayer}
           />
         </Suspense>
         <div className="cf absolute bg-white o-90 top-1 left-1 pa3 mw6">

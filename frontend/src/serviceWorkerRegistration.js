@@ -135,3 +135,8 @@ export function unregister() {
       });
   }
 }
+
+export function onServiceWorkerUpdate(registration) {
+  const event = new CustomEvent('onNewServiceWorker', { detail: { registration } });
+  document.dispatchEvent(event);
+}

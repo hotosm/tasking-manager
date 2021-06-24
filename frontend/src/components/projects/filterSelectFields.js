@@ -81,7 +81,7 @@ export const DateFilterPicker = ({
           )
         }
         dateFormat={dateFormat}
-        className="w-auto pv2 ph1"
+        className="w-auto pv2 ph1 ba b--grey-light"
         placeholderText={intl.formatMessage(messages[`${fieldsetName}Placeholder`])}
         showYearDropdown
         scrollableYearDropdown
@@ -113,10 +113,10 @@ export const TagFilterPickerAutocomplete = ({
     }
   };
   const getValue = (option) => {
-    if (option.value) {
+    if (option && option.value) {
       return option.value;
     }
-    if (option.name) {
+    if (option && option.name) {
       return option.name;
     }
     return option;
@@ -131,11 +131,13 @@ export const TagFilterPickerAutocomplete = ({
       {
         ...allQueryParams,
         page: undefined,
-        [fieldsetName]: newValue,
+        [fieldsetName]: newValue || undefined,
       },
       'pushIn',
     );
   };
+
+  const [selectedOption] = tagOptions.filter((option) => option.name === queryParamSelectedItem);
 
   return (
     <Select
@@ -146,7 +148,8 @@ export const TagFilterPickerAutocomplete = ({
       autoFocus={true}
       placeholder={allQueryParams[fieldsetName] || fieldsetTitle}
       options={tagOptions}
-      value={queryParamSelectedItem}
+      value={selectedOption || null}
+      isClearable={true}
     />
   );
 };

@@ -13,3 +13,12 @@
   - scripts/docker/**/*
   - scripts/install/**/*
   - docker-*.yml
+"dependencies":
+  - frontend/yarn.lock
+  - ./requirements.txt
+"javascript":
+  - frontend/yarn.lock
+"python":
+  - ./requirements.txt
+"Type: Translations":
+  - frontend/src/locales/*

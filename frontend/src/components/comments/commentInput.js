@@ -10,8 +10,13 @@ import FileRejections from './fileRejections';
 import DropzoneUploadStatus from './uploadStatus';
 import { DROPZONE_SETTINGS } from '../../config';
 
-export const CommentInputField = ({ comment, setComment, enableHashtagPaste = false }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+export const CommentInputField = ({
+  comment,
+  setComment,
+  contributors,
+  enableHashtagPaste = false,
+  autoFocus,
+}: Object) => {
   const appendImgToComment = (url) => setComment(`${comment}\n![image](${url})\n`);
   const [uploadError, uploading, onDrop] = useOnDrop(appendImgToComment);
   const { fileRejections, getRootProps, getInputProps } = useDropzone({
@@ -24,8 +29,9 @@ export const CommentInputField = ({ comment, setComment, enableHashtagPaste = fa
       <UserFetchTextarea
         inputProps={getInputProps}
         value={comment}
+        contributors={contributors}
         setValueFn={(e) => setComment(e.target.value)}
-        token={token}
+        autoFocus={autoFocus}
       />
       {comment && enableHashtagPaste && (
         <span className="blue-grey f6 pt2">
@@ -40,30 +46,27 @@ export const CommentInputField = ({ comment, setComment, enableHashtagPaste = fa
   );
 };
 
-export const UserFetchTextarea = ({ value, setValueFn, token, inputProps }) => {
+export const UserFetchTextarea = ({ value, setValueFn, inputProps, contributors, autoFocus }) => {
+  const token = useSelector((state) => state.auth.get('token'));
   const fetchUsers = async (user) => {
-    const url = `users/queries/filter/${user}/`;
-    let userItems;
-
     try {
-      const res = await fetchLocalJSONAPI(url, token);
-      userItems = res.usernames.map((u) => {
-        return { name: u };
-      });
+      if (!user) return contributors.map((u) => ({ name: u }));
+      const res = await fetchLocalJSONAPI(`users/queries/filter/${user}/`, token);
+      return res.usernames.map((u) => ({ name: u }));
     } catch (e) {
-      userItems = [];
+      return [];
     }
-
-    return userItems;
   };
 
   return (
     <ReactTextareaAutocomplete
       {...inputProps}
       value={value}
+      innerRef={(textArea) => autoFocus && textArea && textArea.focus()}
       listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey overflow-y-scroll base-font f5 relative z-5"
       listStyle={{ maxHeight: '16rem' }}
       onChange={setValueFn}
+      minChar={0}
       className="w-100 f5 pa2"
       style={{ fontSize: '1rem' }}
       loadingComponent={() => <span></span>}
@@ -72,7 +75,7 @@ export const UserFetchTextarea = ({ value, setValueFn, token, inputProps }) => {
         '@': {
           dataProvider: fetchUsers,
           component: Item,
-          output: (item, trigger) => '@[' + item.name + ']',
+          output: (item, trigger) => `@[${item.name}]`,
         },
       }}
     />

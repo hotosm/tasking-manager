@@ -20,16 +20,19 @@ export default function ContributorsStats({ contributors }) {
       label: getUserLevelLabel('BEGINNER'),
       field: 'beginnerUsers',
       backgroundColor: CHART_COLOURS.green,
+      borderColor: CHART_COLOURS.white,
     },
     {
       label: getUserLevelLabel('INTERMEDIATE'),
       field: 'intermediateUsers',
       backgroundColor: CHART_COLOURS.blue,
+      borderColor: CHART_COLOURS.white,
     },
     {
       label: getUserLevelLabel('ADVANCED'),
       field: 'advancedUsers',
       backgroundColor: CHART_COLOURS.orange,
+      borderColor: CHART_COLOURS.white,
     },
   ];
   let userExperienceReference = [
@@ -92,8 +95,10 @@ export default function ContributorsStats({ contributors }) {
           <Bar
             data={formatChartData(userExperienceReference, stats)}
             options={{
-              legend: { display: false },
-              tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
+              plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+              },
             }}
           />
         </div>
@@ -106,8 +111,11 @@ export default function ContributorsStats({ contributors }) {
           <Doughnut
             data={formatChartData(userLevelsReference, stats)}
             options={{
-              legend: { position: 'right', labels: { boxWidth: 12 } },
-              tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
+              aspectRatio: 2,
+              plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12 } },
+                tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+              },
             }}
           />
         </div>

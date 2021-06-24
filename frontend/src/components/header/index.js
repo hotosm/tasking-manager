@@ -11,6 +11,7 @@ import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { LocaleSelector } from '../localeSelect';
 import { Button } from '../button';
+import { UpdateDialog } from './updateDialog';
 import { BurgerMenu } from './burgerMenu';
 import { TopNavLink } from './NavLink';
 import { SignUp } from './signUp';
@@ -52,7 +53,7 @@ const UserDisplay = ({ username }) => {
   return (
     <span>
       <CurrentUserAvatar className="br-100 v-mid red h2 w2 dib" />
-      <span className="pl2">{username}</span>
+      <span className="pl2 mw5 dib v-mid truncate">{username}</span>
     </span>
   );
 };
@@ -197,8 +198,6 @@ class Header extends React.Component {
       <>
         <NotificationBell />
         <Dropdown
-          onAdd={() => {}}
-          onRemove={() => {}}
           onChange={this.onUserMenuSelect}
           value={[]}
           display={<UserDisplay username={this.props.userDetails.username} />}
@@ -222,6 +221,7 @@ class Header extends React.Component {
     return (
       // Validate that user has set is email.
       <header className="w-100 bb b--grey-light">
+        <UpdateDialog />
         {this.checkUserEmail()}
         {this.props.showOrgBar && (
           <div className="cf ph2 red pt3 pb2 bb b--grey-light">

@@ -145,6 +145,23 @@ export default defineMessages({
     id: 'management.projects.create.reset.button',
     defaultMessage: 'Reset',
   },
+  showProjectsAOILayer: {
+    id: 'management.projects.create.show_aois',
+    defaultMessage: 'Show existing projects',
+  },
+  disabledAOILayer: {
+    id: 'management.projects.create.show_aois.disabled',
+    defaultMessage:
+      "Zoom in to be able to activate the visualization of other projects' areas of interest.",
+  },
+  enableAOILayer: {
+    id: 'management.projects.create.show_aois.enable',
+    defaultMessage: "Enable the visualization of the existing projects' areas of interest.",
+  },
+  colorLegend: {
+    id: 'management.projects.create.show_aois.legend',
+    defaultMessage: 'Color legend:',
+  },
   taskNumberMessage: {
     id: 'management.projects.create.split.tasks.number',
     defaultMessage: 'A new project will be created with {n} tasks.',

@@ -415,6 +415,8 @@ class ProjectsRestAPI(Resource):
             return {"Invalid GeoJson": str(e)}, 400
         except NotFound as e:
             return {"Error": str(e) or "Project Not Found"}, 404
+        except ProjectAdminServiceError as e:
+            return {"Error": str(e)}, 400
         except Exception as e:
             error_msg = f"ProjectsRestAPI PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

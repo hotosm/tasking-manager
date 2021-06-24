@@ -16,10 +16,14 @@ import { CustomButton } from '../button';
 import { MappedIcon, WasteIcon, MappedSquareIcon, FileImportIcon } from '../svgIcons';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL, CHART_COLOURS } from '../../config';
 import { BasemapMenu } from '../basemapMenu';
-import { readGeoFile, verifyGeometry, verifyFileSize } from '../../utils/fileFunctions';
+import {
+  verifyGeometry,
+  readGeoFile,
+  verifyFileFormat,
+  verifyFileSize,
+} from '../../utils/geoFileFunctions';
+import { getErrorMsg } from '../projectCreate/fileUploadErrors';
 import { Alert } from '../alert';
-
-var shpjs = require('shpjs');
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -75,51 +79,36 @@ export const PriorityAreasForm = () => {
   }));
 
   const uploadFile = (files) => {
+    const file = files[0];
+    if (!file) return;
+
     try {
-      let file = files[0];
-      if (!file) return;
+      setError({ error: false, message: null }); //reset error on new file upload
 
-      let error = { error: false, message: null };
-      setError(error); //reset error on new file upload
+      verifyFileSize(file);
+      verifyFileFormat(file);
 
-      verifyFileSize(file, error);
-
-      const format = file.name.split('.')[1].toLowerCase();
-
-      let reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          let geom = readGeoFile(e, format, error);
-          const supportedGeoms = ['Polygon'];
-
-          if (format === 'zip') {
-            shpjs(e.target.result).then((geom) => {
-              verifyAndRenderPriorityArea(geom, error, supportedGeoms);
-            });
-          } else {
-            verifyAndRenderPriorityArea(geom, error, supportedGeoms);
-          }
-        } catch (err) {
-          setError({ error: true, message: err.message });
-        }
-      };
-      if (format === 'zip') {
-        reader.readAsArrayBuffer(file);
-      } else {
-        reader.readAsText(file);
-      }
-    } catch (e) {
-      setError({ error: true, message: e.message });
+      readGeoFile(file)
+        .then((geometry) => {
+          verifyAndRenderPriorityArea(geometry);
+        })
+        .catch((e) => setError({ error: true, message: getErrorMsg(e.message) || e.message }));
+    } catch (err) {
+      setError({ error: true, message: getErrorMsg(err.message) || err.message });
     }
   };
 
-  const verifyAndRenderPriorityArea = (geom, error, supportedGeoms) => {
-    let validGeometry = verifyGeometry(geom, error, supportedGeoms);
-    priorityAreas = validGeometry.features.map((g) => g.geometry);
-    // validGeometry.features.forEach((g) => priorityAreas.push(g.geometry))
+  const verifyAndRenderPriorityArea = (geom) => {
+    const supportedGeoms = ['Polygon'];
+    try {
+      let validGeometry = verifyGeometry(geom, supportedGeoms);
+      priorityAreas = validGeometry.features.map((g) => g.geometry);
 
-    setProjectInfo({ ...projectInfo, priorityAreas: priorityAreas });
-    mapObj.map.getSource('priority_areas').setData(validGeometry);
+      setProjectInfo({ ...projectInfo, priorityAreas: priorityAreas });
+      mapObj.map.getSource('priority_areas').setData(validGeometry);
+    } catch (err) {
+      setError({ error: true, message: getErrorMsg(err.message) || err.message });
+    }
   };
 
   const { getRootProps, getInputProps, open } = useDropzone({
@@ -239,9 +228,8 @@ export const PriorityAreasForm = () => {
       mapObj.map.on('load', () => {
         mapObj.map.addControl(mapObj.draw);
         addMapLayers(mapObj.map);
+        mapObj.map.fitBounds(projectInfo.aoiBBOX, { duration: 0, padding: 100 });
       });
-
-      mapObj.map.fitBounds(projectInfo.aoiBBOX, { duration: 0, padding: 100 });
 
       mapObj.map.on('styledata', () => {
         addMapLayers(mapObj.map);

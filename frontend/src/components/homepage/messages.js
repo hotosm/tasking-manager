@@ -145,4 +145,12 @@ export default defineMessages({
     id: 'home.contact.submit',
     defaultMessage: 'Send',
   },
+  serviceDesk: {
+    id: 'home.contact.serviceDesk',
+    defaultMessage: 'Service Desk',
+  },
+  contactServiceDesk: {
+    id: 'home.contact.serviceDesk.description',
+    defaultMessage: 'You can also contact us through our <b>{link}</b>.',
+  },
 });
