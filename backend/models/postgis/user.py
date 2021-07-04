@@ -68,14 +68,6 @@ class User(db.Model):
     accepted_licenses = db.relationship("License", secondary=user_licenses_table)
     interests = db.relationship(Interest, secondary=user_interests, backref="users")
 
-    @property
-    def missing_maps_profile_url(self):
-        return f"http://www.missingmaps.org/users/#/{self.username}"
-
-    @property
-    def osm_profile_url(self):
-        return f"{current_app.config['OSM_SERVER_URL']}/user/{self.username}"
-
     def create(self):
         """ Creates and saves the current model to the DB """
         db.session.add(self)
@@ -364,8 +356,6 @@ class User(db.Model):
         user_dto.country = self.country
         user_dto.name = self.name
         user_dto.picture_url = self.picture_url
-        user_dto.osm_profile = self.osm_profile_url
-        user_dto.missing_maps_profile = self.missing_maps_profile_url
         user_dto.default_editor = self.default_editor
         user_dto.mentions_notifications = self.mentions_notifications
         user_dto.projects_notifications = self.projects_notifications

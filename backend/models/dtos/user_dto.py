@@ -77,8 +77,6 @@ class UserDTO(Model):
     teams_notifications = BooleanType(serialized_name="teamsNotifications")
 
     # these are read only
-    missing_maps_profile = StringType(serialized_name="missingMapsProfile")
-    osm_profile = StringType(serialized_name="osmProfile")
     gender = StringType(
         serialized_name="gender",
         choices=("MALE", "FEMALE", "SELF_DESCRIBE", "PREFER_NOT"),
