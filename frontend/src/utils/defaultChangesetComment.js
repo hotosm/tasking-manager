@@ -1,8 +1,6 @@
+import { TM_DEFAULT_CHANGESET_COMMENT } from '../config';
+
 export const retrieveDefaultChangesetComment = (changesetComment, projectId) => {
-  let pattern = `\\w*(-project-${projectId})$`;
-  const regex = new RegExp(pattern);
-  let defaultComment = changesetComment.split(' ').filter((c) => {
-    return c.match(regex) !== null;
-  });
-  return defaultComment;
+  const regex = new RegExp(`${TM_DEFAULT_CHANGESET_COMMENT}-${projectId}`);
+  return changesetComment.split(' ').filter((c) => c.match(regex) !== null);
 };

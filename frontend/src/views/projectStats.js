@@ -36,14 +36,16 @@ export function ProjectStats({ id }: Object) {
     if (project && project.changesetComment !== undefined) {
       let defaultComment = retrieveDefaultChangesetComment(project.changesetComment, id);
       // To fix: set this URL with an ENV VAR later
-      fetchExternalJSONAPI(
-        `https://osm-stats-production-api.azurewebsites.net/stats/${defaultComment[0].replace(
-          '#',
-          '',
-        )}`,
-      )
-        .then((res) => setEdits(res))
-        .catch((e) => console.log(e));
+      if (defaultComment.length) {
+        fetchExternalJSONAPI(
+          `https://osm-stats-production-api.azurewebsites.net/stats/${defaultComment[0].replace(
+            '#',
+            '',
+          )}`,
+        )
+          .then((res) => setEdits(res))
+          .catch((e) => console.log(e));
+      }
     }
   }, [project, id]);
 

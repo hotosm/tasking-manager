@@ -1,11 +1,12 @@
 import { retrieveDefaultChangesetComment } from '../defaultChangesetComment';
+import { TM_DEFAULT_CHANGESET_COMMENT } from '../../config';
 
 describe('retrieveDefaultChangesetComment', () => {
   // defaultChangesetComment structure: organisation-project-projectId
   it('returns the default comment included in the changeset comment', () => {
-    let changesetComment = '#volunteers #organisation-project-1000 #builldings';
+    let changesetComment = `#volunteers ${TM_DEFAULT_CHANGESET_COMMENT}-1000 #builldings`;
     expect(retrieveDefaultChangesetComment(changesetComment, 1000)).toEqual([
-      '#organisation-project-1000',
+      `${TM_DEFAULT_CHANGESET_COMMENT}-1000`,
     ]);
   });
 
