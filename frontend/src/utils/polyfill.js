@@ -6,10 +6,10 @@ export const polyfill = async (locale) => {
   if (shouldPolyfill()) {
     await import('@formatjs/intl-locale/polyfill');
   }
-  if (shouldPolyfillPluralRules()) {
+  if (shouldPolyfillPluralRules(locale)) {
     await import('@formatjs/intl-pluralrules/polyfill');
   }
-  if (shouldPolyfillRelativeTimeFormat()) {
+  if (shouldPolyfillRelativeTimeFormat(locale)) {
     await import('@formatjs/intl-relativetimeformat/polyfill');
   }
   /* Safari 12- and IE */
