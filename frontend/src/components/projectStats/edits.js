@@ -1,12 +1,14 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import ReactTooltip from 'react-tooltip';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import projectMessages from './messages';
 import userDetailMessages from '../userDetail/messages';
-import { MappingIcon, HomeIcon, RoadIcon, EditIcon } from '../svgIcons';
+import { MappingIcon, HomeIcon, RoadIcon, EditIcon, InfoIcon } from '../svgIcons';
 import { StatsCard } from '../statsCard';
 
 export const EditsStats = ({ data }) => {
+  const intl = useIntl();
   const { changesets, buildings, roads, edits } = data;
 
   const iconClass = 'h-50 w-50';
@@ -16,7 +18,12 @@ export const EditsStats = ({ data }) => {
     <div className="cf w-100 pb4 ph2 ph4-ns blue-dark">
       <h3 className="barlow-condensed ttu f3">
         <FormattedMessage {...projectMessages.edits} />
+        <InfoIcon
+          data-tip={intl.formatMessage(projectMessages.editsStats)}
+          className="blue-grey h1 w1 v-mid pb1 ml2"
+        />
       </h3>
+      <ReactTooltip place="top" className="mw6" effect="solid" />
       <div className="cf db pb2">
         <StatsCard
           field={'changesets'}

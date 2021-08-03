@@ -11,6 +11,7 @@ import { ProjectHeader } from '../components/projectDetail/header';
 import { TimeStats } from '../components/projectStats/timeStats';
 import { CompletionStats } from '../components/projectStats/completion';
 import { EditsStats } from '../components/projectStats/edits';
+import { retrieveDefaultChangesetComment } from '../utils/defaultChangesetComment';
 
 const ContributorsStats = React.lazy(() => import('../components/projectStats/contributorsStats'));
 const TasksByStatus = React.lazy(() => import('../components/projectStats/taskStatus'));
@@ -33,16 +34,20 @@ export function ProjectStats({ id }: Object) {
   const [edits, setEdits] = useState({});
   useEffect(() => {
     if (project && project.changesetComment !== undefined) {
+      let defaultComment = retrieveDefaultChangesetComment(project.changesetComment, id);
       // To fix: set this URL with an ENV VAR later
-      fetchExternalJSONAPI(
-        `https://osm-stats-production-api.azurewebsites.net/stats/${
-          project.changesetComment.replace('#', '').split(' ')[0]
-        }`,
-      )
-        .then((res) => setEdits(res))
-        .catch((e) => console.log(e));
+      if (defaultComment.length) {
+        fetchExternalJSONAPI(
+          `https://osm-stats-production-api.azurewebsites.net/stats/${defaultComment[0].replace(
+            '#',
+            '',
+          )}`,
+        )
+          .then((res) => setEdits(res))
+          .catch((e) => console.log(e));
+      }
     }
-  }, [project]);
+  }, [project, id]);
 
   return (
     <ReactPlaceholder
