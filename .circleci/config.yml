@@ -232,25 +232,19 @@ jobs:
     - checkout
     - setup_remote_docker
     - run:
-        name: Install modules
+        name: Install AWS CLI
         command: |
-          sudo pip3 install awscli --upgrade
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+          aws --version
     - run:
-        name: Configure AWS Access Key ID
+        name: Configure AWS CLI
         command: |
-          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID \
-          --profile default
-    - run:
-        name: Configure AWS Secret Access Key
-        command: |
-          aws configure set aws_secret_access_key \
-          $AWS_SECRET_ACCESS_KEY \
-          --profile default
-    - run:
-        name: Configure AWS default region
-        command: |
-          aws configure set region $AWS_REGION \
-          --profile default
+          aws configure set default.aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set default.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set default.region $AWS_REGION
+          aws configure set default.aws_session_token $AWS_SESSION_TOKEN
     - deploy:
         name: Update service to deploy latest << parameters.stack_name >>
         command: |
@@ -271,26 +265,19 @@ jobs:
     - checkout
     - setup_remote_docker
     - run:
-        name: Install modules
+        name: Install AWS CLI
         command: |
-          sudo pip3 install awscli --upgrade
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+          aws --version
     - run:
-        name: Configure AWS Access Key ID
+        name: Configure AWS CLI
         command: |
-          aws configure set aws_access_key_id \
-          $AWS_ACCESS_KEY_ID \
-          --profile default
-    - run:
-        name: Configure AWS Secret Access Key
-        command: |
-          aws configure set aws_secret_access_key \
-          $AWS_SECRET_ACCESS_KEY \
-          --profile default
-    - run:
-        name: Configure AWS default region
-        command: |
-          aws configure set region $AWS_REGION \
-          --profile default
+          aws configure set default.aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set default.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set default.region $AWS_REGION
+          aws configure set default.aws_session_token $AWS_SESSION_TOKEN
     - run:
         name: Deploy Frontend to S3
         command: |
@@ -301,10 +288,10 @@ jobs:
           aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-frontend-app --delete
           export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id'].Value"`
           aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
-        # TODO: Remove the following
-        environment:
-          TM_APP_API_URL: https://tm4-demo-api.hotosm.org
-          TM_APP_BASE_URL: https://tasks-demo.hotosm.org
+        # NOTE: Replaced with CircleCI context `tasking-manager-containers`
+        # environment:
+        #   TM_APP_API_URL: https://tm4-demo-api.hotosm.org
+        #   TM_APP_BASE_URL: https://tasks-demo.hotosm.org
 
 workflows:
   version: 2
@@ -434,19 +421,20 @@ workflows:
           filters:
             branches:
               only:
-                - feature/containerize-backend-cfn
+                - deployment/container-tasking-manager
           stack_name: "demo"
-            # context: tm4-containers
+          deployment_environment: "demo"
+          context: tasking-manager-containers
 
       - backend_deploy_containers:
           name: containers-backend
           filters:
             branches:
               only:
-                - feature/containerize-backend-cfn
+                - deployment/container-tasking-manager
           stack_name: "demo"
           deployment_environment: "demo"
-            # context: tm4-containers
+          context: tasking-manager-containers
 
 notify:
   webhooks:
