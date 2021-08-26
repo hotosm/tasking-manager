@@ -210,11 +210,7 @@ const Resources = {
         //  Interval: 10,
         //  Retries: 3
         //},
-        Image: 'quay.io/hotosm/tasking-manager:feature_containerize-backend-cfn', //configure this properly
-        // Image: cf.join('', [cf.accountId, '.dkr.ecr.', cf.region, '.amazonaws.com/taskingmanager:latest']),
-        // RepositoryCredentials: {
-        //   CredentialsParameter: 'arn:aws:secretsmanager:us-east-1:670261699094:secret:prod/tasking-manager/quay-image-pull-access-WdfayD'
-        // },
+        Image: 'quay.io/hotosm/tasking-manager:latest',
         PortMappings: [
           {
             ContainerPort: cf.ref('ApplicationPort'),
