@@ -168,7 +168,7 @@ const Resources = {
       DBInstanceIdentifier: cf.join('-', ['TM4', cf.ref('DeploymentEnvironment')]), // NOTE: This prevents instance from getting replaced; see doc.
       DBName: cf.ref('DatabaseName'),
       Engine: 'postgres',
-      EngineVersion: '11.10',
+      EngineVersion: '11.12',
       MasterUsername: cf.join(':', ['{{resolve:secretsmanager', cf.ref('DatabaseInstanceManagedPassword'), 'SecretString:username}}']),
       MasterUserPassword: cf.join(':', ['{{resolve:secretsmanager', cf.ref('DatabaseInstanceManagedPassword'), 'SecretString:password}}']),
       AllocatedStorage: cf.ref('DatabaseSize'),

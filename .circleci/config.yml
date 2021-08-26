@@ -286,10 +286,10 @@ jobs:
         command: |
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend/
           export TM_ENVIRONMENT=<< parameters.stack_name >>
+          export AWS_PAGER=""
           yarn
           CI=true GENERATE_SOURCEMAP=false yarn build
           aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-frontend-app --delete
-          export AWS_PAGER=""
           export DISTRIBUTION_ID=$(aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id'].Value")
           aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
         # NOTE: Replaced with CircleCI context `tasking-manager-containers`
