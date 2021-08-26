@@ -129,7 +129,6 @@ const Conditions = {
  * React Bucket Policy
  * React CloudFront
  * Route 53
- *
  */
 const Resources = {
   ECSCluster: {
