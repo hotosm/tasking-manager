@@ -251,7 +251,7 @@ jobs:
           aws ecs update-service \
           --cluster $(aws cloudformation list-exports --output=text --query "Exports[?Name=='TaskingManager-<< parameters.deployment_environment >>-ecs-cluster'].Value") \
           --service $(aws cloudformation list-exports --output=text --query "Exports[?Name=='TaskingManager-<< parameters.deployment_environment >>-ecs-service'].Value") \
-          --force-new-deployment
+          --force-new-deployment --no-cli-pager
 
   frontend_deploy_containers:
     working_directory: /home/circleci/tasking-manager
@@ -289,7 +289,8 @@ jobs:
           yarn
           CI=true GENERATE_SOURCEMAP=false yarn build
           aws s3 sync build/ s3://tasking-manager-<< parameters.stack_name >>-frontend-app --delete
-          export DISTRIBUTION_ID=`aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id'].Value"`
+          export AWS_PAGER=""
+          export DISTRIBUTION_ID=$(aws cloudformation list-exports --output=text --query "Exports[?Name=='tasking-manager-<< parameters.stack_name >>-cloudfront-id'].Value")
           aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
         # NOTE: Replaced with CircleCI context `tasking-manager-containers`
         # environment:
