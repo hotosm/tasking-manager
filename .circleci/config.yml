@@ -261,6 +261,9 @@ jobs:
       stack_name:
         description: "the name of the stack for cfn-config"
         type: string
+      deployment_environment:
+        description: "Deployment Environment demo, staging or production"
+        type: string
     steps:
     - checkout
     - setup_remote_docker
