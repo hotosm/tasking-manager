@@ -26,15 +26,18 @@ const Parameters = {
   },
   TaskingManagerAppBaseUrl: {
     Type: 'String',
-    Description: 'TM_APP_BASE_URL; Ex: https://example.hotosm.org'
+    Description: 'TM_APP_BASE_URL; Ex: https://example.hotosm.org',
+    Default: 'https://tasks-example.hotosm.org'
   },
   TaskingManagerEmailFromAddress: {
     Description: 'TM_EMAIL_FROM_ADDRESS',
-    Type: 'String'
+    Type: 'String',
+    Default: 'noreply@hotosmmail.org'
   },
   TaskingManagerEmailContactAddress: {
     Description: 'TM_EMAIL_CONTACT_ADDRESS',
-    Type: 'String'
+    Type: 'String',
+    Default: 'noreply@hotosmmail.org'
   },
   TaskingManagerImageUploadAPIURL: {
     Description: 'URL for image upload service',
@@ -42,7 +45,8 @@ const Parameters = {
   },
   TaskingManagerSMTPHost: {
     Description: 'TM_SMTP_HOST environment variable',
-    Type: 'String'
+    Type: 'String',
+    Default: 'email-smtp.us-east-1.amazonaws.com'
   },
   TaskingManagerSMTPUser: {
     Description: 'TM_SMTP_USER environment variable',
@@ -161,7 +165,6 @@ const Resources = {
       RequiresCompatibilities: ['FARGATE'],
       ContainerDefinitions: [{
         Name: 'Backend_Service',
-        // Command: ['/bin/sh', '-c', 'echo $POSTGRES_ENDPOINT'],
         Environment: [
           { Name: 'TM_APP_BASE_URL', Value: cf.ref('TaskingManagerAppBaseUrl') },
           { Name: 'TM_CONSUMER_KEY', Value: cf.ref('TaskingManagerConsumerKey') },
@@ -204,11 +207,6 @@ const Resources = {
           }
         ],
         Essential: true,
-        //HealthCheck: {
-        //  Command: ['/bin/sh', '-c', "echo $POSTGRES_ENDPOINT || exit 1"],
-        //  Interval: 10,
-        //  Retries: 3
-        //},
         Image: 'quay.io/hotosm/tasking-manager:latest',
         PortMappings: [
           {
@@ -458,7 +456,7 @@ const Resources = {
   LoadBalancerRoute53: {
     Type: 'AWS::Route53::RecordSet',
     Properties: {
-      Name: cf.join('-', [cf.stackName, 'api.hotosm.org']),
+      Name: cf.join('-', ['tm4', cf.ref('DeploymentEnvironment'), 'api.hotosm.org']), // Env: TM_APP_API_URL
       Type: 'A',
       AliasTarget: {
         DNSName: cf.getAtt('LoadBalancer', 'DNSName'),
@@ -531,7 +529,6 @@ const Resources = {
     Type: 'AWS::S3::Bucket',
     Properties: {
       BucketName: cf.join('-', ['tasking-manager', cf.ref('DeploymentEnvironment'), 'frontend-app']),
-      // BucketName: cf.join('-', [cf.stackName, 'react-app']), // TODO: Remove
       AccessControl: "PublicRead",
       PublicAccessBlockConfiguration: {
         BlockPublicAcls: false,
@@ -645,7 +642,6 @@ const Outputs = {
     Description: "Distribution ID for Cloudfront",
     Value: cf.ref('FrontEndCDN'),
     Export: {
-      // Name: cf.join('-', ['tasking-manager', cf.stackName, 'cloudfront-id']) // TODO: Remove
       Name: cf.join('-', ['tasking-manager', cf.ref('DeploymentEnvironment'), 'cloudfront-id'])
     },
   },
