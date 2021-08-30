@@ -342,7 +342,7 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
         <FormattedMessage {...messages.messageContributorsTranslationAlert} />
       </p>
 
-      <ActionStatus status={messageAllContributorsAsync.status} action="MAP_ALL_TASKS" />
+      <ActionStatus status={messageAllContributorsAsync.status} action="MESSAGE_CONTRIBUTORS" />
       <p>
         <Button className={styleClasses.whiteButtonClass} onClick={close}>
           <FormattedMessage {...messages.cancel} />
