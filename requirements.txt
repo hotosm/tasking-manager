@@ -1,5 +1,5 @@
 alembic==1.4.3
-aniso8601==8.0.0
+aniso8601==9.0.1
 appdirs==1.4.4
 apscheduler==3.7.0
 attrs==20.2.0
