@@ -43,6 +43,5 @@ COPY scripts/world scripts/world/
 COPY scripts/database scripts/database/
 COPY manage.py .
 
-ENV TZ UTC # Fix timezone (do not change - see issue #3638)
 EXPOSE 5000
 CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application"]
