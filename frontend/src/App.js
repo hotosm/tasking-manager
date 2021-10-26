@@ -57,7 +57,7 @@ import {
   NotificationPageIndex,
   NotificationDetail,
 } from './views/notifications';
-import { Banner } from './components/banner/index';
+import { Banner, DonationBanner } from './components/banner/index';
 
 const ProjectEdit = React.lazy(() =>
   import('./views/projectEdit' /* webpackChunkName: "projectEdit" */),
@@ -147,6 +147,7 @@ let App = (props) => {
               </QueryParamProvider>
             </Suspense>
           </main>
+          <DonationBanner />
           {MATOMO_ID && <Banner />}
           <Router primary={false}>
             <Footer path="/*" />
