@@ -75,3 +75,47 @@ export function Banner() {
     </div>
   );
 }
+
+export function DonationBanner() {
+  const form = document.getElementById('donation-form');
+
+  if (typeof form !== 'undefined' && form != null) {
+    if (!localStorage.getItem('donation-closed')) {
+      form.style.display = 'grid';
+    }
+    document.getElementById('donation-close').onclick = function() {
+      closeForm();
+    };
+  }
+
+  function closeForm() {
+    form.style.display = 'none';
+    localStorage.setItem('donation-closed', 'true');
+  }
+
+  return (
+    <div
+      id="donation-form"
+      className="fixed bottom-0 left-0 cf f5 w-100 tc ph6-l ph4-m ph2 pb2 bg-blue-dark white z-5 dn"
+    >
+      <div id="donation-contents">
+        <p>
+          <a
+            id="privlink"
+            className="red link f4 fw6"
+            href={`https://www.hotosm.org/donate/`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Donate text, though not internationalized.
+          </a>
+        </p>
+        <div id="donation-buttons">
+          <div className="white bg-red pv2 ph3 mh1 br1 dib fw6 pointer" id="donation-close">
+            Close
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
