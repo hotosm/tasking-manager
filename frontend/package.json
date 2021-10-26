@@ -28,7 +28,7 @@
     "@turf/transform-scale": "^6.4.0",
     "@turf/truncate": "^6.4.0",
     "@webscopeio/react-textarea-autocomplete": "^4.7.3",
-    "axios": "^0.21.1",
+    "axios": "^0.24.0",
     "chart.js": "^3.3.2",
     "date-fns": "^2.22.1",
     "dompurify": "^2.2.9",
