@@ -103,12 +103,15 @@ export function DonationBanner() {
           <a
             id="privlink"
             className="red link f4 fw6"
-            href={`https://www.hotosm.org/donate/`}
+            href={`http://bit.ly/HOTSummit2021`}
             target="_blank"
             rel="noopener noreferrer"
           >
-            Donate text, though not internationalized.
+              2021 HOT Summit
           </a>
+        </p>
+        <p>
+              Join the virtual HOT Summit 2021 on November 22! All are invited; RSVP for free.
         </p>
         <div id="donation-buttons">
           <div className="white bg-red pv2 ph3 mh1 br1 dib fw6 pointer" id="donation-close">
