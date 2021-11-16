@@ -2377,17 +2377,17 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@^2.19.6":
-  version "2.19.6"
-  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.19.6.tgz#2c984cda76b3223533cd7aee5f4b99a7cd08ea08"
-  integrity sha512-cl5ZuJ29nCmRnhj+p+FT/GIsdTZ7JmBnuWdIJcGFxQaDVEXogkFs6M5iuOpAEDP6qbvMmDmwkqdXCmCUL1bzdA==
+"@hotosm/id@^2.20.2":
+  version "2.20.2"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.20.2.tgz#26a0549695382689a336cbff2b2426a71ec77fd1"
+  integrity sha512-5G29dXL1TjpShj8+oTBLnpxydyoO6wyh4o1JqltGqMnyAeFcSrzoDCU6BZ3Kv1d2c7fVPNITwZv9f4dlmnj3rw==
   dependencies:
-    "@ideditor/country-coder" "^3.2.0"
-    "@ideditor/location-conflation" "~0.5.0"
-    "@mapbox/geojson-rewind" "^0.5.0"
+    "@ideditor/country-coder" "~5.0.3"
+    "@ideditor/location-conflation" "~1.0.2"
+    "@mapbox/geojson-area" "^0.2.2"
     "@mapbox/sexagesimal" "1.2.0"
-    "@mapbox/togeojson" "0.16.0"
     "@mapbox/vector-tile" "^1.3.1"
+    "@tmcw/togeojson" "^4.5.0"
     "@turf/bbox-clip" "^6.0.0"
     abortcontroller-polyfill "^1.4.0"
     aes-js "^3.1.2"
@@ -2397,11 +2397,12 @@
     fast-deep-equal "~3.1.1"
     fast-json-stable-stringify "2.1.0"
     lodash-es "~4.17.15"
-    marked "~1.2.3"
-    martinez-polygon-clipping "0.7.0"
+    marked "~2.0.0"
     node-diff3 "2.1.0"
     osm-auth "1.1.0"
     pannellum "2.5.6"
+    pbf "^3.2.1"
+    polygon-clipping "~0.15.1"
     rbush "3.0.1"
     whatwg-fetch "^3.4.1"
     which-polygon "2.2.0"
@@ -2413,24 +2414,24 @@
   dependencies:
     prettier "^2.0.5"
 
-"@ideditor/country-coder@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@ideditor/country-coder/-/country-coder-3.2.0.tgz#5c34ec3a2edc9a761dfa1c8a986db2f55792821b"
-  integrity sha512-tQ4NPQPbCflse93hK1QBPZzN+sDwajOEivWEHd1vzXpfQY03UgrDkJlOVZ7hoASIKWCsDGthjAvObgBPnof9wQ==
+"@ideditor/country-coder@^5.0.3", "@ideditor/country-coder@~5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@ideditor/country-coder/-/country-coder-5.0.3.tgz#79e14880cb87273f0c50891d5c6427bccc4a2de2"
+  integrity sha512-HHJtvEp2h/EyOKX+iCkOLBaFt1iRupF+zJcgEX5TO+o51CceempZYIf9o7pBo/u8BBM+ntsAeLauFvHIPqHBKw==
   dependencies:
     which-polygon "^2.2.0"
 
-"@ideditor/location-conflation@~0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@ideditor/location-conflation/-/location-conflation-0.5.0.tgz#db765be268bd724da22fb380c3c9b826cd56c052"
-  integrity sha512-xeg4j5vgYugYoiLcZzvGu5bEsr9+ibxTHAUIKmFW9lt3UGj8dEM6cPlCmanS73WqpBXnf10jP8Sxg834JBxqYA==
+"@ideditor/location-conflation@~1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@ideditor/location-conflation/-/location-conflation-1.0.2.tgz#3ae420dc572d4227a1f439e9d258f998c79feb74"
+  integrity sha512-6WzMgjapiIiYKPVFK70zQ4qqesM6OCA3hmP9/FvT3odrBZWsHf+cTeNiZYDew2A4KV+WAJAaDW6dMlaHWgDL/A==
   dependencies:
     "@aitodotai/json-stringify-pretty-compact" "^1.3.0"
-    "@ideditor/country-coder" "^3.2.0"
+    "@ideditor/country-coder" "^5.0.3"
     "@mapbox/geojson-area" "^0.2.2"
     circle-to-polygon "^2.0.2"
     geojson-precision "^1.0.0"
-    polygon-clipping "~0.15.1"
+    polygon-clipping "~0.15.3"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -2805,15 +2806,6 @@
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@mapbox/tiny-sdf/-/tiny-sdf-1.1.1.tgz#16a20c470741bfe9191deb336f46e194da4a91ff"
   integrity sha512-Ihn1nZcGIswJ5XGbgFAvVumOgWpvIjBX9jiRlIl46uQG9vJOF51ViBYHF95rEZupuyQbEmhLaDPLQlU7fUTsBg==
-
-"@mapbox/togeojson@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/togeojson/-/togeojson-0.16.0.tgz#5b283001078431821dc74e287acaf56a11ceb37c"
-  integrity sha1-WygwAQeEMYIdx04oesr1ahHOs3w=
-  dependencies:
-    concat-stream "~1.5.1"
-    minimist "1.2.0"
-    xmldom "~0.1.19"
 
 "@mapbox/unitbezier@^0.0.0":
   version "0.0.0"
@@ -3210,6 +3202,11 @@
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-4.4.1.tgz#1733f6b3ab64a907b7c2954046f9083b227a50dd"
   integrity sha512-R4f8fYzXPGKjW+que03/UOtHEsMe3Tb4wOBOQi8KaZwJEX7RGOIoxUis//k2CrLL7f+6QX1Z4nb1dDozO2/LYA==
+
+"@tmcw/togeojson@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-4.5.0.tgz#9b5c7bdd8c5ad3b9c504824d3cdef9b60edbd206"
+  integrity sha512-lNuuhW7nvN1T7xII9eRTi9zuPwYfFl43/1u/Xgi88tedX4ePfwJB5dqc31N7z6sWeR+7EES274ESNrK1gsW53A==
 
 "@turf/area@^6.4.0":
   version "6.4.0"
@@ -5526,15 +5523,6 @@ concat-stream@^1.5.0, concat-stream@~1.6.0:
     inherits "^2.0.3"
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
-
-concat-stream@~1.5.1:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/concat-stream/-/concat-stream-1.5.2.tgz#708978624d856af41a5a741defdd261da752c266"
-  integrity sha1-cIl4Yk2FavQaWnQd790mHadSwmY=
-  dependencies:
-    inherits "~2.0.1"
-    readable-stream "~2.0.0"
-    typedarray "~0.0.5"
 
 confusing-browser-globals@^1.0.10:
   version "1.0.10"
@@ -9903,19 +9891,10 @@ marked@^2.1.3:
   resolved "https://registry.yarnpkg.com/marked/-/marked-2.1.3.tgz#bd017cef6431724fd4b27e0657f5ceb14bff3753"
   integrity sha512-/Q+7MGzaETqifOMWYEA7HVMaZb4XbcRfaOzcSsHZEith83KGlvaSG33u0SKu89Mj5h+T8V2hM+8O45Qc5XTgwA==
 
-marked@~1.2.3:
-  version "1.2.9"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-1.2.9.tgz#53786f8b05d4c01a2a5a76b7d1ec9943d29d72dc"
-  integrity sha512-H8lIX2SvyitGX+TRdtS06m1jHMijKN/XjfH6Ooii9fvxMlh8QdqBfBDkGUpMWH2kQNrtixjzYUa3SH8ROTgRRw==
-
-martinez-polygon-clipping@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/martinez-polygon-clipping/-/martinez-polygon-clipping-0.7.0.tgz#5ae979d4ba32c6425c8cdd422f14d54276350ab7"
-  integrity sha512-EBxKjlUqrVjzT1HRwJARaSwj66JZqEUl+JnqnrzHZLU4hd4XrCQWqShZx40264NR/pm5wIHRlNEaIrev44wvKA==
-  dependencies:
-    robust-predicates "^2.0.4"
-    splaytree "^0.1.4"
-    tinyqueue "^1.2.0"
+marked@~2.0.0:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-2.0.7.tgz#bc5b857a09071b48ce82a1f7304913a993d4b7d1"
+  integrity sha512-BJXxkuIfJchcXOJWTT2DOL+yFWifFv2yGYOUzvXg8Qz610QKw+sHCvTMYwA+qWGhlA2uivBezChZ/pBy1tWdkQ==
 
 md5.js@^1.3.4:
   version "1.3.5"
@@ -11199,6 +11178,13 @@ polygon-clipping@~0.15.1:
   dependencies:
     splaytree "^3.0.1"
 
+polygon-clipping@~0.15.3:
+  version "0.15.3"
+  resolved "https://registry.yarnpkg.com/polygon-clipping/-/polygon-clipping-0.15.3.tgz#0215840438470ba2e9e6593625e4ea5c1087b4b7"
+  integrity sha512-ho0Xx5DLkgxRx/+n4O74XyJ67DcyN3Tu9bGYKsnTukGAW6ssnuak6Mwcyb1wHy9MZc9xsUWqIoiazkZB5weECg==
+  dependencies:
+    splaytree "^3.1.0"
+
 portfinder@^1.0.26:
   version "1.0.28"
   resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.28.tgz#67c4622852bd5374dd1dd900f779f53462fac778"
@@ -11975,11 +11961,6 @@ private@^0.1.8:
   resolved "https://registry.yarnpkg.com/private/-/private-0.1.8.tgz#2381edb3689f7a53d653190060fcf822d2f368ff"
   integrity sha512-VvivMrbvd2nKkiG38qjULzlc+4Vx4wm/whI9pQD35YrARNnhxeiRktSOhSukRLFNlzg6Br/cJPet5J/u19r/mg==
 
-process-nextick-args@~1.0.6:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3"
-  integrity sha1-FQ4gt1ZZCtP5EJPyWk8q2L/zC6M=
-
 process-nextick-args@~2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.1.tgz#7820d9b16120cc55ca9ae7792680ae7dba6d7fe2"
@@ -12657,18 +12638,6 @@ readable-stream@^3.0.2, readable-stream@^3.0.6, readable-stream@^3.1.1, readable
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
 
-readable-stream@~2.0.0:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.0.6.tgz#8f90341e68a53ccc928788dacfcd11b36eb9b78e"
-  integrity sha1-j5A0HmilPMySh4jaz80Rs265t44=
-  dependencies:
-    core-util-is "~1.0.0"
-    inherits "~2.0.1"
-    isarray "~1.0.0"
-    process-nextick-args "~1.0.6"
-    string_decoder "~0.10.x"
-    util-deprecate "~1.0.1"
-
 readdirp@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/readdirp/-/readdirp-2.2.1.tgz#0e87622a3325aa33e892285caf8b4e846529a525"
@@ -13078,11 +13047,6 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^3.0.0"
     inherits "^2.0.1"
-
-robust-predicates@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/robust-predicates/-/robust-predicates-2.0.4.tgz#0a2367a93abd99676d075981707f29cfb402248b"
-  integrity sha512-l4NwboJM74Ilm4VKfbAtFeGq7aEjWL+5kVFcmgFA2MrdnQWx9iE/tUGvxY5HyMI7o/WpSIUFLbC5fbeaHgSCYg==
 
 rollup-plugin-babel@^4.3.3:
   version "4.4.0"
@@ -13745,11 +13709,6 @@ spdy@^4.0.2:
     select-hose "^2.0.0"
     spdy-transport "^3.0.0"
 
-splaytree@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/splaytree/-/splaytree-0.1.4.tgz#fc35475248edcc29d4938c9b67e43c6b7e55a659"
-  integrity sha512-D50hKrjZgBzqD3FT2Ek53f2dcDLAQT8SSGrzj3vidNH5ISRgceeGVJ2dQIthKOuayqFXfFjXheHNo4bbt9LhRQ==
-
 splaytree@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/splaytree/-/splaytree-3.0.1.tgz#038d8e6d597a3a1893e8e82693a0f4413b3559f7"
@@ -14395,11 +14354,6 @@ tiny-osmpbf@^0.1.0:
     pbf "^3.0.4"
     tiny-inflate "^1.0.2"
 
-tinyqueue@^1.2.0:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/tinyqueue/-/tinyqueue-1.2.3.tgz#b6a61de23060584da29f82362e45df1ec7353f3d"
-  integrity sha512-Qz9RgWuO9l8lT+Y9xvbzhPT2efIUIFd69N7eF7tJ9lnQl0iLj1M7peK7IoUGZL9DJHw9XftqLreccfxcQgYLxA==
-
 tinyqueue@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/tinyqueue/-/tinyqueue-2.0.3.tgz#64d8492ebf39e7801d7bd34062e29b45b2035f08"
@@ -14626,7 +14580,7 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typedarray@^0.0.6, typedarray@~0.0.5:
+typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
@@ -15480,7 +15434,7 @@ xmldom@^0.6.0:
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.6.0.tgz#43a96ecb8beece991cef382c08397d82d4d0c46f"
   integrity sha512-iAcin401y58LckRZ0TkI4k0VSM1Qg0KGSc3i8rU+xrxe19A/BN1zHyVSJY7uoutVlaTSzYyk/v5AmkewAP7jtg==
 
-xmldom@~0.1.16, xmldom@~0.1.19:
+xmldom@~0.1.16:
   version "0.1.31"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.31.tgz#b76c9a1bd9f0a9737e5a72dc37231cf38375e2ff"
   integrity sha512-yS2uJflVQs6n+CyjHoaBmVSqIDevTAWrzMmjG1Gc7h1qQ7uVozNhEPJAwZXWyGQ/Gafo3fCwrcaokezLPupVyQ==
