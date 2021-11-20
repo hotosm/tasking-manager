@@ -22,7 +22,9 @@ export default function Editor({ editorRef, setEditorRef, setDisable, comment, p
   useEffect(() => {
     if (windowInit && !editorRef) {
       dispatch({ type: 'SET_VISIBILITY', isVisible: false });
-      setEditorRef(window.iD.coreContext());
+      setEditorRef(window.iD.coreContext()
+        .minEditableZoom(13)
+        );
     }
   }, [windowInit, setEditorRef, editorRef, dispatch]);
 
