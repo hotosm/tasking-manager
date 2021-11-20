@@ -73,6 +73,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
         .assetPath('/static/id/')
         .locale(locale)
         .setsDocumentTitle(false)
+        .minEditableZoom(13)
         .containerNode(document.getElementById('id-container'));
       // init the ui or restart if it was loaded previously
       if (iDContext.ui() !== undefined) {
