@@ -122,3 +122,63 @@ export function DonationBanner() {
     </div>
   );
 }
+
+export function ArchivalNotificationBanner() {
+  const form = document.getElementById('archival-notification-form');
+
+  if (typeof form !== 'undefined' && form != null) {
+    if (!localStorage.getItem('archival-notification-closed')) {
+      form.style.display = 'grid';
+    }
+    document.getElementById('archival-notification-learnmore').onclick = function() {
+      openWikiLink('/Humanitarian_OSM_Team/Working_groups/Data_Quality_Control_and_Assurance/Tasking_Manager_Project_Gardening');
+    };
+    document.getElementById('archival-notification-close').onclick = function() {
+      closeForm();
+    };
+  }
+
+  function closeForm() {
+    form.style.display = 'none';
+    localStorage.setItem('archival-notification-closed', 'true');
+  }
+  function openWikiLink(path) {
+    window.open(
+      'https://wiki.openstreetmap.org/wiki' + path,
+      '_blank',
+    );
+    closeForm();
+  }
+
+  return (
+    <div
+      id="archival-notification-form"
+      className="fixed bottom-0 left-0 cf f5 w-100 tc ph6-l ph4-m ph2 pb2 bg-blue-dark white z-5 dn"
+    >
+      <div id="archival-notification-contents">
+        <p>
+          <a
+            id="privlink"
+            className="red link f4 fw6"
+            href={'https://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Team/Working_groups/Data_Quality_Control_and_Assurance/Tasking_Manager_Project_Gardening'}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FormattedMessage {...messages.importantNotification} />
+          </a>
+        </p>
+        <p>
+          <FormattedMessage {...messages.archivalNotificationText} />
+        </p>
+        <div id="archival-notification-buttons">
+          <div className="white bg-red pv2 ph3 mh1 br1 dib fw6 pointer" id="archival-notification-learnmore">
+            <FormattedMessage {...messages.learnMore} />
+          </div>
+          <div className="white bg-red pv2 ph3 mh1 br1 dib fw6 pointer" id="archival-notification-close">
+            <FormattedMessage {...messages.close} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
