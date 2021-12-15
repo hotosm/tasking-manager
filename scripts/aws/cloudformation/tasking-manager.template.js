@@ -616,7 +616,7 @@ const Resources = {
     Properties: {
         Engine: 'postgres',
         DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresDB')),
-        EngineVersion: '11.5',
+        EngineVersion: '11.12',
         MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresUser')),
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresPassword')),
         AllocatedStorage: cf.ref('DatabaseSize'),
@@ -624,7 +624,7 @@ const Resources = {
         StorageType: 'gp2',
         DBParameterGroupName: 'tm3-logging-postgres11',
         EnableCloudwatchLogsExports: ['postgresql'],
-        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.t3.2xlarge', 'db.t2.small'),
+        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.t3.xlarge', 'db.t2.small'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
     }
