@@ -33,7 +33,7 @@ jobs:
         
       - name: Install cloudfriend
         run: |
-          yarn add @mapbox/cfn-config @mapbox/cloudfriend
+          yarn global add @mapbox/cfn-config @mapbox/cloudfriend
           validate-template scripts/aws/cloudformation/tasking-manager.template.js
           
 
