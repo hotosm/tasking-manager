@@ -633,6 +633,9 @@ const Resources = {
   },
   TaskingManagerRDS: {
     Type: 'AWS::RDS::DBInstance',
+    Metadata: {
+      Todo: 'Spin out database components into its own cloudformation template'
+    },
     Properties: {
         Engine: 'postgres',
         DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresDB')),
