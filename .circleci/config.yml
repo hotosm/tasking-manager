@@ -226,7 +226,7 @@ workflows:
             ignore:
             - /^deployment\/.*/
     - backend_deploy:
-        name: staging
+        name: backend-staging
         filters:
           branches:
             only:
@@ -238,7 +238,7 @@ workflows:
         gitsha: $CIRCLE_SHA1
         context: tasking-manager-staging
     - frontend_deploy:
-        name: staging
+        name: frontend-staging
         filters:
           branches:
             only:
