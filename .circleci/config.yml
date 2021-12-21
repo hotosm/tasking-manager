@@ -315,7 +315,7 @@ workflows:
   backend-production:
     jobs:
     - backend_deploy:
-        name: production
+        name: backend-production
         filters:
           branches:
             only:
@@ -326,7 +326,7 @@ workflows:
   frontend-production:
     jobs:
     - frontend_deploy:
-        name: production
+        name: frontend-production
         filters:
           branches:
             only:
