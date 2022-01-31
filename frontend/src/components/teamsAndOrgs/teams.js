@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
@@ -11,6 +11,7 @@ import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
 import { SwitchToggle, RadioField, OrganisationSelectInput } from '../formInputs';
 import { Button, EditButton } from '../button';
+import { MemberSearchBox } from './memberSearchBox';
 
 export function TeamsManagement({
   teams,
@@ -253,6 +254,18 @@ export function TeamForm(props) {
 
 export function TeamSideBar({ team, members, managers, requestedToJoin }: Object) {
   const [isUserTeamManager] = useEditTeamAllowed(team);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const searchMembers = () => {
+    if (searchQuery !== '') {
+      const results = members.filter((member) => {
+        return member.username.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+      return results;
+    } else {
+      return members;
+    }
+  };
 
   return (
     <ReactPlaceholder
@@ -329,16 +342,19 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
               <FormattedMessage {...messages.noMembers} />
             </span>
           ) : (
-            <div className="cf db mt3">
-              {members.map((user, n) => (
-                <UserAvatar
-                  key={n}
-                  username={user.username}
-                  picture={user.pictureUrl}
-                  colorClasses="white bg-blue-grey mv1"
-                />
-              ))}
-            </div>
+            <>
+              <MemberSearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+              <div className="cf db mt3">
+                {searchMembers().map((user, n) => (
+                  <UserAvatar
+                    key={n}
+                    username={user.username}
+                    picture={user.pictureUrl}
+                    colorClasses="white bg-blue-grey mv1"
+                  />
+                ))}
+              </div>
+            </>
           )}
           <div className="cf db mt3">
             {requestedToJoin && (
