@@ -32,16 +32,14 @@ jobs:
           yarn
           cd ${CIRCLE_WORKING_DIRECTORY}
           # Install Python dependencies
-          pip install virtualenv
-          virtualenv env
-          ${CIRCLE_WORKING_DIRECTORY}/env/bin/pip install --upgrade pip
-          ${CIRCLE_WORKING_DIRECTORY}/env/bin/pip install -r requirements.txt
+          pip install --upgrade pip
+          pip install -r requirements.txt
     - run:
         name: Run backend code checks
         command: |
           cd ${CIRCLE_WORKING_DIRECTORY}
           mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/lint
-          . ${CIRCLE_WORKING_DIRECTORY}/env/bin/activate
+          # . ${CIRCLE_WORKING_DIRECTORY}/env/bin/activate
           black --check manage.py backend tests migrations
           flake8 manage.py backend tests migrations
     - run:
@@ -58,10 +56,10 @@ jobs:
     #       cd ${CIRCLE_WORKING_DIRECTORY}
     #       mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
     #       find ./tests/backend -name "test*.py" -exec chmod -x {} \;
-    #       env/bin/nosetests ./tests/backend --with-xunit \
+    #       nosetests ./tests/backend --with-xunit \
     #         --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
     #         --with-coverage --cover-erase --cover-package=./backend
-    #       env/bin/coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
+    #       coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
     # - store_test_results:
     #     path: tests/backend/results
     # - store_artifacts:
