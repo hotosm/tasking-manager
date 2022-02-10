@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: cimg/python:3.7-buster-node
+    - image: cimg/python:3.7-node
     steps:
     - checkout
     - setup_remote_docker
@@ -81,7 +81,7 @@ jobs:
         type: string
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: cimg/python:3.7-buster-node
+    - image: cimg/python:3.7-node
     steps:
     - checkout
     - setup_remote_docker
@@ -177,7 +177,7 @@ jobs:
   frontend_deploy:
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: cimg/python:3.7-buster-node
+    - image: cimg/python:3.7-node
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
