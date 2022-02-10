@@ -38,10 +38,30 @@ const Parameters = {
     Type: 'String',
     Description: 'POSTGRES_USER'
   },
-  DatabaseSize: {
+  DatabaseEngineVersion: {
+    Description: 'AWS PostgreSQL Engine version',
+    Type: 'String',
+    Default: '11.12'
+  },
+  DatabaseInstanceType: {
+    Description: 'Database instance type',
+    Type: 'String',
+    Default: 'db.t3.xlarge'
+  },
+  DatabaseDiskSize: {
     Description: 'Database size in GB',
     Type: 'String',
     Default: '100'
+  },
+  DatabaseParameterGroupName: {
+    Description: 'Name of the customized parameter group for the database',
+    Type: 'String',
+    Default: 'tm3-logging-postgres11'
+  },
+  DatabaseSnapshotRetentionPeriod: {
+    Description: 'Retention period for automatic (scheduled) snapshots in days',
+    Type: 'Number',
+    Default: 10
   },
   ELBSubnets: {
     Description: 'ELB subnets',
@@ -608,18 +628,21 @@ const Resources = {
   },
   TaskingManagerRDS: {
     Type: 'AWS::RDS::DBInstance',
+    Metadata: {
+      Todo: 'Spin out database components into its own cloudformation template'
+    },
     Properties: {
         Engine: 'postgres',
         DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresDB')),
-        EngineVersion: '11.12',
+        EngineVersion: cf.ref('DatabaseEngineVersion'),
         MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresUser')),
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresPassword')),
-        AllocatedStorage: cf.ref('DatabaseSize'),
-        BackupRetentionPeriod: 10,
+        AllocatedStorage: cf.ref('DatabaseDiskSize'),
+        BackupRetentionPeriod: cf.ref('DatabaseSnapshotRetentionPeriod'),
         StorageType: 'gp2',
-        DBParameterGroupName: 'tm3-logging-postgres11',
+        DBParameterGroupName: cf.ref('DatabaseParameterGroupName'),
         EnableCloudwatchLogsExports: ['postgresql'],
-        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.t3.xlarge', 'db.t2.small'),
+        DBInstanceClass: cf.ref('DatabaseInstanceType'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
     }
