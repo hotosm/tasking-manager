@@ -13,7 +13,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgeos-dev # Required for shapely
           sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-          sudo pip3 install awscli --upgrade
+          pip3 install awscli --upgrade
     - run:
         name: Set folder permissions
         command: |
@@ -91,7 +91,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgeos-dev jq # Required for shapely
           sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-          sudo pip3 install awscli --upgrade
+          pip3 install awscli --upgrade
     - run:
         name: Configure AWS Access Key ID
         command: |
@@ -188,7 +188,7 @@ jobs:
     - run:
         name: Install modules
         command: |
-          sudo pip3 install awscli --upgrade
+          pip3 install awscli --upgrade
     - run:
         name: Configure AWS Access Key ID
         command: |
