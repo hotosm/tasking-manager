@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: circleci/python:3.7-buster-node
+    - image: cimg/python:3.7-buster-node
     steps:
     - checkout
     - setup_remote_docker
@@ -81,7 +81,7 @@ jobs:
         type: string
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: circleci/python:3.7-buster-node
+    - image: cimg/python:3.7-buster-node
     steps:
     - checkout
     - setup_remote_docker
@@ -177,7 +177,7 @@ jobs:
   frontend_deploy:
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: circleci/python:3.7-buster-node
+    - image: cimg/python:3.7-buster-node
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
@@ -226,7 +226,7 @@ workflows:
             ignore:
             - /^deployment\/.*/
     - backend_deploy:
-        name: staging
+        name: backend-staging
         filters:
           branches:
             only:
@@ -238,7 +238,7 @@ workflows:
         gitsha: $CIRCLE_SHA1
         context: tasking-manager-staging
     - frontend_deploy:
-        name: staging
+        name: frontend-staging
         filters:
           branches:
             only:
@@ -315,7 +315,7 @@ workflows:
   backend-production:
     jobs:
     - backend_deploy:
-        name: production
+        name: backend-production
         filters:
           branches:
             only:
@@ -326,7 +326,7 @@ workflows:
   frontend-production:
     jobs:
     - frontend_deploy:
-        name: production
+        name: frontend-production
         filters:
           branches:
             only:
