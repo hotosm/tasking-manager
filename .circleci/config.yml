@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: circleci/python:3.7-buster-node
+    - image: cimg/python:3.7-node
     steps:
     - checkout
     - setup_remote_docker
@@ -13,7 +13,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgeos-dev # Required for shapely
           sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-          sudo pip3 install awscli --upgrade
+          pip install awscli --upgrade
     - run:
         name: Set folder permissions
         command: |
@@ -32,16 +32,14 @@ jobs:
           yarn
           cd ${CIRCLE_WORKING_DIRECTORY}
           # Install Python dependencies
-          pip install virtualenv
-          virtualenv env
-          ${CIRCLE_WORKING_DIRECTORY}/env/bin/pip install --upgrade pip
-          ${CIRCLE_WORKING_DIRECTORY}/env/bin/pip install -r requirements.txt
+          pip install --upgrade pip
+          pip install -r requirements.txt
     - run:
         name: Run backend code checks
         command: |
           cd ${CIRCLE_WORKING_DIRECTORY}
           mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/lint
-          . ${CIRCLE_WORKING_DIRECTORY}/env/bin/activate
+          # . ${CIRCLE_WORKING_DIRECTORY}/env/bin/activate
           black --check manage.py backend tests migrations
           flake8 manage.py backend tests migrations
     - run:
@@ -58,10 +56,10 @@ jobs:
     #       cd ${CIRCLE_WORKING_DIRECTORY}
     #       mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
     #       find ./tests/backend -name "test*.py" -exec chmod -x {} \;
-    #       env/bin/nosetests ./tests/backend --with-xunit \
+    #       nosetests ./tests/backend --with-xunit \
     #         --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
     #         --with-coverage --cover-erase --cover-package=./backend
-    #       env/bin/coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
+    #       coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
     # - store_test_results:
     #     path: tests/backend/results
     # - store_artifacts:
@@ -81,7 +79,7 @@ jobs:
         type: string
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: circleci/python:3.7-buster-node
+    - image: cimg/python:3.7-node
     steps:
     - checkout
     - setup_remote_docker
@@ -91,7 +89,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgeos-dev jq # Required for shapely
           sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
-          sudo pip3 install awscli --upgrade
+          pip install awscli --upgrade
     - run:
         name: Configure AWS Access Key ID
         command: |
@@ -177,7 +175,7 @@ jobs:
   frontend_deploy:
     working_directory: /home/circleci/tasking-manager
     docker:
-    - image: circleci/python:3.7-buster-node
+    - image: cimg/python:3.7-node
     parameters:
       stack_name:
         description: "the name of the stack for cfn-config"
@@ -188,7 +186,7 @@ jobs:
     - run:
         name: Install modules
         command: |
-          sudo pip3 install awscli --upgrade
+          pip install awscli --upgrade
     - run:
         name: Configure AWS Access Key ID
         command: |
@@ -226,7 +224,7 @@ workflows:
             ignore:
             - /^deployment\/.*/
     - backend_deploy:
-        name: staging
+        name: backend-staging
         filters:
           branches:
             only:
@@ -238,7 +236,7 @@ workflows:
         gitsha: $CIRCLE_SHA1
         context: tasking-manager-staging
     - frontend_deploy:
-        name: staging
+        name: frontend-staging
         filters:
           branches:
             only:
@@ -315,7 +313,7 @@ workflows:
   backend-production:
     jobs:
     - backend_deploy:
-        name: production
+        name: backend-production
         filters:
           branches:
             only:
@@ -326,7 +324,7 @@ workflows:
   frontend-production:
     jobs:
     - frontend_deploy:
-        name: production
+        name: frontend-production
         filters:
           branches:
             only:
