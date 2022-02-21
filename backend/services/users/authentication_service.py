@@ -143,13 +143,14 @@ class AuthenticationService:
 
     @staticmethod
     def generate_authorize_url(callback):
-        token, secret = osm.generate_request_token(callback)
-        url = f"{osm.expand_url(osm.authorize_url)}?oauth_token={url_quote(token)}"
 
-        # Remove tokens from session. The library creates it.
-        session.pop("osm_oauthtok")
-
-        return {"auth_url": url, "oauth_token": token, "oauth_token_secret": secret}
+        url = "{authorize_url}?response_type=code&client_id={client_id}&scope={scope}&redirect_uri={callback}".format(
+            authorize_url=osm.expand_url(osm.authorize_url),
+            client_id=url_quote(osm.consumer_key),
+            scope=url_quote(osm.request_token_params),
+            callback=callback
+        )
+        return {"auth_url": url}
 
     @staticmethod
     def is_valid_token(token, token_expiry):

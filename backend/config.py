@@ -118,9 +118,11 @@ class EnvironmentConfig:
         "base_url": "{}/api/0.6/".format(OSM_SERVER_URL),
         "consumer_key": os.getenv("TM_CONSUMER_KEY", None),
         "consumer_secret": os.getenv("TM_CONSUMER_SECRET", None),
-        "request_token_url": "{}/oauth/request_token".format(OSM_SERVER_URL),
-        "access_token_url": "{}/oauth/access_token".format(OSM_SERVER_URL),
-        "authorize_url": "{}/oauth/authorize".format(OSM_SERVER_URL),
+        "request_token_params": os.getenv("TM_SCOPE", None),
+        "request_token_url": None,
+        "access_token_method":'POST',
+        "access_token_url": "{}/oauth2/token".format(OSM_SERVER_URL),
+        "authorize_url": "{}/oauth2/authorize".format(OSM_SERVER_URL),
     }
 
     # Some more definitions (not overridable)
