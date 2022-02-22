@@ -43,7 +43,6 @@ export const logout = () => (dispatch) => {
   safeStorage.removeItem('token');
   safeStorage.removeItem('action');
   safeStorage.removeItem('osm_oauth_token');
-  safeStorage.removeItem('osm_oauth_token_secret');
   dispatch(clearUserDetails());
 };
 
@@ -89,19 +88,17 @@ export function updateSession(session) {
   };
 }
 
-export const setAuthDetails = (username, token, osm_oauth_token, osm_oauth_token_secret) => (
+export const setAuthDetails = (username, token, osm_oauth_token ) => (
   dispatch,
 ) => {
   const encoded_token = btoa(token);
   safeStorage.setItem('token', encoded_token);
   safeStorage.setItem('username', username);
   safeStorage.setItem('osm_oauth_token', osm_oauth_token);
-  safeStorage.setItem('osm_oauth_token_secret', osm_oauth_token_secret);
   dispatch(updateToken(encoded_token));
   dispatch(
     updateSession({
       osm_oauth_token: osm_oauth_token,
-      osm_oauth_token_secret: osm_oauth_token_secret,
     }),
   );
   dispatch(setUserDetails(username, encoded_token));
