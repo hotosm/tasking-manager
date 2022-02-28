@@ -369,7 +369,8 @@ class MappingService:
     def reset_all_badimagery(project_id: int, user_id: int):
         """ Marks all bad imagery tasks ready for mapping """
         badimagery_tasks = Task.query.filter(
-            Task.task_status == TaskStatus.BADIMAGERY.value
+            Task.task_status == TaskStatus.BADIMAGERY.value,
+            Task.project_id == project_id
         ).all()
 
         for task in badimagery_tasks:
