@@ -34,7 +34,7 @@ class TestProject(BaseTestCase):
             self.test_project.id, None
         )
         self.assertIsInstance(feature_collection, geojson.FeatureCollection)
-        self.assertEqual(2, len(feature_collection.features))
+        self.assertEqual(3, len(feature_collection.features))
 
     def test_project_can_be_generated_as_dto(self):
         self.test_project, self.test_user = create_canned_project()
