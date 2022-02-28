@@ -116,7 +116,6 @@ class TestMappingService(BaseTestCase):
         for task in self.test_project.tasks:
             self.assertIsNotNone(task.mapped_by)
 
-
     def test_reset_all_bad_imagery(
         self,
     ):
