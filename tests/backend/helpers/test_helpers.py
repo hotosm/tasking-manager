@@ -89,7 +89,9 @@ def create_canned_project() -> Tuple[Project, User]:
     task_non_square_feature = geojson.loads(
         json.dumps(get_canned_json("non_square_task.json"))
     )
-    task_arbitrary_feature = geojson.loads(json.dumps(get_canned_json("splittable_task.json")))
+    task_arbitrary_feature = geojson.loads(
+        json.dumps(get_canned_json("splittable_task.json"))
+    )
     test_user = get_canned_user("Thinkwhere TEST")
     if test_user is None:
         test_user = create_canned_user()
