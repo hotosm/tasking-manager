@@ -347,6 +347,14 @@ export default defineMessages({
     defaultMessage:
       'If checked, users must edit tasks at random for the initial editing stage (managers and admins are exempt).',
   },
+  rapidPowerUser: {
+    id: 'projects.formInputs.rapid_power_user',
+    defaultMessage: 'Enable RapiD Power User Features',
+  },
+  rapidPowerUserDescription: {
+    id: 'projects.formInputs.rapid_power_user.description',
+    defaultMessage: 'If checked, RapiD will load with the power user dialog enabled.',
+  },
   imagery: {
     id: 'projects.formInputs.imagery',
     defaultMessage: 'Imagery',

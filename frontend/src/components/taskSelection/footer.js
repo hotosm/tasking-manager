@@ -42,7 +42,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
 
   const lockFailed = (windowObjectReference, message) => {
     // JOSM and iD don't open a new window
-    if (!['JOSM', 'ID'].includes(editor)) {
+    if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
       windowObjectReference.close();
     }
     fetchLockedTasks();
@@ -71,8 +71,11 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       }
     }
     let windowObjectReference;
-    if (!['JOSM', 'ID'].includes(editor)) {
-      windowObjectReference = window.open('', `TM-${project.projectId}-${selectedTasks}`);
+    if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
+      windowObjectReference = window.open(
+        '',
+        `TM-${project.projectId}-${selectedTasks}`,
+      );
     }
     if (['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(taskAction)) {
       const mappedTasks = selectedTasks.filter(
@@ -105,6 +108,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       )
         .then((res) => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
+          window.location.reload();
         })
         .catch((e) => lockFailed(windowObjectReference, e.message));
     }

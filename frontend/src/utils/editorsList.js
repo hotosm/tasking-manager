@@ -1,7 +1,12 @@
-import { ID_EDITOR_URL, POTLATCH2_EDITOR_URL } from '../config';
+import { ID_EDITOR_URL, POTLATCH2_EDITOR_URL, RAPID_EDITOR_URL } from '../config';
 
 export function getEditors(filterList, customEditor) {
   let editors = [
+    {
+      label: 'RapiD',
+      value: 'RAPID',
+      url: RAPID_EDITOR_URL,
+    },
     {
       label: 'iD Editor',
       value: 'ID',
@@ -24,7 +29,7 @@ export function getEditors(filterList, customEditor) {
     },
   ];
   if (filterList) {
-    editors = editors.filter(i => filterList.includes(i.value));
+    editors = editors.filter((i) => filterList.includes(i.value));
   }
   if (customEditor && filterList.includes('CUSTOM')) {
     editors.push({ label: customEditor.name, value: 'CUSTOM', url: customEditor.url });
