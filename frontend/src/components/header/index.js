@@ -5,7 +5,7 @@ import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { ORG_URL, ORG_NAME, ORG_LOGO } from '../../config';
+import { ORG_URL, ORG_NAME, ORG_LOGO, SERVICE_DESK } from '../../config';
 import logo from '../../assets/img/main-logo.svg';
 import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
@@ -33,6 +33,7 @@ function getMenuItensForUser(userDetails, organisations) {
     { label: messages.manage, link: 'manage', authenticated: true, manager: true },
     { label: messages.learn, link: 'learn', showAlways: true },
     { label: messages.about, link: 'about', showAlways: true },
+    { label: messages.support, link: SERVICE_DESK, showAlways: true, serviceDesk: true },
   ];
   let filteredMenuItems;
   if (userDetails.username) {
@@ -114,6 +115,16 @@ const PopupItems = (props) => {
               </Link>
             </p>
           ))}
+
+      {props.menuItems
+        .filter((item) => item.serviceDesk === true)
+        .map((item, n) => (
+          <p key={n}>
+           <Link to={{pathname: "%SERVICE_DESK%"}} target="_blank" className={props.linkCombo} onClick={props.close}>
+              <FormattedMessage {...item.label} />
+            </Link>
+          </p>
+        ))}
       {/* user links */}
       {props.userDetails.username && (
         <>
