@@ -2,6 +2,7 @@ import datetime
 import hashlib
 from unittest.mock import patch
 from backend.services.mapping_service import MappingService, Task
+from backend.models.postgis.task import TaskStatus
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
 
@@ -114,3 +115,16 @@ class TestMappingService(BaseTestCase):
         # Assert
         for task in self.test_project.tasks:
             self.assertIsNotNone(task.mapped_by)
+
+    def test_reset_all_bad_imagery(
+        self,
+    ):
+        if self.skip_tests:
+            return
+
+        # Act
+        MappingService.reset_all_badimagery(self.test_project.id, self.test_user.id)
+
+        # Assert
+        for task in self.test_project.tasks:
+            self.assertNotEqual(task.task_status, TaskStatus.BADIMAGERY.value)
