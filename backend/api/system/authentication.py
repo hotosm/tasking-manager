@@ -34,10 +34,10 @@ class SystemAuthenticationLoginAPI(Resource):
           200:
             description: oauth token params
         """
-        callback_url = request.args.get("callback_url", None)
-        if callback_url is None:
-            callback_url = current_app.config["APP_BASE_URL"]
-        url = AuthenticationService.generate_authorize_url(callback_url)
+        redirect_uri = request.args.get("redirect_uri", None)
+        if redirect_uri is None:
+            redirect_uri = current_app.config["APP_BASE_URL"]
+        url = AuthenticationService.generate_authorize_url(redirect_uri)
 
         return url, 200
 
@@ -66,7 +66,7 @@ class SystemAuthenticationCallbackAPI(Resource):
             return {"Error": "Missing code parameter"}, 500
 
         email = request.args.get("email_address", None)
-        session["osm_oauthredir"] = request.args.get("callback")
+        session["osm_oauthredir"] = request.args.get("redirect_uri")
 
         osm_resp = osm.authorized_response()
         if osm_resp is None:
@@ -84,7 +84,6 @@ class SystemAuthenticationCallbackAPI(Resource):
         try:
             user_params = AuthenticationService.login_user(osm_response.data, email)
             user_params["session"] = osm_resp
-            print(user_params)
             return user_params, 200
         except AuthServiceError:
             return {"Error": "Unable to authenticate"}, 500

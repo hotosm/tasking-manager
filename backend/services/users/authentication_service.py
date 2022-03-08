@@ -142,13 +142,13 @@ class AuthenticationService:
         return serializer.dumps(osm_id)
 
     @staticmethod
-    def generate_authorize_url(callback):
+    def generate_authorize_url(redirect_uri):
 
-        url = "{authorize_url}?response_type=code&client_id={client_id}&scope={scope}&redirect_uri={callback}".format(
+        url = "{authorize_url}?response_type=code&client_id={client_id}&scope={scope}&redirect_uri={redirect_uri}".format(
             authorize_url=osm.expand_url(osm.authorize_url),
             client_id=url_quote(osm.consumer_key),
-            scope=url_quote(osm.request_token_params),
-            callback=callback
+            scope=url_quote(osm.request_token_params.get("scope", '')),
+            redirect_uri=redirect_uri
         )
         return {"auth_url": url}
 

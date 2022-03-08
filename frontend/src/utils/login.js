@@ -1,5 +1,6 @@
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import * as safeStorage from '../utils/safe_storage';
+import { OSM_REDIRECT_URI } from '../config';
 
 // Code taken from https://github.com/mapbox/osmcha-frontend/blob/master/src/utils/create_popup.js
 export function createPopup(title: string = 'Authentication', location: string) {
@@ -22,13 +23,13 @@ export function createPopup(title: string = 'Authentication', location: string) 
 
 export const createLoginWindow = (redirectTo) => {
   const popup = createPopup('OSM auth', '');
-  let url = `system/authentication/login/?redirect_uri=http://127.0.0.1:3000/authorized`;
+  let url = `system/authentication/login/?redirect_uri=${OSM_REDIRECT_URI}`;
   fetchLocalJSONAPI(url).then((resp) => {
     popup.location = resp.auth_url;
     // Perform token exchange.
     window.authComplete = (authCode) => {
       const tokens = new URLSearchParams({
-        redirect_uri: 'http://127.0.0.1:3000/authorized',
+        redirect_uri: OSM_REDIRECT_URI,
       }).toString();
       let callback_url = `system/authentication/callback/?${tokens}&code=${authCode}`;
       const emailAddress = safeStorage.getItem('email_address');
