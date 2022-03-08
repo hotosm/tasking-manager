@@ -32,6 +32,7 @@ export const HOMEPAGE_IMG_HIGH = process.env.REACT_APP_HOMEPAGE_IMG_HIGH || '';
 export const HOMEPAGE_IMG_LOW = process.env.REACT_APP_HOMEPAGE_IMG_LOW || '';
 export const OSM_CONSUMER_KEY = process.env.REACT_APP_OSM_CONSUMER_KEY || '';
 export const OSM_CONSUMER_SECRET = process.env.REACT_APP_OSM_CONSUMER_SECRET || '';
+export const OSM_REDIRECT_URI = process.env.REACT_APP_OSM_REDIRECT_URI || '';
 export const ORG_PRIVACY_POLICY_URL = process.env.REACT_APP_ORG_PRIVACY_POLICY_URL || '';
 export const OSM_REGISTER_URL =
   process.env.REACT_APP_OSM_REGISTER_URL || 'https://www.openstreetmap.org/user/new';

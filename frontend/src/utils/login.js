@@ -22,20 +22,20 @@ export function createPopup(title: string = 'Authentication', location: string) 
 
 export const createLoginWindow = (redirectTo) => {
   const popup = createPopup('OSM auth', '');
-  let url = `system/authentication/login/?callback_url=http://127.0.0.1:3000/authorized`;
+  let url = `system/authentication/login/?redirect_uri=http://127.0.0.1:3000/authorized`;
   fetchLocalJSONAPI(url).then((resp) => {
     popup.location = resp.auth_url;
     // Perform token exchange.
     window.authComplete = (authCode) => {
       const tokens = new URLSearchParams({
-        callback: 'http://127.0.0.1:3000/authorized',
+        redirect_uri: 'http://127.0.0.1:3000/authorized',
       }).toString();
       let callback_url = `system/authentication/callback/?${tokens}&code=${authCode}`;
-      // const emailAddress = safeStorage.getItem('email_address');
-      // if (emailAddress !== null) {
-      //   callback_url += `&email_address=${emailAddress}`;
-      //   safeStorage.removeItem('email_address');
-      // }
+      const emailAddress = safeStorage.getItem('email_address');
+      if (emailAddress !== null) {
+        callback_url += `&email_address=${emailAddress}`;
+        safeStorage.removeItem('email_address');
+      }
 
       fetchLocalJSONAPI(callback_url).then((res) => {
         const params = new URLSearchParams({
