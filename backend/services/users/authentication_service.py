@@ -1,7 +1,7 @@
 import base64
 import urllib.parse
 
-from flask import current_app, request, session
+from flask import current_app, request
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
@@ -144,11 +144,11 @@ class AuthenticationService:
     @staticmethod
     def generate_authorize_url(redirect_uri):
 
-        url = "{authorize_url}?response_type=code&client_id={client_id}&scope={scope}&redirect_uri={redirect_uri}".format(
-            authorize_url=osm.expand_url(osm.authorize_url),
-            client_id=url_quote(osm.consumer_key),
-            scope=url_quote(osm.request_token_params.get("scope", "")),
-            redirect_uri=redirect_uri,
+        scope = url_quote(osm.request_token_params.get("scope", ""))
+        url = (
+            f"{osm.authorize_url}?response_type=code&"
+            + f"client_id={osm.consumer_key}&scope={scope}"
+            + f"&redirect_uri={redirect_uri}"
         )
         return {"auth_url": url}
 
