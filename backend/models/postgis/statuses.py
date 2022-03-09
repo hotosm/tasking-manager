@@ -108,6 +108,7 @@ class Editors(Enum):
     POTLATCH_2 = 2
     FIELD_PAPERS = 3
     CUSTOM = 4
+    RAPID = 5
 
 
 class TeamVisibility(Enum):

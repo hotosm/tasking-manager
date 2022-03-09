@@ -70,7 +70,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
       // setup the context
       iDContext
         .embed(true)
-        .assetPath('/static/')
+        .assetPath('/static/id/')
         .locale(locale)
         .setsDocumentTitle(false)
         .containerNode(document.getElementById('id-container'));

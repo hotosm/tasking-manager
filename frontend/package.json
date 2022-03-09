@@ -36,6 +36,7 @@
     "final-form": "^4.20.2",
     "fromentries": "^1.3.2",
     "humanize-duration": "^3.27.0",
+    "RapiD": "facebookincubator/rapid#rapid-v1.1.8_tm",
     "immutable": "^4.0.0-rc.12",
     "mapbox-gl": "^1.13.1",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
@@ -77,8 +78,8 @@
   },
   "scripts": {
     "build-locales": "combine-messages -i './src/**/messages.js' -o './src/locales/en.json'",
-    "copy-static": "bash -c \"if ! (test -a public/static/index.js); then cp -R node_modules/@hotosm/id/dist/* public/static/; fi\"",
-    "update-static": "bash -c \"cp -R node_modules/@hotosm/id/dist/* public/static/;\"",
+    "copy-static": "bash -c \"mkdir -p public/static/id; mkdir -p public/static/rapid; if ! (test -a public/static/id/index.js); then cp -R node_modules/@hotosm/id/dist/* public/static/id; elif ! (test -a public/static/rapid/index.js); then  cp -R node_modules/RapiD/dist/* public/static/rapid; fi\"",
+    "update-static": "bash -c \"mkdir -p public/static/id; mkdir -p public/static/rapid; cp -R node_modules/@hotosm/id/dist/* public/static/id;  cp -R node_modules/RapiD/dist/* public/static/rapid;\"",
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
     "start": "npm run preparation && npm run copy-static && react-scripts start",
     "build": "npm run preparation && npm run update-static && react-scripts build",

@@ -127,6 +127,29 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
           <FormattedMessage {...messages.randomTaskSelectionDescription} />
         </p>
       </div>
+      {(projectInfo.mappingEditors.includes('RAPID') || projectInfo.validationEditors.includes('RAPID')) && (
+        <div className={styleClasses.divClass}>
+          <label className={styleClasses.labelClass} >
+            <FormattedMessage {...messages.rapidPowerUser} />
+            <div className={'rapid-beta'}/>
+          </label>
+
+          <SwitchToggle
+            isChecked={projectInfo.rapidPowerUser}
+            label={<FormattedMessage {...messages.rapidPowerUser} />}
+            labelPosition={'right'}
+            onChange={() =>
+              setProjectInfo({
+                ...projectInfo,
+                rapidPowerUser: !projectInfo.rapidPowerUser
+              })
+            }
+          />
+          <p className={styleClasses.pClass}>
+            <FormattedMessage {...messages.rapidPowerUserDescription} />
+          </p>
+        </div>
+      )}
     </div>
   );
 };
