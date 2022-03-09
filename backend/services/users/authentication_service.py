@@ -17,7 +17,7 @@ tm = TMAPIDecorators()
 
 @token_auth.verify_token
 def verify_token(token):
-    """ Verify the supplied token and check user role is correct for the requested resource"""
+    """Verify the supplied token and check user role is correct for the requested resource"""
     tm.authenticated_user_id = None
     if not token:
         return False
@@ -40,7 +40,7 @@ def verify_token(token):
 
 
 class AuthServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when authenticating """
+    """Custom Exception to notify callers an error occurred when authenticating"""
 
     def __init__(self, message):
         if current_app:
@@ -93,7 +93,7 @@ class AuthenticationService:
 
     @staticmethod
     def authenticate_email_token(username: str, token: str):
-        """ Validate that the email token is valid """
+        """Validate that the email token is valid"""
         try:
             user = UserService.get_user_by_username(username)
         except NotFound:
@@ -113,7 +113,7 @@ class AuthenticationService:
 
     @staticmethod
     def _get_email_validated_url(is_valid: bool) -> str:
-        """ Helper function to generate redirect url for email verification """
+        """Helper function to generate redirect url for email verification"""
         base_url = current_app.config["APP_BASE_URL"]
 
         verification_params = {"is_valid": is_valid}
@@ -124,7 +124,7 @@ class AuthenticationService:
 
     @staticmethod
     def get_authentication_failed_url():
-        """ Generates the auth-failed URL for the running app """
+        """Generates the auth-failed URL for the running app"""
         base_url = current_app.config["APP_BASE_URL"]
         auth_failed_url = f"{base_url}/auth-failed"
         return auth_failed_url
@@ -147,8 +147,8 @@ class AuthenticationService:
         url = "{authorize_url}?response_type=code&client_id={client_id}&scope={scope}&redirect_uri={redirect_uri}".format(
             authorize_url=osm.expand_url(osm.authorize_url),
             client_id=url_quote(osm.consumer_key),
-            scope=url_quote(osm.request_token_params.get("scope", '')),
-            redirect_uri=redirect_uri
+            scope=url_quote(osm.request_token_params.get("scope", "")),
+            redirect_uri=redirect_uri,
         )
         return {"auth_url": url}
 

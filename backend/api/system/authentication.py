@@ -10,9 +10,9 @@ from backend.services.users.authentication_service import (
 
 @osm.tokengetter
 def get_oauth_token():
-    """ Required by Flask-OAuthlib.  Pulls access token from the session so we can make authenticated requests"""
+    """Required by Flask-OAuthlib.  Pulls access token from the session so we can make authenticated requests"""
     if "osm_token" in session:
-       return session.get('osm_token')
+        return session.get("osm_token")
 
 
 class SystemAuthenticationLoginAPI(Resource):
@@ -73,7 +73,9 @@ class SystemAuthenticationCallbackAPI(Resource):
             current_app.logger.critical("No response from OSM")
             return redirect(AuthenticationService.get_authentication_failed_url())
         else:
-            session["osm_token"] =  osm_resp # Set access token details in the session temporarily
+            session[
+                "osm_token"
+            ] = osm_resp  # Set access token details in the session temporarily
         osm_response = osm.request(
             "user/details"
         )  # Get details for the authenticating user
