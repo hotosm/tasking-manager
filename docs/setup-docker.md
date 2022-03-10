@@ -41,7 +41,7 @@ volumes:
 
 The Tasking Manager uses OpenStreetMap accounts for users to login.
 
-In order to configure this connection you have to go to `https://www.openstreetmap.org/user/<Your_OSM_UserName>/oauth_clients/new` and fill in the form:
+In order to configure this connection you have to go to `https://www.openstreetmap.org/oauth2/applications/new` and fill in the form:
 
 <img width="300" alt="Required OSM OAuth settings" src="./assets/osm-oauth-settings.jpg">
 
