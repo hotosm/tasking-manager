@@ -17,8 +17,9 @@ function AuthorizedView(props) {
 
   useComponentWillMount(() => {
     let authCode = params.get('code');
+    let state = params.get('state');
     if (authCode !== null) {
-      window.opener.authComplete(authCode);
+      window.opener.authComplete(authCode, state);
       window.close();
       return;
     }

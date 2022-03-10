@@ -27,7 +27,8 @@ export const createLoginWindow = (redirectTo) => {
   fetchLocalJSONAPI(url).then((resp) => {
     popup.location = resp.auth_url;
     // Perform token exchange.
-    window.authComplete = (authCode) => {
+
+    window.authComplete = (authCode, state) => {
       const tokens = new URLSearchParams({
         redirect_uri: OSM_REDIRECT_URI,
       }).toString();
@@ -38,17 +39,21 @@ export const createLoginWindow = (redirectTo) => {
         safeStorage.removeItem('email_address');
       }
 
-      fetchLocalJSONAPI(callback_url).then((res) => {
-        const params = new URLSearchParams({
-          username: res.username,
-          osm_oauth_token: res.session.access_token,
-          session_token: res.session_token,
-          picture: res.picture,
-          redirect_to: redirectTo,
-        }).toString();
-        let redirectUrl = `/authorized/?${params}`;
-        window.location.href = redirectUrl;
-      });
+      if (resp.state === state) {
+        fetchLocalJSONAPI(callback_url).then((res) => {
+          const params = new URLSearchParams({
+            username: res.username,
+            osm_oauth_token: res.session.access_token,
+            session_token: res.session_token,
+            picture: res.picture,
+            redirect_to: redirectTo,
+          }).toString();
+          let redirectUrl = `/authorized/?${params}`;
+          window.location.href = redirectUrl;
+        });
+      } else {
+        throw new Error('States do not match');
+      }
     };
   });
 };
