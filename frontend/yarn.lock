@@ -4119,9 +4119,9 @@ JSONStream@0.8.0:
     jsonparse "0.0.5"
     through "~2.2.7"
 
-RapiD@facebookincubator/rapid#rapid-v1.1.8-TM:
+RapiD@facebookincubator/rapid#rapid-v1.1.8_tm:
   version "1.1.8"
-  resolved "https://codeload.github.com/facebookincubator/rapid/tar.gz/47897f881279d46779ce89545cb42811e5ab857e"
+  resolved "https://codeload.github.com/facebookincubator/rapid/tar.gz/6771b3ad6d353c63368cebf94d9d8d6a91d7fa34"
   dependencies:
     "@id-sdk/math" "~3.0.0-pre.10"
     "@id-sdk/util" "~3.0.0-pre.10"
@@ -9722,7 +9722,7 @@ jsesc@~0.5.0:
   resolved "https://registry.yarnpkg.com/jsesc/-/jsesc-0.5.0.tgz#e7dee66e35d6fc16f710fe91d5cf69f70f08911d"
   integrity sha1-597mbjXW/Bb3EP6R1c9p9w8IkR0=
 
-jshashes@~1.0.0, jshashes@~1.0.8:
+jshashes@~1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/jshashes/-/jshashes-1.0.8.tgz#f60d837428383abf73ab022e1542e6614bd75514"
   integrity sha512-btmQZ/w1rj8Lb6nEwvhjM7nBYoj54yaEFo2PWh3RkxZ8qNwuvOxvQYN/JxVuwoMmdIluL+XwYVJ+pEEZoSYybQ==
@@ -10988,13 +10988,6 @@ obuf@^1.0.0, obuf@^1.1.2:
   dependencies:
     jshashes "~1.0.8"
 
-ohauth@~1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/ohauth/-/ohauth-1.0.1.tgz#a5d4ab8e5390bb1cad68a58cc9c58630173c02f2"
-  integrity sha512-R9ZUN3+FVCwzeOOHCJpzA9jw/byRxp5O9X06mTL6Sp/LIQn/rLrMv6cwYctX+hoIKzRUsalGJXZ1kG5wBmSskQ==
-  dependencies:
-    jshashes "~1.0.8"
-
 on-finished@~2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/on-finished/-/on-finished-2.3.0.tgz#20f1336481b083cd75337992a16971aa2d906947"
@@ -11107,20 +11100,11 @@ os-tmpdir@~1.0.2:
   resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
   integrity sha1-u+Z0BseaqFxc/sdm/lc0VV36EnQ=
 
-"osm-auth@git+https://github.com/HelNershingThapa/osm-auth.git":
+osm-auth@1.1.1, "osm-auth@git+https://github.com/HelNershingThapa/osm-auth.git":
   version "1.1.1"
   resolved "git+https://github.com/HelNershingThapa/osm-auth.git#27050a05cb667412515e3291ca7808c68c6b112e"
   dependencies:
     ohauth "git+https://github.com/HelNershingThapa/ohauth.git"
-    resolve-url "~0.2.1"
-    store "~2.0.12"
-
-osm-auth@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-1.1.1.tgz#2a6be41fb45998d9276b879154f8b86628de17d7"
-  integrity sha512-U2Q7wvjcLJSi7P1a4JKIgTSvWlVq2rqCsjYLHX/cMeIuiMDM8y0B/LQCQyvM7KKJa1juk3Do35dhlwPGxtxc/Q==
-  dependencies:
-    ohauth "~1.0.1"
     resolve-url "~0.2.1"
     store "~2.0.12"
 
@@ -14150,7 +14134,7 @@ stealthy-require@^1.1.1:
   resolved "https://registry.yarnpkg.com/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
   integrity sha1-NbCYdbT/SfJqd35QmzCQoyJr8ks=
 
-store@~2.0.12, store@~2.0.4:
+store@~2.0.12:
   version "2.0.12"
   resolved "https://registry.yarnpkg.com/store/-/store-2.0.12.tgz#8c534e2a0b831f72b75fc5f1119857c44ef5d593"
   integrity sha1-jFNOKguDH3K3X8XxEZhXxE711ZM=
