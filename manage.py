@@ -30,8 +30,8 @@ for key in [
     "POSTGRES_USER",
     "POSTGRES_PASSWORD",
     "TM_SECRET",
-    "TM_CONSUMER_KEY",
-    "TM_CONSUMER_SECRET",
+    "TM_CLIENT_ID",
+    "TM_CLIENT_SECRET",
     "TM_DEFAULT_CHANGESET_COMMENT",
 ]:
     if not os.getenv(key):
@@ -86,7 +86,7 @@ atexit.register(lambda: cron.shutdown(wait=False))
 
 @manager.option("-u", "--user_id", help="Test User ID")
 def gen_token(user_id):
-    """ Helper method for generating valid base64 encoded session tokens """
+    """Helper method for generating valid base64 encoded session tokens"""
     token = AuthenticationService.generate_session_token_for_user(user_id)
     print(f"Raw token is: {token}")
     b64_token = base64.b64encode(token.encode())

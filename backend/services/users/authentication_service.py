@@ -10,9 +10,14 @@ from backend.api.utils import TMAPIDecorators
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
 from werkzeug import url_quote
+from random import SystemRandom
 
 token_auth = HTTPTokenAuth(scheme="Token")
 tm = TMAPIDecorators()
+
+UNICODE_ASCII_CHARACTER_SET = (
+    "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789"
+)
 
 
 @token_auth.verify_token
@@ -141,16 +146,30 @@ class AuthenticationService:
         serializer = URLSafeTimedSerializer(entropy)
         return serializer.dumps(osm_id)
 
+    # code taken from https://github.com/oauthlib/oauthlib/blob/master/oauthlib/common.py
+    @staticmethod
+    def generate_random_state(length=30, chars=UNICODE_ASCII_CHARACTER_SET):
+        """Generates a non-guessable OAuth token
+        OAuth (1 and 2) does not specify the format of tokens except that they
+        should be strings of random characters. Tokens should not be guessable
+        and entropy when generating the random characters is important. Which is
+        why SystemRandom is used instead of the default random.choice method.
+        """
+        rand = SystemRandom()
+        return "".join(rand.choice(chars) for x in range(length))
+
     @staticmethod
     def generate_authorize_url(redirect_uri):
 
+        state = AuthenticationService.generate_random_state()
         scope = url_quote(osm.request_token_params.get("scope", ""))
         url = (
-            f"{osm.authorize_url}?response_type=code&"
-            + f"client_id={osm.consumer_key}&scope={scope}"
+            f"{osm.authorize_url}?response_type=code"
+            + f"&client_id={osm.consumer_key}&scope={scope}"
+            + f"&state={state}"
             + f"&redirect_uri={redirect_uri}"
         )
-        return {"auth_url": url}
+        return {"state": state, "auth_url": url}
 
     @staticmethod
     def is_valid_token(token, token_expiry):

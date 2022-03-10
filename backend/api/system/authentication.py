@@ -37,9 +37,9 @@ class SystemAuthenticationLoginAPI(Resource):
         redirect_uri = request.args.get("redirect_uri", None)
         if redirect_uri is None:
             redirect_uri = current_app.config["APP_BASE_URL"]
-        url = AuthenticationService.generate_authorize_url(redirect_uri)
+        params = AuthenticationService.generate_authorize_url(redirect_uri)
 
-        return url, 200
+        return params, 200
 
 
 class SystemAuthenticationCallbackAPI(Resource):
