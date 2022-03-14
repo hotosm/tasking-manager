@@ -14,8 +14,8 @@ export function openEditor(
     return '?editor=JOSM';
   }
   const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
-  if (editor === 'ID') {
-    return getIdUrl(project, center, zoom, selectedTasks, '?editor=ID');
+  if (['ID', 'RAPID'].includes(editor)) {
+    return getIdUrl(project, center, zoom, selectedTasks, ('?editor=' + editor));
   }
   if (windowObjectReference == null || windowObjectReference.closed) {
     windowObjectReference = window.open('', `iD-${project}-${selectedTasks}`);
@@ -76,7 +76,7 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl)
   const base = customUrl ? formatCustomUrl(customUrl) : `${ID_EDITOR_URL}`;
   let url = base + '#map=' + [zoomLevel, centroid[1], centroid[0]].join('/');
   // the other URL params are only needed by external iD editors
-  if (customUrl !== '?editor=ID') {
+  if (!['?editor=ID','?editor=RAPID'].includes(customUrl)) {
     if (project.changesetComment) {
       url += '&comment=' + encodeURIComponent(project.changesetComment);
     }

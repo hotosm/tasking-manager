@@ -75,6 +75,7 @@ export default function ProjectEdit({ id }) {
         perTaskInstructions: '',
       },
     ],
+    rapidPowerUser: false,
   });
   const [userCanEditProject] = useEditProjectAllowed(projectInfo);
   const supportedLanguages =

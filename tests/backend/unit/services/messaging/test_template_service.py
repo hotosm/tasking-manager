@@ -42,7 +42,10 @@ class TestTemplateService(BaseTestCase):
         base_url = current_app.config["APP_BASE_URL"]
         self.assertEqual(
             format_username_link("try @[yo] @[us2]! [t](http://a.c)"),
-            f'try <a href="{base_url}/users/yo/">@yo</a> <a href="{base_url}/users/us2/">@us2</a>! [t](http://a.c)',
+            (
+                f'try <a style="color: #d73f3f" href="{base_url}/users/yo/">@yo</a>'
+                f' <a style="color: #d73f3f" href="{base_url}/users/us2/">@us2</a>! [t](http://a.c)'
+            ),
         )
         self.assertEqual(
             format_username_link(
