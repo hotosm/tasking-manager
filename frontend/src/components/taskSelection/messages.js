@@ -29,6 +29,15 @@ export default defineMessages({
     defaultMessage:
       'It was not possible to lock the selected tasks, as none of them are on the mapped status.',
   },
+  forbiddenError: {
+    id: 'project.tasks.forbidden_error',
+    defaultMessage: 'Forbidden Error',
+  },
+  forbiddenErrorDescription: {
+    id: 'project.tasks.forbidden_error.description',
+    defaultMessage:
+      'Tasks cannot be validated by the same user who marked task as mapped or badimagery.',
+  },
   josmError: {
     id: 'project.tasks.josm_error',
     defaultMessage: 'Connection with JOSM failed',
