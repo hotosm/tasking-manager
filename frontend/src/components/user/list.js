@@ -63,7 +63,7 @@ const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
 };
 
 const RoleFilter = ({ filters, setFilters, updateFilters }) => {
-  const roles = ['ALL', 'MAPPER', 'ADMIN'];
+  const roles = ['ALL', 'MAPPER', 'ADMIN', 'READ_ONLY'];
 
   const options = roles.map((role) => {
     return { value: role, label: <FormattedMessage {...messages[`userRole${role}`]} /> };
