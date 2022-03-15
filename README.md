@@ -11,7 +11,7 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 * Start by reading our [Code of conduct](./docs/code_of_conduct.md)
 * Get familiar with our [contributor guidelines](./docs/contributing.md) explaining the different ways in which you can support this project! We need your help!
-* Join the Tasking Manager Collective Meet up- an opportinity to meet other Tasking Manager contributors- details coming shortly!
+* Join the Tasking Manager Collective Meet up- an opportunity to meet other Tasking Manager contributors- details coming shortly!
 
 
 ## Developers
