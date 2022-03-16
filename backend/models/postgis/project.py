@@ -132,7 +132,7 @@ class Project(db.Model):
     )  # Mapper level project is suitable for
     mapping_permission = db.Column(db.Integer, default=MappingPermission.ANY.value)
     validation_permission = db.Column(
-        db.Integer, default=ValidationPermission.ANY.value
+        db.Integer, default=ValidationPermission.LEVEL.value
     )  # Means only users with validator role can validate
     enforce_random_task_selection = db.Column(
         db.Boolean, default=False
