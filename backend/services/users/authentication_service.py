@@ -16,7 +16,7 @@ token_auth = HTTPTokenAuth(scheme="Token")
 tm = TMAPIDecorators()
 
 UNICODE_ASCII_CHARACTER_SET = (
-    "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789"
+    "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789" "-_"
 )
 
 
@@ -148,7 +148,7 @@ class AuthenticationService:
 
     # code taken from https://github.com/oauthlib/oauthlib/blob/master/oauthlib/common.py
     @staticmethod
-    def generate_random_state(length=30, chars=UNICODE_ASCII_CHARACTER_SET):
+    def generate_random_state(length=48, chars=UNICODE_ASCII_CHARACTER_SET):
         """Generates a non-guessable OAuth token
         OAuth (1 and 2) does not specify the format of tokens except that they
         should be strings of random characters. Tokens should not be guessable
