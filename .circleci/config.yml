@@ -251,7 +251,7 @@ workflows:
         filters:
           branches:
             only:
-            - fix/sentry-environments
+            - fix/cfn-init-codedeploy
         requires:
           - build
         stack_name: "test"
@@ -262,7 +262,7 @@ workflows:
         filters:
           branches:
             only:
-            - fix/sentry-environments
+            - fix/cfn-init-codedeploy
         requires:
           - build
         context: tasking-manager-staging
