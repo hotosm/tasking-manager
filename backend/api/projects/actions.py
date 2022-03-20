@@ -127,15 +127,20 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             return {"Error": "Unable to send message to mappers"}, 400
 
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
+            user_has_permission = (
+                ProjectAdminService.is_user_action_permitted_on_project(
+                    authenticated_user_id, project_id
+                )
             )
-            threading.Thread(
-                target=MessageService.send_message_to_all_contributors,
-                args=(project_id, message_dto),
-            ).start()
+            if user_has_permission:
+                threading.Thread(
+                    target=MessageService.send_message_to_all_contributors,
+                    args=(project_id, message_dto),
+                ).start()
 
-            return {"Success": "Messages started"}, 200
+                return {"Success": "Messages started"}, 200
+            else:
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
