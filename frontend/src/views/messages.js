@@ -296,6 +296,14 @@ export default defineMessages({
     id: 'pages.learn.tutorials.osm_step_by_step.description',
     defaultMessage: 'Beginner’s Guide to mapping on OpenStreetMap',
   },
+  learnTMCheatsheetTitle: {
+    id: 'pages.learn.tutorials.cheatsheet.title',
+    defaultMessage: 'Tasking Manager Cheatsheet',
+  },
+  learnTMCheatsheetDescription: {
+    id: 'pages.learn.tutorials.cheatsheet.description',
+    defaultMessage: "TM's concise set of notes used for quick reference",
+  },
   learnOSMTutorialTitle: {
     id: 'pages.learn.tutorials.learnosm.title',
     defaultMessage: 'Administration Guide',
