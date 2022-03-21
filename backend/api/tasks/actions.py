@@ -585,7 +585,7 @@ class TasksActionsValidationUnlockAPI(Resource):
         try:
             tasks = ValidatorService.unlock_tasks_after_validation(validated_dto)
             return tasks.to_primitive(), 200
-        except ValidatorServiceError:
+        except ValidatorServiceError as e:
             return {"Error": str(e.split("-")[1]), "SubCode": str(e.split("-")[0])}, 403
         except NotFound:
             return {"Error": "Task unlock failed", "SubCode": "NotFound"}, 404
