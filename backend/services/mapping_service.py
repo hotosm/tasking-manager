@@ -85,7 +85,7 @@ class MappingService:
         task = MappingService.get_task(lock_task_dto.task_id, lock_task_dto.project_id)
 
         if not task.is_mappable():
-            raise MappingServiceError("Task in invalid state for mapping")
+            raise MappingServiceError("InvalidTaskState- Task in invalid state for mapping")
 
         user_can_map, error_reason = ProjectService.is_user_permitted_to_map(
             lock_task_dto.project_id, lock_task_dto.user_id
@@ -93,9 +93,15 @@ class MappingService:
         if not user_can_map:
             if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError("User must accept license to map this task")
+            elif error_reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
+                raise MappingServiceError("UserNotAllowed- User not on allowed list")
+            elif error_reason == MappingNotAllowed.PROJECT_NOT_PUBLISHED:
+                raise MappingServiceError("ProjectNotPublished- Project is not published")
+            elif error_reason == MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
+                raise MappingServiceError("UserAlreadyHasTaskLocked- User already has task locked")
             else:
                 raise MappingServiceError(
-                    f"Mapping not allowed because: {error_reason}"
+                    f"{error_reason}- Mapping not allowed because: {error_reason}"
                 )
 
         task.lock_task_for_mapping(lock_task_dto.user_id)
@@ -116,7 +122,7 @@ class MappingService:
             TaskStatus.READY,
         ]:
             raise MappingServiceError(
-                "Can only set status to MAPPED, BADIMAGERY, READY after mapping"
+                "InvalidUnlockState- Can only set status to MAPPED, BADIMAGERY, READY after mapping"
             )
 
         # Update stats around the change of state
@@ -164,13 +170,13 @@ class MappingService:
         """
         task = MappingService.get_task(task_id, project_id)
         if task is None:
-            raise MappingServiceError(f"Task {task_id} not found")
+            raise NotFound(f"Task {task_id} not found")
         current_state = TaskStatus(task.task_status)
         if current_state != TaskStatus.LOCKED_FOR_MAPPING:
-            raise MappingServiceError("Status must be LOCKED_FOR_MAPPING to unlock")
+            raise MappingServiceError("LockBeforeUnlocking- Status must be LOCKED_FOR_MAPPING to unlock")
         if task.locked_by != user_id:
             raise MappingServiceError(
-                "Attempting to unlock a task owned by another user"
+                "TaskNotOwned- Attempting to unlock a task owned by another user"
             )
         return task
 
@@ -315,7 +321,7 @@ class MappingService:
         task = MappingService.get_task(task_id, project_id)
 
         if not MappingService._is_task_undoable(user_id, task):
-            raise MappingServiceError("Undo not allowed for this user")
+            raise MappingServiceError("UndoPermissionError- Undo not allowed for this user")
 
         current_state = TaskStatus(task.task_status)
         undo_state = TaskHistory.get_last_status(project_id, task_id, True)
