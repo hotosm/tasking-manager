@@ -56,14 +56,14 @@ class ValidatorService:
                 TaskStatus.BADIMAGERY,
             ]:
                 raise ValidatorServiceError(
-                    f"Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
+                    f"NotReadyForValidation- Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
                 )
             user_can_validate = ValidatorService._user_can_validate_task(
                 validation_dto.user_id, task.mapped_by
             )
             if not user_can_validate:
                 raise ValidatorServiceError(
-                    "Tasks cannot be validated by the same user who marked task as mapped or badimagery"
+                    "CannotValidateMappedTask- Tasks cannot be validated by the same user who marked task as mapped or badimagery"
                 )
 
             tasks_to_lock.append(task)
@@ -75,8 +75,12 @@ class ValidatorService:
         if not user_can_validate:
             if error_reason == ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError("User must accept license to map this task")
+            elif error_reason == ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
+                raise ValidatorServiceError("UserNotAllowed- Validation not allowed because: User not on allowed list")
+            elif error_reason == ValidatingNotAllowed.PROJECT_NOT_PUBLISHED:
+                raise ValidatorServiceError("ProjectNotPublished- Validation not allowed because: Project not published")
             elif error_reason == ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
-                raise ValidatorServiceError("User already has a task locked")
+                raise ValidatorServiceError("UserAlreadyHasTaskLocked- User already has a task locked")
             else:
                 raise ValidatorServiceError(
                     f"Validation not allowed because: {error_reason}"
@@ -241,12 +245,12 @@ class ValidatorService:
             current_state = TaskStatus(task.task_status)
             if current_state != TaskStatus.LOCKED_FOR_VALIDATION:
                 raise ValidatorServiceError(
-                    f"Task {unlock_task.task_id} is not LOCKED_FOR_VALIDATION"
+                    f"NotLockedForValidation- Task {unlock_task.task_id} is not LOCKED_FOR_VALIDATION"
                 )
 
             if task.locked_by != user_id:
                 raise ValidatorServiceError(
-                    "Attempting to unlock a task owned by another user"
+                    "TaskNotOwned- Attempting to unlock a task owned by another user"
                 )
 
             if hasattr(unlock_task, "status"):
