@@ -93,7 +93,7 @@ class TasksActionsMappingLockAPI(Resource):
         except NotFound:
             return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
-            return {"Error": str(e.split("-")[1]), "SubCode": str(e.split("-")[0])}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except UserLicenseError:
             return {
                 "Error": "User not accepted license terms",
@@ -185,7 +185,7 @@ class TasksActionsMappingStopAPI(Resource):
         except NotFound:
             return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
-            return {"Error": str(e.split("-")[1]), "SubCode": str(e.split("-")[0])}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -272,7 +272,7 @@ class TasksActionsMappingUnlockAPI(Resource):
         except NotFound:
             return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
-            return {"Error": str(e.split("-")[1]), "SubCode": str(e.split("-")[0])}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -339,7 +339,7 @@ class TasksActionsMappingUndoAPI(Resource):
         except NotFound:
             return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
-            return {"Error": str(e.split("-")[1]), "SubCode": str(e.split("-")[0])}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"Task GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -420,7 +420,7 @@ class TasksActionsValidationLockAPI(Resource):
             tasks = ValidatorService.lock_tasks_for_validation(validator_dto)
             return tasks.to_primitive(), 200
         except ValidatorServiceError as e:
-            return {"Error": str(e.split("-")[1]), "SubCode": str(e.split("-")[0])}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Task not found", "SubCode": "NotFound"}, 404
         except UserLicenseError:
@@ -506,7 +506,7 @@ class TasksActionsValidationStopAPI(Resource):
             tasks = ValidatorService.stop_validating_tasks(validated_dto)
             return tasks.to_primitive(), 200
         except ValidatorServiceError as e:
-            return {"Error": str(e.split("-")[1]), "SubCode": str(e.split("-")[0])}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Task unlock failed", "SubCode": "NotFound"}, 404
         except Exception as e:
@@ -586,7 +586,7 @@ class TasksActionsValidationUnlockAPI(Resource):
             tasks = ValidatorService.unlock_tasks_after_validation(validated_dto)
             return tasks.to_primitive(), 200
         except ValidatorServiceError as e:
-            return {"Error": str(e.split("-")[1]), "SubCode": str(e.split("-")[0])}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
             return {"Error": "Task unlock failed", "SubCode": "NotFound"}, 404
         except Exception as e:
@@ -947,9 +947,9 @@ class TasksActionsSplitAPI(Resource):
         except NotFound:
             return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except SplitServiceError as e:
-            return {"Error": str(e.split("-")[1]), "SubCode": str(e.split("-")[0])}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except InvalidGeoJson as e:
-            return {"Error": str(e.split("-")[1]), "SubCode": str(e.split("-")[0])}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"TasksActionsSplitAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

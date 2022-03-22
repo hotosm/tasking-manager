@@ -63,11 +63,14 @@ class ProjectsActionsTransferAPI(Resource):
             )
             return {"Success": "Project Transferred"}, 200
         except ValueError as e:
-            return {"Error": str(e)}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"ProjectsActionsTransferAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to transfer project"}, 500
+            return {
+                "Error": "Unable to transfer project",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsActionsMessageContributorsAPI(Resource):
@@ -124,7 +127,10 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             message_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to send message to mappers"}, 400
+            return {
+                "Error": "Unable to send message to mappers",
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             ProjectAdminService.is_user_action_permitted_on_project(
@@ -136,12 +142,18 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             ).start()
 
             return {"Success": "Messages started"}, 200
-        except ValueError as e:
-            return {"Error": str(e)}, 403
+        except ValueError:
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
         except Exception as e:
             error_msg = f"Send message all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to send messages to mappers"}, 500
+            return {
+                "Error": "Unable to send messages to mappers",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsActionsFeatureAPI(Resource):
@@ -185,21 +197,22 @@ class ProjectsActionsFeatureAPI(Resource):
                 authenticated_user_id, project_id
             )
         except ValueError as e:
-            error_msg = f"FeaturedProjects POST: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
 
         try:
             ProjectService.set_project_as_featured(project_id)
             return {"Success": True}, 200
         except NotFound:
-            return {"Error": "Project Not Found"}, 404
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
-            error_msg = f"FeaturedProjects POST: {str(e)}"
-            return {"Error": error_msg}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"FeaturedProjects POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectsActionsUnFeatureAPI(Resource):
@@ -242,21 +255,22 @@ class ProjectsActionsUnFeatureAPI(Resource):
                 token_auth.current_user(), project_id
             )
         except ValueError as e:
-            error_msg = f"FeaturedProjects POST: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
 
         try:
             ProjectService.unset_project_as_featured(project_id)
             return {"Success": True}, 200
         except NotFound:
-            return {"Error": "Project Not Found"}, 404
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
-            error_msg = f"FeaturedProjects DELETE: {str(e)}"
-            return {"Error": error_msg}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"FeaturedProjects DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectsActionsSetInterestsAPI(Resource):
@@ -309,8 +323,10 @@ class ProjectsActionsSetInterestsAPI(Resource):
                 token_auth.current_user(), project_id
             )
         except ValueError as e:
-            error_msg = f"ProjectsActionsSetInterestsAPI POST: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
 
         try:
             data = request.get_json()
@@ -319,13 +335,13 @@ class ProjectsActionsSetInterestsAPI(Resource):
             )
             return project_interests.to_primitive(), 200
         except NotFound:
-            return {"Error": "Project not Found"}, 404
+            return {"Error": "Project not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = (
                 f"ProjectsActionsSetInterestsAPI POST - unhandled error: {str(e)}"
             )
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectActionsIntersectingTilesAPI(Resource):
@@ -390,7 +406,7 @@ class ProjectActionsIntersectingTilesAPI(Resource):
             grid_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             grid = GridService.trim_grid_to_aoi(grid_dto)
@@ -400,4 +416,4 @@ class ProjectActionsIntersectingTilesAPI(Resource):
         except Exception as e:
             error_msg = f"IntersectingTiles GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"error": error_msg, "SubCode": "InternalServerError"}, 500

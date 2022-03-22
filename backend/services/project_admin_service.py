@@ -21,7 +21,7 @@ from backend.services.team_service import TeamService
 
 
 class ProjectAdminServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when validating a Project """
+    """Custom Exception to notify callers an error occurred when validating a Project"""
 
     def __init__(self, message):
         if current_app:
@@ -29,7 +29,7 @@ class ProjectAdminServiceError(Exception):
 
 
 class ProjectStoreError(Exception):
-    """ Custom Exception to notify callers an error occurred with database CRUD operations """
+    """Custom Exception to notify callers an error occurred with database CRUD operations"""
 
     def __init__(self, message):
         if current_app:
@@ -97,7 +97,7 @@ class ProjectAdminService:
 
     @staticmethod
     def _set_default_changeset_comment(draft_project: Project):
-        """ Sets the default changesset comment when project created """
+        """Sets the default changesset comment when project created"""
         default_comment = current_app.config["DEFAULT_CHANGESET_COMMENT"]
         draft_project.changeset_comment = f"{default_comment}-{draft_project.id}"
         draft_project.save()
@@ -113,7 +113,7 @@ class ProjectAdminService:
 
     @staticmethod
     def get_project_dto_for_admin(project_id: int) -> ProjectDTO:
-        """ Get the project as DTO for project managers """
+        """Get the project as DTO for project managers"""
         project = ProjectAdminService._get_project_by_id(project_id)
         return project.as_dto_for_admin(project_id)
 
@@ -144,7 +144,7 @@ class ProjectAdminService:
 
     @staticmethod
     def _validate_imagery_licence(license_id: int):
-        """ Ensures that the suppliced license Id actually exists """
+        """Ensures that the suppliced license Id actually exists"""
         try:
             LicenseService.get_license_as_dto(license_id)
         except NotFound:
@@ -152,7 +152,7 @@ class ProjectAdminService:
 
     @staticmethod
     def delete_project(project_id: int, authenticated_user_id: int):
-        """ Deletes project if it has no completed tasks """
+        """Deletes project if it has no completed tasks"""
 
         project = ProjectAdminService._get_project_by_id(project_id)
         is_admin = UserService.is_user_an_admin(authenticated_user_id)
@@ -175,7 +175,7 @@ class ProjectAdminService:
 
     @staticmethod
     def reset_all_tasks(project_id: int, user_id: int):
-        """ Resets all tasks on project, preserving history"""
+        """Resets all tasks on project, preserving history"""
         tasks_to_reset = Task.query.filter(Task.project_id == project_id).all()
 
         for task in tasks_to_reset:
@@ -193,7 +193,7 @@ class ProjectAdminService:
 
     @staticmethod
     def get_all_comments(project_id: int) -> ProjectCommentsDTO:
-        """ Gets all comments mappers, validators have added to tasks associated with project """
+        """Gets all comments mappers, validators have added to tasks associated with project"""
         comments = TaskHistory.get_all_comments(project_id)
 
         if len(comments.comments) == 0:
@@ -268,26 +268,28 @@ class ProjectAdminService:
     def get_projects_for_admin(
         admin_id: int, preferred_locale: str, search_dto: ProjectSearchDTO
     ):
-        """ Get all projects for provided admin """
+        """Get all projects for provided admin"""
         return Project.get_projects_for_admin(admin_id, preferred_locale, search_dto)
 
     @staticmethod
     def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
-        """ Transfers project from old owner (transfering_user_id) to new owner (username) """
+        """Transfers project from old owner (transfering_user_id) to new owner (username)"""
         project = Project.get(project_id)
 
         # Check permissions for the user (transferring_user_id) who initiatied the action
         if not ProjectAdminService.is_user_action_permitted_on_project(
             transfering_user_id, project_id
         ):
-            raise ValueError("User action not permitted")
+            raise ValueError("UserNotPermitted- User action not permitted")
         new_owner = UserService.get_user_by_username(username)
 
         # Check permissions for the new owner - must be an admin or project's org manager or a PM team member
         if not ProjectAdminService.is_user_action_permitted_on_project(
             new_owner.id, project_id
         ):
-            raise ValueError("User action not permitted")
+            raise ValueError(
+                "InvalidNewOwner- New owner must be an admin or project's org manager or a PM team member"
+            )
         else:
             project.save()
 
@@ -295,7 +297,7 @@ class ProjectAdminService:
     def is_user_action_permitted_on_project(
         authenticated_user_id: int, project_id: int
     ) -> bool:
-        """ Is user action permitted on project"""
+        """Is user action permitted on project"""
         project = Project.get(project_id)
         author_id = project.author_id
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
