@@ -39,7 +39,6 @@ jobs:
         command: |
           cd ${CIRCLE_WORKING_DIRECTORY}
           mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/lint
-          # . ${CIRCLE_WORKING_DIRECTORY}/env/bin/activate
           black --check manage.py backend tests migrations
           flake8 manage.py backend tests migrations
     - run:
