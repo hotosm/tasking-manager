@@ -14,17 +14,20 @@ export function cancelablePromise(promise: Promise<*>) {
   };
 }
 
-export function handleErrors(response) {
+export async function handleErrors(response) {
   if (response.ok) {
     return response;
   }
 
-  let text = response.statusText;
+  let text;
+  await response
+    .clone()
+    .json()
+    .then((res) => {
+      text = res.SubCode || response.statusText;
+    });
   if (response.status === 409) {
     text = 'CONFLICT';
-  }
-  if (response.status === 403) {
-    text = 'FORBIDDEN';
   }
   throw Error(text);
 }

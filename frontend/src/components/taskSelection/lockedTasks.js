@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from '@reach/router';
+import { Link, navigate } from '@reach/router';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useSelector } from 'react-redux';
-import { navigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -118,33 +117,18 @@ export const LicenseError = ({ id, close, lockTasks }) => {
 };
 
 export function LockError({ error, close }) {
-  const errorDetail = {
-    JOSM: {
-      title: <FormattedMessage {...messages.josmError} />,
-      description: <FormattedMessage {...messages.josmErrorDescription} />,
-    },
-    FORBIDDEN: {
-      title: <FormattedMessage {...messages.forbiddenError} />,
-      description: <FormattedMessage {...messages.forbiddenErrorDescription} />,
-    },
-    'No mapped tasks selected': {
-      title: <FormattedMessage {...messages.noMappedTasksSelected} />,
-      description: <FormattedMessage {...messages.noMappedTasksSelectedDescription} />,
-    },
-  };
-
   return (
     <>
       <h3 className="barlow-condensed f3 fw6 mv0">
-        {errorDetail[error] ? (
-          errorDetail[error].title
+        {messages[`${error}Error`] ? (
+          <FormattedMessage {...messages[`${error}Error`]} />
         ) : (
           <FormattedMessage {...messages.lockError} />
         )}
       </h3>
       <div className="mv4 lh-title">
-        {errorDetail[error] ? (
-          errorDetail[error].description
+        {messages[`${error}ErrorDescription`] ? (
+          <FormattedMessage {...messages[`${error}ErrorDescription`]} />
         ) : (
           <FormattedMessage {...messages.lockErrorDescription} />
         )}
@@ -161,8 +145,7 @@ export function LockError({ error, close }) {
 export function LockedTaskModalContent({ project, error, close, lockTasks }: Object) {
   const lockedTasks = useGetLockedTasks();
   const action = lockedTasks.get('status') === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
-  const licenseError =
-    ['Conflict', 'CONFLICT', 'conflict'].includes(error) && !lockedTasks.get('project');
+  const licenseError = error === 'UserLicenseError' && !lockedTasks.get('project');
 
   return (
     <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
