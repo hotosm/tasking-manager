@@ -39,7 +39,7 @@ class AnnotationsRestAPI(Resource):
             ProjectService.exists(project_id)
         except NotFound as e:
             current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found"}, 404
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
 
         try:
             if annotation_type:
@@ -52,7 +52,7 @@ class AnnotationsRestAPI(Resource):
                 )
             return annotations.to_primitive(), 200
         except NotFound:
-            return {"Error": "Annotations not found"}, 404
+            return {"Error": "Annotations not found", "SubCode": "NotFound"}, 404
 
     def post(self, project_id: int, annotation_type: str):
         """
@@ -128,10 +128,10 @@ class AnnotationsRestAPI(Resource):
                 )
             except NotFound:
                 current_app.logger.error("Invalid token")
-                return {"Error": "Invalid token"}, 500
+                return {"Error": "Invalid token", "SubCode": "NotFound"}, 500
         else:
             current_app.logger.error("No token supplied")
-            return {"Error": "No token supplied"}, 500
+            return {"Error": "No token supplied", "SubCode": "NotFound"}, 500
 
         try:
             annotations = request.get_json() or {}
@@ -142,7 +142,7 @@ class AnnotationsRestAPI(Resource):
             ProjectService.exists(project_id)
         except NotFound as e:
             current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found"}, 404
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
 
         task_ids = [t["taskId"] for t in annotations["tasks"]]
 
@@ -159,7 +159,10 @@ class AnnotationsRestAPI(Resource):
                 )
             except DataError as e:
                 current_app.logger.error(f"Error creating annotations: {str(e)}")
-                return {"Error": "Error creating annotations"}, 500
+                return {
+                    "Error": "Error creating annotations",
+                    "SubCode": "InvalidData",
+                }, 400
 
         return project_id, 200
 

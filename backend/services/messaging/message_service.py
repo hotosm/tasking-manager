@@ -29,7 +29,7 @@ message_cache = TTLCache(maxsize=512, ttl=30)
 
 
 class MessageServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling mapping """
+    """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
         if current_app:
@@ -65,7 +65,7 @@ class MessageService:
     def send_message_after_validation(
         status: int, validated_by: int, mapped_by: int, task_id: int, project_id: int
     ):
-        """ Sends mapper a notification after their task has been marked valid or invalid """
+        """Sends mapper a notification after their task has been marked valid or invalid"""
         if validated_by == mapped_by:
             return  # No need to send a notification if you've verified your own task
 
@@ -202,7 +202,7 @@ class MessageService:
     def send_message_after_comment(
         comment_from: int, comment: str, task_id: int, project_id: int
     ):
-        """ Will send a canned message to anyone @'d in a comment """
+        """Will send a canned message to anyone @'d in a comment"""
         usernames = MessageService._parse_message_for_username(comment, project_id)
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
@@ -376,7 +376,7 @@ class MessageService:
 
     @staticmethod
     def send_message_after_chat(chat_from: int, chat: str, project_id: int):
-        """ Send alert to user if they were @'d in a chat message """
+        """Send alert to user if they were @'d in a chat message"""
         # Because message-all run on background thread it needs it's own app context
         app = create_app()
         with app.app_context():
@@ -506,7 +506,7 @@ class MessageService:
 
     @staticmethod
     def resend_email_validation(user_id: int):
-        """ Resends the email validation email to the logged in user """
+        """Resends the email validation email to the logged in user"""
         user = UserService.get_user_by_id(user_id)
         SMTPService.send_verification_email(user.email_address, user.username)
 
@@ -540,7 +540,7 @@ class MessageService:
 
     @staticmethod
     def _parse_message_for_username(message: str, project_id: int) -> List[str]:
-        """ Extracts all usernames from a comment looks for format @[user name] """
+        """Extracts all usernames from a comment looks for format @[user name]"""
 
         parser = re.compile(r"((?<=@)\w+|\[.+?\])")
 
@@ -559,7 +559,7 @@ class MessageService:
     @staticmethod
     @cached(message_cache)
     def has_user_new_messages(user_id: int) -> dict:
-        """ Determines if the user has any unread messages """
+        """Determines if the user has any unread messages"""
         count = Notification.get_unread_message_count(user_id)
 
         new_messages = False
@@ -582,7 +582,7 @@ class MessageService:
         task_id=None,
         status=None,
     ):
-        """ Get all messages for user """
+        """Get all messages for user"""
         sort_column = Message.__table__.columns.get(sort_by)
         if sort_column is None:
             sort_column = Message.date
@@ -634,7 +634,7 @@ class MessageService:
 
     @staticmethod
     def get_message(message_id: int, user_id: int) -> Message:
-        """ Gets the specified message """
+        """Gets the specified message"""
         message = Message.query.get(message_id)
 
         if message is None:
@@ -642,32 +642,33 @@ class MessageService:
 
         if message.to_user_id != int(user_id):
             raise MessageServiceError(
-                f"User {user_id} attempting to access another users message {message_id}"
+                "AccessOtherUserMessage- "
+                + f"User {user_id} attempting to access another users message {message_id}"
             )
 
         return message
 
     @staticmethod
     def get_message_as_dto(message_id: int, user_id: int):
-        """ Gets the selected message and marks it as read """
+        """Gets the selected message and marks it as read"""
         message = MessageService.get_message(message_id, user_id)
         message.mark_as_read()
         return message.as_dto()
 
     @staticmethod
     def delete_message(message_id: int, user_id: int):
-        """ Deletes the specified message """
+        """Deletes the specified message"""
         message = MessageService.get_message(message_id, user_id)
         message.delete()
 
     @staticmethod
     def delete_multiple_messages(message_ids: list, user_id: int):
-        """ Deletes the specified messages to the user """
+        """Deletes the specified messages to the user"""
         Message.delete_multiple_messages(message_ids, user_id)
 
     @staticmethod
     def get_task_link(project_id: int, task_id: int, base_url=None) -> str:
-        """ Helper method that generates a link to the task """
+        """Helper method that generates a link to the task"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
@@ -677,7 +678,7 @@ class MessageService:
     def get_project_link(
         project_id: int, base_url=None, include_chat_section=False
     ) -> str:
-        """ Helper method to generate a link to project chat"""
+        """Helper method to generate a link to project chat"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
         if include_chat_section:
@@ -689,7 +690,7 @@ class MessageService:
 
     @staticmethod
     def get_user_profile_link(user_name: str, base_url=None) -> str:
-        """ Helper method to generate a link to a user profile"""
+        """Helper method to generate a link to a user profile"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
@@ -697,7 +698,7 @@ class MessageService:
 
     @staticmethod
     def get_user_settings_link(section=None, base_url=None) -> str:
-        """ Helper method to generate a link to a user profile"""
+        """Helper method to generate a link to a user profile"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 

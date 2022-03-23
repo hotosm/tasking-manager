@@ -472,7 +472,7 @@ class ProjectSearchService:
         # validate the bbox area is less than or equal to the max area allowed to prevent
         # abuse of the api or performance issues from large requests
         if not ProjectSearchService.validate_bbox_area(polygon):
-            raise BBoxTooBigError("Requested bounding box is too large")
+            raise BBoxTooBigError("BBoxTooBigError- Requested bounding box is too large")
 
         # get projects intersecting the polygon for created by the author_id
         intersecting_projects = ProjectSearchService._get_intersecting_projects(

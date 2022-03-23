@@ -79,12 +79,18 @@ class UsersActionsSetUsersAPI(Resource):
             user_dto.validate()
             authenticated_user_id = token_auth.current_user()
             if authenticated_user_id != user_dto.id:
-                return {"Error": "Unable to authenticate"}, 401
+                return {
+                    "Error": "Unable to authenticate",
+                    "SubCode": "UnableToAuth",
+                }, 401
         except ValueError as e:
             return {"Error": str(e)}, 400
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return {"Error": "Unable to update user details"}, 400
+            return {
+                "Error": "Unable to update user details",
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             verification_sent = UserService.update_user_details(
@@ -92,11 +98,14 @@ class UsersActionsSetUsersAPI(Resource):
             )
             return verification_sent, 200
         except NotFound:
-            return {"Error": "User not found"}, 404
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to update user details"}, 500
+            return {
+                "Error": "Unable to update user details",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class UsersActionsSetLevelAPI(Resource):
@@ -144,14 +153,17 @@ class UsersActionsSetLevelAPI(Resource):
         try:
             UserService.set_user_mapping_level(username, level)
             return {"Success": "Level set"}, 200
-        except UserServiceError:
-            return {"Error": "Not allowed"}, 400
+        except UserServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except NotFound:
-            return {"Error": "User or mapping not found"}, 404
+            return {"Error": "User or mapping not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to update mapping level"}, 500
+            return {
+                "Error": "Unable to update mapping level",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class UsersActionsSetRoleAPI(Resource):
@@ -199,14 +211,17 @@ class UsersActionsSetRoleAPI(Resource):
         try:
             UserService.add_role_to_user(token_auth.current_user(), username, role)
             return {"Success": "Role Added"}, 200
-        except UserServiceError:
-            return {"Error": "Not allowed"}, 403
+        except UserServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
-            return {"Error": "User or mapping not found"}, 404
+            return {"Error": "User or mapping not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to update user role"}, 500
+            return {
+                "Error": "Unable to update user role",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class UsersActionsSetExpertModeAPI(Resource):
@@ -252,11 +267,14 @@ class UsersActionsSetExpertModeAPI(Resource):
         except UserServiceError:
             return {"Error": "Not allowed"}, 400
         except NotFound:
-            return {"Error": "User not found"}, 404
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"UserSetExpert POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to update expert mode"}, 500
+            return {
+                "Error": "Unable to update expert mode",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class UsersActionsVerifyEmailAPI(Resource):
@@ -289,7 +307,10 @@ class UsersActionsVerifyEmailAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to send verification email"}, 500
+            return {
+                "Error": "Unable to send verification email",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class UsersActionsRegisterEmailAPI(Resource):
@@ -324,7 +345,7 @@ class UsersActionsRegisterEmailAPI(Resource):
             user_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             user = UserService.register_user_with_email(user_dto)
@@ -395,8 +416,8 @@ class UsersActionsSetInterestsAPI(Resource):
         except ValueError as e:
             return {"Error": str(e)}, 400
         except NotFound:
-            return {"Error": "Interest not Found"}, 404
+            return {"Error": "Interest not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User relationship POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

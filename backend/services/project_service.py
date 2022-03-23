@@ -214,7 +214,7 @@ class ProjectService:
         if project.status == ProjectStatus.DRAFT.value:
             if not is_manager_permission:
                 is_allowed_user = False
-                raise ProjectServiceError("Unable to fetch project")
+                raise ProjectServiceError("ProjectNotFetched- Unable to fetch project")
 
         # Private Projects - allowed_users, admins, org admins &
         # assigned teams (mappers, validators, project managers), authors permitted
@@ -247,7 +247,7 @@ class ProjectService:
         if is_allowed_user or is_manager_permission or is_team_member:
             return project.as_dto_for_mapping(current_user_id, locale, abbrev)
         else:
-            raise ProjectServiceError("Unable to fetch project")
+            raise ProjectServiceError("ProjectNotFetched- Unable to fetch project")
 
     @staticmethod
     def get_project_tasks(

@@ -28,7 +28,7 @@ from backend.services.messaging.message_service import MessageService
 
 
 class TeamServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling teams """
+    """Custom Exception to notify callers an error occurred when handling teams"""
 
     def __init__(self, message):
         if current_app:
@@ -36,7 +36,7 @@ class TeamServiceError(Exception):
 
 
 class TeamJoinNotAllowed(Exception):
-    """ Custom Exception to notify bad user level on joining team """
+    """Custom Exception to notify bad user level on joining team"""
 
     def __init__(self, message):
         if current_app:
@@ -52,7 +52,8 @@ class TeamService:
 
         if TeamService.is_user_team_member(team.id, user.id):
             raise TeamJoinNotAllowed(
-                "User is already a member of this team or has already requested to join"
+                "UserAlreadyInList- "
+                + "User is already a member of this team or has already requested to join"
             )
 
         if is_manager:
@@ -67,7 +68,9 @@ class TeamService:
             TeamService.add_team_member(team_id, user.id, role, True)
         else:
             if user.id != requesting_user:
-                raise TeamJoinNotAllowed("User not allowed to join team")
+                raise TeamJoinNotAllowed(
+                    "UserJoinDisallowed- User not allowed to join team"
+                )
 
             role = TeamMemberFunctions.MEMBER.value
 
@@ -348,7 +351,7 @@ class TeamService:
 
     @staticmethod
     def get_project_teams_as_dto(project_id: int) -> TeamsListDTO:
-        """ Gets all the teams for a specified project """
+        """Gets all the teams for a specified project"""
         project_teams = ProjectTeams.query.filter(
             ProjectTeams.project_id == project_id
         ).all()
@@ -423,7 +426,7 @@ class TeamService:
 
     @staticmethod
     def assert_validate_organisation(org_id: int):
-        """ Makes sure an organisation exists """
+        """Makes sure an organisation exists"""
         try:
             OrganisationService.get_organisation_by_id(org_id)
         except NotFound:
@@ -431,7 +434,7 @@ class TeamService:
 
     @staticmethod
     def assert_validate_members(team_dto: TeamDTO):
-        """ Validates that the users exist"""
+        """Validates that the users exist"""
         if len(team_dto.members) == 0:
             raise TeamServiceError("Must have at least one member")
 
@@ -516,7 +519,7 @@ class TeamService:
 
     @staticmethod
     def delete_team(team_id: int):
-        """ Deletes a team """
+        """Deletes a team"""
         team = TeamService.get_team_by_id(team_id)
 
         if team.can_be_deleted():
@@ -526,7 +529,7 @@ class TeamService:
 
     @staticmethod
     def check_team_membership(project_id: int, allowed_roles: list, user_id: int):
-        """ Given a project and permitted team roles, check user's membership in the team list """
+        """Given a project and permitted team roles, check user's membership in the team list"""
         teams_dto = TeamService.get_project_teams_as_dto(project_id)
         teams_allowed = [
             team_dto for team_dto in teams_dto.teams if team_dto.role in allowed_roles

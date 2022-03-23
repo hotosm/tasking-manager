@@ -53,7 +53,7 @@ class ProjectsCampaignsAPI(Resource):
             ProjectAdminService.is_user_action_permitted_on_project(
                 token_auth.current_user(), project_id
             )
-        except ValueError as e:
+        except ValueError:
             return {
                 "Error": "User is not a manager of the project",
                 "SubCode": "UserPermissionError",
@@ -158,7 +158,7 @@ class ProjectsCampaignsAPI(Resource):
             ProjectAdminService.is_user_action_permitted_on_project(
                 token_auth.current_user(), project_id
             )
-        except ValueError as e:
+        except ValueError:
             return {
                 "Error": "User is not a manager of the project",
                 "SubCode": "UserPermissionError",

@@ -57,7 +57,7 @@ class ProjectAdminService:
             user = UserService.get_user_by_id(user_id)
             raise (
                 ProjectAdminServiceError(
-                    f"User {user.username} is not permitted to create project"
+                    f"NotPermittedToCreate- User {user.username} is not permitted to create project"
                 )
             )
 
@@ -129,6 +129,7 @@ class ProjectAdminService:
         if project_dto.license_id:
             ProjectAdminService._validate_imagery_licence(project_dto.license_id)
 
+        # To be handled before reaching this function
         if ProjectAdminService.is_user_action_permitted_on_project(
             authenticated_user_id, project_id
         ):
@@ -148,7 +149,7 @@ class ProjectAdminService:
         try:
             LicenseService.get_license_as_dto(license_id)
         except NotFound:
-            raise ProjectAdminServiceError(f"LicenseId {license_id} not found")
+            raise ProjectAdminServiceError(f"RequireLicenseId- LicenseId {license_id} not found")
 
     @staticmethod
     def delete_project(project_id: int, authenticated_user_id: int):
@@ -166,11 +167,11 @@ class ProjectAdminService:
                 project.delete()
             else:
                 raise ProjectAdminServiceError(
-                    "Project has mapped tasks, cannot be deleted"
+                    "HasMappedTasks- Project has mapped tasks, cannot be deleted"
                 )
         else:
             raise ProjectAdminServiceError(
-                "User does not have permissions to delete project"
+                "DeletePermissionError- User does not have permissions to delete project"
             )
 
     @staticmethod
@@ -212,12 +213,12 @@ class ProjectAdminService:
         tasks = geojson.loads(json.dumps(tasks_geojson))
 
         if type(tasks) is not geojson.FeatureCollection:
-            raise InvalidGeoJson("Tasks: Invalid GeoJson must be FeatureCollection")
+            raise InvalidGeoJson("MustBeFeatureCollection- Invalid: GeoJson must be FeatureCollection")
 
         is_valid_geojson = geojson.is_valid(tasks)
         if is_valid_geojson["valid"] == "no":
             raise InvalidGeoJson(
-                f"Tasks: Invalid FeatureCollection - {is_valid_geojson['message']}"
+                f"InvalidFeatureCollection- {is_valid_geojson['message']}"
             )
 
         task_count = 1
@@ -250,7 +251,7 @@ class ProjectAdminService:
 
         if default_info is None:
             raise ProjectAdminServiceError(
-                "Project Info for Default Locale not provided"
+                "InfoForLocaleRequired- Project Info for Default Locale not provided"
             )
 
         for attr, value in default_info.items():
@@ -259,7 +260,7 @@ class ProjectAdminService:
 
             if not value:
                 raise (
-                    ProjectAdminServiceError(f"{attr} not provided for Default Locale")
+                    ProjectAdminServiceError(f"MissingRequiredAttribute- {attr} not provided for Default Locale")
                 )
 
         return True  # Indicates valid default locale for unit testing

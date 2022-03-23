@@ -193,7 +193,7 @@ class MappingService:
         """Adds the comment to the task history"""
         task = Task.get(task_comment.task_id, task_comment.project_id)
         if task is None:
-            raise MappingServiceError(f"Task {task_comment.task_id} not found")
+            raise NotFound(f"Task {task_comment.task_id} not found")
 
         task.set_task_history(
             TaskAction.COMMENT, task_comment.user_id, task_comment.comment

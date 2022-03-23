@@ -538,17 +538,17 @@ class Task(db.Model):
         :raises InvalidGeoJson, InvalidData
         """
         if type(task_feature) is not geojson.Feature:
-            raise InvalidGeoJson("Task: Invalid GeoJson should be a feature")
+            raise InvalidGeoJson("MustBeFeature- Invalid GeoJson should be a feature")
 
         task_geometry = task_feature.geometry
 
         if type(task_geometry) is not geojson.MultiPolygon:
-            raise InvalidGeoJson("Task: Geometry must be a MultiPolygon")
+            raise InvalidGeoJson("MustBeMultiPloygon- Geometry must be a MultiPolygon")
 
         is_valid_geojson = geojson.is_valid(task_geometry)
         if is_valid_geojson["valid"] == "no":
             raise InvalidGeoJson(
-                f"Task: Invalid MultiPolygon - {is_valid_geojson['message']}"
+                f"InvalidMultiPolygon- {is_valid_geojson['message']}"
             )
 
         task = cls()
@@ -558,7 +558,7 @@ class Task(db.Model):
             task.zoom = task_feature.properties["zoom"]
             task.is_square = task_feature.properties["isSquare"]
         except KeyError as e:
-            raise InvalidData(f"Task: Expected property not found: {str(e)}")
+            raise InvalidData(f"PropertyNotFound: Expected property not found: {str(e)}")
 
         if "extra_properties" in task_feature.properties:
             task.extra_properties = json.dumps(
