@@ -120,7 +120,10 @@ class ProjectsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch project", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to fetch project",
+                "SubCode": "InternalServerError",
+            }, 500
         finally:
             # this will try to unlock tasks that have been locked too long
             try:
@@ -214,7 +217,10 @@ class ProjectsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Project PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to create project", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to create project",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @token_auth.login_required
     def head(self, project_id):
@@ -268,7 +274,10 @@ class ProjectsRestAPI(Resource):
         except Exception as e:
             error_msg = f"ProjectsRestAPI HEAD - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch project", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to fetch project",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @token_auth.login_required
     def patch(self, project_id):
@@ -424,7 +433,10 @@ class ProjectsRestAPI(Resource):
         except Exception as e:
             error_msg = f"ProjectsRestAPI PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to update project", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to update project",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @token_auth.login_required
     def delete(self, project_id):
@@ -481,7 +493,10 @@ class ProjectsRestAPI(Resource):
         except Exception as e:
             error_msg = f"ProjectsRestAPI DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to delete project", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to delete project",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectSearchBase(Resource):
@@ -700,7 +715,10 @@ class ProjectsAllAPI(ProjectSearchBase):
         except Exception as e:
             error_msg = f"Projects GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch projects", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to fetch projects",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsQueriesBboxAPI(Resource):
@@ -779,7 +797,10 @@ class ProjectsQueriesBboxAPI(Resource):
             search_dto.validate()
         except Exception as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to fetch projects", "SubCode": "InternalServerError"}, 400
+            return {
+                "Error": "Unable to fetch projects",
+                "SubCode": "InternalServerError",
+            }, 400
         try:
             geojson = ProjectSearchService.get_projects_geojson(search_dto)
             return geojson, 200
@@ -790,7 +811,10 @@ class ProjectsQueriesBboxAPI(Resource):
         except Exception as e:
             error_msg = f"ProjectsQueriesBboxAPI GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch projects", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to fetch projects",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsQueriesOwnerAPI(ProjectSearchBase):
@@ -897,7 +921,10 @@ class ProjectsQueriesTouchedAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch projects", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to fetch projects",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsQueriesSummaryAPI(Resource):
@@ -939,7 +966,10 @@ class ProjectsQueriesSummaryAPI(Resource):
         except Exception as e:
             error_msg = f"Project Summary GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch project summary", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to fetch project summary",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsQueriesNoGeometriesAPI(Resource):
@@ -1007,7 +1037,10 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch project", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to fetch project",
+                "SubCode": "InternalServerError",
+            }, 500
         finally:
             # this will try to unlock tasks that have been locked too long
             try:
@@ -1128,7 +1161,10 @@ class ProjectsQueriesAoiAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch project", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to fetch project",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsQueriesPriorityAreasAPI(Resource):
@@ -1167,7 +1203,10 @@ class ProjectsQueriesPriorityAreasAPI(Resource):
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch project", "SubCode": "InternalServerError"}, 500
+            return {
+                "Error": "Unable to fetch project",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsQueriesFeaturedAPI(Resource):

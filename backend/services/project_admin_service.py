@@ -149,7 +149,9 @@ class ProjectAdminService:
         try:
             LicenseService.get_license_as_dto(license_id)
         except NotFound:
-            raise ProjectAdminServiceError(f"RequireLicenseId- LicenseId {license_id} not found")
+            raise ProjectAdminServiceError(
+                f"RequireLicenseId- LicenseId {license_id} not found"
+            )
 
     @staticmethod
     def delete_project(project_id: int, authenticated_user_id: int):
@@ -213,7 +215,9 @@ class ProjectAdminService:
         tasks = geojson.loads(json.dumps(tasks_geojson))
 
         if type(tasks) is not geojson.FeatureCollection:
-            raise InvalidGeoJson("MustBeFeatureCollection- Invalid: GeoJson must be FeatureCollection")
+            raise InvalidGeoJson(
+                "MustBeFeatureCollection- Invalid: GeoJson must be FeatureCollection"
+            )
 
         is_valid_geojson = geojson.is_valid(tasks)
         if is_valid_geojson["valid"] == "no":
@@ -260,7 +264,9 @@ class ProjectAdminService:
 
             if not value:
                 raise (
-                    ProjectAdminServiceError(f"MissingRequiredAttribute- {attr} not provided for Default Locale")
+                    ProjectAdminServiceError(
+                        f"MissingRequiredAttribute- {attr} not provided for Default Locale"
+                    )
                 )
 
         return True  # Indicates valid default locale for unit testing

@@ -93,13 +93,16 @@ class ProjectsTeamsAPI(Resource):
                 description: Internal Server Error
         """
         if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
-            return {"Error": "User is not an admin or a manager for the team", "SubCode": "UserPermissionError"}, 401
+            return {
+                "Error": "User is not an admin or a manager for the team",
+                "SubCode": "UserPermissionError",
+            }, 401
 
         try:
             role = request.get_json(force=True)["role"]
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": str(e),  "SubCode": "InvalidData"}, 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             TeamService.add_team_project(team_id, project_id, role)
