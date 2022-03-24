@@ -338,7 +338,7 @@ const Resources = {
     },
     Properties: {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: 'ami-00fa576fb10a52a1c',
+      ImageId: 'ami-01079af93e791f059',
       InstanceType: 'c5d.large',
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
