@@ -46,3 +46,6 @@ ehthumbs.db
 Thumbs.db
 .elasticbeanstalk/
 venv_aws/
+
+# Terraform
+.terraform*
