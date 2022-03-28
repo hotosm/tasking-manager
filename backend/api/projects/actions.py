@@ -127,20 +127,16 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             return {"Error": "Unable to send message to mappers"}, 400
 
         try:
-            user_has_permission = (
-                ProjectAdminService.is_user_action_permitted_on_project(
-                    authenticated_user_id, project_id
-                )
-            )
-            if user_has_permission:
-                threading.Thread(
-                    target=MessageService.send_message_to_all_contributors,
-                    args=(project_id, message_dto),
-                ).start()
-
-                return {"Success": "Messages started"}, 200
-            else:
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
                 raise ValueError("User is not a manager of the project")
+
+            threading.Thread(
+                target=MessageService.send_message_to_all_contributors,
+                args=(project_id, message_dto),
+            ).start()
+            return {"Success": "Messages started"}, 200
         except ValueError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
@@ -186,9 +182,10 @@ class ProjectsActionsFeatureAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"FeaturedProjects POST: {str(e)}"
             return {"Error": error_msg}, 403
@@ -243,9 +240,11 @@ class ProjectsActionsUnFeatureAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            )
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"FeaturedProjects POST: {str(e)}"
             return {"Error": error_msg}, 403
@@ -310,9 +309,11 @@ class ProjectsActionsSetInterestsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            )
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"ProjectsActionsSetInterestsAPI POST: {str(e)}"
             return {"Error": error_msg}, 403

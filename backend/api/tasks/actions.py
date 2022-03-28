@@ -607,9 +607,10 @@ class TasksActionsMapAllAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"TasksActionsMapAllAPI POST: {str(e)}"
             return {"Error": error_msg}, 403
@@ -658,9 +659,10 @@ class TasksActionsValidateAllAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"TasksActionsValidateAllAPI POST: {str(e)}"
             return {"Error": error_msg}, 403
@@ -709,9 +711,10 @@ class TasksActionsInvalidateAllAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"TasksActionsInvalidateAllAPI POST: {str(e)}"
             return {"Error": error_msg}, 403
@@ -760,9 +763,10 @@ class TasksActionsResetBadImageryAllAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"TasksActionsResetBadImageryAllAPI POST: {str(e)}"
             return {"Error": error_msg}, 403
@@ -813,9 +817,11 @@ class TasksActionsResetAllAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            ProjectAdminService.is_user_action_permitted_on_project(
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"TasksActionsResetAllAPI POST: {str(e)}"
             return {"Error": error_msg}, 403

@@ -50,9 +50,11 @@ class ProjectsCampaignsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            )
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"ProjectsCampaignsAPI POST: {str(e)}"
             return {"Error": error_msg}, 403
@@ -153,9 +155,11 @@ class ProjectsCampaignsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            )
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"ProjectsCampaignsAPI DELETE: {str(e)}"
             return {"Error": error_msg}, 403

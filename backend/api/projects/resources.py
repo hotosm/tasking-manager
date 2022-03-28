@@ -392,13 +392,13 @@ class ProjectsRestAPI(Resource):
                 description: Internal Server Error
         """
         authenticated_user_id = token_auth.current_user()
-        try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                authenticated_user_id, project_id
-            )
-        except ValueError as e:
-            error_msg = f"ProjectsRestAPI PATCH: {str(e)}"
-            return {"Error": error_msg}, 403
+        # try:
+        #     ProjectAdminService.is_user_action_permitted_on_project(
+        #         authenticated_user_id, project_id
+        #     )
+        # except ValueError as e:
+        #     error_msg = f"ProjectsRestAPI PATCH: {str(e)}"
+        #     return {"Error": error_msg}, 403
 
         try:
             project_dto = ProjectDTO(request.get_json())
@@ -458,9 +458,10 @@ class ProjectsRestAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
+            ):
+                raise ValueError("User is not a manager of the project")
         except ValueError as e:
             error_msg = f"ProjectsRestAPI DELETE: {str(e)}"
             return {"Error": error_msg}, 403
