@@ -46,11 +46,14 @@ class UsersStatisticsAPI(Resource, JSONEncoder):
             stats_dto = UserService.get_detailed_stats(username)
             return stats_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "User not found"}, 404
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch user statistics"}, 500
+            return {
+                "Error": "Unable to fetch user statistics",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class UsersStatisticsInterestsAPI(Resource):
@@ -87,11 +90,11 @@ class UsersStatisticsInterestsAPI(Resource):
             rate = InterestService.compute_contributions_rate(user_id)
             return rate.to_primitive(), 200
         except NotFound:
-            return {"Error": "User not Found"}, 404
+            return {"Error": "User not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Interest GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class UsersStatisticsAllAPI(Resource):
@@ -134,19 +137,24 @@ class UsersStatisticsAllAPI(Resource):
             start_date = validate_date_input(request.args.get("startDate"))
             end_date = validate_date_input(request.args.get("endDate", date.today()))
             if not (start_date):
-                raise KeyError("Missing start date parameter")
+                raise KeyError("MissingDate- Missing start date parameter")
             if end_date < start_date:
-                raise ValueError("Start date must be earlier than end date")
+                raise ValueError(
+                    "InvalidStartDate- Start date must be earlier than end date"
+                )
             if (end_date - start_date) > timedelta(days=366 * 3):
-                raise ValueError("Date range can not be bigger than 3 years")
+                raise ValueError(
+                    "DateRangeGreaterThan3- Date range can not be bigger than 3 years"
+                )
 
             stats = StatsService.get_all_users_statistics(start_date, end_date)
             return stats.to_primitive(), 200
         except (KeyError, ValueError) as e:
-            error_msg = f"User Statistics GET - {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
             error_msg = f"User Statistics GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch user stats"}, 500
+            return {
+                "Error": "Unable to fetch user stats",
+                "SubCode": "InternalServerError",
+            }, 500

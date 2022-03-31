@@ -1,12 +1,12 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
-
+import { FormattedMessage } from 'react-intl';
+import '@testing-library/jest-dom/extend-expect';
 import {
   LockedTaskModalContent,
   SameProjectLock,
   AnotherProjectLock,
   LicenseError,
-  JosmError,
   LockError,
 } from '../lockedTasks';
 import { createComponentWithReduxAndIntl } from '../../../utils/testWithIntl';
@@ -47,7 +47,10 @@ describe('test LockedTaskModalContent', () => {
       store.dispatch({ type: 'SET_TASKS_STATUS', status: null });
     });
     const instance = createComponentWithReduxAndIntl(
-      <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'Conflict'} />,
+      <LockedTaskModalContent
+        project={{ projectId: 1, licenseId: 123 }}
+        error={'UserLicenseError'}
+      />,
     );
     const element = instance.root;
     expect(element.findByType(LicenseError)).toBeTruthy();
@@ -63,7 +66,37 @@ describe('test LockedTaskModalContent', () => {
       <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'JOSM'} />,
     );
     const element = instance.root;
-    expect(element.findByType(JosmError)).toBeTruthy();
+    expect(element.findByType(LockError)).toBeTruthy();
+    expect(element.findAllByType(FormattedMessage).length).toBe(3);
+  });
+
+  it('return forbidden to map the task message', () => {
+    act(() => {
+      store.dispatch({ type: 'SET_PROJECT', project: null });
+      store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
+      store.dispatch({ type: 'SET_TASKS_STATUS', status: null });
+    });
+    const instance = createComponentWithReduxAndIntl(
+      <LockedTaskModalContent project={{ projectId: 1, licenseId: 123 }} error={'FORBIDDEN'} />,
+    );
+    const element = instance.root;
+    expect(element.findByType(LockError)).toBeTruthy();
+  });
+
+  it('return no map tasks selected message', () => {
+    act(() => {
+      store.dispatch({ type: 'SET_PROJECT', project: null });
+      store.dispatch({ type: 'SET_LOCKED_TASKS', tasks: [] });
+      store.dispatch({ type: 'SET_TASKS_STATUS', status: null });
+    });
+    const instance = createComponentWithReduxAndIntl(
+      <LockedTaskModalContent
+        project={{ projectId: 1, licenseId: 123 }}
+        error={'noMappedTasksSelected'}
+      />,
+    );
+    const element = instance.root;
+    expect(element.findByType(LockError)).toBeTruthy();
   });
 
   it('return LockError message', () => {

@@ -54,7 +54,7 @@ class CommentsProjectsRestAPI(Resource):
         """
         authenticated_user_id = token_auth.current_user()
         if UserService.is_user_blocked(authenticated_user_id):
-            return {"Error": "User is on read only mode."}, 403
+            return {"Error": "User is on read only mode.", "SubCode": "ReadOnly"}, 403
 
         try:
             chat_dto = ChatMessageDTO(request.get_json())
@@ -63,7 +63,10 @@ class CommentsProjectsRestAPI(Resource):
             chat_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to add chat message"}, 400
+            return {
+                "Error": "Unable to add chat message",
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             project_messages = ChatService.post_message(
@@ -71,12 +74,14 @@ class CommentsProjectsRestAPI(Resource):
             )
             return project_messages.to_primitive(), 201
         except ValueError as e:
-            error_msg = f"CommentsProjectsRestAPI POST: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"Chat POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to add chat message"}, 500
+            return {
+                "Error": "Unable to add chat message",
+                "SubCode": "InternalServerError",
+            }, 500
 
     def get(self, project_id):
         """
@@ -115,7 +120,7 @@ class CommentsProjectsRestAPI(Resource):
             ProjectService.exists(project_id)
         except NotFound as e:
             current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found"}, 404
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
 
         try:
             page = int(request.args.get("page")) if request.args.get("page") else 1
@@ -123,11 +128,14 @@ class CommentsProjectsRestAPI(Resource):
             project_messages = ChatService.get_messages(project_id, page, per_page)
             return project_messages.to_primitive(), 200
         except NotFound:
-            return {"Error": "Project not found"}, 404
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Chat GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch chat messages"}, 500
+            return {
+                "Error": "Unable to fetch chat messages",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class CommentsTasksRestAPI(Resource):
@@ -194,19 +202,22 @@ class CommentsTasksRestAPI(Resource):
             task_comment.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to add comment"}, 400
+            return {"Error": "Unable to add comment", "SubCode": "InvalidData"}, 400
 
         try:
             task = MappingService.add_task_comment(task_comment)
             return task.to_primitive(), 201
         except NotFound:
-            return {"Error": "Task Not Found"}, 404
+            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError:
             return {"Error": "Task update failed"}, 403
         except Exception as e:
             error_msg = f"Task Comment API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Task update failed"}, 500
+            return {
+                "Error": "Task update failed",
+                "SubCode": "InternalServerError",
+            }, 500
 
     def get(self, project_id, task_id):
         """
@@ -269,7 +280,10 @@ class CommentsTasksRestAPI(Resource):
             task_comment.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to fetch task comments"}, 400
+            return {
+                "Error": "Unable to fetch task comments",
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             # NEW FUNCTION HAS TO BE ADDED
@@ -277,10 +291,10 @@ class CommentsTasksRestAPI(Resource):
             # return task.to_primitive(), 200
             return
         except NotFound:
-            return {"Error": "Task Not Found"}, 404
+            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except MappingServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
             error_msg = f"Task Comment API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

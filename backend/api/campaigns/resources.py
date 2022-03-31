@@ -53,11 +53,11 @@ class CampaignsRestAPI(Resource):
                 campaign = CampaignService.get_campaign_as_dto(campaign_id, 0)
             return campaign.to_primitive(), 200
         except NotFound:
-            return {"Error": "No campaign found"}, 404
+            return {"Error": "No campaign found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Campaign GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def patch(self, campaign_id):
@@ -129,27 +129,27 @@ class CampaignsRestAPI(Resource):
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"CampaignsRestAPI PATCH: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
         try:
             campaign_dto = CampaignDTO(request.get_json())
             campaign_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             campaign = CampaignService.update_campaign(campaign_dto, campaign_id)
             return {"Success": "Campaign {} updated".format(campaign.id)}, 200
         except NotFound:
-            return {"Error": "Campaign not found"}, 404
+            return {"Error": "Campaign not found", "SubCode": "NotFound"}, 404
         except ValueError:
             error_msg = "Campaign PATCH - name already exists"
-            return {"Error": error_msg}, 409
+            return {"Error": error_msg, "SubCode": "NameExists"}, 409
         except Exception as e:
             error_msg = f"Campaign PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def delete(self, campaign_id):
@@ -197,18 +197,18 @@ class CampaignsRestAPI(Resource):
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"CampaignsRestAPI DELETE: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
         try:
             campaign = CampaignService.get_campaign(campaign_id)
             CampaignService.delete_campaign(campaign.id)
             return {"Success": "Campaign deleted"}, 200
         except NotFound:
-            return {"Error": "Campaign not found"}, 404
+            return {"Error": "Campaign not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Campaign DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class CampaignsAllAPI(Resource):
@@ -232,7 +232,7 @@ class CampaignsAllAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def post(self):
@@ -298,22 +298,21 @@ class CampaignsAllAPI(Resource):
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"CampaignsAllAPI POST: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
         try:
             campaign_dto = NewCampaignDTO(request.get_json())
             campaign_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             campaign = CampaignService.create_campaign(campaign_dto)
             return {"campaignId": campaign.id}, 200
         except ValueError as e:
-            error_msg = f"Campaign POST - {str(e)}"
-            return {"Error": error_msg}, 409
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 409
         except Exception as e:
             error_msg = f"Campaign POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

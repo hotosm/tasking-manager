@@ -35,11 +35,17 @@ class IssuesRestAPI(Resource):
             category_dto = MappingIssueCategoryService.get_category_as_dto(category_id)
             return category_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "Mapping-issue category Not Found"}, 404
+            return {
+                "Error": "Mapping-issue category Not Found",
+                "SubCode": "NotFound",
+            }, 404
         except Exception as e:
             error_msg = f"Mapping-issue category PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch mapping issue category"}, 500
+            return {
+                "Error": "Unable to fetch mapping issue category",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -90,7 +96,10 @@ class IssuesRestAPI(Resource):
             category_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to update mapping issue category"}, 400
+            return {
+                "Error": "Unable to update mapping issue category",
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             updated_category = (
@@ -98,11 +107,17 @@ class IssuesRestAPI(Resource):
             )
             return updated_category.to_primitive(), 200
         except NotFound:
-            return {"Error": "Mapping-issue category Not Found"}, 404
+            return {
+                "Error": "Mapping-issue category Not Found",
+                "SubCode": "NotFound",
+            }, 404
         except Exception as e:
             error_msg = f"Mapping-issue category PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to update mapping issue category"}, 500
+            return {
+                "Error": "Unable to update mapping issue category",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -144,11 +159,17 @@ class IssuesRestAPI(Resource):
             MappingIssueCategoryService.delete_mapping_issue_category(category_id)
             return {"Success": "Mapping-issue category deleted"}, 200
         except NotFound:
-            return {"Error": "Mapping-issue category Not Found"}, 404
+            return {
+                "Error": "Mapping-issue category Not Found",
+                "SubCode": "NotFound",
+            }, 404
         except Exception as e:
             error_msg = f"Mapping-issue category DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to delete mapping issue category"}, 500
+            return {
+                "Error": "Unable to delete mapping issue category",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class IssuesAllAPI(Resource):
@@ -181,7 +202,10 @@ class IssuesAllAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch mapping issue categories"}, 500
+            return {
+                "Error": "Unable to fetch mapping issue categories",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -226,7 +250,10 @@ class IssuesAllAPI(Resource):
             category_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to create a new mapping issue category"}, 400
+            return {
+                "Error": "Unable to create a new mapping issue category",
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             new_category_id = MappingIssueCategoryService.create_mapping_issue_category(
@@ -236,4 +263,7 @@ class IssuesAllAPI(Resource):
         except Exception as e:
             error_msg = f"Mapping-issue category POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to create a new mapping issue category"}, 500
+            return {
+                "Error": "Unable to create a new mapping issue category",
+                "SubCode": "InternalServerError",
+            }, 500
