@@ -85,7 +85,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
           ).length,
       );
       if (!mappedTasks.length) {
-        setLockError('No mapped tasks selected');
+        setLockError('noMappedTasksSelected');
       } else {
         setIsPending(true);
         pushToLocalJSONAPI(

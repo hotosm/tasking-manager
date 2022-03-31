@@ -60,7 +60,10 @@ class TeamsActionsJoinAPI(Resource):
             role = post_data.get("role", None)
         except (DataError, KeyError) as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {
+                "Error": str(e),
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             authenticated_user_id = token_auth.current_user()
@@ -70,11 +73,11 @@ class TeamsActionsJoinAPI(Resource):
             else:
                 return {"Success": "Request to join the team sent successfully."}, 200
         except TeamJoinNotAllowed as e:
-            return {"Error": str(e)}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"User POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -138,7 +141,10 @@ class TeamsActionsJoinAPI(Resource):
             role = json_data.get("role", "member")
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {
+                "Error": str(e),
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             authenticated_user_id = token_auth.current_user()
@@ -151,7 +157,8 @@ class TeamsActionsJoinAPI(Resource):
                 else:
                     return (
                         {
-                            "Error": "You don't have permissions to approve this join team request"
+                            "Error": "You don't have permissions to approve this join team request",
+                            "SubCode": "ApproveJoinError",
                         },
                         403,
                     )
@@ -163,7 +170,10 @@ class TeamsActionsJoinAPI(Resource):
         except Exception as e:
             error_msg = f"Team Join PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {
+                "Error": error_msg,
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class TeamsActionsLeaveAPI(Resource):
@@ -225,16 +235,20 @@ class TeamsActionsLeaveAPI(Resource):
                     {
                         "Error": "You don't have permissions to remove {} from this team.".format(
                             username
-                        )
+                        ),
+                        "SubCode": "RemoveUserError",
                     },
                     403,
                 )
         except NotFound:
-            return {"Error": "No team member found"}, 404
+            return {"Error": "No team member found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"TeamMembers DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {
+                "Error": error_msg,
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class TeamsActionsMessageMembersAPI(Resource):
@@ -301,12 +315,20 @@ class TeamsActionsMessageMembersAPI(Resource):
             message_dto.from_user_id = authenticated_user_id
             message_dto.validate()
             if not message_dto.message.strip() or not message_dto.subject.strip():
-                raise DataError({"Validation": "Empty message not allowed"})
+                raise DataError(
+                    {"Error": "Empty message not allowed", "SubCode": "EmptyMessage"}
+                )
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Request payload did not match validation"}, 400
+            return {
+                "Error": "Request payload did not match validation",
+                "SubCode": "InvalidData",
+            }, 400
         except ValueError:
-            return {"Error": "Unauthorised to send message to team members"}, 403
+            return {
+                "Error": "Unauthorised to send message to team members",
+                "SubCode": "UserNotPermitted",
+            }, 403
 
         try:
             threading.Thread(
@@ -320,4 +342,7 @@ class TeamsActionsMessageMembersAPI(Resource):
         except Exception as e:
             error_msg = f"Send message all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to send messages to team members"}, 500
+            return {
+                "Error": "Unable to send messages to team members",
+                "SubCode": "InternalServerError",
+            }, 500

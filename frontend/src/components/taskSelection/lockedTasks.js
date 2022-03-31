@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from '@reach/router';
+import { Link, navigate } from '@reach/router';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useSelector } from 'react-redux';
-import { navigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -117,45 +116,22 @@ export const LicenseError = ({ id, close, lockTasks }) => {
   );
 };
 
-export function LockError() {
+export function LockError({ error, close }) {
   return (
     <>
       <h3 className="barlow-condensed f3 fw6 mv0">
-        <FormattedMessage {...messages.lockError} />
+        {messages[`${error}Error`] ? (
+          <FormattedMessage {...messages[`${error}Error`]} />
+        ) : (
+          <FormattedMessage {...messages.lockError} />
+        )}
       </h3>
       <div className="mv4 lh-title">
-        <FormattedMessage {...messages.lockErrorDescription} />
-      </div>
-    </>
-  );
-}
-
-export function JosmError({ close }: Object) {
-  return (
-    <>
-      <h3 className="barlow-condensed f3 fw6 mv0">
-        <FormattedMessage {...messages.josmError} />
-      </h3>
-      <div className="mv4 lh-title">
-        <FormattedMessage {...messages.josmErrorDescription} />
-      </div>
-      <div className="w-100 pt3">
-        <Button onClick={() => close()} className="bg-red white mr2">
-          <FormattedMessage {...messages.closeModal} />
-        </Button>
-      </div>
-    </>
-  );
-}
-
-export function NoMappedTasksError({ close }: Object) {
-  return (
-    <>
-      <h3 className="barlow-condensed f3 fw6 mv0">
-        <FormattedMessage {...messages.noMappedTasksSelected} />
-      </h3>
-      <div className="mv4 lh-title">
-        <FormattedMessage {...messages.noMappedTasksSelectedDescription} />
+        {messages[`${error}ErrorDescription`] ? (
+          <FormattedMessage {...messages[`${error}ErrorDescription`]} />
+        ) : (
+          <FormattedMessage {...messages.lockErrorDescription} />
+        )}
       </div>
       <div className="w-100 pt3">
         <Button onClick={() => close()} className="bg-red white mr2">
@@ -169,21 +145,13 @@ export function NoMappedTasksError({ close }: Object) {
 export function LockedTaskModalContent({ project, error, close, lockTasks }: Object) {
   const lockedTasks = useGetLockedTasks();
   const action = lockedTasks.get('status') === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
-  const licenseError =
-    ['Conflict', 'CONFLICT', 'conflict'].includes(error) && !lockedTasks.get('project');
-  const josmError = error === 'JOSM' && !lockedTasks.get('project');
-  const noMappedTasksSelectedError = error === 'No mapped tasks selected';
+  const licenseError = error === 'UserLicenseError' && !lockedTasks.get('project');
+
   return (
     <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
-      {noMappedTasksSelectedError && <NoMappedTasksError close={close} />}
       {licenseError && <LicenseError id={project.licenseId} close={close} lockTasks={lockTasks} />}
-      {josmError && <JosmError close={close} />}
-
-      {/* User has not tasks locked, but other error happened */}
-      {!lockedTasks.get('project') &&
-        !licenseError &&
-        !josmError &&
-        !noMappedTasksSelectedError && <LockError />}
+      {/* Other error happened */}
+      {!lockedTasks.get('project') && !licenseError && <LockError error={error} close={close} />}
       {/* User has tasks locked on another project */}
       {lockedTasks.get('project') && lockedTasks.get('project') !== project.projectId && (
         <AnotherProjectLock

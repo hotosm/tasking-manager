@@ -10,7 +10,7 @@ from backend.services.users.authentication_service import (
 
 @osm.tokengetter
 def get_oauth_token():
-    """ Required by Flask-OAuthlib.  Pulls oauth token from the session so we can make authenticated requests"""
+    """Required by Flask-OAuthlib.  Pulls oauth token from the session so we can make authenticated requests"""
     if "osm_oauth" in session:
         resp = session["osm_oauth"]
         return resp["oauth_token"], resp["oauth_token_secret"]
@@ -92,7 +92,7 @@ class SystemAuthenticationCallbackAPI(Resource):
             user_params["session"] = osm_resp
             return user_params, 200
         except AuthServiceError:
-            return {"Error": "Unable to authenticate"}, 500
+            return {"Error": "Unable to authenticate", "SubCode": "AuthError"}, 500
 
 
 class SystemAuthenticationEmailAPI(Resource):
@@ -126,8 +126,11 @@ class SystemAuthenticationEmailAPI(Resource):
 
             return {"Status": "OK"}, 200
         except AuthServiceError:
-            return {"Error": "Unable to authenticate"}, 403
+            return {"Error": "Unable to authenticate", "SubCode": "AuthError"}, 403
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to authenticate"}, 500
+            return {
+                "Error": "Unable to authenticate",
+                "SubCode": "InternalServerError",
+            }, 500

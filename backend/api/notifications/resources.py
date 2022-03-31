@@ -47,14 +47,17 @@ class NotificationsRestAPI(Resource):
                 message_id, token_auth.current_user()
             )
             return user_message.to_primitive(), 200
-        except MessageServiceError:
-            return {"Error": "Unable to fetch message"}, 403
+        except MessageServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
-            return {"Error": "No messages found"}, 404
+            return {"Error": "No messages found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Messages GET all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch message"}, 500
+            return {
+                "Error": "Unable to fetch message",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -92,14 +95,17 @@ class NotificationsRestAPI(Resource):
         try:
             MessageService.delete_message(message_id, token_auth.current_user())
             return {"Success": "Message deleted"}, 200
-        except MessageServiceError:
-            return {"Error": "Unable to delete message"}, 403
+        except MessageServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except NotFound:
-            return {"Error": "No messages found"}, 404
+            return {"Error": "No messages found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Messages GET all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to delete message"}, 500
+            return {
+                "Error": "Unable to delete message",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class NotificationsAllAPI(Resource):
@@ -193,7 +199,10 @@ class NotificationsAllAPI(Resource):
         except Exception as e:
             error_msg = f"Messages GET all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch messages"}, 500
+            return {
+                "Error": "Unable to fetch messages",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class NotificationsQueriesCountUnreadAPI(Resource):
@@ -228,7 +237,10 @@ class NotificationsQueriesCountUnreadAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch messages count"}, 500
+            return {
+                "Error": "Unable to fetch messages count",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class NotificationsQueriesPostUnreadAPI(Resource):
@@ -264,4 +276,7 @@ class NotificationsQueriesPostUnreadAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch messages count"}, 500
+            return {
+                "Error": "Unable to fetch messages count",
+                "SubCode": "InternalServerError",
+            }, 500

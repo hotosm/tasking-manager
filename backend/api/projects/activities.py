@@ -36,7 +36,7 @@ class ProjectsActivitiesAPI(Resource):
             ProjectService.exists(project_id)
         except NotFound as e:
             current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found"}, 404
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
 
         try:
             page = int(request.args.get("page")) if request.args.get("page") else 1
@@ -45,7 +45,10 @@ class ProjectsActivitiesAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch user activity"}, 500
+            return {
+                "Error": "Unable to fetch user activity",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsLastActivitiesAPI(Resource):
@@ -75,7 +78,7 @@ class ProjectsLastActivitiesAPI(Resource):
             ProjectService.exists(project_id)
         except NotFound as e:
             current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found"}, 404
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
 
         try:
             activity = StatsService.get_last_activity(project_id)
@@ -83,4 +86,7 @@ class ProjectsLastActivitiesAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch user activity"}, 500
+            return {
+                "Error": "Unable to fetch user activity",
+                "SubCode": "InternalServerError",
+            }, 500
