@@ -5,7 +5,7 @@ import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { ORG_URL, ORG_NAME, ORG_LOGO } from '../../config';
+import { ORG_URL, ORG_NAME, ORG_LOGO, SERVICE_DESK } from '../../config';
 import logo from '../../assets/img/main-logo.svg';
 import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
@@ -33,6 +33,7 @@ function getMenuItensForUser(userDetails, organisations) {
     { label: messages.manage, link: 'manage', authenticated: true, manager: true },
     { label: messages.learn, link: 'learn', showAlways: true },
     { label: messages.about, link: 'about', showAlways: true },
+    { label: messages.support, link: SERVICE_DESK, showAlways: true, serviceDesk: true },
   ];
   let filteredMenuItems;
   if (userDetails.username) {
@@ -97,9 +98,21 @@ const PopupItems = (props) => {
         .filter((item) => item.authenticated === false || item.showAlways)
         .map((item, n) => (
           <p key={n}>
-            <Link to={item.link} className={props.linkCombo} onClick={props.close}>
-              <FormattedMessage {...item.label} />
-            </Link>
+            {!item.serviceDesk ? (
+              <Link to={item.link} className={props.linkCombo} onClick={props.close}>
+                <FormattedMessage {...item.label} />
+              </Link>
+            ) : (
+              <a
+                href={item.link}
+                target="_blank"
+                rel="noreferrer"
+                className="link mh3 barlow-condensed blue-dark f4 ttu"
+              >
+                <FormattedMessage {...item.label} />
+                <ExternalLinkIcon className="pl2 v-cen" style={{ height: '15px' }} />
+              </a>
+            )}
           </p>
         ))}
       <p className="bb b--grey-light"></p>
@@ -114,6 +127,7 @@ const PopupItems = (props) => {
               </Link>
             </p>
           ))}
+
       {/* user links */}
       {props.userDetails.username && (
         <>
@@ -163,9 +177,23 @@ class Header extends React.Component {
     return (
       <div className="v-mid">
         {filteredMenuItems.map((item, n) => (
-          <TopNavLink to={item.link} key={n} isActive={this.isActive}>
-            <FormattedMessage {...item.label} />
-          </TopNavLink>
+          <>
+            {!item.serviceDesk ? (
+              <TopNavLink to={item.link} key={n} isActive={this.isActive}>
+                <FormattedMessage {...item.label} />
+              </TopNavLink>
+            ) : (
+              <a
+                href={item.link}
+                target="_blank"
+                rel="noreferrer"
+                className="link mh3 barlow-condensed blue-dark f4 ttu"
+              >
+                <FormattedMessage {...item.label} />
+                <ExternalLinkIcon className="pl2 v-cen" style={{ height: '15px' }} />
+              </a>
+            )}
+          </>
         ))}
       </div>
     );

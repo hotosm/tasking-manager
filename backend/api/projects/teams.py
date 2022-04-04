@@ -43,7 +43,7 @@ class ProjectsTeamsAPI(Resource):
         except Exception as e:
             error_msg = f"Team GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def post(self, team_id, project_id):
@@ -93,13 +93,16 @@ class ProjectsTeamsAPI(Resource):
                 description: Internal Server Error
         """
         if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
-            return {"Error": "User is not an admin or a manager for the team"}, 401
+            return {
+                "Error": "User is not an admin or a manager for the team",
+                "SubCode": "UserPermissionError",
+            }, 401
 
         try:
             role = request.get_json(force=True)["role"]
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             TeamService.add_team_project(team_id, project_id, role)
@@ -114,7 +117,7 @@ class ProjectsTeamsAPI(Resource):
         except Exception as e:
             error_msg = f"Project Team POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def patch(self, team_id, project_id):
@@ -169,19 +172,19 @@ class ProjectsTeamsAPI(Resource):
             role = request.get_json(force=True)["role"]
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             TeamService.change_team_role(team_id, project_id, role)
             return {"Status": "Team role updated successfully."}, 200
         except NotFound as e:
-            return {"Error": str(e)}, 404
+            return {"Error": str(e), "SubCode": "NotFound"}, 404
         except TeamServiceError as e:
             return str(e), 402
         except Exception as e:
             error_msg = f"Team-Project PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def delete(self, team_id, project_id):
@@ -223,8 +226,8 @@ class ProjectsTeamsAPI(Resource):
             TeamService.delete_team_project(team_id, project_id)
             return {"Success": True}, 200
         except NotFound:
-            return {"Error": "No team found"}, 404
+            return {"Error": "No team found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"TeamMembers DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

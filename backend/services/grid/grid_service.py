@@ -9,7 +9,7 @@ from backend.models.postgis.utils import InvalidGeoJson
 
 
 class GridServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling projects """
+    """Custom Exception to notify callers an error occurred when handling projects"""
 
     def __init__(self, message):
         if current_app:
@@ -115,12 +115,14 @@ class GridService:
 
         # validate the geometry
         if type(aoi_multi_polygon_geojson) is not geojson.MultiPolygon:
-            raise InvalidGeoJson("Area Of Interest: geometry must be a MultiPolygon")
+            raise InvalidGeoJson(
+                "MustBeMultiPloygon- Area Of Interest: geometry must be a MultiPolygon"
+            )
 
         is_valid_geojson = geojson.is_valid(aoi_multi_polygon_geojson)
         if is_valid_geojson["valid"] == "no":
             raise InvalidGeoJson(
-                f"Area of Interest: Invalid MultiPolygon - {is_valid_geojson['message']}"
+                f"InvalidMultipolygon- Area of Interest: Invalid MultiPolygon - {is_valid_geojson['message']}"
             )
 
         return aoi_multi_polygon_geojson
@@ -154,7 +156,9 @@ class GridService:
         collection = geojson.loads(input, object_hook=geojson.GeoJSON.to_instance)
 
         if not hasattr(collection, "features") or len(collection.features) < 1:
-            raise InvalidGeoJson("Geojson does not contain any features")
+            raise InvalidGeoJson(
+                "MustHaveFeatures- Geojson does not contain any features"
+            )
 
         shapely_features = list(
             (

@@ -59,7 +59,7 @@ class OrganisationsCampaignsAPI(Resource):
                             campaign_id, organisation_id
                         )
                     )
-                    return {"Error": message}, 400
+                    return {"Error": message, "SubCode": "CampaignAlreadyAssigned"}, 400
 
                 CampaignService.create_campaign_organisation(
                     organisation_id, campaign_id
@@ -71,11 +71,14 @@ class OrganisationsCampaignsAPI(Resource):
                 )
                 return {"Success": message}, 200
             else:
-                return {"Error": "User is not a manager of the organisation"}, 403
+                return {
+                    "Error": "User is not a manager of the organisation",
+                    "SubCode": "UserNotPermitted",
+                }, 403
         except Exception as e:
             error_msg = f"Campaign Organisation POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     def get(self, organisation_id):
         """
@@ -112,11 +115,11 @@ class OrganisationsCampaignsAPI(Resource):
             )
             return campaigns.to_primitive(), 200
         except NotFound:
-            return {"Error": "No campaign found"}, 404
+            return {"Error": "No campaign found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Organisation Campaigns GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def delete(self, organisation_id, campaign_id):
@@ -170,10 +173,16 @@ class OrganisationsCampaignsAPI(Resource):
                     200,
                 )
             else:
-                return {"Error": "User is not a manager of the organisation"}, 403
+                return {
+                    "Error": "User is not a manager of the organisation",
+                    "SubCode": "UserNotPermitted",
+                }, 403
         except NotFound:
-            return {"Error": "Organisation Campaign Not Found"}, 404
+            return {
+                "Error": "Organisation Campaign Not Found",
+                "SubCode": "NotFound",
+            }, 404
         except Exception as e:
             error_msg = f"Organisation Campaigns DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

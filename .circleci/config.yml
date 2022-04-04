@@ -39,7 +39,6 @@ jobs:
         command: |
           cd ${CIRCLE_WORKING_DIRECTORY}
           mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/lint
-          # . ${CIRCLE_WORKING_DIRECTORY}/env/bin/activate
           black --check manage.py backend tests migrations
           flake8 manage.py backend tests migrations
     - run:
@@ -252,7 +251,7 @@ workflows:
         filters:
           branches:
             only:
-            - fix/sentry-environments
+            - fix/cfn-init-codedeploy
         requires:
           - build
         stack_name: "test"
@@ -263,7 +262,7 @@ workflows:
         filters:
           branches:
             only:
-            - fix/sentry-environments
+            - fix/cfn-init-codedeploy
         requires:
           - build
         context: tasking-manager-staging
@@ -334,4 +333,4 @@ workflows:
         context: tasking-manager-tm4-production
 notify:
   webhooks:
-    -url: https://api.opsgenie.com/v1/json/circleci?apiKey=$OPSGENIE_API
+    - url: https://api.opsgenie.com/v1/json/circleci?apiKey=$OPSGENIE_API

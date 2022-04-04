@@ -18,7 +18,7 @@ class ChatService:
     def post_message(
         chat_dto: ChatMessageDTO, project_id: int, authenticated_user_id: int
     ) -> ProjectChatDTO:
-        """ Save message to DB and return latest chat"""
+        """Save message to DB and return latest chat"""
         current_app.logger.debug("Posting Chat Message")
 
         project = ProjectService.get_project_by_id(project_id)
@@ -33,7 +33,7 @@ class ChatService:
             ProjectStatus(project.status) == ProjectStatus.DRAFT
             and not is_manager_permission
         ):
-            raise ValueError("User not permitted to post Comment")
+            raise ValueError("UserNotPermitted- User not permitted to post Comment")
 
         if project.private:
             is_allowed_user = False
@@ -68,9 +68,9 @@ class ChatService:
             # Ensure we return latest messages after post
             return ProjectChat.get_messages(chat_dto.project_id, 1, 5)
         else:
-            raise ValueError("User not permitted to post Comment")
+            raise ValueError("UserNotPermitted- User not permitted to post Comment")
 
     @staticmethod
     def get_messages(project_id: int, page: int, per_page: int) -> ProjectChatDTO:
-        """ Get all messages attached to a project """
+        """Get all messages attached to a project"""
         return ProjectChat.get_messages(project_id, page, per_page)
