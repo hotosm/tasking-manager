@@ -331,6 +331,3 @@ workflows:
               - deployment/hot-tasking-manager
         stack_name: "tm4-production"
         context: tasking-manager-tm4-production
-notify:
-  webhooks:
-    - url: https://api.opsgenie.com/v1/json/circleci?apiKey=$OPSGENIE_API
