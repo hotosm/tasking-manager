@@ -1,31 +1,32 @@
 [main]
 host = https://www.transifex.com
 
-[tasking-manager.version-4]
+[o:hotosm:p:tasking-manager:r:version-4]
 source_file = frontend/src/locales/en.json
 source_lang = en
-trans.ar = frontend/src/locales/ar.json
-trans.cs = frontend/src/locales/cs.json
-trans.de = frontend/src/locales/de.json
-trans.el = frontend/src/locales/el.json
-trans.es = frontend/src/locales/es.json
-trans.fa_IR = frontend/src/locales/fa_IR.json
-trans.fr = frontend/src/locales/fr.json
-trans.he = frontend/src/locales/he.json
-trans.hu = frontend/src/locales/hu.json
-trans.id = frontend/src/locales/id.json
-trans.it = frontend/src/locales/it.json
-trans.ja = frontend/src/locales/ja.json
-trans.ko = frontend/src/locales/ko.json
-trans.mg = frontend/src/locales/mg.json
-trans.ml = frontend/src/locales/ml.json
+type        = KEYVALUEJSON
+trans.el    = frontend/src/locales/el.json
 trans.nl_NL = frontend/src/locales/nl_NL.json
-trans.pt = frontend/src/locales/pt.json
-trans.pt_BR = frontend/src/locales/pt_BR.json
-trans.sv = frontend/src/locales/sv.json
-trans.sw = frontend/src/locales/sw.json
-trans.tl = frontend/src/locales/tl.json
-trans.tr = frontend/src/locales/tr.json
-trans.uk = frontend/src/locales/uk.json
+trans.sw    = frontend/src/locales/sw.json
+trans.uk    = frontend/src/locales/uk.json
+trans.tr    = frontend/src/locales/tr.json
 trans.zh_TW = frontend/src/locales/zh_TW.json
-type = KEYVALUEJSON
+trans.ar    = frontend/src/locales/ar.json
+trans.id    = frontend/src/locales/id.json
+trans.it    = frontend/src/locales/it.json
+trans.ja    = frontend/src/locales/ja.json
+trans.ko    = frontend/src/locales/ko.json
+trans.pt    = frontend/src/locales/pt.json
+trans.cs    = frontend/src/locales/cs.json
+trans.es    = frontend/src/locales/es.json
+trans.hu    = frontend/src/locales/hu.json
+trans.pt_BR = frontend/src/locales/pt_BR.json
+trans.sv    = frontend/src/locales/sv.json
+trans.tl    = frontend/src/locales/tl.json
+trans.de    = frontend/src/locales/de.json
+trans.fa_IR = frontend/src/locales/fa_IR.json
+trans.fr    = frontend/src/locales/fr.json
+trans.he    = frontend/src/locales/he.json
+trans.mg    = frontend/src/locales/mg.json
+trans.ml    = frontend/src/locales/ml.json
+
