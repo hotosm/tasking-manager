@@ -450,7 +450,7 @@ export default defineMessages({
   learnManageDescription: {
     id: 'pages.learn.manage.description',
     defaultMessage:
-      'You can use the Tasking Manager to set up your own projects. Be sure to be responsible by making sure your skill level matches your ambition. It is good to reach out to the administrators of the Tasking Manager and learn more about what is needed to obtain the permissions to create and manage projects.',
+      'You can use the Tasking Manager to set up your own projects. Be sure to be responsible by making sure your skill level matches your ambition. If you are interested in creating projects please check whether your organization already exists on Tasking Manager by viewing this {organizationsListLink}. If your organization already exists on Tasking Manager please contact one of your listed organization managers. If your organization does not exist, feel free to register your interest in creating projects by completing this {createNewOrganizationFormLink}.',
   },
   learnManageStepJoinTitle: {
     id: 'pages.learn.manage.steps.join.title',
@@ -460,6 +460,14 @@ export default defineMessages({
     id: 'pages.learn.manage.steps.join.description',
     defaultMessage:
       'The Tasking Manager allows you to create projects as part of a community or organization. Either get in touch with one you know, or request the admins to add your group to the Tasking Manager.',
+  },
+  list: {
+    id: 'pages.learn.manage.list',
+    defaultMessage: 'list',
+  },
+  form: {
+    id: 'pages.learn.manage.form',
+    defaultMessage: 'form',
   },
   learnManageStepCreateTitle: {
     id: 'pages.learn.manage.steps.create.title',
