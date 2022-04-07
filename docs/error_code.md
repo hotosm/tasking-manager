@@ -1,5 +1,6 @@
 # Tasking Manager API Error Codes
 
+In this document you can find detailed descriptions of the error codes you might encounter when using the different endpoints of the Tasking Manager API.
 
 ## Error Messages and Codes
 When the TM API returns error messages, it does so in JSON format. For example, an error might look like this:
