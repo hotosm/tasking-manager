@@ -258,11 +258,6 @@ class UserService:
         if end_date:
             base_query = base_query.filter(TaskHistory.action_date <= end_date)
 
-        if sort_by == "action_date":
-            base_query = base_query.order_by(func.max(TaskHistory.action_date))
-        elif sort_by == "-action_date":
-            base_query = base_query.order_by(desc(func.max(TaskHistory.action_date)))
-
         user_task_dtos = UserTaskDTOs()
         task_id_list = base_query.subquery()
 
@@ -297,6 +292,13 @@ class UserService:
             ),
         )
         tasks = tasks.add_columns("max", "comments")
+
+        if sort_by == "action_date":
+            tasks = tasks.order_by(sq.c.max)
+        elif sort_by == "-action_date":
+            tasks = tasks.order_by(desc(sq.c.max))
+        elif sort_by == "project_id":
+            tasks = tasks.order_by(sq.c.project_id)
 
         if project_status:
             tasks = tasks.filter(
