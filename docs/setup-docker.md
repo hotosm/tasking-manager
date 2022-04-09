@@ -54,7 +54,7 @@ Afterwards copy the consumer key and secret from OpenStreetMap into your configu
 The **easiest way** to run the Tasking Manager requires [Docker](https://docs.docker.com/get-started/) and [Docker Compose](https://docs.docker.com/compose/) to be installed on your system.  Afterwards you'll just need:
 
 * One command to get everything together and start the Tasking Manager: `docker-compose up -d`
-* Visit with your browser `http://127.0.0.1:5000`
+* Visit with your browser [http://127.0.0.1:80](http://127.0.0.1:80)
 
 For stopping this command do the job: `docker-compose stop`
 And you can check the logs with `docker-compose logs -f`
