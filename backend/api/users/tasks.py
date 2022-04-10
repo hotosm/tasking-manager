@@ -60,7 +60,7 @@ class UsersTasksAPI(Resource):
             - in: query
               name: sort_by
               description:
-                    criteria to sort by. The supported options are action_date, -action_date.
+                    criteria to sort by. The supported options are action_date, -action_date, project_id, -project_id.
                     The default value is -action_date.
               required: false
               type: string
