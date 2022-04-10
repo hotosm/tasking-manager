@@ -299,6 +299,8 @@ class UserService:
             tasks = tasks.order_by(desc(sq.c.max))
         elif sort_by == "project_id":
             tasks = tasks.order_by(sq.c.project_id)
+        elif sort_by == "-project_id":
+            tasks = tasks.order_by(desc(sq.c.project_id))
 
         if project_status:
             tasks = tasks.filter(
