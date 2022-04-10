@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { ProjectSearchBox } from '../projects/projectSearchBox';
 import { useTaskContributionQueryParams, stringify } from '../../hooks/UseTaskContributionAPI';
+import MyTasksOrderDropdown from './myTasksOrderDropdown';
 
 const isActiveButton = (buttonName, contributionQuery) => {
   let isActive = false;
@@ -59,6 +60,11 @@ export const MyTasksNav = (props) => {
                 );
               }}
             </FormattedMessage>
+            <MyTasksOrderDropdown
+              className={`fl f5 mt1 mt2-ns`}
+              setQuery={setContributionsQuery}
+              allQueryParams={contributionsQuery}
+            />
             {!notAnyFilter && (
               <Link to="./" className="red link ph3 f6 v-mid dib pv2 mh1 mt1 mt2-ns fr">
                 <FormattedMessage {...messages.clearFilters} />
