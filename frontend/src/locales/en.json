@@ -252,6 +252,8 @@
   "management.projects.create.button.back": "Back to previous",
   "management.projects.create.button.next": "Next",
   "management.projects.create.button.trim": "Trim",
+  "management.projects.create.trimError": "An error occured while trimming the geometry.",
+  "management.projects.create.SelfIntersectingAOIError": "Invalid geometry - polygon is self intersecting.",
   "management.projects.create.button.draw": "Draw",
   "management.projects.create.button.select_file": "Select file",
   "management.projects.create.arbitrary_tasks": "Set tasks using uploaded polygons",

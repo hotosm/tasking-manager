@@ -10,6 +10,7 @@ import { SwitchToggle } from '../formInputs';
 import { CutIcon, WasteIcon } from '../svgIcons';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useAsync } from '../../hooks/UseAsync';
+import { Alert } from '../alert';
 
 const trimTaskGrid = (params) => {
   const { clipStatus, metadata, updateMetadata, token } = params;
@@ -83,6 +84,18 @@ export default function TrimProject({ metadata, mapObj, updateMetadata }) {
                 <FormattedMessage {...messages.trim} />
               </CustomButton>
             </div>
+            {trimTaskGridAsync.status === 'error' && (
+              <div className="mt3">
+                <Alert type="error">
+                  {`${trimTaskGridAsync.error.message}Error` in messages && (
+                    <FormattedMessage {...messages[`${trimTaskGridAsync.error.message}Error`]} />
+                  )}
+                  {!(`${trimTaskGridAsync.error.message}Error` in messages) && (
+                    <FormattedMessage {...messages.trimError} />
+                  )}
+                </Alert>
+              </div>
+            )}
           </>
         ) : (
           <div className="pt0 fw6">
