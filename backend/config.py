@@ -114,16 +114,10 @@ class EnvironmentConfig:
     }
 
     # Connection to OSM authentification system
-    OSM_OAUTH_SETTINGS = {
-        "base_url": "{}/api/0.6/".format(OSM_SERVER_URL),
-        "consumer_key": os.getenv("TM_CLIENT_ID", None),
-        "consumer_secret": os.getenv("TM_CLIENT_SECRET", None),
-        "request_token_params": {"scope": os.getenv("TM_SCOPE", None)},
-        "request_token_url": None,
-        "access_token_method": "POST",
-        "access_token_url": "{}/oauth2/token".format(OSM_SERVER_URL),
-        "authorize_url": "{}/oauth2/authorize".format(OSM_SERVER_URL),
-    }
+    OAUTH_API_URL = "{}/api/0.6/".format(OSM_SERVER_URL)
+    OAUTH_CLIENT_ID = os.getenv("TM_CLIENT_ID", None)
+    OAUTH_CLIENT_SECRET = os.getenv("TM_CLIENT_SECRET", None)
+    OAUTH_SCOPE = os.getenv("TM_SCOPE", None)
 
     # Some more definitions (not overridable)
     SEND_FILE_MAX_AGE_DEFAULT = 0

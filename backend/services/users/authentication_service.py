@@ -5,11 +5,9 @@ from flask import current_app, request
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
-from backend import osm
 from backend.api.utils import TMAPIDecorators
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
-from werkzeug import url_quote
 from random import SystemRandom
 
 token_auth = HTTPTokenAuth(scheme="Token")
@@ -64,16 +62,16 @@ class AuthenticationService:
         :returns A dictionary containing the keys "username", "session_token"
         and "picture."
         """
-        osm_user = osm_user_details.find(user_element)
+        osm_user = osm_user_details.get(user_element)
 
         if osm_user is None:
             raise AuthServiceError("User element not found in OSM response")
 
-        osm_id = int(osm_user.attrib["id"])
-        username = osm_user.attrib["display_name"]
+        osm_id = int(osm_user.get("id"))
+        username = osm_user.get("display_name")
         try:
             # get gravatar profile picture file name
-            user_picture = osm_user.find("img").attrib["href"]
+            user_picture = osm_user.get("img").get("href")
         except (AttributeError, IndexError):
             user_picture = None
 
@@ -82,8 +80,8 @@ class AuthenticationService:
             UserService.update_user(osm_id, username, user_picture)
         except NotFound:
             # User not found, so must be new user
-            changesets = osm_user.find("changesets")
-            changeset_count = int(changesets.attrib["count"])
+            changesets = osm_user.get("changesets")
+            changeset_count = int(changesets.get("count"))
             new_user = UserService.register_user(
                 osm_id, username, changeset_count, user_picture, email
             )
@@ -157,19 +155,6 @@ class AuthenticationService:
         """
         rand = SystemRandom()
         return "".join(rand.choice(chars) for x in range(length))
-
-    @staticmethod
-    def generate_authorize_url(redirect_uri):
-
-        state = AuthenticationService.generate_random_state()
-        scope = url_quote(osm.request_token_params.get("scope", ""))
-        url = (
-            f"{osm.authorize_url}?response_type=code"
-            + f"&client_id={osm.consumer_key}&scope={scope}"
-            + f"&state={state}"
-            + f"&redirect_uri={redirect_uri}"
-        )
-        return {"state": state, "auth_url": url}
 
     @staticmethod
     def is_valid_token(token, token_expiry):

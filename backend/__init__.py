@@ -5,7 +5,7 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask, redirect
 from flask_cors import CORS
 from flask_migrate import Migrate
-from flask_oauthlib.client import OAuth
+from requests_oauthlib import OAuth2Session
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
@@ -32,9 +32,10 @@ def format_url(endpoint):
 
 db = SQLAlchemy()
 migrate = Migrate()
-oauth = OAuth()
 
-osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
+osm = OAuth2Session(
+    client_id=EnvironmentConfig.OAUTH_CLIENT_ID, scope=EnvironmentConfig.OAUTH_SCOPE
+)
 
 # Import all models so that they are registered with SQLAlchemy
 from backend.models.postgis import *  # noqa
@@ -78,7 +79,6 @@ def create_app(env="backend.config.EnvironmentConfig"):
     app.secret_key = app.config[
         "SECRET_KEY"
     ]  # Required by itsdangerous, Flask-OAuthlib for creating entropy
-    oauth.init_app(app)
 
     return app
 
