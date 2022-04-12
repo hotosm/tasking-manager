@@ -1,0 +1,47 @@
+{
+    "version": "0.6",
+    "generator": "OpenStreetMap server",
+    "copyright": "OpenStreetMap and contributors",
+    "attribution": "http://www.openstreetmap.org/copyright",
+    "license": "http://opendatacommons.org/licenses/odbl/1-0/",
+    "user": {
+        "id": 7777777,
+        "display_name": "Thinkwhere Test",
+        "account_created": "2017-01-23T16:23:22Z",
+        "description": "",
+        "contributor_terms": {
+            "agreed": true,
+            "pd": false
+        },
+        "roles": [],
+        "changesets": {
+            "count": 16
+        },
+        "traces": {
+            "count": 0
+        },
+        "blocks": {
+            "received": {
+                "count": 0,
+                "active": 0
+            }
+        },
+        "home": {
+            "lat": 39.1109,
+            "lon": -2.991,
+            "zoom": 3
+        },
+        "languages": [
+            "Spa."
+        ],
+        "messages": {
+            "received": {
+                "count": 0,
+                "unread": 0
+            },
+            "sent": {
+                "count": 0
+            }
+        }
+    }
+}

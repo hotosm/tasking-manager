@@ -16,14 +16,14 @@ def get_canned_osm_user_details():
     """ Helper method to find test file, dependent on where tests are being run from """
 
     location = os.path.join(
-        os.path.dirname(__file__), "test_files", "osm_user_details.xml"
+        os.path.dirname(__file__), "test_files", "osm_user_details.json"
     )
-
+    print(location)
     try:
-        with open(location, "r"):
-            return ET.parse(location)
+        with open(location, "r") as x:
+            return json.load(x)
     except FileNotFoundError:
-        raise FileNotFoundError("osm_user_details.xml not found")
+        raise FileNotFoundError("osm_user_details.json not found")
 
 
 def get_canned_osm_user_details_changed_name():
