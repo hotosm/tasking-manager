@@ -26,6 +26,7 @@ import {
   CompletionTabForValidation,
   SidebarToggle,
   ReopenEditor,
+  UnsavedMapChangesModalContent,
 } from './actionSidebars';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { MultipleTaskHistoriesAccordion } from './multipleTaskHistories';
@@ -46,11 +47,11 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     () =>
       activeTasks
         ? activeTasks
-            .map((task) => task.taskId)
-            .sort((n1, n2) => {
-              // in ascending order
-              return n1 - n2;
-            })
+          .map((task) => task.taskId)
+          .sort((n1, n2) => {
+            // in ascending order
+            return n1 - n2;
+          })
         : [],
     [activeTasks],
   );
@@ -61,6 +62,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [validationStatus, setValidationStatus] = useState({});
   const [historyTabChecked, setHistoryTabChecked] = useState(false);
   const [multipleTasksInfo, setMultipleTasksInfo] = useState({});
+  const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const intl = useIntl();
 
   const activeTask = activeTasks && activeTasks[0];
@@ -130,21 +132,28 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds]);
 
   const callEditor = (arr) => {
-    setActiveEditor(arr[0].value);
-    const url = openEditor(
-      arr[0].value,
-      project,
-      tasks,
-      tasksIds,
-      [window.innerWidth, window.innerHeight],
-      null,
-    );
-    if (url) {
-      navigate(`./${url}`);
+    if (!disabled) {
+      setActiveEditor(arr[0].value);
+      const url = openEditor(
+        arr[0].value,
+        project,
+        tasks,
+        tasksIds,
+        [window.innerWidth, window.innerHeight],
+        null,
+      );
+      if (url) {
+        navigate(`./${url}`);
+      } else {
+        navigate(`./?editor=${arr[0].value}`);
+      }
     } else {
-      navigate(`./?editor=${arr[0].value}`);
+      // we need to return a promise in order to be called by useAsync
+      return new Promise((resolve, reject) => {
+        setShowMapChangesModal('reload editor');
+        resolve();
+      });
     }
-    window.location.reload();
   };
 
   return (
@@ -300,6 +309,17 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                         editor={activeEditor}
                         callEditor={callEditor}
                       />
+                      {disabled && showMapChangesModal && (
+                        <Popup
+                          modal
+                          open
+                          closeOnEscape={true}
+                          closeOnDocumentClick={true}
+                          onClose={() => setShowMapChangesModal(null)}
+                        >
+                          {(close) => <UnsavedMapChangesModalContent close={close} action={showMapChangesModal} />}
+                        </Popup>
+                      )}
                       {(editor === 'ID' || editor === 'RAPID') && (
                         <Popup
                           modal
