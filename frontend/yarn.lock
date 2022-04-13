@@ -4266,10 +4266,9 @@ JSONStream@0.8.0:
     jsonparse "0.0.5"
     through "~2.2.7"
 
-RapiD@facebookincubator/rapid#rapid-v1.1.8_tm:
-  version "1.1.8"
-  uid "6771b3ad6d353c63368cebf94d9d8d6a91d7fa34"
-  resolved "https://codeload.github.com/facebookincubator/rapid/tar.gz/6771b3ad6d353c63368cebf94d9d8d6a91d7fa34"
+RapiD@facebookincubator/rapid#rapid-v1.1.8-tm.1:
+  version "1.1.8-tm.1"
+  resolved "https://codeload.github.com/facebookincubator/rapid/tar.gz/dcd0f97a7e569e237e75aa3650987f39966d9f13"
   dependencies:
     "@id-sdk/math" "~3.0.0-pre.10"
     "@id-sdk/util" "~3.0.0-pre.10"
