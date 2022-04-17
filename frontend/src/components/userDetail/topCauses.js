@@ -1,10 +1,13 @@
 import React from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const TopCauses = ({ userStats }) => {
   const intl = useIntl();
