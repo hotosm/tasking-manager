@@ -2,6 +2,7 @@ import { types } from '../actions/editor';
 
 const initialState = {
   context: null,
+  rapidContext: null,
 };
 
 export function editorReducer(state = initialState, action) {
@@ -10,6 +11,12 @@ export function editorReducer(state = initialState, action) {
       return {
         ...state,
         context: action.context,
+      };
+    }
+    case types.SET_RAPIDEDITOR: {
+      return {
+        ...state,
+        rapidContext: action.context,
       };
     }
     default:

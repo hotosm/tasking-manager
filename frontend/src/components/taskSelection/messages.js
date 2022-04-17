@@ -16,6 +16,14 @@ export default defineMessages({
     id: 'project.tasks.unsaved_map_changes.unlock',
     defaultMessage: 'Save or undo it to be able to select another task',
   },
+  unsavedChangesToReloadEditor: {
+    id: 'project.tasks.unsaved_map_changes.reload_editor',
+    defaultMessage: 'Save or undo it to be able to switch editors',
+  },
+  unsavedChangesTooltip: {
+    id: 'project.tasks.unsaved_map_changes.tooltip',
+    defaultMessage: 'You have unsaved edits. Save or undo them to submit this task.'
+  },
   closeModal: {
     id: 'project.tasks.unsaved_map_changes.actions.close_modal',
     defaultMessage: 'Close',
