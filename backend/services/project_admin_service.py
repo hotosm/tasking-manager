@@ -175,10 +175,6 @@ class ProjectAdminService:
             raise ProjectAdminServiceError(
                 "DeletePermissionError- User does not have permissions to delete project"
             )
-        # else:
-        #     raise ProjectAdminServiceError(
-        #         "User does not have permissions to delete project"
-        #     )
 
     @staticmethod
     def reset_all_tasks(project_id: int, user_id: int):

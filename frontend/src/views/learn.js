@@ -95,43 +95,43 @@ const Steps = ({ items }) => (
 );
 
 const Manuals = ({ contents }) => (
-    <div className="mv3">
-      <h3 className="f2 ttu barlow-condensed fw6">
-        <FormattedMessage {...messages.learnManualsTitle} />
-      </h3>
-      <div className="w-100 cf">
-        {contents.map((content, i) => (
-          <div key={i} style={{ height: '20rem' }} className="w-25-l w-third-m w-100 fl ph2">
-            <div className="shadow-4">
-              <a
-                className="no-underline"
-                rel="noopener noreferrer"
-                target="_blank"
-                href={content.url}
-              >
-                <div
-                  className="bg-tan w-100 tc h4"
-                  style={{
-                    background: `#f0efef url(${content.img}) no-repeat center`,
-                    backgroundSize: '55%',
-                  }}
-                ></div>
-                <div className="pa3" style={{ height: '12rem' }}>
-                  <p className="fw7 f4 mt0 blue-dark">
-                    <FormattedMessage {...messages[`${content.message}Title`]} />
-                  </p>
+  <div className="mv3">
+    <h3 className="f2 ttu barlow-condensed fw6">
+      <FormattedMessage {...messages.learnManualsTitle} />
+    </h3>
+    <div className="w-100 cf">
+      {contents.map((content, i) => (
+        <div key={i} style={{ height: '20rem' }} className="w-25-l w-third-m w-100 fl ph2">
+          <div className="shadow-4">
+            <a
+              className="no-underline"
+              rel="noopener noreferrer"
+              target="_blank"
+              href={content.url}
+            >
+              <div
+                className="bg-tan w-100 tc h4"
+                style={{
+                  background: `#f0efef url(${content.img}) no-repeat center`,
+                  backgroundSize: '55%',
+                }}
+              ></div>
+              <div className="pa3" style={{ height: '12rem' }}>
+                <p className="fw7 f4 mt0 blue-dark">
+                  <FormattedMessage {...messages[`${content.message}Title`]} />
+                </p>
 
-                  <p className="blue-grey lh-title f5">
-                    <FormattedMessage {...messages[`${content.message}Description`]} />
-                  </p>
-                </div>
-              </a>
-            </div>
+                <p className="blue-grey lh-title f5">
+                  <FormattedMessage {...messages[`${content.message}Description`]} />
+                </p>
+              </div>
+            </a>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
-  );
+  </div>
+);
 
 const Videos = ({ contents }) => {
   const [activeVideo, setActiveVideo] = useState(null);
