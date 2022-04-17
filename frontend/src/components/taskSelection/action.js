@@ -12,7 +12,7 @@ import { HeaderLine } from '../projectDetail/header';
 import { Button } from '../button';
 import Portal from '../portal';
 import { SidebarIcon } from '../svgIcons';
-import { openEditor, getTaskGpxUrl, formatImageryUrl } from '../../utils/openEditor';
+import { openEditor, getTaskGpxUrl, formatImageryUrl, formatJosmUrl } from '../../utils/openEditor';
 import { getTaskContributors } from '../../utils/getTaskContributors';
 import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
@@ -32,7 +32,7 @@ import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { MultipleTaskHistoriesAccordion } from './multipleTaskHistories';
 import { ResourcesTab } from './resourcesTab';
 import { ActionTabsNav } from './actionTabsNav';
-
+import { LockedTaskModalContent } from './lockedTasks';
 const Editor = React.lazy(() => import('../editor'));
 const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 
@@ -43,6 +43,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [isJosmError, setIsJosmError] = useState(false);
   const tasksIds = useMemo(
     () =>
       activeTasks
@@ -131,7 +132,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     }
   }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds]);
 
-  const callEditor = (arr) => {
+  const callEditor = async (arr) => {
+    setIsJosmError(false);
     if (!disabled) {
       setActiveEditor(arr[0].value);
       const url = openEditor(
@@ -144,6 +146,14 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
       );
       if (url) {
         navigate(`./${url}`);
+        if (arr[0].value === 'JOSM') {
+          try {
+            await fetch(formatJosmUrl('version', { jsonp: 'checkJOSM' }));
+          } catch (e) {
+            setIsJosmError(true);
+            return;
+          }
+        }
       } else {
         navigate(`./?editor=${arr[0].value}`);
       }
@@ -157,6 +167,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   };
 
   return (
+    <>
     <Portal>
       <div className="cf w-100 vh-minus-77-ns overflow-y-hidden">
         <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
@@ -408,5 +419,17 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
         )}
       </div>
     </Portal>
+    {isJosmError && (
+        <Popup
+          modal
+          open
+          closeOnEscape={true}
+          closeOnDocumentClick={true}
+          onClose={() => setIsJosmError(false)}
+        >
+          {(close) => <LockedTaskModalContent project={project} error="JOSM" close={close} />}
+        </Popup>
+      )}
+    </>
   );
 }
