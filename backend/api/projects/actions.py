@@ -136,7 +136,7 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             ):
-                raise ValueError("User is not a manager of the project")
+                raise ValueError()
 
             threading.Thread(
                 target=MessageService.send_message_to_all_contributors,
