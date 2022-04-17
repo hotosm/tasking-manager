@@ -16,6 +16,7 @@ const contributionsQueryAllSpecification = {
   maxDate: StringParam,
   projectStatus: StringParam,
   page: StringParam,
+  orderBy: StringParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -40,6 +41,7 @@ const backendToQueryConversion = {
   text: 'project_id',
   maxDate: 'max_action_date',
   projectStatus: 'project_status',
+  orderBy: 'sort_by',
 };
 
 const dataFetchReducer = (state, action) => {
@@ -132,7 +134,7 @@ export const useTaskContributionAPI = (
           backendToQueryConversion,
         );
         const result = await axios({
-          url: `${API_URL}users/${user_id}/tasks/?sort_by=-action_date`,
+          url: `${API_URL}users/${user_id}/tasks/`,
           method: 'get',
           params: remappedParams,
           headers: { Authorization: `Token ${token}` },

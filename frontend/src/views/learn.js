@@ -54,7 +54,14 @@ const Intro = ({ section, messagesObjs }) => (
       </div>
       <div className="w-70-ns w-100 fr lh-copy f4">
         <p className="b">{<FormattedMessage {...messages[messagesObjs.intro]} />}</p>
-        <p className="f5">{<FormattedMessage {...messages[messagesObjs.description]} />}</p>
+        <p className="f5">
+          {
+            <FormattedMessage
+              {...messages[messagesObjs.description]}
+              values={messagesObjs.values}
+            />
+          }
+        </p>
       </div>
     </div>
   </div>
@@ -210,6 +217,28 @@ const LearnToManage = ({ section }) => {
   const messagesObjs = {
     intro: 'learnManageIntro',
     description: 'learnManageDescription',
+    values: {
+      organizationsListLink: (
+        <a
+          className="link red fw5"
+          target="_blank"
+          rel="noreferrer"
+          href="https://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Team/HOT_Tasking_Manager_Organizations"
+        >
+          <FormattedMessage {...messages.list} />
+        </a>
+      ),
+      createNewOrganizationFormLink: (
+        <a
+          className="link red fw5"
+          target="_blank"
+          rel="noreferrer"
+          href="https://docs.google.com/forms/d/e/1FAIpQLSdW4O4qVYI7vdway5qdqMxp_gLhSuYVKYAwpq_jUzrcqipNeg/viewform"
+        >
+          <FormattedMessage {...messages.form} />
+        </a>
+      ),
+    },
   };
 
   const items = [

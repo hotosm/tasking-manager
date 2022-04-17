@@ -1,4 +1,4 @@
-import marked from 'marked';
+import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
 /* per https://stackoverflow.com/a/34688574/272018 */
@@ -16,7 +16,7 @@ export const htmlFromMarkdown = (markdownText) => {
       node.setAttribute('xlink:show', 'new');
     }
   });
-  return { __html: DOMPurify.sanitize(marked(markdownText)) };
+  return { __html: DOMPurify.sanitize(marked.parse(markdownText)) };
 };
 
 export const formatUserNamesToLink = (text) => {

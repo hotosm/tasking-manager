@@ -403,6 +403,15 @@ class ProjectsRestAPI(Resource):
                 description: Internal Server Error
         """
         authenticated_user_id = token_auth.current_user()
+        try:
+            ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            )
+        except ValueError:
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
 
         try:
             project_dto = ProjectDTO(request.get_json())

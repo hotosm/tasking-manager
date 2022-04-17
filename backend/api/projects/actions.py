@@ -12,6 +12,7 @@ from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import token_auth, tm
 from backend.services.interests_service import InterestService
 from backend.models.postgis.utils import InvalidGeoJson
+from shapely.errors import TopologicalError
 
 
 class ProjectsActionsTransferAPI(Resource):
@@ -418,7 +419,12 @@ class ProjectActionsIntersectingTilesAPI(Resource):
             grid = GridService.trim_grid_to_aoi(grid_dto)
             return grid, 200
         except InvalidGeoJson as e:
-            return {"error": f"{str(e)}"}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        except TopologicalError:
+            return {
+                "error": "Invalid geometry. Polygon is self intersecting",
+                "SubCode": "SelfIntersectingAOI",
+            }, 400
         except Exception as e:
             error_msg = f"IntersectingTiles GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
