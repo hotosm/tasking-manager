@@ -88,6 +88,23 @@ export function Footer({ location }: Object) {
         </div>
         <div className="cf">
           <div className="pt2 mb2 f7 w-50-l w-100 fl">
+            <div className="pb3 lh-title">
+              <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+                <img
+                  className="mb1"
+                  src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
+                  alt="Creative Commons License"
+                />
+              </a>
+              <br />
+              <a
+                className="link white"
+                href="https://creativecommons.org/licenses/by-sa/4.0/"
+                rel="license"
+              >
+                <FormattedMessage {...messages.license} />
+              </a>
+            </div>
             <Link to={'about'} className="link white">
               <FormattedMessage {...messages.credits} />
             </Link>

@@ -34,6 +34,11 @@ export default defineMessages({
     id: 'footer.privacyPolicy',
     defaultMessage: 'Privacy Policy',
   },
+  license: {
+    id: 'footer.license',
+    defaultMessage:
+      'This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.',
+  },
   mappingLevelALL: {
     id: 'mapping.level.all',
     defaultMessage: 'All levels',
