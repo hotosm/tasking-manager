@@ -33,6 +33,7 @@ jobs:
         OSM_REGISTER_URL: ${{ secrets.STAGING_OSM_REGISTER_URL }}
         ID_EDITOR_URL: ${{ secrets.STAGING_ID_EDITOR_URL }}
         POTLATCH2_EDITOR_URL: ${{ secrets.STAGING_POTLATCH2_EDITOR_URL }}
+        TM_MAX_AOI_AREA: ${{ secrets.MAP_MAX_AREA }}
       run: |
         cd frontend && yarn build
     - name: Unit Tests
