@@ -108,7 +108,9 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       )
         .then((res) => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
-          window.location.reload();
+          if (editor !== 'JOSM') {
+            window.location.reload();
+          }
         })
         .catch((e) => lockFailed(windowObjectReference, e.message));
     }

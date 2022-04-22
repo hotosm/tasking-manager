@@ -194,6 +194,10 @@ class CommentsTasksRestAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        authenticated_user_id = token_auth.current_user()
+        if UserService.is_user_blocked(authenticated_user_id):
+            return {"Error": "User is on read only mode.", "SubCode": "ReadOnly"}, 403
+
         try:
             task_comment = TaskCommentDTO(request.get_json())
             task_comment.user_id = token_auth.current_user()

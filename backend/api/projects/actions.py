@@ -134,14 +134,15 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             }, 400
 
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
+            ):
+                raise ValueError()
+
             threading.Thread(
                 target=MessageService.send_message_to_all_contributors,
                 args=(project_id, message_dto),
             ).start()
-
             return {"Success": "Messages started"}, 200
         except ValueError:
             return {
@@ -194,9 +195,10 @@ class ProjectsActionsFeatureAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
+            ):
+                raise ValueError()
         except ValueError:
             return {
                 "Error": "User is not a manager of the project",
@@ -252,9 +254,11 @@ class ProjectsActionsUnFeatureAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            )
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
+                raise ValueError()
         except ValueError:
             return {
                 "Error": "User is not a manager of the project",
@@ -320,9 +324,11 @@ class ProjectsActionsSetInterestsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            )
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
+                raise ValueError()
         except ValueError:
             return {
                 "Error": "User is not a manager of the project",

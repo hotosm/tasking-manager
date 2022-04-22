@@ -33,8 +33,11 @@ function getMenuItensForUser(userDetails, organisations) {
     { label: messages.manage, link: 'manage', authenticated: true, manager: true },
     { label: messages.learn, link: 'learn', showAlways: true },
     { label: messages.about, link: 'about', showAlways: true },
-    { label: messages.support, link: SERVICE_DESK, showAlways: true, serviceDesk: true },
   ];
+  if (SERVICE_DESK) {
+    menuItems.push({ label: messages.support, link: SERVICE_DESK, showAlways: true, serviceDesk: true });
+  }
+
   let filteredMenuItems;
   if (userDetails.username) {
     filteredMenuItems = menuItems.filter((item) => item.authenticated === true || item.showAlways);
