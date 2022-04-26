@@ -227,7 +227,8 @@ export function EditTeam(props) {
   const [members, setMembers] = useState([]);
   const [requests, setRequests] = useState([]);
   const [canUserEditTeam] = useEditTeamAllowed(team);
-  const [joinTeamError, setJoinTeamError] = useState(null);
+  const [memberJoinTeamError, setMemberJoinTeamError] = useState(null);
+  const [managerJoinTeamError, setManagerJoinTeamError] = useState(null);
 
   useEffect(() => {
     if (!initManagers && team && team.members) {
@@ -259,7 +260,12 @@ export function EditTeam(props) {
   };
   const updateManagers = () => {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, managers, true);
-    usersAdded.forEach((user) => joinTeamRequest(team.teamId, user, 'MANAGER', token));
+    usersAdded.forEach((user) =>
+      joinTeamRequest(team.teamId, user, 'MANAGER', token).catch((err) => {
+        setManagerJoinTeamError(err.message);
+        removeManagers(user);
+      }),
+    );
     usersRemoved.forEach((user) => leaveTeamRequest(team.teamId, user, 'MANAGER', token));
     team.members = team.members
       .filter((user) => user.function === 'MEMBER' || user.active === false)
@@ -269,7 +275,7 @@ export function EditTeam(props) {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, members);
     usersAdded.forEach((user) =>
       joinTeamRequest(team.teamId, user, 'MEMBER', token).catch((err) => {
-        setJoinTeamError(err.message);
+        setMemberJoinTeamError(err.message);
         removeMembers(user);
       }),
     );
@@ -324,6 +330,8 @@ export function EditTeam(props) {
           saveMembersFn={updateManagers}
           resetMembersFn={setManagers}
           members={managers}
+          managerJoinTeamError={managerJoinTeamError}
+          setManagerJoinTeamError={setManagerJoinTeamError}
         />
         <div className="h1"></div>
         <Members
@@ -333,8 +341,8 @@ export function EditTeam(props) {
           resetMembersFn={setMembers}
           members={members}
           type="members"
-          joinTeamError={joinTeamError}
-          setJoinTeamError={setJoinTeamError}
+          memberJoinTeamError={memberJoinTeamError}
+          setMemberJoinTeamError={setMemberJoinTeamError}
         />
         <div className="h1"></div>
         <JoinRequests

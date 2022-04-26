@@ -19,8 +19,10 @@ export function Members({
   resetMembersFn,
   members,
   type,
-  joinTeamError,
-  setJoinTeamError,
+  memberJoinTeamError,
+  setMemberJoinTeamError,
+  managerJoinTeamError,
+  setManagerJoinTeamError,
 }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [editMode, setEditMode] = useState(false);
@@ -31,7 +33,9 @@ export function Members({
     title = <FormattedMessage {...messages.members} />;
   }
   const errorRef = useRef(null);
-  useOnClickOutside(errorRef, () => setJoinTeamError(null));
+  useOnClickOutside(errorRef, () => {
+    setMemberJoinTeamError?.(null) || setManagerJoinTeamError?.(null);
+  });
 
   // store the first array of members in order to restore it if the user cancels an
   // add and remove members operation
@@ -113,10 +117,12 @@ export function Members({
               <FormattedMessage {...messages.noMembers} />
             </div>
           )}
-          {joinTeamError && (
+          {(memberJoinTeamError || managerJoinTeamError) && (
             <div className="cf pv2" ref={errorRef}>
               <Alert type="error">
-                <FormattedMessage {...messages[`${joinTeamError}Error`]} />
+                <FormattedMessage
+                  {...messages[`${memberJoinTeamError || managerJoinTeamError}Error`]}
+                />
               </Alert>
             </div>
           )}
