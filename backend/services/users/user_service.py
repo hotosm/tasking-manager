@@ -361,6 +361,11 @@ class UserService:
         user_tasks = (
             db.session.query(filtered_actions)
             .filter(filtered_actions.c.user_id == user.id)
+            .distinct(
+                filtered_actions.c.project_id,
+                filtered_actions.c.task_id,
+                filtered_actions.c.action_text,
+            )
             .subquery()
             .alias("user_tasks")
         )
@@ -371,6 +376,11 @@ class UserService:
             .filter(filtered_actions.c.task_id == user_tasks.c.task_id)
             .filter(filtered_actions.c.project_id == user_tasks.c.project_id)
             .filter(filtered_actions.c.action_text != TaskStatus.MAPPED.name)
+            .distinct(
+                filtered_actions.c.project_id,
+                filtered_actions.c.task_id,
+                filtered_actions.c.action_text,
+            )
             .subquery()
             .alias("others_tasks")
         )

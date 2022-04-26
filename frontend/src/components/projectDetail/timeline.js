@@ -1,4 +1,14 @@
 import React from 'react';
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  TimeScale,
+  Legend,
+  Tooltip,
+} from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { useIntl } from 'react-intl';
 
@@ -6,6 +16,8 @@ import messages from './messages';
 import { formatTimelineData, formatTimelineTooltip } from '../../utils/formatChartJSData';
 import { CHART_COLOURS } from '../../config';
 import { useTimeDiff } from '../../hooks/UseTimeDiff';
+
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, TimeScale, Legend, Tooltip);
 
 export default function ProjectTimeline({ tasksByDay }: Object) {
   const intl = useIntl();
