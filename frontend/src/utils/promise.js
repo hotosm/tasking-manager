@@ -26,9 +26,6 @@ export async function handleErrors(response) {
     .then((res) => {
       text = res.SubCode || response.statusText;
     });
-  if (response.status === 409) {
-    text = 'CONFLICT';
-  }
   throw Error(text);
 }
 
