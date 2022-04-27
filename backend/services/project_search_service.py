@@ -2,11 +2,12 @@ from flask import current_app
 import math
 import geojson
 from geoalchemy2 import shape
-from sqlalchemy import func, distinct, desc, or_
+from sqlalchemy import func, distinct, desc, or_, and_
 from shapely.geometry import Polygon, box
 from cachetools import TTLCache, cached
 
 from backend import db
+from backend.api.utils import validate_date_input
 from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectSearchResultsDTO,
@@ -22,6 +23,8 @@ from backend.models.postgis.statuses import (
     ProjectPriority,
     UserRole,
     TeamRoles,
+    ValidationPermission,
+    MappingPermission,
 )
 from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.organisation import Organisation
@@ -45,19 +48,19 @@ MAX_AREA = math.pow(1250 * 4275 * 1.5, 2)
 
 
 class ProjectSearchServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling mapping """
+    """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class BBoxTooBigError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling mapping """
+    """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class ProjectSearchService:
@@ -159,7 +162,13 @@ class ProjectSearchService:
                 Project.id, func.count(distinct(TaskHistory.user_id)).label("total")
             )
             .filter(Project.id.in_(paginated_projects_ids))
-            .outerjoin(TaskHistory, TaskHistory.project_id == Project.id)
+            .outerjoin(
+                TaskHistory,
+                and_(
+                    TaskHistory.project_id == Project.id,
+                    TaskHistory.action != "COMMENT",
+                ),
+            )
             .group_by(Project.id)
             .all()
         )
@@ -169,7 +178,7 @@ class ProjectSearchService:
     @staticmethod
     @cached(search_cache)
     def search_projects(search_dto: ProjectSearchDTO, user) -> ProjectSearchResultsDTO:
-        """ Searches all projects for matches to the criteria provided by the user """
+        """Searches all projects for matches to the criteria provided by the user"""
         all_results, paginated_results = ProjectSearchService._filter_projects(
             search_dto, user
         )
@@ -208,7 +217,7 @@ class ProjectSearchService:
 
     @staticmethod
     def _filter_projects(search_dto: ProjectSearchDTO, user):
-        """ Filters all projects based on criteria provided by user"""
+        """Filters all projects based on criteria provided by user"""
 
         query = ProjectSearchService.create_search_query(user)
 
@@ -244,6 +253,11 @@ class ProjectSearchService:
             query = query.filter(
                 Project.mapper_level == MappingLevel[search_dto.mapper_level].value
             )
+        if search_dto.action and search_dto.action != "any":
+            if search_dto.action == "map":
+                query = ProjectSearchService.filter_projects_to_map(query, user)
+            if search_dto.action == "validate":
+                query = ProjectSearchService.filter_projects_to_validate(query, user)
 
         if search_dto.organisation_name:
             query = query.filter(Organisation.name == search_dto.organisation_name)
@@ -263,12 +277,21 @@ class ProjectSearchService:
         if search_dto.mapping_types:
             # Construct array of mapping types for query
             mapping_type_array = []
-            mapping_type_array = [
-                MappingTypes[mapping_type].value
-                for mapping_type in search_dto.mapping_types
-            ]
 
-            query = query.filter(Project.mapping_types.contains(mapping_type_array))
+            if search_dto.mapping_types_exact:
+                mapping_type_array = [
+                    {
+                        MappingTypes[mapping_type].value
+                        for mapping_type in search_dto.mapping_types
+                    }
+                ]
+                query = query.filter(Project.mapping_types.in_(mapping_type_array))
+            else:
+                mapping_type_array = [
+                    MappingTypes[mapping_type].value
+                    for mapping_type in search_dto.mapping_types
+                ]
+                query = query.filter(Project.mapping_types.overlap(mapping_type_array))
 
         if search_dto.text_search:
             # We construct an OR search, so any projects that contain or more of the search terms should be returned
@@ -296,6 +319,22 @@ class ProjectSearchService:
             query = query.filter(
                 sq.c.country.ilike("%{}%".format(search_dto.country))
             ).filter(Project.id == sq.c.id)
+
+        if search_dto.last_updated_gte:
+            last_updated_gte = validate_date_input(search_dto.last_updated_gte)
+            query = query.filter(Project.last_updated >= last_updated_gte)
+
+        if search_dto.last_updated_lte:
+            last_updated_lte = validate_date_input(search_dto.last_updated_lte)
+            query = query.filter(Project.last_updated <= last_updated_lte)
+
+        if search_dto.created_gte:
+            created_gte = validate_date_input(search_dto.created_gte)
+            query = query.filter(Project.created >= created_gte)
+
+        if search_dto.created_lte:
+            created_lte = validate_date_input(search_dto.created_lte)
+            query = query.filter(Project.created <= created_lte)
 
         order_by = search_dto.order_by
         if search_dto.order_by_type == "DESC":
@@ -340,10 +379,90 @@ class ProjectSearchService:
         return all_results, paginated_results
 
     @staticmethod
+    def filter_by_user_permission(query, user, permission: str):
+        """Filter projects a user can map or validate, based on their permissions."""
+        if user and user.role != UserRole.ADMIN.value:
+            if permission == "validation_permission":
+                permission_class = ValidationPermission
+                team_roles = [
+                    TeamRoles.VALIDATOR.value,
+                    TeamRoles.PROJECT_MANAGER.value,
+                ]
+            else:
+                permission_class = MappingPermission
+                team_roles = [
+                    TeamRoles.MAPPER.value,
+                    TeamRoles.VALIDATOR.value,
+                    TeamRoles.PROJECT_MANAGER.value,
+                ]
+
+            selection = []
+            # get ids of projects assigned to the user's teams
+            [
+                [
+                    selection.append(team_project.project_id)
+                    for team_project in user_team.team.projects
+                    if team_project.project_id not in selection
+                    and team_project.role in team_roles
+                ]
+                for user_team in user.teams
+            ]
+            if user.mapping_level == MappingLevel.BEGINNER.value:
+                # if user is beginner, get only projects with ANY or TEAMS mapping permission
+                # in the later case, only those that are associated with user teams
+                query = query.filter(
+                    or_(
+                        and_(
+                            Project.id.in_(selection),
+                            getattr(Project, permission)
+                            == permission_class.TEAMS.value,
+                        ),
+                        getattr(Project, permission) == permission_class.ANY.value,
+                    )
+                )
+            else:
+                # if user is intermediate or advanced, get projects with ANY or LEVEL permission
+                # and projects associated with user teams
+                query = query.filter(
+                    or_(
+                        Project.id.in_(selection),
+                        getattr(Project, permission).in_(
+                            [
+                                permission_class.ANY.value,
+                                permission_class.LEVEL.value,
+                            ]
+                        ),
+                    )
+                )
+
+        return query
+
+    @staticmethod
+    def filter_projects_to_map(query, user):
+        """Filter projects that needs mapping and can be mapped by the current user."""
+        query = query.filter(
+            Project.tasks_mapped + Project.tasks_validated
+            < Project.total_tasks - Project.tasks_bad_imagery
+        )
+        return ProjectSearchService.filter_by_user_permission(
+            query, user, "mapping_permission"
+        )
+
+    @staticmethod
+    def filter_projects_to_validate(query, user):
+        """Filter projects that needs validation and can be validated by the current user."""
+        query = query.filter(
+            Project.tasks_validated < Project.total_tasks - Project.tasks_bad_imagery
+        )
+        return ProjectSearchService.filter_by_user_permission(
+            query, user, "validation_permission"
+        )
+
+    @staticmethod
     def get_projects_geojson(
         search_bbox_dto: ProjectSearchBBoxDTO,
     ) -> geojson.FeatureCollection:
-        """  search for projects meeting criteria provided return as a geojson feature collection"""
+        """Search for projects meeting the provided criteria. Returns a GeoJSON feature collection."""
 
         # make a polygon from provided bounding box
         polygon = ProjectSearchService._make_4326_polygon_from_bbox(
@@ -353,7 +472,9 @@ class ProjectSearchService:
         # validate the bbox area is less than or equal to the max area allowed to prevent
         # abuse of the api or performance issues from large requests
         if not ProjectSearchService.validate_bbox_area(polygon):
-            raise BBoxTooBigError("Requested bounding box is too large")
+            raise BBoxTooBigError(
+                "BBoxTooBigError- Requested bounding box is too large"
+            )
 
         # get projects intersecting the polygon for created by the author_id
         intersecting_projects = ProjectSearchService._get_intersecting_projects(
@@ -385,7 +506,7 @@ class ProjectSearchService:
 
     @staticmethod
     def _get_intersecting_projects(search_polygon: Polygon, author_id: int):
-        """ executes a database query to get the intersecting projects created by the author if provided """
+        """Executes a database query to get the intersecting projects created by the author if provided"""
 
         query = db.session.query(
             Project.id,
@@ -412,7 +533,7 @@ class ProjectSearchService:
 
     @staticmethod
     def _make_4326_polygon_from_bbox(bbox: list, srid: int) -> Polygon:
-        """ make a shapely Polygon in SRID 4326 from bbox and srid"""
+        """make a shapely Polygon in SRID 4326 from bbox and srid"""
         try:
             polygon = box(bbox[0], bbox[1], bbox[2], bbox[3])
             if not srid == 4326:
@@ -425,13 +546,13 @@ class ProjectSearchService:
 
     @staticmethod
     def _get_area_sqm(polygon: Polygon) -> float:
-        """ get the area of the polygon in square metres """
+        """get the area of the polygon in square metres"""
         return db.engine.execute(
             ST_Area(ST_Transform(shape.from_shape(polygon, 4326), 3857))
         ).scalar()
 
     @staticmethod
     def validate_bbox_area(polygon: Polygon) -> bool:
-        """ check polygon does not exceed maximim allowed area"""
+        """check polygon does not exceed maximim allowed area"""
         area = ProjectSearchService._get_area_sqm(polygon)
         return area <= MAX_AREA

@@ -59,16 +59,17 @@ class UsersTasksAPI(Resource):
               default: null
             - in: query
               name: sort_by
-              description: field to sort by, supported fields action_date, -action_date
+              description:
+                    criteria to sort by. The supported options are action_date, -action_date, project_id, -project_id.
+                    The default value is -action_date.
               required: false
               type: string
-              default: null
             - in: query
               name: page
               description: Page of results user requested
               type: integer
             - in: query
-              name: pageSize
+              name: page_size
               description: Size of page, defaults to 10
               type: integer
         responses:
@@ -94,7 +95,7 @@ class UsersTasksAPI(Resource):
                 if request.args.get("end_date")
                 else None
             )
-            sort_by = request.args.get("sort_by")
+            sort_by = request.args.get("sort_by", "-action_date")
 
             tasks = UserService.get_tasks_dto(
                 user.id,
@@ -104,15 +105,15 @@ class UsersTasksAPI(Resource):
                 start_date=start_date,
                 end_date=end_date,
                 page=request.args.get("page", None, type=int),
-                page_size=request.args.get("pageSize", 10, type=int),
+                page_size=request.args.get("page_size", 10, type=int),
                 sort_by=sort_by,
             )
             return tasks.to_primitive(), 200
         except ValueError:
             return {"tasks": [], "pagination": {"total": 0}}, 200
         except NotFound:
-            return {"Error": "User or tasks not found"}, 404
+            return {"Error": "User or tasks not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"error": error_msg, "SubCode": "InternalServerError"}, 500

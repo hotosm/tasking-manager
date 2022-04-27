@@ -52,9 +52,23 @@ export default defineMessages({
     id: 'user.gender.selfDescribe',
     defaultMessage: 'Prefer to self-describe:',
   },
+  genderPrivacy: {
+    id: 'user.gender.privacy',
+    defaultMessage:
+      'Your gender information will be used only for statistics purposes and will not be exposed to other users.',
+  },
+  emailPrivacy: {
+    id: 'user.email.privacy',
+    defaultMessage:
+      'Your email address will be used only to send you notifications and updates about Tasking Manager. It will not be shared with other users or organizations.',
+  },
   slackUsername: {
     id: 'user.slack',
-    defaultMessage: 'Username on HOT Slack',
+    defaultMessage: 'Username on {org} Slack',
+  },
+  urlDetectedError: {
+    id: 'user.personalInfo.error',
+    defaultMessage: 'Type only your username, not the URL.',
   },
   save: {
     id: 'user.form.save',

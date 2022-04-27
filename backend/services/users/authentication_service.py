@@ -44,19 +44,20 @@ class AuthServiceError(Exception):
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class AuthenticationService:
     @staticmethod
-    def login_user(osm_user_details, email, user_element="user") -> str:
+    def login_user(osm_user_details, email, user_element="user") -> dict:
         """
         Generates authentication details for user, creating in DB if user is unknown to us
         :param osm_user_details: XML response from OSM
         :param redirect_to: Route to redirect user to, from callback url
         :param user_element: Exists for unit testing
         :raises AuthServiceError
-        :returns Authorized URL with authentication details in query string
+        :returns A dictionary containing the keys "username", "session_token"
+        and "picture."
         """
         osm_user = osm_user_details.find(user_element)
 

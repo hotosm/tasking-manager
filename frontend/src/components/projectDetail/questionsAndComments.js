@@ -1,45 +1,58 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
+import { useAsync } from '../../hooks/UseAsync';
 import { PaginatorLine } from '../paginator';
 import { Button } from '../button';
+import { Alert } from '../alert';
 import { CommentInputField } from '../comments/commentInput';
+import { MessageStatus } from '../comments/status';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import '@webscopeio/react-textarea-autocomplete/style.css';
 
-const PostProjectComment = ({ token, projectId, setStat }) => {
+const PostProjectComment = ({ projectId, updateComments }) => {
+  const token = useSelector((state) => state.auth.get('token'));
   const [comment, setComment] = useState('');
 
   const saveComment = () => {
-    if (comment === '') {
-      return null;
-    }
-    const url = `projects/${projectId}/comments/`;
-    const body = JSON.stringify({ message: comment });
-
-    pushToLocalJSONAPI(url, body, token).then((res) => {
-      setStat(true);
+    return pushToLocalJSONAPI(
+      `projects/${projectId}/comments/`,
+      JSON.stringify({ message: comment }),
+      token,
+    ).then((res) => {
+      updateComments(res);
       setComment('');
     });
   };
+  const saveCommentAsync = useAsync(saveComment);
 
   return (
     <div className="w-90-ns w-100 cf pv4 bg-white center">
-      <div className="fl w-10-ns w-20 pt2">
-        <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
+      <div className="cf w-100">
+        <div className="fl w-10-ns w-20 pt2">
+          <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
+        </div>
+        <div className="fl w-70-ns w-80 ph1 h-100">
+          <CommentInputField comment={comment} setComment={setComment} enableHashtagPaste={true} />
+        </div>
+        <div className="fl w-20-ns w-100 tc-ns tr pt3 pr0-ns pr1">
+          <Button
+            onClick={() => saveCommentAsync.execute()}
+            className="bg-red white f5"
+            disabled={comment === '' || saveCommentAsync.status === 'pending'}
+            loading={saveCommentAsync.status === 'pending'}
+          >
+            <FormattedMessage {...messages.post} />
+          </Button>
+        </div>
       </div>
-      <div className="fl w-70-ns w-80 ph1 h-100">
-        <CommentInputField comment={comment} setComment={setComment} enableHashtagPaste={true} />
-      </div>
-      <div className="fl w-20-ns w-100 tc-ns tr pt3 pr0-ns pr1">
-        <Button onClick={saveComment} className="bg-red white f5" disabled={comment === ''}>
-          <FormattedMessage {...messages.post} />
-        </Button>
+      <div className="cf w-100 fr tr pr2">
+        <MessageStatus status={saveCommentAsync.status} comment={comment} />
       </div>
     </div>
   );
@@ -47,52 +60,48 @@ const PostProjectComment = ({ token, projectId, setStat }) => {
 
 export const QuestionsAndComments = ({ projectId }) => {
   const token = useSelector((state) => state.auth.get('token'));
-  const [response, setResponse] = useState(null);
+  const [comments, setComments] = useState(null);
   const [page, setPage] = useState(1);
-  const [commentsStat, setStat] = useState(true);
 
   const handlePagination = (val) => {
     setPage(val);
-    setStat(true);
   };
 
-  useLayoutEffect(() => {
-    const getComments = async (pageNo, projectId, perPage, token) => {
-      const url = `projects/${projectId}/comments/?perPage=${perPage}&page=${pageNo}`;
-      const res = await fetchLocalJSONAPI(url, token);
-      setResponse(res);
-    };
-
-    if (commentsStat === true && projectId) {
-      getComments(page, projectId, 5, token);
-      setStat(false);
+  useEffect(() => {
+    if (projectId && page) {
+      fetchLocalJSONAPI(
+        `projects/${projectId}/comments/?perPage=5&page=${page}`,
+        token,
+      ).then((res) => setComments(res));
     }
-  }, [page, projectId, commentsStat, token]);
+  }, [page, projectId, token]);
 
   return (
     <div className="bg-tan">
       <div className="ph6-l ph4-m ph2 pb3 w-100 w-70-l">
-        {response && response.chat.length ? (
-          <CommentList comments={response.chat} />
+        {comments && comments.chat.length ? (
+          <CommentList comments={comments.chat} />
         ) : (
           <div className="pv4 blue-grey tc">
             <FormattedMessage {...messages.noComments} />
           </div>
         )}
 
-        {response && response.pagination && response.pagination.pages > 0 && (
+        {comments && comments.pagination && comments.pagination.pages > 0 && (
           <PaginatorLine
             activePage={page}
             setPageFn={handlePagination}
-            lastPage={response.pagination.pages}
+            lastPage={comments.pagination.pages}
             className="tr w-90 center pv3"
           />
         )}
         {token ? (
-          <PostProjectComment projectId={projectId} token={token} setStat={setStat} />
+          <PostProjectComment projectId={projectId} updateComments={setComments} />
         ) : (
-          <div>
-            <p>You need to log in to be able to post comments.</p>
+          <div className="w-90 center pa3">
+            <Alert type="info">
+              <FormattedMessage {...messages.loginTocomment} />
+            </Alert>
           </div>
         )}
       </div>

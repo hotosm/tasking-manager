@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
@@ -7,27 +6,35 @@ import { MessageStatus } from '../status';
 
 describe('MessageStatus', () => {
   it('with status = error', () => {
-    render(
+    const { container } = render(
       <ReduxIntlProviders>
         <MessageStatus status="error" />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText('An error ocurred while sending message.').className).toBe('red');
+    expect(screen.getByText('An error occurred while sending message.')).toBeInTheDocument();
+    expect(container.querySelector('.dark-red')).toBeInTheDocument();
+    expect(container.querySelector('.bg-washed-red')).toBeInTheDocument();
+    expect(container.querySelector('.di')).toBeInTheDocument();
+    expect(container.querySelector('.pa2')).toBeInTheDocument();
   });
-  it('with status = messageSent', () => {
-    render(
+  it('with status = success', () => {
+    const { container } = render(
       <ReduxIntlProviders>
-        <MessageStatus status="messageSent" />
+        <MessageStatus status="success" />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText('Message sent.').className).toBe('red');
+    expect(screen.getByText('Message sent.')).toBeInTheDocument();
+    expect(container.querySelector('.dark-green')).toBeInTheDocument();
+    expect(container.querySelector('.bg-washed-green')).toBeInTheDocument();
+    expect(container.querySelector('.di')).toBeInTheDocument();
+    expect(container.querySelector('.pa2')).toBeInTheDocument();
   });
-  it('with status = sending', () => {
+  it('with status = success and a comment', () => {
     render(
       <ReduxIntlProviders>
-        <MessageStatus status="sending" />
+        <MessageStatus status="success" comment="new comment started" />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText('Sending message...').className).toBe('blue-grey');
+    expect(screen.queryByText('Message sent.')).not.toBeInTheDocument();
   });
 });

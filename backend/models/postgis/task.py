@@ -34,7 +34,7 @@ from backend.models.postgis.task_annotation import TaskAnnotation
 
 
 class TaskAction(Enum):
-    """ Describes the possible actions that can happen to to a task, that we'll record history for """
+    """Describes the possible actions that can happen to to a task, that we'll record history for"""
 
     LOCKED_FOR_MAPPING = 1
     LOCKED_FOR_VALIDATION = 2
@@ -45,7 +45,7 @@ class TaskAction(Enum):
 
 
 class TaskInvalidationHistory(db.Model):
-    """ Describes the most recent history of task invalidation and subsequent validation """
+    """Describes the most recent history of task invalidation and subsequent validation"""
 
     __tablename__ = "task_invalidation_history"
     id = db.Column(db.Integer, primary_key=True)
@@ -87,7 +87,7 @@ class TaskInvalidationHistory(db.Model):
         self.is_closed = False
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
@@ -162,7 +162,7 @@ class TaskMappingIssue(db.Model):
         self.mapping_issue_category_id = mapping_issue_category_id
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
@@ -178,7 +178,7 @@ class TaskMappingIssue(db.Model):
 
 
 class TaskHistory(db.Model):
-    """ Describes the history associated with a task """
+    """Describes the history associated with a task"""
 
     __tablename__ = "task_history"
 
@@ -239,7 +239,7 @@ class TaskHistory(db.Model):
         self.action = task_action.name
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
@@ -351,7 +351,7 @@ class TaskHistory(db.Model):
 
     @staticmethod
     def get_all_comments(project_id: int) -> ProjectCommentsDTO:
-        """ Gets all comments for the supplied project_id"""
+        """Gets all comments for the supplied project_id"""
 
         comments = (
             db.session.query(
@@ -381,7 +381,7 @@ class TaskHistory(db.Model):
 
     @staticmethod
     def get_last_status(project_id: int, task_id: int, for_undo: bool = False):
-        """ Get the status the task was set to the last time the task had a STATUS_CHANGE"""
+        """Get the status the task was set to the last time the task had a STATUS_CHANGE"""
         result = (
             db.session.query(TaskHistory.action_text)
             .filter(
@@ -480,7 +480,7 @@ class TaskHistory(db.Model):
 
 
 class Task(db.Model):
-    """ Describes an individual mapping Task """
+    """Describes an individual mapping Task"""
 
     __tablename__ = "tasks"
 
@@ -509,23 +509,23 @@ class Task(db.Model):
 
     # Mapped objects
     task_history = db.relationship(
-        TaskHistory, cascade="all", order_by=desc(TaskHistory.id)
+        TaskHistory, cascade="all", order_by=desc(TaskHistory.action_date)
     )
     task_annotations = db.relationship(TaskAnnotation, cascade="all")
     lock_holder = db.relationship(User, foreign_keys=[locked_by])
     mapper = db.relationship(User, foreign_keys=[mapped_by])
 
     def create(self):
-        """ Creates and saves the current model to the DB """
+        """Creates and saves the current model to the DB"""
         db.session.add(self)
         db.session.commit()
 
     def update(self):
-        """ Updates the DB with the current state of the Task """
+        """Updates the DB with the current state of the Task"""
         db.session.commit()
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
@@ -534,22 +534,20 @@ class Task(db.Model):
         """
         Constructs and validates a task from a GeoJson feature object
         :param task_id: Unique ID for the task
-        :param task_feature: A geoJSON feature object
+        :param task_feature: A geojson feature object
         :raises InvalidGeoJson, InvalidData
         """
         if type(task_feature) is not geojson.Feature:
-            raise InvalidGeoJson("Task: Invalid GeoJson should be a feature")
+            raise InvalidGeoJson("MustBeFeature- Invalid GeoJson should be a feature")
 
         task_geometry = task_feature.geometry
 
         if type(task_geometry) is not geojson.MultiPolygon:
-            raise InvalidGeoJson("Task: Geometry must be a MultiPolygon")
+            raise InvalidGeoJson("MustBeMultiPloygon- Geometry must be a MultiPolygon")
 
         is_valid_geojson = geojson.is_valid(task_geometry)
         if is_valid_geojson["valid"] == "no":
-            raise InvalidGeoJson(
-                f"Task: Invalid MultiPolygon - {is_valid_geojson['message']}"
-            )
+            raise InvalidGeoJson(f"InvalidMultiPolygon- {is_valid_geojson['message']}")
 
         task = cls()
         try:
@@ -558,7 +556,9 @@ class Task(db.Model):
             task.zoom = task_feature.properties["zoom"]
             task.is_square = task_feature.properties["isSquare"]
         except KeyError as e:
-            raise InvalidData(f"Task: Expected property not found: {str(e)}")
+            raise InvalidData(
+                f"PropertyNotFound: Expected property not found: {str(e)}"
+            )
 
         if "extra_properties" in task_feature.properties:
             task.extra_properties = json.dumps(
@@ -585,14 +585,14 @@ class Task(db.Model):
 
     @staticmethod
     def get_tasks(project_id: int, task_ids: List[int]):
-        """ Get all tasks that match supplied list """
+        """Get all tasks that match supplied list"""
         return Task.query.filter(
             Task.project_id == project_id, Task.id.in_(task_ids)
         ).all()
 
     @staticmethod
     def get_all_tasks(project_id: int):
-        """ Get all tasks for a given project """
+        """Get all tasks for a given project"""
         return Task.query.filter(Task.project_id == project_id).all()
 
     @staticmethod
@@ -643,7 +643,7 @@ class Task(db.Model):
             self.clear_lock()
 
     def is_mappable(self):
-        """ Determines if task in scope is in suitable state for mapping """
+        """Determines if task in scope is in suitable state for mapping"""
         if TaskStatus(self.task_status) not in [
             TaskStatus.READY,
             TaskStatus.INVALIDATED,
@@ -744,7 +744,7 @@ class Task(db.Model):
     def unlock_task(
         self, user_id, new_state=None, comment=None, undo=False, issues=None
     ):
-        """ Unlock task and ensure duration task locked is saved in History """
+        """Unlock task and ensure duration task locked is saved in History"""
         if comment:
             self.set_task_history(
                 action=TaskAction.COMMENT,
@@ -789,7 +789,8 @@ class Task(db.Model):
         self.update()
 
     def reset_lock(self, user_id, comment=None):
-        """ Removes a current lock from a task, resets to last status and updates history with duration of lock """
+        """Removes a current lock from a task, resets to last status and
+        updates history with duration of lock"""
         if comment:
             self.set_task_history(
                 action=TaskAction.COMMENT, comment=comment, user_id=user_id
@@ -802,7 +803,7 @@ class Task(db.Model):
         self.clear_lock()
 
     def clear_lock(self):
-        """ Resets to last status and removes current lock from a task """
+        """Resets to last status and removes current lock from a task"""
         self.task_status = TaskHistory.get_last_status(self.project_id, self.id).value
         self.locked_by = None
         self.update()
@@ -943,7 +944,7 @@ class Task(db.Model):
 
     @staticmethod
     def get_mapped_tasks_by_user(project_id: int):
-        """ Gets all mapped tasks for supplied project grouped by user"""
+        """Gets all mapped tasks for supplied project grouped by user"""
         results = (
             db.session.query(
                 User.username,
@@ -1000,6 +1001,7 @@ class Task(db.Model):
         self,
         task_history: List[TaskHistoryDTO] = [],
         last_updated: datetime.datetime = None,
+        comments: int = None,
     ):
         """Just converts to a TaskDTO"""
         task_dto = TaskDTO()
@@ -1010,6 +1012,7 @@ class Task(db.Model):
         task_dto.task_history = task_history
         task_dto.last_updated = last_updated if last_updated else None
         task_dto.auto_unlock_seconds = Task.auto_unlock_delta().total_seconds()
+        task_dto.comments_number = comments if type(comments) == int else None
         return task_dto
 
     def as_dto_with_instructions(self, preferred_locale: str = "en") -> TaskDTO:
@@ -1059,7 +1062,7 @@ class Task(db.Model):
         return result
 
     def get_per_task_instructions(self, search_locale: str) -> str:
-        """ Gets any per task instructions attached to the project """
+        """Gets any per task instructions attached to the project"""
         project_info = self.projects.project_info.all()
 
         for info in project_info:
@@ -1067,7 +1070,7 @@ class Task(db.Model):
                 return self.format_per_task_instructions(info.per_task_instructions)
 
     def format_per_task_instructions(self, instructions) -> str:
-        """ Format instructions by looking for X, Y, Z tokens and replacing them with the task values """
+        """Format instructions by looking for X, Y, Z tokens and replacing them with the task values"""
         if not instructions:
             return ""  # No instructions so return empty string
 
@@ -1101,7 +1104,7 @@ class Task(db.Model):
         return copies
 
     def get_locked_tasks_for_user(user_id: int):
-        """ Gets tasks on project owned by specified user id"""
+        """Gets tasks on project owned by specified user id"""
         tasks = Task.query.filter_by(locked_by=user_id)
         tasks_dto = LockedTasksForUser()
         for task in tasks:
@@ -1112,7 +1115,7 @@ class Task(db.Model):
         return tasks_dto
 
     def get_locked_tasks_details_for_user(user_id: int):
-        """ Gets tasks on project owned by specified user id"""
+        """Gets tasks on project owned by specified user id"""
         tasks = Task.query.filter_by(locked_by=user_id)
         locked_tasks = [task for task in tasks]
 

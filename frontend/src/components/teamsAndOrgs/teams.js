@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
@@ -9,8 +9,7 @@ import messages from './messages';
 import { useEditTeamAllowed } from '../../hooks/UsePermissions';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
-import { SwitchToggle, RadioField, OrganisationSelect } from '../formInputs';
-import { EditModeControl } from './editMode';
+import { SwitchToggle, RadioField, OrganisationSelectInput } from '../formInputs';
 import { Button, EditButton } from '../button';
 
 export function TeamsManagement({
@@ -54,11 +53,11 @@ export function TeamsManagement({
   );
 }
 
-export function Teams({ teams, viewAllQuery, showAddButton = false, isReady }: Object) {
+export function Teams({ teams, viewAllQuery, showAddButton = false, isReady, border = true }) {
   return (
-    <div className="bg-white b--grey-light ba pa4">
+    <div className={`bg-white ${border ? 'b--grey-light ba pa4' : ''}`}>
       <div className="cf db">
-        <h3 className="f3 blue-dark mv0 fw6 dib v-mid">
+        <h3 className="f3 barlow-condensed ttu blue-dark mv0 fw6 dib v-mid">
           <FormattedMessage {...messages.teams} />
         </h3>
         {showAddButton && (
@@ -66,7 +65,7 @@ export function Teams({ teams, viewAllQuery, showAddButton = false, isReady }: O
             <AddButton />
           </Link>
         )}
-        <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />
+        {viewAllQuery && <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />}
         <div className="cf pt4">
           <ReactPlaceholder
             showLoadingAnimation={true}
@@ -160,7 +159,7 @@ export function TeamInformation(props) {
         <label className={labelClasses}>
           <FormattedMessage {...messages.organisation} />
         </label>
-        <OrganisationSelect name="organisation_id" />
+        <OrganisationSelectInput name="organisation_id" />
       </div>
       <div className="cf pt1">
         <label className={labelClasses}>
@@ -201,44 +200,42 @@ export function TeamInformation(props) {
 }
 
 export function TeamForm(props) {
-  const [editMode, setEditMode] = useState(false);
-
   return (
     <Form
       onSubmit={(values) => props.updateTeam(values)}
       initialValues={props.team}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({
+        handleSubmit,
+        dirty,
+        submitSucceeded,
+        dirtySinceLastSubmit,
+        form,
+        submitting,
+        values,
+      }) => {
+        const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         return (
           <div className="blue-grey mb3">
-            <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
+            <div className={`bg-white b--grey-light pa4 ${dirtyForm ? 'bt bl br' : 'ba'}`}>
               <h3 className="f3 fw6 dib blue-dark mv0">
                 <FormattedMessage {...messages.teamInfo} />
               </h3>
-              <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
               <form id="team-form" onSubmit={handleSubmit}>
-                <fieldset
-                  className="bn pa0"
-                  disabled={submitting || props.disabledForm || !editMode}
-                >
+                <fieldset className="bn pa0" disabled={submitting}>
                   <TeamInformation />
                 </fieldset>
               </form>
             </div>
-            {editMode && (
+            {dirtyForm && (
               <div className="cf pt0 h3">
                 <div className="w-70-l w-50 fl tr dib bg-grey-light">
-                  <Button className="blue-dark bg-grey-light h3" onClick={() => setEditMode(false)}>
+                  <Button className="blue-dark bg-grey-light h3" onClick={() => form.restart()}>
                     <FormattedMessage {...messages.cancel} />
                   </Button>
                 </div>
                 <div className="w-30-l w-50 h-100 fr dib">
                   <Button
-                    onClick={() => {
-                      document
-                        .getElementById('team-form')
-                        .dispatchEvent(new Event('submit', { cancelable: true }));
-                      setEditMode(false);
-                    }}
+                    onClick={() => handleSubmit()}
                     className="w-100 h-100 bg-red white"
                     disabledClassName="bg-red o-50 white w-100 h-100"
                   >
@@ -291,41 +288,58 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
           <h4>
             <FormattedMessage {...messages.organisation} />
           </h4>
-          <p>
-            {typeof team.logo === 'string' && (
-              <img src={team.logo} alt="organisation logo" className="mw4" />
-            )}
-          </p>
-          <p>{team.organisation}</p>
+          <Link
+            className="link blue-dark fw5 mr2 underline"
+            to={`/organisations/${team.organisationSlug}`}
+          >
+            <p>
+              {typeof team.logo === 'string' && (
+                <img src={team.logo} alt="organisation logo" className="mw4" />
+              )}
+            </p>
+            {team.organisation}
+          </Link>
         </div>
         <div className="w-100 w-50-m fl">
           <h4>
             <FormattedMessage {...messages.managers} />
           </h4>
-          <div className="cf db mt3">
-            {managers.map((user, n) => (
-              <UserAvatar
-                key={n}
-                username={user.username}
-                picture={user.pictureUrl}
-                size="large"
-                colorClasses="white bg-blue-grey mv1"
-              />
-            ))}
-          </div>
+          {managers.length === 0 ? (
+            <span className="f6 blue-grey">
+              <FormattedMessage {...messages.noManagers} />
+            </span>
+          ) : (
+            <div className="cf db mt3">
+              {managers.map((user, n) => (
+                <UserAvatar
+                  key={n}
+                  username={user.username}
+                  picture={user.pictureUrl}
+                  size="large"
+                  colorClasses="white bg-blue-grey mv1"
+                />
+              ))}
+            </div>
+          )}
           <h4>
             <FormattedMessage {...messages.members} />
           </h4>
-          <div className="cf db mt3">
-            {members.map((user, n) => (
-              <UserAvatar
-                key={n}
-                username={user.username}
-                picture={user.pictureUrl}
-                colorClasses="white bg-blue-grey mv1"
-              />
-            ))}
-          </div>
+          {members.length === 0 ? (
+            <span className="f6 blue-grey">
+              <FormattedMessage {...messages.noMembers} />
+            </span>
+          ) : (
+            <div className="cf db mt3">
+              {members.map((user, n) => (
+                <UserAvatar
+                  key={n}
+                  username={user.username}
+                  picture={user.pictureUrl}
+                  colorClasses="white bg-blue-grey mv1"
+                />
+              ))}
+            </div>
+          )}
           <div className="cf db mt3">
             {requestedToJoin && (
               <span className="red pr5-ns">

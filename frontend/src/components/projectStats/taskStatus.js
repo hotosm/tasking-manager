@@ -1,15 +1,19 @@
 import React from 'react';
+import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale,Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import statusMessages from '../taskSelection/messages';
 import messages from './messages';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 import { TASK_COLOURS } from '../../config';
-import { StatsCardContent } from '../statsCardContent';
+import { StatsCardContent } from '../statsCard';
 
-const TasksByStatus = (props) => {
-  const getLabel = (status) => props.intl.formatMessage(statusMessages[`taskStatus_${status}`]);
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale,Tooltip, Legend);
+
+const TasksByStatus = ({ stats }) => {
+  const intl = useIntl();
+  const getLabel = (status) => intl.formatMessage(statusMessages[`taskStatus_${status}`]);
 
   let reference = [
     {
@@ -54,7 +58,7 @@ const TasksByStatus = (props) => {
       borderColor: TASK_COLOURS.BADIMAGERY,
     },
   ];
-  const data = formatChartData(reference, props.stats);
+  const data = formatChartData(reference, stats);
 
   return (
     <div className="cf w-100 mb3 ph2 ph4-ns bg-tan blue-dark">
@@ -66,8 +70,11 @@ const TasksByStatus = (props) => {
           <Doughnut
             data={data}
             options={{
-              legend: { position: 'right', labels: { boxWidth: 12 } },
-              tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
+              aspectRatio: 2,
+              plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12 } },
+                tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+              },
             }}
           />
         </div>
@@ -75,7 +82,7 @@ const TasksByStatus = (props) => {
           {reference.map((status, n) => (
             <StatsCardContent
               key={n}
-              value={props.stats[status.field]}
+              value={stats[status.field]}
               label={status.label}
               className="w-25-ns w-50 fl tc pt3 pb4"
             />
@@ -86,4 +93,4 @@ const TasksByStatus = (props) => {
   );
 };
 
-export default injectIntl(TasksByStatus);
+export default TasksByStatus;

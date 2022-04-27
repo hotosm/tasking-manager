@@ -20,10 +20,14 @@ class EnvironmentConfig:
     if APP_BASE_URL.endswith("/"):
         APP_BASE_URL = APP_BASE_URL[:-1]
 
-    FRONTEND_BASE_URL = os.getenv("TM_FRONTEND_BASE_URL", APP_BASE_URL)
     API_VERSION = os.getenv("TM_APP_API_VERSION", "v2")
     ORG_CODE = os.getenv("TM_ORG_CODE", "")
     ORG_NAME = os.getenv("TM_ORG_NAME", "")
+    ORG_LOGO = os.getenv(
+        "TM_ORG_LOGO",
+        "https://cdn.hotosm.org/tasking-manager/uploads/1588741335578_hot-logo.png",
+    )
+    ENVIRONMENT = os.getenv("TM_ENVIRONMENT", "")
     # The default tag used in the OSM changeset comment
     DEFAULT_CHANGESET_COMMENT = os.getenv("TM_DEFAULT_CHANGESET_COMMENT", None)
 
@@ -52,6 +56,22 @@ class EnvironmentConfig:
     # Assamble the database uri
     if os.getenv("TM_DB", False):
         SQLALCHEMY_DATABASE_URI = os.getenv("TM_DB", None)
+    elif os.getenv("TM_DB_CONNECT_PARAM_JSON", False):
+        """
+        This section reads JSON formatted Database connection parameters passed
+        from AWS Secrets Manager with the ENVVAR key `TM_DB_CONNECT_PARAM_JSON`
+        and forms a valid SQLALCHEMY DATABASE URI
+        """
+        import json
+
+        _params = json.loads(os.getenv("TM_DB_CONNECT_PARAM_JSON", None))
+        SQLALCHEMY_DATABASE_URI = (
+            f"postgresql://{_params.get('username')}"
+            + f":{_params.get('password')}"
+            + f"@{_params.get('host')}"
+            + f":{_params.get('port')}"
+            + f"/{_params.get('dbname')}"
+        )
     else:
         SQLALCHEMY_DATABASE_URI = (
             f"postgresql://{POSTGRES_USER}"
@@ -85,11 +105,11 @@ class EnvironmentConfig:
     SUPPORTED_LANGUAGES = {
         "codes": os.getenv(
             "TM_SUPPORTED_LANGUAGES_CODES",
-            "ar, cs, de, el, en, es, fa_IR, fr, he, hu, id, it, ja, mg, ml, nl_NL, pt, pt_BR, ru, sv, sw, tl, tr, uk, zh_TW",  # noqa
+            "ar, cs, de, el, en, es, fa_IR, fr, he, hu, id, it, ja, ko, mg, ml, nl_NL, pt, pt_BR, ru, sv, sw, tl, tr, uk, zh_TW",  # noqa
         ),
         "languages": os.getenv(
             "TM_SUPPORTED_LANGUAGES",
-            "عربى, Česky, Deutsch, Ελληνικά, English, Español, فارسی, Français, עברית, Magyar, Indonesia, Italiano, 日本語, Malagasy, Malayalam, Nederlands, Português, Português (Brasil), Русский язык, Svenska, Kiswahili, Filipino (Tagalog), Türkçe, Українська, 中国台湾",  # noqa
+            "عربى, Čeština, Deutsch, Ελληνικά, English, Español, فارسی, Français, עברית, Magyar, Indonesia, Italiano, 日本語, 한국어, Malagasy, Malayalam, Nederlands, Português, Português (Brasil), Русский язык, Svenska, Kiswahili, Filipino (Tagalog), Türkçe, Українська, 繁體中文",  # noqa
         ),
     }
 
@@ -112,3 +132,21 @@ class EnvironmentConfig:
     # Image upload Api
     IMAGE_UPLOAD_API_KEY = os.getenv("TM_IMAGE_UPLOAD_API_KEY", None)
     IMAGE_UPLOAD_API_URL = os.getenv("TM_IMAGE_UPLOAD_API_URL", None)
+
+    # Sentry backend DSN
+    SENTRY_BACKEND_DSN = os.getenv("TM_SENTRY_BACKEND_DSN", None)
+
+
+class TestEnvironmentConfig(EnvironmentConfig):
+    POSTGRES_USER = os.getenv("POSTGRES_USER", None)
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", None)
+    POSTGRES_ENDPOINT = os.getenv("POSTGRES_ENDPOINT", "localhost")
+    POSTGRES_DB = os.getenv("POSTGRES_DB", None)
+    POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+    SQLALCHEMY_DATABASE_URI = (
+        f"postgresql://{POSTGRES_USER}"
+        + f":{POSTGRES_PASSWORD}"
+        + f"@{POSTGRES_ENDPOINT}:"
+        + f"{POSTGRES_PORT}"
+        + f"/test_{POSTGRES_DB}"
+    )

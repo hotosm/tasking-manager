@@ -3,9 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
 import Popup from 'reactjs-popup';
 import ReactPlaceholder from 'react-placeholder';
-import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
 import { useFetch } from '../../hooks/UseFetch';
 import { useInterval } from '../../hooks/UseInterval';
 import { useGetLockedTasks } from '../../hooks/UseLockedTasks';
@@ -16,6 +14,7 @@ import { getRandomArrayItem } from '../../utils/random';
 import { updateTasksStatus } from '../../utils/updateTasksStatus';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { TasksMap } from './map.js';
+import { TabSelector } from './tabSelector.js';
 import { TaskList } from './taskList';
 import { TasksMapLegend } from './legend';
 import { ProjectInstructions } from './instructions';
@@ -72,7 +71,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   );
   //eslint-disable-next-line
   const [priorityAreasError, priorityAreasLoading, priorityAreas] = useFetch(
-    `/api/v2/projects/${project.projectId}/queries/priority-areas/`,
+    `projects/${project.projectId}/queries/priority-areas/`,
     project.projectId !== undefined,
   );
 
@@ -139,7 +138,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   }, [latestActivities, project.projectId]);
 
   // show the tasks tab when the page loads if the user has already contributed
-  // to the project. If no, show the intructions tab.
+  // to the project. If no, show the instructions tab.
   useEffect(() => {
     if (contributions && contributions.userContributions && activeSection === null) {
       const currentUserContributions = contributions.userContributions.filter(
@@ -294,33 +293,7 @@ export function TaskSelection({ project, type, loading }: Object) {
             >
               <ProjectHeader project={project} />
               <div className="cf">
-                <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
-                  <span
-                    className={`mr4 pb2 pointer ${activeSection === 'tasks' && 'bb b--blue-dark'}`}
-                    onClick={() => setActiveSection('tasks')}
-                  >
-                    <FormattedMessage {...messages.tasks} />
-                  </span>
-                  <span
-                    className={`mr4 pb2 pointer ${
-                      activeSection === 'instructions' && 'bb b--blue-dark'
-                    }`}
-                    onClick={() => setActiveSection('instructions')}
-                  >
-                    <FormattedMessage {...messages.instructions} />
-                  </span>
-                  <span
-                    className={`mr4 pb2 pointer ${
-                      activeSection === 'contributions' && 'bb b--blue-dark'
-                    }`}
-                    onClick={() => {
-                      getContributions(project.projectId);
-                      setActiveSection('contributions');
-                    }}
-                  >
-                    <FormattedMessage {...messages.contributions} />
-                  </span>
-                </div>
+                <TabSelector activeSection={activeSection} setActiveSection={setActiveSection} />
                 <div className="pt3">
                   <div className={`${activeSection !== 'tasks' ? 'dn' : ''}`}>
                     <TaskList
@@ -389,7 +362,7 @@ export function TaskSelection({ project, type, loading }: Object) {
           </ReactPlaceholder>
         </div>
       </div>
-      <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-5">
+      <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-4">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={3}

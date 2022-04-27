@@ -22,7 +22,7 @@ import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
 
 /* lazy imports must be last import */
-const ProjectTimeline = React.lazy(() => import('./timeline'));
+const ProjectTimeline = React.lazy(() => import('./timeline' /* webpackChunkName: "timeline" */));
 
 const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
@@ -83,7 +83,7 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
       <div className="h-75 z-1">
         <ReactPlaceholder
           showLoadingAnimation={true}
-          rows={3}
+          rows={10}
           delay={500}
           ready={typeof project.projectId === 'number'}
         >
@@ -189,17 +189,26 @@ export const ProjectDetail = (props) => {
               <FormattedMessage
                 {...messages.projectCoordination}
                 values={{
-                  organisation: <span className="fw6">{props.project.organisationName}</span>,
+                  organisation: (
+                    <Link
+                      to={`/organisations/${props.project.organisationSlug}`}
+                      className="fw6 link blue-dark"
+                    >
+                      {props.project.organisationName}
+                    </Link>
+                  ),
                   user: userLink,
                 }}
               />
             </p>
             {props.project.organisationLogo && (
-              <img
-                className="w5 mt3 pa1 z-1"
-                src={props.project.organisationLogo}
-                alt={props.project.organisationName}
-              />
+              <Link to={`/organisations/${props.project.organisationSlug}`}>
+                <img
+                  className="w5 mt3 pa1 z-1"
+                  src={props.project.organisationLogo}
+                  alt={props.project.organisationName}
+                />
+              </Link>
             )}
           </>
         )}

@@ -1,35 +1,38 @@
 import React from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import userMessages from '../user/messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 import { useContributorStats } from '../../hooks/UseContributorStats';
-import { StatsCardContent } from '../statsCardContent';
+import { StatsCardContent } from '../statsCard';
 
-function ContributorsStats(props) {
-  const stats = useContributorStats(props.contributors.userContributions);
-  const getUserLevelLabel = (level) =>
-    props.intl.formatMessage(userMessages[`mapperLevel${level}`]);
-  const getUserExpLabel = (id) => props.intl.formatMessage(messages[`${id}`]);
+export default function ContributorsStats({ contributors }) {
+  const intl = useIntl();
+  const stats = useContributorStats(contributors.userContributions);
+  const getUserLevelLabel = (level) => intl.formatMessage(userMessages[`mapperLevel${level}`]);
+  const getUserExpLabel = (id) => intl.formatMessage(messages[`${id}`]);
 
   let userLevelsReference = [
     {
       label: getUserLevelLabel('BEGINNER'),
       field: 'beginnerUsers',
       backgroundColor: CHART_COLOURS.green,
+      borderColor: CHART_COLOURS.white,
     },
     {
       label: getUserLevelLabel('INTERMEDIATE'),
       field: 'intermediateUsers',
       backgroundColor: CHART_COLOURS.blue,
+      borderColor: CHART_COLOURS.white,
     },
     {
       label: getUserLevelLabel('ADVANCED'),
       field: 'advancedUsers',
       backgroundColor: CHART_COLOURS.orange,
+      borderColor: CHART_COLOURS.white,
     },
   ];
   let userExperienceReference = [
@@ -61,59 +64,62 @@ function ContributorsStats(props) {
   ];
 
   return (
-    <div className="ph2 ph4-ns pv3 pt3 pb4">
-      <h3 className="f3 ttu barlow-condensed pv3 ma0">
+    <div className="ph2 ph4-ns">
+      <h3 className="f3 ttu barlow-condensed">
         <FormattedMessage {...messages.contributors} />
       </h3>
-      <div className="cf w-third-l w-100 fl tc">
-        <div className="mb3 ph2">
+      <div className="cf w-third-l w-100 fl pa2">
+        <div className="cf bg-tan tc">
           <StatsCardContent
             value={stats.mappers}
             label={<FormattedMessage {...messages.mappers} />}
-            className="pv3-l pv2 shadow-1"
+            className="pv3-l pv2 mb3-l mb2 shadow-4 bg-white"
           />
-        </div>
-        <div className="mv3 ph2">
           <StatsCardContent
             value={stats.validators}
             label={<FormattedMessage {...messages.validators} />}
-            className="pv3-l pv2 shadow-1"
+            className="pv3-l pv2 mb3-l mb2 shadow-4 bg-white"
           />
-        </div>
-        <div className="mv3 ph2">
           <StatsCardContent
-            value={props.contributors.userContributions.length}
+            value={contributors.userContributions.length}
             label={<FormattedMessage {...messages.totalContributors} />}
-            className="pv3-l pv2 shadow-1"
+            className="pv3-l pv2 mb3-l mb2 shadow-4 bg-white"
           />
         </div>
       </div>
-      <div className="cf w-third-l w-100 fl ph2 mv0-l mv3">
-        <h3 className="f4 ttu barlow-condensed pb3 ph2 ma0">
-          <FormattedMessage {...messages.usersExperience} />
-        </h3>
-        <Bar
-          data={formatChartData(userExperienceReference, stats)}
-          options={{
-            legend: { display: false },
-            tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
-          }}
-        />
+      <div className="w-third-l w-100 fl pa2">
+        <div className="cf bg-white pb4 ph3 pt2 shadow-4">
+          <h3 className="f4 mv3 fw6">
+            <FormattedMessage {...messages.usersExperience} />
+          </h3>
+          <Bar
+            data={formatChartData(userExperienceReference, stats)}
+            options={{
+              plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+              },
+            }}
+          />
+        </div>
       </div>
-      <div className="cf w-third-l w-100 fl mv0-l mv3">
-        <h3 className="f4 ttu barlow-condensed pb3 ph2 ma0">
-          <FormattedMessage {...messages.usersLevel} />
-        </h3>
-        <Doughnut
-          data={formatChartData(userLevelsReference, stats)}
-          options={{
-            legend: { position: 'right', labels: { boxWidth: 12 } },
-            tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
-          }}
-        />
+      <div className="w-third-l w-100 fl pa2">
+        <div className="cf bg-white pb4 ph3 pt2 shadow-4">
+          <h3 className="f4 mv3 fw6">
+            <FormattedMessage {...messages.usersLevel} />
+          </h3>
+          <Doughnut
+            data={formatChartData(userLevelsReference, stats)}
+            options={{
+              aspectRatio: 2,
+              plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12 } },
+                tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+              },
+            }}
+          />
+        </div>
       </div>
     </div>
   );
 }
-
-export default injectIntl(ContributorsStats);

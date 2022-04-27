@@ -54,7 +54,7 @@ export function Members({
     <>
       <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
         <div className="cf db">
-          <h3 className="f3 blue-dark mt0 fw6 fl">{title}</h3>
+          <h3 className="f3 blue-dark mv2 fw6 fl">{title}</h3>
           <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
         </div>
         <div className="cf mb1">

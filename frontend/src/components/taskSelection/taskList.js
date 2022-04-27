@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from '@reach/router';
 import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
@@ -197,6 +197,16 @@ export function TaskList({
   const [sortBy, setSortingOption] = useQueryParam('sortBy', StringParam);
   const [statusFilter, setStatusFilter] = useQueryParam('filter', StringParam);
 
+  const orderedTasks = useCallback(
+    (criteria) => {
+      if (criteria === 'id') return readyTasks.sort(compareTaskId);
+      if (criteria === '-date') return readyTasks.sort(compareLastUpdate).reverse();
+      // default option is to order by date
+      return readyTasks.sort(compareLastUpdate);
+    },
+    [readyTasks],
+  );
+
   useEffect(() => {
     if (tasks && tasks.features) {
       let newTasks = tasks.features;
@@ -245,7 +255,8 @@ export function TaskList({
 
   const sortingOptions = [
     { label: <FormattedMessage {...messages.sortById} />, value: 'id' },
-    { label: <FormattedMessage {...messages.sortByLastUpdate} />, value: 'date' },
+    { label: <FormattedMessage {...messages.sortByMostRecentlyUpdate} />, value: 'date' },
+    { label: <FormattedMessage {...messages.sortByLeastRecentlyUpdate} />, value: '-date' },
   ];
 
   return (
@@ -276,8 +287,6 @@ export function TaskList({
         </div>
         <div className="w-60-l w-50-m w-100 dib pv1">
           <Dropdown
-            onAdd={() => {}}
-            onRemove={() => {}}
             onChange={updateSortingOption}
             value={sortBy || 'date'}
             options={sortingOptions}
@@ -300,9 +309,7 @@ export function TaskList({
         {readyTasks && (
           <PaginatedList
             pageSize={6}
-            items={
-              sortBy === 'id' ? readyTasks.sort(compareTaskId) : readyTasks.sort(compareLastUpdate)
-            }
+            items={orderedTasks(sortBy)}
             ItemComponent={TaskItem}
             setZoomedTaskId={setZoomedTaskId}
             setActiveTaskModal={setActiveTaskModal}
@@ -357,11 +364,11 @@ function TaskActivityModal({
             <div className="w-100 pa4 blue-dark bg-white">
               <CloseIcon className="h1 w1 fr pointer" onClick={() => close()} />
               <h3 className="ttu f3 pa0 ma0 barlow-condensed b mb4">
-                <FormattedMessage {...messages.taskSplitted} />
+                <FormattedMessage {...messages.taskUnavailable} />
               </h3>
               <p className="pb0">
                 <FormattedMessage
-                  {...messages.taskSplittedDescription}
+                  {...messages.taskSplitDescription}
                   values={{ id: <b>#{taskId}</b> }}
                 />
               </p>
@@ -385,16 +392,18 @@ function PaginatedList({
 }: Object) {
   const [page, setPage] = useQueryParam('page', NumberParam);
   const lastPage = howManyPages(items.length, pageSize);
-  // change page to 1 if the page number is not valid
-  if (items && page && page > lastPage) {
-    setPage(1);
-  }
+  // reset page number to 1 if it is not valid any more
+  useEffect(() => {
+    if (items && page > 1 && page > lastPage) {
+      setPage(1);
+    }
+  }, [items, page, lastPage, setPage]);
 
   const latestItems = useRef(items);
   useEffect(() => {
     latestItems.current = items;
   });
-  // the useEffect above avoids the next one to run everytime the items change
+  // the useEffect above avoids the next one to run every time the items change
   useEffect(() => {
     // switch the taskList page to always show the selected task.
     // Only do it if there is only one task selected

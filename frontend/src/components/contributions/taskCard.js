@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from '@reach/router';
 import Popup from 'reactjs-popup';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
-import { ListIcon, ResumeIcon, ClockIcon } from '../svgIcons';
+import { ListIcon, ResumeIcon, ClockIcon, CommentIcon } from '../svgIcons';
 import { TaskStatus } from '../taskSelection/taskList';
 import { TaskActivity } from '../taskSelection/taskActivity';
 
@@ -21,14 +21,11 @@ export function TaskCard({
   autoUnlockSeconds,
   lastUpdated,
   lastUpdatedBy,
+  numberOfComments,
 }: Object) {
   const [isHovered, setHovered] = useState(false);
-  if (!title) {
-    title = 'My Project';
-  }
-  if (!lastUpdatedBy) {
-    lastUpdatedBy = 'user';
-  }
+  const taskLink = `/projects/${projectId}/tasks?search=${taskId}`;
+  const intl = useIntl();
 
   const timeToAutoUnlock =
     lastUpdated &&
@@ -44,11 +41,8 @@ export function TaskCard({
         }`}
       >
         <div className="pv3 ph3 ba br1 b--grey-light cf">
-          <div className="w-40-ns w-100 fl">
-            <Link
-              to={`/projects/${projectId}/tasks/?search=${taskId}`}
-              className="no-underline link blue-dark dib"
-            >
+          <div className="w-third-ns w-100 fl">
+            <Link to={taskLink} className="no-underline link blue-dark dib">
               <h4 className="mv0 fw6 f5">
                 <FormattedMessage
                   {...messages.projectTask}
@@ -65,7 +59,7 @@ export function TaskCard({
               </span>
             </div>
           </div>
-          <div className="w-40-ns w-100 fl">
+          <div className="w-third-ns w-100 fl">
             <div className={lockHolder ? '' : 'pv2 mv1'}>
               <div className="db">
                 <TaskStatus status={taskStatus} lockHolder={lockHolder} />
@@ -86,7 +80,18 @@ export function TaskCard({
               )}
             </div>
           </div>
-          <div className="w-20-ns w-100 fr">
+          <div className="w-third-ns w-100 fr">
+            {numberOfComments ? (
+              <span
+                className="w-auto tr fl mv1 pv2 f6 blue-grey"
+                title={intl.formatMessage(messages.commentsNumber, { number: numberOfComments })}
+              >
+                <CommentIcon className="pr2 v-mid" height="19px" width="13px" />
+                {numberOfComments}
+              </span>
+            ) : (
+              ''
+            )}
             <Popup
               trigger={
                 <ListIcon className="pointer fr h1 w1 mv1 pv2 v-mid pr3 blue-light hover-blue-grey" />
@@ -102,7 +107,7 @@ export function TaskCard({
               ['READY', 'LOCKED_FOR_MAPPING', 'LOCKED_FOR_VALIDATION', 'INVALIDATED'].includes(
                 taskStatus,
               ) && (
-                <Link to={`/projects/${projectId}/tasks#search=${taskId}`}>
+                <Link to={taskLink}>
                   <div className={`dn dib-l link pv2 ph3 mh3 mv1 bg-red white f7 fr`}>
                     <ResumeIcon className={`ph1 dib-l dn`} />
                     <FormattedMessage {...messages.resumeTask} />

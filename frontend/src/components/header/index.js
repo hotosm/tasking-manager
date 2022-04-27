@@ -5,12 +5,13 @@ import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { ORG_URL, ORG_NAME } from '../../config';
+import { ORG_URL, ORG_NAME, ORG_LOGO, SERVICE_DESK } from '../../config';
 import logo from '../../assets/img/main-logo-ohm.svg';
 import { ExternalLinkIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { LocaleSelector } from '../localeSelect';
 import { Button } from '../button';
+import { UpdateDialog } from './updateDialog';
 import { BurgerMenu } from './burgerMenu';
 import { TopNavLink } from './NavLink';
 import { SignUp } from './signUp';
@@ -33,6 +34,10 @@ function getMenuItensForUser(userDetails, organisations) {
     { label: messages.learn, link: 'learn', showAlways: true },
     { label: messages.about, link: 'about', showAlways: true },
   ];
+  if (SERVICE_DESK) {
+    menuItems.push({ label: messages.support, link: SERVICE_DESK, showAlways: true, serviceDesk: true });
+  }
+
   let filteredMenuItems;
   if (userDetails.username) {
     filteredMenuItems = menuItems.filter((item) => item.authenticated === true || item.showAlways);
@@ -48,17 +53,16 @@ function getMenuItensForUser(userDetails, organisations) {
   return filteredMenuItems;
 }
 
-const UserDisplay = (props) => {
+const UserDisplay = ({ username }) => {
   return (
     <span>
       <CurrentUserAvatar className="br-100 v-mid red h2 w2 dib" />
-      <span className="pl2">{props.username}</span>
+      <span className="pl2 mw5 dib v-mid truncate">{username}</span>
     </span>
   );
 };
 
-const AuthButtons = (props) => {
-  const { logInStyle, signUpStyle, redirectTo } = props;
+const AuthButtons = ({ logInStyle, signUpStyle, redirectTo, alternativeSignUpText = false }) => {
   const [debouncedCreateLoginWindow] = useDebouncedCallback(
     (redirectToPass) => createLoginWindow(redirectToPass),
     3000,
@@ -73,7 +77,11 @@ const AuthButtons = (props) => {
       <Popup
         trigger={
           <Button className={signUpStyle}>
-            <FormattedMessage {...messages.signUp} />
+            {alternativeSignUpText ? (
+              <FormattedMessage {...messages.createAccount} />
+            ) : (
+              <FormattedMessage {...messages.signUp} />
+            )}
           </Button>
         }
         modal
@@ -93,9 +101,21 @@ const PopupItems = (props) => {
         .filter((item) => item.authenticated === false || item.showAlways)
         .map((item, n) => (
           <p key={n}>
-            <Link to={item.link} className={props.linkCombo} onClick={props.close}>
-              <FormattedMessage {...item.label} />
-            </Link>
+            {!item.serviceDesk ? (
+              <Link to={item.link} className={props.linkCombo} onClick={props.close}>
+                <FormattedMessage {...item.label} />
+              </Link>
+            ) : (
+              <a
+                href={item.link}
+                target="_blank"
+                rel="noreferrer"
+                className="link mh3 barlow-condensed blue-dark f4 ttu"
+              >
+                <FormattedMessage {...item.label} />
+                <ExternalLinkIcon className="pl2 v-cen" style={{ height: '15px' }} />
+              </a>
+            )}
           </p>
         ))}
       <p className="bb b--grey-light"></p>
@@ -110,6 +130,7 @@ const PopupItems = (props) => {
               </Link>
             </p>
           ))}
+
       {/* user links */}
       {props.userDetails.username && (
         <>
@@ -159,9 +180,23 @@ class Header extends React.Component {
     return (
       <div className="v-mid">
         {filteredMenuItems.map((item, n) => (
-          <TopNavLink to={item.link} key={n} isActive={this.isActive}>
-            <FormattedMessage {...item.label} />
-          </TopNavLink>
+          <>
+            {!item.serviceDesk ? (
+              <TopNavLink to={item.link} key={n} isActive={this.isActive}>
+                <FormattedMessage {...item.label} />
+              </TopNavLink>
+            ) : (
+              <a
+                href={item.link}
+                target="_blank"
+                rel="noreferrer"
+                className="link mh3 barlow-condensed blue-dark f4 ttu"
+              >
+                <FormattedMessage {...item.label} />
+                <ExternalLinkIcon className="pl2 v-cen" style={{ height: '15px' }} />
+              </a>
+            )}
+          </>
         ))}
       </div>
     );
@@ -194,8 +229,6 @@ class Header extends React.Component {
       <>
         <NotificationBell />
         <Dropdown
-          onAdd={() => {}}
-          onRemove={() => {}}
           onChange={this.onUserMenuSelect}
           value={[]}
           display={<UserDisplay username={this.props.userDetails.username} />}
@@ -207,7 +240,6 @@ class Header extends React.Component {
       <div className="dib">
         <LocaleSelector className="bn dn dib-66rem" />
         <AuthButtons
-          aStyle="mh1 v-mid dn dib-ns"
           logInStyle="blue-dark bg-white"
           signUpStyle="bg-blue-dark white ml1 v-mid dn dib-ns"
           redirectTo={this.props.location.pathname}
@@ -220,6 +252,7 @@ class Header extends React.Component {
     return (
       // Validate that user has set is email.
       <header className="w-100 bb b--grey-light">
+        <UpdateDialog />
         {this.checkUserEmail()}
         {this.props.showOrgBar && (
           <div className="cf ph2 red pt3 pb2 bb b--grey-light">
@@ -239,12 +272,7 @@ class Header extends React.Component {
         <div className="mt3 pb1 pb2-ns ph2 dib w-100">
           <div className="cf fl pt1 dib">
             <Link to={'/'} className="link mv-1">
-              <img
-                src={logo}
-                alt={`${ORG_NAME} logo`}
-                className="ml2 v-mid pb2"
-                style={{ width: '54px' }}
-              />
+              <img src={ORG_LOGO || logo} alt={`${ORG_NAME} logo`} className="h2 ml2 v-mid pb2" />
               <span className="barlow-condensed f3 fw6 ml2 blue-dark">Tasking Manager</span>
             </Link>
           </div>

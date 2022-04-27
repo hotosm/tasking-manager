@@ -1,16 +1,18 @@
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
+import { FormattedMessage } from 'react-intl';
+
 import messages from './messages';
 import { FormSubmitButton } from '../button';
+import { SERVICE_DESK } from '../../config';
 
-export const ContactForm = props => {
+export const ContactForm = (props) => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
   return (
     <Form
-      onSubmit={values => props.submitMessage(values)}
+      onSubmit={(values) => props.submitMessage(values)}
       initialValues={props.contactUsValues}
       render={({ handleSubmit, pristine, form, submitting, values }) => {
         return (
@@ -19,8 +21,27 @@ export const ContactForm = props => {
               <h3 className="f3 fw6 dib blue-dark mv0">
                 <FormattedMessage {...messages.contacterTitle} />
               </h3>
-              <div>
+              <div className="pt3 lh-title">
                 <FormattedMessage {...messages.contacterHeaderText} />
+                {SERVICE_DESK && ' '}
+                {SERVICE_DESK && (
+                  <FormattedMessage
+                    {...messages.contactServiceDesk}
+                    values={{
+                      b: (chunks) => (
+                        <a
+                          href={SERVICE_DESK}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="red link"
+                        >
+                          {chunks}
+                        </a>
+                      ),
+                      link: <FormattedMessage {...messages.serviceDesk} />,
+                    }}
+                  />
+                )}
               </div>
               <form id="contact-form" onSubmit={handleSubmit}>
                 <fieldset className="bn pa0" disabled={submitting || props.disabledForm}>

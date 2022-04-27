@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
+import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
 import ReactPlaceholder from 'react-placeholder';
-import { Link, redirectTo } from '@reach/router';
+import { Link, useNavigate } from '@reach/router';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
 
@@ -17,6 +18,7 @@ export const EditLicense = (props) => {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, license] = useFetch(`licenses/${props.id}/`);
+  useSetTitleTag(`Edit ${license.name}`);
 
   const updateLicense = (payload) => {
     pushToLocalJSONAPI(`licenses/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
@@ -25,7 +27,7 @@ export const EditLicense = (props) => {
   return (
     <div className="cf pv4 bg-tan">
       <div className="cf">
-        <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib ttu">
+        <h3 className="f2 ttu blue-dark fw7 barlow-condensed v-mid ma0 dib">
           <FormattedMessage {...messages.manageLicense} />
         </h3>
         <DeleteModal id={license.licenseId} name={license.name} type="licenses" />
@@ -43,6 +45,7 @@ export const EditLicense = (props) => {
 };
 
 export const ListLicenses = () => {
+  useSetTitleTag('Manage licenses');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   // TO DO: filter teams of current user
   const [error, loading, licenses] = useFetch(`licenses/`);
@@ -70,18 +73,13 @@ export const ListLicenses = () => {
 };
 
 export const CreateLicense = () => {
+  useSetTitleTag('Create new license');
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.get('token'));
-  const [newLicenseId, setNewLicenseId] = useState(null);
-
-  useEffect(() => {
-    if (newLicenseId) {
-      redirectTo(`/manage/licenses/${newLicenseId}`);
-    }
-  }, [newLicenseId]);
 
   const createLicense = (payload) => {
     pushToLocalJSONAPI('licenses/', JSON.stringify(payload), token, 'POST').then((result) =>
-      setNewLicenseId(result.licenseId),
+      navigate(`/manage/licenses/${result.licenseId}`),
     );
   };
 

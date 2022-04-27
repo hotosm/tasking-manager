@@ -62,8 +62,6 @@ export function OrderBySelector(props) {
   };
   return (
     <Dropdown
-      onAdd={() => {}}
-      onRemove={() => {}}
       onChange={onSortSelect}
       value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}` || []}
       options={options}

@@ -80,6 +80,7 @@ class ValidatingNotAllowed(Enum):
     NOT_A_VALIDATION_TEAM = 105
     USER_NOT_TEAM_MEMBER = 106
     PROJECT_HAS_NO_TEAM = 107
+    USER_ALREADY_HAS_TASK_LOCKED = 108
 
 
 class UserGender(Enum):
@@ -107,6 +108,7 @@ class Editors(Enum):
     POTLATCH_2 = 2
     FIELD_PAPERS = 3
     CUSTOM = 4
+    RAPID = 5
 
 
 class TeamVisibility(Enum):
@@ -148,3 +150,11 @@ class ValidationPermission(Enum):
     LEVEL = 1
     TEAMS = 2
     TEAMS_LEVEL = 3
+
+
+class OrganisationType(Enum):
+    """ Describes an organisation's subscription type """
+
+    FREE = 1
+    DISCOUNTED = 2
+    FULL_FEE = 3

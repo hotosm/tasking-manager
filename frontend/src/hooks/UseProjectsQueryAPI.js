@@ -22,6 +22,7 @@ const projectQueryAllSpecification = {
   team: NumberParam,
   location: StringParam,
   types: CommaArrayParam,
+  exactTypes: BooleanParam,
   interests: CommaArrayParam,
   page: NumberParam,
   text: StringParam,
@@ -32,6 +33,7 @@ const projectQueryAllSpecification = {
   favoritedByMe: BooleanParam,
   mappedByMe: BooleanParam,
   status: StringParam,
+  action: StringParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -49,6 +51,7 @@ const backendToQueryConversion = {
   organisation: 'organisationName',
   location: 'country',
   types: 'mappingTypes',
+  exactTypes: 'mappingTypesExact',
   interests: 'interests',
   text: 'textSearch',
   page: 'page',
@@ -59,6 +62,7 @@ const backendToQueryConversion = {
   favoritedByMe: 'favoritedByMe',
   mappedByMe: 'mappedByMe',
   status: 'projectStatuses',
+  action: 'action',
 };
 
 const dataFetchReducer = (state, action) => {
@@ -109,6 +113,7 @@ export const useProjectsQueryAPI = (
   /* Get the user bearer token from the Redux store */
   const token = useSelector((state) => state.auth.get('token'));
   const locale = useSelector((state) => state.preferences['locale']);
+  const action = useSelector((state) => state.preferences['action']);
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
@@ -140,6 +145,10 @@ export const useProjectsQueryAPI = (
         throttledExternalQueryParamsState,
         backendToQueryConversion,
       );
+      // it's needed in order to query by action when the user goes to /explore page
+      if (paramsRemapped.action === undefined && action) {
+        paramsRemapped.action = action;
+      }
 
       try {
         const result = await axios({
@@ -181,7 +190,7 @@ export const useProjectsQueryAPI = (
           // The request was made and the server responded with a status code
           // that falls out of the range of 2xx
           console.log(
-            'Res failure',
+            'Response failure',
             error.response.data,
             error.response.status,
             error.response.headers,
@@ -193,7 +202,7 @@ export const useProjectsQueryAPI = (
           // The request was made but no response was received
           // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
           // http.ClientRequest in node.js
-          console.log('req failure', error.request, errorReqPayload);
+          console.log('Request failure', error.request, errorReqPayload);
           dispatch({ type: 'FETCH_FAILURE', payload: errorReqPayload });
         } else if (!didCancel) {
           dispatch({ type: 'FETCH_FAILURE' });
@@ -210,7 +219,7 @@ export const useProjectsQueryAPI = (
       console.log('tried to cancel on effect cleanup ', cancel && cancel.params);
       cancel && cancel.end();
     };
-  }, [throttledExternalQueryParamsState, forceUpdate, token, locale]);
+  }, [throttledExternalQueryParamsState, forceUpdate, token, locale, action]);
 
   return [state, dispatch];
 };

@@ -14,14 +14,20 @@ export function ManagementMenu({ isAdmin }: Object) {
     'users',
     'licenses',
   ];
-  // non admin users can only see the three first itens
+  // non admin users can only see the three first items
   if (!isAdmin) {
     links = links.slice(0, 3);
   }
-  const items = links.map((item) => ({
-    url: `/manage/${item}/${item === 'projects' ? '?status=PUBLISHED&managedByMe=1' : ''}`,
+  let items = links.map((item) => ({
+    url: `/manage/${item}/${
+      item === 'projects' ? '?status=PUBLISHED&managedByMe=1&action=any' : ''
+    }`,
     label: <FormattedMessage {...messages[item]} />,
   }));
+  items.push({
+    url: '/manage/stats/',
+    label: <FormattedMessage {...messages.statistics} />,
+  });
 
   return <SectionMenu items={items} />;
 }

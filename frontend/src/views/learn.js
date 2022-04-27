@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
+import { Link } from '@reach/router';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { TopBar } from '../components/header/topBar';
-import { PlayIcon, CloseIcon } from '../components/svgIcons';
+import {
+  PlayIcon,
+  CloseIcon,
+  PolygonIcon,
+  SelectProject,
+  SelectTask,
+  ValidationIcon,
+  HumanProcessingIcon,
+  WorldNodesIcon,
+} from '../components/svgIcons';
 
 import CommunityLogo from '../assets/img/icons/community.jpg';
 import EmergencyMappingLogo from '../assets/img/icons/emergency-mapping.jpg';
 import TechnicalLogo from '../assets/img/icons/technical.jpg';
-import ValidateStepIdentity from '../assets/img/icons/validate_step_identify.png';
-import ValidateStepBuild from '../assets/img/icons/validate_step_build.png';
-import ValidateStepCollaborate from '../assets/img/icons/validate_step_collaborate.png';
-import SelectProject from '../assets/img/icons/map_step_select_project.png';
-import SelectTask from '../assets/img/icons/map_step_select_task.png';
-import MapOSM from '../assets/img/icons/map_step_osm.png';
 import LearnOSMLogo from '../assets/img/learn-osm-logo.svg';
 import QuickstartLogo from '../assets/img/main-logo-ohm.svg';
 
@@ -24,68 +28,110 @@ const LearnNav = ({ sections, section, setSection }) => {
   return (
     <div className="w-50 w-100-m">
       <ul className="pa0 ma0 list bg-tan dib">
-        {sections.map((s) => {
-          return (
-            <li
-              className={`f5 dib mh2 pa3 link pointer underline-hover ${
-                section === s ? 'underline' : ''
-              }`}
-              onClick={() => setSection(s)}
-            >
-              {<FormattedMessage {...messages[s]} />}
-            </li>
-          );
-        })}
+        {sections.map((s) => (
+          <li
+            className={`f5 dib mh3 pt3 link pointer no-underline ${
+              section === s ? 'bb b--blue-dark bw1 pb1' : 'pb3'
+            }`}
+            onClick={() => setSection(s)}
+            key={s}
+          >
+            <FormattedMessage {...messages[s]} />
+          </li>
+        ))}
       </ul>
     </div>
   );
 };
 
-const Steps = ({ items }) => {
-  return (
-    <div className="w-100 cf relative">
-      {items.map((v, i) => {
-        return (
-          <div className="w-third-ns w-100 fl pa2 z-2 bg-white">
-            <div className="shadow-1 pa3">
-              <img className="w-35" src={v.img} alt={v.message} />
-
-              <p className="blue-dark b f4 pt0">
-                <span className="mr1">{i + 1}.</span>
-                {<FormattedMessage {...messages[`${v.message}Title`]} />}
-              </p>
-              <p className="blue-grey lh-title f5">
-                {<FormattedMessage {...messages[`${v.message}Description`]} values={v.values} />}
-              </p>
-            </div>
-          </div>
-        );
-      })}
-      <div
-        style={{ height: '60%' }}
-        className="w-100 bg-tan relative bottom--2 right--2 z-1 "
-      ></div>
-    </div>
-  );
-};
-
-const Intro = ({ section, messagesObjs }) => {
-  return (
+const Intro = ({ section, messagesObjs }) => (
+  <div className="w-100 cf">
     <div className="w-100 cf">
-      <div className="w-100 cf">
-        <div className="w-30-ns w-100 fl">
-          <p className="barlow-condensed f2 ttu b fw6">
-            {<FormattedMessage {...messages[section]} />}
-          </p>
-        </div>
-        <div className="w-70-ns w-100 fr lh-copy f4">
-          <p className="b">{<FormattedMessage {...messages[messagesObjs.intro]} />}</p>
-          <p className="f5">{<FormattedMessage {...messages[messagesObjs.description]} />}</p>
-        </div>
+      <div className="w-30-ns w-100 fl">
+        <p className="barlow-condensed f2 ttu b fw6">
+          {<FormattedMessage {...messages[section]} />}
+        </p>
+      </div>
+      <div className="w-70-ns w-100 fr lh-copy f4">
+        <p className="b">{<FormattedMessage {...messages[messagesObjs.intro]} />}</p>
+        <p className="f5">
+          {
+            <FormattedMessage
+              {...messages[messagesObjs.description]}
+              values={messagesObjs.values}
+            />
+          }
+        </p>
       </div>
     </div>
-  );
-};
+  </div>
+);
+
+const Steps = ({ items }) => (
+  <div className="w-100 cf relative">
+    {items.map((item, i) => (
+      <div className="w-third-ns w-100 fl pa2 z-2 bg-white" key={i}>
+        <div className="shadow-1 pa3">
+          {item.img}
+
+          <p className="blue-dark b f4 pt0">
+            <span className="mr1">{i + 1}.</span>
+            {item.titleLink ? (
+              <Link to={item.titleLink} className="link no-underline blue-dark">
+                <FormattedMessage {...messages[`${item.message}Title`]} />
+              </Link>
+            ) : (
+              <FormattedMessage {...messages[`${item.message}Title`]} />
+            )}
+          </p>
+          <p className="blue-grey lh-title f5">
+            <FormattedMessage {...messages[`${item.message}Description`]} values={item.values} />
+          </p>
+        </div>
+      </div>
+    ))}
+    <div style={{ height: '60%' }} className="w-100 bg-tan relative bottom--2 right--2 z-1 "></div>
+  </div>
+);
+
+const Manuals = ({ contents }) => (
+  <div className="mv3">
+    <h3 className="f2 ttu barlow-condensed fw6">
+      <FormattedMessage {...messages.learnManualsTitle} />
+    </h3>
+    <div className="w-100 cf">
+      {contents.map((content, i) => (
+        <div key={i} style={{ height: '20rem' }} className="w-25-l w-third-m w-100 fl ph2">
+          <div className="shadow-4">
+            <a
+              className="no-underline"
+              rel="noopener noreferrer"
+              target="_blank"
+              href={content.url}
+            >
+              <div
+                className="bg-tan w-100 tc h4"
+                style={{
+                  background: `#f0efef url(${content.img}) no-repeat center`,
+                  backgroundSize: '55%',
+                }}
+              ></div>
+              <div className="pa3" style={{ height: '12rem' }}>
+                <p className="fw7 f4 mt0 blue-dark">
+                  <FormattedMessage {...messages[`${content.message}Title`]} />
+                </p>
+
+                <p className="blue-grey lh-title f5">
+                  <FormattedMessage {...messages[`${content.message}Description`]} />
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 const Videos = ({ contents }) => {
   const [activeVideo, setActiveVideo] = useState(null);
@@ -103,9 +149,9 @@ const Videos = ({ contents }) => {
         <FormattedMessage {...messages.learnVideosTitle} />
       </h3>
       <div className="w-100 cf">
-        {contents.map((content) => {
+        {contents.map((content, i) => {
           return (
-            <div className="w-25-l w-third-m w-100 fl ph2">
+            <div className="w-25-l w-third-m w-100 fl ph2" key={i}>
               <div className="shadow-4 pointer" onClick={() => setActiveVideo(content)}>
                 <div
                   className="bg-tan w-100 tc h5-l h4"
@@ -167,71 +213,46 @@ const Videos = ({ contents }) => {
   );
 };
 
-const Manuals = ({ contents }) => {
-  return (
-    <div className="mv3">
-      <h3 className="f2 ttu barlow-condensed fw6">
-        <FormattedMessage {...messages.learnManualsTitle} />
-      </h3>
-      <div className="w-100 cf">
-        {contents.map((content) => {
-          return (
-            <div style={{ height: '20rem' }} className="w-25-l w-third-m w-100 fl ph2">
-              <div className="shadow-4">
-                <a
-                  className="no-underline"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  href={content.url}
-                >
-                  <div
-                    className="bg-tan w-100 tc h4"
-                    style={{
-                      background: `#f0efef url(${content.img}) no-repeat center`,
-                      backgroundSize: '55%',
-                    }}
-                    bac
-                  ></div>
-                  <div className="pa3" style={{ height: '12rem' }}>
-                    <p className="fw7 f4 mt0 blue-dark">
-                      <FormattedMessage {...messages[`${content.message}Title`]} />
-                    </p>
-
-                    <p className="blue-grey lh-title f5">
-                      <FormattedMessage {...messages[`${content.message}Description`]} />
-                    </p>
-                  </div>
-                </a>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-const LearnStruct = ({ section, messagesObjs, items }) => {
-  return (
-    <div>
-      <Intro section={section} messagesObjs={messagesObjs} />
-      <Steps items={items} />
-    </div>
-  );
-};
-
 const LearnToManage = ({ section }) => {
   const messagesObjs = {
     intro: 'learnManageIntro',
     description: 'learnManageDescription',
+    values: {
+      organizationsListLink: (
+        <a
+          className="link red fw5"
+          target="_blank"
+          rel="noreferrer"
+          href="https://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Team/HOT_Tasking_Manager_Organizations"
+        >
+          <FormattedMessage {...messages.list} />
+        </a>
+      ),
+      createNewOrganizationFormLink: (
+        <a
+          className="link red fw5"
+          target="_blank"
+          rel="noreferrer"
+          href="https://docs.google.com/forms/d/e/1FAIpQLSdW4O4qVYI7vdway5qdqMxp_gLhSuYVKYAwpq_jUzrcqipNeg/viewform"
+        >
+          <FormattedMessage {...messages.form} />
+        </a>
+      ),
+    },
   };
 
   const items = [
-    { message: 'learnManageStepJoin', img: CommunityLogo },
-    { message: 'learnManageStepCreate', img: EmergencyMappingLogo },
+    {
+      message: 'learnManageStepJoin',
+      img: <img className="w-35" src={CommunityLogo} alt={'join a community'} />,
+    },
+    {
+      message: 'learnManageStepCreate',
+      img: <img className="w-35" src={EmergencyMappingLogo} alt={'create project'} />,
+    },
     {
       message: 'learnManageStepData',
-      img: TechnicalLogo,
+      img: <img className="w-35" src={TechnicalLogo} alt={'use the data'} />,
       values: {
         exportToolLink: (
           <a className="link red fw5" href="https://export.hotosm.org/">
@@ -257,7 +278,8 @@ const LearnToManage = ({ section }) => {
 
   return (
     <div className="w-100">
-      <LearnStruct section={section} messagesObjs={messagesObjs} items={items} />
+      <Intro section={section} messagesObjs={messagesObjs} />
+      <Steps items={items} />
       <Manuals contents={tutorials} />
     </div>
   );
@@ -270,30 +292,30 @@ const LearnToValidate = ({ section }) => {
   };
 
   const items = [
-    { message: 'learnValidateStepIdentify', img: ValidateStepIdentity },
+    { message: 'learnValidateStepIdentify', img: <ValidationIcon className="red" /> },
     {
       message: 'learnValidateStepBuild',
-      img: ValidateStepBuild,
+      img: <HumanProcessingIcon className="red" />,
       values: {
         taggingLink: (
           <a className="link red fw5" href="https://wiki.openstreetmap.org/wiki/Map_Features">
-            OpenStreetMap tagging schema
+            <FormattedMessage {...messages.osmTaggingSchema} />
           </a>
         ),
       },
     },
     {
       message: 'learnValidateStepCollaborate',
-      img: ValidateStepCollaborate,
+      img: <WorldNodesIcon className="red" />,
       values: {
         mailingListLink: (
           <a className="link red fw5" href="https://wiki.openstreetmap.org/wiki/Mailing_lists">
-            mailing lists
+            <FormattedMessage {...messages.mailingLists} />
           </a>
         ),
         forumLink: (
           <a className="link red fw5" href="https://forum.openstreetmap.org/">
-            forum
+            <FormattedMessage {...messages.forum} />
           </a>
         ),
       },
@@ -305,11 +327,16 @@ const LearnToValidate = ({ section }) => {
       message: 'learnValidateHowToVideo',
       youTubeId: 'frVwlJn4tdI',
     },
+    {
+      message: 'learnValidateTrainingVideo',
+      youTubeId: 'YQ18XfRM6d4',
+    },
   ];
 
   return (
     <div className="w-100">
-      <LearnStruct section={section} messagesObjs={messagesObjs} items={items} />
+      <Intro section={section} messagesObjs={messagesObjs} />
+      <Steps items={items} />
       <p className="w-60 lh-copy f5 left mb5">
         {<FormattedMessage {...messages.learnValidateNote} />}
       </p>
@@ -325,9 +352,13 @@ const LearnToMap = ({ section }) => {
   };
 
   const items = [
-    { message: 'learnMapStepSelectProject', img: SelectProject },
-    { message: 'learnMapStepSelectTask', img: SelectTask },
-    { message: 'learnMapStepMapOSM', img: MapOSM },
+    {
+      message: 'learnMapStepSelectProject',
+      img: <SelectProject className="red" />,
+      titleLink: '/explore',
+    },
+    { message: 'learnMapStepSelectTask', img: <SelectTask className="red" /> },
+    { message: 'learnMapStepMapOSM', img: <PolygonIcon className="red" /> },
   ];
 
   const tutorials = [
@@ -346,6 +377,11 @@ const LearnToMap = ({ section }) => {
       url: 'https://learnosm.org/en/beginner/',
       img: LearnOSMLogo,
     },
+    {
+      message: 'learnTMCheatsheet',
+      url: 'https://drive.google.com/file/d/19pckU4Cru-cSz_aclsLsBk-45SQ1Qyy_/view?usp=sharing',
+      img: QuickstartLogo,
+    },
   ];
 
   const videos = [
@@ -355,7 +391,7 @@ const LearnToMap = ({ section }) => {
     },
     {
       message: 'learnMapBuildings',
-      youTubeId: 'lSLe6rjtgi0',
+      youTubeId: 'nswUcgMfKTM',
     },
     {
       message: 'learnMapRoads',
@@ -391,7 +427,7 @@ export const LearnPage = () => {
 
   const [section, setSection] = useState(sections[0]);
   return (
-    <div className="pt180 pull-center">
+    <div className="pt180 pull-center blue-dark">
       <TopBar pageName={<FormattedMessage {...messages.learn} />} />
       <div className="ph6-l ph4-m ph2">
         <LearnNav sections={sections} section={section} setSection={setSection} />

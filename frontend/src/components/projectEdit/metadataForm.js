@@ -5,10 +5,14 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import typesMessages from '../messages';
-import { StateContext, styleClasses, handleCheckButton } from '../../views/projectEdit';
+import { StateContext, styleClasses } from '../../views/projectEdit';
+import { CheckBox } from '../formInputs';
 import { ProjectInterests } from './projectInterests';
+import { ExtraIdParams } from './extraIdParams';
+import { Code } from '../code';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { ID_PRESETS } from '../../config/presets';
+import { getFilterId } from '../../utils/osmchaLink';
 
 export const MetadataForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -41,10 +45,7 @@ export const MetadataForm = () => {
 
   const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
 
-  const handleMappingTypes = (event) => {
-    let types = projectInfo.mappingTypes;
-
-    types = handleCheckButton(event, types);
+  const handleMappingTypes = (types) => {
     setProjectInfo({ ...projectInfo, mappingTypes: types });
   };
 
@@ -106,17 +107,18 @@ export const MetadataForm = () => {
             <FormattedMessage {...messages.mappingTypes} />*
           </label>
           {elements.map((elm) => (
-            <label className="db pv2">
-              <input
-                className="mr2 h"
-                name="mapping_types"
-                checked={projectInfo.mappingTypes.includes(elm.item)}
-                onChange={handleMappingTypes}
-                type="checkbox"
-                value={elm.item}
-              />
-              <FormattedMessage {...typesMessages[elm.messageId]} />
-            </label>
+            <div className="pv3 pr3" aria-label="mapping_types" key={elm.messageId}>
+              <div className="ph0 pt1 fl" aria-labelledby={elm.messageId}>
+                <CheckBox
+                  activeItems={projectInfo.mappingTypes}
+                  toggleFn={handleMappingTypes}
+                  itemId={elm.item}
+                />
+              </div>
+              <span className="fl pt2 mr1 ph2" id={elm.messageId}>
+                <FormattedMessage {...typesMessages[elm.messageId]} />
+              </span>
+            </div>
           ))}
         </div>
         <div className="w-50 fl">
@@ -148,7 +150,28 @@ export const MetadataForm = () => {
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
-          <FormattedMessage {...messages.organisation} />
+            <FormattedMessage {...messages.extraIdParams} />*
+        </label>
+        <p className={styleClasses.pClass}>
+          <FormattedMessage
+            {...messages.extraIdParamsDescription}
+            values={{ text: <Code>disabled_features=buildings&offset=-10,5</Code> }}
+          />
+        </p>
+        <p className={styleClasses.pClass}>
+          <FormattedMessage
+            {...messages.extraIdParamsDescriptionLink}
+            values={{ link: <IdDocsLink /> }}
+          />
+        </p>
+        <ExtraIdParams
+          value={projectInfo.extraIdParams}
+          setProjectInfo={setProjectInfo}
+        />
+      </div>
+      <div className={styleClasses.divClass}>
+        <label className={styleClasses.labelClass}>
+          <FormattedMessage {...messages.organisation} />*
         </label>
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.organisationDescription} />
@@ -213,9 +236,25 @@ export const MetadataForm = () => {
           className={styleClasses.inputClass}
           type="text"
           name="osmchaFilterId"
-          value={projectInfo.osmchaFilterId}
+          value={projectInfo.osmchaFilterId || ''}
+          onChange={(e) => {
+            setProjectInfo({
+              ...projectInfo,
+              osmchaFilterId: getFilterId(e.target.value),
+            });
+          }}
         />
       </div>
     </div>
   );
 };
+
+const IdDocsLink = () =>
+  <a
+    href="https://github.com/openstreetmap/iD/blob/develop/API.md#url-parameters"
+    className="red underline link"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <FormattedMessage {...messages.iDAPIDocs} />
+  </a>;

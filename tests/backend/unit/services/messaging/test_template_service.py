@@ -1,5 +1,3 @@
-import unittest
-
 from backend.services.messaging.template_service import (
     template_var_replacing,
     get_template,
@@ -7,9 +5,10 @@ from backend.services.messaging.template_service import (
     format_username_link,
 )
 from flask import current_app
+from tests.backend.base import BaseTestCase
 
 
-class TestTemplateService(unittest.TestCase):
+class TestTemplateService(BaseTestCase):
     def test_variable_replacing(self):
         # Act
         content = get_template("email_verification_en.html")
@@ -43,7 +42,10 @@ class TestTemplateService(unittest.TestCase):
         base_url = current_app.config["APP_BASE_URL"]
         self.assertEqual(
             format_username_link("try @[yo] @[us2]! [t](http://a.c)"),
-            f'try <a href="{base_url}/users/yo/">@yo</a> <a href="{base_url}/users/us2/">@us2</a>! [t](http://a.c)',
+            (
+                f'try <a style="color: #d73f3f" href="{base_url}/users/yo/">@yo</a>'
+                f' <a style="color: #d73f3f" href="{base_url}/users/us2/">@us2</a>! [t](http://a.c)'
+            ),
         )
         self.assertEqual(
             format_username_link(

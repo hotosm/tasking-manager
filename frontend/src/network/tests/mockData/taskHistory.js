@@ -42,3 +42,73 @@ export const history = {
     },
   ],
 };
+
+export const invalidatedTaskHistory = {
+  taskHistory: [
+    {
+      historyId: 12001,
+      taskId: 1,
+      action: 'COMMENT',
+      actionText: 'More buildings need to be mapped',
+      actionDate: '2020-10-04T14:35:30.174515Z',
+      actionBy: 'test_user',
+      pictureUrl: null,
+      issues: null,
+    },
+    {
+      historyId: 12000,
+      taskId: 1,
+      action: 'STATE_CHANGE',
+      actionText: 'INVALIDATED',
+      actionDate: '2020-10-04T14:35:20.174515Z',
+      actionBy: 'test_user',
+      pictureUrl: null,
+      issues: null,
+    },
+  ],
+};
+
+export const revertedBadImagery = {
+  taskHistory: [
+    {
+      historyId: 999,
+      taskId: 123,
+      action: 'STATE_CHANGE',
+      actionText: 'READY',
+      actionDate: '2021-01-18T13:47:31.858248Z',
+      actionBy: 'test_user',
+      pictureUrl: null,
+      issues: null,
+    },
+    {
+      historyId: 998,
+      taskId: 123,
+      action: 'COMMENT',
+      actionText: 'Undo state from BADIMAGERY to READY',
+      actionDate: '2021-01-18T13:47:31.857840Z',
+      actionBy: 'test_user',
+      pictureUrl: null,
+      issues: null,
+    },
+    {
+      historyId: 997,
+      taskId: 123,
+      action: 'STATE_CHANGE',
+      actionText: 'BADIMAGERY',
+      actionDate: '2021-01-18T13:47:21.368475Z',
+      actionBy: 'user_11',
+      pictureUrl: null,
+      issues: null,
+    },
+    {
+      historyId: 996,
+      taskId: 123,
+      action: 'LOCKED_FOR_MAPPING',
+      actionText: '00:00:05.111774',
+      actionDate: '2021-01-18T13:47:16.258317Z',
+      actionBy: 'user_1',
+      pictureUrl: null,
+      issues: null,
+    },
+  ],
+};

@@ -2,7 +2,6 @@ import geojson
 from backend import db
 from sqlalchemy import desc, func
 from geoalchemy2 import functions
-from flask import current_app
 from backend.models.dtos.user_dto import (
     UserDTO,
     UserMappedProjectsDTO,
@@ -67,14 +66,6 @@ class User(db.Model):
     # Relationships
     accepted_licenses = db.relationship("License", secondary=user_licenses_table)
     interests = db.relationship(Interest, secondary=user_interests, backref="users")
-
-    @property
-    def missing_maps_profile_url(self):
-        return f"http://www.missingmaps.org/users/#/{self.username}"
-
-    @property
-    def osm_profile_url(self):
-        return f"{current_app.config['OSM_SERVER_URL']}/user/{self.username}"
 
     def create(self):
         """ Creates and saves the current model to the DB """
@@ -151,7 +142,7 @@ class User(db.Model):
             ]
             base = base.filter(User.mapping_level.in_(mapping_level_array))
         if query.username:
-            base = base.filter(User.username.ilike(query.username.lower() + "%"))
+            base = base.filter(User.username.ilike(("%" + query.username + "%")))
 
         if query.role:
             roles = query.role.split(",")
@@ -364,24 +355,22 @@ class User(db.Model):
         user_dto.country = self.country
         user_dto.name = self.name
         user_dto.picture_url = self.picture_url
-        user_dto.osm_profile = self.osm_profile_url
-        user_dto.missing_maps_profile = self.missing_maps_profile_url
         user_dto.default_editor = self.default_editor
         user_dto.mentions_notifications = self.mentions_notifications
         user_dto.projects_notifications = self.projects_notifications
         user_dto.comments_notifications = self.comments_notifications
         user_dto.tasks_notifications = self.tasks_notifications
         user_dto.teams_notifications = self.teams_notifications
-        gender = None
-        if self.gender is not None:
-            gender = UserGender(self.gender).name
-        user_dto.gender = gender
-        user_dto.self_description_gender = self.self_description_gender
 
         if self.username == logged_in_username:
-            # Only return email address when logged in user is looking at their own profile
+            # Only return email address and gender information when logged in user is looking at their own profile
             user_dto.email_address = self.email_address
             user_dto.is_email_verified = self.is_email_verified
+            gender = None
+            if self.gender is not None:
+                gender = UserGender(self.gender).name
+                user_dto.gender = gender
+                user_dto.self_description_gender = self.self_description_gender
         return user_dto
 
     def create_or_update_interests(self, interests_ids):

@@ -52,12 +52,18 @@ class SystemImageUploadRestAPI(Resource):
             current_app.config["IMAGE_UPLOAD_API_URL"] is None
             or current_app.config["IMAGE_UPLOAD_API_KEY"] is None
         ):
-            return {"Error": "Image upload service not defined"}, 500
+            return {
+                "Error": "Image upload service not defined",
+                "SubCode": "UndefinedImageService",
+            }, 500
 
         try:
             data = request.get_json()
             if data.get("filename") is None:
-                return {"Error": "Missing filename parameter"}, 400
+                return {
+                    "Error": "Missing filename parameter",
+                    "SubCode": "MissingFilename",
+                }, 400
             if data.get("mime") in [
                 "image/png",
                 "image/jpeg",
@@ -81,11 +87,15 @@ class SystemImageUploadRestAPI(Resource):
             else:
                 return (
                     {
-                        "Error": "Mimetype is not allowed. The supported formats are: png, jpeg, webp and gif."
+                        "Error": "Mimetype is not allowed. The supported formats are: png, jpeg, webp and gif.",
+                        "SubCode": "UnsupportedFile",
                     },
                     400,
                 )
         except Exception as e:
             error_msg = f"Image upload POST API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to upload image"}, 500
+            return {
+                "Error": "Unable to upload image",
+                "SubCode": "InternalServerError",
+            }, 500

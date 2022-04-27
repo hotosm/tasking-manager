@@ -23,12 +23,13 @@ export function useContributorStats(contributions) {
         intermediateUsers: contributions.filter((i) => i.mappingLevel === 'INTERMEDIATE').length,
         advancedUsers: contributions.filter((i) => i.mappingLevel === 'ADVANCED').length,
       };
-      [
+      const monthRanges = [
         [0, 1],
         [1, 3],
         [3, 6],
         [6, 12],
-      ].map(
+      ];
+      monthRanges.forEach(
         (months) =>
           (data[`lessThan${months[1]}MonthExp`] = contributions.filter(
             (i) =>

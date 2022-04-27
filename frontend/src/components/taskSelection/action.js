@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import Popup from 'reactjs-popup';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { ProjectInstructions } from './instructions';
@@ -12,32 +12,59 @@ import { HeaderLine } from '../projectDetail/header';
 import { Button } from '../button';
 import Portal from '../portal';
 import { SidebarIcon } from '../svgIcons';
-import { openEditor } from '../../utils/openEditor';
+import { openEditor, getTaskGpxUrl, formatImageryUrl, formatJosmUrl } from '../../utils/openEditor';
+import { getTaskContributors } from '../../utils/getTaskContributors';
 import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
 import { useSetProjectPageTitleTag } from '../../hooks/UseMetaTags';
 import { useFetch } from '../../hooks/UseFetch';
-import DueDateBox from '../projectCard/dueDateBox';
+import { useReadTaskComments } from '../../hooks/UseReadTaskComments';
+import { useDisableBadImagery } from '../../hooks/UseDisableBadImagery';
+import { DueDateBox } from '../projectCard/dueDateBox';
 import {
   CompletionTabForMapping,
   CompletionTabForValidation,
   SidebarToggle,
   ReopenEditor,
+  UnsavedMapChangesModalContent,
 } from './actionSidebars';
-
+import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { MultipleTaskHistoriesAccordion } from './multipleTaskHistories';
+import { ResourcesTab } from './resourcesTab';
+import { ActionTabsNav } from './actionTabsNav';
+import { LockedTaskModalContent } from './lockedTasks';
 const Editor = React.lazy(() => import('../editor'));
+const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 
 export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
   useSetProjectPageTitleTag(project);
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.get('token'));
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
-  const tasksIds = activeTasks ? activeTasks.map((task) => task.taskId) : [];
-  const [editorRef, setEditorRef] = useState(null);
+  const [isJosmError, setIsJosmError] = useState(false);
+  const tasksIds = useMemo(
+    () =>
+      activeTasks
+        ? activeTasks
+          .map((task) => task.taskId)
+          .sort((n1, n2) => {
+            // in ascending order
+            return n1 - n2;
+          })
+        : [],
+    [activeTasks],
+  );
   const [disabled, setDisable] = useState(false);
   const [taskComment, setTaskComment] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
+  const [validationComments, setValidationComments] = useState({});
+  const [validationStatus, setValidationStatus] = useState({});
+  const [historyTabChecked, setHistoryTabChecked] = useState(false);
+  const [multipleTasksInfo, setMultipleTasksInfo] = useState({});
+  const [showMapChangesModal, setShowMapChangesModal] = useState(false);
+  const intl = useIntl();
 
   const activeTask = activeTasks && activeTasks[0];
   const timer = new Date(activeTask.lastUpdated);
@@ -47,6 +74,34 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     `projects/${project.projectId}/tasks/${tasksIds[0]}/`,
     project.projectId && tasksIds && tasksIds.length === 1,
   );
+
+  const contributors =
+    taskHistory && taskHistory.taskHistory
+      ? getTaskContributors(taskHistory.taskHistory, userDetails.username)
+      : [];
+
+  const readTaskComments = useReadTaskComments(taskHistory);
+  const disableBadImagery = useDisableBadImagery(taskHistory);
+
+  const getTaskGpxUrlCallback = useCallback((project, tasks) => getTaskGpxUrl(project, tasks), []);
+  const formatImageryUrlCallback = useCallback((imagery) => formatImageryUrl(imagery), []);
+
+  const historyTabSwitch = () => {
+    setHistoryTabChecked(true);
+    setActiveSection('history');
+  };
+
+  const handleTaskHistories = (taskIds) => {
+    if (taskIds.length < 1) return;
+
+    taskIds.forEach((id) => {
+      if (!Object.keys(multipleTasksInfo).includes(id.toString())) {
+        fetchLocalJSONAPI(`projects/${project.projectId}/tasks/${id}/`, token).then((data) =>
+          setMultipleTasksInfo({ ...multipleTasksInfo, [id]: data }),
+        );
+      }
+    });
+  };
 
   useEffect(() => {
     if (!editor && projectIsReady && userDetails.defaultEditor && tasks && tasksIds) {
@@ -68,6 +123,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
         [window.innerWidth, window.innerHeight],
         null,
       );
+
       if (url) {
         navigate(`./${url}`);
       } else {
@@ -76,28 +132,46 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     }
   }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds]);
 
-  const callEditor = (arr) => {
-    setActiveEditor(arr[0].value);
-    const url = openEditor(
-      arr[0].value,
-      project,
-      tasks,
-      tasksIds,
-      [window.innerWidth, window.innerHeight],
-      null,
-    );
-    if (url) {
-      navigate(`./${url}`);
+  const callEditor = async (arr) => {
+    setIsJosmError(false);
+    if (!disabled) {
+      setActiveEditor(arr[0].value);
+      const url = openEditor(
+        arr[0].value,
+        project,
+        tasks,
+        tasksIds,
+        [window.innerWidth, window.innerHeight],
+        null,
+      );
+      if (url) {
+        navigate(`./${url}`);
+        if (arr[0].value === 'JOSM') {
+          try {
+            await fetch(formatJosmUrl('version', { jsonp: 'checkJOSM' }));
+          } catch (e) {
+            setIsJosmError(true);
+            return;
+          }
+        }
+      } else {
+        navigate(`./?editor=${arr[0].value}`);
+      }
     } else {
-      navigate(`./?editor=${arr[0].value}`);
+      // we need to return a promise in order to be called by useAsync
+      return new Promise((resolve, reject) => {
+        setShowMapChangesModal('reload editor');
+        resolve();
+      });
     }
   };
 
   return (
+    <>
     <Portal>
       <div className="cf w-100 vh-minus-77-ns overflow-y-hidden">
         <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
-          {editor === 'ID' ? (
+          {['ID', 'RAPID'].includes(editor) ? (
             <React.Suspense
               fallback={
                 <div className={`w7 h5 center`}>
@@ -110,13 +184,24 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                 </div>
               }
             >
-              <Editor
-                editorRef={editorRef}
-                setEditorRef={setEditorRef}
-                setDisable={setDisable}
-                comment={project.changesetComment}
-                presets={project.idPresets}
-              />
+              {editor === 'ID' ? (
+                <Editor
+                  setDisable={setDisable}
+                  comment={project.changesetComment}
+                  presets={project.idPresets}
+                  imagery={formatImageryUrlCallback(project.imagery)}
+                  gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
+                />
+              ) : (
+                <RapiDEditor
+                  setDisable={setDisable}
+                  comment={project.changesetComment}
+                  presets={project.idPresets}
+                  imagery={formatImageryUrlCallback(project.imagery)}
+                  gpxUrl={getTaskGpxUrlCallback(project.projectId, tasksIds)}
+                  powerUser={project.rapidPowerUser}
+                />
+              )}
             </React.Suspense>
           ) : (
             <ReactPlaceholder
@@ -132,6 +217,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                 taskBordersOnly={false}
                 animateZoom={false}
                 selected={tasksIds}
+                showTaskIds={action === 'VALIDATION'}
               />
             </ReactPlaceholder>
           )}
@@ -143,8 +229,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
               rows={3}
               ready={typeof project.projectId === 'number' && project.projectId > 0}
             >
-              {activeEditor === 'ID' && (
-                <SidebarToggle setShowSidebar={setShowSidebar} editorRef={editorRef} />
+              {(activeEditor === 'ID' || activeEditor === 'RAPID') && (
+                <SidebarToggle setShowSidebar={setShowSidebar} />
               )}
               <HeaderLine
                 author={project.author}
@@ -169,55 +255,35 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                     </span>
                   ))}
                 </h3>
-                <DueDateBox dueDate={timer} align="left" intervalMili={60000} />
-              </div>
-              <div className="cf">
-                <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
-                  <span
-                    className={`mr4-l mr3 pb2 pointer ${
-                      activeSection === 'completion' && 'bb b--blue-dark'
-                    }`}
-                    onClick={() => setActiveSection('completion')}
-                  >
-                    <FormattedMessage {...messages.completion} />
-                  </span>
-                  <span
-                    className={`mr4-l mr3 pb2 pointer ${
-                      activeSection === 'instructions' && 'bb b--blue-dark'
-                    }`}
-                    onClick={() => setActiveSection('instructions')}
-                  >
-                    <FormattedMessage {...messages.instructions} />
-                  </span>
-                  {activeTasks && activeTasks.length === 1 && (
-                    <span
-                      className={`pb2 pointer truncate ${
-                        activeSection === 'history' && 'bb b--blue-dark'
-                      }`}
-                      onClick={() => setActiveSection('history')}
-                    >
-                      <FormattedMessage {...messages.history} />
-                      {taskHistory &&
-                        taskHistory.taskHistory &&
-                        taskHistory.taskHistory.length > 1 && (
-                          <div
-                            className="bg-red white dib br-100 tc f6 ml1 mb1 v-mid"
-                            style={{ height: '1.125rem', width: '1.125rem' }}
-                          >
-                            {taskHistory.taskHistory.length}
-                          </div>
-                        )}
-                    </span>
-                  )}
+                <div className="db" title={intl.formatMessage(messages.timeToUnlock)}>
+                  <DueDateBox dueDate={timer} align="left" intervalMili={60000} />
                 </div>
               </div>
-              <div className="pt3">
+              <div className="cf">
+                <ActionTabsNav
+                  activeSection={activeSection}
+                  setActiveSection={setActiveSection}
+                  activeTasks={activeTasks}
+                  historyTabSwitch={historyTabSwitch}
+                  taskHistoryLength={
+                    taskHistory && taskHistory.taskHistory && taskHistory.taskHistory.length
+                  }
+                  action={action}
+                />
+              </div>
+              <div className="pt1">
                 {activeSection === 'completion' && (
                   <>
                     {action === 'MAPPING' && (
                       <CompletionTabForMapping
                         project={project}
                         tasksIds={tasksIds}
+                        showReadCommentsAlert={readTaskComments && !historyTabChecked}
+                        disableBadImagery={
+                          userDetails.mappingLevel !== 'ADVANCED' && disableBadImagery
+                        }
+                        contributors={contributors}
+                        historyTabSwitch={historyTabSwitch}
                         taskInstructions={
                           activeTasks && activeTasks.length === 1
                             ? activeTasks[0].perTaskInstructions
@@ -240,10 +306,11 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                             : null
                         }
                         disabled={disabled}
-                        taskComment={taskComment}
-                        setTaskComment={setTaskComment}
-                        selectedStatus={selectedStatus}
-                        setSelectedStatus={setSelectedStatus}
+                        contributors={contributors}
+                        validationComments={validationComments}
+                        setValidationComments={setValidationComments}
+                        validationStatus={validationStatus}
+                        setValidationStatus={setValidationStatus}
                       />
                     )}
                     <div className="pt3">
@@ -253,7 +320,18 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                         editor={activeEditor}
                         callEditor={callEditor}
                       />
-                      {editor === 'ID' && (
+                      {disabled && showMapChangesModal && (
+                        <Popup
+                          modal
+                          open
+                          closeOnEscape={true}
+                          closeOnDocumentClick={true}
+                          onClose={() => setShowMapChangesModal(null)}
+                        >
+                          {(close) => <UnsavedMapChangesModalContent close={close} action={showMapChangesModal} />}
+                        </Popup>
+                      )}
+                      {(editor === 'ID' || editor === 'RAPID') && (
                         <Popup
                           modal
                           trigger={(open) => (
@@ -274,6 +352,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                                 taskBordersOnly={false}
                                 animateZoom={false}
                                 selected={tasksIds}
+                                showTaskIds={action === 'VALIDATION'}
                               />
                             </div>
                           )}
@@ -291,11 +370,27 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                   </>
                 )}
                 {activeSection === 'history' && (
-                  <TaskHistory
-                    projectId={project.projectId}
-                    taskId={tasksIds[0]}
-                    commentPayload={taskHistory}
-                  />
+                  <>
+                    {activeTasks.length === 1 && (
+                      <>
+                        <TaskHistory
+                          projectId={project.projectId}
+                          taskId={tasksIds[0]}
+                          commentPayload={taskHistory}
+                        />
+                      </>
+                    )}
+                    {action === 'VALIDATION' && activeTasks.length > 1 && (
+                      <MultipleTaskHistoriesAccordion
+                        handleChange={handleTaskHistories}
+                        tasks={activeTasks}
+                        projectId={project.projectId}
+                      />
+                    )}
+                  </>
+                )}
+                {activeSection === 'resources' && (
+                  <ResourcesTab project={project} tasksIds={tasksIds} tasksGeojson={tasks} />
                 )}
               </div>
             </ReactPlaceholder>
@@ -313,10 +408,10 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
               )}
             </FormattedMessage>
             <div className="db">
-              <h3 className="blue-dark">#{project.projectId}</h3>
+              <h3 className="blue-dark f5">#{project.projectId}</h3>
               <div>
                 {tasksIds.map((task, n) => (
-                  <span key={n} className="red fw5 db pb2">{`#${task}`}</span>
+                  <span key={n} className="red fw8 f5 db pb2">{`#${task}`}</span>
                 ))}
               </div>
             </div>
@@ -324,5 +419,17 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
         )}
       </div>
     </Portal>
+    {isJosmError && (
+        <Popup
+          modal
+          open
+          closeOnEscape={true}
+          closeOnDocumentClick={true}
+          onClose={() => setIsJosmError(false)}
+        >
+          {(close) => <LockedTaskModalContent project={project} error="JOSM" close={close} />}
+        </Popup>
+      )}
+    </>
   );
 }

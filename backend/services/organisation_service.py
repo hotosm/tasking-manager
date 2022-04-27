@@ -8,18 +8,26 @@ from backend.models.dtos.organisation_dto import (
     ListOrganisationsDTO,
     UpdateOrganisationDTO,
 )
+from backend.models.dtos.stats_dto import (
+    OrganizationStatsDTO,
+    OrganizationProjectsStatsDTO,
+    OrganizationTasksStatsDTO,
+)
+from backend.models.postgis.campaign import campaign_organisations
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project, ProjectInfo
+from backend.models.postgis.task import Task
+from backend.models.postgis.statuses import ProjectStatus, TaskStatus
 from backend.models.postgis.utils import NotFound
 from backend.services.users.user_service import UserService
 
 
 class OrganisationServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling organisations """
+    """Custom Exception to notify callers an error occurred when handling organisations"""
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class OrganisationService:
@@ -37,17 +45,22 @@ class OrganisationService:
         organisation_id: int, user_id: int, abbreviated: bool
     ):
         org = Organisation.get(organisation_id)
+        return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
 
+    @staticmethod
+    def get_organisation_by_slug_as_dto(slug: str, user_id: int, abbreviated: bool):
+        org = Organisation.query.filter_by(slug=slug).first()
+        return OrganisationService.get_organisation_dto(org, user_id, abbreviated)
+
+    @staticmethod
+    def get_organisation_dto(org, user_id: int, abbreviated: bool):
         if org is None:
             raise NotFound()
-
         organisation_dto = org.as_dto(abbreviated)
 
         if user_id != 0:
             organisation_dto.is_manager = (
-                OrganisationService.can_user_manage_organisation(
-                    organisation_id, user_id
-                )
+                OrganisationService.can_user_manage_organisation(org.id, user_id)
             )
         else:
             organisation_dto.is_manager = False
@@ -84,7 +97,7 @@ class OrganisationService:
             return org.id
         except IntegrityError:
             raise OrganisationServiceError(
-                f"Organisation name already exists: {new_organisation_dto.name}"
+                f"NameExists- Organisation name already exists: {new_organisation_dto.name}"
             )
 
     @staticmethod
@@ -104,7 +117,7 @@ class OrganisationService:
 
     @staticmethod
     def delete_organisation(organisation_id: int):
-        """ Deletes an organisation if it has no projects """
+        """Deletes an organisation if it has no projects"""
         org = OrganisationService.get_organisation_by_id(organisation_id)
 
         if org.can_be_deleted():
@@ -117,7 +130,7 @@ class OrganisationService:
     @staticmethod
     def get_organisations(manager_user_id: int):
         if manager_user_id is None:
-            """ Get all organisations """
+            """Get all organisations"""
             return Organisation.get_all_organisations()
         else:
             return Organisation.get_organisations_managed_by_user(manager_user_id)
@@ -138,14 +151,14 @@ class OrganisationService:
 
     @staticmethod
     def get_organisations_managed_by_user(user_id: int):
-        """ Get all organisations a user manages """
+        """Get all organisations a user manages"""
         if UserService.is_user_an_admin(user_id):
             return Organisation.get_all_organisations()
 
         return Organisation.get_organisations_managed_by_user(user_id)
 
     @staticmethod
-    def get_organisations_managed_by_user_as_dto(user_id: int):
+    def get_organisations_managed_by_user_as_dto(user_id: int) -> ListOrganisationsDTO:
         orgs = OrganisationService.get_organisations_managed_by_user(user_id)
         orgs_dto = ListOrganisationsDTO()
         orgs_dto.organisations = [org.as_dto() for org in orgs]
@@ -166,17 +179,74 @@ class OrganisationService:
         return projects
 
     @staticmethod
+    def get_organisation_stats(organisation_id: int) -> OrganizationStatsDTO:
+        projects = db.session.query(Project.id, Project.status).filter(
+            Project.organisation_id == organisation_id
+        )
+        published_projects = projects.filter(
+            Project.status == ProjectStatus.PUBLISHED.value
+        )
+        active_tasks = db.session.query(
+            Task.id, Task.project_id, Task.task_status
+        ).filter(Task.project_id.in_([i.id for i in published_projects.all()]))
+
+        # populate projects stats
+        projects_dto = OrganizationProjectsStatsDTO()
+        projects_dto.draft = projects.filter(
+            Project.status == ProjectStatus.DRAFT.value
+        ).count()
+        projects_dto.published = published_projects.count()
+        projects_dto.archived = projects.filter(
+            Project.status == ProjectStatus.ARCHIVED.value
+        ).count()
+
+        # populate tasks stats
+        tasks_dto = OrganizationTasksStatsDTO()
+        tasks_dto.ready = active_tasks.filter(
+            Task.task_status == TaskStatus.READY.value
+        ).count()
+        tasks_dto.locked_for_mapping = active_tasks.filter(
+            Task.task_status == TaskStatus.LOCKED_FOR_MAPPING.value
+        ).count()
+        tasks_dto.mapped = active_tasks.filter(
+            Task.task_status == TaskStatus.MAPPED.value
+        ).count()
+        tasks_dto.locked_for_validation = active_tasks.filter(
+            Task.task_status == TaskStatus.LOCKED_FOR_VALIDATION.value
+        ).count()
+        tasks_dto.validated = active_tasks.filter(
+            Task.task_status == TaskStatus.VALIDATED.value
+        ).count()
+        tasks_dto.invalidated = active_tasks.filter(
+            Task.task_status == TaskStatus.INVALIDATED.value
+        ).count()
+        tasks_dto.badimagery = active_tasks.filter(
+            Task.task_status == TaskStatus.BADIMAGERY.value
+        ).count()
+
+        # populate and return main dto
+        stats_dto = OrganizationStatsDTO()
+        stats_dto.projects = projects_dto
+        stats_dto.active_tasks = tasks_dto
+        return stats_dto
+
+    @staticmethod
     def assert_validate_name(org: Organisation, name: str):
-        """ Validates that the organisation name doesn't exist """
+        """Validates that the organisation name doesn't exist"""
         if org.name != name and Organisation.get_organisation_by_name(name) is not None:
-            raise OrganisationServiceError(f"Organisation name already exists: {name}")
+            raise OrganisationServiceError(
+                f"NameExists- Organisation name already exists: {name}"
+            )
 
     @staticmethod
     def assert_validate_users(organisation_dto: OrganisationDTO):
-        """ Validates that the users exist"""
+        """Validates that the users exist"""
         if organisation_dto.managers and len(organisation_dto.managers) == 0:
-            raise OrganisationServiceError("Must have at least one admin")
+            raise OrganisationServiceError(
+                "MustHaveAdmin- Must have at least one admin"
+            )
 
+        if organisation_dto.managers and len(organisation_dto.managers) > 0:
             managers = []
             for user in organisation_dto.managers:
                 try:
@@ -190,7 +260,7 @@ class OrganisationService:
 
     @staticmethod
     def can_user_manage_organisation(organisation_id: int, user_id: int):
-        """ Check that the user is an admin for the org or a global admin"""
+        """Check that the user is an admin for the org or a global admin"""
         if UserService.is_user_an_admin(user_id):
             return True
         else:
@@ -198,7 +268,7 @@ class OrganisationService:
 
     @staticmethod
     def is_user_an_org_manager(organisation_id: int, user_id: int):
-        """ Check that the user is an manager for the org """
+        """Check that the user is an manager for the org"""
 
         org = Organisation.get(organisation_id)
 
@@ -207,3 +277,34 @@ class OrganisationService:
         user = UserService.get_user_by_id(user_id)
 
         return user in org.managers
+
+    @staticmethod
+    def get_campaign_organisations_as_dto(campaign_id: int, user_id: int):
+        """
+        Returns organisations under a particular campaign
+        """
+        organisation_list_dto = ListOrganisationsDTO()
+        orgs = (
+            Organisation.query.join(campaign_organisations)
+            .filter(campaign_organisations.c.campaign_id == campaign_id)
+            .all()
+        )
+
+        for org in orgs:
+            if user_id != 0:
+                logged_in = OrganisationService.can_user_manage_organisation(
+                    org.id, user_id
+                )
+            else:
+                logged_in = False
+
+            organisation_dto = OrganisationDTO()
+            organisation_dto.organisation_id = org.id
+            organisation_dto.name = org.name
+            organisation_dto.logo = org.logo
+            organisation_dto.url = org.url
+            organisation_dto.is_manager = logged_in
+
+            organisation_list_dto.organisations.append(organisation_dto)
+
+        return organisation_list_dto

@@ -7,19 +7,19 @@ export default defineMessages({
   },
   averageMappingTime: {
     id: 'projects.stats.average_mapping_time',
-    defaultMessage: 'Average mapping time',
+    defaultMessage: 'Average mapping time per Task',
   },
   averageValidationTime: {
     id: 'projects.stats.average_validation_time',
-    defaultMessage: 'Average validation time',
+    defaultMessage: 'Average validation time per Task',
   },
   timeToFinishMapping: {
     id: 'projects.stats.time_finish_mapping',
-    defaultMessage: 'Time to finish mapping',
+    defaultMessage: 'Estimated time to finish mapping',
   },
   timeToFinishValidating: {
     id: 'projects.stats.time_finish_validation',
-    defaultMessage: 'Time to finish validation',
+    defaultMessage: 'Estimated time to finish validation',
   },
   status: {
     id: 'project.stats.tasks.tatus',
@@ -76,5 +76,21 @@ export default defineMessages({
   moreThan1YearExp: {
     id: 'project.stats.contributors.experience.year',
     defaultMessage: 'More than 1 year',
+  },
+  totalEdits: {
+    id: 'project.stats.totalEdits',
+    defaultMessage: 'Total map edits',
+  },
+  changesets: {
+    id: 'project.stats.changesets',
+    defaultMessage: 'Changesets',
+  },
+  edits: {
+    id: 'project.stats.edits',
+    defaultMessage: 'Edits',
+  },
+  editsStats: {
+    id: 'project.stats.edits.info',
+    defaultMessage: 'These stats are retrieved using the default changeset comment of the project',
   },
 });

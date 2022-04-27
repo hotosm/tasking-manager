@@ -1,23 +1,13 @@
-FROM alpine/git as base
-
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-ADD . /usr/src/app
-
 FROM tiangolo/node-frontend:10 as build
 
-WORKDIR /usr/src/app
-
-COPY --from=base /usr/src/app/ /usr/src/app
 WORKDIR /usr/src/app/frontend
+COPY frontend .
 
 ## SETUP
 RUN npm install
 
-ARG TM_APP_API_URL=http://localhost/api
-
 # SERVE
+COPY tasking-manager.env ..
 RUN npm run build
 
 FROM nginx:stable-alpine

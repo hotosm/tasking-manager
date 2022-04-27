@@ -20,7 +20,7 @@ class UsersRestAPI(Resource):
         parameters:
             - in: header
               name: Authorization
-              description: Base64 encoded sesesion token
+              description: Base64 encoded session token
               required: true
               type: string
               default: Token sessionTokenHere==
@@ -41,14 +41,19 @@ class UsersRestAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            user_dto = UserService.get_user_dto_by_id(user_id)
+            user_dto = UserService.get_user_dto_by_id(
+                user_id, token_auth.current_user()
+            )
             return user_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "User not found"}, 404
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Userid GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch user details"}, 500
+            return {
+                "Error": "Unable to fetch user details",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class UsersAllAPI(Resource):
@@ -103,7 +108,7 @@ class UsersAllAPI(Resource):
             query.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to fetch user list"}, 400
+            return {"Error": "Unable to fetch user list", "SubCode": "InvalidData"}, 400
 
         try:
             users_dto = UserService.get_all_users(query)
@@ -111,7 +116,10 @@ class UsersAllAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch user list"}, 500
+            return {
+                "Error": "Unable to fetch user list",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class UsersQueriesUsernameAPI(Resource):
@@ -153,11 +161,14 @@ class UsersQueriesUsernameAPI(Resource):
             )
             return user_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "User not found"}, 404
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch user details"}, 500
+            return {
+                "Error": "Unable to fetch user details",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class UsersQueriesUsernameFilterAPI(Resource):
@@ -206,11 +217,14 @@ class UsersQueriesUsernameFilterAPI(Resource):
             users_dto = UserService.filter_users(username, project_id, page)
             return users_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "User not found"}, 404
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch matching users"}, 500
+            return {
+                "Error": "Unable to fetch matching users",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class UsersQueriesOwnLockedAPI(Resource):
@@ -248,7 +262,7 @@ class UsersQueriesOwnLockedAPI(Resource):
         except Exception as e:
             error_msg = f"UsersQueriesOwnLockedAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class UsersQueriesOwnLockedDetailsAPI(Resource):
@@ -291,11 +305,11 @@ class UsersQueriesOwnLockedDetailsAPI(Resource):
             )
             return locked_tasks.to_primitive(), 200
         except NotFound:
-            return {"Error": "User has no locked tasks"}, 404
+            return {"Error": "User has no locked tasks", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"UsersQueriesOwnLockedDetailsAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class UsersQueriesFavoritesAPI(Resource):
@@ -327,11 +341,11 @@ class UsersQueriesFavoritesAPI(Resource):
             favs_dto = UserService.get_projects_favorited(token_auth.current_user())
             return favs_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "User not found"}, 404
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"UserFavorites GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class UsersQueriesInterestsAPI(Resource):
@@ -369,11 +383,11 @@ class UsersQueriesInterestsAPI(Resource):
             interests_dto = UserService.get_interests(user)
             return interests_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "User not found"}, 404
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"UserInterests GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class UsersRecommendedProjectsAPI(Resource):
@@ -426,8 +440,8 @@ class UsersRecommendedProjectsAPI(Resource):
             user_dto = UserService.get_recommended_projects(username, locale)
             return user_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "User or mapping not found"}, 404
+            return {"Error": "User or mapping not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

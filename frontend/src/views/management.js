@@ -25,7 +25,7 @@ export function ManagementPageIndex() {
     <>
       <Projects
         projects={!projectsLoading && !projectsError && projects}
-        viewAllEndpoint="/manage/projects/?managedByMe=1"
+        viewAllEndpoint="/manage/projects/?managedByMe=1&action=any"
         showAddButton={true}
         ownerEntity="user"
       />
@@ -62,7 +62,7 @@ export const ManagementSection = (props) => {
           {(isOrgManager || userDetails.role === 'ADMIN') && (
             <ManagementMenu isAdmin={userDetails && userDetails.role === 'ADMIN'} />
           )}
-          {props.children}
+          <div className="ph0-ns ph2">{props.children}</div>
         </div>
       ) : (
         <div className="cf w-100 pv5">

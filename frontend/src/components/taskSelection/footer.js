@@ -15,11 +15,12 @@ import { Imagery } from './imagery';
 import { MappingTypes } from '../mappingTypes';
 import { LockedTaskModalContent } from './lockedTasks';
 
-const TaskSelectionFooter = (props) => {
+const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, selectedTasks }) => {
   const token = useSelector((state) => state.auth.get('token'));
   const locale = useSelector((state) => state.preferences.locale);
-  const [editor, setEditor] = useState(props.defaultUserEditor);
+  const [editor, setEditor] = useState(defaultUserEditor);
   const [editorOptions, setEditorOptions] = useState([]);
+  const [isPending, setIsPending] = useState(false);
   const [lockError, setLockError] = useState(null);
   const dispatch = useDispatch();
   const fetchLockedTasks = useFetchLockedTasks();
@@ -27,24 +28,26 @@ const TaskSelectionFooter = (props) => {
   const lockSuccess = (status, endpoint, windowObjectReference) => {
     const urlParams = openEditor(
       editor,
-      props.project,
-      props.tasks,
-      props.selectedTasks,
+      project,
+      tasks,
+      selectedTasks,
       [window.innerWidth, window.innerHeight],
       windowObjectReference,
       locale,
     );
-    updateReduxState(props.selectedTasks, props.project.projectId, status);
-    navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}`);
+    updateReduxState(selectedTasks, project.projectId, status);
+    setIsPending(false);
+    navigate(`/projects/${project.projectId}/${endpoint}/${urlParams}`);
   };
 
   const lockFailed = (windowObjectReference, message) => {
     // JOSM and iD don't open a new window
-    if (!['JOSM', 'ID'].includes(editor)) {
+    if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
       windowObjectReference.close();
     }
     fetchLockedTasks();
     setLockError(message);
+    setIsPending(false);
   };
 
   const updateReduxState = (tasks, project, status) => {
@@ -55,9 +58,7 @@ const TaskSelectionFooter = (props) => {
 
   const lockTasks = async () => {
     // if user can not map or validate the project, lead him to the explore projects page
-    if (
-      ['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(props.taskAction)
-    ) {
+    if (['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(taskAction)) {
       navigate(`/explore/`);
     }
     // then pass to the JOSM check and validate/map checks
@@ -70,48 +71,61 @@ const TaskSelectionFooter = (props) => {
       }
     }
     let windowObjectReference;
-    if (!['JOSM', 'ID'].includes(editor)) {
+    if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
       windowObjectReference = window.open(
         '',
-        `TM-${props.project.projectId}-${props.selectedTasks}`,
+        `TM-${project.projectId}-${selectedTasks}`,
       );
     }
-    if (
-      ['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(props.taskAction)
-    ) {
-      pushToLocalJSONAPI(
-        `projects/${props.project.projectId}/tasks/actions/lock-for-validation/`,
-        JSON.stringify({ taskIds: props.selectedTasks }),
-        token,
-      )
-        .then((res) => {
-          lockSuccess('LOCKED_FOR_VALIDATION', 'validate', windowObjectReference);
-        })
-        .catch((e) => lockFailed(windowObjectReference, e.message));
+    if (['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(taskAction)) {
+      const mappedTasks = selectedTasks.filter(
+        (id) =>
+          tasks.features.filter(
+            (task) => task.properties.taskId === id && task.properties.taskStatus === 'MAPPED',
+          ).length,
+      );
+      if (!mappedTasks.length) {
+        setLockError('noMappedTasksSelected');
+      } else {
+        setIsPending(true);
+        pushToLocalJSONAPI(
+          `projects/${project.projectId}/tasks/actions/lock-for-validation/`,
+          JSON.stringify({ taskIds: mappedTasks }),
+          token,
+        )
+          .then((res) => {
+            lockSuccess('LOCKED_FOR_VALIDATION', 'validate', windowObjectReference);
+          })
+          .catch((e) => lockFailed(windowObjectReference, e.message));
+      }
     }
-    if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(props.taskAction)) {
+    if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(taskAction)) {
+      setIsPending(true);
       fetchLocalJSONAPI(
-        `projects/${props.project.projectId}/tasks/actions/lock-for-mapping/${props.selectedTasks[0]}/`,
+        `projects/${project.projectId}/tasks/actions/lock-for-mapping/${selectedTasks[0]}/`,
         token,
         'POST',
       )
         .then((res) => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
+          if (editor !== 'JOSM') {
+            window.location.reload();
+          }
         })
         .catch((e) => lockFailed(windowObjectReference, e.message));
     }
-    if (['resumeMapping', 'resumeValidation'].includes(props.taskAction)) {
+    if (['resumeMapping', 'resumeValidation'].includes(taskAction)) {
       const urlParams = openEditor(
         editor,
-        props.project,
-        props.tasks,
-        props.selectedTasks,
+        project,
+        tasks,
+        selectedTasks,
         [window.innerWidth, window.innerHeight],
         windowObjectReference,
         locale,
       );
-      const endpoint = props.taskAction === 'resumeMapping' ? 'map' : 'validate';
-      navigate(`/projects/${props.project.projectId}/${endpoint}/${urlParams}`);
+      const endpoint = taskAction === 'resumeMapping' ? 'map' : 'validate';
+      navigate(`/projects/${project.projectId}/${endpoint}/${urlParams}`);
     }
   };
 
@@ -119,40 +133,34 @@ const TaskSelectionFooter = (props) => {
   // according to the status of the task that is currently selected
   useEffect(() => {
     if (
-      props.taskAction &&
-      props.project.mappingEditors &&
-      (props.taskAction.startsWith('validate') || props.taskAction === 'resumeValidation')
+      taskAction &&
+      project.mappingEditors &&
+      (taskAction.startsWith('validate') || taskAction === 'resumeValidation')
     ) {
-      const validationEditorOptions = getEditors(
-        props.project.validationEditors,
-        props.project.customEditor,
-      );
+      const validationEditorOptions = getEditors(project.validationEditors, project.customEditor);
       setEditorOptions(validationEditorOptions);
       // activate defaultUserEditor if it's allowed. If not, use the first allowed editor for validation
-      if (props.project.validationEditors.includes(props.defaultUserEditor)) {
-        setEditor(props.defaultUserEditor);
+      if (project.validationEditors.includes(defaultUserEditor)) {
+        setEditor(defaultUserEditor);
       } else {
         updateEditor(validationEditorOptions);
       }
     } else {
-      const mappingEditorOptions = getEditors(
-        props.project.mappingEditors,
-        props.project.customEditor,
-      );
+      const mappingEditorOptions = getEditors(project.mappingEditors, project.customEditor);
       setEditorOptions(mappingEditorOptions);
       // activate defaultUserEditor if it's allowed. If not, use the first allowed editor
-      if (props.project.mappingEditors.includes(props.defaultUserEditor)) {
-        setEditor(props.defaultUserEditor);
+      if (project.mappingEditors.includes(defaultUserEditor)) {
+        setEditor(defaultUserEditor);
       } else {
         updateEditor(mappingEditorOptions);
       }
     }
   }, [
-    props.taskAction,
-    props.project.mappingEditors,
-    props.project.validationEditors,
-    props.project.customEditor,
-    props.defaultUserEditor,
+    taskAction,
+    project.mappingEditors,
+    project.validationEditors,
+    project.customEditor,
+    defaultUserEditor,
   ]);
 
   const updateEditor = (arr) => setEditor(arr[0].value);
@@ -169,7 +177,7 @@ const TaskSelectionFooter = (props) => {
         >
           {(close) => (
             <LockedTaskModalContent
-              project={props.project}
+              project={project}
               error={lockError}
               close={close}
               lockTasks={lockTasks}
@@ -182,14 +190,14 @@ const TaskSelectionFooter = (props) => {
           <FormattedMessage {...messages.typesOfMapping} />
         </h3>
         <div className="db fl pt1">
-          <MappingTypes types={props.project.mappingTypes} />
+          <MappingTypes types={project.mappingTypes} />
         </div>
       </div>
       <div className="w-25-ns w-60 fl">
         <h3 className={titleClasses}>
           <FormattedMessage {...messages.imagery} />
         </h3>
-        <Imagery value={props.project.imagery} />
+        <Imagery value={project.imagery} />
       </div>
       <div className="w-20-ns w-40 fl">
         <h3 className={titleClasses}>
@@ -202,21 +210,19 @@ const TaskSelectionFooter = (props) => {
           className="bg-white bn"
           toTop={true}
           onChange={updateEditor}
-          onAdd={() => {}}
-          onRemove={() => {}}
         />
       </div>
       <div className="w-30-ns w-60 fl tr">
         <div className="mt3">
-          <Button className="white bg-red" onClick={() => lockTasks()}>
+          <Button className="white bg-red" onClick={() => lockTasks()} loading={isPending}>
             {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(
-              props.taskAction,
+              taskAction,
             ) ? (
               <FormattedMessage {...messages.selectAnotherProject} />
             ) : (
               <FormattedMessage
-                {...messages[props.taskAction]}
-                values={{ number: props.selectedTasks ? props.selectedTasks.length : 0 }}
+                {...messages[taskAction]}
+                values={{ number: selectedTasks ? selectedTasks.length : 0 }}
               />
             )}
           </Button>

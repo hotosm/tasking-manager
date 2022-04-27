@@ -16,15 +16,81 @@ export default defineMessages({
     id: 'project.tasks.unsaved_map_changes.unlock',
     defaultMessage: 'Save or undo it to be able to select another task',
   },
+  unsavedChangesToReloadEditor: {
+    id: 'project.tasks.unsaved_map_changes.reload_editor',
+    defaultMessage: 'Save or undo it to be able to switch editors',
+  },
+  unsavedChangesTooltip: {
+    id: 'project.tasks.unsaved_map_changes.tooltip',
+    defaultMessage: 'You have unsaved edits. Save or undo them to submit this task.'
+  },
   closeModal: {
     id: 'project.tasks.unsaved_map_changes.actions.close_modal',
     defaultMessage: 'Close',
   },
-  josmError: {
+  noMappedTasksSelectedError: {
+    id: 'project.tasks.no_mapped_tasks_selected',
+    defaultMessage: 'No mapped tasks selected',
+  },
+  noMappedTasksSelectedErrorDescription: {
+    id: 'project.tasks.no_mapped_tasks_selected.description',
+    defaultMessage:
+      'It was not possible to lock the selected tasks, as none of them are on the mapped status.',
+  },  
+  InvalidTaskStateError: {
+    id: 'project.tasks.invalid_task_state_errortitle',
+    defaultMessage: 'Invalid Task State',
+  },
+  InvalidTaskStateErrorDescription: {
+    id: 'project.tasks.invalid_task_state_error.description',
+    defaultMessage: 'Task in invalid state for mapping',
+  },
+  UserNotAllowedError: {
+    id: 'project.tasks.user_not_allowed_error.title',
+    defaultMessage: 'User Not Allowed Error',
+  },
+  UserNotAllowedErrorDescription: {
+    id: 'project.tasks.user_not_allowed_error.description',
+    defaultMessage: 'Mapping not allowed because user not on allowed list',
+  },
+  ProjectNotPublishedError: {
+    id: 'project.tasks.project_not_published_error.title',
+    defaultMessage: 'Project Not Published',
+  },
+  ProjectNotPublishedErrorDescription: {
+    id: 'project.tasks.project_not_published_error.description',
+    defaultMessage: 'Mapping not allowed because project not published',
+  },
+  TaskNotOwnedError: {
+    id: 'project.tasks.task_not_owned_error.title',
+    defaultMessage: 'Task Not Owned',
+  },
+  TaskNotOwnedErrorDescription: {
+    id: 'project.tasks.task_not_owned_error.description',
+    defaultMessage: 'Attempting to unlock a task owned by another user',
+  },
+  NotReadyForValidationError: {
+    id: 'project.tasks.not_ready_for_validation_error.title',
+    defaultMessage: 'Not Ready for Validation',
+  },
+  NotReadyForValidationErrorDescription: {
+    id: 'project.tasks.not_ready_for_validation_error.description',
+    defaultMessage: 'Task is not MAPPED, BADIMAGERY or INVALIDATED',
+  },
+  CannotValidateMappedTaskError: {
+    id: 'project.tasks.cannot_validate_mapped_task_error.title',
+    defaultMessage: 'Cannot Validate Mapped Task',
+  },
+  CannotValidateMappedTaskErrorDescription: {
+    id: 'project.tasks.cannot_validate_mapped_task_error.description',
+    defaultMessage:
+      'Tasks cannot be validated by the same user who marked task as mapped or badimagery',
+  },
+  JOSMError: {
     id: 'project.tasks.josm_error',
     defaultMessage: 'Connection with JOSM failed',
   },
-  josmErrorDescription: {
+  JOSMErrorDescription: {
     id: 'project.tasks.josm_error.description',
     defaultMessage:
       'Please verify if JOSM is running on your computer and the remote control is enabled.',
@@ -44,7 +110,7 @@ export default defineMessages({
   },
   lockErrorLicenseDescription: {
     id: 'project.tasks.lock_error.license.description',
-    defaultMessage: 'Please accept this license in order to colaborate in this project. ',
+    defaultMessage: 'Please accept this license in order to collaborate in this project. ',
   },
   acceptLicense: {
     id: 'project.tasks.lock_error.license.accept',
@@ -126,6 +192,10 @@ export default defineMessages({
     id: 'project.sidebar.hide',
     defaultMessage: 'Hide sidebar',
   },
+  timeToUnlock: {
+    id: 'project.sidebar.timeToUnlock',
+    defaultMessage: 'Time available for you to complete work on this task',
+  },
   task: {
     id: 'project.task',
     defaultMessage: 'Task',
@@ -177,6 +247,10 @@ export default defineMessages({
   noImageryDefined: {
     id: 'project.imagery.noDefined',
     defaultMessage: 'Any available source',
+  },
+  copyImageryURL: {
+    id: 'project.imagery.copy',
+    defaultMessage: 'Copy imagery URL',
   },
   mapATask: {
     id: 'project.selectTask.footer.button.mapRandomTask',
@@ -279,9 +353,13 @@ export default defineMessages({
     id: 'project.tasks.sorting.id',
     defaultMessage: 'Sort by task number',
   },
-  sortByLastUpdate: {
+  sortByMostRecentlyUpdate: {
     id: 'project.tasks.sorting.date',
-    defaultMessage: 'Last updated first',
+    defaultMessage: 'Most recently updated',
+  },
+  sortByLeastRecentlyUpdate: {
+    id: 'project.tasks.sorting.date.reverse',
+    defaultMessage: 'Least recently updated',
   },
   filterAll: {
     id: 'project.tasks.filter.all',
@@ -299,6 +377,10 @@ export default defineMessages({
     id: 'project.tasks.filter.noTasksFound',
     defaultMessage: 'No tasks were found.',
   },
+  readTaskComments: {
+    id: 'project.tasks.readComments',
+    defaultMessage: 'Please check the history tab for relevant comments.',
+  },
   completion: {
     id: 'project.tasks.action.completion',
     defaultMessage: 'Completion',
@@ -306,6 +388,38 @@ export default defineMessages({
   history: {
     id: 'project.tasks.action.history',
     defaultMessage: 'History',
+  },
+  taskHistoryComments: {
+    id: 'project.tasks.history.comments',
+    defaultMessage: 'Comments',
+  },
+  taskHistoryActivities: {
+    id: 'project.tasks.history.activities',
+    defaultMessage: 'Activities',
+  },
+  taskHistoryAll: {
+    id: 'project.tasks.history.all',
+    defaultMessage: 'All',
+  },
+  copyComment: {
+    id: 'project.tasks.action.comments.copy',
+    defaultMessage: 'Copy comment',
+  },
+  copyCommentToAll: {
+    id: 'project.tasks.action.comments.copy_to_all',
+    defaultMessage: 'To all tasks',
+  },
+  copyCommentToINVALIDATED: {
+    id: 'project.tasks.action.comments.copy_to_invalidated',
+    defaultMessage: 'To tasks marked as "No"',
+  },
+  copyCommentToVALIDATED: {
+    id: 'project.tasks.action.comments.copy_to_validated',
+    defaultMessage: 'To tasks marked as "Yes"',
+  },
+  resources: {
+    id: 'project.tasks.action.resources',
+    defaultMessage: 'Resources',
   },
   finishMappingTitle: {
     id: 'project.tasks.action.finish_mapping.title',
@@ -373,7 +487,8 @@ export default defineMessages({
   },
   validatedQuestion: {
     id: 'project.tasks.action.options.validated_question',
-    defaultMessage: 'Is this task well mapped?',
+    defaultMessage:
+      '{number, plural, one {Is this task well mapped?} other {Are these tasks well mapped?}}',
   },
   complete: {
     id: 'project.tasks.action.options.complete',
@@ -390,6 +505,14 @@ export default defineMessages({
   splitTask: {
     id: 'project.tasks.action.split_task',
     defaultMessage: 'Split task',
+  },
+  splitTaskError: {
+    id: 'project.tasks.action.split_task.error',
+    defaultMessage: 'It was not possible to split the task',
+  },
+  splitTaskErrorDescription: {
+    id: 'project.tasks.action.split_task.error.description',
+    defaultMessage: 'This task is already too small and can not be split.',
   },
   selectAnotherTask: {
     id: 'project.tasks.action.select_another_task',
@@ -413,14 +536,14 @@ export default defineMessages({
   },
   taskActivity: {
     id: 'project.tasks.history.title',
-    defaultMessage: 'Task activity',
+    defaultMessage: 'Task {n}',
   },
-  taskSplitted: {
-    id: 'project.tasks.history.splitted',
+  taskUnavailable: {
+    id: 'project.tasks.history.unavailable',
     defaultMessage: 'Task unavailable',
   },
-  taskSplittedDescription: {
-    id: 'project.tasks.history.splitted.description',
+  taskSplitDescription: {
+    id: 'project.tasks.history.split.description',
     defaultMessage: 'The task {id} was split and its history is not available anymore',
   },
   taskData: {
@@ -438,6 +561,26 @@ export default defineMessages({
   overpassVisualization: {
     id: 'project.tasks.activity.overpass.visualization',
     defaultMessage: 'Visualize with Overpass',
+  },
+  projectData: {
+    id: 'project.resources.data',
+    defaultMessage: "Project's data",
+  },
+  changesets: {
+    id: 'project.resources.changesets',
+    defaultMessage: 'Changesets',
+  },
+  selectTask: {
+    id: 'project.resources.changesets.select_task',
+    defaultMessage: 'Select task',
+  },
+  entireProject: {
+    id: 'project.resources.changesets.entire_project',
+    defaultMessage: 'Entire project',
+  },
+  seeTaskChangesets: {
+    id: 'project.resources.changesets.task',
+    defaultMessage: "See task's changesets",
   },
   taskOnOSMCha: {
     id: 'project.tasks.activity.osmcha',
@@ -514,6 +657,10 @@ export default defineMessages({
   taskExtraInfo: {
     id: 'project.tasks.extra_information.title',
     defaultMessage: 'Specific task information',
+  },
+  userFilterDefaultLabel: {
+    id: 'project.users.all',
+    defaultMessage: 'All users',
   },
   mappingLevelALL: {
     id: 'project.level.all',

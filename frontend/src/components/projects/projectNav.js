@@ -10,6 +10,7 @@ import { Dropdown } from '../dropdown';
 import { ProjectSearchBox } from './projectSearchBox';
 import ClearFilters from './clearFilters';
 import { OrderBySelector } from './orderBy';
+import { ProjectsActionFilter } from './projectsActionFilter';
 import { SwitchToggle } from '../formInputs';
 import { GripIcon, ListIcon } from '../svgIcons';
 
@@ -51,8 +52,6 @@ export const ProjetListViewToggle = (props) => {
 const DifficultyDropdown = (props) => {
   return (
     <Dropdown
-      onAdd={() => {}}
-      onRemove={() => {}}
       onChange={(n) => {
         const value = n && n[0] && n[0].value;
         props.setQuery(
@@ -109,6 +108,7 @@ export const ProjectNav = (props) => {
             <div className="mv2 dib">
               <DifficultyDropdown setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             </div>
+            <ProjectsActionFilter setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             <Link
               to={filterRouteToggled}
               className={`dn mh1 di-l ${linkCombo} ${moreFiltersCurrentActiveStyle}`}

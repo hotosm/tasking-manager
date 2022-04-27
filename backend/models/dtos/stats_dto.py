@@ -20,7 +20,7 @@ class UserContribution(Model):
 
 
 class ProjectContributionsDTO(Model):
-    """ DTO for all user contributons on a project """
+    """ DTO for all user contributions on a project """
 
     def __init__(self):
         super().__init__()
@@ -78,7 +78,28 @@ class ProjectLastActivityDTO(Model):
     activity = ListType(ModelType(TaskStatusDTO))
 
 
+class OrganizationProjectsStatsDTO(Model):
+    draft = IntType()
+    published = IntType()
+    archived = IntType()
+
+
+class OrganizationTasksStatsDTO(Model):
+    ready = IntType()
+    locked_for_mapping = IntType(serialized_name="lockedForMapping")
+    locked_for_validation = IntType(serialized_name="lockedForValidation")
+    mapped = IntType()
+    validated = IntType()
+    invalidated = IntType()
+    badimagery = IntType(serialized_name="badImagery")
+
+
 class OrganizationStatsDTO(Model):
+    projects = ModelType(OrganizationProjectsStatsDTO)
+    active_tasks = ModelType(OrganizationTasksStatsDTO, serialized_name="activeTasks")
+
+
+class OrganizationListStatsDTO(Model):
     def __init__(self, row):
         super().__init__()
         self.organisation = row[0]
@@ -118,5 +139,45 @@ class HomePageStatsDTO(Model):
     total_organisations = IntType(serialized_name="totalOrganisations")
     total_campaigns = IntType(serialized_name="totalCampaigns")
     # avg_completion_time = IntType(serialized_name='averageCompletionTime')
-    organisations = ListType(ModelType(OrganizationStatsDTO))
+    organisations = ListType(ModelType(OrganizationListStatsDTO))
     campaigns = ListType(ModelType(CampaignStatsDTO))
+
+
+class TaskStats(Model):
+    """ DTO for tasks stats for a single day """
+
+    date = DateType(required=True)
+    mapped = IntType(serialized_name="mapped")
+    validated = IntType(serialized_name="validated")
+    bad_imagery = IntType(serialized_name="badImagery")
+
+
+class GenderStatsDTO(Model):
+    """ DTO for genre stats of users."""
+
+    male = IntType()
+    female = IntType()
+    prefer_not = IntType(serialized_name="preferNotIdentify")
+    self_describe = IntType(serialized_name="selfDescribe")
+
+
+class UserStatsDTO(Model):
+    """ DTO for user stats."""
+
+    total = IntType()
+    beginner = IntType()
+    intermediate = IntType()
+    advanced = IntType()
+    contributed = IntType()
+    email_verified = IntType(serialized_name="emailVerified")
+    genders = ModelType(GenderStatsDTO)
+
+
+class TaskStatsDTO(Model):
+    """ Contains all tasks stats broken down by day"""
+
+    def __init__(self):
+        super().__init__()
+        self.stats = []
+
+    stats = ListType(ModelType(TaskStats), serialized_name="taskStats")

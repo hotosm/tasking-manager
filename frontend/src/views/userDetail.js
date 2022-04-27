@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { Redirect } from '@reach/router';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -9,15 +9,20 @@ import { HeaderProfile } from '../components/userDetail/headerProfile';
 import { ElementsMapped, TaskStats } from '../components/userDetail/elementsMapped';
 import { UserTeams } from '../components/userDetail/userTeamsOrgs';
 import { CountriesMapped } from '../components/userDetail/countriesMapped';
-import { TopCauses } from '../components/userDetail/topCauses';
 import { TopProjects } from '../components/userDetail/topProjects';
-import { EditsByNumbers } from '../components/userDetail/editsByNumbers';
-import ContributionTimeline from '../components/userDetail/contributionTimeline';
+import { ContributionTimeline } from '../components/userDetail/contributionTimeline';
 import { NotFound } from './notFound';
 import { USER_STATS_API_URL } from '../config';
 import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+
+const TopCauses = React.lazy(() =>
+  import('../components/userDetail/topCauses' /* webpackChunkName: "topCauses" */),
+);
+const EditsByNumbers = React.lazy(() =>
+  import('../components/userDetail/editsByNumbers' /* webpackChunkName: "editsByNumbers" */),
+);
 
 export const UserDetail = ({ username, withHeader = true }) => {
   useSetTitleTag(username);
@@ -106,11 +111,15 @@ export const UserDetail = ({ username, withHeader = true }) => {
                 style={{ height: '24em' }}
                 ready={!errorStats && !loadingStats}
               >
-                <TopCauses userStats={userStats} />
+                <Suspense fallback={<div />}>
+                  <TopCauses userStats={userStats} />
+                </Suspense>
               </ReactPlaceholder>
             </div>
             <div className={blockClass}>
-              <EditsByNumbers osmStats={osmStats} />
+              <Suspense fallback={<div />}>
+                <EditsByNumbers osmStats={osmStats} />
+              </Suspense>
             </div>
           </div>
         </div>

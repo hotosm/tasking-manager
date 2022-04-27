@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from '@reach/router';
 import { Form, Field } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
 
 import messages from '../teamsAndOrgs/messages';
 import { Management } from '../teamsAndOrgs/management';
-import { EditModeControl } from '../teamsAndOrgs/editMode';
 import { CopyrightIcon } from '../svgIcons';
 import { Button } from '../button';
 
@@ -39,7 +38,7 @@ export const LicensesManagement = ({ licenses, userDetails }) => {
       managementView
     >
       {licenses.length ? (
-        licenses.map((i, n) => <LicenseCard license={i} />)
+        licenses.map((i, n) => <LicenseCard key={n} license={i} />)
       ) : (
         <div className="pv3">
           <FormattedMessage {...messages.noLicenses} />
@@ -49,7 +48,7 @@ export const LicensesManagement = ({ licenses, userDetails }) => {
   );
 };
 
-export const LicenseInformation = (props) => {
+export const LicenseInformation = () => {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
 
@@ -73,45 +72,43 @@ export const LicenseInformation = (props) => {
   );
 };
 
-export const LicenseForm = (props) => {
-  const [editMode, setEditMode] = useState(false);
-
+export const LicenseForm = ({ license, updateLicense, disabledForm }) => {
   return (
     <Form
-      onSubmit={(values) => props.updateLicense(values)}
-      initialValues={props.license}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      onSubmit={(values) => updateLicense(values)}
+      initialValues={license}
+      render={({
+        handleSubmit,
+        dirty,
+        submitSucceeded,
+        dirtySinceLastSubmit,
+        form,
+        submitting,
+        values,
+      }) => {
+        const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         return (
           <div className="blue-grey mb3">
-            <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
+            <div className={`bg-white b--grey-light pa4 ${dirtyForm ? 'bt bl br' : 'ba'}`}>
               <h3 className="f3 fw6 dib blue-dark mv0">
                 <FormattedMessage {...messages.licenseInfo} />
               </h3>
-              <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
               <form id="license-form" onSubmit={handleSubmit}>
-                <fieldset
-                  className="bn pa0"
-                  disabled={submitting || props.disabledForm || !editMode}
-                >
+                <fieldset className="bn pa0" disabled={submitting}>
                   <LicenseInformation />
                 </fieldset>
               </form>
             </div>
-            {editMode && (
+            {dirtyForm && (
               <div className="cf pt0 h3">
                 <div className="w-70-l w-50 fl tr dib bg-grey-light">
-                  <Button className="blue-dark bg-grey-light h3" onClick={() => setEditMode(false)}>
+                  <Button className="blue-dark bg-grey-light h3" onClick={() => form.restart()}>
                     <FormattedMessage {...messages.cancel} />
                   </Button>
                 </div>
                 <div className="w-30-l w-50 h-100 fr dib">
                   <Button
-                    onClick={() => {
-                      document
-                        .getElementById('license-form')
-                        .dispatchEvent(new Event('submit', { cancelable: true }));
-                      setEditMode(false);
-                    }}
+                    onClick={() => handleSubmit()}
                     className="w-100 h-100 bg-red white"
                     disabledClassName="bg-red o-50 white w-100 h-100"
                   >

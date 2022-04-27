@@ -1,6 +1,6 @@
 import requests
-import xml.etree.ElementTree as ET
 from flask import current_app
+import xml.etree.ElementTree as ET
 
 from backend.models.dtos.user_dto import UserOSMDTO
 
@@ -10,7 +10,7 @@ class OSMServiceError(Exception):
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class OSMService:
@@ -39,6 +39,7 @@ class OSMService:
         root = ET.fromstring(osm_response)
 
         osm_user = root.find(user_element)
+
         if osm_user is None:
             raise OSMServiceError("User element not found in OSM response")
 

@@ -20,6 +20,54 @@ export default defineMessages({
     id: 'project.nav.campaign',
     defaultMessage: 'Campaign',
   },
+  startDate: {
+    id: 'navFilters.startDate',
+    defaultMessage: 'From',
+  },
+  startDatePlaceholder: {
+    id: 'navFilters.startDate.placeholder',
+    defaultMessage: 'Click to select a start date',
+  },
+  endDate: {
+    id: 'navFilters.endDate',
+    defaultMessage: 'To',
+  },
+  endDatePlaceholder: {
+    id: 'navFilters.endDatePlace.placeholder',
+    defaultMessage: 'Click to select an end date',
+  },
+  dateRange: {
+    id: 'navFilters.dateRange',
+    defaultMessage: 'Date Range',
+  },
+  thisWeek: {
+    id: 'navFilters.thisWeek',
+    defaultMessage: 'This week',
+  },
+  thisMonth: {
+    id: 'navFilters.thisMonth',
+    defaultMessage: 'This month',
+  },
+  thisYear: {
+    id: 'navFilters.thisYear',
+    defaultMessage: 'This year',
+  },
+  lastWeek: {
+    id: 'navFilters.lastWeek',
+    defaultMessage: 'Last week',
+  },
+  lastMonth: {
+    id: 'navFilters.lastMonth',
+    defaultMessage: 'Last month',
+  },
+  lastYear: {
+    id: 'navFilters.lastYear',
+    defaultMessage: 'Last year',
+  },
+  customRange: {
+    id: 'navFilters.customRange',
+    defaultMessage: 'Custom range',
+  },
   showMapToggle: {
     id: 'project.nav.showMapToggle',
     defaultMessage: 'Show map',
@@ -31,6 +79,22 @@ export default defineMessages({
   typesOfMapping: {
     id: 'project.navFilters.typesOfMapping',
     defaultMessage: 'Types of mapping',
+  },
+  projectsToMap: {
+    id: 'project.navFilters.action.map',
+    defaultMessage: 'Projects to map',
+  },
+  projectsToValidate: {
+    id: 'project.navFilters.action.validate',
+    defaultMessage: 'Projects to validate',
+  },
+  anyProject: {
+    id: 'project.navFilters.action.any',
+    defaultMessage: 'Any project',
+  },
+  exactMatch: {
+    id: 'project.navFilters.typesOfMapping.exactMatch',
+    defaultMessage: 'Exact match',
   },
   campaigns: {
     id: 'project.navFilters.campaigns',
@@ -137,7 +201,7 @@ export default defineMessages({
     defaultMessage: 'Urgent projects',
   },
   sortByBeginner: {
-    id: 'project.sortby.difficulty.begginer',
+    id: 'project.sortby.difficulty.beginner',
     defaultMessage: 'Beginner projects',
   },
   sortByAdvanced: {

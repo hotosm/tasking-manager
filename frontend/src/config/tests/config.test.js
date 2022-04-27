@@ -16,6 +16,15 @@ it('exports USER_STATS_API_URL', () => {
 it('exports ORG_URL', () => {
   expect(typeof config.ORG_URL).toBe('string');
 });
+it('exports ORG_LOGO', () => {
+  expect(typeof config.ORG_LOGO).toBe('string');
+});
+it('exports HOMEPAGE_IMG_HIGH', () => {
+  expect(typeof config.HOMEPAGE_IMG_HIGH).toBe('string');
+});
+it('exports HOMEPAGE_IMG_LOW', () => {
+  expect(typeof config.HOMEPAGE_IMG_LOW).toBe('string');
+});
 it('exports ORG_NAME', () => {
   expect(typeof config.ORG_NAME).toBe('string');
 });
@@ -46,6 +55,9 @@ it('exports OSM_CONSUMER_SECRET', () => {
 it('exports MATOMO_ID', () => {
   expect(typeof config.MATOMO_ID).toBe('string');
 });
+it('exports SERVICE_DESK', () => {
+  expect(typeof config.SERVICE_DESK).toBe('string');
+});
 it('exports HOMEPAGE_VIDEO_URL', () => {
   expect(typeof config.HOMEPAGE_VIDEO_URL).toBe('string');
 });
@@ -66,6 +78,9 @@ it('exports ADVANCED_LEVEL_COUNT', () => {
 });
 it('exports MAX_FILESIZE', () => {
   expect(typeof config.MAX_FILESIZE).toBe('number');
+});
+it('exports MAX_AOI_AREA', () => {
+  expect(typeof config.MAX_AOI_AREA).toBe('number');
 });
 it('exports TASK_COLOURS', () => {
   expect(typeof config.TASK_COLOURS).toBe('object');

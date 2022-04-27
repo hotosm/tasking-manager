@@ -3,11 +3,13 @@ import {
   getIdUrl,
   getTaskGpxUrl,
   getTaskXmlUrl,
+  formatImageryUrl,
   getFieldPapersUrl,
   getPotlatch2Url,
   formatJosmUrl,
   formatCustomUrl,
   getImageryInfo,
+  formatExtraParams,
 } from '../openEditor';
 
 describe('test if getIdUrl', () => {
@@ -43,7 +45,7 @@ describe('test if getIdUrl', () => {
     );
   });
 
-  it('with idPresets returns the correct formatted url', () => {
+  it('with idPresets returns the url param', () => {
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
       projectId: 1234,
@@ -53,7 +55,22 @@ describe('test if getIdUrl', () => {
       'https://www.openstreetmap.org/edit?editor=id&' +
         '#map=18/-9.663953/120.25684' +
         '&comment=%23hotosm-project-5522%20%23osm_in%20%232018IndiaFloods%20%23mmteamarm' +
-        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1',
+        '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1' +
+        '&presets=building%2Chighway%2Cnatural%2Fwater',
+    );
+  });
+
+  it('Integrated iD returns only the #map params and the extraParams', () => {
+    const testProject = {
+      changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
+      projectId: 1234,
+      idPresets: ['building', 'highway', 'natural/water'],
+      extraIdParams: '&validationDisable=crossing_ways/highway*&photo_user=user1,user2',
+      imagery:
+        'tms[1,22]:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{zoom}/{x}/{y}?access_token=pk.123',
+    };
+    expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1], '?editor=ID')).toBe(
+      '?editor=ID#map=18/-9.663953/120.25684&validationDisable=crossing_ways%2Fhighway*&photo_user=user1%2Cuser2',
     );
   });
 
@@ -74,12 +91,13 @@ describe('test if getIdUrl', () => {
     const testProject = {
       changesetComment: '#hotosm-project-5522',
       projectId: 1234,
-      imagery: 'Bing',
+      imagery: 'Maxar-Premium',
     };
     expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1, 2])).toBe(
       'https://www.openstreetmap.org/edit?editor=id&' +
         '#map=18/-9.663953/120.25684' +
         '&comment=%23hotosm-project-5522' +
+        '&background=Maxar-Premium' +
         '&gpx=http%3A%2F%2F127.0.0.1%3A5000%2Fapi%2Fv2%2Fprojects%2F1234%2Ftasks%2Fqueries%2Fgpx%2F%3Ftasks%3D1%2C2',
     );
   });
@@ -103,10 +121,10 @@ it('test if getPotlatch2Url returns the correct url', () => {
 });
 
 it('test if getTaskGpxUrl returns the correct url', () => {
-  expect(getTaskGpxUrl(1, [1]).href).toBe(
+  expect(getTaskGpxUrl(1, [1])).toBe(
     new URL('projects/1/tasks/queries/gpx/?tasks=1', API_URL).href,
   );
-  expect(getTaskGpxUrl(2312, [1, 344, 54]).href).toBe(
+  expect(getTaskGpxUrl(2312, [1, 344, 54])).toBe(
     new URL('projects/2312/tasks/queries/gpx/?tasks=1,344,54', API_URL).href,
   );
 });
@@ -178,5 +196,29 @@ describe('test get imagery type from URL', () => {
 
     const wmsWithMaxZoom = 'wms[:22]http://tile.openstreetmap.org/{zoom}/{x}/{y}.png';
     expect(getImageryInfo(wmsWithMaxZoom)).toStrictEqual(['wms', null, 22]);
+  });
+});
+
+describe('formatImageryUrl', () => {
+  it('returns a string starting with http and replaces {zoom} by {z}', () => {
+    expect(formatImageryUrl('wms:http://tile.openstreetmap.org/{zoom}/{x}/{y}.png')).toBe(
+      'http://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    );
+    expect(formatImageryUrl('tms[0:]https://tile.openstreetmap.org/{zoom}/{x}/{y}.png')).toBe(
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    );
+  });
+  it('in case the imagery is not an URL, return the same string', () => {
+    expect(formatImageryUrl('Bing')).toBe('Bing');
+    expect(formatImageryUrl('EsriWorldImageryClarity')).toBe('EsriWorldImageryClarity');
+    expect(formatImageryUrl('Maxar-Premium')).toBe('Maxar-Premium');
+  });
+});
+
+describe('formatExtraParams', () => {
+  it('returns the parameter values formated as URI component', () => {
+    expect(
+      formatExtraParams('&validationDisable=crossing_ways/highway*&photo_user=user1,user2')
+    ).toBe('&validationDisable=crossing_ways%2Fhighway*&photo_user=user1%2Cuser2');
   });
 });

@@ -69,11 +69,15 @@ def get_canned_simplified_osm_user_details():
 def create_canned_user() -> User:
     """ Generate a canned user in the DB """
     test_user = User()
-    test_user.id = TEST_USER_ID
     test_user.username = "Thinkwhere TEST"
     test_user.mapping_level = 1
     test_user.create()
 
+    return test_user
+
+
+def get_canned_user(username: str) -> User:
+    test_user = User().get_by_username(username)
     return test_user
 
 
@@ -85,8 +89,12 @@ def create_canned_project() -> Tuple[Project, User]:
     task_non_square_feature = geojson.loads(
         json.dumps(get_canned_json("non_square_task.json"))
     )
-
-    test_user = create_canned_user()
+    task_arbitrary_feature = geojson.loads(
+        json.dumps(get_canned_json("splittable_task.json"))
+    )
+    test_user = get_canned_user("Thinkwhere TEST")
+    if test_user is None:
+        test_user = create_canned_user()
 
     test_project_dto = DraftProjectDTO()
     test_project_dto.project_name = "Test"
@@ -95,7 +103,7 @@ def create_canned_project() -> Tuple[Project, User]:
     test_project = Project()
     test_project.create_draft_project(test_project_dto)
     test_project.set_project_aoi(test_project_dto)
-    test_project.total_tasks = 2
+    test_project.total_tasks = 3
 
     # Setup test task
     test_task = Task.from_geojson_feature(1, task_feature)
@@ -107,8 +115,14 @@ def create_canned_project() -> Tuple[Project, User]:
     test_task2.task_status = TaskStatus.READY.value
     test_task2.is_square = False
 
+    test_task3 = Task.from_geojson_feature(3, task_arbitrary_feature)
+    test_task3.task_status = TaskStatus.BADIMAGERY.value
+    test_task3.mapped_by = test_user.id
+    test_task3.is_square = True
+
     test_project.tasks.append(test_task)
     test_project.tasks.append(test_task2)
+    test_project.tasks.append(test_task3)
     test_project.create()
 
     return test_project, test_user

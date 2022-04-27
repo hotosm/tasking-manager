@@ -1,19 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 import Select from 'react-select';
-
-import { FormattedMessage } from 'react-intl';
+import { format, parse } from 'date-fns';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { dateRanges } from '../../utils/date';
 import messages from './messages';
+import { CalendarIcon } from '../svgIcons';
 
-export const ProjectFilterSelect = (props) => {
-  const state = props.options;
-  const fieldsetTitle = <FormattedMessage {...messages[props.fieldsetName]} />;
-  const fieldsetTitlePlural = <FormattedMessage {...messages[`${props.fieldsetName}s`]} />;
+export const ProjectFilterSelect = ({
+  fieldsetName,
+  fieldsetStyle,
+  titleStyle,
+  selectedTag,
+  setQueryForChild,
+  allQueryParamsForChild,
+  options,
+}) => {
+  const state = options;
+  const fieldsetTitle = <FormattedMessage {...messages[fieldsetName]} />;
+  const fieldsetTitlePlural = <FormattedMessage {...messages[`${fieldsetName}s`]} />;
 
   return (
-    <fieldset id={props.fieldsetName} className={props.fieldsetStyle}>
-      <legend className={props.titleStyle}>{fieldsetTitle}</legend>
+    <fieldset id={fieldsetName} className={fieldsetStyle}>
+      <legend className={titleStyle}>{fieldsetTitle}</legend>
       {state.isError ? (
         <div className="bg-tan pa4">
           <FormattedMessage
@@ -29,13 +41,124 @@ export const ProjectFilterSelect = (props) => {
         <TagFilterPickerAutocomplete
           fieldsetTitle={fieldsetTitle}
           defaultSelectedItem={fieldsetTitlePlural}
-          fieldsetName={props.fieldsetName}
-          queryParamSelectedItem={props.selectedTag || fieldsetTitle}
-          tagOptionsFromAPI={props.options}
-          setQuery={props.setQueryForChild}
-          allQueryParams={props.allQueryParamsForChild}
+          fieldsetName={fieldsetName}
+          queryParamSelectedItem={selectedTag || fieldsetTitle}
+          tagOptionsFromAPI={options}
+          setQuery={setQueryForChild}
+          allQueryParams={allQueryParamsForChild}
         />
       </ReactPlaceholder>
+    </fieldset>
+  );
+};
+
+export const DateRangeFilterSelect = ({
+  fieldsetName,
+  fieldsetStyle,
+  titleStyle,
+  setQueryForChild,
+  allQueryParamsForChild,
+  isCustomDateRange,
+  setIsCustomDateRange,
+  startDateInQuery,
+  endDateInQuery,
+}) => {
+  const [dateRange, setDateRange] = useState('thisYear');
+
+  const dropdownOptions = [
+    { value: 'thisWeek', label: <FormattedMessage {...messages.thisWeek} /> },
+    { value: 'thisMonth', label: <FormattedMessage {...messages.thisMonth} /> },
+    { value: 'thisYear', label: <FormattedMessage {...messages.thisYear} /> },
+    { value: 'lastWeek', label: <FormattedMessage {...messages.lastWeek} /> },
+    { value: 'lastMonth', label: <FormattedMessage {...messages.lastMonth} /> },
+    { value: 'lastYear', label: <FormattedMessage {...messages.lastYear} /> },
+    (isCustomDateRange || dateRange === 'custom') && {
+      value: 'custom',
+      label: <FormattedMessage {...messages.customRange} />,
+      isOptionDisabled: true,
+    },
+  ].filter((a) => a);
+
+  useEffect(() => {
+    if (!endDateInQuery && startDateInQuery === dateRanges['thisYear'].start) {
+      setDateRange('thisYear');
+      return;
+    }
+    const doesRangeMatch = Object.keys(dateRanges).find(
+      (range) =>
+        dateRanges[range].start === startDateInQuery && dateRanges[range].end === endDateInQuery,
+    );
+    doesRangeMatch ? setDateRange(doesRangeMatch) : setDateRange('custom');
+  }, [startDateInQuery, endDateInQuery]);
+
+  return (
+    <fieldset id={fieldsetName} className={fieldsetStyle}>
+      <legend className={titleStyle}>
+        <FormattedMessage {...messages.dateRange} />
+      </legend>
+      <Select
+        onChange={({ value }) => {
+          setQueryForChild(
+            {
+              ...allQueryParamsForChild,
+              page: undefined,
+              startDate: dateRanges[value].start,
+              endDate: dateRanges[value].end,
+            },
+            'pushIn',
+          );
+          setIsCustomDateRange(false);
+          setDateRange(value);
+        }}
+        classNamePrefix="react-select"
+        options={dropdownOptions}
+        value={
+          isCustomDateRange
+            ? dropdownOptions.filter((option) => option.value === 'custom')
+            : dropdownOptions.filter((option) => option.value === dateRange)
+        }
+        isOptionDisabled={(option) => option.isOptionDisabled}
+      />
+    </fieldset>
+  );
+};
+
+export const DateFilterPicker = ({
+  fieldsetName,
+  fieldsetStyle,
+  titleStyle,
+  selectedValue,
+  setQueryForChild,
+  allQueryParamsForChild,
+  setIsCustomDateRange,
+}) => {
+  const intl = useIntl();
+  const dateFormat = 'yyyy-MM-dd';
+  return (
+    <fieldset id={fieldsetName} className={fieldsetStyle}>
+      <legend className={titleStyle}>
+        <FormattedMessage {...messages[fieldsetName]} />
+      </legend>
+      <CalendarIcon className="blue-grey dib w1 pr2 v-mid" />
+      <DatePicker
+        selected={selectedValue ? parse(selectedValue, dateFormat, new Date()) : null}
+        onChange={(date) => {
+          setQueryForChild(
+            {
+              ...allQueryParamsForChild,
+              page: undefined,
+              [fieldsetName]: date ? format(date, dateFormat) : null,
+            },
+            'pushIn',
+          );
+          setIsCustomDateRange(true);
+        }}
+        dateFormat={dateFormat}
+        className="w-auto pv2 ph1 ba b--grey-light"
+        placeholderText={intl.formatMessage(messages[`${fieldsetName}Placeholder`])}
+        showYearDropdown
+        scrollableYearDropdown
+      />
     </fieldset>
   );
 };
@@ -63,10 +186,10 @@ export const TagFilterPickerAutocomplete = ({
     }
   };
   const getValue = (option) => {
-    if (option.value) {
+    if (option && option.value) {
       return option.value;
     }
-    if (option.name) {
+    if (option && option.name) {
       return option.name;
     }
     return option;
@@ -81,11 +204,13 @@ export const TagFilterPickerAutocomplete = ({
       {
         ...allQueryParams,
         page: undefined,
-        [fieldsetName]: newValue,
+        [fieldsetName]: newValue || undefined,
       },
       'pushIn',
     );
   };
+
+  const [selectedOption] = tagOptions.filter((option) => option.name === queryParamSelectedItem);
 
   return (
     <Select
@@ -96,7 +221,8 @@ export const TagFilterPickerAutocomplete = ({
       autoFocus={true}
       placeholder={allQueryParams[fieldsetName] || fieldsetTitle}
       options={tagOptions}
-      value={queryParamSelectedItem}
+      value={selectedOption || null}
+      isClearable={true}
     />
   );
 };

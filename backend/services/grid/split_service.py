@@ -6,18 +6,18 @@ from flask import current_app
 from geoalchemy2 import shape
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.dtos.mapping_dto import TaskDTOs
-from backend.models.postgis.utils import ST_Transform
+from backend.models.postgis.utils import ST_Transform, ST_Area, ST_GeogFromWKB
 from backend.models.postgis.task import Task, TaskStatus, TaskAction
 from backend.models.postgis.project import Project
 from backend.models.postgis.utils import NotFound, InvalidGeoJson
 
 
 class SplitServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling splitting tasks """
+    """Custom Exception to notify callers an error occurred when handling splitting tasks"""
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class SplitService:
@@ -171,12 +171,26 @@ class SplitService:
 
         original_geometry = shape.to_shape(original_task.geometry)
 
+        # Fetch the task geometry in meters
+        original_task_area_m = db.engine.execute(
+            ST_Area(ST_GeogFromWKB(original_task.geometry))
+        ).scalar()
+
+        if (
+            original_task.zoom and original_task.zoom >= 18
+        ) or original_task_area_m < 25000:
+            raise SplitServiceError("SmallToSplit- Task is too small to be split")
+
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
-            raise SplitServiceError("Status must be LOCKED_FOR_MAPPING to split")
+            raise SplitServiceError(
+                "LockToSplit- Status must be LOCKED_FOR_MAPPING to split"
+            )
 
         if original_task.locked_by != split_task_dto.user_id:
-            raise SplitServiceError("Attempting to split a task owned by another user")
+            raise SplitServiceError(
+                "SplitOtherUserTask- Attempting to split a task owned by another user"
+            )
 
         # create new geometries from the task geometry
         try:
@@ -194,7 +208,9 @@ class SplitService:
             # Sanity check: ensure the new task geometry intersects the original task geometry
             new_geometry = shapely_shape(new_task_geojson.geometry)
             if not new_geometry.intersects(original_geometry):
-                raise InvalidGeoJson("New split task does not intersect original task")
+                raise InvalidGeoJson(
+                    "SplitGeoJsonError- New split task does not intersect original task"
+                )
 
             # insert new tasks into database
             i = i + 1

@@ -38,7 +38,7 @@ export default defineMessages({
   },
   waterwaysMapped: {
     id: 'users.detail.waterwaysMapped',
-    defaultMessage: 'Waterways mapped',
+    defaultMessage: 'Km waterways mapped',
   },
   userMapped: {
     id: 'users.detail.tasksMapped',
@@ -75,6 +75,10 @@ export default defineMessages({
   topCausesTitle: {
     id: 'users.detail.topCausesTitle',
     defaultMessage: 'Top causes contributed to',
+  },
+  others: {
+    id: 'users.detail.others',
+    defaultMessage: 'Others',
   },
   noProjectsData: {
     id: 'users.detail.projects.noData',

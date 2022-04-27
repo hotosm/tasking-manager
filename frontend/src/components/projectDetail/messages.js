@@ -20,9 +20,13 @@ export default defineMessages({
     id: 'project.detail.createdBy',
     defaultMessage: 'Project created by {user}.',
   },
+  noProjectContributors: {
+    id: 'project.detail.contributorCount.zero',
+    defaultMessage: 'No contributors yet',
+  },
   projectTotalContributors: {
     id: 'project.detail.contributorCount',
-    defaultMessage: '{number} total contributors',
+    defaultMessage: '{number, plural, one {<b>#</b> contributor} other {<b>#</b> contributors}}',
   },
   projectLastContribution: {
     id: 'project.detail.lastContribution',
@@ -121,6 +125,10 @@ export default defineMessages({
     defaultMessage:
       'There are currently no questions or comments on this project. Be the first to post one!',
   },
+  loginTocomment: {
+    id: 'project.detail.questionsAndComments.login',
+    defaultMessage: 'Log in to be able to post comments.',
+  },
   post: {
     id: 'project.detail.questionsAndComments.button',
     defaultMessage: 'Post',
@@ -186,6 +194,10 @@ export default defineMessages({
   overview: {
     id: 'project.detail.sections.overview',
     defaultMessage: 'Overview',
+  },
+  dueDateTooltip: {
+    id: 'project.detail.sections.overview.dueDate',
+    defaultMessage: 'Ideal date to complete the project',
   },
   description: {
     id: 'project.detail.sections.description',
@@ -262,6 +274,14 @@ export default defineMessages({
   moreStats: {
     id: 'projects.link.stats',
     defaultMessage: 'More statistics',
+  },
+  mappedTasks: {
+    id: 'projects.stats.mapped',
+    defaultMessage: 'Mapped tasks',
+  },
+  validatedTasks: {
+    id: 'projects.stats.validated',
+    defaultMessage: 'Validated tasks',
   },
   shareMessage: {
     id: 'project.share.twitter',

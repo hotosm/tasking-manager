@@ -1,8 +1,6 @@
-import unittest
 from unittest.mock import patch
 from urllib.parse import urlparse, parse_qs
 
-from backend import create_app
 from backend.services.users.authentication_service import (
     AuthenticationService,
     AuthServiceError,
@@ -11,18 +9,11 @@ from backend.services.users.authentication_service import (
     MessageService,
 )
 from backend.services.messaging.smtp_service import SMTPService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import get_canned_osm_user_details
 
 
-class TestAuthenticationService(unittest.TestCase):
-    def setUp(self):
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
-    def tearDown(self):
-        self.ctx.pop()
-
+class TestAuthenticationService(BaseTestCase):
     def test_unable_to_find_user_in_osm_response_raises_error(self):
         # Arrange
         osm_response = get_canned_osm_user_details()

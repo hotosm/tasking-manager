@@ -6,7 +6,7 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   createProject: {
     id: 'management.projects.create.title',
-    defaultMessage: 'Create project',
+    defaultMessage: 'Create new project',
   },
   cloneProject: {
     id: 'management.projects.clone.message',
@@ -19,6 +19,10 @@ export default defineMessages({
   areaSize: {
     id: 'management.projects.create.area_size',
     defaultMessage: 'Area size: {area} km{sq}',
+  },
+  areaOverLimitError: {
+    id: 'management.projects.create.area_error',
+    defaultMessage: 'Project area is higher than {n} squared kilometers.',
   },
   taskNumber: {
     id: 'management.projects.create.tasks',
@@ -43,6 +47,10 @@ export default defineMessages({
   name: {
     id: 'management.projects.create.review_tasks.name',
     defaultMessage: 'Name',
+  },
+  organization: {
+    id: 'management.projects.create.review_tasks.organization',
+    defaultMessage: 'Organization',
   },
   creationFailed: {
     id: 'management.projects.create.review_tasks.failure.message',
@@ -77,6 +85,15 @@ export default defineMessages({
     id: 'management.projects.create.trim_tasks.trim_to_aoi',
     defaultMessage: 'Trim the tasks to define the exact Area of Interest for mapping.',
   },
+  tinyTasks: {
+    id: 'management.projects.create.trim_tasks.tiny_tasks',
+    defaultMessage:
+      '{number, plural, one {There is # task smaller than {area}m². Would you like to discard it?} other {There are # tasks smaller than {area}m². Would you like to discard them?}}',
+  },
+  discard: {
+    id: 'management.projects.create.trim_tasks.tiny_tasks.discard',
+    defaultMessage: 'Discard',
+  },
   taskSizes: {
     id: 'management.projects.create.task_sizes.description',
     defaultMessage: 'General task size',
@@ -106,6 +123,14 @@ export default defineMessages({
     id: 'management.projects.create.errors.closed_linestring',
     defaultMessage: 'Points do not form a closed linestring',
   },
+  noGeometry: {
+    id: 'management.projects.create.errors.no_geometry',
+    defaultMessage: "You need to define the project's area of interest.",
+  },
+  noOrganization: {
+    id: 'management.projects.create.errors.no_organization',
+    defaultMessage: 'Organization is a required field.',
+  },
   fileSize: {
     id: 'management.projects.create.errors.fileSize',
     defaultMessage:
@@ -119,6 +144,23 @@ export default defineMessages({
   reset: {
     id: 'management.projects.create.reset.button',
     defaultMessage: 'Reset',
+  },
+  showProjectsAOILayer: {
+    id: 'management.projects.create.show_aois',
+    defaultMessage: 'Show existing projects',
+  },
+  disabledAOILayer: {
+    id: 'management.projects.create.show_aois.disabled',
+    defaultMessage:
+      "Zoom in to be able to activate the visualization of other projects' areas of interest.",
+  },
+  enableAOILayer: {
+    id: 'management.projects.create.show_aois.enable',
+    defaultMessage: "Enable the visualization of the existing projects' areas of interest.",
+  },
+  colorLegend: {
+    id: 'management.projects.create.show_aois.legend',
+    defaultMessage: 'Color legend:',
   },
   taskNumberMessage: {
     id: 'management.projects.create.split.tasks.number',
@@ -152,36 +194,33 @@ export default defineMessages({
     id: 'management.projects.create.button.trim',
     defaultMessage: 'Trim',
   },
+  trimError: {
+    id: 'management.projects.create.trimError',
+    defaultMessage: 'An error occured while trimming the geometry.',
+  },
+  SelfIntersectingAOIError: {
+    id: 'management.projects.create.SelfIntersectingAOIError',
+    defaultMessage: 'Invalid geometry - polygon is self intersecting.',
+  },
   draw: {
     id: 'management.projects.create.button.draw',
     defaultMessage: 'Draw',
   },
-  uploadFile: {
-    id: 'management.projects.create.button.upload_file',
-    defaultMessage: 'Upload file',
-  },
-  deleteArea: {
-    id: 'management.projects.create.button.delete_area',
-    defaultMessage: 'Delete area',
+  selectFile: {
+    id: 'management.projects.create.button.select_file',
+    defaultMessage: 'Select file',
   },
   arbitraryTasks: {
     id: 'management.projects.create.arbitrary_tasks',
     defaultMessage: 'Set tasks using uploaded polygons',
   },
-  drawDescription: {
+  defineAreaDescription: {
     id: 'management.projects.create.draw.description',
-    defaultMessage: 'Draw the Area of Interest on the map.',
+    defaultMessage: 'Draw the Area of Interest on the map or import a file.',
   },
   importDescription: {
     id: 'management.projects.create.upload.description',
-    defaultMessage: 'Import a GeoJSON, KML, OSM or zipped SHP file.',
-  },
-  option1: {
-    id: 'management.projects.create.options.1',
-    defaultMessage: 'Option 1',
-  },
-  option2: {
-    id: 'management.projects.create.options.2',
-    defaultMessage: 'Option 2',
+    defaultMessage:
+      'The supported file formats are: GeoJSON, KML, OSM or zipped Shapefile. You can drag and drop a file over the map to import it.',
   },
 });

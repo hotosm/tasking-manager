@@ -1,3 +1,5 @@
+import { TM_DEFAULT_CHANGESET_COMMENT } from '../../../config';
+
 export const getProjectSummary = (id) => ({
   projectId: id,
   defaultLocale: 'en',
@@ -22,7 +24,7 @@ export const getProjectSummary = (id) => ({
   countryTag: ['Bolivia'],
   osmchaFilterId: '9322aa63-cccc-4d0d-9f93-403678e52345',
   mappingTypes: ['BUILDINGS'],
-  changesetComment: '#tm-hot-project #brumado-buildings',
+  changesetComment: `${TM_DEFAULT_CHANGESET_COMMENT}-${id} #brumado-buildings`,
   percentMapped: 16,
   percentValidated: 6,
   percentBadImagery: 0,
@@ -54,4 +56,26 @@ export const getProjectSummary = (id) => ({
   idPresets: ['building/house', 'building/residential', 'building'],
   mappingEditors: ['ID', 'JOSM'],
   validationEditors: ['JOSM', 'POTLATCH_2', 'FIELD_PAPERS'],
+});
+
+export const getProjectStats = (id) => ({
+  projectId: id,
+  'projectArea(in sq.km)': 3506.03997973834,
+  totalMappers: 105,
+  totalTasks: 2779,
+  totalComments: 47,
+  totalMappingTime: 2186584,
+  totalValidationTime: 589857,
+  totalTimeSpent: 2776441,
+  averageMappingTime: 679.2743087915502,
+  averageValidationTime: 202.14427690198767,
+  percentMapped: 100,
+  percentValidated: 100,
+  percentBadImagery: 0,
+  aoiCentroid: {
+    type: 'Point',
+    coordinates: [-7.56545195794146, 13.0603087530714],
+  },
+  timeToFinishMapping: 0,
+  timeToFinishValidating: 0,
 });

@@ -47,11 +47,11 @@ class ProjectsFavoritesAPI(Resource):
 
             return {"favorited": False}, 200
         except NotFound:
-            return {"Error": "Project Not Found"}, 404
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Favorite GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def post(self, project_id: int):
@@ -92,17 +92,17 @@ class ProjectsFavoritesAPI(Resource):
             favorite_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
         try:
             ProjectService.favorite(project_id, authenticated_user_id)
         except NotFound:
-            return {"Error": "Project Not Found"}, 404
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
             return {"Error": str(e)}, 400
         except Exception as e:
             error_msg = f"Favorite PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
         return {"project_id": project_id}, 200
 
@@ -140,12 +140,12 @@ class ProjectsFavoritesAPI(Resource):
         try:
             ProjectService.unfavorite(project_id, token_auth.current_user())
         except NotFound:
-            return {"Error": "Project Not Found"}, 404
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
-            return {"Error": str(e)}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"Favorite PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
         return {"project_id": project_id}, 200

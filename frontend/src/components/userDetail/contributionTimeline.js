@@ -1,12 +1,32 @@
 import React from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import ReactTooltip from 'react-tooltip';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
+
 import messages from './messages';
 
-const ContributionTimeline = props => {
-  const { intl } = props;
+const HeatmapLegend = () => {
+  const indexes = [30, 50, 70, 100];
+  const legendFontStyle = 'ph2 f7 blue-grey ttc';
 
+  return (
+    <div className="nt4-ns w-100 cf tr fr">
+      <span className={legendFontStyle}>
+        <FormattedMessage {...messages.heatmapLegendLess} />
+      </span>
+      <div className={`dib h1 w1 bg-tan`}></div>
+      {indexes.map((i) => (
+        <div key={i} className={`dib h1 w1 bg-red o-${i}`}></div>
+      ))}
+      <span className={legendFontStyle}>
+        <FormattedMessage {...messages.heatmapLegendMore} />
+      </span>
+    </div>
+  );
+};
+
+export const ContributionTimeline = ({ userStats }) => {
+  const intl = useIntl();
   const today = new Date();
 
   const shiftDate = (date, numDays) => {
@@ -15,32 +35,10 @@ const ContributionTimeline = props => {
     return newDate;
   };
 
-  const countValues = props.userStats.contributionsByDay.map(r => {
-    return r.count;
-  });
+  const countValues = userStats.contributionsByDay.map((r) => r.count);
   const maxValue = Math.max(...countValues);
 
-  const HeatmapLegend = () => {
-    const indexes = [30, 50, 70, 100];
-
-    const legendFontStyle = 'ph2 f7 blue-grey ttc';
-    return (
-      <div className="nt4-ns w-100 cf tr fr">
-        <span className={legendFontStyle}>
-          <FormattedMessage {...messages.heatmapLegendLess} />
-        </span>
-        <div className={`dib h1 w1 bg-tan`}></div>
-        {indexes.map(i => {
-          return <div key={i} className={`dib h1 w1 bg-red o-${i}`}></div>;
-        })}
-        <span className={legendFontStyle}>
-          <FormattedMessage {...messages.heatmapLegendMore} />
-        </span>
-      </div>
-    );
-  };
-
-  const getHeatmapClass = v => {
+  const getHeatmapClass = (v) => {
     const rate = v.count / maxValue;
 
     if (0.0 <= rate && rate < 0.25) {
@@ -66,15 +64,13 @@ const ContributionTimeline = props => {
         <CalendarHeatmap
           startDate={shiftDate(today, -365)}
           endDate={today}
-          values={props.userStats.contributionsByDay}
-          classForValue={value => {
-            if (!value) {
-              return 'fill-tan';
-            }
+          values={userStats.contributionsByDay}
+          classForValue={(value) => {
+            if (!value) return 'fill-tan';
             return getHeatmapClass(value);
           }}
           showWeekdayLabels={true}
-          tooltipDataAttrs={value => {
+          tooltipDataAttrs={(value) => {
             let val = intl.formatMessage(messages.heatmapNoContribution);
             if (value.count !== null) {
               val = `${value.count} ${
@@ -95,5 +91,3 @@ const ContributionTimeline = props => {
     </div>
   );
 };
-
-export default injectIntl(ContributionTimeline);

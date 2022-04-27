@@ -1,18 +1,15 @@
 import json
-import unittest
-
 import geojson
 
 from backend.models.dtos.grid_dto import GridDTO
 from backend.models.dtos.project_dto import DraftProjectDTO
 from backend.models.postgis.utils import InvalidGeoJson
 from backend.services.grid.grid_service import GridService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import get_canned_json
 
 
-class TestGridService(unittest.TestCase):
-    skip_tests = False
-
+class TestGridService(BaseTestCase):
     def test_feature_collection_to_multi_polygon_dissolve(self):
         # arrange
         grid_json = get_canned_json("test_grid.json")

@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactPlaceholder from 'react-placeholder';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
 import { MappingTypes } from '../mappingTypes';
 import { Imagery } from '../taskSelection/imagery';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
-import DueDateBox from '../projectCard/dueDateBox';
+import { DueDateBox } from '../projectCard/dueDateBox';
 import { MappingLevelMessage } from '../mappingLevel';
 import { BigProjectTeaser } from './bigProjectTeaser';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
@@ -34,6 +34,7 @@ const ProjectDetailTypeBar = (props) => {
 };
 
 export function ProjectInfoPanel({ project, tasks, contributors, type }: Object) {
+  const intl = useIntl();
   const { percentMapped, percentValidated, percentBadImagery } = useComputeCompleteness(tasks);
   return (
     <ReactPlaceholder
@@ -64,10 +65,12 @@ export function ProjectInfoPanel({ project, tasks, contributors, type }: Object)
         percentBadImagery={percentBadImagery}
       />
       <div className="cf pb1 bg-white">
-        <MappingLevelMessage level={project.mapperLevel} className="tl f5 mt1 ttc fw5 blue-dark" />
-        <DueDateBox dueDate={project.dueDate} />
+        <MappingLevelMessage level={project.mapperLevel} className="fl f5 mt1 ttc fw5 blue-dark" />
+        <DueDateBox
+          dueDate={project.dueDate}
+          tooltipMsg={intl.formatMessage(messages.dueDateTooltip)}
+        />
       </div>
-      <DueDateBox />
     </ReactPlaceholder>
   );
 }

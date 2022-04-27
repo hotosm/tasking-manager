@@ -178,7 +178,7 @@ export const ProjectDetailPage = (props) => {
   const [error, loading, data] = useFetch(`projects/${props.id}/`, props.id);
 
   return (
-    <ReactPlaceholder showLoadingAnimation={true} rows={3} delay={1000} ready={loading === false}>
+    <ReactPlaceholder showLoadingAnimation={true} rows={30} delay={1000} ready={loading === false}>
       {!error ? (
         <ProjectDetail
           project={data}

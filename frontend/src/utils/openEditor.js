@@ -14,8 +14,8 @@ export function openEditor(
     return '?editor=JOSM';
   }
   const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
-  if (editor === 'ID') {
-    return getIdUrl(project, center, zoom, selectedTasks, '?editor=ID');
+  if (['ID', 'RAPID'].includes(editor)) {
+    return getIdUrl(project, center, zoom, selectedTasks, ('?editor=' + editor));
   }
   if (windowObjectReference == null || windowObjectReference.closed) {
     windowObjectReference = window.open('', `iD-${project}-${selectedTasks}`);
@@ -35,11 +35,18 @@ export function openEditor(
   }
 }
 
+export function formatImageryUrl(imageryURL) {
+  // url is supposed to look like tms[22]:http://hiu...
+  if (imageryURL) {
+    return imageryURL.substring(imageryURL.indexOf('http')).replace('zoom', 'z');
+  }
+}
+
 export function getTaskGpxUrl(projectId, selectedTasks) {
   return new URL(
     `projects/${projectId}/tasks/queries/gpx/?tasks=${selectedTasks.join(',')}`,
     API_URL,
-  );
+  ).href;
 }
 
 export function getTaskXmlUrl(projectId, selectedTasks) {
@@ -66,24 +73,46 @@ export function getPotlatch2Url(centroid, zoomLevel) {
 }
 
 export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl) {
-  const base = customUrl
-    ? formatCustomUrl(customUrl)
-    : `${ID_EDITOR_URL}`;
+  const base = customUrl ? formatCustomUrl(customUrl) : `${ID_EDITOR_URL}`;
   let url = base + '#map=' + [zoomLevel, centroid[1], centroid[0]].join('/');
-  if (project.changesetComment) {
-    url += '&comment=' + encodeURIComponent(project.changesetComment);
+  // add the extraParams
+  if (project.extraIdParams) {
+    let extraParams = formatExtraParams(project.extraIdParams);
+    if (!extraParams.startsWith('&')) extraParams = `&${extraParams}`;
+    url += extraParams;
   }
-  if (project.imagery && project.imagery.includes('http')) {
-    // url is supposed to look like tms[22]:http://hiu...
-    let urlForImagery = project.imagery.substring(project.imagery.indexOf('http'));
-    urlForImagery = urlForImagery.replace('zoom', 'z');
-    url += '&background=custom:' + encodeURIComponent(urlForImagery);
-  }
-  // add GPX
-  if (project.projectId && selectedTasks) {
-    url += '&gpx=' + encodeURIComponent(getTaskGpxUrl(project.projectId, selectedTasks).href);
+  // the other URL params are only needed by external iD editors
+  if (!['?editor=ID','?editor=RAPID'].includes(customUrl)) {
+    if (project.changesetComment) {
+      url += '&comment=' + encodeURIComponent(project.changesetComment);
+    }
+    if (project.imagery) {
+      if (project.imagery.includes('http')) {
+        url += '&background=custom:' + encodeURIComponent(formatImageryUrl(project.imagery));
+      } else {
+        url += '&background=' + encodeURIComponent(formatImageryUrl(project.imagery));
+      }
+    }
+    // add GPX
+    if (project.projectId && selectedTasks) {
+      url += '&gpx=' + encodeURIComponent(getTaskGpxUrl(project.projectId, selectedTasks));
+    }
+    if (project.idPresets) {
+      url += '&presets=' + encodeURIComponent(project.idPresets.join(','));
+    }
   }
   return url;
+}
+
+export const formatExtraParams = (values) => {
+  let extraParams = '';
+  values.split('&')
+    .filter((term) => term)
+    .forEach((term) => {
+      const [key, value] = term.split('=');
+      extraParams += `&${key}=${encodeURIComponent(value)}`;
+    });
+  return extraParams;
 }
 
 export const sendJosmCommands = async (project, tasks, selectedTasks, windowSize, taskBbox) => {
@@ -137,17 +166,21 @@ export function getImageryInfo(url) {
 }
 
 function loadImageryonJosm(project) {
-  if (project.imagery && project.imagery.includes('http')) {
-    const [type, minZoom, maxZoom] = getImageryInfo(project.imagery);
-    const imageryParams = {
-      title: project.imagery,
-      type: type,
-    };
-    if (minZoom) imageryParams.min_zoom = minZoom;
-    if (maxZoom) imageryParams.max_zoom = maxZoom;
-    imageryParams.url = project.imagery.substr(project.imagery.indexOf('http'));
+  if (project.imagery) {
+    if (project.imagery.includes('http')) {
+      const [type, minZoom, maxZoom] = getImageryInfo(project.imagery);
+      const imageryParams = {
+        title: project.imagery,
+        type: type,
+      };
+      if (minZoom) imageryParams.min_zoom = minZoom;
+      if (maxZoom) imageryParams.max_zoom = maxZoom;
+      imageryParams.url = project.imagery.substr(project.imagery.indexOf('http'));
 
-    return callJosmRemoteControl(formatJosmUrl('imagery', imageryParams));
+      return callJosmRemoteControl(formatJosmUrl('imagery', imageryParams));
+    } else {
+      return callJosmRemoteControl(formatJosmUrl('imagery', { id: project.imagery }));
+    }
   }
 }
 

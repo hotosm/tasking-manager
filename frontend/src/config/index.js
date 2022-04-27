@@ -12,6 +12,7 @@ export const USER_STATS_API_URL =
 
 // APPLICATION SETTINGS
 export const DEFAULT_LOCALE = process.env.REACT_APP_DEFAULT_LOCALE || 'en';
+export const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT || '';
 export const PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD =
   process.env.REACT_APP_PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD || 5;
 export const INTERMEDIATE_LEVEL_COUNT =
@@ -19,32 +20,45 @@ export const INTERMEDIATE_LEVEL_COUNT =
 export const ADVANCED_LEVEL_COUNT = Number(process.env.REACT_APP_TM_MAPPER_LEVEL_ADVANCED) || 500;
 export const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN || '';
 export const ENABLE_SERVICEWORKER = process.env.REACT_APP_ENABLE_SERVICEWORKER || 0;
-export const MAP_MAX_AREA = process.env.REACT_APP_MAP_MAX_AREA || 5000;
+export const MAX_AOI_AREA = Number(process.env.REACT_APP_MAX_AOI_AREA) || 5000;
+export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 1000000; // bytes
 
 // ORGANISATIONAL INFORMATION
 export const ORG_NAME = process.env.REACT_APP_ORG_NAME || '';
 export const ORG_CODE = process.env.REACT_APP_ORG_CODE || '';
 export const ORG_URL = process.env.REACT_APP_ORG_URL || '';
+export const ORG_LOGO = process.env.REACT_APP_ORG_LOGO || '';
+export const HOMEPAGE_IMG_HIGH = process.env.REACT_APP_HOMEPAGE_IMG_HIGH || '';
+export const HOMEPAGE_IMG_LOW = process.env.REACT_APP_HOMEPAGE_IMG_LOW || '';
 export const OSM_CONSUMER_KEY = process.env.REACT_APP_OSM_CONSUMER_KEY || '';
 export const OSM_CONSUMER_SECRET = process.env.REACT_APP_OSM_CONSUMER_SECRET || '';
 export const ORG_PRIVACY_POLICY_URL = process.env.REACT_APP_ORG_PRIVACY_POLICY_URL || '';
 export const OSM_REGISTER_URL =
   process.env.REACT_APP_OSM_REGISTER_URL || 'https://www.openstreetmap.org/user/new';
-export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || 'http://twitter.com';
-export const ORG_FB = process.env.REACT_APP_ORG_FB || 'https://www.facebook.com';
-export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || 'https://www.instagram.com';
-export const ORG_YOUTUBE = process.env.REACT_APP_ORG_YOUTUBE || 'https://www.youtube.com';
-export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || 'https://github.com/';
+export const ORG_TWITTER = process.env.REACT_APP_ORG_TWITTER || '';
+export const ORG_FB = process.env.REACT_APP_ORG_FB || '';
+export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || '';
+export const ORG_YOUTUBE = process.env.REACT_APP_ORG_YOUTUBE || '';
+export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || '';
 export const MATOMO_ID = process.env.REACT_APP_MATOMO_ID || '';
+export const SERVICE_DESK = process.env.REACT_APP_SERVICE_DESK || '';
 export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL || '';
+export const TM_DEFAULT_CHANGESET_COMMENT =
+  process.env.REACT_APP_TM_DEFAULT_CHANGESET_COMMENT || '';
 export const HOMEPAGE_VIDEO_URL = process.env.REACT_APP_HOMEPAGE_VIDEO_URL || '';
+// Sentry.io DSN
+export const SENTRY_FRONTEND_DSN = process.env.REACT_APP_SENTRY_FRONTEND_DSN;
 
 // OSM API and Editor URLs
-export const OSM_SERVER_URL = process.env.REACT_APP_OSM_SERVER_URL || 'https://www.openstreetmap.org';
-export const ID_EDITOR_URL = process.env.REACT_APP_ID_EDITOR_URL || 'https://www.openstreetmap.org/edit?editor=id&';
-export const POTLATCH2_EDITOR_URL = process.env.REACT_APP_POTLATCH2_EDITOR_URL || 'https://www.openstreetmap.org/edit?editor=potlatch2'
-
-export const MAX_FILESIZE = parseInt(process.env.REACT_APP_MAX_FILESIZE) || 1000000; // bytes
+export const OSM_SERVER_URL =
+  process.env.REACT_APP_OSM_SERVER_URL || 'https://www.openstreetmap.org';
+export const ID_EDITOR_URL =
+  process.env.REACT_APP_ID_EDITOR_URL || 'https://www.openstreetmap.org/edit?editor=id&';
+export const POTLATCH2_EDITOR_URL =
+  process.env.REACT_APP_POTLATCH2_EDITOR_URL ||
+  'https://www.openstreetmap.org/edit?editor=potlatch2';
+export const RAPID_EDITOR_URL =
+  process.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
 
 export const TASK_COLOURS = {
   READY: '#fff',
@@ -60,8 +74,9 @@ export const TASK_COLOURS = {
 export const CHART_COLOURS = {
   red: '#d73f3f',
   green: '#3e9c67',
-  blue: '#1757c4',
+  blue: '#3389D6',
   orange: '#f09733',
+  white: '#fff',
 };
 
 const fallbackRasterStyle = {

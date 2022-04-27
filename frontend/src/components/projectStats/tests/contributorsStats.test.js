@@ -8,8 +8,13 @@ import { ConnectedIntl } from '../../../utils/internationalization';
 import { projectContributions } from '../../../network/tests/mockData/contributions';
 import ContributorsStats from '../contributorsStats';
 
+jest.mock('react-chartjs-2', () => ({
+  Doughnut: () => null,
+  Bar: () => null,
+}));
+
 test('ContributorsStats renders the correct labels and numbers', () => {
-  const { container } = render(
+  render(
     <Provider store={store}>
       <ConnectedIntl>
         <ContributorsStats contributors={projectContributions} />
@@ -24,11 +29,10 @@ test('ContributorsStats renders the correct labels and numbers', () => {
   expect(screen.getByText('Total contributors')).toBeInTheDocument();
   expect(screen.getByText('Users by experience on Tasking Manager')).toBeInTheDocument();
   expect(screen.getByText('Users by level')).toBeInTheDocument();
-  expect(container.querySelectorAll('canvas').length).toBe(2);
 });
 
 test('ContributorsStats renders values as 0 if the project did not received contributions', () => {
-  const { container } = render(
+  render(
     <Provider store={store}>
       <ConnectedIntl>
         <ContributorsStats contributors={{ userContributions: [] }} />
@@ -36,5 +40,4 @@ test('ContributorsStats renders values as 0 if the project did not received cont
     </Provider>,
   );
   expect(screen.getAllByText('0').length).toBe(3);
-  expect(container.querySelectorAll('canvas').length).toBe(2);
 });

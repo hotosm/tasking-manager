@@ -38,6 +38,10 @@ export default defineMessages({
     defaultMessage:
       'Organization that is coordinating the project, if there is any. The managers of that organization will have administration rights over the project.',
   },
+  selectImagery: {
+    id: 'projects.formInputs.imagery.select',
+    defaultMessage: 'Select imagery',
+  },
   selectLicense: {
     id: 'projects.formInputs.license.select',
     defaultMessage: 'Select license',
@@ -247,7 +251,7 @@ export default defineMessages({
   },
   transferProjectSuccess: {
     id: 'projects.actions.transfer_project.success',
-    defaultMessage: 'The project was transfered successfully.',
+    defaultMessage: 'The project was transferred successfully.',
   },
   transferProjectError: {
     id: 'projects.actions.transfer_project.error',
@@ -310,6 +314,14 @@ export default defineMessages({
     id: 'projects.formInputs.language',
     defaultMessage: 'Default language',
   },
+  translations: {
+    id: 'projects.formInputs.language.translations',
+    defaultMessage: 'Translations',
+  },
+  selectLanguage: {
+    id: 'projects.formInputs.language.select',
+    defaultMessage: 'Select a language above to translate.',
+  },
   mappingEditors: {
     id: 'projects.formInputs.mapping_editors',
     defaultMessage: 'Editors for mapping',
@@ -335,19 +347,27 @@ export default defineMessages({
     defaultMessage:
       'If checked, users must edit tasks at random for the initial editing stage (managers and admins are exempt).',
   },
-  imageryURL: {
+  rapidPowerUser: {
+    id: 'projects.formInputs.rapid_power_user',
+    defaultMessage: 'Enable RapiD Power User Features',
+  },
+  rapidPowerUserDescription: {
+    id: 'projects.formInputs.rapid_power_user.description',
+    defaultMessage: 'If checked, RapiD will load with the power user dialog enabled.',
+  },
+  imagery: {
     id: 'projects.formInputs.imagery',
-    defaultMessage: 'Imagery URL',
+    defaultMessage: 'Imagery',
   },
   imageryURLNote: {
     id: 'projects.formInputs.imagery.note',
     defaultMessage: 'Follow this format for TMS URLs: {exampleUrl}',
   },
-  priorityAreas_draw_polygon: {
+  drawPolygon: {
     id: 'projects.formInputs.priority_areas.options.polygon',
     defaultMessage: 'Draw polygon',
   },
-  priorityAreas_draw_rectangle: {
+  drawRectangle: {
     id: 'projects.formInputs.priority_areas.options.rectangle',
     defaultMessage: 'Draw rectangle',
   },
@@ -355,9 +375,27 @@ export default defineMessages({
     id: 'projects.formInputs.priority_areas.action.clear',
     defaultMessage: 'Clear all',
   },
+  selectFile: {
+    id: 'projects.formInputs.priority_areas.action.selectFile',
+    defaultMessage: 'Select File',
+  },
+  importDescription: {
+    id: 'projects.formInputs.priority_areas.upload.description',
+    defaultMessage:
+      'The supported file formats are: GeoJSON, KML, OSM or zipped Shapefile. You can drag and drop a file over the map to import it.',
+  },
   name: {
     id: 'projects.formInputs.name',
     defaultMessage: 'Name of the project',
+  },
+  dueDate: {
+    id: 'projects.formInputs.dueDate',
+    defaultMessage: 'Due date',
+  },
+  dueDateDescription: {
+    id: 'projects.formInputs.dueDate.description',
+    defaultMessage:
+      'Define the ideal date to have the project finished. The date format is day/month/year.',
   },
   description: {
     id: 'projects.formInputs.description',
@@ -383,7 +421,7 @@ export default defineMessages({
   priorityAreasDescription: {
     id: 'projects.formInputs.priority_areas.description',
     defaultMessage:
-      'If you want mappers to work on the highest priority areas first, draw one or more polygons within the project area.',
+      'If you want mappers to work on the highest priority areas first, draw one or more polygons within the project area or import a file.',
   },
   mappingTypes: {
     id: 'projects.formInputs.mapping_types',
@@ -529,9 +567,13 @@ export default defineMessages({
     id: 'projects.formInputs.custom_editor.url',
     defaultMessage: 'URL',
   },
-  customEditorEnabled: {
-    id: 'projects.formInputs.custom_editor.enabled',
-    defaultMessage: 'Enabled',
+  customEditorEnabledForMapping: {
+    id: 'projects.formInputs.custom_editor.enabled.mapping',
+    defaultMessage: 'Enabled for mapping',
+  },
+  customEditorEnabledForValidation: {
+    id: 'projects.formInputs.custom_editor.enabled.validation',
+    defaultMessage: 'Enabled for validation',
   },
   deleteCustomEditor: {
     id: 'projects.formInputs.custom_editor.delete',
@@ -545,5 +587,25 @@ export default defineMessages({
     id: 'projects.formInputs.custom_editor.delete.confirm',
     defaultMessage:
       'This will remove the custom editor from the project. Are you sure you don\'t want to disable the custom editor by toggling the "Enabled" checkbox above?',
+  },
+  extraIdParams: {
+    id: 'projects.formInputs.extraIdParams',
+    defaultMessage:
+      'Additional iD URL parameters',
+  },
+  extraIdParamsDescription: {
+    id: 'projects.formInputs.extraIdParams.description',
+    defaultMessage:
+      'Any additional URL parameters that you want include when loading iD editor (both the embedded and the external ones). Use & to separate different parameters. Example: {text}.',
+  },
+  extraIdParamsDescriptionLink: {
+    id: 'projects.formInputs.extraIdParams.description.link',
+    defaultMessage:
+      'Check the {link} for more information.',
+  },
+  iDAPIDocs: {
+    id: 'projects.formInputs.extraIdParams.iDAPIDocs',
+    defaultMessage:
+      'iD editor documentation',
   },
 });

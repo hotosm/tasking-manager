@@ -1,12 +1,21 @@
-<!DOCTYPE html>
-<head></head>
-<body>
-<p><a href="[FROM_USER_LINK]">@[FROM_USERNAME]</a> mentioned you in a comment on <a href="[PROJECT_LINK]">Project [PROJECT_ID]</a></p>
-<p>
-    [CONTENT]
-    <br><br>
-    Access your <a href="[PROFILE_LINK]">inbox</a> to read all your messages on the [ORG_CODE] Tasking Manager.<br><br>
-    You can opt-out of these emails by visiting your <a href="[SETTINGS_LINK]">user settings page</a> and adjusting your notification preferences.<br />
-</p>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+  {% if values['MESSAGE_TYPE'] == 3 %}
+    <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> mentioned you in a comment on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_ID']}}</a>:</p>
+  {% endif %}
+  {% if values['MESSAGE_TYPE'] == 4 %}
+    <p style="font-size: 14px; font-weight: 600">Task validated on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_ID']}}</a>:</p>
+  {% endif %}
+  {% if values['MESSAGE_TYPE'] == 5 %}
+    <p style="font-size: 14px; font-weight: 600">Task on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_ID']}}</a> needs more mapping:</p>
+  {% endif %}
+  {% if values['MESSAGE_TYPE'] == 8 %}
+    <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> left a comment on <a style="color: #d73f3f" href="{{values['TASK_LINK']}}">Task {{values['TASK_ID']}}</a> in <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_ID']}}</a>:</p>
+  {% endif %}
+  {% if values['MESSAGE_TYPE'] == 9 %}
+    <p style="font-size: 14px; font-weight: 600"><a style="color: #d73f3f" href="{{values['FROM_USER_LINK']}}">@{{values['FROM_USERNAME']}}</a> left a comment on <a style="color: #d73f3f" href="{{values['PROJECT_LINK']}}">Project {{values['PROJECT_ID']}}</a>:</p>
+  {% endif %}
+  <p>
+    {{ values['CONTENT']|safe }}
+  </p>
+{% endblock %}

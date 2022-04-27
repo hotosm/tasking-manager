@@ -18,7 +18,7 @@ from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
 from backend.models.postgis.statuses import TeamRoles
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
-    get_template,
+    get_txt_template,
     template_var_replacing,
     clean_html,
 )
@@ -29,24 +29,26 @@ message_cache = TTLCache(maxsize=512, ttl=30)
 
 
 class MessageServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling mapping """
+    """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
         if current_app:
-            current_app.logger.error(message)
+            current_app.logger.debug(message)
 
 
 class MessageService:
     @staticmethod
     def send_welcome_message(user: User):
-        """ Sends welcome message to all new users at Sign up"""
+        """Sends welcome message to new user at Sign up"""
         org_code = current_app.config["ORG_CODE"]
-        text_template = get_template("welcome_message_en.txt")
+        text_template = get_txt_template("welcome_message_en.txt")
+        hot_welcome_section = get_txt_template("hot_welcome_section_en.txt")
         replace_list = [
             ["[USERNAME]", user.username],
             ["[ORG_CODE]", org_code],
             ["[ORG_NAME]", current_app.config["ORG_NAME"]],
             ["[SETTINGS_LINK]", MessageService.get_user_settings_link()],
+            ["[HOT_WELCOME]", hot_welcome_section if org_code == "HOT" else ""],
         ]
         text_template = template_var_replacing(text_template, replace_list)
 
@@ -63,12 +65,12 @@ class MessageService:
     def send_message_after_validation(
         status: int, validated_by: int, mapped_by: int, task_id: int, project_id: int
     ):
-        """ Sends mapper a notification after their task has been marked valid or invalid """
+        """Sends mapper a notification after their task has been marked valid or invalid"""
         if validated_by == mapped_by:
-            return  # No need to send a message to yourself
+            return  # No need to send a notification if you've verified your own task
 
         user = UserService.get_user_by_id(mapped_by)
-        text_template = get_template(
+        text_template = get_txt_template(
             "invalidation_message_en.txt"
             if status == TaskStatus.INVALIDATED
             else "validation_message_en.txt"
@@ -174,15 +176,17 @@ class MessageService:
                 messages_objs.append(obj)
                 continue
             messages_objs.append(obj)
-
             SMTPService.send_email_alert(
                 user.email_address,
                 user.username,
+                user.is_email_verified,
                 message["message"].id,
                 UserService.get_user_by_id(message["message"].from_user_id).username,
                 message["message"].project_id,
+                message["message"].task_id,
                 clean_html(message["message"].subject),
                 message["message"].message,
+                obj.message_type,
             )
 
             if i + 1 % 10 == 0:
@@ -198,7 +202,7 @@ class MessageService:
     def send_message_after_comment(
         comment_from: int, comment: str, task_id: int, project_id: int
     ):
-        """ Will send a canned message to anyone @'d in a comment """
+        """Will send a canned message to anyone @'d in a comment"""
         usernames = MessageService._parse_message_for_username(comment, project_id)
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
@@ -237,12 +241,13 @@ class MessageService:
             user_from = User.query.get(comment_from)
             if user_from is None:
                 raise ValueError("Username not found")
+            user_link = MessageService.get_user_link(user_from.username)
 
             task_link = MessageService.get_task_link(project_id, task_id)
             messages = []
             for user_id in contributed_users:
                 try:
-                    user = UserService.get_user_dto_by_id(user_id)
+                    user = UserService.get_user_by_id(user_id)
                     # if user was mentioned, a message has already been sent to them,
                     # so we can skip
                     if user.username in usernames:
@@ -256,7 +261,9 @@ class MessageService:
                 message.from_user_id = comment_from
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = f"{user_from.username} left a comment in {task_link} of Project {project_id}"
+                message.subject = (
+                    f"{user_link} left a comment in {task_link} of Project {project_id}"
+                )
                 message.message = comment
                 messages.append(dict(message=message, user=user))
 
@@ -369,64 +376,78 @@ class MessageService:
 
     @staticmethod
     def send_message_after_chat(chat_from: int, chat: str, project_id: int):
-        """ Send alert to user if they were @'d in a chat message """
-        current_app.logger.debug("Sending Message After Chat")
-        usernames = MessageService._parse_message_for_username(chat, project_id)
+        """Send alert to user if they were @'d in a chat message"""
+        # Because message-all run on background thread it needs it's own app context
+        app = create_app()
+        with app.app_context():
+            usernames = MessageService._parse_message_for_username(chat, project_id)
+            if len(usernames) != 0:
+                link = MessageService.get_project_link(
+                    project_id, include_chat_section=True
+                )
+                messages = []
+                for username in usernames:
+                    current_app.logger.debug(f"Searching for {username}")
+                    try:
+                        user = UserService.get_user_by_username(username)
+                    except NotFound:
+                        current_app.logger.error(f"Username {username} not found")
+                        continue  # If we can't find the user, keep going no need to fail
 
-        if len(usernames) == 0:
-            return  # Nobody @'d so return
+                    message = Message()
+                    message.message_type = MessageType.MENTION_NOTIFICATION.value
+                    message.project_id = project_id
+                    message.from_user_id = chat_from
+                    message.to_user_id = user.id
+                    message.subject = f"You were mentioned in {link} chat"
+                    message.message = chat
+                    messages.append(dict(message=message, user=user))
 
-        link = MessageService.get_project_link(project_id, include_chat_section=True)
+                MessageService._push_messages(messages)
 
-        messages = []
-        for username in usernames:
-            current_app.logger.debug(f"Searching for {username}")
-            try:
-                user = UserService.get_user_by_username(username)
-            except NotFound:
-                current_app.logger.error(f"Username {username} not found")
-                continue  # If we can't find the user, keep going no need to fail
-
-            message = Message()
-            message.message_type = MessageType.MENTION_NOTIFICATION.value
-            message.project_id = project_id
-            message.from_user_id = chat_from
-            message.to_user_id = user.id
-            message.subject = f"You were mentioned in {link} chat"
-            message.message = chat
-            messages.append(dict(message=message, user=user))
-
-        MessageService._push_messages(messages)
-
-        query = (
-            """ select user_id from project_favorites where project_id = :project_id"""
-        )
-        result = db.engine.execute(text(query), project_id=project_id)
-        favorited_users = [r[0] for r in result]
-
-        if len(favorited_users) != 0:
-            project_link = MessageService.get_project_link(
-                project_id, include_chat_section=True
+            query = """ select user_id from project_favorites where project_id = :project_id"""
+            favorited_users_results = db.engine.execute(
+                text(query), project_id=project_id
             )
-            # project_title = ProjectService.get_project_title(project_id)
-            messages = []
-            for user_id in favorited_users:
+            favorited_users = [r[0] for r in favorited_users_results]
 
-                try:
-                    user = UserService.get_user_dto_by_id(user_id)
-                except NotFound:
-                    continue  # If we can't find the user, keep going no need to fail
+            # Notify all contributors except the user that created the comment.
+            contributed_users_results = (
+                TaskHistory.query.with_entities(TaskHistory.user_id.distinct())
+                .filter(TaskHistory.project_id == project_id)
+                .filter(TaskHistory.user_id != chat_from)
+                .filter(TaskHistory.action == TaskAction.STATE_CHANGE.name)
+                .all()
+            )
+            contributed_users = [r[0] for r in contributed_users_results]
 
-                message = Message()
-                message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
-                message.project_id = project_id
-                message.to_user_id = user.id
-                message.subject = f"{chat_from} left a comment in {project_link}"
-                message.message = chat
-                messages.append(dict(message=message, user=user))
+            users_to_notify = list(set(contributed_users + favorited_users))
 
-            # it's important to keep that line inside the if to avoid duplicated emails
-            MessageService._push_messages(messages)
+            if len(users_to_notify) != 0:
+                from_user = User.query.get(chat_from)
+                from_user_link = MessageService.get_user_link(from_user.username)
+                project_link = MessageService.get_project_link(
+                    project_id, include_chat_section=True
+                )
+                messages = []
+                for user_id in users_to_notify:
+                    try:
+                        user = UserService.get_user_by_id(user_id)
+                    except NotFound:
+                        continue  # If we can't find the user, keep going no need to fail
+                    message = Message()
+                    message.message_type = MessageType.PROJECT_CHAT_NOTIFICATION.value
+                    message.project_id = project_id
+                    message.from_user_id = chat_from
+                    message.to_user_id = user.id
+                    message.subject = (
+                        f"{from_user_link} left a comment in {project_link}"
+                    )
+                    message.message = chat
+                    messages.append(dict(message=message, user=user))
+
+                # it's important to keep that line inside the if to avoid duplicated emails
+                MessageService._push_messages(messages)
 
     @staticmethod
     def send_favorite_project_activities(user_id: int):
@@ -449,7 +470,7 @@ class MessageService:
                 > datetime.date.today() - datetime.timedelta(days=300)
             )
         )
-        user = UserService.get_user_dto_by_id(user_id)
+        user = UserService.get_user_by_id(user_id)
         messages = []
         for project in recently_updated_projects:
             activity_message = []
@@ -485,7 +506,7 @@ class MessageService:
 
     @staticmethod
     def resend_email_validation(user_id: int):
-        """ Resends the email validation email to the logged in user """
+        """Resends the email validation email to the logged in user"""
         user = UserService.get_user_by_id(user_id)
         SMTPService.send_verification_email(user.email_address, user.username)
 
@@ -515,16 +536,11 @@ class MessageService:
         team_members = [item for sublist in team_members for item in sublist]
         project_managers.extend(team_members)
 
-        # Add organization managers.
-        if project.organisation is not None:
-            org_usernames = [u.username for u in project.organisation.managers]
-            project_managers.extend(org_usernames)
-
         return project_managers
 
     @staticmethod
     def _parse_message_for_username(message: str, project_id: int) -> List[str]:
-        """ Extracts all usernames from a comment looks for format @[user name] """
+        """Extracts all usernames from a comment looks for format @[user name]"""
 
         parser = re.compile(r"((?<=@)\w+|\[.+?\])")
 
@@ -543,7 +559,7 @@ class MessageService:
     @staticmethod
     @cached(message_cache)
     def has_user_new_messages(user_id: int) -> dict:
-        """ Determines if the user has any unread messages """
+        """Determines if the user has any unread messages"""
         count = Notification.get_unread_message_count(user_id)
 
         new_messages = False
@@ -566,7 +582,7 @@ class MessageService:
         task_id=None,
         status=None,
     ):
-        """ Get all messages for user """
+        """Get all messages for user"""
         sort_column = Message.__table__.columns.get(sort_by)
         if sort_column is None:
             sort_column = Message.date
@@ -603,7 +619,6 @@ class MessageService:
 
         messages_dto = MessagesDTO()
         for item in results.items:
-            message_dto = None
             if isinstance(item, tuple):
                 message_dto = item[0].as_dto()
                 message_dto.project_title = item[1].name
@@ -619,7 +634,7 @@ class MessageService:
 
     @staticmethod
     def get_message(message_id: int, user_id: int) -> Message:
-        """ Gets the specified message """
+        """Gets the specified message"""
         message = Message.query.get(message_id)
 
         if message is None:
@@ -627,32 +642,33 @@ class MessageService:
 
         if message.to_user_id != int(user_id):
             raise MessageServiceError(
-                f"User {user_id} attempting to access another users message {message_id}"
+                "AccessOtherUserMessage- "
+                + f"User {user_id} attempting to access another users message {message_id}"
             )
 
         return message
 
     @staticmethod
     def get_message_as_dto(message_id: int, user_id: int):
-        """ Gets the selected message and marks it as read """
+        """Gets the selected message and marks it as read"""
         message = MessageService.get_message(message_id, user_id)
         message.mark_as_read()
         return message.as_dto()
 
     @staticmethod
     def delete_message(message_id: int, user_id: int):
-        """ Deletes the specified message """
+        """Deletes the specified message"""
         message = MessageService.get_message(message_id, user_id)
         message.delete()
 
     @staticmethod
     def delete_multiple_messages(message_ids: list, user_id: int):
-        """ Deletes the specified messages to the user """
+        """Deletes the specified messages to the user"""
         Message.delete_multiple_messages(message_ids, user_id)
 
     @staticmethod
     def get_task_link(project_id: int, task_id: int, base_url=None) -> str:
-        """ Helper method that generates a link to the task """
+        """Helper method that generates a link to the task"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
@@ -662,7 +678,7 @@ class MessageService:
     def get_project_link(
         project_id: int, base_url=None, include_chat_section=False
     ) -> str:
-        """ Helper method to generate a link to project chat"""
+        """Helper method to generate a link to project chat"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
         if include_chat_section:
@@ -674,7 +690,7 @@ class MessageService:
 
     @staticmethod
     def get_user_profile_link(user_name: str, base_url=None) -> str:
-        """ Helper method to generate a link to a user profile"""
+        """Helper method to generate a link to a user profile"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
@@ -682,7 +698,7 @@ class MessageService:
 
     @staticmethod
     def get_user_settings_link(section=None, base_url=None) -> str:
-        """ Helper method to generate a link to a user profile"""
+        """Helper method to generate a link to a user profile"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 

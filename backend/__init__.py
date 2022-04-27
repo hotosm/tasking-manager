@@ -9,12 +9,24 @@ from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
-
 from backend.config import EnvironmentConfig
 
 
+def sentry_init():
+    """Initialize sentry.io event tracking"""
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+
+    sentry_sdk.init(
+        dsn=EnvironmentConfig.SENTRY_BACKEND_DSN,
+        environment=EnvironmentConfig.ENVIRONMENT,
+        integrations=[FlaskIntegration()],
+        traces_sample_rate=0.1,
+    )
+
+
 def format_url(endpoint):
-    parts = "/".join([i for i in endpoint.split("/") if i])
+    parts = endpoint.strip("/")
     return "/api/{}/{}/".format(EnvironmentConfig.API_VERSION, parts)
 
 
@@ -28,19 +40,19 @@ osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
 from backend.models.postgis import *  # noqa
 
 
-def create_app(env=None):
+def create_app(env="backend.config.EnvironmentConfig"):
     """
     Bootstrap function to initialise the Flask app and config
     :return: Initialised Flask app
     """
+    # If SENTRY_BACKEND_DSN is configured, init sentry_sdk tracking
+    if EnvironmentConfig.SENTRY_BACKEND_DSN:
+        sentry_init()
 
-    app = Flask(
-        __name__,
-    )
+    app = Flask(__name__, template_folder="services/messaging/templates/")
 
     # Load configuration options from environment
-    app.config.from_object("backend.config.EnvironmentConfig")
-
+    app.config.from_object(env)
     # Enable logging to files
     initialise_logger(app)
     app.logger.info("Starting up a new Tasking Manager application")
@@ -174,6 +186,9 @@ def add_api_endpoints(app):
         TasksActionsResetAllAPI,
         TasksActionsSplitAPI,
     )
+    from backend.api.tasks.statistics import (
+        TasksStatisticsAPI,
+    )
 
     # Comments API impor
     from backend.api.comments.resources import (
@@ -199,7 +214,9 @@ def add_api_endpoints(app):
 
     # Organisations API endpoint
     from backend.api.organisations.resources import (
+        OrganisationsStatsAPI,
         OrganisationsRestAPI,
+        OrganisationsBySlugRestAPI,
         OrganisationsAllAPI,
     )
     from backend.api.organisations.campaigns import OrganisationsCampaignsAPI
@@ -250,6 +267,7 @@ def add_api_endpoints(app):
     from backend.api.users.statistics import (
         UsersStatisticsAPI,
         UsersStatisticsInterestsAPI,
+        UsersStatisticsAllAPI,
     )
 
     # System API endpoint
@@ -519,6 +537,13 @@ def add_api_endpoints(app):
         format_url("projects/<int:project_id>/tasks/actions/split/<int:task_id>/"),
     )
 
+    # Tasks Statistics endpoint
+    api.add_resource(
+        TasksStatisticsAPI,
+        format_url("tasks/statistics/"),
+        methods=["GET"],
+    )
+
     # Comments REST endoints
     api.add_resource(
         CommentsProjectsRestAPI,
@@ -587,12 +612,24 @@ def add_api_endpoints(app):
         methods=["GET"],
     )
     api.add_resource(
+        OrganisationsBySlugRestAPI,
+        format_url("organisations/<string:slug>/"),
+        endpoint="get_organisation_by_slug",
+        methods=["GET"],
+    )
+    api.add_resource(
         OrganisationsRestAPI,
         format_url("organisations/<int:organisation_id>/"),
         methods=["PUT", "DELETE", "PATCH"],
     )
 
     # Organisations additional resources endpoints
+    api.add_resource(
+        OrganisationsStatsAPI,
+        format_url("organisations/<int:organisation_id>/statistics/"),
+        endpoint="get_organisation_stats",
+        methods=["GET"],
+    )
     api.add_resource(
         OrganisationsCampaignsAPI,
         format_url("organisations/<int:organisation_id>/campaigns/"),
@@ -724,6 +761,10 @@ def add_api_endpoints(app):
         UsersStatisticsAPI, format_url("users/<string:username>/statistics/")
     )
 
+    api.add_resource(
+        UsersStatisticsAllAPI,
+        format_url("users/statistics/"),
+    )
     # User RecommendedProjects endpoint
     api.add_resource(
         UsersRecommendedProjectsAPI,

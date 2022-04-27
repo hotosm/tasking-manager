@@ -13,11 +13,12 @@ export function Projects({
   ownerEntity,
   showAddButton = false,
   showManageButtons = true,
+  border = true,
 }: Object) {
   return (
-    <div className="bg-white b--grey-light ba pa4 mb3">
+    <div className={`bg-white mb3 ${border ? 'b--grey-light ba pa4' : ''}`}>
       <div className="cf db">
-        <h3 className="f3 blue-dark mv0 fw6 dib v-mid">
+        <h3 className="f3 barlow-condensed ttu blue-dark mv0 fw6 dib v-mid">
           <FormattedMessage {...messages.projects} />
         </h3>
         {showAddButton && (

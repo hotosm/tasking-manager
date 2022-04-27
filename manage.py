@@ -1,8 +1,6 @@
 import os
-import subprocess
 import warnings
 import base64
-import json
 import csv
 import datetime
 
@@ -107,43 +105,6 @@ def refresh_project_stats():
     print("Started updating project stats...")
     StatsService.update_all_project_stats()
     print("Project stats updated")
-
-
-@manager.command
-def build_locales():
-    print("building locale strings...")
-    print("running: npm build-locales")
-    output = subprocess.Popen(
-        "npm run build-locales", shell=True, cwd="./frontend", stdout=subprocess.PIPE
-    ).stdout.read()
-    print(output)
-    lang_codes = [
-        a.strip() for a in application.config["SUPPORTED_LANGUAGES"]["codes"].split(",")
-    ]
-    locale_path = "frontend/src/locales/"
-    en_locale_path = f"{locale_path}en.json"
-
-    en_locale = json.loads(open(en_locale_path, "r").read())
-
-    for lang_code in lang_codes:
-
-        # skip english
-        if lang_codes == "en":
-            continue
-
-        current_locale_file = f"{locale_path}{lang_code}.json"
-
-        if os.path.exists(current_locale_file):
-            current_locale = json.loads(open(current_locale_file, "r").read())
-        else:
-            current_locale = {}
-
-        for key in en_locale:
-            current_locale[key] = current_locale.get(key, "")
-
-        with open(current_locale_file, "w") as locale_file:
-            locale_file.write(json.dumps(current_locale, indent=3))
-            print(f"updated locale {lang_code} on file {current_locale_file}")
 
 
 @manager.command

@@ -1,3 +1,4 @@
+from distutils.util import strtobool
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
@@ -11,9 +12,64 @@ from backend.services.organisation_service import (
     OrganisationServiceError,
     NotFound,
 )
-
+from backend.models.postgis.statuses import OrganisationType
 from backend.services.users.authentication_service import token_auth
-from distutils.util import strtobool
+
+
+class OrganisationsBySlugRestAPI(Resource):
+    def get(self, slug):
+        """
+        Retrieves an organisation
+        ---
+        tags:
+            - organisations
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              type: string
+              default: Token sessionTokenHere==
+            - name: slug
+              in: path
+              description: The unique organisation slug
+              required: true
+              type: string
+              default: hot
+            - in: query
+              name: omitManagerList
+              type: boolean
+              description: Set it to true if you don't want the managers list on the response.
+              default: False
+        responses:
+            200:
+                description: Organisation found
+            401:
+                description: Unauthorized - Invalid credentials
+            404:
+                description: Organisation not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            authenticated_user_id = token_auth.current_user()
+            if authenticated_user_id is None:
+                user_id = 0
+            else:
+                user_id = authenticated_user_id
+            # Validate abbreviated.
+            omit_managers = strtobool(request.args.get("omitManagerList", "false"))
+            organisation_dto = OrganisationService.get_organisation_by_slug_as_dto(
+                slug, user_id, omit_managers
+            )
+            return organisation_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
+        except Exception as e:
+            error_msg = f"Organisation GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class OrganisationsRestAPI(Resource):
@@ -42,9 +98,12 @@ class OrganisationsRestAPI(Resource):
                     name:
                         type: string
                         default: HOT
+                    slug:
+                        type: string
+                        default: hot
                     logo:
                         type: string
-                        default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
+                        default: https://cdn.hotosm.org/tasking-manager/uploads/1588741335578_hot-logo.png
                     url:
                         type: string
                         default: https://hotosm.org
@@ -53,8 +112,8 @@ class OrganisationsRestAPI(Resource):
                         items:
                             type: string
                         default: [
-                            the_node_less_traveled,
-                            the_node_less_traveled_import
+                            user_1,
+                            user_2
                         ]
         responses:
             201:
@@ -72,7 +131,10 @@ class OrganisationsRestAPI(Resource):
         """
         request_user = User.get_by_id(token_auth.current_user())
         if request_user.role != 1:
-            return {"Error": "Only admin users can create organisations."}, 403
+            return {
+                "Error": "Only admin users can create organisations.",
+                "SubCode": "OnlyAdminAccess",
+            }, 403
 
         try:
             organisation_dto = NewOrganisationDTO(request.get_json())
@@ -81,17 +143,17 @@ class OrganisationsRestAPI(Resource):
             organisation_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             org_id = OrganisationService.create_organisation(organisation_dto)
             return {"organisationId": org_id}, 201
         except OrganisationServiceError as e:
-            return str(e), 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
             error_msg = f"Organisation PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def delete(self, organisation_id):
@@ -130,18 +192,24 @@ class OrganisationsRestAPI(Resource):
         if not OrganisationService.can_user_manage_organisation(
             organisation_id, token_auth.current_user()
         ):
-            return {"Error": "User is not an admin for the org"}, 403
+            return {
+                "Error": "User is not an admin for the org",
+                "SubCode": "UserNotOrgAdmin",
+            }, 403
         try:
             OrganisationService.delete_organisation(organisation_id)
             return {"Success": "Organisation deleted"}, 200
         except OrganisationServiceError:
-            return {"Error": "Organisation has some projects"}, 403
+            return {
+                "Error": "Organisation has some projects",
+                "SubCode": "OrgHasProjects",
+            }, 403
         except NotFound:
-            return {"Error": "Organisation Not Found"}, 404
+            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Organisation DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     def get(self, organisation_id):
         """
@@ -191,11 +259,11 @@ class OrganisationsRestAPI(Resource):
             )
             return organisation_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "Organisation Not Found"}, 404
+            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Organisation GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def patch(self, organisation_id):
@@ -228,6 +296,9 @@ class OrganisationsRestAPI(Resource):
                     name:
                         type: string
                         default: HOT
+                    slug:
+                        type: string
+                        default: HOT
                     logo:
                         type: string
                         default: https://tasks.hotosm.org/assets/img/hot-tm-logo.svg
@@ -239,8 +310,8 @@ class OrganisationsRestAPI(Resource):
                         items:
                             type: string
                         default: [
-                            the_node_less_traveled,
-                            the_node_less_traveled_import
+                            user_1,
+                            user_2
                         ]
         responses:
             201:
@@ -257,26 +328,72 @@ class OrganisationsRestAPI(Resource):
         if not OrganisationService.can_user_manage_organisation(
             organisation_id, token_auth.current_user()
         ):
-            return {"Error": "User is not an admin for the org"}, 403
+            return {
+                "Error": "User is not an admin for the org",
+                "SubCode": "UserNotOrgAdmin",
+            }, 403
         try:
             organisation_dto = UpdateOrganisationDTO(request.get_json())
             organisation_dto.organisation_id = organisation_id
+            # Don't update organisation type and subscription_tier if request user is not an admin
+            if User.get_by_id(token_auth.current_user()).role != 1:
+                org = OrganisationService.get_organisation_by_id(organisation_id)
+                organisation_dto.type = OrganisationType(org.type).name
+                organisation_dto.subscription_tier = org.subscription_tier
             organisation_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             OrganisationService.update_organisation(organisation_dto)
             return {"Status": "Updated"}, 200
         except NotFound as e:
-            return {"Error": str(e)}, 404
+            return {"Error": str(e), "SubCode": "NotFound"}, 404
         except OrganisationServiceError as e:
-            return str(e), 402
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 402
         except Exception as e:
             error_msg = f"Organisation PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+
+
+class OrganisationsStatsAPI(Resource):
+    def get(self, organisation_id):
+        """
+        Return statistics about projects and active tasks of an organisation
+        ---
+        tags:
+            - organisations
+        produces:
+            - application/json
+        parameters:
+            - name: organisation_id
+              in: path
+              description: The unique organisation ID
+              required: true
+              type: integer
+              default: 1
+        responses:
+            200:
+                description: Organisation found
+            404:
+                description: Organisation not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            OrganisationService.get_organisation_by_id(organisation_id)
+            organisation_dto = OrganisationService.get_organisation_stats(
+                organisation_id
+            )
+            return organisation_dto.to_primitive(), 200
+        except NotFound:
+            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
+        except Exception as e:
+            error_msg = f"Organisation GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class OrganisationsAllAPI(Resource):
@@ -330,7 +447,8 @@ class OrganisationsAllAPI(Resource):
         if manager_user_id is not None and not authenticated_user_id:
             return (
                 {
-                    "Error": "Unauthorized - Filter by manager_user_id is not allowed to unauthenticated requests"
+                    "Error": "Unauthorized - Filter by manager_user_id is not allowed to unauthenticated requests",
+                    "SubCode": "LoginToFilterManager",
                 },
                 403,
             )
@@ -344,8 +462,8 @@ class OrganisationsAllAPI(Resource):
             )
             return results_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "No organisations found"}, 404
+            return {"Error": "No organisations found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Organisations GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
