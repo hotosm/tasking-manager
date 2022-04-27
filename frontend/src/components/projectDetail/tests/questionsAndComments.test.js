@@ -56,8 +56,7 @@ describe('test if QuestionsAndComments component', () => {
     ).toBeInTheDocument();
     const textarea = screen.getByRole('textbox');
     expect(textarea.textContent).toBe('');
-    const button = screen.getByRole('button');
-    expect(button.textContent).toBe('Post');
+    const button = screen.getByText('Post');
 
     // type comment in textbox
     fireEvent.change(textarea, { target: { value: 'Test comment' } });
