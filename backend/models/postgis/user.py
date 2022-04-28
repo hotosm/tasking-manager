@@ -26,7 +26,7 @@ from backend.models.postgis.interests import Interest, user_interests
 
 
 class User(db.Model):
-    """ Describes the history associated with a task """
+    """Describes the history associated with a task"""
 
     __tablename__ = "users"
 
@@ -55,9 +55,12 @@ class User(db.Model):
     self_description_gender = db.Column(db.String)
     default_editor = db.Column(db.String, default="ID", nullable=False)
     mentions_notifications = db.Column(db.Boolean, default=True, nullable=False)
-    comments_notifications = db.Column(db.Boolean, default=False, nullable=False)
+    projects_comments_notifications = db.Column(
+        db.Boolean, default=False, nullable=False
+    )
     projects_notifications = db.Column(db.Boolean, default=True, nullable=False)
     tasks_notifications = db.Column(db.Boolean, default=True, nullable=False)
+    tasks_comments_notifications = db.Column(db.Boolean, default=False, nullable=False)
     teams_notifications = db.Column(db.Boolean, default=True, nullable=False)
     date_registered = db.Column(db.DateTime, default=timestamp)
     # Represents the date the user last had one of their tasks validated
@@ -68,7 +71,7 @@ class User(db.Model):
     interests = db.relationship(Interest, secondary=user_interests, backref="users")
 
     def create(self):
-        """ Creates and saves the current model to the DB """
+        """Creates and saves the current model to the DB"""
         db.session.add(self)
         db.session.commit()
 
@@ -77,27 +80,27 @@ class User(db.Model):
 
     @staticmethod
     def get_by_id(user_id: int):
-        """ Return the user for the specified id, or None if not found """
+        """Return the user for the specified id, or None if not found"""
         return User.query.get(user_id)
 
     @staticmethod
     def get_by_username(username: str):
-        """ Return the user for the specified username, or None if not found """
+        """Return the user for the specified username, or None if not found"""
         return User.query.filter_by(username=username).one_or_none()
 
     def update_username(self, username: str):
-        """ Update the username """
+        """Update the username"""
         self.username = username
         db.session.commit()
 
     def update_picture_url(self, picture_url: str):
-        """ Update the profile picture """
+        """Update the profile picture"""
         self.picture_url = picture_url
         db.session.commit()
 
     def update(self, user_dto: UserDTO):
 
-        """ Update the user details """
+        """Update the user details"""
         for attr, value in user_dto.items():
             if attr == "gender" and value is not None:
                 value = UserGender[value].value
@@ -116,18 +119,18 @@ class User(db.Model):
         db.session.commit()
 
     def set_email_verified_status(self, is_verified: bool):
-        """ Updates email verfied flag on successfully verified emails"""
+        """Updates email verfied flag on successfully verified emails"""
         self.is_email_verified = is_verified
         db.session.commit()
 
     def set_is_expert(self, is_expert: bool):
-        """ Enables or disables expert mode on the user"""
+        """Enables or disables expert mode on the user"""
         self.is_expert = is_expert
         db.session.commit()
 
     @staticmethod
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
-        """ Search and filter all users """
+        """Search and filter all users"""
 
         # Base query that applies to all searches
         base = db.session.query(
@@ -167,7 +170,7 @@ class User(db.Model):
 
     @staticmethod
     def get_all_users_not_paginated():
-        """ Get all users in DB"""
+        """Get all users in DB"""
         return db.session.query(User.id).all()
 
     @staticmethod
@@ -206,7 +209,7 @@ class User(db.Model):
 
     @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):
-        """ Adds projects to mapped_projects if it doesn't exist """
+        """Adds projects to mapped_projects if it doesn't exist"""
         query = User.query.filter_by(id=user_id)
         result = query.filter(
             User.projects_mapped.op("@>")("{}".format("{" + str(project_id) + "}"))
@@ -225,7 +228,7 @@ class User(db.Model):
     def get_mapped_projects(
         user_id: int, preferred_locale: str
     ) -> UserMappedProjectsDTO:
-        """ Get all projects a user has mapped on """
+        """Get all projects a user has mapped on"""
 
         from backend.models.postgis.task import Task
         from backend.models.postgis.project import Project
@@ -304,23 +307,23 @@ class User(db.Model):
         return mapped_projects_dto
 
     def set_user_role(self, role: UserRole):
-        """ Sets the supplied role on the user """
+        """Sets the supplied role on the user"""
         self.role = role.value
         db.session.commit()
 
     def set_mapping_level(self, level: MappingLevel):
-        """ Sets the supplied level on the user """
+        """Sets the supplied level on the user"""
         self.mapping_level = level.value
         db.session.commit()
 
     def accept_license_terms(self, license_id: int):
-        """ Associate the user in scope with the supplied license """
+        """Associate the user in scope with the supplied license"""
         image_license = License.get_by_id(license_id)
         self.accepted_licenses.append(image_license)
         db.session.commit()
 
     def has_user_accepted_licence(self, license_id: int):
-        """ Test to see if the user has accepted the terms of the specified license"""
+        """Test to see if the user has accepted the terms of the specified license"""
         image_license = License.get_by_id(license_id)
 
         if image_license in self.accepted_licenses:
@@ -329,12 +332,12 @@ class User(db.Model):
         return False
 
     def delete(self):
-        """ Delete the user in scope from DB """
+        """Delete the user in scope from DB"""
         db.session.delete(self)
         db.session.commit()
 
     def as_dto(self, logged_in_username: str) -> UserDTO:
-        """ Create DTO object from user in scope """
+        """Create DTO object from user in scope"""
         user_dto = UserDTO()
         user_dto.id = self.id
         user_dto.username = self.username
@@ -358,8 +361,9 @@ class User(db.Model):
         user_dto.default_editor = self.default_editor
         user_dto.mentions_notifications = self.mentions_notifications
         user_dto.projects_notifications = self.projects_notifications
-        user_dto.comments_notifications = self.comments_notifications
+        user_dto.projects_comments_notifications = self.projects_comments_notifications
         user_dto.tasks_notifications = self.tasks_notifications
+        user_dto.tasks_comments_notifications = self.tasks_comments_notifications
         user_dto.teams_notifications = self.teams_notifications
 
         if self.username == logged_in_username:
@@ -387,7 +391,7 @@ class UserEmail(db.Model):
     email = db.Column(db.String, nullable=False, unique=True)
 
     def create(self):
-        """ Creates and saves the current model to the DB """
+        """Creates and saves the current model to the DB"""
         db.session.add(self)
         db.session.commit()
 
@@ -395,11 +399,11 @@ class UserEmail(db.Model):
         db.session.commit()
 
     def delete(self):
-        """ Deletes the current model from the DB """
+        """Deletes the current model from the DB"""
         db.session.delete(self)
         db.session.commit()
 
     @staticmethod
     def get_by_email(email_address: str):
-        """ Return the user for the specified username, or None if not found """
+        """Return the user for the specified username, or None if not found"""
         return UserEmail.query.filter_by(email_address=email_address).one_or_none()
