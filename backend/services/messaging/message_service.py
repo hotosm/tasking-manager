@@ -164,9 +164,14 @@ class MessageService:
             ):
                 messages_objs.append(obj)
                 continue
-            if user.comments_notifications is False and obj.message_type in (
-                MessageType.TASK_COMMENT_NOTIFICATION.value,
-                MessageType.PROJECT_CHAT_NOTIFICATION.value,
+            if (
+                user.projects_comments_notifications is False
+                and obj.message_type == MessageType.PROJECT_CHAT_NOTIFICATION.value
+            ):
+                continue
+            if (
+                user.tasks_comments_notifications is False
+                and obj.message_type == MessageType.TASK_COMMENT_NOTIFICATION.value
             ):
                 continue
             if user.tasks_notifications is False and obj.message_type in (
