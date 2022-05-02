@@ -88,3 +88,6 @@ echo "$PY_FILES" | xargs git add
 
 exit 0
 ```
+### Reviewing Pull Requests
+We welcome community members to review Pull Request. The process to review a PR  is by adding a comment if already reviewed and everything looks good, or specifying what change is needed. 
+
