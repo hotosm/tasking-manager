@@ -43,6 +43,7 @@
   "mytasks.tasks.comments.number": "{number, plural, one {# comment} other {# comments}}",
   "deleteModal.status.processing": "Processing",
   "deleteModal.status.success": "{type} deleted successfully.",
+  "deleteModal.status.success.projects": "Project deleted successfully.",
   "deleteModal.status.failure.projects": "An error occurred when trying to delete this project.",
   "deleteModal.status.failure.organisations": "An error occurred when trying to delete this organization.",
   "deleteModal.status.failure.interests": "An error occurred when trying to delete this interest.",
