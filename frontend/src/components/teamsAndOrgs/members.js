@@ -8,6 +8,7 @@ import messages from './messages';
 import { UserAvatar } from '../user/avatar';
 import { EditModeControl } from './editMode';
 import { Button } from '../button';
+import { SwitchToggle } from '../formInputs';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Alert } from '../alert';
 import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
@@ -180,6 +181,16 @@ export function JoinRequests({ requests, teamId, addMembers, updateRequests }: O
           <FormattedMessage {...messages.joinRequests} />
         </h3>
       </div>
+      <div className="flex justify-between blue-grey">
+        <FormattedMessage {...messages.newJoinRequestNotification} />
+        <div className="fl ml5">
+          <SwitchToggle
+            // isChecked={props.input.value}
+            // onChange={props.input.onChange}
+            labelPosition="right"
+          />
+        </div>
+      </div>
       <div className="cf db mt3">
         {requests.map((user, n) => (
           <div className="cf db pt2" key={n}>
@@ -210,7 +221,7 @@ export function JoinRequests({ requests, teamId, addMembers, updateRequests }: O
           </div>
         ))}
         {requests.length === 0 && (
-          <div className="tc">
+          <div className="tc mt3">
             <FormattedMessage {...messages.noRequests} />
           </div>
         )}
