@@ -370,6 +370,33 @@ export function CompletionTabForValidation({
         <p className="b mb2">
           <FormattedMessage {...messages.validatedQuestion} values={{ number: tasksIds.length }} />
         </p>
+        <div className="flex flex-wrap items-center blue-dark w-auto">
+          {['VALIDATED', 'INVALIDATED'].map((value) => (
+            <div className="nowrap">
+              <input
+                type="radio"
+                id={value}
+                value={value}
+                className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
+                checked={
+                  Object.values(validationStatus).every((status) => status === value) &&
+                  Object.values(validationStatus).length === tasksIds.length
+                }
+                onChange={() => {
+                  let tempObj = {};
+                  tasksIds.forEach((id) => (tempObj = { ...tempObj, [id]: value }));
+                  setValidationStatus(tempObj);
+                }}
+              />
+              <label htmlFor={value}>
+                <FormattedMessage
+                  {...messages.markAllValidationStatus}
+                  values={{ status: value }}
+                />
+              </label>
+            </div>
+          ))}
+        </div>
         {tasksIds.map((id) => (
           <TaskValidationSelector
             key={id}
