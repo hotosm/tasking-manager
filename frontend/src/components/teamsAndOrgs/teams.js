@@ -4,6 +4,7 @@ import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import { Form, Field } from 'react-final-form';
+import { useQueryParams, StringParam } from 'use-query-params';
 
 import messages from './messages';
 import { useEditTeamAllowed } from '../../hooks/UsePermissions';
@@ -23,6 +24,12 @@ export function TeamsManagement({
     (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
   );
 
+  const [query, setQuery] = useQueryParams({ organisation: StringParam });
+
+  const filteredTeams = query.organisation
+    ? teams.filter((t) => t.organisation === query.organisation)
+    : teams;
+
   return (
     <Management
       title={
@@ -41,9 +48,14 @@ export function TeamsManagement({
       userOnly={userTeamsOnly}
       setUserOnly={setUserTeamsOnly}
       userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
+      section={'teams'}
+      query={query}
+      setQuery={setQuery}
     >
-      {teams.length ? (
-        teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)
+      {filteredTeams.length ? (
+        filteredTeams.map((team, n) => (
+          <TeamCard team={team} key={n} managementView={managementView} />
+        ))
       ) : (
         <div className="pb3 pt2">
           <FormattedMessage {...messages.noTeams} />

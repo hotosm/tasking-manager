@@ -1,10 +1,14 @@
 import React from 'react';
 import { Link } from '@reach/router';
+import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { useFetch } from '../../hooks/UseFetch';
 import { CustomButton } from '../button';
 import { PlusIcon, WasteIcon } from '../svgIcons';
+import { ProjectFilterSelect } from '../projects/filterSelectFields';
+import ClearFilters from '../projects/clearFilters';
 
 export const ViewAllLink = ({ link }: Object) => (
   <Link to={link} className="dib mt2 fr red link">
@@ -53,6 +57,34 @@ export function InviteOnlyBox({ className }: Object) {
   );
 }
 
+export function TeamFilter({ query, setQuery }) {
+  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const [orgsError, orgsLoading, organisations] = useFetch(
+    `organisations/?omitManagerList=true${
+      userDetails.role === 'ADMIN' ? '' : `&manager_user_id=${userDetails.id}`
+    }`,
+    userDetails && userDetails.id,
+  );
+
+  const { organisation: orgInQuery } = query;
+
+  return (
+    <ProjectFilterSelect
+      fieldsetName="organisation"
+      fieldsetStyle={'w-20-l w-25-m w-50 ph1 pv2 mh0 v-top bn dib'}
+      titleStyle={'dn'}
+      selectedTag={orgInQuery}
+      options={{
+        isError: orgsError,
+        isLoading: orgsLoading,
+        tags: organisations ? organisations.organisations : [],
+      }}
+      setQueryForChild={setQuery}
+      allQueryParamsForChild={query}
+    />
+  );
+}
+
 export function Management(props) {
   // admin users can switch between all teams/orgs and only their teams/orgs
   return (
@@ -84,8 +116,15 @@ export function Management(props) {
             </CustomButton>
           </div>
         )}
+        {props.section === 'teams' ? (
+          <div>
+            <TeamFilter query={props.query} setQuery={props.setQuery} />
+            <ClearFilters url={'/manage/teams/'} className="v-top mh1 mt1 mt2-ns dib" />
+          </div>
+        ) : (
+          ''
+        )}
       </div>
-
       <div className="w-100 cf dib">{props.children}</div>
     </div>
   );
