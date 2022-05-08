@@ -373,7 +373,10 @@ export function TeamDetail(props) {
       JSON.stringify({ role: 'MEMBER', username: userDetails.username }),
       token,
       'POST',
-    ).then((res) => setIsMember(team.inviteOnly ? 'requested' : true));
+    ).then((res) => {
+      setIsMember(team.inviteOnly ? 'requested' : true);
+      setMembers((members) => [...members, userDetails]);
+    });
   };
 
   const leaveTeam = () => {
@@ -382,7 +385,10 @@ export function TeamDetail(props) {
       JSON.stringify({ username: userDetails.username }),
       token,
       'POST',
-    ).then((res) => setIsMember(false));
+    ).then((res) => {
+      setIsMember(false);
+      setMembers((members) => members.filter((member) => member.username !== userDetails.username));
+    });
   };
 
   if (!loading && error) {
