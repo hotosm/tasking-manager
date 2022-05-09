@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { navigate } from '@reach/router';
+import { navigate, useLocation } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import Popup from 'reactjs-popup';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -37,6 +37,7 @@ const Editor = React.lazy(() => import('../editor'));
 const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 
 export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
+  const location = useLocation();
   useSetProjectPageTitleTag(project);
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
@@ -131,6 +132,15 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
       }
     }
   }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds]);
+
+  useEffect(() => {
+    if (location.state?.directedFrom) {
+      localStorage.setItem('lastProjectPathname', location.state.directedFrom);
+    } else {
+      localStorage.removeItem('lastProjectPathname');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const callEditor = async (arr) => {
     setIsJosmError(false);

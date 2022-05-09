@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, navigate } from '@reach/router';
+import { Link, navigate, useLocation } from '@reach/router';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -9,6 +9,8 @@ import { Button } from '../button';
 import { useGetLockedTasks } from '../../hooks/UseLockedTasks';
 
 export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Object) {
+  const location = useLocation();
+
   return (
     <>
       <h3 className="barlow-condensed f3 fw6 mv0">
@@ -32,7 +34,7 @@ export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Obj
           }}
         />
       </div>
-      <Link to={`/projects/${projectId}/${action}/`}>
+      <Link to={`/projects/${projectId}/${action}/`} state={{ directedFrom: location.pathname }}>
         <Button className="bg-red white">
           <FormattedMessage {...messages.goToProject} values={{ project: projectId }} />
         </Button>
