@@ -11,6 +11,7 @@ import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { TaskActivity } from './taskActivity';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
+import { getItem, setItem } from '../../utils/safe_storage';
 import { TASK_COLOURS } from '../../config';
 import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon, InternalLinkIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
@@ -208,6 +209,12 @@ export function TaskList({
   );
 
   useEffect(() => {
+    const tasksSortOrder = getItem('tasksSortOrder');
+    tasksSortOrder && setSortingOption(tasksSortOrder);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (tasks && tasks.features) {
       let newTasks = tasks.features;
       if (statusFilter === 'readyToMap') {
@@ -250,6 +257,7 @@ export function TaskList({
   function updateSortingOption(data: Object) {
     if (data) {
       setSortingOption(data[0].value);
+      setItem('tasksSortOrder', data[0].value);
     }
   }
 
