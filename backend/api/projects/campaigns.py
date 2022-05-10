@@ -50,9 +50,11 @@ class ProjectsCampaignsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            )
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
+                raise ValueError()
         except ValueError:
             return {
                 "Error": "User is not a manager of the project",
@@ -155,9 +157,11 @@ class ProjectsCampaignsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            )
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
+                raise ValueError()
         except ValueError:
             return {
                 "Error": "User is not a manager of the project",
