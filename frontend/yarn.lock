@@ -3262,12 +3262,10 @@
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^8.0.0"
 
-"@testing-library/user-event@^13.1.9":
-  version "13.1.9"
-  resolved "https://registry.npmjs.org/@testing-library/user-event/-/user-event-13.1.9.tgz"
-  integrity sha512-NZr0zL2TMOs2qk+dNlqrAdbaRW5dAmYwd1yuQ4r7HpkVEOj0MWuUjDWwKhcLd/atdBy8ZSMHSKp+kXSQe47ezg==
-  dependencies:
-    "@babel/runtime" "^7.12.5"
+"@testing-library/user-event@^14.2.0":
+  version "14.2.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-14.2.0.tgz#8293560f8f80a00383d6c755ec3e0b918acb1683"
+  integrity sha512-+hIlG4nJS6ivZrKnOP7OGsDu9Fxmryj9vCl8x0ZINtTJcCHs2zLsYif5GzuRiBF2ck5GZG2aQr7Msg+EHlnYVQ==
 
 "@tmcw/togeojson@^4.4.1":
   version "4.4.1"
@@ -4115,9 +4113,10 @@ JSONStream@0.8.0:
     jsonparse "0.0.5"
     through "~2.2.7"
 
-RapiD@facebookincubator/rapid#rapid-v1.1.8_tm:
-  version "1.1.8"
-  resolved "git+ssh://git@github.com/facebookincubator/rapid.git#6771b3ad6d353c63368cebf94d9d8d6a91d7fa34"
+RapiD@facebookincubator/rapid#rapid-v1.1.8-tm.1:
+  version "1.1.8-tm.1"
+  uid dcd0f97a7e569e237e75aa3650987f39966d9f13
+  resolved "https://codeload.github.com/facebookincubator/rapid/tar.gz/dcd0f97a7e569e237e75aa3650987f39966d9f13"
   dependencies:
     "@id-sdk/math" "~3.0.0-pre.10"
     "@id-sdk/util" "~3.0.0-pre.10"
