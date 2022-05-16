@@ -445,6 +445,10 @@ export default defineMessages({
     id: 'project.tasks.action.comment.title',
     defaultMessage: 'Comment',
   },
+  redirectToPreviousProject: {
+    id: 'project.tasks.action.redirectToPreviousProject',
+    defaultMessage: 'Redirect to previous project #{projectId}',
+  },
   commentPlaceholder: {
     id: 'project.tasks.action.comment.input.placeholder',
     defaultMessage: 'Write a comment on this task',

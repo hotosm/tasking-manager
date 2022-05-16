@@ -6,6 +6,7 @@ import ReactTooltip from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { CheckBoxInput } from '../formInputs';
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { CheckCircle } from '../checkCircle';
@@ -47,9 +48,11 @@ export function CompletionTabForMapping({
   const [showHelp, setShowHelp] = useState(false);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const [splitTaskError, setSplitTaskError] = useState(false);
+  const [redirectToPreviousProject, setRedirectToPreviousProject] = useState(true);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
   const fetchLockedTasks = useFetchLockedTasks();
   const clearLockedTasks = useClearLockedTasks();
+  const directedFrom = localStorage.getItem('lastProjectPathname');
 
   const splitTask = () => {
     if (!disabled) {
@@ -60,7 +63,7 @@ export function CompletionTabForMapping({
       )
         .then((r) => {
           clearLockedTasks();
-          navigate(`../tasks/`);
+          navigate((redirectToPreviousProject && directedFrom) || `../tasks/`);
         })
         .catch((e) => {
           setSplitTaskError(true);
@@ -83,7 +86,9 @@ export function CompletionTabForMapping({
         token,
       ).then((r) => {
         clearLockedTasks();
-        navigate(`/projects/${project.projectId}/tasks/`);
+        navigate(
+          (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+        );
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -111,7 +116,9 @@ export function CompletionTabForMapping({
       }
       return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
-        navigate(`/projects/${project.projectId}/tasks/`);
+        navigate(
+          (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+        );
       });
     }
   };
@@ -225,6 +232,22 @@ export function CompletionTabForMapping({
           />
         </p>
       </div>
+      {directedFrom && (
+        <div className="flex items-center">
+          <CheckBoxInput
+            changeState={() => setRedirectToPreviousProject(!redirectToPreviousProject)}
+            isActive={redirectToPreviousProject}
+          />
+          <label>
+            <FormattedMessage
+              {...messages.redirectToPreviousProject}
+              values={{
+                projectId: directedFrom.split('/')[2],
+              }}
+            />
+          </label>
+        </div>
+      )}
       <div className="cf mv2" data-tip>
         <Button
           className="bg-red white w-100 fl"
@@ -239,11 +262,11 @@ export function CompletionTabForMapping({
           <FormattedMessage {...messages.submitTask} />
         </Button>
       </div>
-      {disabled &&
+      {disabled && (
         <ReactTooltip place="top">
           <FormattedMessage {...messages.unsavedChangesTooltip} />
         </ReactTooltip>
-      }
+      )}
       <div className="cf pb1">
         <Button
           className="bg-blue-dark white w-50 fl"
@@ -280,8 +303,10 @@ export function CompletionTabForValidation({
 }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
+  const [redirectToPreviousProject, setRedirectToPreviousProject] = useState(true);
   const fetchLockedTasks = useFetchLockedTasks();
   const clearLockedTasks = useClearLockedTasks();
+  const directedFrom = localStorage.getItem('lastProjectPathname');
 
   const updateStatus = (id, newStatus) =>
     setValidationStatus({ ...validationStatus, [id]: newStatus });
@@ -312,7 +337,7 @@ export function CompletionTabForValidation({
         token,
       ).then((r) => {
         clearLockedTasks();
-        navigate(`../tasks/`);
+        navigate((redirectToPreviousProject && directedFrom) || `../tasks/`);
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -335,10 +360,9 @@ export function CompletionTabForValidation({
       };
       return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
-        navigate(`../tasks/?filter=readyToValidate`);
+        navigate((redirectToPreviousProject && directedFrom) || `../tasks/?filter=readyToValidate`);
       });
-    }
-    else if (disabled) {
+    } else if (disabled) {
       return new Promise((resolve, reject) => {
         setShowMapChangesModal('unlock');
         resolve();
@@ -385,6 +409,22 @@ export function CompletionTabForValidation({
           />
         ))}
       </div>
+      {directedFrom && (
+        <div className="flex items-center">
+          <CheckBoxInput
+            changeState={() => setRedirectToPreviousProject(!redirectToPreviousProject)}
+            isActive={redirectToPreviousProject}
+          />
+          <label>
+            <FormattedMessage
+              {...messages.redirectToPreviousProject}
+              values={{
+                projectId: directedFrom.split('/')[2],
+              }}
+            />
+          </label>
+        </div>
+      )}
       <div className="cf mv3" data-tip>
         <Button
           className="bg-red white w-100 fl"
@@ -395,11 +435,11 @@ export function CompletionTabForValidation({
           <FormattedMessage {...messages[tasksIds.length > 1 ? 'submitTasks' : 'submitTask']} />
         </Button>
       </div>
-      {disabled &&
+      {disabled && (
         <ReactTooltip place="top">
           <FormattedMessage {...messages.unsavedChangesTooltip} />
         </ReactTooltip>
-      }
+      )}
       <div className="cf">
         <Button
           className="blue-dark bg-white w-100 fl"
@@ -475,8 +515,9 @@ const TaskValidationSelector = ({
             <FormattedMessage {...messages.incomplete} />
           </label>
           <CustomButton
-            className={`${showCommentInput ? 'b--red red' : 'b--grey-light blue-dark'
-              } bg-white ba br1 ml3 pv2 ph3`}
+            className={`${
+              showCommentInput ? 'b--red red' : 'b--grey-light blue-dark'
+            } bg-white ba br1 ml3 pv2 ph3`}
             onClick={() => setShowCommentInput(!showCommentInput)}
             icon={
               comment ? (
@@ -636,7 +677,9 @@ export function UnsavedMapChangesModalContent({ close, action }: Object) {
       <div className="mv4 lh-title">
         {action === 'split' && <FormattedMessage {...messages.unsavedChangesToSplit} />}
         {action === 'unlock' && <FormattedMessage {...messages.unsavedChangesToUnlock} />}
-        {action === 'reload editor' && <FormattedMessage {...messages.unsavedChangesToReloadEditor} />}
+        {action === 'reload editor' && (
+          <FormattedMessage {...messages.unsavedChangesToReloadEditor} />
+        )}
       </div>
       <Button className="bg-red white" onClick={() => close()}>
         <FormattedMessage {...messages.closeModal} />
