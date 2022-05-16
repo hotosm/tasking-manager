@@ -1,6 +1,7 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 import { FormattedMessage } from 'react-intl';
+import { createHistory, createMemorySource } from '@reach/router';
 import '@testing-library/jest-dom/extend-expect';
 import {
   LockedTaskModalContent,
@@ -12,8 +13,17 @@ import {
 import { createComponentWithReduxAndIntl } from '../../../utils/testWithIntl';
 import { store } from '../../../store';
 
+jest.mock('@reach/router', () => ({
+  ...jest.requireActual('@reach/router'),
+  useLocation: () => ({
+    pathname: 'localhost:3000/example/path',
+  }),
+}));
+
 describe('test LockedTaskModalContent', () => {
   const { act } = TestRenderer;
+  const history = createHistory(createMemorySource('/'));
+  jest.spyOn(history, 'navigate');
   it('return SameProjectLock message', () => {
     act(() => {
       store.dispatch({ type: 'SET_PROJECT', project: 1 });
