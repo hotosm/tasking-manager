@@ -55,6 +55,7 @@ class TestTask(BaseTestCase):
             Task.from_geojson_feature(1, invalid_feature)
 
     def test_cant_add_task_if_feature_has_missing_properties(self):
+        # Arrange
         # Missing zoom
         invalid_properties = geojson.loads(
             '{"geometry": {"coordinates": [[[[-4.0237, 56.0904], [-3.9111, 56.1715],'
@@ -62,8 +63,31 @@ class TestTask(BaseTestCase):
             '"properties": {"x": 2402, "y": 1736}, "type": "Feature"}'
         )
 
+        # Act/Assert
         with self.assertRaises(InvalidData):
             Task.from_geojson_feature(1, invalid_properties)
+
+    def test_can_add_task_if_feature_geometry_is_valid(self):
+        # Arrange
+        valid_feature_collection = geojson.loads(
+            '{"geometry": {"coordinates": [[[[-4.0237, 56.0904],'
+            '[-3.9111, 56.1715], [-3.8122, 56.098], [-4.0237, 56.0904]]]], "type":'
+            '"MultiPolygon"}, "properties": {"x": 2402, "y": 1736, "zoom": 12, "isSquare": true}, "type":'
+            '"Feature"}'
+        )
+        # Act
+        task = Task.from_geojson_feature(1, valid_feature_collection)
+        # Assert
+        self.assertTrue(task)
+
+    def test_cant_add_task_if_not_supplied_feature_type(self):
+        # Arrange
+        invalid_feature = geojson.MultiPolygon(
+            [[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38, 10.33)]]
+        )
+        # Act/Assert
+        with self.assertRaises(InvalidGeoJson):
+            Task.from_geojson_feature(1, invalid_feature)
 
     def test_lock_task_for_mapping_adds_locked_history(self):
         # Arrange
@@ -76,16 +100,6 @@ class TestTask(BaseTestCase):
         self.assertEqual(
             TaskAction.LOCKED_FOR_MAPPING.name, test_task.task_history[0].action
         )
-
-    def test_cant_add_task_if_not_supplied_feature_type(self):
-        # Arrange
-        invalid_feature = geojson.MultiPolygon(
-            [[(2.38, 57.322), (23.194, -20.28), (-120.43, 19.15), (2.38, 10.33)]]
-        )
-        # Arrange
-
-        with self.assertRaises(InvalidGeoJson):
-            Task.from_geojson_feature(1, invalid_feature)
 
     def test_per_task_instructions_formatted_correctly(self):
         # Arrange

@@ -1,5 +1,5 @@
-import copy
 import geojson
+from backend.models.dtos.project_dto import DraftProjectDTO
 
 from tests.backend.base import BaseTestCase
 from backend.models.postgis.project import (
@@ -10,7 +10,11 @@ from backend.models.postgis.project import (
     Project,
 )
 from backend.models.postgis.project_info import ProjectInfoDTO
-from tests.backend.helpers.test_helpers import create_canned_project
+from tests.backend.helpers.test_helpers import (
+    create_canned_project,
+    return_canned_draft_project_json,
+    update_project_with_info,
+)
 
 
 class TestProject(BaseTestCase):
@@ -39,7 +43,7 @@ class TestProject(BaseTestCase):
     def test_project_can_be_generated_as_dto(self):
         self.test_project, self.test_user = create_canned_project()
         # Arrange
-        self.update_project_with_info()
+        self.test_project = update_project_with_info(self.test_project)
 
         # Act
         project_dto = self.test_project.as_dto_for_mapping()
@@ -54,7 +58,7 @@ class TestProject(BaseTestCase):
     def test_update_project_adds_project_info(self):
         self.test_project, self.test_user = create_canned_project()
         # Act
-        self.update_project_with_info()
+        self.test_project = update_project_with_info(self.test_project)
 
         # Assert
         self.assertEqual(self.test_project.status, ProjectStatus.PUBLISHED.value)
@@ -65,7 +69,7 @@ class TestProject(BaseTestCase):
     def test_partial_translation_uses_default_trans_for_empty_fields(self):
         self.test_project, self.test_user = create_canned_project()
         # Arrange
-        self.update_project_with_info()
+        self.test_project = update_project_with_info(self.test_project)
 
         locales = []
         test_info = ProjectInfoDTO()
@@ -93,43 +97,12 @@ class TestProject(BaseTestCase):
             "English translation should be returned as Italian name was not provided",
         )
 
-    def test_project_can_be_cloned(self):
-        self.test_project, self.test_user = create_canned_project()
-        # Arrange
-        self.update_project_with_info()
-
+    def test_set_project_aoi(self):
+        #  Arrange
+        draft_project_dto = DraftProjectDTO(return_canned_draft_project_json())
+        draft_project = Project()
         # Act
-        original_id = copy.copy(self.test_project.id)
-        cloned_project = Project.clone(original_id, self.test_user.id)
-
-        self.assertTrue(cloned_project)
-        self.assertEqual(cloned_project.project_info[0].name, "Thinkwhere Test")
-
-        # Tidy Up
-        cloned_project.delete()
-        original_project = Project.get(
-            original_id
-        )  # SQLAlchemy is hanging on to a ref to the old project
-        original_project.delete()
-
-    def update_project_with_info(self):
-        self.test_project, self.test_user = create_canned_project()
-        locales = []
-        test_info = ProjectInfoDTO()
-        test_info.locale = "en"
-        test_info.name = "Thinkwhere Test"
-        test_info.description = "Test Description"
-        test_info.short_description = "Short description"
-        test_info.instructions = "Instructions"
-        locales.append(test_info)
-
-        test_dto = ProjectDTO()
-        test_dto.project_status = ProjectStatus.PUBLISHED.name
-        test_dto.project_priority = ProjectPriority.MEDIUM.name
-        test_dto.default_locale = "en"
-        test_dto.project_info_locales = locales
-        test_dto.mapper_level = "BEGINNER"
-        test_dto.mapping_types = ["ROADS"]
-        test_dto.mapping_editors = ["JOSM", "ID"]
-        test_dto.validation_editors = ["JOSM"]
-        self.test_project.update(test_dto)
+        draft_project.set_project_aoi(draft_project_dto)
+        # Assert
+        self.assertIsNotNone(draft_project.geometry)
+        self.assertIsNotNone(draft_project.centroid)
