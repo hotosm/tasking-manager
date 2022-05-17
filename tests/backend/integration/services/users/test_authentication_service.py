@@ -1,61 +1,164 @@
-import os
-import unittest
+from unittest.mock import patch
+import base64
+from urllib.parse import parse_qs, urlparse
 
-from backend import create_app
-from backend.services.users.authentication_service import AuthenticationService
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     get_canned_osm_user_details,
-    get_canned_osm_user_details_changed_name,
+    return_canned_user,
+)
+from backend.services.messaging.smtp_service import SMTPService
+from backend.services.users.authentication_service import (
+    AuthenticationService,
+    UserService,
+    MessageService,
+    NotFound,
+    verify_token,
+    AuthServiceError,
 )
 
 
-class TestAuthenticationService(unittest.TestCase):
-    skip_tests = False
+class TestAuthenticationService(BaseTestCase):
+    def test_verify_token_verifies_user_session_token(self):
 
-    @classmethod
-    def setUpClass(cls):
-        env = os.getenv("CI", "false")
+        # Arrange
+        token = AuthenticationService.generate_session_token_for_user(12345678)
+        token = base64.b64encode(token.encode("utf-8"))
+        token = token.decode("utf-8")
 
-        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == "true":
-            cls.skip_tests = True
+        # Act/Assert
+        self.assertEqual(12345678, verify_token(token))
+        self.assertFalse(verify_token(None))
 
-    def setUp(self):
-        if self.skip_tests:
-            return
+    def test_unable_to_find_user_in_osm_response_raises_error(self):
+        # Arrange
+        osm_response = get_canned_osm_user_details()
 
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
+        # Act / Assert
+        with self.assertRaises(AuthServiceError):
+            AuthenticationService().login_user(osm_response, None, "wont-find")
 
-    def tearDown(self):
-        if self.skip_tests:
-            return
+    @patch.object(MessageService, "send_welcome_message")
+    @patch.object(UserService, "register_user")
+    @patch.object(UserService, "get_user_by_id")
+    def test_if_login_user_calls_user_create_if_user_not_found(
+        self, mock_user_get, mock_user_register, mock_message
+    ):
+        # Arrange
+        osm_response = get_canned_osm_user_details()
+        mock_user_get.side_effect = NotFound()
 
-        self.ctx.pop()
+        # Act
+        AuthenticationService.login_user(osm_response, None)
 
-    def test_unknown_user_creates_user_in_db(self):
-        if self.skip_tests:
-            return
+        # Assert
+        mock_user_register.assert_called_with(
+            7777777, "Thinkwhere Test", 16, None, None
+        )
 
+    @patch.object(MessageService, "send_welcome_message")
+    @patch.object(UserService, "register_user")
+    @patch.object(UserService, "get_user_by_id")
+    def test_if_login_user_calls_send_welcome_if_user_not_found(
+        self, mock_user_get, mock_user_register, mock_message
+    ):
+        # Arrange
+        osm_response = get_canned_osm_user_details()
+        mock_user_get.side_effect = NotFound()
+        new_user = return_canned_user()
+        mock_user_register.return_value = new_user
+
+        # Act
+        AuthenticationService.login_user(osm_response, None)
+
+        # Assert
+        mock_message.assert_called_with(new_user)
+
+    @patch.object(UserService, "update_user")
+    @patch.object(UserService, "get_user_by_id")
+    def test_if_login_user_calls_user_update_if_user_found(
+        self, mock_user_get, mock_user_update
+    ):
+        # Arrange
+        osm_response = get_canned_osm_user_details()
+        osm_response.find("user").attrib["id"] = 12345678
+        osm_response.find("user").attrib["display_name"] = "Thinkwhere Test2"
+
+        # Act
+        AuthenticationService.login_user(osm_response, None)
+
+        # Assert
+        mock_user_update.assert_called_with(12345678, "Thinkwhere Test2", None)
+
+    @patch.object(UserService, "get_user_by_id")
+    def test_if_login_user_returns_all_required_params(self, mock_user_get):
         # Arrange
         osm_response = get_canned_osm_user_details()
 
         # Act
-        params = AuthenticationService().login_user(osm_response, None)
+        user_params = AuthenticationService.login_user(osm_response, None)
 
-        self.assertEqual(params["username"], "Thinkwhere Test")
-        self.assertTrue(params["session_token"])
+        # Assert
+        self.assertIsNotNone(user_params.get("username"))
+        self.assertIsNotNone(user_params.get("session_token"))
+        self.assertIn("picture", user_params)
 
-    def test_existing_user_changed_name(self):
-        if self.skip_tests:
-            return
-
+    @patch.object(UserService, "get_user_by_username")
+    def test_authenticate_email_token_raises_error_when_unable_to_find_user(
+        self, mock_user_get
+    ):
         # Arrange
-        osm_response = get_canned_osm_user_details_changed_name()
+        mock_user_get.side_effect = NotFound
+        email_auth_url = SMTPService._generate_email_verification_url(
+            "thinkwheretest@test.com", "Thinkwhere Test"
+        )
+        parsed_url = urlparse(email_auth_url)
+        token = parse_qs(parsed_url.query)["token"][0]
+        # Act/Assert
+        with self.assertRaises(AuthServiceError):
+            AuthenticationService().authenticate_email_token(
+                username="Thinkwhere Test",
+                token=token,
+            )
 
-        # Act
-        params = AuthenticationService().login_user(osm_response, None)
+    def test_authenticate_email_token_raises_error_when_invalid_token_supplied(self):
+        # Act/Assert
+        with self.assertRaises(AuthServiceError):
+            AuthenticationService().authenticate_email_token(
+                username="Thinkwhere Test",
+                # Invalid Token
+                token="XnRoaW5rd2hlcmV0ZXN0QHRlc3QuY29tIg.YnIWEw.9yg8kxVJXDD6dxxIktYGgnCrZNE",
+            )
 
-        self.assertEqual(params["username"], "Thinkwhere Test Changed")
-        self.assertTrue(params["session_token"])
+    @patch.object(UserService, "get_user_by_username")
+    def test_authenticate_email_token_returns_email_validated_url(self, mock_user_get):
+        # Arrange
+        mock_user_get.return_value = return_canned_user()
+        mock_user_get.return_value.email_address = "thinkwheretest@test.com"
+
+        # Act/Assert
+        self.assertIsNotNone(
+            AuthenticationService().authenticate_email_token(
+                username="Thinkwhere Test",
+                token=AuthenticationService.generate_session_token_for_user(
+                    "thinkwheretest@test.com"
+                ),
+            )
+        )
+
+    @patch.object(UserService, "get_user_by_username")
+    def test_authenticate_email_token_raises_error_if_email_not_matched(
+        self, mock_user_get
+    ):
+        # Arrange
+        mock_user_get.return_value = return_canned_user()
+        mock_user_get.return_value.email_address = "thinkwheretest2@test.com"
+
+        # Act/Assert
+        with self.assertRaises(AuthServiceError):
+            AuthenticationService().authenticate_email_token(
+                username="Thinkwhere Test",
+                token=AuthenticationService.generate_session_token_for_user(
+                    "thinkwheretest@test.com"
+                ),
+            )

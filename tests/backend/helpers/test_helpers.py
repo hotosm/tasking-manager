@@ -3,11 +3,18 @@ import json
 import os
 from typing import Tuple
 import xml.etree.ElementTree as ET
-from backend.models.dtos.project_dto import DraftProjectDTO
+from backend.models.dtos.project_dto import (
+    DraftProjectDTO,
+    ProjectDTO,
+    ProjectInfoDTO,
+    ProjectStatus,
+    ProjectPriority,
+)
 from backend.models.postgis.project import Project
 from backend.models.postgis.statuses import TaskStatus
 from backend.models.postgis.task import Task
 from backend.models.postgis.user import User
+from backend.models.postgis.organisation import Organisation
 
 TEST_USER_ID = 1234
 
@@ -24,6 +31,19 @@ def get_canned_osm_user_details():
             return ET.parse(location)
     except FileNotFoundError:
         raise FileNotFoundError("osm_user_details.xml not found")
+
+
+def get_canned_osm_user_json_details():
+    """ Helper method to find test file, dependent on where tests are being run from """
+
+    location = os.path.join(
+        os.path.dirname(__file__), "test_files", "osm_user_details.json"
+    )
+    try:
+        with open(location, "r") as x:
+            return json.load(x)
+    except FileNotFoundError:
+        raise FileNotFoundError("osm_user_details.json not found")
 
 
 def get_canned_osm_user_details_changed_name():
@@ -66,11 +86,20 @@ def get_canned_simplified_osm_user_details():
     return data
 
 
-def create_canned_user() -> User:
-    """ Generate a canned user in the DB """
+def return_canned_user() -> User:
+    """Returns a canned user"""
     test_user = User()
     test_user.username = "Thinkwhere TEST"
+    test_user.id = "777777"
     test_user.mapping_level = 1
+    test_user.email_address = None
+
+    return test_user
+
+
+def create_canned_user() -> User:
+    """ Generate a canned user in the DB """
+    test_user = return_canned_user()
     test_user.create()
 
     return test_user
@@ -124,5 +153,62 @@ def create_canned_project() -> Tuple[Project, User]:
     test_project.tasks.append(test_task2)
     test_project.tasks.append(test_task3)
     test_project.create()
+    test_project.set_default_changeset_comment()
 
     return test_project, test_user
+
+
+def return_canned_draft_project_json():
+    """ Helper method to find test file, dependent on where tests are being run from """
+
+    location = os.path.join(
+        os.path.dirname(__file__), "test_files", "canned_draft_project.json"
+    )
+    try:
+        with open(location, "r") as x:
+            return json.load(x)
+    except FileNotFoundError:
+        raise FileNotFoundError("canned_draft_project.json not found")
+
+
+def return_canned_organisation():
+    "Returns test organisation without writing to db"
+    test_org = Organisation()
+    test_org.id = 23
+    test_org.name = "Kathmandu Living Labs"
+    test_org.slug = "KLL"
+
+    return test_org
+
+
+def create_canned_organisation():
+    "Generate a canned organisation in the DB"
+    test_org = return_canned_organisation()
+    test_org.create()
+
+    return test_org
+
+
+def update_project_with_info(test_project: Project) -> Project:
+    locales = []
+    test_info = ProjectInfoDTO()
+    test_info.locale = "en"
+    test_info.name = "Thinkwhere Test"
+    test_info.description = "Test Description"
+    test_info.short_description = "Short description"
+    test_info.instructions = "Instructions"
+    locales.append(test_info)
+
+    test_dto = ProjectDTO()
+    test_dto.project_status = ProjectStatus.PUBLISHED.name
+    test_dto.project_priority = ProjectPriority.MEDIUM.name
+    test_dto.default_locale = "en"
+    test_dto.project_info_locales = locales
+    test_dto.mapper_level = "BEGINNER"
+    test_dto.mapping_types = ["ROADS"]
+    test_dto.mapping_editors = ["JOSM", "ID"]
+    test_dto.validation_editors = ["JOSM"]
+    test_dto.changeset_comment = "hot-project"
+    test_project.update(test_dto)
+
+    return test_project
