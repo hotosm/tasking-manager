@@ -91,43 +91,46 @@ export const UserFetchTextarea = ({
 
   return (
     <>
-      <ReactTextareaAutocomplete
-        {...inputProps}
-        value={value}
-        innerRef={(textArea) => autoFocus && textArea && textArea.focus()}
-        listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey overflow-y-scroll base-font f5 relative z-5"
-        listStyle={{ maxHeight: '16rem' }}
-        onChange={setValueFn}
-        minChar={0}
-        className="w-100 f5 pa2 comment-textarea"
-        style={{
-          fontSize: '1rem',
-          resize: 'vertical',
-          borderBottom: `${isProjectDetailCommentSection && '1px dashed'}`,
-        }}
-        loadingComponent={() => <span></span>}
-        rows={3}
-        trigger={{
-          '@': {
-            dataProvider: fetchUsers,
-            component: Item,
-            output: (item, trigger) => `@[${item.name}]`,
-          },
-        }}
-      />
-      {isProjectDetailCommentSection && (
-        <div
-          className={`flex justify-between ba bt-0 w-100 ph2 pv1 relative b--blue-grey`}
-          style={{ bottom: '5px' }}
-        >
-          <span className="f7 lh-copy gray">
-            <FormattedMessage {...messages.attachImage} />
-          </span>
-          <span className="f7 lh-copy gray">
-            <FormattedMessage {...messages.markdownSupported} />
-          </span>
-        </div>
-      )}
+      <div className="comment-textarea">
+        <ReactTextareaAutocomplete
+          {...inputProps}
+          value={value}
+          innerRef={(textArea) => autoFocus && textArea && textArea.focus()}
+          listClassName="list ma0 pa0 ba b--grey-light bg-blue-grey overflow-y-scroll base-font f5 relative z-5"
+          listStyle={{ maxHeight: '16rem' }}
+          onChange={setValueFn}
+          minChar={0}
+          className="w-100 f5 pa2"
+          style={{
+            fontSize: '1rem',
+            resize: 'vertical',
+            borderBottom: `${isProjectDetailCommentSection && '1px dashed'}`,
+            outline: 'none',
+          }}
+          loadingComponent={() => <span></span>}
+          rows={3}
+          trigger={{
+            '@': {
+              dataProvider: fetchUsers,
+              component: Item,
+              output: (item, trigger) => `@[${item.name}]`,
+            },
+          }}
+        />
+        {isProjectDetailCommentSection && (
+          <div
+            className={`flex justify-between ba bt-0 w-100 ph2 pv1 relative b--blue-grey textareaDetail`}
+            style={{ bottom: '5px' }}
+          >
+            <span className="f7 lh-copy gray">
+              <FormattedMessage {...messages.attachImage} />
+            </span>
+            <span className="f7 lh-copy gray">
+              <FormattedMessage {...messages.markdownSupported} />
+            </span>
+          </div>
+        )}
+      </div>
     </>
   );
 };

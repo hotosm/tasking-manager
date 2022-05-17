@@ -319,6 +319,13 @@ div.messageBodyLinks {
   }
 }
 
-.comment-textarea:focus-visible {
-  outline: none;
+.comment-textarea {
+  box-sizing: border-box;
+
+  &:focus-within {
+    outline: -webkit-focus-ring-color auto 1px;
+    .textareaDetail {
+      border-bottom-color: transparent;
+    }
+  }
 }
