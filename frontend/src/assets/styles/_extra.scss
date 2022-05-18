@@ -318,3 +318,14 @@ div.messageBodyLinks {
     vertical-align: middle;
   }
 }
+
+.comment-textarea {
+  box-sizing: border-box;
+
+  &:focus-within {
+    outline: -webkit-focus-ring-color auto 1px;
+    .textareaDetail {
+      border-bottom-color: transparent;
+    }
+  }
+}

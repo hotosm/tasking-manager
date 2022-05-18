@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { store } from '../../../store';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { QuestionsAndComments } from '../questionsAndComments';
+import { QuestionsAndComments, PostProjectComment } from '../questionsAndComments';
 
 describe('test if QuestionsAndComments component', () => {
   it('only renders text asking user to log in for non-logged in user', () => {
@@ -14,6 +14,22 @@ describe('test if QuestionsAndComments component', () => {
       </ReduxIntlProviders>,
     );
     expect(screen.getByText('Log in to be able to post comments.')).toBeInTheDocument();
+  });
+
+  it('renders tabs for writing and previewing comments', () => {
+    render(
+      <ReduxIntlProviders store={store}>
+        <PostProjectComment projectId={1} />
+      </ReduxIntlProviders>,
+    );
+    const previewBtn = screen.getByRole('button', { name: /preview/i });
+    expect(screen.getAllByRole('button').length).toBe(3);
+    expect(screen.getByRole('button', { name: /write/i })).toBeInTheDocument();
+    expect(previewBtn).toBeInTheDocument();
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    fireEvent.click(previewBtn);
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    expect(screen.getByText(/nothing to preview/i)).toBeInTheDocument();
   });
 
   it('enables logged in user to post and view comments', async () => {
@@ -56,7 +72,7 @@ describe('test if QuestionsAndComments component', () => {
     ).toBeInTheDocument();
     const textarea = screen.getByRole('textbox');
     expect(textarea.textContent).toBe('');
-    const button = screen.getByRole('button');
+    const button = screen.getByRole('button', { name: /post/i });
     expect(button.textContent).toBe('Post');
 
     // type comment in textbox
