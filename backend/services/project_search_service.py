@@ -295,9 +295,10 @@ class ProjectSearchService:
 
         if search_dto.text_search:
             # We construct an OR search, so any projects that contain or more of the search terms should be returned
-            or_search = " | ".join(
-                [x for x in search_dto.text_search.split(" ") if x != ""]
+            search_text = "".join(
+                char for char in search_dto.text_search if char.isalnum() or char == " "
             )
+            or_search = " | ".join([x for x in search_text.split(" ") if x != ""])
             opts = [
                 ProjectInfo.text_searchable.match(
                     or_search, postgresql_regconfig="english"
