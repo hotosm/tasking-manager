@@ -37,6 +37,7 @@ export function NotificationOrderBySelector(props) {
       sort: 'ASC',
     },
   ];
+
   const onSortSelect = (arr) => {
     if (arr.length === 1) {
       props.setQuery(
@@ -52,6 +53,7 @@ export function NotificationOrderBySelector(props) {
       throw new Error('filter select array is bigger.');
     }
   };
+
   return (
     <Dropdown
       onChange={onSortSelect}
