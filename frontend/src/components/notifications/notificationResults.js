@@ -13,42 +13,49 @@ export const NotificationResultsMini = (props) => {
   return <NotificationResults {...props} useMiniCard={true} />;
 };
 
-export const NotificationResults = (props) => {
-  const state = props.state;
-  const stateNotifications = !props.useMiniCard
-    ? props.state.notifications
-    : props.state.unreadNotificationsMini;
+export const NotificationResults = ({
+  className,
+  error,
+  loading,
+  state,
+  notifications,
+  retryFn,
+  useMiniCard,
+  liveUnreadCount,
+}) => {
+  const stateNotifications = !useMiniCard
+    ? notifications.userMessages
+    : state.unreadNotificationsMini;
   const showRefreshButton =
+    useMiniCard &&
     !state.isError &&
-    props.useMiniCard &&
-    props.state.unreadNotificationsMini &&
-    props.liveUnreadCount !== props.state.unreadNotificationsMini.filter((n) => !n.read).length;
+    state.unreadNotificationsMini &&
+    liveUnreadCount !== state.unreadNotificationsMini.filter((n) => !n.read).length;
+
   return (
-    <div className={props.className || ''}>
-      {!stateNotifications ? (
-        <span>&nbsp;</span>
-      ) : (
-        !state.isError &&
-        !props.useMiniCard && (
-          <p className="blue-grey ml3 pt2 f7">
-            <FormattedMessage
-              {...messages.paginationCount}
-              values={{
-                number: stateNotifications && stateNotifications.length,
-                total: (
-                  <FormattedNumber
-                    value={
-                      state.pagination && !isNaN(state.pagination.total) && state.pagination.total
-                    }
-                  />
-                ),
-              }}
-            />
-          </p>
-        )
+    <div className={className || ''}>
+      {!stateNotifications && <span>&nbsp;</span>}
+      {notifications?.userMessages && !error && (
+        <p className="blue-grey ml3 pt2 f7">
+          <FormattedMessage
+            {...messages.paginationCount}
+            values={{
+              number: stateNotifications && stateNotifications.length,
+              total: (
+                <FormattedNumber
+                  value={
+                    notifications.pagination &&
+                    !isNaN(notifications.pagination.total) &&
+                    notifications.pagination.total
+                  }
+                />
+              ),
+            }}
+          />
+        </p>
       )}
 
-      {state.isError ? (
+      {error ? (
         <div className="bg-tan pa4 mt3">
           <FormattedMessage
             {...messages.errorLoadingTheXForY}
@@ -58,31 +65,24 @@ export const NotificationResults = (props) => {
             }}
           />
           <div className="pa2">
-            <button className="pa1" onClick={() => props.retryFn()}>
+            <button className="pa1" onClick={() => retryFn()}>
               <FormattedMessage {...messages.notificationsRetry} />
             </button>
           </div>
         </div>
       ) : null}
-      <div className={`cf ${!props.useMiniCard ? 'ml1 db' : 'dib'}`}>
-        <ReactPlaceholder
-          ready={!state.isFirstLoading && stateNotifications}
-          type="media"
-          rows={10}
-        >
+      <div className={`cf ${!useMiniCard ? 'ml1 db' : 'dib'}`}>
+        <ReactPlaceholder ready={!loading && stateNotifications} type="media" rows={10}>
           <NotificationCards
             pageOfCards={stateNotifications}
-            useMiniCard={props.useMiniCard}
-            retryFn={props.retryFn}
+            useMiniCard={useMiniCard}
+            retryFn={retryFn}
           />
         </ReactPlaceholder>
       </div>
       {showRefreshButton && (
         <div className="ph2 pt1 pb2 tc db mb2">
-          <button
-            className="pv1 ph2 pointer ba b--grey-light bg-tan"
-            onClick={() => props.retryFn()}
-          >
+          <button className="pv1 ph2 pointer ba b--grey-light bg-tan" onClick={() => retryFn()}>
             <RefreshIcon height="15px" className="pt1" />
           </button>
         </div>
@@ -103,26 +103,23 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn }) => {
   }
 
   return (
-    <div>
+    <>
       {!useMiniCard && (
-        <div className="mb2">
-          <SelectAll
-            allItems={pageOfCards.map((message) => message.messageId)}
-            setSelected={setSelected}
-            selected={selected}
-            className="dib v-mid mv3 ml3"
-          />
-          <DeleteNotificationsButton
-            selected={selected}
-            setSelected={setSelected}
-            retryFn={retryFn}
-          />
-        </div>
-      )}
-      {useMiniCard
-        ? // show only 5 messages when on miniCard
-          pageOfCards.slice(0, 5).map((card, n) => <NotificationCardMini {...card} key={n} />)
-        : pageOfCards.map((card, n) => (
+        <>
+          <div className="mb2">
+            <SelectAll
+              allItems={pageOfCards.map((message) => message.messageId)}
+              setSelected={setSelected}
+              selected={selected}
+              className="dib v-mid mv3 ml3"
+            />
+            <DeleteNotificationsButton
+              selected={selected}
+              setSelected={setSelected}
+              retryFn={retryFn}
+            />
+          </div>
+          {pageOfCards.map((card, n) => (
             <NotificationCard
               {...card}
               key={n}
@@ -131,6 +128,10 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn }) => {
               setSelected={setSelected}
             />
           ))}
-    </div>
+        </>
+      )}
+      {useMiniCard &&
+        pageOfCards.slice(0, 5).map((card, n) => <NotificationCardMini {...card} key={n} />)}
+    </>
   );
 };
