@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-
-import { useInboxQueryAPI, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
+import { backendToQueryConversion, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
 import useForceUpdate from '../hooks/UseForceUpdate';
 import { InboxNav, InboxNavMini, InboxNavMiniBottom } from '../components/notifications/inboxNav';
 import {
@@ -9,10 +8,25 @@ import {
   NotificationResultsMini,
 } from '../components/notifications/notificationResults';
 import { NotificationBodyModal } from '../components/notifications/notificationBodyCard';
-import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Login } from './login';
+import { remapParamsToAPI } from '../utils/remapParamsToAPI';
+import Paginator from '../components/notifications/paginator';
+
+function serializeParams(queryState) {
+  const obj = remapParamsToAPI(queryState, backendToQueryConversion);
+
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] === undefined) {
+      delete obj[key];
+    }
+  });
+
+  return Object.entries(obj)
+    .map(([key, val]) => `${key}=${val}`)
+    .join('&');
+}
 
 export const NotificationPopout = (props) => {
   // Small screen size, as defined by tachyons
@@ -66,54 +80,51 @@ export const NotificationPopout = (props) => {
 
 export const NotificationsPage = (props) => {
   useSetTitleTag('Notifications');
-  const initialData = {
-    mapResults: {
-      features: [],
-      type: 'FeatureCollection',
-    },
-    results: [],
-    pagination: { hasNext: false, hasPrev: false, page: 1 },
-  };
   const userToken = useSelector((state) => state.auth.get('token'));
   const [inboxQuery, setInboxQuery] = useInboxQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
-  const [state] = useInboxQueryAPI(initialData, inboxQuery, forceUpdated);
+  const [error, loading, notifications] = useFetch(
+    `notifications/?${serializeParams(inboxQuery)}`,
+    forceUpdated,
+  );
 
   if (!userToken) {
     return <Login redirectTo={window.location.pathname} />;
   }
-  // const [isPopoutFocus, setPopoutFocus] = useState(true);
 
   return (
-    <>
-      <div className="pt4-l pb5 ph5-l ph2 pt180 pull-center bg-tan">
-        {
-          props.children
-          /* This is where the full notification body component is rendered using the router, as a child route. */
-        }
-        <section className="cf">
-          <InboxNav />
-          <NotificationResults retryFn={forceUpdate} state={state} />
-          <ProjectCardPaginator projectAPIstate={state} setQueryParam={setInboxQuery} />
-
-          {/* delete me! TDK */}
-          <code className={`dn`}>{JSON.stringify(state)}</code>
-        </section>
-      </div>
-    </>
+    <div className="pt4-l pb5 ph5-l ph2 pt180 pull-center bg-tan">
+      {
+        props.children
+        /* This is where the full notification body component is rendered using the router, as a child route. */
+      }
+      <section className="cf">
+        <InboxNav />
+        <NotificationResults
+          retryFn={forceUpdate}
+          error={error}
+          loading={loading}
+          notifications={notifications}
+        />
+        <Paginator
+          inboxQuery={inboxQuery}
+          notifications={notifications}
+          setInboxQuery={setInboxQuery}
+        />
+      </section>
+    </div>
   );
 };
 
-export const NotificationPageIndex = (props) => {
+export const NotificationPageIndex = () => {
   return null;
 };
 
-export const NotificationDetail = (props) => {
+export const NotificationDetail = ({ id }) => {
   const [thisNotificationError, thisNotificationLoading, thisNotification] = useFetch(
-    `notifications/${props.id}/`,
+    `notifications/${id}/`,
   );
 
-  /* Inside, this loads a NotificationBodyCard */
   return (
     <NotificationBodyModal
       thisNotificationError={thisNotificationError}

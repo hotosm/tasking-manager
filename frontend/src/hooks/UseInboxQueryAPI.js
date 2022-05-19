@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useQueryParams, StringParam, NumberParam } from 'use-query-params';
 import { stringify as stringifyUQP } from 'query-string';
 import axios from 'axios';
 
 import { CommaArrayParam } from '../utils/CommaArrayParam';
-import { useSelector } from 'react-redux';
 import { useThrottle } from '../hooks/UseThrottle';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
 import { API_URL } from '../config';
@@ -27,15 +26,14 @@ const inboxQueryAllSpecification = {
 
 /* This can be passed into inbox API or used independently */
 export const useInboxQueryParams = () => {
-  const uqp = useQueryParams(inboxQueryAllSpecification);
-  return uqp;
+  return useQueryParams(inboxQueryAllSpecification);
 };
 
 /* The API uses slightly different JSON keys than the queryParams,
    this fn takes an object with queryparam keys and outputs JSON keys
    while maintaining the same values */
 /* TODO support full text search and change text=>project for that */
-const backendToQueryConversion = {
+export const backendToQueryConversion = {
   types: 'messageType',
   fromUsername: 'from',
   project: 'project',
