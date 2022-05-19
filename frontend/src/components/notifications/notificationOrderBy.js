@@ -57,7 +57,7 @@ export function NotificationOrderBySelector(props) {
   return (
     <Dropdown
       onChange={onSortSelect}
-      value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}` || []}
+      value={`${props.allQueryParams.orderByType}.${props.allQueryParams.orderBy}` || []}
       options={options}
       display={<FormattedMessage {...messages.sortBy} />}
       className={`ba b--grey-light bg-white mr1 f6 v-mid pv2 ${props.className || ''}`}
