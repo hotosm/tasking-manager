@@ -61,9 +61,14 @@ export function CompletionTabForMapping({
         token,
         'POST',
       )
-        .then((r) => {
+        .then((res) => {
           clearLockedTasks();
-          navigate((redirectToPreviousProject && directedFrom) || `../tasks/`);
+          navigate((redirectToPreviousProject && directedFrom) || `../tasks/`, {
+            state: {
+              lastLockedTasksIds: res.tasks.map((task) => task.taskId),
+              lastLockedProjectId: project.projectId,
+            },
+          });
         })
         .catch((e) => {
           setSplitTaskError(true);
@@ -88,6 +93,12 @@ export function CompletionTabForMapping({
         clearLockedTasks();
         navigate(
           (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+          {
+            state: {
+              lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
+            },
+          },
         );
       });
     } else {
@@ -118,6 +129,12 @@ export function CompletionTabForMapping({
         fetchLockedTasks();
         navigate(
           (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+          {
+            state: {
+              lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
+            },
+          },
         );
       });
     }
@@ -337,7 +354,12 @@ export function CompletionTabForValidation({
         token,
       ).then((r) => {
         clearLockedTasks();
-        navigate((redirectToPreviousProject && directedFrom) || `../tasks/`);
+        navigate((redirectToPreviousProject && directedFrom) || `../tasks/`, {
+          state: {
+            lastLockedTasksIds: tasksIds,
+            lastLockedProjectId: project.projectId,
+          },
+        });
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -360,7 +382,15 @@ export function CompletionTabForValidation({
       };
       return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
-        navigate((redirectToPreviousProject && directedFrom) || `../tasks/?filter=readyToValidate`);
+        navigate(
+          (redirectToPreviousProject && directedFrom) || `../tasks/?filter=readyToValidate`,
+          {
+            state: {
+              lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
+            },
+          },
+        );
       });
     } else if (disabled) {
       return new Promise((resolve, reject) => {
