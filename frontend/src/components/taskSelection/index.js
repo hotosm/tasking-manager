@@ -94,10 +94,12 @@ export function TaskSelection({ project, type, loading }: Object) {
   }, []);
 
   useEffect(() => {
-    const { lastLockedTasksIds } = location.state;
-    lastLockedTasksIds && setZoomedTaskId(lastLockedTasksIds);
+    const { lastLockedTasksIds, lastLockedProjectId } = location.state;
+    if (lastLockedTasksIds && lastLockedProjectId === project.projectId) {
+      setZoomedTaskId(lastLockedTasksIds);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [project]);
 
   // fetch activities and contributions when the component is started
   useEffect(() => {

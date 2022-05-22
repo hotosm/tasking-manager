@@ -66,6 +66,7 @@ export function CompletionTabForMapping({
           navigate((redirectToPreviousProject && directedFrom) || `../tasks/`, {
             state: {
               lastLockedTasksIds: res.tasks.map((task) => task.taskId),
+              lastLockedProjectId: project.projectId,
             },
           });
         })
@@ -95,6 +96,7 @@ export function CompletionTabForMapping({
           {
             state: {
               lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
             },
           },
         );
@@ -130,6 +132,7 @@ export function CompletionTabForMapping({
           {
             state: {
               lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
             },
           },
         );
@@ -354,6 +357,7 @@ export function CompletionTabForValidation({
         navigate((redirectToPreviousProject && directedFrom) || `../tasks/`, {
           state: {
             lastLockedTasksIds: tasksIds,
+            lastLockedProjectId: project.projectId,
           },
         });
       });
@@ -383,6 +387,7 @@ export function CompletionTabForValidation({
           {
             state: {
               lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
             },
           },
         );
