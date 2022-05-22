@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import { useLocation } from '@reach/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
 import Popup from 'reactjs-popup';
@@ -43,6 +44,7 @@ const getRandomTaskByAction = (activities, taskAction) => {
 };
 
 export function TaskSelection({ project, type, loading }: Object) {
+  const location = useLocation();
   const user = useSelector((state) => state.auth.get('userDetails'));
   const userOrgs = useSelector((state) => state.auth.get('organisations'));
   const lockedTasks = useGetLockedTasks();
@@ -89,6 +91,12 @@ export function TaskSelection({ project, type, loading }: Object) {
         .then((res) => setContributions(res))
         .catch((e) => console.log(e));
     }
+  }, []);
+
+  useEffect(() => {
+    const { lastLockedTasksIds } = location.state;
+    lastLockedTasksIds && setZoomedTaskId(lastLockedTasksIds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // fetch activities and contributions when the component is started

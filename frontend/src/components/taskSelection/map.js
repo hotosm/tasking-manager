@@ -69,7 +69,8 @@ export const TasksMap = ({
   }, []);
 
   useLayoutEffect(() => {
-    if (zoomedTaskId) {
+    // should run only when triggered from tasks list
+    if (typeof zoomedTaskId === 'number') {
       const taskGeom = mapResults.features.filter(
         (task) => task.properties.taskId === zoomedTaskId,
       )[0].geometry;
@@ -97,7 +98,30 @@ export const TasksMap = ({
     ];
 
     const updateTMZoom = () => {
-      if (!taskBordersOnly) {
+      // fit bounds to last mapped/validated task(s), if exists
+      // otherwise fit bounds to all tasks 
+      if (zoomedTaskId?.length > 0) {
+        const lastLockedTasks = mapResults.features.filter((task) =>
+          zoomedTaskId.includes(task.properties.taskId),
+        );
+
+        const lastLockedTasksGeom = lastLockedTasks.reduce(
+          (acc, curr) => {
+            const geom = curr.geometry;
+            return {
+              type: 'MultiPolygon',
+              coordinates: [...acc.coordinates, ...geom.coordinates],
+            };
+          },
+          { type: 'MultiPolygon', coordinates: [] },
+        );
+
+        map.fitBounds(bbox(lastLockedTasksGeom), {
+          padding: 250,
+          maxZoom: 22,
+          animate: false,
+        });
+      } else if (!taskBordersOnly) {
         map.fitBounds(bbox(mapResults), { padding: 40, animate: animateZoom });
       } else {
         map.fitBounds(bbox(mapResults), { padding: 220, maxZoom: 6.5, animate: animateZoom });
@@ -433,6 +457,7 @@ export const TasksMap = ({
     animateZoom,
     authDetails.id,
     showTaskIds,
+    zoomedTaskId,
   ]);
 
   return (
