@@ -93,13 +93,14 @@ export function ListTeams({ managementView = false }: Object) {
 }
 
 const joinTeamRequest = (team_id, username, role, token) => {
-  pushToLocalJSONAPI(
+  return pushToLocalJSONAPI(
     `teams/${team_id}/actions/join/`,
     JSON.stringify({ username: username, role: role }),
     token,
     'POST',
   );
 };
+
 const leaveTeamRequest = (team_id, username, role, token) => {
   pushToLocalJSONAPI(
     `teams/${team_id}/actions/leave/`,
@@ -226,6 +227,9 @@ export function EditTeam(props) {
   const [members, setMembers] = useState([]);
   const [requests, setRequests] = useState([]);
   const [canUserEditTeam] = useEditTeamAllowed(team);
+  const [memberJoinTeamError, setMemberJoinTeamError] = useState(null);
+  const [managerJoinTeamError, setManagerJoinTeamError] = useState(null);
+
   useEffect(() => {
     if (!initManagers && team && team.members) {
       setManagers(filterActiveManagers(team.members));
@@ -256,7 +260,12 @@ export function EditTeam(props) {
   };
   const updateManagers = () => {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, managers, true);
-    usersAdded.forEach((user) => joinTeamRequest(team.teamId, user, 'MANAGER', token));
+    usersAdded.forEach((user) =>
+      joinTeamRequest(team.teamId, user, 'MANAGER', token).catch((err) => {
+        setManagerJoinTeamError(err.message);
+        removeManagers(user);
+      }),
+    );
     usersRemoved.forEach((user) => leaveTeamRequest(team.teamId, user, 'MANAGER', token));
     team.members = team.members
       .filter((user) => user.function === 'MEMBER' || user.active === false)
@@ -264,7 +273,12 @@ export function EditTeam(props) {
   };
   const updateMembers = () => {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, members);
-    usersAdded.forEach((user) => joinTeamRequest(team.teamId, user, 'MEMBER', token));
+    usersAdded.forEach((user) =>
+      joinTeamRequest(team.teamId, user, 'MEMBER', token).catch((err) => {
+        setMemberJoinTeamError(err.message);
+        removeMembers(user);
+      }),
+    );
     usersRemoved.forEach((user) => leaveTeamRequest(team.teamId, user, 'MEMBER', token));
     team.members = team.members
       .filter((user) => user.function === 'MANAGER' || user.active === false)
@@ -316,6 +330,8 @@ export function EditTeam(props) {
           saveMembersFn={updateManagers}
           resetMembersFn={setManagers}
           members={managers}
+          managerJoinTeamError={managerJoinTeamError}
+          setManagerJoinTeamError={setManagerJoinTeamError}
         />
         <div className="h1"></div>
         <Members
@@ -325,6 +341,8 @@ export function EditTeam(props) {
           resetMembersFn={setMembers}
           members={members}
           type="members"
+          memberJoinTeamError={memberJoinTeamError}
+          setMemberJoinTeamError={setMemberJoinTeamError}
         />
         <div className="h1"></div>
         <JoinRequests

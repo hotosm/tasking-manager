@@ -736,6 +736,8 @@
   "management.link.manage": "Manage {entity}",
   "management.link.edit.team": "Edit team",
   "management.members.edit": "Edit",
+  "management.members.alreadyInTeam": "Already in team",
+  "management.members.UserAlreadyInListError": "User is already a member of this team or has already requested to join.",
   "management.members": "Members",
   "management.members.empty": "There are no members yet.",
   "management.teams.mapping": "Mapping teams",
