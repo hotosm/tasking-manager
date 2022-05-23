@@ -32,6 +32,14 @@ export default defineMessages({
     id: 'management.members.edit',
     defaultMessage: 'Edit',
   },
+  alreadyInTeam: {
+    id: 'management.members.alreadyInTeam',
+    defaultMessage: 'Already in team',
+  },
+  UserAlreadyInListError: {
+    id: 'management.members.UserAlreadyInListError',
+    defaultMessage: 'User is already a member of this team or has already requested to join.',
+  },
   members: {
     id: 'management.members',
     defaultMessage: 'Members',

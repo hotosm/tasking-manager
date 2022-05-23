@@ -287,6 +287,11 @@ div.messageBodyLinks {
     &--is-selected {
       background-color: $white !important;
     }
+
+    &--is-disabled {
+      pointer-events: auto !important;
+      cursor: not-allowed !important;
+    }
   }
 }
 
