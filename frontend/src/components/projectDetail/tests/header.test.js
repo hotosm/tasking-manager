@@ -64,6 +64,7 @@ describe('test if ProjectHeader component', () => {
     expect(screen.getByText('Environment Conservation')).toBeInTheDocument();
     expect(screen.getByText('Women security')).toBeInTheDocument();
     expect(screen.getByText('Bolivia')).toBeInTheDocument();
+    expect(screen.queryByText(/private/i)).not.toBeInTheDocument();
   });
 
   it('shows Header for urgent priority project for non-logged in user', () => {
@@ -85,6 +86,7 @@ describe('test if ProjectHeader component', () => {
     expect(screen.getByText('Environment Conservation')).toBeInTheDocument();
     expect(screen.getByText('Women security')).toBeInTheDocument();
     expect(screen.getByText('Bolivia')).toBeInTheDocument();
+    expect(screen.queryByText(/private/i)).not.toBeInTheDocument();
   });
 
   it('shows Header for low priority draft project for logged in user', () => {
@@ -113,5 +115,6 @@ describe('test if ProjectHeader component', () => {
     expect(screen.getByText('La Paz Buildings').closest('h3').lang).toBe('en');
     expect(screen.getByText('Environment Conservation')).toBeInTheDocument();
     expect(screen.getByText('Bolivia')).toBeInTheDocument();
+    expect(screen.queryByText(/private/i)).not.toBeInTheDocument();
   });
 });
