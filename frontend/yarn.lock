@@ -3338,28 +3338,21 @@
   resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.5.0.tgz#f79af094bd6b8ce7ed2bd3e089a8493ee6cae82e"
   integrity sha512-VbI1dV5bLFzohYYdgqwikdMVpe7pJ9X3E+dlr425wa2/sMJqYDhTO++ec38/pcPvPE6oD9WEEeU3Xu3gza+VPw==
 
-"@turf/intersect@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/intersect/-/intersect-6.4.0.tgz"
-  integrity sha512-+vGjy/TDS9PXuTPu5Flh/zcjPmC1lluBqtYO03hqB673Ly1Zk9SBcnNoZQjlpyjFdUkutYM2McYgIKsumTbd1Q==
+"@turf/intersect@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/intersect/-/intersect-6.5.0.tgz#a14e161ddd0264d0f07ac4e325553c70c421f9e6"
+  integrity sha512-2legGJeKrfFkzntcd4GouPugoqPUjexPZnOvfez+3SfIMrHvulw8qV8u7pfVyn2Yqs53yoVCEjS5sEpvQ5YRQg==
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
-    polygon-clipping "^0.15.2"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
+    polygon-clipping "^0.15.3"
 
-"@turf/invariant@6.x":
-  version "6.1.2"
-  resolved "https://registry.npmjs.org/@turf/invariant/-/invariant-6.1.2.tgz"
-  integrity sha512-WU08Ph8j0J2jVGlQCKChXoCtI50BB3yEH21V++V0T4cR1T27HKCxkehV2sYMwTierfMBgjwSwDIsxnR4/2mWXg==
+"@turf/invariant@6.x", "@turf/invariant@^6.4.0", "@turf/invariant@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/invariant/-/invariant-6.5.0.tgz#970afc988023e39c7ccab2341bd06979ddc7463f"
+  integrity sha512-Wv8PRNCtPD31UVbdJE/KVAWKe7l6US+lJItRR/HOEW3eh+U/JwRCSUl/KZ7bmjM/C+zLNoreM2TU6OoLACs4eg==
   dependencies:
-    "@turf/helpers" "6.x"
-
-"@turf/invariant@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/invariant/-/invariant-6.4.0.tgz"
-  integrity sha512-ncAiOLkL6Ul6NnyOZSSmEbTwcZZ8PTx7O1IzB89Ed/mAe1g5PvFnyFieWbcnERGmuqH1ftzgtWMFFHFi2PQLsg==
-  dependencies:
-    "@turf/helpers" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
 
 "@turf/line-to-polygon@^6.4.0":
   version "6.4.0"
@@ -4115,9 +4108,10 @@ JSONStream@0.8.0:
     jsonparse "0.0.5"
     through "~2.2.7"
 
-RapiD@facebookincubator/rapid#rapid-v1.1.8_tm:
-  version "1.1.8"
-  resolved "git+ssh://git@github.com/facebookincubator/rapid.git#6771b3ad6d353c63368cebf94d9d8d6a91d7fa34"
+RapiD@facebookincubator/rapid#rapid-v1.1.8-tm.1:
+  version "1.1.8-tm.1"
+  uid dcd0f97a7e569e237e75aa3650987f39966d9f13
+  resolved "https://codeload.github.com/facebookincubator/rapid/tar.gz/dcd0f97a7e569e237e75aa3650987f39966d9f13"
   dependencies:
     "@id-sdk/math" "~3.0.0-pre.10"
     "@id-sdk/util" "~3.0.0-pre.10"
@@ -8547,10 +8541,10 @@ immer@8.0.1:
   resolved "https://registry.npmjs.org/immer/-/immer-8.0.1.tgz"
   integrity sha512-aqXhGP7//Gui2+UrEtvxZxSquQVXTpZ7KDxfCcKAF3Vysvw0CViVaW9RZ1j1xlIYqaaaipBoqdqeibkc18PNvA==
 
-immutable@^4.0.0-rc.12:
-  version "4.0.0-rc.12"
-  resolved "https://registry.npmjs.org/immutable/-/immutable-4.0.0-rc.12.tgz"
-  integrity sha512-0M2XxkZLx/mi3t8NVwIm1g8nHoEmM9p9UBl/G9k4+hm0kBgOVdMV/B3CY5dQ8qG8qc80NN4gDV4HQv6FTJ5q7A==
+immutable@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.1.0.tgz#f795787f0db780183307b9eb2091fcac1f6fafef"
+  integrity sha512-oNkuqVTA8jqG1Q6c+UglTOD1xhC1BtjKI7XkCXRkZHrN5m18/XsnUp8Q89GkQO/z+0WjonSvl0FLhDYftp46nQ==
 
 import-cwd@^2.0.0:
   version "2.1.0"
@@ -11519,21 +11513,7 @@ pnp-webpack-plugin@1.6.4:
   dependencies:
     ts-pnp "^1.1.6"
 
-polygon-clipping@^0.15.2:
-  version "0.15.2"
-  resolved "https://registry.npmjs.org/polygon-clipping/-/polygon-clipping-0.15.2.tgz"
-  integrity sha512-qsUFQSY4nA++1/b76dy0BJGwL0FZAk05Y4hZprctLIhAddE8KUUr3TxIF4sAxIQtjH9xvaBe3raaRQrcSI4wlA==
-  dependencies:
-    splaytree "^3.1.0"
-
-polygon-clipping@~0.15.1:
-  version "0.15.1"
-  resolved "https://registry.npmjs.org/polygon-clipping/-/polygon-clipping-0.15.1.tgz"
-  integrity sha512-6tvqlvuSu+CLe0RtS51sG43iU31h4zwyLAESMW/Kv+iNb62lSwxvGJhlLNduS4JTtX3mtBrg8Bbl/QCpC2I+hA==
-  dependencies:
-    splaytree "^3.0.1"
-
-polygon-clipping@~0.15.3:
+polygon-clipping@^0.15.3, polygon-clipping@~0.15.1, polygon-clipping@~0.15.3:
   version "0.15.3"
   resolved "https://registry.npmjs.org/polygon-clipping/-/polygon-clipping-0.15.3.tgz"
   integrity sha512-ho0Xx5DLkgxRx/+n4O74XyJ67DcyN3Tu9bGYKsnTukGAW6ssnuak6Mwcyb1wHy9MZc9xsUWqIoiazkZB5weECg==
@@ -14061,11 +14041,6 @@ spdy@^4.0.2:
     http-deceiver "^1.2.7"
     select-hose "^2.0.0"
     spdy-transport "^3.0.0"
-
-splaytree@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/splaytree/-/splaytree-3.0.1.tgz"
-  integrity sha512-WvQIHRDXLSVn72xjlIG/WGhv/4QO3m+iY2TpVdFRaXd1+/vkNlpkpw1QaNH5taghF9eWXDHWMWnzXyicR8d6ig==
 
 splaytree@^3.1.0:
   version "3.1.0"
