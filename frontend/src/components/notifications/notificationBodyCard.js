@@ -27,7 +27,7 @@ export const NotificationBodyModal = (props) => {
       className="fixed top-0 left-0 right-0 bottom-0"
     >
       <div
-        className={`relative shadow-3`}
+        className={`relative shadow-3 flex flex-column`}
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
@@ -50,12 +50,13 @@ export const NotificationBodyModal = (props) => {
             <CloseIcon className={`h1 w1 blue-dark`} />
           </Link>
         </div>
-        {!props.thisNotificationError ? (
+        {!props.thisNotificationError && (
           <NotificationBodyCard
             loading={props.thisNotificationLoading}
             card={props.thisNotification}
           />
-        ) : (
+        )}
+        {props.thisNotificationError && !props.thisNotificationLoading && (
           <div>
             <FormattedMessage
               {...messages.errorLoadingTheX}
