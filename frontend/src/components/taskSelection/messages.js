@@ -490,10 +490,6 @@ export default defineMessages({
     defaultMessage:
       '{number, plural, one {Is this task well mapped?} other {Are these tasks well mapped?}}',
   },
-  markAllValidationStatus: {
-    id: 'project.tasks.action.options.markAllValidationStatus',
-    defaultMessage: 'Mark all as {status, select, VALIDATED {yes} other{no}}',
-  },
   complete: {
     id: 'project.tasks.action.options.complete',
     defaultMessage: 'Yes',
