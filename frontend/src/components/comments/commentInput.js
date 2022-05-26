@@ -91,7 +91,7 @@ export const UserFetchTextarea = ({
 
   return (
     <>
-      <div className="comment-textarea">
+      <div className={`${isProjectDetailCommentSection && 'comment-textarea'}`}>
         <ReactTextareaAutocomplete
           {...inputProps}
           value={value}
@@ -105,7 +105,7 @@ export const UserFetchTextarea = ({
             fontSize: '1rem',
             resize: 'vertical',
             borderBottom: `${isProjectDetailCommentSection && '1px dashed'}`,
-            outline: 'none',
+            outline: `${isProjectDetailCommentSection && 'none'}`,
           }}
           loadingComponent={() => <span></span>}
           rows={3}
