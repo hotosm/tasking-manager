@@ -369,41 +369,43 @@ export function CompletionTabForValidation({
         <p className="b mb2">
           <FormattedMessage {...messages.validatedQuestion} values={{ number: tasksIds.length }} />
         </p>
-        <div className="cf w-100 db pt1 pv2 blue-dark">
-          <div className="cf w-100">
-            <div className="fw8 f5 w-10 dib">
-              <FormattedMessage {...messages.filterAll} />
-            </div>
-            <div className="w-auto dib">
-              {['VALIDATED', 'INVALIDATED'].map((value, index) => (
-                <div className="dib" key={index}>
-                  <input
-                    type="radio"
-                    id={value}
-                    value={value}
-                    className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
-                    checked={
-                      Object.values(validationStatus).every((status) => status === value) &&
-                      Object.values(validationStatus).length === tasksIds.length
-                    }
-                    onChange={() => {
-                      let tempObj = {};
-                      tasksIds.forEach((id) => (tempObj = { ...tempObj, [id]: value }));
-                      setValidationStatus(tempObj);
-                    }}
-                  />
-                  <label htmlFor={value}>
-                    {index ? (
-                      <FormattedMessage {...messages.incomplete} />
-                    ) : (
-                      <FormattedMessage {...messages.complete} />
-                    )}
-                  </label>
-                </div>
-              ))}
+        {tasksIds.length > 3 && (
+          <div className="cf w-100 db pt1 pv2 blue-dark mb2 bb b--light-gray">
+            <div className="cf w-100">
+              <div className="fw8 f5 w-10 dib">
+                <FormattedMessage {...messages.filterAll} />
+              </div>
+              <div className="w-auto dib">
+                {['VALIDATED', 'INVALIDATED'].map((value, index) => (
+                  <div className="dib" key={index}>
+                    <input
+                      type="radio"
+                      id={value}
+                      value={value}
+                      className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
+                      checked={
+                        Object.values(validationStatus).every((status) => status === value) &&
+                        Object.values(validationStatus).length === tasksIds.length
+                      }
+                      onChange={() => {
+                        let tempObj = {};
+                        tasksIds.forEach((id) => (tempObj = { ...tempObj, [id]: value }));
+                        setValidationStatus(tempObj);
+                      }}
+                    />
+                    <label htmlFor={value}>
+                      {index ? (
+                        <FormattedMessage {...messages.incomplete} />
+                      ) : (
+                        <FormattedMessage {...messages.complete} />
+                      )}
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
         {tasksIds.map((id) => (
           <TaskValidationSelector
             key={id}
