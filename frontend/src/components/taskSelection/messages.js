@@ -22,7 +22,7 @@ export default defineMessages({
   },
   unsavedChangesTooltip: {
     id: 'project.tasks.unsaved_map_changes.tooltip',
-    defaultMessage: 'You have unsaved edits. Save or undo them to submit this task.'
+    defaultMessage: 'You have unsaved edits. Save or undo them to submit this task.',
   },
   closeModal: {
     id: 'project.tasks.unsaved_map_changes.actions.close_modal',
@@ -36,7 +36,7 @@ export default defineMessages({
     id: 'project.tasks.no_mapped_tasks_selected.description',
     defaultMessage:
       'It was not possible to lock the selected tasks, as none of them are on the mapped status.',
-  },  
+  },
   InvalidTaskStateError: {
     id: 'project.tasks.invalid_task_state_errortitle',
     defaultMessage: 'Invalid Task State',
