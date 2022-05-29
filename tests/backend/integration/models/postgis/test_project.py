@@ -97,6 +97,44 @@ class TestProject(BaseTestCase):
             "English translation should be returned as Italian name was not provided",
         )
 
+    def test_project_update_updates_changed_fields(self):
+        self.test_project, self.test_user = create_canned_project()
+        # Arrange
+        self.test_project = update_project_with_info(self.test_project)
+
+        locales = []
+        test_info = ProjectInfoDTO()
+        test_info.locale = "it"
+        test_info.name = "Italian test project"
+        test_info.description = "Test italian description"
+        test_info.short_description = "Test italian short description"
+        test_info.instructions = "Test italian instructions"
+        locales.append(test_info)
+
+        test_dto = ProjectDTO()
+        test_dto.project_status = ProjectStatus.PUBLISHED.name
+        test_dto.project_priority = ProjectPriority.MEDIUM.name
+        test_dto.default_locale = "it"
+        test_dto.project_info_locales = locales
+        test_dto.mapper_level = "BEGINNER"
+        test_dto.mapping_types = ["ROADS", "BUILDINGS"]
+        test_dto.mapping_editors = ["JOSM", "ID", "RAPID"]
+        test_dto.validation_editors = ["JOSM", "ID"]
+
+        # Act - Create empty italian translation
+        self.test_project.update(test_dto)
+        dto = self.test_project.as_dto_for_mapping(locale="it")
+
+        # Assert
+        self.assertEqual(self.test_project.default_locale, test_info.locale)
+        self.assertDictEqual(
+            dto.project_info.to_primitive(),
+            test_info.to_primitive(),
+        )
+        self.assertListEqual(test_dto.mapping_types, dto.mapping_types)
+        self.assertListEqual(test_dto.validation_editors, dto.validation_editors)
+        self.assertListEqual(test_dto.mapping_editors, dto.mapping_editors)
+
     def test_set_project_aoi(self):
         #  Arrange
         draft_project_dto = DraftProjectDTO(return_canned_draft_project_json())
