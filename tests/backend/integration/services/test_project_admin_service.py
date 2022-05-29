@@ -1,8 +1,9 @@
 from unittest.mock import patch, MagicMock
 import json
-from backend.models.postgis.project import Project
-from backend.models.postgis.utils import NotFound
 
+from backend.models.postgis.project import Project, User, NotFound, ProjectPriority
+from backend.models.postgis.statuses import UserRole, MappingLevel
+from backend.services.team_service import TeamService
 from tests.backend.base import BaseTestCase
 from backend.models.dtos.organisation_dto import ListOrganisationsDTO
 from backend.services.project_admin_service import (
@@ -10,7 +11,12 @@ from backend.services.project_admin_service import (
     ProjectAdminServiceError,
     InvalidGeoJson,
 )
-from backend.models.dtos.project_dto import DraftProjectDTO
+from backend.models.dtos.project_dto import (
+    DraftProjectDTO,
+    ProjectDTO,
+    ProjectInfoDTO,
+    ProjectStatus,
+)
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
 from tests.backend.helpers.test_helpers import (
@@ -150,4 +156,268 @@ class TestProjectAdminService(BaseTestCase):
             1,
             test_project.tasks.count(),
             "One task should have been attached to project",
+        )
+
+    @patch.object(UserService, "is_user_the_project_author")
+    @patch.object(UserService, "is_user_an_admin")
+    def test_is_user_action_permitted_on_project_returns_true_for_admin(
+        self, mock_is_user_admin, mock_is_user_author
+    ):
+        # Arrange
+        test_project, test_user = create_canned_project()
+        mock_is_user_admin.return_value = True
+        mock_is_user_author.return_value = False
+        # Act
+        permitted = ProjectAdminService.is_user_action_permitted_on_project(
+            test_user.id, test_project.id
+        )
+        # Assert
+        self.assertTrue(permitted)
+
+    def test_is_user_action_permitted_on_project_returns_true_for_author(self):
+        # Arrange
+        test_project, test_user = create_canned_project()
+        # Act
+        permitted = ProjectAdminService.is_user_action_permitted_on_project(
+            test_user.id, test_project.id
+        )
+        # Assert
+        self.assertTrue(permitted)
+
+    @patch.object(UserService, "is_user_the_project_author")
+    @patch.object(UserService, "is_user_an_admin")
+    def test_is_user_action_permitted_on_project_returns_true_for_org_manager(
+        self, mock_is_user_admin, mock_is_user_author
+    ):
+        # Arrange
+        test_project, test_user = create_canned_project()
+        test_org = create_canned_organisation()
+        test_project.organisation_id = test_org.id
+        test_org.managers = [test_user]
+        mock_is_user_admin.return_value = False
+        mock_is_user_author.return_value = False
+        # Act
+        permitted = ProjectAdminService.is_user_action_permitted_on_project(
+            test_user.id, test_project.id
+        )
+        # Assert
+        self.assertTrue(permitted)
+
+    @patch.object(TeamService, "check_team_membership")
+    @patch.object(OrganisationService, "is_user_an_org_manager")
+    @patch.object(UserService, "is_user_the_project_author")
+    @patch.object(UserService, "is_user_an_admin")
+    def test_is_user_action_permitted_on_project_returns_true_for_project_team_manager(
+        self,
+        mock_is_user_admin,
+        mock_is_user_author,
+        mock_is_user_org_manager,
+        mock_check_team_membership,
+    ):
+        # Arrange
+        test_project, test_user = create_canned_project()
+        test_org = create_canned_organisation()
+        test_project.organisation_id = test_org.id
+        mock_is_user_admin.return_value = False
+        mock_is_user_author.return_value = False
+        mock_is_user_org_manager.return_value = False
+        mock_check_team_membership.return_value = True
+        # Act
+        permitted = ProjectAdminService.is_user_action_permitted_on_project(
+            test_user.id, test_project.id
+        )
+        # Assert
+        self.assertTrue(permitted)
+
+    @patch.object(TeamService, "check_team_membership")
+    @patch.object(OrganisationService, "is_user_an_org_manager")
+    @patch.object(UserService, "is_user_the_project_author")
+    @patch.object(UserService, "is_user_an_admin")
+    def test_is_user_action_permitted_on_project_returns_false_for_user_without_permission(
+        self,
+        mock_is_user_admin,
+        mock_is_user_author,
+        mock_is_user_org_manager,
+        mock_check_team_membership,
+    ):
+        # Arrange
+        test_project, test_user = create_canned_project()
+        test_org = create_canned_organisation()
+        test_project.organisation_id = test_org.id
+        mock_is_user_admin.return_value = False
+        mock_is_user_author.return_value = False
+        mock_is_user_org_manager.return_value = False
+        mock_check_team_membership.return_value = False
+        # Act
+        permitted = ProjectAdminService.is_user_action_permitted_on_project(
+            test_user.id, test_project.id
+        )
+        # Assert
+        self.assertFalse(permitted)
+
+    @patch.object(User, "get_by_id")
+    @patch.object(Project, "get")
+    def test_update_published_project_with_incomplete_default_locale_raises_error(
+        self, mock_project, mock_user
+    ):
+        # Arrange
+        stub_project = Project()
+        stub_project.status = ProjectStatus.PUBLISHED.value
+
+        mock_project.return_value = stub_project
+
+        locales = []
+        info = ProjectInfoDTO()
+        info.locale = "en"
+        info.name = "Test"
+        locales.append(info)
+
+        dto = ProjectDTO()
+        dto.project_id = 1
+        dto.default_locale = "en"
+        dto.project_info_locales = locales
+        dto.project_status = ProjectStatus.PUBLISHED.name
+
+        stub_admin_user = User()
+        stub_admin_user.username = "admin"
+        stub_admin_user.role = UserRole.ADMIN.value
+
+        mock_user.return_value = stub_admin_user
+        # Act / Assert
+        with self.assertRaises(ProjectAdminServiceError):
+            ProjectAdminService.update_project(dto, mock_user.id)
+
+    @patch.object(User, "get_by_id")
+    @patch.object(Project, "update")
+    @patch.object(Project, "get")
+    def test_updating_a_private_project_with_no_allowed_users_raises_error(
+        self, mock_project, mock_project2, mock_user
+    ):
+        # Arrange
+        mock_project.return_value = Project()
+
+        dto = ProjectDTO()
+        dto.private = True
+        dto.allowed_usernames = []
+
+        stub_user = User()
+        stub_user.username = "admin"
+        stub_user.role = UserRole.ADMIN.value
+
+        mock_user.return_value = stub_user
+
+        # Act
+        try:
+            ProjectAdminService.update_project(dto, mock_user.id)
+        # Assert
+        except ProjectAdminServiceError:
+            self.fail("update_project raised an exception when setting it as private")
+
+    @patch.object(User, "get_by_id")
+    @patch.object(Project, "get")
+    def test_update_project_with_non_existant_license_raises_error(
+        self, mock_project, mock_user
+    ):
+        # Arrange
+        stub_project = Project()
+        stub_project.status = ProjectStatus.PUBLISHED.value
+
+        mock_project.return_value = stub_project
+
+        locales = []
+        info = ProjectInfoDTO()
+        info.locale = "en"
+        info.name = "Test"
+        info.description = "Test description"
+        info.short_description = "Test short description"
+        info.instructions = "Test instructions"
+        locales.append(info)
+
+        dto = ProjectDTO()
+        dto.project_id = 1
+        dto.default_locale = "en"
+        dto.license_id = 1
+        dto.project_info_locales = locales
+        dto.project_status = ProjectStatus.PUBLISHED.name
+
+        stub_admin_user = User()
+        stub_admin_user.username = "admin"
+        stub_admin_user.role = UserRole.ADMIN.value
+
+        mock_user.return_value = stub_admin_user
+        # Act / Assert
+        with self.assertRaises(ProjectAdminServiceError):
+            ProjectAdminService.update_project(dto, mock_user.id)
+
+    @patch.object(User, "get_by_id")
+    @patch.object(Project, "update")
+    @patch.object(Project, "get")
+    def test_updating_a_project_with_different_roles_raises_error(
+        self, mock_project, mock_project2, mock_user
+    ):
+        # Arrange
+        stub_project = Project()
+        stub_project.status = ProjectStatus.DRAFT.value
+
+        mock_project.return_value = stub_project
+
+        locales = []
+        info = ProjectInfoDTO()
+        info.locale = "en"
+        info.name = "Test"
+        locales.append(info)
+
+        dto = ProjectDTO()
+        dto.project_id = 1
+        dto.default_locale = "en"
+        dto.project_status = ProjectStatus.DRAFT.name
+        dto.project_priority = ProjectPriority.LOW.name
+        dto.mapper_level = MappingLevel.BEGINNER.name
+        dto.mapping_types = ["ROADS"]
+        dto.mapping_editors = ["ID"]
+        dto.validation_editors = ["ID"]
+        dto.project_info_locales = locales
+
+        stub_user = User()
+        stub_user.username = "mapper"
+        stub_user.role = UserRole.MAPPER.value
+        mock_user.return_value = stub_user
+        # Act/Assert
+        with self.assertRaises(ValueError):
+            ProjectAdminService.update_project(dto, mock_user.id)
+
+    def test_updating_a_project_with_valid_project_info(self):
+
+        locales = []
+        info = ProjectInfoDTO()
+        info.locale = "en"
+        info.name = "Test"
+        info.description = "Test description"
+        info.short_description = "Test short description"
+        info.instructions = "Test instructions"
+        locales.append(info)
+
+        test_project, test_user = create_canned_project()
+
+        dto = ProjectDTO()
+        dto.project_id = test_project.id
+        dto.default_locale = "en"
+        dto.project_status = ProjectStatus.PUBLISHED.name
+        dto.project_priority = ProjectPriority.LOW.name
+        dto.mapper_level = MappingLevel.BEGINNER.name
+        dto.mapping_types = ["ROADS"]
+        dto.mapping_editors = ["ID"]
+        dto.validation_editors = ["ID"]
+        dto.project_info_locales = locales
+        # Act
+        updated_project = ProjectAdminService.update_project(dto, test_user.id)
+        # Assert
+        self.assertEqual(
+            updated_project.mapper_level, MappingLevel[dto.mapper_level.upper()].value
+        )
+        self.assertEqual(
+            updated_project.status, ProjectStatus[dto.project_status].value
+        )
+        self.assertEqual(
+            updated_project.priority, ProjectPriority[dto.project_priority].value
         )

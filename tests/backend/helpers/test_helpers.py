@@ -10,13 +10,20 @@ from backend.models.dtos.project_dto import (
     ProjectStatus,
     ProjectPriority,
 )
-from backend.models.postgis.project import Project
-from backend.models.postgis.statuses import TaskStatus
+from backend.models.postgis.project import Project, ProjectTeams
+from backend.models.postgis.statuses import MappingLevel, TaskStatus
 from backend.models.postgis.task import Task
+from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User
 from backend.models.postgis.organisation import Organisation
 
-TEST_USER_ID = 1234
+TEST_USER_ID = 777777
+TEST_USERNAME = "Thinkwhere Test"
+TEST_ORGANISATION_NAME = "Kathmandu Living Labs"
+TEST_ORGANISATION_SLUG = "KLL"
+TEST_ORGANISATION_ID = 23
+TEST_PROJECT_NAME = "Test"
+TEST_TEAM_NAME = "Test Team"
 
 
 def get_canned_osm_user_details():
@@ -89,9 +96,9 @@ def get_canned_simplified_osm_user_details():
 def return_canned_user() -> User:
     """Returns a canned user"""
     test_user = User()
-    test_user.username = "Thinkwhere TEST"
-    test_user.id = "777777"
-    test_user.mapping_level = 1
+    test_user.username = TEST_USERNAME
+    test_user.id = TEST_USER_ID
+    test_user.mapping_level = MappingLevel.BEGINNER.value
     test_user.email_address = None
 
     return test_user
@@ -121,12 +128,12 @@ def create_canned_project() -> Tuple[Project, User]:
     task_arbitrary_feature = geojson.loads(
         json.dumps(get_canned_json("splittable_task.json"))
     )
-    test_user = get_canned_user("Thinkwhere TEST")
+    test_user = get_canned_user(TEST_USERNAME)
     if test_user is None:
         test_user = create_canned_user()
 
     test_project_dto = DraftProjectDTO()
-    test_project_dto.project_name = "Test"
+    test_project_dto.project_name = TEST_PROJECT_NAME
     test_project_dto.user_id = test_user.id
     test_project_dto.area_of_interest = test_aoi_geojson
     test_project = Project()
@@ -174,9 +181,9 @@ def return_canned_draft_project_json():
 def return_canned_organisation():
     "Returns test organisation without writing to db"
     test_org = Organisation()
-    test_org.id = 23
-    test_org.name = "Kathmandu Living Labs"
-    test_org.slug = "KLL"
+    test_org.id = TEST_ORGANISATION_ID
+    test_org.name = TEST_ORGANISATION_NAME
+    test_org.slug = TEST_ORGANISATION_SLUG
 
     return test_org
 
@@ -187,6 +194,45 @@ def create_canned_organisation():
     test_org.create()
 
     return test_org
+
+
+def get_canned_organisation(org_name: str) -> Organisation:
+    organisation = Organisation.get_organisation_by_name(org_name)
+    return organisation
+
+
+def return_canned_team() -> Team:
+    """Returns test team without writing to db"""
+    test_team = Team()
+    test_team.name = TEST_TEAM_NAME
+    test_org = get_canned_organisation(TEST_ORGANISATION_NAME)
+    if test_org is None:
+        test_org = create_canned_organisation()
+    test_team.organisation = test_org
+    test_team.organisation_id = test_org.id
+
+    return test_team
+
+
+def create_canned_team() -> Team:
+    test_team = return_canned_team()
+    test_team.create()
+
+    return test_team
+
+
+def add_user_to_team(team: Team, user: User, role: int, is_active: bool) -> TeamMembers:
+    team_member = TeamMembers(team=team, member=user, function=role, active=is_active)
+    team_member.create()
+
+    return team_member
+
+
+def assign_team_to_project(project: Project, team: Team, role: int) -> ProjectTeams:
+    project_team = ProjectTeams(project=project, team=team, role=role)
+    project_team.create()
+
+    return project_team
 
 
 def update_project_with_info(test_project: Project) -> Project:
