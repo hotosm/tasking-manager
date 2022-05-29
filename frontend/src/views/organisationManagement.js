@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
-import { RectShape } from 'react-placeholder/lib/placeholders';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 
@@ -22,6 +21,7 @@ import { FormSubmitButton, CustomButton } from '../components/button';
 import { ChartLineIcon } from '../components/svgIcons';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { nCardPlaceholders } from '../components/teamsAndOrgs/organisationsPlaceholder';
 
 export function ListOrganisations() {
   useSetTitleTag('Manage organizations');
@@ -41,17 +41,10 @@ export function ListOrganisations() {
     }
   }, [userDetails, token, userOrgsOnly]);
 
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <RectShape className="bg-white dib mv2" style={{ width: 700, height: 250 }} />
-      <RectShape className="bg-white dib mv2" style={{ width: 700, height: 250 }} />
-    </div>
-  );
-
   return (
     <ReactPlaceholder
       showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
+      customPlaceholder={nCardPlaceholders(2)}
       delay={10}
       ready={organisations !== null}
     >
