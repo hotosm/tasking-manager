@@ -1,8 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
-import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
-import ReactPlaceholder from 'react-placeholder';
 import { Link, useNavigate } from '@reach/router';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
@@ -76,26 +74,14 @@ export const ListInterests = () => {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   // TO DO: filter teams of current user
   const [error, loading, interests] = useFetch(`interests/`);
-
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <div className="w-50-ns w-100 cf ph6-l ph4">
-        <TextBlock rows={1} className="bg-grey-light h3" />
-      </div>
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-    </div>
-  );
+  const isInterestsFetched = !loading && !error;
 
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={!error && !loading}
-    >
-      <InterestsManagement interests={interests.interests} userDetails={userDetails} />
-    </ReactPlaceholder>
+    <InterestsManagement
+      interests={interests.interests}
+      userDetails={userDetails}
+      isInterestsFetched={isInterestsFetched}
+    />
   );
 };
 
