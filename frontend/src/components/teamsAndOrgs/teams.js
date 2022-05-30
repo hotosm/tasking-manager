@@ -43,13 +43,20 @@ export function TeamsManagement({
       setUserOnly={setUserTeamsOnly}
       userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
     >
-      {teams.length ? (
-        teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)
-      ) : (
-        <div className="pb3 pt2">
-          <FormattedMessage {...messages.noTeams} />
-        </div>
-      )}
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        customPlaceholder={nCardPlaceholders(4)}
+        delay={10}
+        ready={teams !== null}
+      >
+        {teams?.length ? (
+          teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)
+        ) : (
+          <div className="pb3 pt2">
+            <FormattedMessage {...messages.noTeams} />
+          </div>
+        )}
+      </ReactPlaceholder>
     </Management>
   );
 }

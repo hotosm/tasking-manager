@@ -4,7 +4,7 @@ import { TextRow, TextBlock, RoundShape, RectShape } from 'react-placeholder/lib
 
 export const teamCardPlaceholderTemplate = () => (_n, i) =>
   (
-    <div className={`fl 'w-third-l' base-font w-50-m w-100 mb3 ph2 blue-dark mw5`} key={i}>
+    <div className={`fl 'w-third-l' base-font w-50-m w-100 mb3 pr3 blue-dark mw5`} key={i}>
       <div className="pv3 ph3 ba br1 b--grey-light shadow-hover bg-white">
         <TextRow className="show-loading-animation mb3" color="#CCC" />
         <RectShape

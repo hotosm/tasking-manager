@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from '@reach/router';
-import ReactPlaceholder from 'react-placeholder';
-import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 
@@ -63,32 +61,14 @@ export function ListTeams({ managementView = false }: Object) {
     }
   }, [userDetails, token, managementView, userTeamsOnly]);
 
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <div className="w-50-ns w-100 cf ph6-l ph4">
-        <TextBlock rows={1} className="bg-grey-light h3" />
-        <TextBlock rows={1} className="bg-grey-light h2 mt2" />
-      </div>
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-    </div>
-  );
-
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={teams !== null}
-    >
-      <TeamsManagement
-        teams={teams}
-        userDetails={userDetails}
-        managementView={managementView}
-        userTeamsOnly={userTeamsOnly}
-        setUserTeamsOnly={setUserTeamsOnly}
-      />
-    </ReactPlaceholder>
+    <TeamsManagement
+      teams={teams}
+      userDetails={userDetails}
+      managementView={managementView}
+      userTeamsOnly={userTeamsOnly}
+      setUserTeamsOnly={setUserTeamsOnly}
+    />
   );
 }
 
