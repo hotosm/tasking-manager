@@ -15,6 +15,7 @@ import { Management } from './management';
 import { InternalLinkIcon, ClipboardIcon } from '../svgIcons';
 import { Button } from '../button';
 import { UserAvatarList } from '../user/avatar';
+import { nCardPlaceholders } from './organisationsPlaceholder';
 
 export function OrgsManagement({
   organisations,
@@ -38,19 +39,26 @@ export function OrgsManagement({
       setUserOnly={setUserOrgsOnly}
       isAdmin={isAdmin}
     >
-      {isOrgManager ? (
-        organisations.length ? (
-          organisations.map((org, n) => <OrganisationCard details={org} key={n} />)
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        customPlaceholder={nCardPlaceholders(4)}
+        delay={10}
+        ready={organisations !== null}
+      >
+        {isOrgManager ? (
+          organisations?.length ? (
+            organisations.map((org, n) => <OrganisationCard details={org} key={n} />)
+          ) : (
+            <div className="pb5">
+              <FormattedMessage {...messages.noOrganisationsFound} />
+            </div>
+          )
         ) : (
-          <div className="pb5">
-            <FormattedMessage {...messages.noOrganisationsFound} />
+          <div>
+            <FormattedMessage {...messages.notAllowed} />
           </div>
-        )
-      ) : (
-        <div>
-          <FormattedMessage {...messages.notAllowed} />
-        </div>
-      )}
+        )}
+      </ReactPlaceholder>
     </Management>
   );
 }

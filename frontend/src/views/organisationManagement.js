@@ -42,20 +42,13 @@ export function ListOrganisations() {
   }, [userDetails, token, userOrgsOnly]);
 
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={nCardPlaceholders(2)}
-      delay={10}
-      ready={organisations !== null}
-    >
-      <OrgsManagement
-        organisations={organisations}
-        userOrgsOnly={userOrgsOnly}
-        setUserOrgsOnly={setUserOrgsOnly}
-        isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
-        isAdmin={userDetails.role === 'ADMIN'}
-      />
-    </ReactPlaceholder>
+    <OrgsManagement
+      organisations={organisations}
+      userOrgsOnly={userOrgsOnly}
+      setUserOrgsOnly={setUserOrgsOnly}
+      isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
+      isAdmin={userDetails.role === 'ADMIN'}
+    />
   );
 }
 
