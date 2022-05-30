@@ -48,6 +48,8 @@ export function ListTeams({ managementView = false }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [teams, setTeams] = useState(null);
   const [userTeamsOnly, setUserTeamsOnly] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
@@ -57,7 +59,13 @@ export function ListTeams({ managementView = false }: Object) {
       } else {
         queryParam = `?member=${userDetails.id}`;
       }
-      fetchLocalJSONAPI(`teams/${queryParam}`, token).then((res) => setTeams(res.teams));
+      setLoading(true);
+      fetchLocalJSONAPI(`teams/${queryParam}`, token)
+        .then((res) => {
+          setTeams(res.teams);
+          setLoading(false);
+        })
+        .catch((err) => setError(err));
     }
   }, [userDetails, token, managementView, userTeamsOnly]);
 
@@ -68,6 +76,7 @@ export function ListTeams({ managementView = false }: Object) {
       managementView={managementView}
       userTeamsOnly={userTeamsOnly}
       setUserTeamsOnly={setUserTeamsOnly}
+      isTeamsFetched={!loading && !error}
     />
   );
 }

@@ -23,6 +23,7 @@ export function OrgsManagement({
   isAdmin,
   userOrgsOnly,
   setUserOrgsOnly,
+  isOrganisationsFetched,
 }: Object) {
   return (
     <Management
@@ -43,7 +44,7 @@ export function OrgsManagement({
         showLoadingAnimation={true}
         customPlaceholder={nCardPlaceholders(4)}
         delay={10}
-        ready={organisations !== null}
+        ready={isOrganisationsFetched}
       >
         {isOrgManager ? (
           organisations?.length ? (

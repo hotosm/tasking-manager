@@ -19,6 +19,7 @@ export function TeamsManagement({
   managementView,
   userTeamsOnly,
   setUserTeamsOnly,
+  isTeamsFetched,
 }: Object) {
   const isOrgManager = useSelector(
     (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
@@ -47,7 +48,7 @@ export function TeamsManagement({
         showLoadingAnimation={true}
         customPlaceholder={nCardPlaceholders(4)}
         delay={10}
-        ready={teams !== null}
+        ready={isTeamsFetched}
       >
         {teams?.length ? (
           teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)

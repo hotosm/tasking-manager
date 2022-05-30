@@ -21,7 +21,6 @@ import { FormSubmitButton, CustomButton } from '../components/button';
 import { ChartLineIcon } from '../components/svgIcons';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { nCardPlaceholders } from '../components/teamsAndOrgs/organisationsPlaceholder';
 
 export function ListOrganisations() {
   useSetTitleTag('Manage organizations');
@@ -32,12 +31,19 @@ export function ListOrganisations() {
   );
   const [organisations, setOrganisations] = useState(null);
   const [userOrgsOnly, setUserOrgsOnly] = useState(userDetails.role === 'ADMIN' ? false : true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
+      setLoading(true);
       const queryParam = `${userOrgsOnly ? `?manager_user_id=${userDetails.id}` : ''}`;
-      fetchLocalJSONAPI(`organisations/${queryParam}`, token).then((orgs) =>
-        setOrganisations(orgs.organisations),
-      );
+      fetchLocalJSONAPI(`organisations/${queryParam}`, token)
+        .then((orgs) => {
+          setOrganisations(orgs.organisations);
+          setLoading(false);
+        })
+        .catch((err) => setError(err));
     }
   }, [userDetails, token, userOrgsOnly]);
 
@@ -48,6 +54,7 @@ export function ListOrganisations() {
       setUserOrgsOnly={setUserOrgsOnly}
       isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
       isAdmin={userDetails.role === 'ADMIN'}
+      isOrganisationsFetched={!loading && !error}
     />
   );
 }
