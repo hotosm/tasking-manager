@@ -11,6 +11,7 @@ import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
 import { SwitchToggle, RadioField, OrganisationSelectInput } from '../formInputs';
 import { Button, EditButton } from '../button';
+import { nCardPlaceholders } from './teamsPlaceholder';
 
 export function TeamsManagement({
   teams,
@@ -18,6 +19,7 @@ export function TeamsManagement({
   managementView,
   userTeamsOnly,
   setUserTeamsOnly,
+  isTeamsFetched,
 }: Object) {
   const isOrgManager = useSelector(
     (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
@@ -42,13 +44,20 @@ export function TeamsManagement({
       setUserOnly={setUserTeamsOnly}
       userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
     >
-      {teams.length ? (
-        teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)
-      ) : (
-        <div className="pb3 pt2">
-          <FormattedMessage {...messages.noTeams} />
-        </div>
-      )}
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        customPlaceholder={nCardPlaceholders(4)}
+        delay={10}
+        ready={isTeamsFetched}
+      >
+        {teams?.length ? (
+          teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)
+        ) : (
+          <div className="pb3 pt2">
+            <FormattedMessage {...messages.noTeams} />
+          </div>
+        )}
+      </ReactPlaceholder>
     </Management>
   );
 }
@@ -67,14 +76,7 @@ export function Teams({ teams, viewAllQuery, showAddButton = false, isReady, bor
         )}
         {viewAllQuery && <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />}
         <div className="cf pt4">
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            type="rect"
-            color="#f0efef"
-            style={{ width: 250, height: 300 }}
-            delay={10}
-            ready={isReady}
-          >
+          <ReactPlaceholder customPlaceholder={nCardPlaceholders(4)} delay={10} ready={isReady}>
             {teams && teams.slice(0, 6).map((team, n) => <TeamCard team={team} key={n} />)}
             {teams && teams.length === 0 && (
               <span className="blue-grey">

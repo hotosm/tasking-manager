@@ -2,11 +2,13 @@ import React from 'react';
 import { Link } from '@reach/router';
 import { Form, Field } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
+import ReactPlaceholder from 'react-placeholder';
 
 import messages from '../teamsAndOrgs/messages';
 import { Management } from '../teamsAndOrgs/management';
 import { CopyrightIcon } from '../svgIcons';
 import { Button } from '../button';
+import { nCardPlaceholders } from './licensesPlaceholder';
 
 export const LicenseCard = ({ license }) => {
   return (
@@ -25,7 +27,7 @@ export const LicenseCard = ({ license }) => {
   );
 };
 
-export const LicensesManagement = ({ licenses, userDetails }) => {
+export const LicensesManagement = ({ licenses, userDetails, isLicensesFetched }) => {
   return (
     <Management
       title={
@@ -37,13 +39,20 @@ export const LicensesManagement = ({ licenses, userDetails }) => {
       showAddButton={true}
       managementView
     >
-      {licenses.length ? (
-        licenses.map((i, n) => <LicenseCard key={n} license={i} />)
-      ) : (
-        <div className="pv3">
-          <FormattedMessage {...messages.noLicenses} />
-        </div>
-      )}
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        customPlaceholder={nCardPlaceholders(4)}
+        delay={10}
+        ready={isLicensesFetched}
+      >
+        {licenses?.length ? (
+          licenses.map((i, n) => <LicenseCard key={n} license={i} />)
+        ) : (
+          <div className="pv3">
+            <FormattedMessage {...messages.noLicenses} />
+          </div>
+        )}
+      </ReactPlaceholder>
     </Management>
   );
 };

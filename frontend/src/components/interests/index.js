@@ -2,11 +2,13 @@ import React from 'react';
 import { Link } from '@reach/router';
 import { Form, Field } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
+import ReactPlaceholder from 'react-placeholder';
 
 import messages from '../teamsAndOrgs/messages';
 import { Management } from '../teamsAndOrgs/management';
 import { HashtagIcon } from '../svgIcons';
 import { Button } from '../button';
+import { nCardPlaceholders } from '../teamsAndOrgs/campaignsPlaceholder';
 
 export const InterestCard = ({ interest }) => {
   return (
@@ -25,7 +27,7 @@ export const InterestCard = ({ interest }) => {
   );
 };
 
-export const InterestsManagement = ({ interests, userDetails }) => {
+export const InterestsManagement = ({ interests, _userDetails, isInterestsFetched }) => {
   return (
     <Management
       title={
@@ -37,13 +39,20 @@ export const InterestsManagement = ({ interests, userDetails }) => {
       showAddButton={true}
       managementView
     >
-      {interests.length ? (
-        interests.map((i, n) => <InterestCard interest={i} />)
-      ) : (
-        <div>
-          <FormattedMessage {...messages.noCategories} />
-        </div>
-      )}
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        customPlaceholder={nCardPlaceholders(4)}
+        delay={10}
+        ready={isInterestsFetched}
+      >
+        {interests?.length ? (
+          interests.map((i, n) => <InterestCard key={n} interest={i} />)
+        ) : (
+          <div>
+            <FormattedMessage {...messages.noCategories} />
+          </div>
+        )}
+      </ReactPlaceholder>
     </Management>
   );
 };
