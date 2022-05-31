@@ -6,6 +6,7 @@ import ReactPlaceholder from 'react-placeholder';
 import messages from './messages';
 import { ProjectCard } from '../projectCard/projectCard';
 import { AddButton, ViewAllLink } from './management';
+import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
 
 export function Projects({
   projects,
@@ -29,12 +30,10 @@ export function Projects({
         <ViewAllLink link={viewAllEndpoint} />
         <div className="cf pt4">
           <ReactPlaceholder
+            customPlaceholder={nCardPlaceholders(4, 'w-third-l')}
             showLoadingAnimation={true}
-            type="rect"
-            color="#f0efef"
-            style={{ width: 250, height: 300 }}
             delay={10}
-            ready={projects && projects.results}
+            ready={projects?.results}
           >
             {projects &&
               projects.results &&

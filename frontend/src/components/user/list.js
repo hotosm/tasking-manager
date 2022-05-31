@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
+import ReactPlaceholder from 'react-placeholder';
 
 import messages from './messages';
 import { UserAvatar } from './avatar';
@@ -10,6 +11,7 @@ import { SearchIcon, CloseIcon } from '../svgIcons';
 import { Dropdown } from '../dropdown';
 import { SettingsIcon, CheckIcon } from '../svgIcons';
 import Popup from 'reactjs-popup';
+import { nCardPlaceholders } from './usersPlaceholder';
 
 const UserFilter = ({ filters, setFilters, updateFilters, intl }) => {
   const inputRef = useRef(null);
@@ -146,12 +148,19 @@ export const UsersTable = ({ filters, setFilters }) => {
   const [response, setResponse] = useState(null);
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const [status, setStatus] = useState({ status: null, message: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUsers = async (filters) => {
+      setLoading(true);
       const url = `users/?${filters}`;
-      const res = await fetchLocalJSONAPI(url, token);
-      setResponse(res);
+      fetchLocalJSONAPI(url, token)
+        .then((res) => {
+          setResponse(res);
+          setLoading(false);
+        })
+        .catch((err) => setError(err));
     };
 
     // Filter elements according to logic.
@@ -176,27 +185,35 @@ export const UsersTable = ({ filters, setFilters }) => {
     fetchUsers(urlFilters);
   }, [filters, token, status]);
 
-  if (response === null) {
-    return null;
-  }
-
   return (
     <div className="w-100">
-      <p className="f6 mt0">
-        <FormattedMessage {...messages.totalUsers} values={{ total: response.pagination.total }} />
-      </p>
+      {response?.users && (
+        <p className="f6 mt0">
+          <FormattedMessage
+            {...messages.totalUsers}
+            values={{ total: response.pagination.total }}
+          />
+        </p>
+      )}
       <div className="w-100 f5">
-        <ul className="list pa0 ma0">
-          {response.users.map((user) => (
-            <UserListCard
-              user={user}
-              key={user.id}
-              token={token}
-              username={userDetails.username}
-              setStatus={setStatus}
-            />
-          ))}
-        </ul>
+        <ReactPlaceholder
+          showLoadingAnimation={true}
+          customPlaceholder={nCardPlaceholders(4)}
+          delay={10}
+          ready={!loading && !error}
+        >
+          <ul className="list pa0 ma0">
+            {response?.users.map((user) => (
+              <UserListCard
+                user={user}
+                key={user.id}
+                token={token}
+                username={userDetails.username}
+                setStatus={setStatus}
+              />
+            ))}
+          </ul>
+        </ReactPlaceholder>
         {response === null || response.pagination.total === 0 ? null : (
           <PaginatorLine
             activePage={filters.page}
