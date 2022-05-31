@@ -1,9 +1,10 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
+import '@testing-library/jest-dom';
+import { render, screen } from '@testing-library/react';
 import { FormattedMessage } from 'react-intl';
-
-import { createComponentWithIntl } from '../../../utils/testWithIntl';
-import { TeamBox, TeamsBoxList } from '../teams';
+import { createComponentWithIntl, ReduxIntlProviders } from '../../../utils/testWithIntl';
+import { TeamBox, TeamsBoxList, TeamsManagement } from '../teams';
 
 describe('test TeamBox', () => {
   const element = TestRenderer.create(
@@ -96,5 +97,109 @@ describe('test TeamBoxList without mapping and validation teams', () => {
         .findAllByType(TeamBox)
         .toThrow(new Error('No instances found with node type: "TeamBox"')),
     );
+  });
+});
+
+describe('TeamsManagement component', () => {
+  it('renders loading placeholder when API is being fetched', async () => {
+    const { container, getByRole } = render(
+      <ReduxIntlProviders>
+        <TeamsManagement
+          userDetails={{ role: 'ADMIN' }}
+          managementView={true}
+          isTeamsFetched={false}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(
+      getByRole('button', {
+        name: /new/i,
+      }),
+    ).toBeInTheDocument();
+    expect(container.querySelectorAll('button')).toHaveLength(3);
+    expect(container.getElementsByClassName('show-loading-animation mb3')).toHaveLength(4);
+  });
+
+  it('does not render loading placeholder after API is fetched', () => {
+    const { container } = render(
+      <ReduxIntlProviders>
+        <TeamsManagement
+          userDetails={{ role: 'ADMIN' }}
+          managementView={true}
+          isTeamsFetched={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(container.getElementsByClassName('show-loading-animation mb3')).toHaveLength(0);
+  });
+
+  it("should not render 'Manage teams' but render 'My teams' text for non management view", () => {
+    render(
+      <ReduxIntlProviders>
+        <TeamsManagement
+          userDetails={{ role: 'ADMIN' }}
+          managementView={true}
+          isTeamsFetched={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(
+      screen.getByRole('heading', {
+        name: /manage teams/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', {
+        name: /my teams/i,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders teams list card after API is fetched', async () => {
+    const dummyTeams = [
+      {
+        teamId: 3,
+        name: 'My Best Team',
+        role: 'PROJECT_MANAGER',
+        members: [
+          {
+            username: 'ram',
+            function: 'MEMBER',
+            active: true,
+            pictureUrl: null,
+          },
+        ],
+      },
+    ];
+    const { container, getByText } = render(
+      <ReduxIntlProviders>
+        <TeamsManagement
+          teams={dummyTeams}
+          userDetails={{ role: 'ADMIN' }}
+          managementView={true}
+          isTeamsFetched={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(container.querySelectorAll('h3')[0].textContent).toBe('Manage Teams');
+    expect(container.querySelectorAll('article').length).toBe(1);
+    expect(getByText('My Best Team')).toBeInTheDocument();
+    expect(getByText('Managers')).toBeInTheDocument();
+    expect(getByText('Team members')).toBeInTheDocument();
+    expect(getByText('My Best Team').closest('a').href).toContain('/manage/teams/3/');
+  });
+
+  it('renders relevant text if user is not a member of any team', async () => {
+    render(
+      <ReduxIntlProviders>
+        <TeamsManagement
+          teams={[]}
+          userDetails={{ role: 'ADMIN' }}
+          managementView={true}
+          isTeamsFetched={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText(/you are not a member of a team yet\./i)).toBeInTheDocument();
   });
 });
