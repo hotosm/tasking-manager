@@ -1,4 +1,5 @@
 import json
+import locale
 import re
 from typing import Optional
 from cachetools import TTLCache, cached
@@ -363,7 +364,8 @@ class Project(db.Model):
         """Updates project from DTO"""
         self.status = ProjectStatus[project_dto.project_status].value
         self.priority = ProjectPriority[project_dto.project_priority].value
-        if self.default_locale != project_dto.default_locale:
+        locales = [i.locale for i in project_dto.project_info_locales]
+        if project_dto.default_locale not in locales:
             new_locale_dto = ProjectInfoDTO()
             new_locale_dto.locale = project_dto.default_locale
             project_dto.project_info_locales.append(new_locale_dto)
