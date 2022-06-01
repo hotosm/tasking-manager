@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Link, navigate } from '@reach/router';
 import Popup from 'reactjs-popup';
@@ -179,10 +179,10 @@ class Header extends React.Component {
 
     return (
       <div className="v-mid">
-        {filteredMenuItems.map((item, n) => (
-          <>
+        {filteredMenuItems.map((item) => (
+          <Fragment key={item.label.id}>
             {!item.serviceDesk ? (
-              <TopNavLink to={item.link} key={n} isActive={this.isActive}>
+              <TopNavLink to={item.link} isActive={this.isActive}>
                 <FormattedMessage {...item.label} />
               </TopNavLink>
             ) : (
@@ -196,7 +196,7 @@ class Header extends React.Component {
                 <ExternalLinkIcon className="pl2 v-cen" style={{ height: '15px' }} />
               </a>
             )}
-          </>
+          </Fragment>
         ))}
       </div>
     );

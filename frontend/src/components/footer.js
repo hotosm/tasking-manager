@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
@@ -48,11 +48,10 @@ export function Footer({ location }: Object) {
             <FormattedMessage {...messages.definition} />
           </div>
           <div className="pt2 mb2 w-50-l w-100 tl tr-l fr">
-            {getMenuItensForUser(userDetails).map((item, n) => (
-              <>
+            {getMenuItensForUser(userDetails).map((item) => (
+              <Fragment key={item.label.id}>
                 {!item.serviceDesk ? (
                   <Link
-                    key={n}
                     to={item.link}
                     className="link barlow-condensed white f5 ttu di-l dib pt3 pt3-m ml4-l w-100 w-auto-l"
                   >
@@ -69,7 +68,7 @@ export function Footer({ location }: Object) {
                     <ExternalLinkIcon className="pl2 v-cen" style={{ height: '11px' }} />
                   </a>
                 )}
-              </>
+              </Fragment>
             ))}
             <p className="pt5-l pt4 pb3">
               {socialNetworks
