@@ -1,5 +1,4 @@
 import json
-import locale
 import re
 from typing import Optional
 from cachetools import TTLCache, cached
