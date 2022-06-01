@@ -23,7 +23,7 @@ export const PermissionsBlock = ({ permissions, type }: Object) => {
         )}
       </p>
       {permissions.map((permission) => (
-        <label className="db pv2" key={permission}>
+        <label className="db pv2" key={permission.label.props.id}>
           <input
             value={permission.value}
             checked={projectInfo[type] === permission.value}

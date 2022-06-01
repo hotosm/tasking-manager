@@ -4,6 +4,7 @@ import { TextRow, RoundShape } from 'react-placeholder/lib/placeholders';
 export const userCardPlaceholderTemplate = () => (_n, i) =>
   (
     <div
+      key={i}
       className={`bg-white cf flex items-center pa3 ba mb1 b--grey-light blue-dark shadow-hover`}
     >
       <div className="w-50-ns w-100 fl flex items-center">
