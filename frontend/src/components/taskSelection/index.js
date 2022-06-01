@@ -94,7 +94,7 @@ export function TaskSelection({ project, type, loading }: Object) {
   }, []);
 
   useEffect(() => {
-    const { lastLockedTasksIds, lastLockedProjectId } = location.state;
+    const { lastLockedTasksIds, lastLockedProjectId } = location.state || {};
     if (lastLockedTasksIds && lastLockedProjectId === project.projectId) {
       setZoomedTaskId(lastLockedTasksIds);
     }
