@@ -66,37 +66,6 @@ class TestProject(BaseTestCase):
         self.assertEqual(self.test_project.default_locale, "en")
         self.assertEqual(self.test_project.project_info[0].name, "Thinkwhere Test")
 
-    def test_partial_translation_uses_default_trans_for_empty_fields(self):
-        self.test_project, self.test_user = create_canned_project()
-        # Arrange
-        self.test_project = update_project_with_info(self.test_project)
-
-        locales = []
-        test_info = ProjectInfoDTO()
-        test_info.locale = "it"
-        locales.append(test_info)
-
-        test_dto = ProjectDTO()
-        test_dto.project_status = ProjectStatus.PUBLISHED.name
-        test_dto.project_priority = ProjectPriority.MEDIUM.name
-        test_dto.default_locale = "en"
-        test_dto.project_info_locales = locales
-        test_dto.mapper_level = "BEGINNER"
-        test_dto.mapping_types = ["ROADS"]
-        test_dto.mapping_editors = ["JOSM", "ID"]
-        test_dto.validation_editors = ["JOSM"]
-
-        # Act - Create empty italian translation
-        self.test_project.update(test_dto)
-        dto = self.test_project.as_dto_for_mapping(locale="it")
-
-        # Assert
-        self.assertEqual(
-            dto.project_info["name"],
-            "Thinkwhere Test",
-            "English translation should be returned as Italian name was not provided",
-        )
-
     def test_project_update_updates_changed_fields(self):
         self.test_project, self.test_user = create_canned_project()
         # Arrange

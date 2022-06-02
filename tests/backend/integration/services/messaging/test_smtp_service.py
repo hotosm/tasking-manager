@@ -1,11 +1,24 @@
 import os
 from urllib.parse import urlparse, parse_qs
+from unittest.mock import patch
 
 from backend.services.messaging.smtp_service import SMTPService
 from tests.backend.base import BaseTestCase
 
 
-class TestStatsService(BaseTestCase):
+class TestSMTPService(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.to_address = "hot-test@mailinator.com"
+        self.to_username = "Iain Hunter"
+        self.from_username = "Aadesh Baral"
+        self.message_id = 1
+        self.project_id = 1
+        self.task_id = 1
+        self.subject = "test subject"
+        self.content = "test content"
+        self.message_type = "test"
+
     def test_send_verification_mail(self):
 
         if os.getenv("TM_SMTP_HOST") is None:
@@ -30,29 +43,69 @@ class TestStatsService(BaseTestCase):
             return  # If SMTP not setup there's no value attempting the integration tests
 
         for x in range(0, 50):
-            self.assertTrue(
-                SMTPService.send_email_alert(
-                    "hot-test@mailinator.com", "Iain Hunter", True
-                )
+            sent_alert = SMTPService.send_email_alert(
+                to_address=self.to_address,
+                username=self.to_username,
+                user_email_verified=True,
+                message_id=self.message_id,
+                from_username=self.from_username,
+                project_id=self.project_id,
+                task_id=self.task_id,
+                subject=self.subject,
+                content=self.content,
+                message_type=self.message_type,
             )
+            self.assertTrue(sent_alert)
 
     def test_alert_not_sent_if_email_not_supplied(self):
-        self.assertFalse(SMTPService.send_email_alert("", "Iain Hunter", True))
+        sent_alert = SMTPService.send_email_alert(
+            to_address="",
+            username=self.to_username,
+            user_email_verified=True,
+            message_id=self.message_id,
+            from_username=self.from_username,
+            project_id=self.project_id,
+            task_id=self.task_id,
+            subject=self.subject,
+            content=self.content,
+            message_type=self.message_type,
+        )
+        self.assertFalse(sent_alert)
 
     def test_does_not_send_if_user_not_verified(self):
-        self.assertFalse(
-            SMTPService.send_email_alert(
-                "hot-test@mailinator.com", "Iain Hunter", False
-            )
+        sent_alert = SMTPService.send_email_alert(
+            to_address=self.to_address,
+            username=self.to_username,
+            user_email_verified=False,
+            message_id=self.message_id,
+            from_username=self.from_username,
+            project_id=self.project_id,
+            task_id=self.task_id,
+            subject=self.subject,
+            content=self.content,
+            message_type=self.message_type,
         )
+        self.assertFalse(sent_alert)
 
-    def test_does_send_if_user_verified(self):
-        self.assertTrue(
-            SMTPService.send_email_alert("hot-test@mailinator.com", "Iain Hunter", True)
+    @patch.object(SMTPService, "_send_message")
+    def test_does_send_if_user_verified(self, mock_send_message):
+        # Arrange
+        mock_send_message.side_effect = None
+        # Act
+        sent_alert = SMTPService.send_email_alert(
+            to_address=self.to_address,
+            username=self.to_username,
+            user_email_verified=True,
+            message_id=self.message_id,
+            from_username=self.from_username,
+            project_id=self.project_id,
+            task_id=self.task_id,
+            subject=self.subject,
+            content=self.content,
+            message_type=self.message_type,
         )
-        self.assertFalse(
-            SMTPService.send_email_alert("", "Iain Hunter", 1, "test", "testing")
-        )
+        # Assert
+        self.assertTrue(sent_alert)
 
     def test_email_verification_url_generated_correctly(self):
         # Arrange

@@ -13,11 +13,11 @@ from tests.backend.helpers.test_helpers import create_canned_user, return_canned
 class TestUserService(BaseTestCase):
     def test_get_user_by_id_returns_user(self):
         # Arrange
-        create_canned_user()
+        test_user = create_canned_user()
         # Act
         user = UserService.get_user_by_id(777777)
         # Assert
-        self.assertEqual(user.username, "Thinkwhere TEST")
+        self.assertEqual(user.username, test_user.username)
 
     def test_get_user_by_id_raises_error_if_user_not_found(self):
         # Act/Assert
@@ -26,9 +26,9 @@ class TestUserService(BaseTestCase):
 
     def test_get_user_by_username_returns_user(self):
         # Arrange
-        create_canned_user()
+        test_user = create_canned_user()
         # Act
-        user = UserService.get_user_by_username("Thinkwhere TEST")
+        user = UserService.get_user_by_username(test_user.username)
         # Assert
         self.assertEqual(user.id, 777777)
 

@@ -25,9 +25,9 @@ class TestSplitService(BaseTestCase):
     def test_split_geom_returns_split_geometries(self):
 
         # arrange
-        x = 2021
-        y = 2798
-        zoom = 12
+        x = 1010
+        y = 1399
+        zoom = 11
         task_stub = Task()
         task_stub.is_square = True
 
@@ -35,7 +35,6 @@ class TestSplitService(BaseTestCase):
 
         # act
         result = SplitService._create_split_tasks(x, y, zoom, task_stub)
-
         # assert
         self.assertEqual(str(expected), str(result))
 
@@ -119,5 +118,4 @@ class TestSplitService(BaseTestCase):
             json.dumps(get_canned_json("non_square_split_results.json"))
         )
         result = SplitService._create_split_tasks(task.x, task.y, task.zoom, task)
-
         self.assertEqual(str(expected), str(result))
