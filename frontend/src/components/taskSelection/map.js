@@ -116,9 +116,9 @@ export const TasksMap = ({
           { type: 'MultiPolygon', coordinates: [] },
         );
 
+        const screenWidth = window.innerWidth;
         map.fitBounds(bbox(lastLockedTasksGeom), {
-          padding: 250,
-          maxZoom: 22,
+          padding: screenWidth / 8,
           animate: false,
         });
       } else if (!taskBordersOnly) {
