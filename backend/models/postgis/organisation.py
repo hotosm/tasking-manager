@@ -57,6 +57,9 @@ class Organisation(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def save(self):
+        db.session.commit()
+
     @classmethod
     def create_from_dto(cls, new_organisation_dto: NewOrganisationDTO):
         """ Creates a new organisation from a DTO """

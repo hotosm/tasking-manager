@@ -38,21 +38,32 @@ class TestProjectService(BaseTestCase):
         # Act / Assert
         self.assertTrue(ProjectService._is_user_intermediate_or_advanced(1))
 
+    @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
+    @patch.object(UserService, "is_user_blocked")
     @patch.object(Task, "get_locked_tasks_for_user")
     @patch.object(Project, "get")
     def test_user_not_permitted_to_map_if_already_locked_tasks(
-        self, mock_project, mock_user_tasks
+        self,
+        mock_project,
+        mock_user_tasks,
+        mock_user_blocked,
+        mock_user_action_permitted,
     ):
         # Arrange
-        mock_project.return_value = Project()
-        mock_user_tasks.return_value = LockedTasksForUser()
-        mock_user_tasks.return_value.lockedTasks = [1]
+        stub_project = Project()
+        stub_project.status = ProjectStatus.PUBLISHED.value
+        mock_user_blocked.return_value = False
+        mock_user_action_permitted.return_value = True
+        mock_project.return_value = stub_project
+        stub_task = LockedTasksForUser()
+        stub_task.locked_tasks = [1]
+        mock_user_tasks.return_value = stub_task
 
         # Act
         allowed, reason = ProjectService.is_user_permitted_to_map(1, 1)
-
         # Assert
         self.assertFalse(allowed)
+        self.assertEqual(MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED, reason)
 
     @patch.object(UserService, "is_user_blocked")
     @patch.object(ProjectAdminService, "is_user_action_permitted_on_project")
