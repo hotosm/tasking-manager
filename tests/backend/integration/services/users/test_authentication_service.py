@@ -1,11 +1,14 @@
 from unittest.mock import patch
 import base64
 from urllib.parse import parse_qs, urlparse
+from itsdangerous import URLSafeTimedSerializer
+from flask import current_app
 
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     get_canned_osm_user_details,
     return_canned_user,
+    TEST_USERNAME,
 )
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.authentication_service import (
@@ -16,6 +19,8 @@ from backend.services.users.authentication_service import (
     verify_token,
     AuthServiceError,
 )
+
+TEST_USER_EMAIL = "thinkwheretest@test.com"
 
 
 class TestAuthenticationService(BaseTestCase):
@@ -52,9 +57,7 @@ class TestAuthenticationService(BaseTestCase):
         AuthenticationService.login_user(osm_response, None)
 
         # Assert
-        mock_user_register.assert_called_with(
-            7777777, "Thinkwhere Test", 16, None, None
-        )
+        mock_user_register.assert_called_with(7777777, TEST_USERNAME, 16, None, None)
 
     @patch.object(MessageService, "send_welcome_message")
     @patch.object(UserService, "register_user")
@@ -110,14 +113,14 @@ class TestAuthenticationService(BaseTestCase):
         # Arrange
         mock_user_get.side_effect = NotFound
         email_auth_url = SMTPService._generate_email_verification_url(
-            "thinkwheretest@test.com", "Thinkwhere Test"
+            TEST_USER_EMAIL, TEST_USERNAME
         )
         parsed_url = urlparse(email_auth_url)
         token = parse_qs(parsed_url.query)["token"][0]
         # Act/Assert
         with self.assertRaises(AuthServiceError):
             AuthenticationService().authenticate_email_token(
-                username="Thinkwhere Test",
+                username=TEST_USERNAME,
                 token=token,
             )
 
@@ -125,7 +128,7 @@ class TestAuthenticationService(BaseTestCase):
         # Act/Assert
         with self.assertRaises(AuthServiceError):
             AuthenticationService().authenticate_email_token(
-                username="Thinkwhere Test",
+                username=TEST_USERNAME,
                 # Invalid Token
                 token="XnRoaW5rd2hlcmV0ZXN0QHRlc3QuY29tIg.YnIWEw.9yg8kxVJXDD6dxxIktYGgnCrZNE",
             )
@@ -134,15 +137,16 @@ class TestAuthenticationService(BaseTestCase):
     def test_authenticate_email_token_returns_email_validated_url(self, mock_user_get):
         # Arrange
         mock_user_get.return_value = return_canned_user()
-        mock_user_get.return_value.email_address = "thinkwheretest@test.com"
+        mock_user_get.return_value.email_address = TEST_USER_EMAIL
+        entropy = current_app.secret_key if current_app.secret_key else "un1testingmode"
+
+        serializer = URLSafeTimedSerializer(entropy)
 
         # Act/Assert
         self.assertIsNotNone(
             AuthenticationService().authenticate_email_token(
-                username="Thinkwhere Test",
-                token=AuthenticationService.generate_session_token_for_user(
-                    "thinkwheretest@test.com"
-                ),
+                username=TEST_USERNAME,
+                token=serializer.dumps(TEST_USER_EMAIL),
             )
         )
 
@@ -153,12 +157,14 @@ class TestAuthenticationService(BaseTestCase):
         # Arrange
         mock_user_get.return_value = return_canned_user()
         mock_user_get.return_value.email_address = "thinkwheretest2@test.com"
+        entropy = current_app.secret_key if current_app.secret_key else "un1testingmode"
+
+        serializer = URLSafeTimedSerializer(entropy)
 
         # Act/Assert
         with self.assertRaises(AuthServiceError):
+
             AuthenticationService().authenticate_email_token(
-                username="Thinkwhere Test",
-                token=AuthenticationService.generate_session_token_for_user(
-                    "thinkwheretest@test.com"
-                ),
+                username=TEST_USERNAME,
+                token=serializer.dumps(TEST_USER_EMAIL),
             )
