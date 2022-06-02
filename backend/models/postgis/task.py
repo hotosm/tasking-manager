@@ -73,7 +73,9 @@ class TaskInvalidationHistory(db.Model):
         ),
         db.Index("idx_task_validation_history_composite", "task_id", "project_id"),
         db.Index(
-            "idx_task_validation_mapper_status_composite", "invalidator_id", "is_closed"
+            "idx_task_validation_validator_status_composite",
+            "invalidator_id",
+            "is_closed",
         ),
         db.Index(
             "idx_task_validation_mapper_status_composite", "mapper_id", "is_closed"
