@@ -247,7 +247,7 @@ class ProjectService:
         if is_allowed_user or is_manager_permission or is_team_member:
             return project.as_dto_for_mapping(current_user_id, locale, abbrev)
         else:
-            raise ProjectServiceError("ProjectNotFetched- Unable to fetch project")
+            return None
 
     @staticmethod
     def get_project_tasks(
