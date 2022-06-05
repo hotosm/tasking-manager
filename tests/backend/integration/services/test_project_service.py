@@ -75,7 +75,7 @@ class TestProjectService(BaseTestCase):
         )
         # Assert
         self.assertIsNotNone(project_dto)
-        
+
     @patch.object(TeamService, "check_team_membership")
     def test_get_project_dto_for_mapper_returns_private_project_dto_for_project_team_member(
         self, mock_is_team_member
@@ -90,4 +90,3 @@ class TestProjectService(BaseTestCase):
         )
         # Assert
         self.assertIsNotNone(project_dto)
-    
