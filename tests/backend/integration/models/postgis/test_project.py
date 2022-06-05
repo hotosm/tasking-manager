@@ -113,3 +113,16 @@ class TestProject(BaseTestCase):
         # Assert
         self.assertIsNotNone(draft_project.geometry)
         self.assertIsNotNone(draft_project.centroid)
+
+    def test_as_dto_for_mapping(self):
+        # Arrange
+        test_project, project_author = create_canned_project()
+        # Act
+        test_project_dto = test_project.as_dto_for_mapping(project_author.id)
+
+        self.assertEqual(
+            test_project.status, ProjectStatus[test_project_dto.project_status].value
+        )
+        self.assertEqual(
+            test_project.project_info[0].name, test_project_dto.project_info.name
+        )
