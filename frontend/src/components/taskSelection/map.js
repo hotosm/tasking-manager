@@ -129,6 +129,9 @@ export const TasksMap = ({
     };
 
     const mapboxLayerDefn = () => {
+      map.once('load', () => {
+        map.resize();
+      });
       if (map.getSource('tasks') === undefined) {
         map.addImage('lock', lockIcon, { width: 17, height: 20, data: lockIcon });
         map.addImage('redlock', redlockIcon, { width: 30, height: 30, data: redlockIcon });
