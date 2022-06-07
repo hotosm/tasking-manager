@@ -79,8 +79,10 @@ class UserDTO(Model):
     tasks_comments_notifications = BooleanType(
         serialized_name="taskCommentsNotifications"
     )
-    teams_notifications = BooleanType(serialized_name="teamsNotifications")
-
+    teams_announcement_notifications = BooleanType(
+        serialized_name="teamsAnnouncementNotifications"
+    )
+    team_join_notifications = BooleanType(serialized_name="teamJoinNotifications")
     # these are read only
     gender = StringType(
         serialized_name="gender",

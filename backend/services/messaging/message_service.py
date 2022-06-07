@@ -159,8 +159,14 @@ class MessageService:
             ):
                 continue
             if (
-                user.teams_notifications is False
+                user.teams_announcement_notifications is False
                 and obj.message_type == MessageType.TEAM_BROADCAST.value
+            ):
+                messages_objs.append(obj)
+                continue
+            if (
+                user.team_join_notification is False
+                and obj.message_type == MessageType.REQUEST_TEAM_NOTIFICATION.value
             ):
                 messages_objs.append(obj)
                 continue

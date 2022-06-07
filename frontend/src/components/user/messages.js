@@ -138,6 +138,14 @@ export default defineMessages({
     id: 'user.notifications.teams.description',
     defaultMessage: 'Receive emails with announcements sent by team managers.',
   },
+  teamJoinRequests: {
+    id: 'user.notifications.teamJoinRequests',
+    defaultMessage: 'Team join requests',
+  },
+  teamJoinRequestsDescription: {
+    id: 'user.notifications.teamJoinRequests.description',
+    defaultMessage: 'You get a notification when a user requests to join the team you manage.',
+  },
   projectUpdates: {
     id: 'user.notifications.projects',
     defaultMessage: 'Project updates',
