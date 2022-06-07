@@ -45,7 +45,6 @@
     "marked": "^4.0.12",
     "osmtogeojson": "^3.0.0-beta.3",
     "query-string": "^7.0.1",
-    "RapiD": "facebookincubator/rapid#rapid-v1.1.8_tm",
     "react": "^17.0.2",
     "react-accessible-accordion": "^3.3.4",
     "react-calendar-heatmap": "^1.8.1",
