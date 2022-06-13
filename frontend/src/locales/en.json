@@ -63,6 +63,7 @@
   "deleteModal.title.campaigns": "Are you sure you want to delete this campaign?",
   "deleteModal.title.notifications": "Are you sure you want to delete this notification?",
   "deleteModal.title.teams": "Are you sure you want to delete this team?",
+  "deleteModal.error.OrgHasProjectsError": "Organisation has some projects. Please delete them first.",
   "header.nav.projects": "Explore projects",
   "header.nav.learn": "Learn",
   "header.nav.aboutLink": "About",

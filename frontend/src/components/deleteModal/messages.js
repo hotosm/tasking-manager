@@ -80,4 +80,8 @@ export default defineMessages({
     id: 'deleteModal.title.teams',
     defaultMessage: 'Are you sure you want to delete this team?',
   },
+  OrgHasProjectsError: {
+    id: 'deleteModal.error.OrgHasProjectsError',
+    defaultMessage: 'Organisation has some projects. Please delete them first.',
+  },
 });

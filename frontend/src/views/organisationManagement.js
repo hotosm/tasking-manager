@@ -142,7 +142,7 @@ export function EditOrganisation(props) {
   const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?organisationId=${props.id}&omitMapResults=true`,
+    `projects/?organisationId=${props.id}&omitMapResults=true&projectStatuses=PUBLISHED,DRAFT,ARCHIVED`,
     props.id,
   );
   useSetTitleTag(`Edit ${organisation.name}`);

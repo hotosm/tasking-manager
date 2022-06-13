@@ -92,7 +92,9 @@ export function DeleteModal({ id, name, type, className }: Object) {
                 )}
               </h3>
             )}
-            {deleteStatus === 'failure' && <p>{error}</p>}
+            {deleteStatus === 'failure' && (
+              <p>{(error && <FormattedMessage {...messages[`${error}Error`]} />) || error}</p>
+            )}
           </div>
         </div>
       )}
