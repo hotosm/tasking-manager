@@ -33,10 +33,6 @@ export function DeleteModal({ id, name, type, className }: Object) {
       });
   };
 
-  const errorMessageMap = {
-    OrgHasProjects: <FormattedMessage {...messages.orgHasProjectsError} />,
-  };
-
   return (
     <Popup
       trigger={<DeleteButton className={`${className || ''} dib ml3`} />}
@@ -96,7 +92,9 @@ export function DeleteModal({ id, name, type, className }: Object) {
                 )}
               </h3>
             )}
-            {deleteStatus === 'failure' && <p>{errorMessageMap[error] || error}</p>}
+            {deleteStatus === 'failure' && (
+              <p>{(error && <FormattedMessage {...messages[`${error}Error`]} />) || error}</p>
+            )}
           </div>
         </div>
       )}
