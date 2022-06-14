@@ -127,6 +127,16 @@ export default function ProjectEdit({ id }) {
       missingFields.push({ locale: null, fields: nonLocaleMissingFields });
     }
 
+    const doesMappingTeamNotExist =
+      ['TEAMS', 'TEAMS_LEVEL'].includes(projectInfo.mappingPermission) &&
+      projectInfo.teams.filter((team) => team.role === 'MAPPER').length === 0;
+    const doesValidationTeamNotExist =
+      ['TEAMS', 'TEAMS_LEVEL'].includes(projectInfo.validationPermission) &&
+      projectInfo.teams.filter((team) => team.role === 'VALIDATOR').length === 0;
+    if (doesMappingTeamNotExist || doesValidationTeamNotExist) {
+      missingFields.push({ type: 'noTeamsAssigned' });
+    }
+
     if (missingFields.length > 0) {
       setError(missingFields);
       return new Promise((resolve, reject) => reject());
@@ -250,7 +260,9 @@ export default function ProjectEdit({ id }) {
             <FormattedMessage {...messages.save} />
           </Button>
           <div style={{ minHeight: '3rem' }}>
-            {(error || success) && <SaveStatus error={error} success={success} />}
+            {(error || success) && (
+              <SaveStatus error={error} success={success} projectInfo={projectInfo} />
+            )}
           </div>
           <span className="db">
             <Dropdown
@@ -302,7 +314,24 @@ export default function ProjectEdit({ id }) {
   );
 }
 
-const ErrorTitle = ({ locale, numberOfMissingFields }) => {
+const ErrorTitle = ({ locale, numberOfMissingFields, type, projectInfo }) => {
+  if (type === 'noTeamsAssigned') {
+    // message if mapping or validation permissions is set to team only but no team has been added
+    const { mappingPermission, validationPermission, teams } = projectInfo;
+    const doesMappingTeamNotExist =
+      ['TEAMS', 'TEAMS_LEVEL'].includes(mappingPermission) &&
+      teams.filter((team) => team.role === 'MAPPER').length === 0;
+    const doesValidationTeamNotExist =
+      ['TEAMS', 'TEAMS_LEVEL'].includes(validationPermission) &&
+      teams.filter((team) => team.role === 'VALIDATOR').length === 0;
+
+    return (
+      <FormattedMessage
+        {...messages.noTeamsAssigned}
+        values={{ mapping: doesMappingTeamNotExist, validation: doesValidationTeamNotExist }}
+      />
+    );
+  }
   if (locale === null) {
     return (
       <FormattedMessage {...messages.missingFields} values={{ number: numberOfMissingFields }} />
@@ -312,7 +341,7 @@ const ErrorTitle = ({ locale, numberOfMissingFields }) => {
   return <FormattedMessage {...messages.missingFieldsForLocale} values={{ locale: locale }} />;
 };
 
-const ErrorMessage = ({ errors }) => {
+const ErrorMessage = ({ errors, projectInfo }) => {
   return (
     <>
       <span className="fw6">
@@ -322,10 +351,15 @@ const ErrorMessage = ({ errors }) => {
         return (
           <div className="cf w-100 pt2 ml3 pl2" key={i}>
             <span>
-              <ErrorTitle locale={error.locale} numberOfMissingFields={error.fields.length || 0} />
+              <ErrorTitle
+                locale={error.locale}
+                numberOfMissingFields={error.fields?.length || 0}
+                type={error.type}
+                projectInfo={projectInfo}
+              />
             </span>
             <ul className="mt2 mb0">
-              {error.fields.map((f, i) => {
+              {error.fields?.map((f, i) => {
                 return (
                   <li key={i}>
                     {<FormattedMessage {...projectEditMessages[f]} />}
@@ -341,13 +375,13 @@ const ErrorMessage = ({ errors }) => {
   );
 };
 
-const SaveStatus = ({ error, success }) => {
+const SaveStatus = ({ error, success, projectInfo }) => {
   let message = null;
   if (success === true) {
     message = <FormattedMessage {...messages.updateSuccess} />;
   }
   if (error !== null && error !== 'SERVER') {
-    message = <ErrorMessage errors={error} />;
+    message = <ErrorMessage errors={error} projectInfo={projectInfo} />;
   }
   if (error !== null && error === 'SERVER') {
     message = <FormattedMessage {...messages.serverError} />;

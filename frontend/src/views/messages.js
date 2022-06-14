@@ -660,6 +660,11 @@ export default defineMessages({
     id: 'pages.edit_project.actions.missing_fields_for_locale',
     defaultMessage: "Missing information in the project's default language ({locale}):",
   },
+  noTeamsAssigned: {
+    id: 'pages.edit_project.actions.missing_fields_for_teams',
+    defaultMessage:
+      '{mapping, select, true {Mapping} other {{validation, select, true {Validation} other {}}}} {mapping, select, true {{validation, select, true {and validation} other {}}} other {}} permissions have been set only to team members but no team has been added.',
+  },
   projectEditSection_description: {
     id: 'pages.edit_project.sections.description',
     defaultMessage: 'Description',
