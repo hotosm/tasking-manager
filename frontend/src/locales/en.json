@@ -1123,6 +1123,7 @@
   "pages.edit_project.actions.update.error": "Saving the project failed because of a Server Error. Please try again later or contact the administrator if problem persists.",
   "pages.edit_project.actions.missing_fields": "{number, plural, one {One required field is missing:} other {Some required fields are missing:}}",
   "pages.edit_project.actions.missing_fields_for_locale": "Missing information in the project's default language ({locale}):",
+  "pages.edit_project.actions.missing_fields_for_teams": "{mapping, select, true {Mapping} other {{validation, select, true {Validation} other {}}}} {mapping, select, true {{validation, select, true {and validation} other {}}} other {}} permissions have been set only to team members but no team has been added.",
   "pages.edit_project.sections.description": "Description",
   "pages.edit_project.sections.instructions": "Instructions",
   "pages.edit_project.sections.metadata": "Metadata",
