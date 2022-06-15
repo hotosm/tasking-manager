@@ -1,11 +1,11 @@
 FROM python:3.7-alpine as base
-LABEL version=0.2
+LABEL version=0.3
 LABEL description="Builds docker image for TM Backend"
-
-WORKDIR /usr/src/app
 
 ## BUILD STAGE
 FROM base as builder
+
+WORKDIR /install
 
 # Setup backend build dependencies
 RUN apk update && \
@@ -22,16 +22,25 @@ RUN apk update && \
        proj-dev
 
 # Setup backend Python dependencies
-COPY requirements.txt .
-RUN pip install --prefix=/install --no-warn-script-location -r requirements.txt
+COPY pyproject.toml pdm.lock README.md ./
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir pdm
+RUN pdm install --prod --no-lock --no-editable
 
 ## DEPLOY STAGE
 FROM base
 
-# Setup backend runtime dependencies
-RUN apk update && apk add postgresql-libs geos proj-util
+WORKDIR /usr/src/app
 
-COPY --from=builder /install /usr/local
+ENV PATH="/usr/src/python/bin:$PATH" \
+    PYTHONPATH="/usr/src/python/lib"
+
+# Setup backend runtime dependencies
+RUN apk update && apk add --no-cache postgresql-libs geos proj-util
+
+COPY --from=builder \
+    /install/__pypackages__/3.7 \
+    /usr/src/python
 COPY . .
 
 ENV TZ UTC # Fix timezone (do not change - see issue #3638)

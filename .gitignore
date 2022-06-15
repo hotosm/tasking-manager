@@ -26,6 +26,8 @@ logs/
 #python
 venv/
 *pyc
+.pdm.toml
+__pypackages__/
 
 # Editor generated files #
 .idea/
