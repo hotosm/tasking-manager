@@ -1,11 +1,11 @@
 FROM quay.io/hotosm/base-python-image as base
-LABEL version=0.1
-LABEL maintainer="HOT Sysadmin <sysadmin@hotosm.org>"
-LABEL description="Builds backend docker image"
-
-WORKDIR /usr/src/app
+LABEL version=0.2
+LABEL hotosm.org.maintainer="HOT Sysadmin <sysadmin@hotosm.org>"
+LABEL hotosm.org.description="Builds docker image for TM Backend"
 
 FROM base as builder
+
+WORKDIR /install
 
 # Setup backend build-time dependencies
 RUN apk update && \
@@ -21,20 +21,28 @@ RUN apk update && \
         proj-dev \
         make
 
+# Setup backend Python dependencies
 COPY pyproject.toml pdm.lock README.md ./
-RUN pip install \
-    --prefix=/install \
-    --no-cache-dir \
-    --no-warn-script-location .
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir pdm
+RUN pdm install --prod --no-lock --no-editable
 
 # Setup backend runtime dependencies
 FROM base
 
+WORKDIR /usr/src/app
+
+ENV PATH="/usr/src/python/bin:$PATH" \
+    PYTHONPATH="/usr/src/python/lib"
+
+# Setup backend runtime dependencies
 RUN apk update && \
-    apk add \
+    apk add --no-cache \
         postgresql-libs geos proj-util
 
-COPY --from=builder /install /usr/local
+COPY --from=builder \
+    /install/__pypackages__/3.8 \
+    /usr/src/python
 COPY backend backend/
 COPY migrations migrations/
 COPY scripts/world scripts/world/
@@ -43,4 +51,5 @@ COPY manage.py .
 
 ENV TZ UTC # Fix timezone (do not change - see issue #3638)
 EXPOSE 5000
+
 CMD ["gunicorn", "-c", "python:backend.gunicorn", "manage:application"]

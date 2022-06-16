@@ -3,6 +3,9 @@ FROM python:3.7-buster
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
+ENV PATH="/usr/src/app/__pypackages__/3.7/bin:$PATH" \
+    PYTHONPATH="/usr/src/app/__pypackages__/3.7/lib"
+
 # INSTALLATION
 
 # Add repository for node
@@ -26,7 +29,8 @@ RUN git clone --depth=1 git://github.com/hotosm/tasking-manager.git \
 
 # Setup backend dependencies
 COPY pyproject.toml pdm.lock README.md ./
-RUN pip install --no-cache-dir .
+RUN pip install --no-cache-dir pdm \
+    && pdm install --prod --no-lock --no-editable
 
 # Setup and build frontend
 RUN cd frontend && npm install && npm run build
