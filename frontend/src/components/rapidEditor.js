@@ -5,7 +5,14 @@ import 'RapiD/dist/RapiD.css';
 
 import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET, OSM_SERVER_URL } from '../config';
 
-export default function RapidEditor({ setDisable, comment, presets, imagery, gpxUrl, powerUser = false }) {
+export default function RapidEditor({
+  setDisable,
+  comment,
+  presets,
+  imagery,
+  gpxUrl,
+  powerUser = false,
+}) {
   const dispatch = useDispatch();
   const session = useSelector((state) => state.auth.get('session'));
   const RapiDContext = useSelector((state) => state.editor.rapidContext);
@@ -44,9 +51,8 @@ export default function RapidEditor({ setDisable, comment, presets, imagery, gpx
       if (RapiDContext === null) {
         // we need to keep iD context on redux store because iD works better if
         // the context is not restarted while running in the same browser session
-        dispatch({ type: 'SET_RAPIDEDITOR', context: window.iD.coreContext() })
+        dispatch({ type: 'SET_RAPIDEDITOR', context: window.iD.coreContext() });
       }
-
     }
   }, [windowInit, RapiDContext, dispatch]);
 
@@ -69,8 +75,7 @@ export default function RapidEditor({ setDisable, comment, presets, imagery, gpx
         window.iD.presetManager.addablePresetIDs(null);
       }
       // setup the context
-      RapiDContext
-        .embed(true)
+      RapiDContext.embed(true)
         .assetPath('/static/rapid/')
         .locale(locale)
         .setsDocumentTitle(false)

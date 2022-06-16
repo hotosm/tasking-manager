@@ -178,8 +178,6 @@ export const MoreFilters = (props) => {
 export const ProjectDetailPage = (props) => {
   const [error, loading, data] = useFetch(`projects/${props.id}/`, props.id);
 
-  console.log('error>>>', !!error);
-
   return (
     <ReactPlaceholder showLoadingAnimation={true} rows={30} delay={1000} ready={loading === false}>
       {!error && (
