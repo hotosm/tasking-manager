@@ -52,7 +52,12 @@ and ask the person to check on the error.
 
 1. Test behaviour and edge cases
   Install the PR on your local setup, make sure you run
-  a. backend dependency installation: `pip install .`
+  a. backend dependency installation:
+    ```
+    pip install --upgrade pdm
+    eval "$(pdm --pep582)"
+    pdm install
+    ```
   b. introduced database migrations: `python manage.py db upgrade`
   c. frontend dependency installation: `cd frontend && yarn && cd ..`
   d. rebuild the frontend: `cd frontend && yarn build && cd ..`
