@@ -25,7 +25,8 @@ RUN git clone --depth=1 git://github.com/hotosm/tasking-manager.git \
 ## SETUP
 
 # Setup backend dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml pdm.lock README.md ./
+RUN pip install --no-cache-dir .
 
 # Setup and build frontend
 RUN cd frontend && npm install && npm run build

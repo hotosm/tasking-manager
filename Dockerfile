@@ -21,13 +21,11 @@ RUN apk update && \
         proj-dev \
         make
 
-COPY requirements.txt .
-
+COPY pyproject.toml pdm.lock README.md ./
 RUN pip install \
     --prefix=/install \
     --no-cache-dir \
-    --no-warn-script-location \
-    -r requirements.txt
+    --no-warn-script-location .
 
 # Setup backend runtime dependencies
 FROM base
