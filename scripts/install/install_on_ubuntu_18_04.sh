@@ -20,7 +20,7 @@ sudo apt install -y build-essential curl git &&
 
 # Install Python and Node
 curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -
-sudo apt install -y python3 python3-dev python3-venv nodejs &&
+sudo apt install -y python3 python3-dev nodejs &&
 
 # Install the database
 sudo apt install -y postgresql-10 libpq-dev postgresql-server-dev-10 postgresql-10-postgis-2.4 postgresql-10-postgis-scripts &&
@@ -30,10 +30,10 @@ git clone https://github.com/hotosm/tasking-manager.git &&
 
 ## Prepare the tasking manager
 cd tasking-manager/ &&
-python3 -m venv ./venv &&
-. ./venv/bin/activate &&
 pip install --upgrade pip &&
-pip install -r requirements.txt &&
+pip install --upgrade pdm &&
+eval "$(pdm --pep582)" &&
+pdm install &&
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p &&
 
 # Set up configuration
@@ -67,7 +67,7 @@ do  sudo -u postgres psql -c "alter table \"$tbl\" owner to $POSTGRES_USER" $POS
 cd ../../ &&
 
 # Upgrade database
-./venv/bin/python3 manage.py db upgrade &&
+python3 manage.py db upgrade &&
 
 # Assamble the tasking manager interface
 cd frontend/ &&
@@ -78,4 +78,4 @@ cd ../ &&
 ## Please edit the tasking-manager.env as indicated in the README.md ##
 
 # Start the tasking manager
-./venv/bin/python manage.py runserver -d
+python3 manage.py runserver -d

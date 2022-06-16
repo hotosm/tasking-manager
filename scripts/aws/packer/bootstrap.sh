@@ -36,7 +36,6 @@ sudo apt-get -y install \
 
 sudo apt-get -y install \
     python3.6 python3.6-dev \
-    python3.6-venv \
     python-pip                 # Default python pip (why?)
 
 # Install mapping related stuff
