@@ -52,7 +52,7 @@ and ask the person to check on the error.
 
 1. Test behaviour and edge cases
   Install the PR on your local setup, make sure you run
-  a. backend dependency installation: `pip install -r requirements.txt`
+  a. backend dependency installation: `pip install .`
   b. introduced database migrations: `python manage.py db upgrade`
   c. frontend dependency installation: `cd frontend && yarn && cd ..`
   d. rebuild the frontend: `cd frontend && yarn build && cd ..`
@@ -100,7 +100,9 @@ git pull https://github.com/author/tasking-manager.git branchname
 
 Make sure that python dependencies are up to date:
 
-`pip install -r requirements.txt`
+`pip install --upgrade pdm`
+`eval "$(pdm --pep582)"`
+`pdm install`
 
 ### Frontend
 
@@ -127,7 +129,7 @@ If you get an error, you may have an upgraded database from a prior PR. Try down
 
 I have found it better to run tests on a separate database from the live version, but the choice is up to you. Again, it is probably wise to back up your database first if you choose to run it on your main database.
 
-`venv/bin/  ./tests --with-xunit --xunit-file unitresults.xml --with-coverage --cover-erase --cover-package=./backend`
+`python3 -m unittest discover ./tests --with-xunit --xunit-file unitresults.xml --with-coverage --cover-erase --cover-package=./backend`
 
 ### Check changes
 
