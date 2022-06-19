@@ -48,21 +48,21 @@ jobs:
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend
           CI=true yarn test -w 1
           CI=true GENERATE_SOURCEMAP=false yarn build
-    # - run:
-    #     name: Run backend tests
-    #     command: |
-    #       # Run Python tests
-    #       cd ${CIRCLE_WORKING_DIRECTORY}
-    #       mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
-    #       find ./tests/backend -name "test*.py" -exec chmod -x {} \;
-    #       nosetests ./tests/backend --with-xunit \
-    #         --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
-    #         --with-coverage --cover-erase --cover-package=./backend
-    #       coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
-    # - store_test_results:
-    #     path: tests/backend/results
-    # - store_artifacts:
-    #     path: tests/backend/results
+    - run:
+        name: Run backend tests
+        command: |
+          # Run Python tests
+          cd ${CIRCLE_WORKING_DIRECTORY}
+          mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
+          find ./tests/backend -name "test*.py" -exec chmod -x {} \;
+          nosetests ./tests/backend --with-xunit \
+            --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
+            --with-coverage --cover-erase --cover-package=./backend
+          coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
+    - store_test_results:
+        path: tests/backend/results
+    - store_artifacts:
+        path: tests/backend/results
     - save_cache:
         key: node-v1-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
         paths:
