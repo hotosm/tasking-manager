@@ -53,11 +53,10 @@ and ask the person to check on the error.
 1. Test behaviour and edge cases
   Install the PR on your local setup, make sure you run
   a. backend dependency installation:
-    ```
-    pip install --upgrade pdm
-    eval "$(pdm --pep582)"
-    pdm install
-    ```
+    * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
+    * `pip install --upgrade pdm`
+    * `eval "$(pdm --pep582)"`
+    * `pdm install`
   b. introduced database migrations: `python manage.py db upgrade`
   c. frontend dependency installation: `cd frontend && yarn && cd ..`
   d. rebuild the frontend: `cd frontend && yarn build && cd ..`
@@ -105,9 +104,10 @@ git pull https://github.com/author/tasking-manager.git branchname
 
 Make sure that python dependencies are up to date:
 
-`pip install --upgrade pdm`
-`eval "$(pdm --pep582)"`
-`pdm install`
+* `pip install --upgrade pdm`
+* `eval "$(pdm --pep582)"`
+* `pdm install`
+
 
 ### Frontend
 
