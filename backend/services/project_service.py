@@ -9,10 +9,17 @@ from backend.models.dtos.project_dto import (
     ProjectContribsDTO,
     ProjectContribDTO,
     ProjectSearchResultsDTO,
+    ProjectsMatchedDTO,
+    ProjectMatchedDTO,
 )
 
 from backend.models.postgis.organisation import Organisation
-from backend.models.postgis.project import Project, ProjectStatus, MappingLevel
+from backend.models.postgis.project import (
+    Project,
+    ProjectStatus,
+    ProjectInfo,
+    MappingLevel,
+)
 from backend.models.postgis.statuses import (
     MappingNotAllowed,
     ValidatingNotAllowed,
@@ -563,3 +570,32 @@ class ProjectService:
             raise NotFound()
 
         return project.organisation
+
+    @staticmethod
+    def get_matched_projects(keyword: str) -> ProjectsMatchedDTO:
+        invalid_ts_chars = "@&!><\\():"  # Invalid characters for a TS query
+        keyword = "".join(
+            char for char in keyword if char not in invalid_ts_chars
+        )  # Remove invalid characters
+        keyword = keyword.replace(
+            "|", " "
+        )  # Replace | with space for search query so that | is treated as OR
+        keywords = keyword.split(" ")
+        keywords = " | ".join(["{}:*".format(k) for k in keywords if k != ""])
+        matched_projects = (
+            ProjectInfo.query.filter(
+                ProjectInfo.text_searchable.match(
+                    keywords, postgresql_regconfig="english"
+                )
+            )
+            .limit(6)
+            .all()
+        )
+
+        dto = ProjectsMatchedDTO()
+        dto.projects = [
+            ProjectMatchedDTO(dict(project_id=p.project_id, name=p.name))
+            for p in matched_projects
+        ]
+
+        return dto
