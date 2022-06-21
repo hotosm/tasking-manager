@@ -6,7 +6,6 @@ Create Date: 2022-06-20 13:50:26.229142
 
 """
 from alembic import op
-import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
@@ -21,7 +20,8 @@ def upgrade():
         """
         DROP TRIGGER IF EXISTS tsvectorupdate ON project_info;
         CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON project_info FOR EACH ROW EXECUTE PROCEDURE
-        tsvector_update_trigger(text_searchable, "pg_catalog.english", project_id_str, name, short_description, description)
+        tsvector_update_trigger(text_searchable, "pg_catalog.english", project_id_str, name,
+        short_description, description)
         """
     )
 
