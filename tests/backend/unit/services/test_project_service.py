@@ -12,6 +12,10 @@ from backend.services.project_service import ProjectAdminService
 from backend.models.dtos.project_dto import LockedTasksForUser
 from backend.models.postgis.task import Task
 from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import (
+    create_canned_project,
+    update_project_with_info,
+)
 
 
 class TestProjectService(BaseTestCase):
@@ -126,3 +130,25 @@ class TestProjectService(BaseTestCase):
         # Assert
         self.assertFalse(allowed)
         self.assertEqual(reason, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST)
+
+    def test_get_matched_projects_returns_matched_projects(self):
+        # Arrange
+        stub_project, _author = create_canned_project()
+        stub_project = update_project_with_info(stub_project)
+        # Act
+        matched_projects = ProjectService.get_matched_projects("think")
+        # Assert
+        result = matched_projects.to_primitive()["projects"]
+        expected = {"projectId": stub_project.id, "name": "Thinkwhere Test"}
+        self.assertIn(expected, result)
+
+    def test_get_matched_projects_doesnt_returns_umatched_projects(self):
+        # Arrange
+        stub_project, _author = create_canned_project()
+        stub_project = update_project_with_info(stub_project)
+        # Act
+        matched_projects = ProjectService.get_matched_projects("hello")
+        # Assert
+        result = matched_projects.to_primitive()["projects"]
+        expected = {"projectId": stub_project.id, "name": "Thinkwhere Test"}
+        self.assertNotIn(expected, result)
