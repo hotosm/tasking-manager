@@ -725,6 +725,44 @@ class ProjectsAllAPI(ProjectSearchBase):
             }, 500
 
 
+class ProjectsQueriesAutoCompleteAPI(Resource):
+    def get(self):
+        """
+        Get Projects whose title match a given keyword
+        ---
+        tags:
+            - projects
+        produces:
+            - application/json
+        parameters:
+            - in: query
+              name: keyword
+              type: string
+              description: keyword used to query project names
+              default: True
+        responses:
+            200:
+                description: Projects found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            keyword = request.args.get("keyword")
+            if keyword is None:
+                raise ValueError("Keyword not found")
+            matched_dto = ProjectService.get_matched_projects(keyword)
+
+            return matched_dto.to_primitive(), 200
+        except ValueError as e:
+            return {"Project GET - BAD REQUEST": str(e)}, 400
+        # except ProjectServiceError:
+        #     return {"Error": "Unable to fetch project"}, 403
+        except Exception as e:
+            error_msg = f"Project GET - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": "Unable to fetch projects"}, 500
+
+
 class ProjectsQueriesBboxAPI(Resource):
     @token_auth.login_required
     def get(self):

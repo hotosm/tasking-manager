@@ -110,7 +110,7 @@ def initialise_logger(app):
 
 
 def initialise_counters(app):
-    """ Initialise homepage counters so that users don't see 0 users on first load of application"""
+    """Initialise homepage counters so that users don't see 0 users on first load of application"""
     from backend.services.stats_service import StatsService
 
     with app.app_context():
@@ -137,6 +137,7 @@ def add_api_endpoints(app):
         ProjectsQueriesAoiAPI,
         ProjectsQueriesPriorityAreasAPI,
         ProjectsQueriesFeaturedAPI,
+        ProjectsQueriesAutoCompleteAPI,
     )
     from backend.api.projects.activities import (
         ProjectsActivitiesAPI,
@@ -422,6 +423,10 @@ def add_api_endpoints(app):
         ProjectActionsIntersectingTilesAPI,
         format_url("projects/actions/intersecting-tiles/"),
         methods=["POST"],
+    )
+
+    api.add_resource(
+        ProjectsQueriesAutoCompleteAPI, "/api/v2/projects/queries/auto-complete/"
     )
 
     api.add_resource(

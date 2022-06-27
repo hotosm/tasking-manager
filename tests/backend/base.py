@@ -8,6 +8,19 @@ def clean_db(db):
         db.session.execute(table.delete())
 
 
+def add_trigger_for_text_searchable(db):
+    # Add trigger to text_searchable field on project_info table
+    # This trigger was manually added on migration script so it has to be added here
+    db.engine.execute(
+        """
+            DROP TRIGGER IF EXISTS tsvectorupdate ON project_info;
+            CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON project_info FOR EACH ROW EXECUTE PROCEDURE
+            tsvector_update_trigger(text_searchable, "pg_catalog.english", project_id_str, name,
+            short_description, description)
+            """
+    )
+
+
 class BaseTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -15,7 +28,10 @@ class BaseTestCase(unittest.TestCase):
         cls.app = create_app("backend.config.TestEnvironmentConfig")
         cls.db = db
         cls.db.app = cls.app
+        cls.db.session.close()
+        cls.db.drop_all()
         cls.db.create_all()
+        add_trigger_for_text_searchable(cls.db)
 
     @classmethod
     def tearDownClass(cls):
