@@ -121,6 +121,21 @@ export default function ProjectEdit({ id }) {
 
     const nonLocaleMissingFields = [];
     if (projectInfo.mappingTypes.length === 0) nonLocaleMissingFields.push('mappingTypes');
+    const { mappingEditors, validationEditors, customEditor } = projectInfo;
+    if (
+      (mappingEditors.filter((editor) => editor !== 'CUSTOM').length === 0 &&
+        mappingEditors.includes('CUSTOM') &&
+        customEditor === undefined) ||
+      mappingEditors.length === 0
+    )
+      nonLocaleMissingFields.push('noMappingEditor');
+    if (
+      (validationEditors.filter((editor) => editor !== 'CUSTOM').length === 0 &&
+        validationEditors.includes('CUSTOM') &&
+        customEditor === undefined) ||
+      validationEditors.length === 0
+    )
+      nonLocaleMissingFields.push('noValidationEditor');
     if (!projectInfo.organisation) nonLocaleMissingFields.push('organisation');
 
     if (nonLocaleMissingFields.length) {
