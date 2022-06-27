@@ -485,6 +485,8 @@
   "projects.formInputs.custom_editor.delete": "Delete Custom Editor",
   "projects.formInputs.custom_editor.remove": "Remove Custom Editor",
   "projects.formInputs.custom_editor.delete.confirm": "This will remove the custom editor from the project. Are you sure you don't want to disable the custom editor by toggling the \"Enabled\" checkbox above?",
+  "projects.formInputs.noMappingEditor": "At least one editor must be enabled for mapping",
+  "projects.formInputs.noValidationEditor": "At least one editor must be enabled for validation",
   "project.mainSection.title": "Generic project",
   "project.nav.mappingDifficulty": "Difficulty level",
   "project.nav.moreFilters": "More filters",
