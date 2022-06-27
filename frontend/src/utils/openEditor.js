@@ -75,6 +75,12 @@ export function getPotlatch2Url(centroid, zoomLevel) {
 export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl) {
   const base = customUrl ? formatCustomUrl(customUrl) : `${ID_EDITOR_URL}`;
   let url = base + '#map=' + [zoomLevel, centroid[1], centroid[0]].join('/');
+  // add the extraParams
+  if (project.extraIdParams) {
+    let extraParams = formatExtraParams(project.extraIdParams);
+    if (!extraParams.startsWith('&')) extraParams = `&${extraParams}`;
+    url += extraParams;
+  }
   // the other URL params are only needed by external iD editors
   if (!['?editor=ID', '?editor=RAPID'].includes(customUrl)) {
     if (project.changesetComment) {
@@ -96,6 +102,17 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl)
     }
   }
   return url;
+}
+
+export const formatExtraParams = (values) => {
+  let extraParams = '';
+  values.split('&')
+    .filter((term) => term)
+    .forEach((term) => {
+      const [key, value] = term.split('=');
+      extraParams += `&${key}=${encodeURIComponent(value)}`;
+    });
+  return extraParams;
 }
 
 export const sendJosmCommands = async (project, tasks, selectedTasks, windowSize, taskBbox) => {
