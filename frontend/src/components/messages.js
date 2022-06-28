@@ -74,4 +74,13 @@ export default defineMessages({
     id: 'project.typesOfMapping.pointsOfInterest',
     defaultMessage: 'Points of interest',
   },
+  webglUnsupportedTitle: {
+    id: 'browser.webgl.unsupported.title',
+    defaultMessage: 'WebGL Context Not Found',
+  },
+  webglUnsupportedDescription: {
+    id: 'browser.webgl.unsupported.description',
+    defaultMessage:
+      'Your browser does not support WebGL. Please try using a different browser or check that <a>WebGL is enabled</a>.',
+  },
 });
