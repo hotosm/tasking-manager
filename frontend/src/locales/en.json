@@ -161,7 +161,7 @@
   "project.typesOfMapping.other": "Other",
   "project.typesOfMapping.pointsOfInterest": "Points of interest",
   "browser.webgl.unsupported.title": "WebGL Context Not Found",
-  "browser.webgl.unsupported.description": "Your browser does not support WebGL. Please try using a different browser or check that <a>WebGL is enabled</a>.",
+  "browser.webgl.unsupported.description": "Your browser does not support WebGL, which is required to render map components. Please try using a different browser or check that <a>WebGL is enabled</a>.",
   "notifications.mainSection.title": "Notifications",
   "notifications.filter.all": "All",
   "notifications.filter.messages": "Messages",

@@ -19,6 +19,7 @@ import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useDebouncedCallback } from '../../hooks/UseThrottle';
 import { BasemapMenu } from '../basemapMenu';
 import { ProjectsAOILayerCheckBox } from './projectsAOILayerCheckBox';
+import WebglUnsupported from '../webglUnsupported';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -66,16 +67,18 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   }, [showProjectsAOILayer, debouncedGetProjectsAOI, clearProjectsAOI, step]);
 
   useLayoutEffect(() => {
-    const map = new mapboxgl.Map({
-      container: mapRef.current,
-      style: MAP_STYLE,
-      center: [0, 0],
-      zoom: 1.3,
-      attributionControl: false,
-    })
-      .addControl(new mapboxgl.AttributionControl({ compact: false }))
-      .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
-      .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }));
+    const map =
+      mapboxgl.supported() &&
+      new mapboxgl.Map({
+        container: mapRef.current,
+        style: MAP_STYLE,
+        center: [0, 0],
+        zoom: 1.3,
+        attributionControl: false,
+      })
+        .addControl(new mapboxgl.AttributionControl({ compact: false }))
+        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
+        .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }));
     if (MAPBOX_TOKEN) {
       map.addControl(
         new MapboxGeocoder({
@@ -186,7 +189,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   };
 
   useLayoutEffect(() => {
-    if (mapObj.map !== null) {
+    if (mapObj.map !== null && mapboxgl.supported()) {
       mapObj.map.on('moveend', (event) => {
         debouncedGetProjectsAOI();
       });
@@ -194,7 +197,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   });
 
   useLayoutEffect(() => {
-    if (mapObj.map !== null) {
+    if (mapObj.map !== null && mapboxgl.supported()) {
       mapObj.map.on('load', () => {
         mapObj.map.addControl(new mapboxgl.NavigationControl());
         mapObj.map.addControl(mapObj.draw);
@@ -234,22 +237,26 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     }
   }, [mapObj, metadata, updateMetadata, step]);
 
-  return (
-    <div className="w-100 h-100-l relative" {...getRootProps()}>
-      <div className="absolute top-0 right-0 z-5 mr2">
-        {step === 1 && (
-          <ProjectsAOILayerCheckBox
-            isActive={showProjectsAOILayer}
-            setActive={setShowProjectsAOILayer}
-            disabled={!aoiCanBeActivated}
-          />
-        )}
-        <BasemapMenu map={mapObj.map} />
-        <input className="dn" {...getInputProps()} />
+  if (!mapboxgl.supported()) {
+    return <WebglUnsupported className="vh-50 h-100-l w-100" />;
+  } else {
+    return (
+      <div className="w-100 h-100-l relative" {...getRootProps()}>
+        <div className="absolute top-0 right-0 z-5 mr2">
+          {step === 1 && (
+            <ProjectsAOILayerCheckBox
+              isActive={showProjectsAOILayer}
+              setActive={setShowProjectsAOILayer}
+              disabled={!aoiCanBeActivated}
+            />
+          )}
+          <BasemapMenu map={mapObj.map} />
+          <input className="dn" {...getInputProps()} />
+        </div>
+        <div id="project-creation-map" className="vh-50 h-100-l w-100" ref={mapRef}></div>
       </div>
-      <div id="project-creation-map" className="vh-50 h-100-l w-100" ref={mapRef}></div>
-    </div>
-  );
+    );
+  }
 };
 
 export default ProjectCreationMap;
