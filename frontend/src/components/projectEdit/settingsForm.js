@@ -28,9 +28,13 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.language} />
         </label>
-        <select name="defaultLocale" onChange={updateDefaultLocale} className="pa2">
+        <select
+          name="defaultLocale"
+          onChange={updateDefaultLocale}
+          className="pa2 bg-white ba ba--grey-light"
+        >
           {languages.map((l) => (
-            <option selected={l.code === defaultLocale ? true : false} value={l.code}>
+            <option key={l.code} selected={l.code === defaultLocale ? true : false} value={l.code}>
               {l.language} ({l.code})
             </option>
           ))}
@@ -123,6 +127,29 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
           <FormattedMessage {...messages.randomTaskSelectionDescription} />
         </p>
       </div>
+      {(projectInfo.mappingEditors.includes('RAPID') || projectInfo.validationEditors.includes('RAPID')) && (
+        <div className={styleClasses.divClass}>
+          <label className={styleClasses.labelClass} >
+            <FormattedMessage {...messages.rapidPowerUser} />
+            <div className={'rapid-beta'}/>
+          </label>
+
+          <SwitchToggle
+            isChecked={projectInfo.rapidPowerUser}
+            label={<FormattedMessage {...messages.rapidPowerUser} />}
+            labelPosition={'right'}
+            onChange={() =>
+              setProjectInfo({
+                ...projectInfo,
+                rapidPowerUser: !projectInfo.rapidPowerUser
+              })
+            }
+          />
+          <p className={styleClasses.pClass}>
+            <FormattedMessage {...messages.rapidPowerUserDescription} />
+          </p>
+        </div>
+      )}
     </div>
   );
 };

@@ -16,9 +16,9 @@ export const ViewAllLink = ({ link }: Object) => (
 
 export const AddButton = () => (
   <CustomButton className="red bg-transparent ba b--red barlow-condensed pv1">
-    <PlusIcon height="20px" width="20px" className="v-mid" />
-    <span className="v-mid f3 ttu pl2">
-      <FormattedMessage {...messages.add} />
+    <PlusIcon className="v-mid h1 w1" />
+    <span className="v-mid f4 fw6 ttu pl2">
+      <FormattedMessage {...messages.new} />
     </span>
   </CustomButton>
 );
@@ -28,9 +28,9 @@ export const DeleteButton = ({ className, onClick, showText = true }: Object) =>
     className={`red bg-transparent ba b--red barlow-condensed pv1 ${className}`}
     onClick={onClick}
   >
-    <WasteIcon height="20px" width="20px" className="v-mid" />
+    <WasteIcon className="v-mid h1 w1" />
     {showText && (
-      <span className="v-mid f3 ttu pl2">
+      <span className="v-mid f4 fw6 ttu pl2">
         <FormattedMessage {...messages.delete} />
       </span>
     )}
@@ -57,8 +57,8 @@ export function Management(props) {
   // admin users can switch between all teams/orgs and only their teams/orgs
   return (
     <div className="pull-center cf bg-tan">
-      <div className="cf mt1">
-        <h3 className="barlow-condensed f2 ma0 pv3 dib v-mid ttu pl2 pl0-l">{props.title}</h3>
+      <div className="cf pv4">
+        <h3 className="barlow-condensed f2 ma0 dib v-mid ttu">{props.title}</h3>
         {props.showAddButton && (
           <Link to={'new/'} className="dib ml3">
             <AddButton />

@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { useFetch } from '../../hooks/UseFetch';
 import { shortEnglishHumanizer } from '../userDetail/elementsMapped';
-import { StatsCardContent } from '../statsCardContent';
+import { StatsCardContent } from '../statsCard';
 import { MappedIcon, ValidatedIcon } from '../svgIcons';
 
 const StatsRow = ({ stats }) => {
@@ -25,7 +25,7 @@ const StatsRow = ({ stats }) => {
   return (
     <div className="cf center">
       {fields.map((t, n) => (
-        <div key={n} className="ph2 w-25-l w-50-m w-100 fl">
+        <div key={n} className="ph2 w-25-l w-50-m w-100 fl mv1">
           <div className="cf pa3 bg-white shadow-4">
             <div className="w-30 fl red">
               {t.indexOf('Mapping') !== -1 ? (

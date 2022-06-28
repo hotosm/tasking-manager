@@ -1,191 +1,92 @@
-import React, { useState, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useLayoutEffect, useCallback, Suspense } from 'react';
 import { useSelector } from 'react-redux';
-import { Redirect } from '@reach/router';
+import { Redirect, navigate } from '@reach/router';
+import { useQueryParam, NumberParam } from 'use-query-params';
+import { FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
+import ReactPlaceholder from 'react-placeholder';
 import area from '@turf/area';
 import bbox from '@turf/bbox';
 import { featureCollection } from '@turf/helpers';
-import lineToPolygon from '@turf/line-to-polygon';
-import { useQueryParam, NumberParam } from 'use-query-params';
-import { FormattedMessage, FormattedNumber } from 'react-intl';
+import truncate from '@turf/truncate';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 import messages from './messages';
+import { createProject } from '../../store/actions/project';
+import { store } from '../../store';
+import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import SetAOI from './setAOI';
-import { ProjectCreationMap } from './projectCreationMap';
 import SetTaskSizes from './setTaskSizes';
 import TrimProject from './trimProject';
 import NavButtons from './navButtons';
 import Review from './review';
-import { AlertMessage } from './alertMessage';
+import { Alert } from '../alert';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { makeGrid } from '../../utils/taskGrid';
 import { MAX_AOI_AREA } from '../../config';
+import {
+  verifyGeometry,
+  readGeoFile,
+  verifyFileFormat,
+  verifyFileSize,
+} from '../../utils/geoFileFunctions';
+import { getErrorMsg } from './fileUploadErrors';
 
-import { makeGrid } from './setTaskSizes';
-import { MAX_FILESIZE } from '../../config';
-
-var toGeojson = require('@mapbox/togeojson');
-var osmToGeojson = require('osmtogeojson');
-var shpjs = require('shpjs');
-
-const aoiPaintOptions = {
-  'fill-color': '#00004d',
-  'fill-opacity': 0.3,
-};
-
-const taskGridPaintOptions = {
-  'fill-color': '#fff',
-  'fill-outline-color': '#00f',
-  'fill-opacity': 0.5,
-};
-
-export const addLayer = (layerName, data, map) => {
-  if (map.getLayer(layerName)) {
-    map.removeLayer(layerName);
-  }
-  if (map.getSource(layerName)) {
-    map.removeSource(layerName);
-  }
-
-  let options = aoiPaintOptions;
-  if (layerName === 'grid') {
-    options = taskGridPaintOptions;
-  }
-
-  map.addLayer({
-    id: layerName,
-    type: 'fill',
-    source: {
-      type: 'geojson',
-      data: data,
-    },
-    paint: options,
-  });
-};
+const ProjectCreationMap = React.lazy(() =>
+  import('./projectCreationMap' /* webpackChunkName: "projectCreationMap" */),
+);
 
 const ProjectCreate = (props) => {
+  const intl = useIntl();
   const token = useSelector((state) => state.auth.get('token'));
   const [drawModeIsActive, setDrawModeIsActive] = useState(false);
-  const layer_name = 'aoi';
+  const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(false);
 
   const setDataGeom = (geom, display) => {
-    mapObj.map.fitBounds(bbox(geom), { padding: 20 });
-    const geomArea = area(geom) / 1e6;
-    const zoomLevel = 11;
-    const grid = makeGrid(geom, zoomLevel, {});
-    updateMetadata({
-      ...metadata,
-      geom: geom,
-      area: geomArea.toFixed(2),
-      zoomLevel: zoomLevel,
-      taskGrid: grid,
-      tempTaskGrid: grid,
-    });
+    const supportedGeoms = ['Polygon', 'MultiPolygon', 'LineString'];
 
-    if (display === true) {
-      addLayer('aoi', geom, mapObj.map);
-    }
-  };
-
-  const validateFeature = (e, supportedGeoms, err) => {
-    if (supportedGeoms.includes(e.geometry.type) === false) {
-      err.message = (
-        <FormattedMessage {...messages.unsupportedGeom} values={{ geometry: e.geometry.type }} />
-      );
-      throw err;
-    }
-    // Transform lineString to polygon
-    if (e.geometry.type === 'LineString') {
-      const coords = e.geometry.coordinates;
-      if (JSON.stringify(coords[0]) !== JSON.stringify(coords[coords.length - 1])) {
-        err.message = <FormattedMessage {...messages.closedLinestring} />;
-        throw err;
-      }
-      return lineToPolygon(e);
-    }
-    return e;
-  };
-
-  const verifyAndSetData = (event) => {
-    let err = { code: 403, message: null };
     try {
-      if (event.type !== 'FeatureCollection') {
-        err.message = <FormattedMessage {...messages.noFeatureCollection} />;
-        throw err;
+      let validGeometry = verifyGeometry(geom, supportedGeoms);
+
+      mapObj.map.fitBounds(bbox(validGeometry), { padding: 200 });
+      const zoomLevel = 11;
+      const grid = makeGrid(validGeometry, zoomLevel);
+      updateMetadata({
+        ...metadata,
+        geom: validGeometry,
+        area: (area(validGeometry) / 1e6).toFixed(2),
+        zoomLevel: zoomLevel,
+        taskGrid: grid,
+        tempTaskGrid: grid,
+      });
+
+      if (display === true) {
+        mapObj.map.getSource('aoi').setData(validGeometry);
       }
-      // Validate geometry for each feature.
-      const supportedGeoms = ['Polygon', 'MultiPolygon', 'LineString'];
-      event.features = event.features.map((e) => validateFeature(e, supportedGeoms, err));
-      setDataGeom(event, true);
-    } catch (e) {
-      deleteHandler();
-      setErr({ error: true, message: e.message });
+    } catch (err) {
+      setErr({ error: true, message: getErrorMsg(err.message) || err.message });
     }
   };
 
   const uploadFile = (files) => {
-    let file = files[0];
-    if (!file) {
-      return null;
-    }
-    if (file.size >= MAX_FILESIZE) {
-      setErr({
-        error: true,
-        message: (
-          <FormattedMessage {...messages.fileSize} values={{ fileSize: MAX_FILESIZE / 1000000 }} />
-        ),
-      });
-      return null;
-    }
+    const file = files[0];
+    if (!file) return null;
+    try {
+      setErr({ code: 403, message: null }); //reset error on new file upload
 
-    const format = file.name.split('.')[1].toLowerCase();
+      verifyFileFormat(file);
+      verifyFileSize(file);
 
-    const readFile = (e) => {
-      let geom = null;
-      switch (format) {
-        case 'json':
-        case 'geojson':
-          geom = JSON.parse(e.target.result);
-          break;
-        case 'kml':
-          let kml = new DOMParser().parseFromString(e.target.result, 'text/xml');
-          geom = toGeojson.kml(kml);
-          break;
-        case 'osm':
-          let osm = new DOMParser().parseFromString(e.target.result, 'text/xml');
-          geom = osmToGeojson(osm);
-          break;
-        case 'xml':
-          let xml = new DOMParser().parseFromString(e.target.result, 'text/xml');
-          geom = osmToGeojson(xml);
-          break;
-        case 'zip':
-          shpjs(e.target.result).then((geom) => verifyAndSetData(geom));
-          break;
-        default:
-          break;
-      }
-      if (format !== 'zip') {
-        verifyAndSetData(geom);
-      }
-    };
-
-    let fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      try {
-        readFile(e);
-      } catch (err) {
-        setErr({
-          error: true,
-          message: <FormattedMessage {...messages.invalidFile} />,
-        });
-      }
-    };
-
-    if (format === 'zip') {
-      fileReader.readAsArrayBuffer(file);
-    } else {
-      fileReader.readAsText(file);
+      readGeoFile(file)
+        .then((geometry) => {
+          setDataGeom(geometry, true);
+        })
+        .catch((error) =>
+          setErr({ error: true, message: getErrorMsg(error.message) || error.message }),
+        );
+    } catch (e) {
+      deleteHandler();
+      setErr({ error: true, message: getErrorMsg(e.message) || e.message });
     }
   };
 
@@ -196,13 +97,10 @@ const ProjectCreate = (props) => {
       mapObj.draw.delete(id);
     }
 
-    if (mapObj.map.getLayer(layer_name)) {
-      mapObj.map.removeLayer(layer_name);
+    if (mapObj.map.getSource('aoi')) {
+      mapObj.map.getSource('aoi').setData(featureCollection([]));
     }
-    if (mapObj.map.getSource(layer_name)) {
-      mapObj.map.removeSource(layer_name);
-    }
-    updateMetadata({ ...metadata, area: 0, geom: null });
+    updateMetadata({ ...metadata, area: 0, geom: null, arbitraryTasks: false, tasksNumber: 0 });
   };
 
   const drawHandler = () => {
@@ -260,7 +158,7 @@ const ProjectCreate = (props) => {
   const [metadata, updateMetadata] = useState({
     geom: null,
     area: 0,
-    tasksNo: 0,
+    tasksNumber: 0,
     taskGrid: null,
     projectName: '',
     zoomLevel: 9,
@@ -288,6 +186,42 @@ const ProjectCreate = (props) => {
     draw: new MapboxDraw(drawOptions),
   });
 
+  const handleCreate = useCallback(
+    (cloneProjectData) => {
+      if (!metadata.geom) {
+        setErr({ error: true, message: intl.formatMessage(messages.noGeometry) });
+        throw new Error('Missing geom.');
+      }
+      if (!metadata.organisation && !cloneProjectData.organisation) {
+        setErr({ error: true, message: intl.formatMessage(messages.noOrganization) });
+        throw new Error('Missing organization information.');
+      }
+
+      store.dispatch(createProject(metadata));
+      let projectParams = {
+        areaOfInterest: truncate(metadata.geom, { precision: 6 }),
+        projectName: metadata.projectName,
+        organisation: metadata.organisation || cloneProjectData.organisation,
+        tasks: truncate(metadata.taskGrid, { precision: 6 }),
+        arbitraryTasks: metadata.arbitraryTasks,
+      };
+
+      if (cloneProjectData.name !== null) {
+        projectParams.projectName = '';
+        projectParams.cloneFromProjectId = cloneProjectData.id;
+      }
+      pushToLocalJSONAPI('projects/', JSON.stringify(projectParams), token)
+        .then((res) => navigate(`/manage/projects/${res.projectId}`))
+        .catch((e) =>
+          setErr({
+            error: true,
+            message: <FormattedMessage {...messages.creationFailed} values={{ error: e }} />,
+          }),
+        );
+    },
+    [metadata, setErr, intl, token],
+  );
+
   if (!token) {
     return <Redirect to={'/login'} noThrow />;
   }
@@ -303,6 +237,8 @@ const ProjectCreate = (props) => {
             drawHandler={drawHandler}
             deleteHandler={deleteHandler}
             drawIsActive={drawModeIsActive}
+            showProjectsAOILayer={showProjectsAOILayer}
+            setShowProjectsAOILayer={setShowProjectsAOILayer}
           />
         );
       case 2:
@@ -331,14 +267,17 @@ const ProjectCreate = (props) => {
         </h2>
       </div>
       <div className="w-100 h-100-l h-50 pt3 pt0-l fr relative">
-        <ProjectCreationMap
-          metadata={metadata}
-          updateMetadata={updateMetadata}
-          mapObj={mapObj}
-          setMapObj={setMapObj}
-          step={step}
-          uploadFile={uploadFile}
-        />
+        <Suspense fallback={<ReactPlaceholder showLoadingAnimation={true} rows={30} delay={300} />}>
+          <ProjectCreationMap
+            metadata={metadata}
+            updateMetadata={updateMetadata}
+            mapObj={mapObj}
+            setMapObj={setMapObj}
+            step={step}
+            uploadFile={uploadFile}
+            showProjectsAOILayer={showProjectsAOILayer}
+          />
+        </Suspense>
         <div className="cf absolute bg-white o-90 top-1 left-1 pa3 mw6">
           {cloneFromId && (
             <p className="fw6 pv2 blue-grey">
@@ -348,9 +287,8 @@ const ProjectCreate = (props) => {
               />
             </p>
           )}
-          {renderCurrentStep()}
-          <AlertMessage error={err} />
-
+          <div className="pb2">{renderCurrentStep()}</div>
+          {err.error === true && <Alert type="error">{err.message}</Alert>}
           <NavButtons
             index={step}
             setStep={setStep}
@@ -359,6 +297,8 @@ const ProjectCreate = (props) => {
             updateMetadata={updateMetadata}
             maxArea={MAX_AOI_AREA}
             setErr={setErr}
+            cloneProjectData={cloneProjectData}
+            handleCreate={() => handleCreate(cloneProjectData)}
           />
         </div>
         <div className="cf absolute" style={{ bottom: '3.5rem', left: '0.6rem' }}>
@@ -378,7 +318,7 @@ const ProjectCreate = (props) => {
           <p className="fl bg-blue-light white mr2 pa1 f7-ns">
             <FormattedMessage
               {...messages.taskNumber}
-              values={{ n: <FormattedNumber value={metadata.tasksNo} /> }}
+              values={{ n: <FormattedNumber value={metadata.tasksNumber} /> }}
             />
           </p>
         </div>

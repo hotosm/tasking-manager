@@ -1,17 +1,9 @@
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from flask_restful import Resource, current_app, request
 
 from backend.services.users.authentication_service import token_auth
 from backend.services.stats_service import StatsService
-
-
-def validate_date_input(input_date):
-    try:
-        if not isinstance(input_date, date):
-            input_date = datetime.strptime(input_date, "%Y-%m-%d").date()
-        return input_date
-    except (TypeError, ValueError):
-        raise ValueError("Invalid date value")
+from backend.api.utils import validate_date_input
 
 
 class TasksStatisticsAPI(Resource):
@@ -75,14 +67,18 @@ class TasksStatisticsAPI(Resource):
             start_date = validate_date_input(request.args.get("startDate"))
             end_date = validate_date_input(request.args.get("endDate", date.today()))
             if not (start_date):
-                raise KeyError("Missing start date parameter")
+                raise KeyError("MissingDate- Missing start date parameter")
             if end_date < start_date:
-                raise ValueError("Start date must be earlier than end date")
+                raise ValueError(
+                    "InvalidStartDate- Start date must be earlier than end date"
+                )
             if (end_date - start_date) > timedelta(days=366):
-                raise ValueError("Date range can not be bigger than 1 year")
+                raise ValueError(
+                    "InvalidDateRange- Date range can not be bigger than 1 year"
+                )
             organisation_id = request.args.get("organisationId", None, int)
             organisation_name = request.args.get("organisationName", None, str)
-            campaign = request.args.get("campaign", None, int)
+            campaign = request.args.get("campaign", None, str)
             project_id = request.args.get("projectId")
             if project_id:
                 project_id = map(str, project_id.split(","))
@@ -98,9 +94,7 @@ class TasksStatisticsAPI(Resource):
             )
             return task_stats.to_primitive(), 200
         except (KeyError, ValueError) as e:
-            error_msg = f"Task Statistics GET - {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
             error_msg = f"Task Statistics GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

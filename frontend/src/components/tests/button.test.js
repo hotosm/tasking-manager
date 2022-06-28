@@ -1,49 +1,133 @@
-import React from 'react';
-import TestRenderer from 'react-test-renderer';
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 
 import { Button, CustomButton, EditButton } from '../button';
+import { BanIcon } from '../svgIcons';
 
-it('children and onClick props of Button', () => {
-  let testVar;
-  const testButton = TestRenderer.create(
-    <Button className="black bg-white" onClick={() => (testVar = true)}>
-      Test it
-    </Button>,
-  );
-  const buttonInstance = testButton.root;
-  expect(
-    buttonInstance.findByProps({ className: 'black bg-white br1 f5 bn pointer' }).children,
-  ).toEqual(['Test it']);
+describe('Button', () => {
+  it('children and onClick props', () => {
+    let testVar;
+    const { container } = render(
+      <Button className="black bg-white" onClick={() => (testVar = true)}>
+        Test it
+      </Button>,
+    );
+    expect(screen.getByText('Test it')).toBeInTheDocument();
+    expect(screen.getByRole('button').className).toBe('black bg-white br1 f5 bn pointer');
+    expect(container.querySelector('svg')).not.toBeInTheDocument();
 
-  buttonInstance.findByProps({ className: 'black bg-white br1 f5 bn pointer' }).props.onClick();
-  expect(testVar).toEqual(true);
+    fireEvent.click(screen.getByRole('button'));
+    expect(testVar).toEqual(true);
+  });
+  it('loading prop', () => {
+    let testVar = false;
+    const { container } = render(
+      <Button
+        className="red bg-white"
+        loading={true}
+        onClick={() => (testVar = true)}
+        icon={<BanIcon className="h1 w1 blue" />}
+      >
+        Loading
+      </Button>,
+    );
+    expect(screen.getByText('Loading')).toBeInTheDocument();
+    expect(screen.getByRole('button').className).toBe('red bg-white br1 f5 bn o-50');
+    expect(container.querySelector('svg')).toBeInTheDocument(); // loading icon
+    expect(container.querySelector('.mr2')).toBeInTheDocument(); // space after icon
+    expect(container.querySelector('.blue')).not.toBeInTheDocument(); // ban icon is not present
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(testVar).toBeFalsy();
+  });
+  it('disabled and icons props', () => {
+    let testVar = false;
+    const { container } = render(
+      <Button
+        className="red bg-white"
+        disabled={true}
+        onClick={() => (testVar = true)}
+        icon={<BanIcon className="h1 w1 blue" />}
+      >
+        Cancel
+      </Button>,
+    );
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    expect(screen.getByRole('button').className).toBe('red bg-white br1 f5 bn o-50');
+    expect(container.querySelector('svg')).toBeInTheDocument(); // ban icon
+    expect(container.querySelector('.blue')).toBeInTheDocument();
+    expect(container.querySelector('.mr2')).toBeInTheDocument(); // space after icon
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(testVar).toBeFalsy();
+  });
 });
 
-it('children and onClick props of CustomButton', () => {
-  let testVar;
-  const testButton = TestRenderer.create(
-    <CustomButton className="black bg-white" onClick={() => (testVar = true)}>
-      Test it
-    </CustomButton>,
-  );
-  const buttonInstance = testButton.root;
-  expect(
-    buttonInstance.findByProps({ className: 'black bg-white br1 f5 pointer' }).children,
-  ).toEqual(['Test it']);
+describe('CustomButton', () => {
+  it('children and onClick props, without icon', () => {
+    let testVar;
+    const { container } = render(
+      <CustomButton className="black bg-white" onClick={() => (testVar = true)}>
+        Test it
+      </CustomButton>,
+    );
+    expect(screen.getByText('Test it')).toBeInTheDocument();
+    expect(screen.getByRole('button').className).toBe('black bg-white br1 f5 pointer');
+    expect(container.querySelector('svg')).not.toBeInTheDocument();
 
-  buttonInstance.findByProps({ className: 'black bg-white br1 f5 pointer' }).props.onClick();
-  expect(testVar).toEqual(true);
+    fireEvent.click(screen.getByRole('button'));
+    expect(testVar).toEqual(true);
+  });
+  it('loading prop', () => {
+    let testVar = false;
+    const { container } = render(
+      <CustomButton
+        className="red bg-white"
+        loading={true}
+        onClick={() => (testVar = true)}
+        icon={<BanIcon className="h1 w1 blue" />}
+      >
+        Loading
+      </CustomButton>,
+    );
+    expect(screen.getByText('Loading')).toBeInTheDocument();
+    expect(screen.getByRole('button').className).toBe('red bg-white br1 f5 o-50');
+    expect(container.querySelector('svg')).toBeInTheDocument(); // loading icon
+    expect(container.querySelector('.mr2')).toBeInTheDocument(); // space after icon
+    expect(container.querySelector('.blue')).not.toBeInTheDocument(); // ban icon is not present
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(testVar).toBeFalsy();
+  });
+  it('disabled and icons props', () => {
+    let testVar = false;
+    const { container } = render(
+      <CustomButton
+        className="red bg-white"
+        disabled={true}
+        onClick={() => (testVar = true)}
+        icon={<BanIcon className="h1 w1 blue" />}
+      >
+        Cancel
+      </CustomButton>,
+    );
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    expect(screen.getByRole('button').className).toBe('red bg-white br1 f5 o-50');
+    expect(container.querySelector('svg')).toBeInTheDocument(); // ban icon
+    expect(container.querySelector('.blue')).toBeInTheDocument();
+    expect(container.querySelector('.mr2')).toBeInTheDocument(); // space after icon
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(testVar).toBeFalsy();
+  });
 });
 
 it('children and link props of EditButton', () => {
-  const testButton = TestRenderer.create(
-    <EditButton url="/manage/projects/1/">Test it</EditButton>,
-  );
-  const buttonInstance = testButton.root;
+  render(<EditButton url="/manage/projects/1/">Edit project</EditButton>);
 
-  expect(buttonInstance.findByType('a').props.href).toBe('/manage/projects/1/');
-  expect(buttonInstance.findByType('a').props.children).toEqual('Test it');
-  expect(buttonInstance.findByType('a').props.className).toBe(
+  expect(screen.getByText('Edit project')).toBeInTheDocument();
+  expect(screen.getByText('Edit project').href).toContain('/manage/projects/1/');
+  expect(screen.getByText('Edit project').className).toBe(
     'pointer no-underline br1 fw6 f7 dib pv2 ph3 ba b--red white bg-red mh1 mv1',
   );
 });

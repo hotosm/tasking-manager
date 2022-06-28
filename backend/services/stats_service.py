@@ -1,8 +1,9 @@
 from cachetools import TTLCache, cached
-
-from sqlalchemy import func, desc, cast, extract, or_, and_
+from datetime import date, timedelta
+from sqlalchemy import func, desc, cast, extract, or_, tuple_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
+
 from backend import db
 from backend.models.dtos.stats_dto import (
     ProjectContributionsDTO,
@@ -17,21 +18,22 @@ from backend.models.dtos.stats_dto import (
     CampaignStatsDTO,
     TaskStats,
     TaskStatsDTO,
+    GenderStatsDTO,
+    UserStatsDTO,
 )
 
 from backend.models.dtos.project_dto import ProjectSearchResultsDTO
 from backend.models.postgis.campaign import Campaign, campaign_projects
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project import Project
-from backend.models.postgis.statuses import TaskStatus, MappingLevel
+from backend.models.postgis.statuses import TaskStatus, MappingLevel, UserGender
 from backend.models.postgis.task import TaskHistory, User, Task, TaskAction
 from backend.models.postgis.utils import timestamp, NotFound  # noqa: F401
 from backend.services.project_service import ProjectService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
-
-from datetime import date, timedelta
+from backend.services.campaign_service import CampaignService
 
 homepage_stats_cache = TTLCache(maxsize=4, ttl=30)
 
@@ -76,7 +78,6 @@ class StatsService:
 
         # Make sure you are aware that users table has it as incrementing counters,
         # while projects table reflect the actual state, and both increment and decrement happens
-
         if new_state == last_state:
             return project, user
 
@@ -484,8 +485,58 @@ class StatsService:
         project.save()
 
     @staticmethod
+    def get_all_users_statistics(start_date: date, end_date: date):
+        users = User.query.filter(
+            User.date_registered >= start_date,
+            User.date_registered <= end_date,
+        )
+
+        stats_dto = UserStatsDTO()
+        stats_dto.total = users.count()
+        stats_dto.beginner = users.filter(
+            User.mapping_level == MappingLevel.BEGINNER.value
+        ).count()
+        stats_dto.intermediate = users.filter(
+            User.mapping_level == MappingLevel.INTERMEDIATE.value
+        ).count()
+        stats_dto.advanced = users.filter(
+            User.mapping_level == MappingLevel.ADVANCED.value
+        ).count()
+        stats_dto.contributed = users.filter(User.projects_mapped.isnot(None)).count()
+        stats_dto.email_verified = users.filter(
+            User.is_email_verified.is_(True)
+        ).count()
+
+        gender_stats = GenderStatsDTO()
+        gender_stats.male = users.filter(User.gender == UserGender.MALE.value).count()
+        gender_stats.female = users.filter(
+            User.gender == UserGender.FEMALE.value
+        ).count()
+        gender_stats.self_describe = users.filter(
+            User.gender == UserGender.SELF_DESCRIBE.value
+        ).count()
+        gender_stats.prefer_not = users.filter(
+            User.gender == UserGender.PREFER_NOT.value
+        ).count()
+
+        stats_dto.genders = gender_stats
+        return stats_dto
+
+    @staticmethod
+    def set_task_stats(result_row):
+        date_dto = TaskStats(
+            {
+                "date": result_row[0],
+                "mapped": result_row[1],
+                "validated": result_row[2],
+                "bad_imagery": result_row[3],
+            }
+        )
+        return date_dto
+
+    @staticmethod
     def get_task_stats(
-        start_date, end_date, org_id, org_name, campaign_id, project_id, country
+        start_date, end_date, org_id, org_name, campaign, project_id, country
     ):
         """ Creates tasks stats for a period using the TaskStatsDTO """
 
@@ -496,6 +547,11 @@ class StatsService:
                 TaskHistory.action_text,
                 func.DATE(TaskHistory.action_date).label("day"),
             )
+            .distinct(
+                tuple_(
+                    TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text
+                )
+            )
             .filter(
                 TaskHistory.action == "STATE_CHANGE",
                 or_(
@@ -504,19 +560,12 @@ class StatsService:
                     TaskHistory.action_text == "BADIMAGERY",
                 ),
             )
-            .filter(
-                and_(
-                    func.DATE(TaskHistory.action_date) >= start_date,
-                    func.DATE(TaskHistory.action_date) <= end_date,
-                )
-            )
-            .group_by(
-                TaskHistory.action_text,
-                "day",
+            .order_by(
                 TaskHistory.project_id,
                 TaskHistory.task_id,
+                TaskHistory.action_text,
+                TaskHistory.action_date,
             )
-            .order_by("day")
         )
 
         if org_id:
@@ -533,7 +582,11 @@ class StatsService:
             query = query.join(Project, Project.id == TaskHistory.project_id).filter(
                 Project.organisation_id == organisation_id
             )
-        if campaign_id:
+        if campaign:
+            try:
+                campaign_id = CampaignService.get_campaign_by_name(campaign).id
+            except NotFound:
+                campaign_id = None
             query = query.join(
                 campaign_projects,
                 campaign_projects.c.project_id == TaskHistory.project_id,
@@ -550,50 +603,68 @@ class StatsService:
                 TaskHistory.project_id == sq.c.id
             )
 
-        dates_stats = []
-        task_tracker = {
-            "MAPPED": [],
-            "VALIDATED": [],
-            "BADIMAGERY": [],
-        }
+        query = query.subquery()
 
-        # r -> (58, 3, 'MAPPED', datetime.date(2021, 1, 5)):
-        # r[0]: task_id, r[1]: project_id,r[2]: action_text, r[3]: date
-        dates = list(set(r[3] for r in query))
-        dates.sort(reverse=False)
+        date_query = db.session.query(
+            func.DATE(
+                func.generate_series(start_date, end_date, timedelta(days=1))
+            ).label("d_day")
+        ).subquery()
 
-        for d in dates:
-            day_stats_dto = TaskStats(
-                {
-                    "date": d,
-                    "mapped": 0,
-                    "validated": 0,
-                    "bad_imagery": 0,
-                }
+        grouped_dates = (
+            db.session.query(
+                date_query.c.d_day,
+                query.c.action_text,
+                func.count(query.c.action_text).label("cnt"),
             )
+            .join(date_query, date_query.c.d_day == query.c.day)
+            .group_by(date_query.c.d_day, query.c.action_text)
+            .order_by(date_query.c.d_day)
+        ).subquery()
 
-            values = [(r[0], r[1], r[2]) for r in query if d == r[3]]
-            values.sort(reverse=True)
+        mapped = (
+            db.session.query(
+                grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
+            )
+            .select_from(grouped_dates)
+            .filter(grouped_dates.c.action_text == "MAPPED")
+            .subquery()
+        )
+        validated = (
+            db.session.query(
+                grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
+            )
+            .select_from(grouped_dates)
+            .filter(grouped_dates.c.action_text == "VALIDATED")
+            .subquery()
+        )
+        badimagery = (
+            db.session.query(
+                grouped_dates.c.d_day, grouped_dates.c.action_text, grouped_dates.c.cnt
+            )
+            .select_from(grouped_dates)
+            .filter(grouped_dates.c.action_text == "BADIMAGERY")
+            .subquery()
+        )
 
-            for value in values:
-                task_detail = (value[0], value[1])  # tuple for (task_id, project_id)
-                task_status = value[2]
+        result = (
+            db.session.query(
+                func.to_char(grouped_dates.c.d_day, "YYYY-MM-DD"),
+                func.coalesce(mapped.c.cnt, 0).label("mapped"),
+                func.coalesce(validated.c.cnt, 0).label("validated"),
+                func.coalesce(badimagery.c.cnt, 0).label("badimagery"),
+            )
+            .select_from(grouped_dates)
+            .distinct(grouped_dates.c.d_day)
+            .filter(grouped_dates.c.d_day is not None)
+            .outerjoin(mapped, mapped.c.d_day == grouped_dates.c.d_day)
+            .outerjoin(validated, validated.c.d_day == grouped_dates.c.d_day)
+            .outerjoin(badimagery, badimagery.c.d_day == grouped_dates.c.d_day)
+        )
 
-                if task_status == "MAPPED":
-                    if task_detail not in task_tracker["MAPPED"]:
-                        task_tracker["MAPPED"].append(task_detail)
-                        day_stats_dto.mapped += 1
-                elif task_status == "VALIDATED":
-                    if task_detail not in task_tracker["VALIDATED"]:
-                        task_tracker["VALIDATED"].append(task_detail)
-                        day_stats_dto.validated += 1
-                elif task_status == "BADIMAGERY":
-                    if task_detail not in task_tracker["BADIMAGERY"]:
-                        task_tracker["BADIMAGERY"].append(task_detail)
-                        day_stats_dto.bad_imagery += 1
-            dates_stats.append(day_stats_dto)
+        day_stats_dto = list(map(StatsService.set_task_stats, result))
 
         results_dto = TaskStatsDTO()
-        results_dto.stats = dates_stats
+        results_dto.stats = day_stats_dto
 
         return results_dto

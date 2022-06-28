@@ -6,7 +6,7 @@ import { defineMessages } from 'react-intl';
 export default defineMessages({
   createProject: {
     id: 'management.projects.create.title',
-    defaultMessage: 'Create project',
+    defaultMessage: 'Create new project',
   },
   cloneProject: {
     id: 'management.projects.clone.message',
@@ -85,6 +85,15 @@ export default defineMessages({
     id: 'management.projects.create.trim_tasks.trim_to_aoi',
     defaultMessage: 'Trim the tasks to define the exact Area of Interest for mapping.',
   },
+  tinyTasks: {
+    id: 'management.projects.create.trim_tasks.tiny_tasks',
+    defaultMessage:
+      '{number, plural, one {There is # task smaller than {area}m². Would you like to discard it?} other {There are # tasks smaller than {area}m². Would you like to discard them?}}',
+  },
+  discard: {
+    id: 'management.projects.create.trim_tasks.tiny_tasks.discard',
+    defaultMessage: 'Discard',
+  },
   taskSizes: {
     id: 'management.projects.create.task_sizes.description',
     defaultMessage: 'General task size',
@@ -136,6 +145,23 @@ export default defineMessages({
     id: 'management.projects.create.reset.button',
     defaultMessage: 'Reset',
   },
+  showProjectsAOILayer: {
+    id: 'management.projects.create.show_aois',
+    defaultMessage: 'Show existing projects',
+  },
+  disabledAOILayer: {
+    id: 'management.projects.create.show_aois.disabled',
+    defaultMessage:
+      "Zoom in to be able to activate the visualization of other projects' areas of interest.",
+  },
+  enableAOILayer: {
+    id: 'management.projects.create.show_aois.enable',
+    defaultMessage: "Enable the visualization of the existing projects' areas of interest.",
+  },
+  colorLegend: {
+    id: 'management.projects.create.show_aois.legend',
+    defaultMessage: 'Color legend:',
+  },
   taskNumberMessage: {
     id: 'management.projects.create.split.tasks.number',
     defaultMessage: 'A new project will be created with {n} tasks.',
@@ -167,6 +193,14 @@ export default defineMessages({
   trim: {
     id: 'management.projects.create.button.trim',
     defaultMessage: 'Trim',
+  },
+  trimError: {
+    id: 'management.projects.create.trimError',
+    defaultMessage: 'An error occured while trimming the geometry.',
+  },
+  SelfIntersectingAOIError: {
+    id: 'management.projects.create.SelfIntersectingAOIError',
+    defaultMessage: 'Invalid geometry - polygon is self intersecting.',
   },
   draw: {
     id: 'management.projects.create.button.draw',

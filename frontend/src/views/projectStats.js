@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { fetchExternalJSONAPI } from '../network/genericJSONRequest';
 import { useFetch } from '../hooks/UseFetch';
 import { useTasksByStatus } from '../hooks/UseProjectCompletenessCalc';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
@@ -10,6 +11,7 @@ import { ProjectHeader } from '../components/projectDetail/header';
 import { TimeStats } from '../components/projectStats/timeStats';
 import { CompletionStats } from '../components/projectStats/completion';
 import { EditsStats } from '../components/projectStats/edits';
+import { retrieveDefaultChangesetComment } from '../utils/defaultChangesetComment';
 
 const ContributorsStats = React.lazy(() => import('../components/projectStats/contributorsStats'));
 const TasksByStatus = React.lazy(() => import('../components/projectStats/taskStatus'));
@@ -29,13 +31,23 @@ export function ProjectStats({ id }: Object) {
     `projects/${id}/contributions/queries/day/`,
     id,
   );
-  // To fix: set this URL with an ENV VAR later
-  const [errorEdits, loadingEdits, edits] = useFetch(
-    `https://osm-stats-production-api.azurewebsites.net/stats/${
-      project && project.changesetComment && project.changesetComment.replace('#', '').split(' ')[0]
-    }`,
-    project && project.changesetComment !== undefined,
-  );
+  const [edits, setEdits] = useState({});
+  useEffect(() => {
+    if (project && project.changesetComment !== undefined) {
+      let defaultComment = retrieveDefaultChangesetComment(project.changesetComment, id);
+      // To fix: set this URL with an ENV VAR later
+      if (defaultComment.length) {
+        fetchExternalJSONAPI(
+          `https://osm-stats-production-api.azurewebsites.net/stats/${defaultComment[0].replace(
+            '#',
+            '',
+          )}`,
+        )
+          .then((res) => setEdits(res))
+          .catch((e) => console.log(e));
+      }
+    }
+  }, [project, id]);
 
   return (
     <ReactPlaceholder
@@ -59,7 +71,7 @@ export function ProjectStats({ id }: Object) {
               showLoadingAnimation={true}
               rows={5}
               delay={500}
-              ready={!errorEdits && !loadingEdits}
+              ready={edits && edits.hashtag}
             >
               <EditsStats data={edits} />
             </ReactPlaceholder>

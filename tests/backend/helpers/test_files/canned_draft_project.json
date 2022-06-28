@@ -1,0 +1,85 @@
+{
+    "areaOfInterest": {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "id": "de744f407ca8d92a7298ad2a13d362f5",
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "coordinates": [
+                        [
+                            [
+                                84.767265,
+                                27.808938
+                            ],
+                            [
+                                84.774481,
+                                27.808117
+                            ],
+                            [
+                                84.774327,
+                                27.803786
+                            ],
+                            [
+                                84.765719,
+                                27.805017
+                            ],
+                            [
+                                84.767265,
+                                27.808938
+                            ]
+                        ]
+                    ],
+                    "type": "Polygon"
+                }
+            }
+        ]
+    },
+    "projectName": "Test",
+    "organisation": 23,
+    "tasks": {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "x": 753,
+                    "y": 594,
+                    "zoom": 10,
+                    "isSquare": false
+                },
+                "geometry": {
+                    "type": "MultiPolygon",
+                    "coordinates": [
+                        [
+                            [
+                                [
+                                    84.767265,
+                                    27.808938
+                                ],
+                                [
+                                    84.774481,
+                                    27.808117
+                                ],
+                                [
+                                    84.774327,
+                                    27.803786
+                                ],
+                                [
+                                    84.765719,
+                                    27.805017
+                                ],
+                                [
+                                    84.767265,
+                                    27.808938
+                                ]
+                            ]
+                        ]
+                    ]
+                }
+            }
+        ]
+    },
+    "arbitraryTasks": false
+}

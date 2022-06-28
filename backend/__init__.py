@@ -8,6 +8,7 @@ from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
 
 from backend.config import EnvironmentConfig
 
@@ -32,6 +33,7 @@ def format_url(endpoint):
 
 db = SQLAlchemy()
 migrate = Migrate()
+mail = Mail()
 oauth = OAuth()
 
 osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
@@ -40,7 +42,7 @@ osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
 from backend.models.postgis import *  # noqa
 
 
-def create_app(env=None):
+def create_app(env="backend.config.EnvironmentConfig"):
     """
     Bootstrap function to initialise the Flask app and config
     :return: Initialised Flask app
@@ -52,8 +54,7 @@ def create_app(env=None):
     app = Flask(__name__, template_folder="services/messaging/templates/")
 
     # Load configuration options from environment
-    app.config.from_object("backend.config.EnvironmentConfig")
-
+    app.config.from_object(env)
     # Enable logging to files
     initialise_logger(app)
     app.logger.info("Starting up a new Tasking Manager application")
@@ -62,6 +63,7 @@ def create_app(env=None):
     app.logger.debug("Connecting to the database")
     db.init_app(app)
     migrate.init_app(app, db)
+    mail.init_app(app)
 
     app.logger.debug("Add root redirect route")
 
@@ -217,6 +219,7 @@ def add_api_endpoints(app):
     from backend.api.organisations.resources import (
         OrganisationsStatsAPI,
         OrganisationsRestAPI,
+        OrganisationsBySlugRestAPI,
         OrganisationsAllAPI,
     )
     from backend.api.organisations.campaigns import OrganisationsCampaignsAPI
@@ -267,6 +270,7 @@ def add_api_endpoints(app):
     from backend.api.users.statistics import (
         UsersStatisticsAPI,
         UsersStatisticsInterestsAPI,
+        UsersStatisticsAllAPI,
     )
 
     # System API endpoint
@@ -611,6 +615,12 @@ def add_api_endpoints(app):
         methods=["GET"],
     )
     api.add_resource(
+        OrganisationsBySlugRestAPI,
+        format_url("organisations/<string:slug>/"),
+        endpoint="get_organisation_by_slug",
+        methods=["GET"],
+    )
+    api.add_resource(
         OrganisationsRestAPI,
         format_url("organisations/<int:organisation_id>/"),
         methods=["PUT", "DELETE", "PATCH"],
@@ -754,6 +764,10 @@ def add_api_endpoints(app):
         UsersStatisticsAPI, format_url("users/<string:username>/statistics/")
     )
 
+    api.add_resource(
+        UsersStatisticsAllAPI,
+        format_url("users/statistics/"),
+    )
     # User RecommendedProjects endpoint
     api.add_resource(
         UsersRecommendedProjectsAPI,

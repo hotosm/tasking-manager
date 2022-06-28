@@ -1,3 +1,5 @@
+import { TM_DEFAULT_CHANGESET_COMMENT } from '../../../config';
+
 export const getProjectSummary = (id) => ({
   projectId: id,
   defaultLocale: 'en',
@@ -22,7 +24,7 @@ export const getProjectSummary = (id) => ({
   countryTag: ['Bolivia'],
   osmchaFilterId: '9322aa63-cccc-4d0d-9f93-403678e52345',
   mappingTypes: ['BUILDINGS'],
-  changesetComment: `#hotosm-project-${id} #brumado-buildings`,
+  changesetComment: `${TM_DEFAULT_CHANGESET_COMMENT}-${id} #brumado-buildings`,
   percentMapped: 16,
   percentValidated: 6,
   percentBadImagery: 0,

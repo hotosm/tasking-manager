@@ -1,9 +1,9 @@
-import unittest
 from schematics.exceptions import DataError
 from backend.models.dtos.project_dto import ProjectDTO
+from tests.backend.base import BaseTestCase
 
 
-class TestProjectDTO(unittest.TestCase):
+class TestProjectDTO(BaseTestCase):
     def test_project_with_unknown_mapping_type_is_invalid(self):
 
         project_dto = ProjectDTO()

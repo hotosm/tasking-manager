@@ -8,8 +8,11 @@ import typesMessages from '../messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { CheckBox } from '../formInputs';
 import { ProjectInterests } from './projectInterests';
+import { ExtraIdParams } from './extraIdParams';
+import { Code } from '../code';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { ID_PRESETS } from '../../config/presets';
+import { getFilterId } from '../../utils/osmchaLink';
 
 export const MetadataForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -147,6 +150,27 @@ export const MetadataForm = () => {
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
+            <FormattedMessage {...messages.extraIdParams} />*
+        </label>
+        <p className={styleClasses.pClass}>
+          <FormattedMessage
+            {...messages.extraIdParamsDescription}
+            values={{ text: <Code>disabled_features=buildings&offset=-10,5</Code> }}
+          />
+        </p>
+        <p className={styleClasses.pClass}>
+          <FormattedMessage
+            {...messages.extraIdParamsDescriptionLink}
+            values={{ link: <IdDocsLink /> }}
+          />
+        </p>
+        <ExtraIdParams
+          value={projectInfo.extraIdParams}
+          setProjectInfo={setProjectInfo}
+        />
+      </div>
+      <div className={styleClasses.divClass}>
+        <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.organisation} />*
         </label>
         <p className={styleClasses.pClass}>
@@ -212,9 +236,25 @@ export const MetadataForm = () => {
           className={styleClasses.inputClass}
           type="text"
           name="osmchaFilterId"
-          value={projectInfo.osmchaFilterId}
+          value={projectInfo.osmchaFilterId || ''}
+          onChange={(e) => {
+            setProjectInfo({
+              ...projectInfo,
+              osmchaFilterId: getFilterId(e.target.value),
+            });
+          }}
         />
       </div>
     </div>
   );
 };
+
+const IdDocsLink = () =>
+  <a
+    href="https://github.com/openstreetmap/iD/blob/develop/API.md#url-parameters"
+    className="red underline link"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <FormattedMessage {...messages.iDAPIDocs} />
+  </a>;

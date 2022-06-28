@@ -3,7 +3,11 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { TopCauses } from '../topCauses';
+import TopCauses from '../topCauses';
+
+jest.mock('react-chartjs-2', () => ({
+  Doughnut: () => null,
+}));
 
 describe('TopCauses card', () => {
   it('renders a message if the user has not projects mapped yet', () => {
@@ -36,7 +40,7 @@ describe('TopCauses card', () => {
       ],
       projectsMapped: 7,
     };
-    const { container } = render(
+    render(
       <ReduxIntlProviders>
         <TopCauses userStats={stats} />
       </ReduxIntlProviders>,
@@ -46,6 +50,5 @@ describe('TopCauses card', () => {
     expect(
       screen.queryByText('Information is not available because no projects were mapped until now.'),
     ).not.toBeInTheDocument();
-    expect(container.querySelector('canvas')).toBeInTheDocument();
   });
 });

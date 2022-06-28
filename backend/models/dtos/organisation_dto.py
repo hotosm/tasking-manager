@@ -1,4 +1,5 @@
 from schematics import Model
+from schematics.exceptions import ValidationError
 from schematics.types import (
     StringType,
     IntType,
@@ -7,6 +8,19 @@ from schematics.types import (
     BooleanType,
     DictType,
 )
+
+from backend.models.postgis.statuses import OrganisationType
+
+
+def is_known_organisation_type(value):
+    """ Validates organisation subscription type string """
+    try:
+        OrganisationType[value.upper()]
+    except (AttributeError, KeyError):
+        raise ValidationError(
+            f"Unknown organisationType: {value}. Valid values are {OrganisationType.FREE.name}, "
+            f"{OrganisationType.DISCOUNTED.name}, {OrganisationType.FULL_FEE.name}"
+        )
 
 
 class OrganisationManagerDTO(Model):
@@ -33,6 +47,7 @@ class OrganisationDTO(Model):
     organisation_id = IntType(serialized_name="organisationId")
     managers = ListType(ModelType(OrganisationManagerDTO), min_size=1, required=True)
     name = StringType(required=True)
+    slug = StringType()
     logo = StringType()
     description = StringType()
     url = StringType()
@@ -40,6 +55,8 @@ class OrganisationDTO(Model):
     projects = ListType(StringType, serialize_when_none=False)
     teams = ListType(ModelType(OrganisationTeamsDTO))
     campaigns = ListType(ListType(StringType))
+    type = StringType(validators=[is_known_organisation_type])
+    subscription_tier = IntType(serialized_name="subscriptionTier")
 
 
 class ListOrganisationsDTO(Model):
@@ -56,9 +73,12 @@ class NewOrganisationDTO(Model):
     organisation_id = IntType(serialized_name="organisationId", required=False)
     managers = ListType(StringType(), required=True)
     name = StringType(required=True)
+    slug = StringType()
     logo = StringType()
     description = StringType()
     url = StringType()
+    type = StringType(validators=[is_known_organisation_type])
+    subscription_tier = IntType(serialized_name="subscriptionTier")
 
 
 class UpdateOrganisationDTO(OrganisationDTO):
@@ -66,6 +86,8 @@ class UpdateOrganisationDTO(OrganisationDTO):
     organisation_id = IntType(serialized_name="organisationId", required=False)
     managers = ListType(StringType())
     name = StringType()
+    slug = StringType()
     logo = StringType()
     description = StringType()
     url = StringType()
+    type = StringType(validators=[is_known_organisation_type])

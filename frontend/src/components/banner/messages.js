@@ -25,4 +25,20 @@ export default defineMessages({
     defaultMessage:
       'We use cookies and similar technologies to recognize and analyze your visits, and measure traffic usage and activity. You can learn about how we use the data about your visit or information you provide reading our {link}. By clicking "I Agree", you consent to the use of cookies.',
   },
+  close: {
+    id: 'banner.button.close',
+    defaultMessage: 'Close',
+  },
+  learnMore: {
+    id: 'banner.button.learnmore',
+    defaultMessage: 'Learn More',
+  },
+  importantNotification: {
+      id: 'banner.title.notification',
+      defaultMessage: 'Important notification for users',
+  },
+  archivalNotificationText: {
+    id: 'banner.text.archivalNotification',
+    defaultMessage: 'Attention: as part of the ongoing maintenance of the Tasking Manager, projects created before 2020 will be archived.',
+  }
 });

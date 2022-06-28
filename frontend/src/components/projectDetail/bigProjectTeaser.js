@@ -16,13 +16,18 @@ export function BigProjectTeaser({
   return (
     <div className="cf bg-white blue-dark">
       <div className={`fl ${outerDivStyles} ${className}`}>
-        <span className={`${littleFont} blue-light`}>
-          <FormattedMessage
-            {...messages['projectTotalContributors']}
-            values={{
-              number: <span className={`blue-dark b ${bigFont}`}>{totalContributors || 0}</span>,
-            }}
-          />
+        <span className={littleFont}>
+          {totalContributors ? (
+            <FormattedMessage
+              {...messages.projectTotalContributors}
+              values={{
+                number: totalContributors,
+                b: (chunks) => <span className="blue-dark b">{chunks}</span>,
+              }}
+            />
+          ) : (
+            <FormattedMessage {...messages.noProjectContributors} />
+          )}
         </span>
       </div>
       <div title={lastUpdated} className={`fr ${outerDivStyles} ${className || ''}`}>

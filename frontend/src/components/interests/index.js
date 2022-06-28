@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from '@reach/router';
 import { Form, Field } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
+import ReactPlaceholder from 'react-placeholder';
 
 import messages from '../teamsAndOrgs/messages';
 import { Management } from '../teamsAndOrgs/management';
-import { EditModeControl } from '../teamsAndOrgs/editMode';
 import { HashtagIcon } from '../svgIcons';
 import { Button } from '../button';
+import { nCardPlaceholders } from '../teamsAndOrgs/campaignsPlaceholder';
 
 export const InterestCard = ({ interest }) => {
   return (
@@ -26,7 +27,7 @@ export const InterestCard = ({ interest }) => {
   );
 };
 
-export const InterestsManagement = ({ interests, userDetails }) => {
+export const InterestsManagement = ({ interests, _userDetails, isInterestsFetched }) => {
   return (
     <Management
       title={
@@ -38,13 +39,20 @@ export const InterestsManagement = ({ interests, userDetails }) => {
       showAddButton={true}
       managementView
     >
-      {interests.length ? (
-        interests.map((i, n) => <InterestCard interest={i} />)
-      ) : (
-        <div>
-          <FormattedMessage {...messages.noCategories} />
-        </div>
-      )}
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        customPlaceholder={nCardPlaceholders(4)}
+        delay={10}
+        ready={isInterestsFetched}
+      >
+        {interests?.length ? (
+          interests.map((i, n) => <InterestCard key={n} interest={i} />)
+        ) : (
+          <div>
+            <FormattedMessage {...messages.noCategories} />
+          </div>
+        )}
+      </ReactPlaceholder>
     </Management>
   );
 };
@@ -66,42 +74,42 @@ export const InterestInformation = (props) => {
 };
 
 export const InterestForm = (props) => {
-  const [editMode, setEditMode] = useState(false);
-
   return (
     <Form
       onSubmit={(values) => props.updateInterest(values)}
       initialValues={props.interest}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      render={({
+        handleSubmit,
+        dirty,
+        submitSucceeded,
+        dirtySinceLastSubmit,
+        form,
+        submitting,
+        values,
+      }) => {
+        const dirtyForm = submitSucceeded ? dirtySinceLastSubmit && dirty : dirty;
         return (
           <div className="blue-grey mb3">
-            <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
+            <div className={`bg-white b--grey-light pa4 ${dirtyForm ? 'bt bl br' : 'ba'}`}>
               <h3 className="f3 fw6 dib blue-dark mv0">
                 <FormattedMessage {...messages.categoryInfo} />
               </h3>
-              <EditModeControl editMode={editMode} switchModeFn={setEditMode} />
               <form id="interest-form" onSubmit={handleSubmit}>
-                <fieldset
-                  className="bn pa0"
-                  disabled={submitting || props.disabledForm || !editMode}
-                >
+                <fieldset className="bn pa0" disabled={submitting}>
                   <InterestInformation />
                 </fieldset>
               </form>
             </div>
-            {editMode && (
+            {dirtyForm && (
               <div className="cf pt0 h3">
                 <div className="w-70-l w-50 fl tr dib bg-grey-light">
-                  <Button className="blue-dark bg-grey-light h3" onClick={() => setEditMode(false)}>
+                  <Button className="blue-dark bg-grey-light h3" onClick={() => form.restart()}>
                     <FormattedMessage {...messages.cancel} />
                   </Button>
                 </div>
                 <div className="w-30-l w-50 h-100 fr dib">
                   <Button
-                    onClick={() => {
-                      handleSubmit();
-                      setEditMode(false);
-                    }}
+                    onClick={() => handleSubmit()}
                     className="w-100 h-100 bg-red white"
                     disabledClassName="bg-red o-50 white w-100 h-100"
                   >

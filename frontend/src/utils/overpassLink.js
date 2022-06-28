@@ -6,7 +6,7 @@ export function formatOverpassLink(users, bbox, download = false) {
     format = 'xml';
   }
   const swneBbox = [bbox[1], bbox[0], bbox[3], bbox[2]];
-  const usersQuery = users.map(user => formatUserQuery(user, swneBbox)).join('');
+  const usersQuery = users.map((user) => formatUserQuery(user, swneBbox)).join('');
   const query = `[out:${format}][timeout:250];(${usersQuery});out body;>;out skel qt;`;
 
   return `${baseUrl}${encodeURIComponent(query)}`;

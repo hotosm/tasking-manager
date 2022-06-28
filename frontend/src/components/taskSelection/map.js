@@ -4,7 +4,9 @@ import bbox from '@turf/bbox';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
 import redlock from '../../assets/img/red-lock.png';
@@ -34,11 +36,13 @@ export const TasksMap = ({
   zoomedTaskId,
   navigate,
   animateZoom = true,
+  showTaskIds = false,
   selected: selectedOnMap,
 }) => {
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const authDetails = useSelector((state) => state.auth.get('userDetails'));
+  const [hoveredTaskId, setHoveredTaskId] = useState(null);
 
   const [map, setMapObj] = useState(null);
 
@@ -65,7 +69,8 @@ export const TasksMap = ({
   }, []);
 
   useLayoutEffect(() => {
-    if (zoomedTaskId) {
+    // should run only when triggered from tasks list
+    if (typeof zoomedTaskId === 'number') {
       const taskGeom = mapResults.features.filter(
         (task) => task.properties.taskId === zoomedTaskId,
       )[0].geometry;
@@ -93,7 +98,30 @@ export const TasksMap = ({
     ];
 
     const updateTMZoom = () => {
-      if (!taskBordersOnly) {
+      // fit bounds to last mapped/validated task(s), if exists
+      // otherwise fit bounds to all tasks 
+      if (zoomedTaskId?.length > 0) {
+        const lastLockedTasks = mapResults.features.filter((task) =>
+          zoomedTaskId.includes(task.properties.taskId),
+        );
+
+        const lastLockedTasksGeom = lastLockedTasks.reduce(
+          (acc, curr) => {
+            const geom = curr.geometry;
+            return {
+              type: 'MultiPolygon',
+              coordinates: [...acc.coordinates, ...geom.coordinates],
+            };
+          },
+          { type: 'MultiPolygon', coordinates: [] },
+        );
+
+        const screenWidth = window.innerWidth;
+        map.fitBounds(bbox(lastLockedTasksGeom), {
+          padding: screenWidth / 8,
+          animate: false,
+        });
+      } else if (!taskBordersOnly) {
         map.fitBounds(bbox(mapResults), { padding: 40, animate: animateZoom });
       } else {
         map.fitBounds(bbox(mapResults), { padding: 220, maxZoom: 6.5, animate: animateZoom });
@@ -101,6 +129,9 @@ export const TasksMap = ({
     };
 
     const mapboxLayerDefn = () => {
+      map.once('load', () => {
+        map.resize();
+      });
       if (map.getSource('tasks') === undefined) {
         map.addImage('lock', lockIcon, { width: 17, height: 20, data: lockIcon });
         map.addImage('redlock', redlockIcon, { width: 30, height: 30, data: redlockIcon });
@@ -318,12 +349,20 @@ export const TasksMap = ({
         );
       }
 
-      map.on('mouseenter', 'tasks-fill', function (e) {
-        if (selectTask) {
-          // Change the cursor style as a UI indicator.
-          map.getCanvas().style.cursor = 'pointer';
-        }
-      });
+      if (showTaskIds) {
+        map.on('mousemove', 'tasks-fill', function (e) {
+          // when the user hover on a task they are validating, enable the task id dialog
+          if (e.features[0].properties.lockedBy === authDetails.id) {
+            setHoveredTaskId(e.features[0].properties.taskId);
+          } else {
+            setHoveredTaskId(null);
+          }
+        });
+        map.on('mouseleave', 'tasks-fill', function (e) {
+          // disable the task id dialog when the mouse go outside the task grid
+          setHoveredTaskId(null);
+        });
+      }
 
       if (taskBordersOnly && navigate) {
         map.on('mouseenter', 'point-tasks-centroid', function (e) {
@@ -336,6 +375,12 @@ export const TasksMap = ({
         map.on('click', 'point-tasks-centroid-inner', () => navigate('./tasks'));
       }
 
+      map.on('mouseenter', 'tasks-fill', function (e) {
+        if (selectTask) {
+          // Change the cursor style as a UI indicator.
+          map.getCanvas().style.cursor = 'pointer';
+        }
+      });
       map.on('click', 'tasks-fill', onSelectTaskClick);
       map.on('mouseleave', 'tasks-fill', function (e) {
         // Change the cursor style as a UI indicator.
@@ -414,7 +459,18 @@ export const TasksMap = ({
     navigate,
     animateZoom,
     authDetails.id,
+    showTaskIds,
+    zoomedTaskId,
   ]);
 
-  return <div id="map" className={className} ref={mapRef}></div>;
+  return (
+    <>
+      {showTaskIds && hoveredTaskId && (
+        <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 ">
+          <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
+        </div>
+      )}
+      <div id="map" className={className} ref={mapRef}></div>
+    </>
+  );
 };

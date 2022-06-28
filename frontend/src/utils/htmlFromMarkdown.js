@@ -1,5 +1,54 @@
-import marked from 'marked';
+import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+
+const VIDEO_TAG_REGEXP = new RegExp(/^::youtube\[(.*)\]$/);
+
+const parseMarkdown = (markdownText) => {
+  marked.use({
+    gfm: false,
+    extensions: [
+      {
+        name: 'videoExt',
+        level: 'inline',
+        start: (src) => {
+          const m = src.match(/^::youtube/);
+
+          if (m) {
+            return m.index;
+          }
+        },
+        tokenizer: function (src) {
+          const match = VIDEO_TAG_REGEXP.exec(src);
+
+          if (match) {
+            return {
+              type: 'videoExt',
+              raw: match[0],
+              text: match[1].trim(),
+              tokens: [],
+            };
+          }
+        },
+        renderer: function (token) {
+          const videoId = token.text;
+
+          return `
+            <iframe
+              src="https://www.youtube.com/embed/${videoId}"
+              width="480" height="270"
+              style="border: 0;"
+              title="YouTube Video"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          `;
+        },
+      },
+    ],
+  });
+  return marked.parse(markdownText);
+};
 
 /* per https://stackoverflow.com/a/34688574/272018 */
 export const htmlFromMarkdown = (markdownText) => {
@@ -16,7 +65,23 @@ export const htmlFromMarkdown = (markdownText) => {
       node.setAttribute('xlink:show', 'new');
     }
   });
-  return { __html: DOMPurify.sanitize(marked(markdownText)) };
+
+  DOMPurify.addHook('uponSanitizeElement', (node, data) => {
+    if (data.tagName === 'iframe') {
+      const src = node.getAttribute('src') || '';
+      // allow only youtube urls to be embedded in iframes
+      if (!src.startsWith('https://www.youtube.com/embed/')) {
+        return node.parentNode?.removeChild(node);
+      }
+    }
+  });
+
+  const config = {
+    ADD_TAGS: ['iframe'],
+    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder'],
+  };
+
+  return { __html: DOMPurify.sanitize(parseMarkdown(markdownText), config) };
 };
 
 export const formatUserNamesToLink = (text) => {

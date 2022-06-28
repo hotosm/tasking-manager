@@ -1,4 +1,5 @@
 import React from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -7,28 +8,34 @@ import typesMessages from '../messages';
 import { CHART_COLOURS } from '../../config';
 import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 
-export const EditsByNumbers = ({ osmStats }) => {
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+const EditsByNumbers = ({ osmStats }) => {
   const intl = useIntl();
   let reference = [
     {
       label: intl.formatMessage(typesMessages.buildings),
       field: 'total_building_count_add',
       backgroundColor: CHART_COLOURS.red,
+      borderColor: CHART_COLOURS.white,
     },
     {
       label: intl.formatMessage(typesMessages.roads),
       field: 'total_road_km_add',
       backgroundColor: CHART_COLOURS.green,
+      borderColor: CHART_COLOURS.white,
     },
     {
       label: intl.formatMessage(typesMessages.pointsOfInterest),
       field: 'total_poi_count_add',
       backgroundColor: CHART_COLOURS.orange,
+      borderColor: CHART_COLOURS.white,
     },
     {
       label: intl.formatMessage(typesMessages.waterways),
       field: 'total_waterway_count_add',
       backgroundColor: CHART_COLOURS.blue,
+      borderColor: CHART_COLOURS.white,
     },
   ];
 
@@ -43,8 +50,11 @@ export const EditsByNumbers = ({ osmStats }) => {
         <Doughnut
           data={data}
           options={{
-            legend: { position: 'right', labels: { boxWidth: 12 } },
-            tooltips: { callbacks: { label: (tooltip, data) => formatTooltip(tooltip, data) } },
+            aspectRatio: 2,
+            plugins: {
+              legend: { position: 'right', labels: { boxWidth: 12 } },
+              tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+            },
           }}
         />
       ) : (
@@ -55,3 +65,5 @@ export const EditsByNumbers = ({ osmStats }) => {
     </div>
   );
 };
+
+export default EditsByNumbers;

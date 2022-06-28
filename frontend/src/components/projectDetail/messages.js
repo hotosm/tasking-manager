@@ -20,9 +20,13 @@ export default defineMessages({
     id: 'project.detail.createdBy',
     defaultMessage: 'Project created by {user}.',
   },
+  noProjectContributors: {
+    id: 'project.detail.contributorCount.zero',
+    defaultMessage: 'No contributors yet',
+  },
   projectTotalContributors: {
     id: 'project.detail.contributorCount',
-    defaultMessage: '{number} total contributors',
+    defaultMessage: '{number, plural, one {<b>#</b> contributor} other {<b>#</b> contributors}}',
   },
   projectLastContribution: {
     id: 'project.detail.lastContribution',
@@ -59,6 +63,10 @@ export default defineMessages({
   typesOfMapping: {
     id: 'project.detail.typesOfMapping',
     defaultMessage: 'Types of Mapping',
+  },
+  private: {
+    id: 'project.detail.private',
+    defaultMessage: 'Private',
   },
   editProject: {
     id: 'project.detail.editProject',
@@ -120,6 +128,18 @@ export default defineMessages({
     id: 'project.detail.questionsAndComments.none',
     defaultMessage:
       'There are currently no questions or comments on this project. Be the first to post one!',
+  },
+  loginTocomment: {
+    id: 'project.detail.questionsAndComments.login',
+    defaultMessage: 'Log in to be able to post comments.',
+  },
+  write: {
+    id: 'project.detail.questionsAndComments.write',
+    defaultMessage: 'Write',
+  },
+  preview: {
+    id: 'project.detail.questionsAndComments.preview',
+    defaultMessage: 'Preview',
   },
   post: {
     id: 'project.detail.questionsAndComments.button',
@@ -267,6 +287,14 @@ export default defineMessages({
     id: 'projects.link.stats',
     defaultMessage: 'More statistics',
   },
+  mappedTasks: {
+    id: 'projects.stats.mapped',
+    defaultMessage: 'Mapped tasks',
+  },
+  validatedTasks: {
+    id: 'projects.stats.validated',
+    defaultMessage: 'Validated tasks',
+  },
   shareMessage: {
     id: 'project.share.twitter',
     defaultMessage: 'Contribute mapping the project #{id} on {site}',
@@ -278,5 +306,17 @@ export default defineMessages({
   shareOnLinkedIn: {
     id: 'project.share.linkedin',
     defaultMessage: 'Share on LinkedIn',
+  },
+  inaccessibleProjectTitle: {
+    id: 'project.inaccessible.title',
+    defaultMessage: "You don't have permission to access this project",
+  },
+  inaccessibleProjectDescription: {
+    id: 'project.inaccessible.description',
+    defaultMessage: 'Please contact the project manager to request access.',
+  },
+  exploreOtherProjects: {
+    id: 'project.inaccessible.exploreOtherProjects',
+    defaultMessage: 'Explore other projects',
   },
 });

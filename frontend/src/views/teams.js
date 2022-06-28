@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, redirectTo } from '@reach/router';
-import ReactPlaceholder from 'react-placeholder';
-import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
+import { Link, useNavigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 
@@ -50,6 +48,8 @@ export function ListTeams({ managementView = false }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [teams, setTeams] = useState(null);
   const [userTeamsOnly, setUserTeamsOnly] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
@@ -59,47 +59,37 @@ export function ListTeams({ managementView = false }: Object) {
       } else {
         queryParam = `?member=${userDetails.id}`;
       }
-      fetchLocalJSONAPI(`teams/${queryParam}`, token).then((res) => setTeams(res.teams));
+      setLoading(true);
+      fetchLocalJSONAPI(`teams/${queryParam}`, token)
+        .then((res) => {
+          setTeams(res.teams);
+          setLoading(false);
+        })
+        .catch((err) => setError(err));
     }
   }, [userDetails, token, managementView, userTeamsOnly]);
 
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <div className="w-50-ns w-100 cf ph6-l ph4">
-        <TextBlock rows={1} className="bg-grey-light h3" />
-        <TextBlock rows={1} className="bg-grey-light h2 mt2" />
-      </div>
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-    </div>
-  );
-
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={teams !== null}
-    >
-      <TeamsManagement
-        teams={teams}
-        userDetails={userDetails}
-        managementView={managementView}
-        userTeamsOnly={userTeamsOnly}
-        setUserTeamsOnly={setUserTeamsOnly}
-      />
-    </ReactPlaceholder>
+    <TeamsManagement
+      teams={teams}
+      userDetails={userDetails}
+      managementView={managementView}
+      userTeamsOnly={userTeamsOnly}
+      setUserTeamsOnly={setUserTeamsOnly}
+      isTeamsFetched={!loading && !error}
+    />
   );
 }
 
 const joinTeamRequest = (team_id, username, role, token) => {
-  pushToLocalJSONAPI(
+  return pushToLocalJSONAPI(
     `teams/${team_id}/actions/join/`,
     JSON.stringify({ username: username, role: role }),
     token,
     'POST',
   );
 };
+
 const leaveTeamRequest = (team_id, username, role, token) => {
   pushToLocalJSONAPI(
     `teams/${team_id}/actions/leave/`,
@@ -111,23 +101,17 @@ const leaveTeamRequest = (team_id, username, role, token) => {
 
 export function CreateTeam() {
   useSetTitleTag('Create new team');
+  const navigate = useNavigate();
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
-  const [newTeamId, setNewTeamId] = useState(null);
 
   useEffect(() => {
     if (userDetails && userDetails.username && managers.length === 0) {
       setManagers([{ username: userDetails.username, pictureUrl: userDetails.pictureUrl }]);
     }
   }, [userDetails, managers]);
-
-  useEffect(() => {
-    if (newTeamId) {
-      redirectTo(`/manage/teams/${newTeamId}`);
-    }
-  }, [newTeamId]);
 
   const addManagers = (values) => {
     const newValues = values.filter(
@@ -154,7 +138,7 @@ export function CreateTeam() {
         .filter((user) => user.username !== userDetails.username)
         .map((user) => joinTeamRequest(result.teamId, user.username, 'MANAGER', token));
       members.map((user) => joinTeamRequest(result.teamId, user.username, 'MEMBER', token));
-      setNewTeamId(result.teamId);
+      navigate(`/manage/teams/${result.teamId}`);
     });
   };
 
@@ -224,7 +208,6 @@ export function CreateTeam() {
 }
 
 export function EditTeam(props) {
-  useSetTitleTag('Edit team');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, team] = useFetch(`teams/${props.id}/`);
@@ -233,6 +216,9 @@ export function EditTeam(props) {
   const [members, setMembers] = useState([]);
   const [requests, setRequests] = useState([]);
   const [canUserEditTeam] = useEditTeamAllowed(team);
+  const [memberJoinTeamError, setMemberJoinTeamError] = useState(null);
+  const [managerJoinTeamError, setManagerJoinTeamError] = useState(null);
+
   useEffect(() => {
     if (!initManagers && team && team.members) {
       setManagers(filterActiveManagers(team.members));
@@ -241,6 +227,7 @@ export function EditTeam(props) {
       setInitManagers(true);
     }
   }, [team, managers, initManagers]);
+  useSetTitleTag(`Edit ${team.name}`);
 
   const addManagers = (values) => {
     const newValues = values
@@ -262,7 +249,12 @@ export function EditTeam(props) {
   };
   const updateManagers = () => {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, managers, true);
-    usersAdded.forEach((user) => joinTeamRequest(team.teamId, user, 'MANAGER', token));
+    usersAdded.forEach((user) =>
+      joinTeamRequest(team.teamId, user, 'MANAGER', token).catch((err) => {
+        setManagerJoinTeamError(err.message);
+        removeManagers(user);
+      }),
+    );
     usersRemoved.forEach((user) => leaveTeamRequest(team.teamId, user, 'MANAGER', token));
     team.members = team.members
       .filter((user) => user.function === 'MEMBER' || user.active === false)
@@ -270,7 +262,12 @@ export function EditTeam(props) {
   };
   const updateMembers = () => {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, members);
-    usersAdded.forEach((user) => joinTeamRequest(team.teamId, user, 'MEMBER', token));
+    usersAdded.forEach((user) =>
+      joinTeamRequest(team.teamId, user, 'MEMBER', token).catch((err) => {
+        setMemberJoinTeamError(err.message);
+        removeMembers(user);
+      }),
+    );
     usersRemoved.forEach((user) => leaveTeamRequest(team.teamId, user, 'MEMBER', token));
     team.members = team.members
       .filter((user) => user.function === 'MANAGER' || user.active === false)
@@ -322,6 +319,8 @@ export function EditTeam(props) {
           saveMembersFn={updateManagers}
           resetMembersFn={setManagers}
           members={managers}
+          managerJoinTeamError={managerJoinTeamError}
+          setManagerJoinTeamError={setManagerJoinTeamError}
         />
         <div className="h1"></div>
         <Members
@@ -331,6 +330,8 @@ export function EditTeam(props) {
           resetMembersFn={setMembers}
           members={members}
           type="members"
+          memberJoinTeamError={memberJoinTeamError}
+          setMemberJoinTeamError={setMemberJoinTeamError}
         />
         <div className="h1"></div>
         <JoinRequests
@@ -379,7 +380,10 @@ export function TeamDetail(props) {
       JSON.stringify({ role: 'MEMBER', username: userDetails.username }),
       token,
       'POST',
-    ).then((res) => setIsMember(team.inviteOnly ? 'requested' : true));
+    ).then((res) => {
+      setIsMember(team.inviteOnly ? 'requested' : true);
+      setMembers((members) => [...members, userDetails]);
+    });
   };
 
   const leaveTeam = () => {
@@ -388,7 +392,10 @@ export function TeamDetail(props) {
       JSON.stringify({ username: userDetails.username }),
       token,
       'POST',
-    ).then((res) => setIsMember(false));
+    ).then((res) => {
+      setIsMember(false);
+      setMembers((members) => members.filter((member) => member.username !== userDetails.username));
+    });
   };
 
   if (!loading && error) {

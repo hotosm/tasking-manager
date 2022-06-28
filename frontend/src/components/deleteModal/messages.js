@@ -12,6 +12,10 @@ export default defineMessages({
     id: 'deleteModal.status.success',
     defaultMessage: '{type} deleted successfully.',
   },
+  success_projects: {
+    id: 'deleteModal.status.success.projects',
+    defaultMessage: 'Project deleted successfully.',
+  },
   failure_projects: {
     id: 'deleteModal.status.failure.projects',
     defaultMessage: 'An error occurred when trying to delete this project.',
@@ -75,5 +79,9 @@ export default defineMessages({
   confirmDeleteTitle_teams: {
     id: 'deleteModal.title.teams',
     defaultMessage: 'Are you sure you want to delete this team?',
+  },
+  OrgHasProjectsError: {
+    id: 'deleteModal.error.OrgHasProjectsError',
+    defaultMessage: 'Organisation has some projects. Please delete them first.',
   },
 });

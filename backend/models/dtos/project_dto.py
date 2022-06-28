@@ -79,7 +79,8 @@ def is_known_editor(value):
         raise ValidationError(
             f"Unknown editor: {value} Valid values are {Editors.ID.name}, "
             f"{Editors.JOSM.name}, {Editors.POTLATCH_2.name}, "
-            f"{Editors.FIELD_PAPERS.name}"
+            f"{Editors.FIELD_PAPERS.name}, "
+            f"{Editors.RAPID.name} "
         )
 
 
@@ -206,6 +207,10 @@ class ProjectDTO(Model):
     imagery = StringType()
     josm_preset = StringType(serialized_name="josmPreset", serialize_when_none=False)
     id_presets = ListType(StringType, serialized_name="idPresets", default=[])
+    extra_id_params = StringType(serialized_name="extraIdParams")
+    rapid_power_user = BooleanType(
+        serialized_name="rapidPowerUser", default=False, required=False
+    )
     mapping_types = ListType(
         StringType,
         serialized_name="mappingTypes",
@@ -215,6 +220,7 @@ class ProjectDTO(Model):
     campaigns = ListType(ModelType(CampaignDTO), default=[])
     organisation = IntType(required=True)
     organisation_name = StringType(serialized_name="organisationName")
+    organisation_slug = StringType(serialized_name="organisationSlug")
     organisation_logo = StringType(serialized_name="organisationLogo")
     country_tag = ListType(StringType, serialized_name="countryTag")
 
@@ -303,6 +309,10 @@ class ProjectSearchDTO(Model):
     favorited_by = IntType(required=False)
     managed_by = IntType(required=False)
     omit_map_results = BooleanType(required=False)
+    last_updated_lte = StringType(required=False)
+    last_updated_gte = StringType(required=False)
+    created_lte = StringType(required=False)
+    created_gte = StringType(required=False)
 
     def __hash__(self):
         """ Make object hashable so we can cache user searches"""
@@ -457,6 +467,7 @@ class ProjectSummary(Model):
     campaigns = ListType(ModelType(CampaignDTO), default=[])
     organisation = IntType()
     organisation_name = StringType(serialized_name="organisationName")
+    organisation_slug = StringType(serialized_name="organisationSlug")
     organisation_logo = StringType(serialized_name="organisationLogo")
     country_tag = ListType(StringType, serialized_name="countryTag")
     osmcha_filter_id = StringType(serialized_name="osmchaFilterId")
@@ -494,6 +505,10 @@ class ProjectSummary(Model):
     imagery = StringType()
     license_id = IntType(serialized_name="licenseId")
     id_presets = ListType(StringType, serialized_name="idPresets", default=[])
+    extra_id_params = StringType(serialized_name="extraIdParams")
+    rapid_power_user = BooleanType(
+        serialized_name="rapidPowerUser", default=False, required=False
+    )
     mapping_editors = ListType(
         StringType,
         min_size=1,

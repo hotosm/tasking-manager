@@ -44,6 +44,18 @@ export default defineMessages({
     id: 'mytasks.filter.tasks',
     defaultMessage: 'Tasks',
   },
+  recentlyEdited: {
+    id: 'mytasks.filter.recentlyEdited',
+    defaultMessage: 'Recently edited',
+  },
+  projectId: {
+    id: 'mytasks.filter.projectId',
+    defaultMessage: 'Project ID',
+  },
+  sortBy: {
+    id: 'mytasks.filter.sortBy',
+    defaultMessage: 'Sort by',
+  },
   clearFilters: {
     id: 'mytasks.filter.clear',
     defaultMessage: 'Clear filters',
@@ -91,5 +103,9 @@ export default defineMessages({
   retry: {
     id: 'mytasks.tasks.button.retry',
     defaultMessage: 'Retry',
+  },
+  commentsNumber: {
+    id: 'mytasks.tasks.comments.number',
+    defaultMessage: '{number, plural, one {# comment} other {# comments}}',
   },
 });

@@ -1,36 +1,47 @@
+
 # Contributing to the Tasking Manager
 
 ## Welcome
 
-Thank you very much for considering contributing to this project. Humanitarian OpenStreetMap Team (HOT) is a volunteer driven non-profit and we really rely on the community for our success. We welcome and encourage contributors of all skill levels to be a part of our development community and we are committed to making sure your participation in our community is enjoyable and rewarding. If you have never contributed to an open source project before, we are the perfect place to start and will make sure you are supported every step of the way. If you have **any** questions, please ask!
+:+1::tada: First off, I'm really glad you're reading this, because we need volunteer developers to help improve the Tasking Manager.! :tada::+1:
+We welcome and encourage contributors of all skill levels and we are committed to making sure your participation in our tech collective is inclusive, enjoyable and rewarding. If you have never contributed to an open source project before, we are a good place to start and will make sure you are supported every step of the way. If you have **any** questions, please ask!
 
-There are many ways to contribute to a project, below are some examples:
+We are collaborating with Kathmandu Living Labs on the maintenance of the Tasking Manager - expect to hear a lot from all of us on Github :)
 
-1. Report bugs, offer ideas, and/or request features by creating “Issues” in the project repository.
-2. Fork the code and play with it, whether you later choose to make a pull request or not.
-3. Create pull requests for changes that you think are needed. From typos and wording changes, to significant new features or major design flaws, you will find lots of opportunities to contribute improvement.
-4. Review or submit language translations.
+There are many ways to contribute to the Tasking Manager Project:
 
-## Code of Conduct
+## Report bugs and suggest improvements:
 
-All of HOT's projects fall under the general [HOT Community Code of Conduct](https://www.hotosm.org/hot_code_of_conduct), which is in part based on the well known [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/0/code_of_conduct/).
+The [issue queue](https://github.com/hotosm/tasking-manager/issues) is the best way to get started. There are issue templates for BUGs and FEATURES that you can use, or you can create your own. Once you have submitted an issue, it will be assigned one label out of the following [label categories](https://github.com/hotosm/tasking-manager/labels):
 
-The short version is:
+- **Backlog**:  Backlog=triage will first be assigned to any new issues
+- **Component**
 
-* Use welcoming and inclusive language
-* Be respectful of differing viewpoints and experiences
-* Gracefully accept constructive criticism
-* Focus on what is best for the community and the project
-* Show empathy toward other community members
+On a monthly basis, we will collaboratively triage issues from the *backlog=triage* and assign one of the below labels:
+- **Assigned**: once reviewed the issue will be assigned either to hot_tech OR tm_collective. Issues assigned to tm_collective is where we really need your help!
+- **Type**: specifying whether the issue is a bug or feature/enhancement
+- **Priority**: specifying the priority level for each issue. We want to collaboratively agree the criteria for prioritisation.
+- **Status**: specifying whether the issue is in progress or done.
+- **Experience**: we have added a beginner label for good first issues. We will work with the community to update the labels in this category and make them suitable.
+
+Note: Issues older than 6 months from the point of raising the issue with no engagement will be labelled as *archived*.
+
+## Testing
+
+Test a bug fix or new feature. Once an issue has been addressed and Pull Request (PR) change deployed to the [Tasking Manager Staging site](https://tasks-stage.hotosm.org/), you will be able to view and test the change on the staging site. A PR would then be made from develop to master branch, which would require two reviews. If you notice any issues while testing, please comment on the PR directly.
 
 
-## The issue queue and the repository
+## Code contributions
 
-The main tool used to manage the Tasking Manager software is its [repository on Github](https://github.com/hotosm/tasking-manager). In this repository, there is an [issue queue](https://github.com/hotosm/tasking-manager/issues), where most communication, planning and reporting of errors happens. Feel free to take part in these conversations.
+Create pull requests (PRs) for changes that you think are needed. We would really appreciate your help! We ask that you follow our [coding contribution guidelines](https://github.com/hotosm/tasking-manager/blob/develop/docs/contributing-code.md).
 
-## Contribute now!
+## Translating
+Review or submit [language translations]( https://github.com/hotosm/tasking-manager/blob/develop/docs/contributing-translation.md)
 
-All kind of contributions are welcome and the [issue queue](https://github.com/hotosm/tasking-manager/issues) is the best way to get started. We have specific guides for contributing to the Tasking Manager:
+## Thank you!
+Thank you very much in advance for your contributions!! Please ensure you refer to our [Code of Conduct](https://github.com/hotosm/tasking-manager/blob/develop/docs/code_of_conduct.md) when you contribute!
 
-* **[translation](./contributing-translation.md)**
-* **[code](./contributing-code.md)**
+If you've read the guidelines, but you are still not sure how to contribute on Github, please reach out to us via our [ HOT Tech Support page](https://hotosm.atlassian.net/servicedesk/customer/portal/4) and we will be happy to help!
+
+
+

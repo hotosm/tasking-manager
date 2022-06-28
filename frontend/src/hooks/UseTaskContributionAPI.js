@@ -16,6 +16,7 @@ const contributionsQueryAllSpecification = {
   maxDate: StringParam,
   projectStatus: StringParam,
   page: StringParam,
+  orderBy: StringParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -40,6 +41,7 @@ const backendToQueryConversion = {
   text: 'project_id',
   maxDate: 'max_action_date',
   projectStatus: 'project_status',
+  orderBy: 'sort_by',
 };
 
 const dataFetchReducer = (state, action) => {

@@ -67,7 +67,7 @@ export const useFavProjectAPI = (initialData, projectId, token) => {
    * https://www.reddit.com/r/reasonml/comments/c6eer3/a_better_usereducer_colocating_side_effects_with/ */
   const [toggleFetchType, setToggleFetchType] = useState('GET');
 
-  const toggleFetchMethod = state => {
+  const toggleFetchMethod = (state) => {
     if (state.isFav === false) {
       /* set favorite to true on project */
       return 'POST';
@@ -86,7 +86,7 @@ export const useFavProjectAPI = (initialData, projectId, token) => {
   useEffect(() => {
     let didCancel = false;
 
-    const fetchData = async toggleFetchType => {
+    const fetchData = async (toggleFetchType) => {
       const isToggle = toggleFetchType !== 'GET' ? '_TOGGLE' : '';
 
       dispatch({ type: `FETCH${isToggle}_INIT` });

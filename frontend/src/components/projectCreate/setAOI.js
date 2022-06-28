@@ -38,13 +38,16 @@ export default function SetAOI({
             drawIsActive ? 'red b--red' : 'blue-dark b--grey-light'
           }`}
           onClick={drawHandler}
+          icon={<MappedIcon className="h1 w1 v-mid" />}
         >
-          <MappedIcon className="h1 w1 v-mid mr2" />
           <FormattedMessage {...messages.draw} />
         </CustomButton>
         <input {...getInputProps()} />
-        <CustomButton className="bg-white blue-dark ba b--grey-light ph3 pv2" onClick={open}>
-          <FileImportIcon className="h1 w1 v-mid mr2" />
+        <CustomButton
+          className="bg-white blue-dark ba b--grey-light ph3 pv2"
+          onClick={open}
+          icon={<FileImportIcon className="h1 w1 v-mid" />}
+        >
           <FormattedMessage {...messages.selectFile} />
         </CustomButton>
         <p className="f6 blue-grey lh-title mt3">
@@ -59,7 +62,12 @@ export default function SetAOI({
             labelPosition="right"
             isChecked={metadata.arbitraryTasks}
             onChange={() =>
-              updateMetadata({ ...metadata, arbitraryTasks: !metadata.arbitraryTasks })
+              updateMetadata({
+                ...metadata,
+                arbitraryTasks: !metadata.arbitraryTasks,
+                tasksNumber:
+                  metadata.geom && metadata.geom.features ? metadata.geom.features.length : 0,
+              })
             }
           />
         )}
@@ -69,8 +77,8 @@ export default function SetAOI({
           <CustomButton
             className="bg-white blue-dark ba b--grey-light ph3 pv2"
             onClick={deleteHandler}
+            icon={<UndoIcon className="w1 h1 v-top" />}
           >
-            <UndoIcon className="w1 h1 mr2 v-mid pb1" />
             <FormattedMessage {...messages.reset} />
           </CustomButton>
         </div>

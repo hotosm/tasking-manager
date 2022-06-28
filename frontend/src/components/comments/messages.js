@@ -32,4 +32,16 @@ export default defineMessages({
     id: 'comment.hashtags.help.author',
     defaultMessage: 'Add "{hashtag}" to notify the project author about your comment.',
   },
+  nothingToPreview: {
+    id: 'comment.preview.nothingToPreview',
+    defaultMessage: 'Nothing to preview',
+  },
+  attachImage: {
+    id: 'comment.write.attachImage',
+    defaultMessage: 'Attach image by dragging and dropping',
+  },
+  markdownSupported: {
+    id: 'comment.write.markdownSupported',
+    defaultMessage: 'Markdown supported',
+  },
 });

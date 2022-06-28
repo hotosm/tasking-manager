@@ -27,24 +27,24 @@ export function DueDateBox({ dueDate, intervalMili, align = 'right', tooltipMsg 
 
   let options = { language: intl.locale.slice(0, 2), fallbacks: ['en'], largest: 1 };
 
-  let className = `dib relative lh-solid f7 tr ${
-    align === 'right' ? 'fr' : 'fl'
-  } br1 link ph1 pv2 bg-grey-light blue-grey truncate mw4`;
-
   if (intervalMili !== undefined) {
-    className = className.replace('mw4', '');
     options = { units: ['h', 'm'], round: true };
   }
-
   const milliDifference = new Date(dueDate) - timer;
-  if (milliDifference < 60000 * 20 && intervalMili !== undefined) {
-    className = className.replace('bg-grey-light', 'bg-red').replace('blue-grey', 'white');
-  }
 
   if (milliDifference > 0) {
     return (
       <>
-        <span className={className} data-tip={tooltipMsg}>
+        <span
+          className={`dib relative lh-solid f7 tr br1 link ph1 pv2 truncate ${
+            align === 'right' ? 'fr' : 'fl'
+          } ${
+            milliDifference < 60000 * 20 && intervalMili !== undefined
+              ? 'bg-red white fw6'
+              : 'bg-grey-light blue-grey'
+          } ${intervalMili ? '' : 'mw4'}`}
+          data-tip={tooltipMsg}
+        >
           <span>
             <ClockIcon className="absolute pl1 top-0 pt1 left-0" />
           </span>

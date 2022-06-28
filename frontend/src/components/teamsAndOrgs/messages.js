@@ -16,6 +16,10 @@ export default defineMessages({
     id: 'management.fields.managers',
     defaultMessage: 'Managers',
   },
+  noManagers: {
+    id: 'management.fields.managers.empty',
+    defaultMessage: 'There are no managers yet.',
+  },
   manage: {
     id: 'management.link.manage',
     defaultMessage: 'Manage {entity}',
@@ -24,9 +28,25 @@ export default defineMessages({
     id: 'management.link.edit.team',
     defaultMessage: 'Edit team',
   },
+  edit: {
+    id: 'management.members.edit',
+    defaultMessage: 'Edit',
+  },
+  alreadyInTeam: {
+    id: 'management.members.alreadyInTeam',
+    defaultMessage: 'Already in team',
+  },
+  UserAlreadyInListError: {
+    id: 'management.members.UserAlreadyInListError',
+    defaultMessage: 'User is already a member of this team or has already requested to join.',
+  },
   members: {
     id: 'management.members',
     defaultMessage: 'Members',
+  },
+  noMembers: {
+    id: 'management.members.empty',
+    defaultMessage: 'There are no members yet.',
   },
   mappingTeams: {
     id: 'management.teams.mapping',
@@ -58,7 +78,7 @@ export default defineMessages({
   },
   noRequests: {
     id: 'management.teams.join_requests.empty',
-    defaultMessage: "There isn't requests to join the team.",
+    defaultMessage: "There aren't any requests to join the team.",
   },
   teams: {
     id: 'management.teams',
@@ -120,9 +140,9 @@ export default defineMessages({
     id: 'management.myTeams',
     defaultMessage: 'My teams',
   },
-  add: {
-    id: 'management.buttons.add',
-    defaultMessage: 'Add',
+  new: {
+    id: 'management.buttons.new',
+    defaultMessage: 'New',
   },
   delete: {
     id: 'management.buttons.delete',
@@ -147,6 +167,151 @@ export default defineMessages({
   organisations: {
     id: 'management.organisations',
     defaultMessage: 'Organizations',
+  },
+  type: {
+    id: 'management.organisations.type',
+    defaultMessage: 'Type',
+  },
+  publicUrl: {
+    id: 'management.organisations.publicUrl',
+    defaultMessage: 'Public URL',
+  },
+  copyPublicUrl: {
+    id: 'management.organisations.publicUrl.copy',
+    defaultMessage: 'Copy public URL',
+  },
+  selectTier: {
+    id: 'management.organisations.tier.select',
+    defaultMessage: 'Select tier',
+  },
+  selectType: {
+    id: 'management.organisations.type.select',
+    defaultMessage: 'Select type',
+  },
+  free: {
+    id: 'management.organisations.type.free',
+    defaultMessage: 'Free',
+  },
+  discounted: {
+    id: 'management.organisations.type.discounted',
+    defaultMessage: 'Discounted',
+  },
+  defaultFee: {
+    id: 'management.organisations.type.defaultFee',
+    defaultMessage: 'Default fee',
+  },
+  noOrganisationsFound: {
+    id: 'management.organisations.list.empty',
+    defaultMessage: 'No organizations were found.',
+  },
+  retry: {
+    id: 'management.organisations.stats.retry',
+    defaultMessage: 'Try again',
+  },
+  errorLoadingStats: {
+    id: 'management.organisations.stats.error',
+    defaultMessage: 'An error occurred while loading stats.',
+  },
+  badStartDate: {
+    id: 'management.organisations.stats.error.start_date',
+    defaultMessage: 'Start date should not be later than end date.',
+  },
+  longDateRange: {
+    id: 'management.organisations.stats.error.date_range',
+    defaultMessage: 'Date range is longer than one year.',
+  },
+  toBeMapped: {
+    id: 'management.organisations.stats.to_be_mapped',
+    defaultMessage: 'Tasks to be mapped',
+  },
+  tasksMapped: {
+    id: 'management.organisations.stats.tasks_mapped',
+    defaultMessage: 'Tasks mapped',
+  },
+  readyForValidation: {
+    id: 'management.organisations.stats.ready_for_validation',
+    defaultMessage: 'Ready for validation',
+  },
+  tasksValidated: {
+    id: 'management.organisations.stats.tasks_validated',
+    defaultMessage: 'Tasks validated',
+  },
+  actionsNeeded: {
+    id: 'management.organisations.stats.actions_needed',
+    defaultMessage: 'Actions needed',
+  },
+  completedActions: {
+    id: 'management.organisations.stats.completed_actions',
+    defaultMessage: 'Completed actions',
+  },
+  actionsNeededHelp: {
+    id: 'management.organisations.stats.actions_needed.help',
+    defaultMessage:
+      'Action means a mapping or validation operation. As each task needs to be mapped and validated, this is the number of actions needed to finish all the published projects of that organization.',
+  },
+  subscribedTier: {
+    id: 'management.organisations.stats.tier.subscribed',
+    defaultMessage: 'Subscribed tier',
+  },
+  levelTooltip: {
+    id: 'management.organisations.stats.level.tooltip',
+    defaultMessage: '{n} of {total} ({percent}%) completed to move to level {nextLevel}',
+  },
+  tierTooltip: {
+    id: 'management.organisations.stats.tier.tooltip',
+    defaultMessage: '{n} of {total} ({percent}%) completed to move to the {nextTier} tier',
+  },
+  levelInfo: {
+    id: 'management.organisations.stats.level.description',
+    defaultMessage: '{org} is an organization level {level}.',
+  },
+  estimatedLevel: {
+    id: 'management.organisations.stats.level.estimation',
+    defaultMessage: 'Estimated level by the end of {year}',
+  },
+  estimatedTier: {
+    id: 'management.organisations.stats.tier.estimation',
+    defaultMessage: 'Estimated tier by the end of {year}',
+  },
+  estimatedCost: {
+    id: 'management.organisations.stats.cost.estimation',
+    defaultMessage: 'Estimated cost by the end of {year}',
+  },
+  actionsToNextLevel: {
+    id: 'management.organisations.stats.next_level.actions',
+    defaultMessage: 'Actions to reach the level {n}',
+  },
+  actionsRemaining: {
+    id: 'management.organisations.stats.tier.actions_remaining',
+    defaultMessage: 'Actions remaining on the {name} tier',
+  },
+  freeTier: {
+    id: 'management.organisations.tier.free',
+    defaultMessage: 'Free',
+  },
+  lowTier: {
+    id: 'management.organisations.tier.low',
+    defaultMessage: 'Low',
+  },
+  mediumTier: {
+    id: 'management.organisations.tier.medium',
+    defaultMessage: 'Medium',
+  },
+  highTier: {
+    id: 'management.organisations.tier.high',
+    defaultMessage: 'High',
+  },
+  veryHighTier: {
+    id: 'management.organisations.tier.very_high',
+    defaultMessage: 'Very High',
+  },
+  nextLevelInfo: {
+    id: 'management.organisations.stats.level.next',
+    defaultMessage: 'After completing more {n} actions, it will reach the level {nextLevel}.',
+  },
+  topLevelInfo: {
+    id: 'management.organisations.stats.level.top',
+    defaultMessage: 'It is the highest level an organization can be on Tasking Manager!',
   },
   orgInfo: {
     id: 'management.titles.organisation_information',
@@ -255,5 +420,31 @@ export default defineMessages({
   noTeamsFound: {
     id: 'management.organisation.teams.no_found',
     defaultMessage: 'No teams found.',
+  },
+  newUsersOnLastMonth: {
+    id: 'management.stats.new_users.month',
+    defaultMessage:
+      '{number, plural, one {# user registered in the last 30 days} other {# users registered in the last 30 days}}',
+  },
+  newUsersOnLastWeek: {
+    id: 'management.stats.new_users.week',
+    defaultMessage:
+      '{number, plural, one {# user registered in the last 7 days} other {# users registered in the last 7 days}}',
+  },
+  activeNewUsers: {
+    id: 'management.stats.new_users.active',
+    defaultMessage: 'Mapped at least one task',
+  },
+  emailVerified: {
+    id: 'management.stats.new_users.email_verified',
+    defaultMessage: 'Confirmed email address',
+  },
+  statistics: {
+    id: 'management.stats.title',
+    defaultMessage: 'Statistics',
+  },
+  overview: {
+    id: 'management.stats.overview',
+    defaultMessage: 'Overview',
   },
 });

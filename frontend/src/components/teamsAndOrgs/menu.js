@@ -18,12 +18,20 @@ export function ManagementMenu({ isAdmin }: Object) {
   if (!isAdmin) {
     links = links.slice(0, 3);
   }
-  const items = links.map((item) => ({
+  let items = links.map((item) => ({
     url: `/manage/${item}/${
       item === 'projects' ? '?status=PUBLISHED&managedByMe=1&action=any' : ''
     }`,
     label: <FormattedMessage {...messages[item]} />,
   }));
+  items.push({
+    url: '/manage/stats/',
+    label: <FormattedMessage {...messages.statistics} />,
+  });
+  items.unshift({
+    url: '/manage',
+    label: <FormattedMessage {...messages.overview} />,
+  });
 
   return <SectionMenu items={items} />;
 }

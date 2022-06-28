@@ -23,8 +23,6 @@ services:
     build:
       context: "."
       dockerfile: "./scripts/docker/Dockerfile.frontend"
-      args:
-        - TM_APP_API_URL=http://localhost/api
     volumes:
       - ".:/usr/src/app"
     labels:

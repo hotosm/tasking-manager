@@ -7,8 +7,8 @@ import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { TaskCard } from '../taskCard';
 
 describe('TaskCard', () => {
-  it('on MAPPED state', () => {
-    render(
+  it('on MAPPED state with comments', () => {
+    const { container } = render(
       <ReduxIntlProviders>
         <TaskCard
           taskId={987}
@@ -16,6 +16,7 @@ describe('TaskCard', () => {
           taskStatus={'MAPPED'}
           lockHolder={null}
           taskHistory={[]}
+          numberOfComments={5}
           lastUpdated={'2021-01-22T12:59:37.238281Z'}
         />
       </ReduxIntlProviders>,
@@ -23,14 +24,16 @@ describe('TaskCard', () => {
     expect(screen.getByText('Task #987 · Project #4321')).toBeInTheDocument();
     expect(screen.getByText(/Last updated/)).toBeInTheDocument();
     expect(screen.getByText('Ready for validation')).toBeInTheDocument();
+    expect(screen.getByText('5')).toBeInTheDocument();
+    expect(container.querySelectorAll('svg').length).toBe(2);
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
     // hovering on the card should not change anything
     userEvent.hover(screen.getByText('Ready for validation'));
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
   });
 
-  it('on VALIDATED state', () => {
-    render(
+  it('on VALIDATED state without comments', () => {
+    const { container } = render(
       <ReduxIntlProviders>
         <TaskCard
           taskId={987}
@@ -38,12 +41,15 @@ describe('TaskCard', () => {
           taskStatus={'VALIDATED'}
           lockHolder={null}
           taskHistory={[]}
+          commentsNumber={0}
           lastUpdated={'2021-01-22T12:59:37.238281Z'}
         />
       </ReduxIntlProviders>,
     );
     expect(screen.getByText('Finished')).toBeInTheDocument();
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
+    expect(screen.queryByText('0')).not.toBeInTheDocument();
+    expect(container.querySelectorAll('svg').length).toBe(1);
     // hovering on the card should not change anything
     userEvent.hover(screen.getByText('Finished'));
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
@@ -78,7 +84,8 @@ describe('TaskCard', () => {
           taskStatus={'LOCKED_FOR_VALIDATION'}
           lockHolder={'user_1'}
           taskHistory={[]}
-          lastUpdated={'2021-01-22T12:59:37.238281Z'}
+          lastUpdated={new Date()}
+          autoUnlockSeconds={120 * 60}
         />
       </ReduxIntlProviders>,
     );

@@ -20,6 +20,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
   const locale = useSelector((state) => state.preferences.locale);
   const [editor, setEditor] = useState(defaultUserEditor);
   const [editorOptions, setEditorOptions] = useState([]);
+  const [isPending, setIsPending] = useState(false);
   const [lockError, setLockError] = useState(null);
   const dispatch = useDispatch();
   const fetchLockedTasks = useFetchLockedTasks();
@@ -35,16 +36,18 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       locale,
     );
     updateReduxState(selectedTasks, project.projectId, status);
+    setIsPending(false);
     navigate(`/projects/${project.projectId}/${endpoint}/${urlParams}`);
   };
 
   const lockFailed = (windowObjectReference, message) => {
     // JOSM and iD don't open a new window
-    if (!['JOSM', 'ID'].includes(editor)) {
+    if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
       windowObjectReference.close();
     }
     fetchLockedTasks();
     setLockError(message);
+    setIsPending(false);
   };
 
   const updateReduxState = (tasks, project, status) => {
@@ -68,8 +71,11 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       }
     }
     let windowObjectReference;
-    if (!['JOSM', 'ID'].includes(editor)) {
-      windowObjectReference = window.open('', `TM-${project.projectId}-${selectedTasks}`);
+    if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
+      windowObjectReference = window.open(
+        '',
+        `TM-${project.projectId}-${selectedTasks}`,
+      );
     }
     if (['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(taskAction)) {
       const mappedTasks = selectedTasks.filter(
@@ -79,8 +85,9 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
           ).length,
       );
       if (!mappedTasks.length) {
-        setLockError('No mapped tasks selected');
+        setLockError('noMappedTasksSelected');
       } else {
+        setIsPending(true);
         pushToLocalJSONAPI(
           `projects/${project.projectId}/tasks/actions/lock-for-validation/`,
           JSON.stringify({ taskIds: mappedTasks }),
@@ -93,6 +100,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       }
     }
     if (['mapSelectedTask', 'mapAnotherTask', 'mapATask'].includes(taskAction)) {
+      setIsPending(true);
       fetchLocalJSONAPI(
         `projects/${project.projectId}/tasks/actions/lock-for-mapping/${selectedTasks[0]}/`,
         token,
@@ -100,6 +108,9 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       )
         .then((res) => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
+          if (editor !== 'JOSM') {
+            window.location.reload();
+          }
         })
         .catch((e) => lockFailed(windowObjectReference, e.message));
     }
@@ -128,23 +139,28 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
     ) {
       const validationEditorOptions = getEditors(project.validationEditors, project.customEditor);
       setEditorOptions(validationEditorOptions);
-      // activate defaultUserEditor if it's allowed. If not, use the first allowed editor for validation
-      if (project.validationEditors.includes(defaultUserEditor)) {
-        setEditor(defaultUserEditor);
-      } else {
-        updateEditor(validationEditorOptions);
+      if (!project.validationEditors.includes(editor)) {
+        // activate defaultUserEditor if it's allowed. If not, use the first allowed editor for validation
+        if (project.validationEditors.includes(defaultUserEditor)) {
+          setEditor(defaultUserEditor);
+        } else {
+          updateEditor(validationEditorOptions);
+        }
       }
     } else {
       const mappingEditorOptions = getEditors(project.mappingEditors, project.customEditor);
       setEditorOptions(mappingEditorOptions);
-      // activate defaultUserEditor if it's allowed. If not, use the first allowed editor
-      if (project.mappingEditors.includes(defaultUserEditor)) {
-        setEditor(defaultUserEditor);
-      } else {
-        updateEditor(mappingEditorOptions);
+      if (!project.mappingEditors.includes(editor)) {
+        // activate defaultUserEditor if it's allowed. If not, use the first allowed editor
+        if (project.mappingEditors.includes(defaultUserEditor)) {
+          setEditor(defaultUserEditor);
+        } else {
+          updateEditor(mappingEditorOptions);
+        }
       }
     }
   }, [
+    editor,
     taskAction,
     project.mappingEditors,
     project.validationEditors,
@@ -199,13 +215,11 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
           className="bg-white bn"
           toTop={true}
           onChange={updateEditor}
-          onAdd={() => {}}
-          onRemove={() => {}}
         />
       </div>
       <div className="w-30-ns w-60 fl tr">
         <div className="mt3">
-          <Button className="white bg-red" onClick={() => lockTasks()}>
+          <Button className="white bg-red" onClick={() => lockTasks()} loading={isPending}>
             {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(
               taskAction,
             ) ? (

@@ -21,7 +21,13 @@ export const RadioField = ({ name, value, className }: Object) => (
   />
 );
 
-export const SwitchToggle = ({ label, isChecked, onChange, labelPosition }: Object) => (
+export const SwitchToggle = ({
+  label,
+  isChecked,
+  onChange,
+  labelPosition,
+  small = false,
+}: Object) => (
   <div className="v-mid justify-center bg-grey-dark">
     {label && labelPosition !== 'right' && <span className="di mr2 nowrap f6 dn-m">{label}</span>}
     <div className="relative dib">
@@ -31,8 +37,18 @@ export const SwitchToggle = ({ label, isChecked, onChange, labelPosition }: Obje
         checked={isChecked}
         onChange={onChange}
       />
-      <div className="relative z-1 dib w3 h2 bg-blue-grey overflow-hidden br4 v-mid bg-animate checkbox-wrapper">
-        <div className="absolute right-auto left-0 w2 h2 br4 bg-white ba b-grey-light shadow-4 t-cb bg-animate checkbox-toggle"></div>
+      <div
+        className={`relative z-1 dib ${
+          small ? 'w2 h1' : 'w3 h2'
+        } bg-blue-grey overflow-hidden br4 v-mid bg-animate checkbox-wrapper`}
+      >
+        <div
+          className={`absolute right-auto left-0 ${
+            small ? 'w1 h1' : 'w2 h2'
+          } br4 bg-white ba b-grey-light shadow-4 t-cb bg-animate ${
+            small ? 'checkbox-toggle-sm' : 'checkbox-toggle'
+          }`}
+        ></div>
       </div>
     </div>
     {label && labelPosition === 'right' && <span className="di ml2 f6">{label}</span>}
@@ -122,16 +138,25 @@ export function UserCountrySelect({ className }: Object) {
   );
 }
 
-export const CheckBoxInput = ({ isActive, changeState, className = '' }) => (
+export const CheckBoxInput = ({ isActive, changeState, className = '', disabled }) => (
   <div
     role="checkbox"
+    disabled={disabled}
     aria-checked={isActive}
-    onClick={changeState}
-    onKeyPress={changeState}
+    onClick={disabled ? () => {} : changeState}
+    onKeyPress={disabled ? () => {} : changeState}
     tabIndex="0"
-    className={`bg-white w1 h1 ma1 ba bw1 b--red br1 relative pointer ${className}`}
+    className={`bg-white w1 h1 ma1 ba bw1 ${
+      disabled ? 'b--grey-light' : 'b--red'
+    } br1 relative pointer ${className}`}
   >
-    {isActive ? <div className="bg-red ba b--white bw1 br1 w-100 h-100"></div> : <></>}
+    {isActive ? (
+      <div
+        className={`${disabled ? 'bg-grey-light' : 'bg-red'} ba b--white bw1 br1 w-100 h-100`}
+      ></div>
+    ) : (
+      <></>
+    )}
   </div>
 );
 

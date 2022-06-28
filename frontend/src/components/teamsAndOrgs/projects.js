@@ -6,6 +6,7 @@ import ReactPlaceholder from 'react-placeholder';
 import messages from './messages';
 import { ProjectCard } from '../projectCard/projectCard';
 import { AddButton, ViewAllLink } from './management';
+import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
 
 export function Projects({
   projects,
@@ -13,11 +14,12 @@ export function Projects({
   ownerEntity,
   showAddButton = false,
   showManageButtons = true,
+  border = true,
 }: Object) {
   return (
-    <div className="bg-white b--grey-light ba pa4 mb3">
+    <div className={`bg-white mb3 ${border ? 'b--grey-light ba pa4' : ''}`}>
       <div className="cf db">
-        <h3 className="f3 blue-dark mv0 fw6 dib v-mid">
+        <h3 className="f3 barlow-condensed ttu blue-dark mv0 fw6 dib v-mid">
           <FormattedMessage {...messages.projects} />
         </h3>
         {showAddButton && (
@@ -28,12 +30,10 @@ export function Projects({
         <ViewAllLink link={viewAllEndpoint} />
         <div className="cf pt4">
           <ReactPlaceholder
+            customPlaceholder={nCardPlaceholders(4, 'w-third-l')}
             showLoadingAnimation={true}
-            type="rect"
-            color="#f0efef"
-            style={{ width: 250, height: 300 }}
             delay={10}
-            ready={projects && projects.results}
+            ready={projects?.results}
           >
             {projects &&
               projects.results &&

@@ -39,7 +39,10 @@ class SystemApplicationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Application GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch application keys"}, 500
+            return {
+                "Error": "Unable to fetch application keys",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @token_auth.login_required
     def post(self):
@@ -71,7 +74,10 @@ class SystemApplicationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Application POST API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to create application keys"}, 500
+            return {
+                "Error": "Unable to create application keys",
+                "SubCode": "InternalServerError",
+            }, 500
 
     def patch(self, application_key):
         """
@@ -105,7 +111,10 @@ class SystemApplicationsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Application PUT API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to check application key"}, 500
+            return {
+                "Error": "Unable to check application key",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @token_auth.login_required
     def delete(self, application_key):
@@ -147,8 +156,11 @@ class SystemApplicationsRestAPI(Resource):
             else:
                 return 302
         except NotFound:
-            return {"Error": "Key does not exist for user"}, 404
+            return {"Error": "Key does not exist for user", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Application DELETE API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to delete application key"}, 500
+            return {
+                "Error": "Unable to delete application key",
+                "SubCode": "InternalServerError",
+            }, 500

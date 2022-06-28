@@ -5,7 +5,7 @@ import messages from './messages';
 import { SwitchToggle } from '../formInputs';
 import { StateContext, styleClasses } from '../../views/projectEdit';
 import { TeamSelect } from './teamSelect';
-import { PermissionsBlock } from '../permissionsBlock';
+import { PermissionsBlock } from './permissionsBlock';
 
 export const PermissionsForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
@@ -18,14 +18,8 @@ export const PermissionsForm = () => {
 
   return (
     <div className="w-100">
-      <PermissionsBlock
-        permissions={permissions}
-        type="mappingPermission"
-      />
-      <PermissionsBlock
-        permissions={permissions}
-        type="validationPermission"
-      />
+      <PermissionsBlock permissions={permissions} type="mappingPermission" />
+      <PermissionsBlock permissions={permissions} type="validationPermission" />
       <div className={styleClasses.divClass.replace('w-70', 'w-90')}>
         <label className={styleClasses.labelClass}>
           <FormattedMessage {...messages.teams} />

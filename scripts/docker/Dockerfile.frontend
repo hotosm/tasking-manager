@@ -6,9 +6,8 @@ COPY frontend .
 ## SETUP
 RUN npm install
 
-ARG TM_APP_API_URL=http://localhost/api
-
 # SERVE
+COPY tasking-manager.env ..
 RUN npm run build
 
 FROM nginx:stable-alpine

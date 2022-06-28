@@ -1,44 +1,21 @@
 import datetime
 import hashlib
-import os
-import unittest
 from unittest.mock import patch
-from backend import create_app
 from backend.services.mapping_service import MappingService, Task
+from backend.models.postgis.task import TaskStatus
+from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
 
 
-class TestMappingService(unittest.TestCase):
+class TestMappingService(BaseTestCase):
 
     skip_tests = False
     test_project = None
     test_user = None
 
-    @classmethod
-    def setUpClass(cls):
-        env = os.getenv("CI", "false")
-
-        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == "true":
-            cls.skip_tests = True
-
     def setUp(self):
-        if self.skip_tests:
-            return
-
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
+        super().setUp()
         self.test_project, self.test_user = create_canned_project()
-
-    def tearDown(self):
-        if self.skip_tests:
-            return
-
-        self.test_project.delete()
-        self.test_user.delete()
-        self.ctx.pop()
 
     @patch.object(Task, "get_tasks")
     def test_gpx_xml_file_generated_correctly(self, mock_task):
@@ -58,7 +35,7 @@ class TestMappingService(unittest.TestCase):
         gpx_hash = hashlib.md5(gpx_xml_str.encode("utf-8")).hexdigest()
 
         # Assert
-        self.assertEqual(gpx_hash, "b91f7361cc1d6d9433cf393609103272")
+        self.assertEqual(gpx_hash, "17c95ad7772b6b264c3a7eaafcb7c0aa")
 
     @patch.object(Task, "get_all_tasks")
     def test_gpx_xml_file_generated_correctly_all_tasks(self, mock_task):
@@ -78,7 +55,7 @@ class TestMappingService(unittest.TestCase):
         gpx_hash = hashlib.md5(gpx_xml_str.encode("utf-8")).hexdigest()
 
         # Assert
-        self.assertEqual(gpx_hash, "b91f7361cc1d6d9433cf393609103272")
+        self.assertEqual(gpx_hash, "17c95ad7772b6b264c3a7eaafcb7c0aa")
 
     @patch.object(Task, "get_tasks")
     def test_osm_xml_file_generated_correctly(self, mock_task):
@@ -97,7 +74,7 @@ class TestMappingService(unittest.TestCase):
         osm_hash = hashlib.md5(osm_xml_str.encode("utf-8")).hexdigest()
 
         # Assert
-        self.assertEqual(osm_hash, "eafd0760a0d372e2ab139e25a2d300f1")
+        self.assertEqual(osm_hash, "6f51169314543c73eb2e2a94ad17ffd9")
 
     @patch.object(Task, "get_all_tasks")
     def test_osm_xml_file_generated_correctly_all_tasks(self, mock_task):
@@ -116,7 +93,7 @@ class TestMappingService(unittest.TestCase):
         osm_hash = hashlib.md5(osm_xml_str.encode("utf-8")).hexdigest()
 
         # Assert
-        self.assertEqual(osm_hash, "eafd0760a0d372e2ab139e25a2d300f1")
+        self.assertEqual(osm_hash, "6f51169314543c73eb2e2a94ad17ffd9")
 
     def test_map_all_sets_counters_correctly(self):
         if self.skip_tests:
@@ -138,3 +115,16 @@ class TestMappingService(unittest.TestCase):
         # Assert
         for task in self.test_project.tasks:
             self.assertIsNotNone(task.mapped_by)
+
+    def test_reset_all_bad_imagery(
+        self,
+    ):
+        if self.skip_tests:
+            return
+
+        # Act
+        MappingService.reset_all_badimagery(self.test_project.id, self.test_user.id)
+
+        # Assert
+        for task in self.test_project.tasks:
+            self.assertNotEqual(task.task_status, TaskStatus.BADIMAGERY.value)

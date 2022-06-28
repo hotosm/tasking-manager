@@ -1,9 +1,7 @@
-import os
-import unittest
 from unittest.mock import patch
 
-
-from backend import create_app
+from tests.backend.base import BaseTestCase
+from backend.models.postgis.message import Message
 from backend.services.users.user_service import (
     UserService,
     MappingLevel,
@@ -11,45 +9,17 @@ from backend.services.users.user_service import (
     OSMService,
     UserOSMDTO,
 )
-from tests.backend.helpers.test_helpers import create_canned_project
-from backend.models.postgis.message import Message
+from tests.backend.helpers.test_helpers import (
+    create_canned_user,
+    create_canned_project,
+    get_canned_user,
+    return_canned_user,
+)
 
 
-class TestAuthenticationService(unittest.TestCase):
-    skip_tests = False
-    test_user = None
-    test_project = None
-
-    @classmethod
-    def setUpClass(cls):
-        env = os.getenv("CI", "false")
-
-        # Firewall rules mean we can't hit Postgres from CI so we have to skip them in the CI build
-        if env == "true":
-            cls.skip_tests = True
-
-    def setUp(self):
-        if self.skip_tests:
-            return
-
-        self.app = create_app()
-        self.ctx = self.app.app_context()
-        self.ctx.push()
-
-        self.test_project, self.test_user = create_canned_project()
-
-    def tearDown(self):
-        if self.skip_tests:
-            return
-
-        self.test_project.delete()
-        self.test_user.delete()
-        self.ctx.pop()
-
+class TestUserService(BaseTestCase):
     def test_upsert_inserts_project_if_not_exists(self):
-        if self.skip_tests:
-            return
-
+        self.test_project, self.test_user = create_canned_project()
         # Arrange
         UserService.upsert_mapped_projects(self.test_user.id, self.test_project.id)
 
@@ -63,8 +33,10 @@ class TestAuthenticationService(unittest.TestCase):
         )  # We should find we've mapped the test project
 
     def test_set_level_adds_level_to_user(self):
-        if self.skip_tests:
-            return
+
+        self.test_user = get_canned_user("Thinkwhere TEST")
+        if self.test_user is None:
+            self.test_user = create_canned_user()
 
         # Act
         user = UserService.set_user_mapping_level(
@@ -106,3 +78,23 @@ class TestAuthenticationService(unittest.TestCase):
 
         # Assert
         self.assertTrue(test_user.mapping_level, MappingLevel.INTERMEDIATE.value)
+
+    def test_update_user_updates_user_details(self):
+        # Arrange
+        create_canned_user()
+        # Act
+        UserService.update_user(777777, "Thinkwhere", None)
+        # Assert
+        user = UserService.get_user_by_id(777777)
+        self.assertEqual(user.username, "Thinkwhere")
+
+    def test_register_user_creates_new_user(self):
+        # Arrange
+        test_user = return_canned_user()
+        # Act
+        UserService.register_user(test_user.id, test_user.username, 251, None, None)
+        # Arrange
+        expected_user = UserService.get_user_by_id(777777)
+        # Assert
+        self.assertEqual(expected_user.username, test_user.username)
+        self.assertEqual(expected_user.mapping_level, MappingLevel.INTERMEDIATE.value)

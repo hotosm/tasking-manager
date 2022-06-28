@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from '@reach/router';
 import Popup from 'reactjs-popup';
 import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
@@ -11,6 +11,7 @@ import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { TaskActivity } from './taskActivity';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
+import { getItem, setItem } from '../../utils/safe_storage';
 import { TASK_COLOURS } from '../../config';
 import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon, InternalLinkIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
@@ -197,6 +198,22 @@ export function TaskList({
   const [sortBy, setSortingOption] = useQueryParam('sortBy', StringParam);
   const [statusFilter, setStatusFilter] = useQueryParam('filter', StringParam);
 
+  const orderedTasks = useCallback(
+    (criteria) => {
+      if (criteria === 'id') return readyTasks.sort(compareTaskId);
+      if (criteria === '-date') return readyTasks.sort(compareLastUpdate).reverse();
+      // default option is to order by date
+      return readyTasks.sort(compareLastUpdate);
+    },
+    [readyTasks],
+  );
+
+  useEffect(() => {
+    const tasksSortOrder = getItem('tasksSortOrder');
+    tasksSortOrder && setSortingOption(tasksSortOrder);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (tasks && tasks.features) {
       let newTasks = tasks.features;
@@ -240,12 +257,14 @@ export function TaskList({
   function updateSortingOption(data: Object) {
     if (data) {
       setSortingOption(data[0].value);
+      setItem('tasksSortOrder', data[0].value);
     }
   }
 
   const sortingOptions = [
     { label: <FormattedMessage {...messages.sortById} />, value: 'id' },
-    { label: <FormattedMessage {...messages.sortByLastUpdate} />, value: 'date' },
+    { label: <FormattedMessage {...messages.sortByMostRecentlyUpdate} />, value: 'date' },
+    { label: <FormattedMessage {...messages.sortByLeastRecentlyUpdate} />, value: '-date' },
   ];
 
   return (
@@ -276,8 +295,6 @@ export function TaskList({
         </div>
         <div className="w-60-l w-50-m w-100 dib pv1">
           <Dropdown
-            onAdd={() => {}}
-            onRemove={() => {}}
             onChange={updateSortingOption}
             value={sortBy || 'date'}
             options={sortingOptions}
@@ -300,9 +317,7 @@ export function TaskList({
         {readyTasks && (
           <PaginatedList
             pageSize={6}
-            items={
-              sortBy === 'id' ? readyTasks.sort(compareTaskId) : readyTasks.sort(compareLastUpdate)
-            }
+            items={orderedTasks(sortBy)}
             ItemComponent={TaskItem}
             setZoomedTaskId={setZoomedTaskId}
             setActiveTaskModal={setActiveTaskModal}
@@ -385,10 +400,12 @@ function PaginatedList({
 }: Object) {
   const [page, setPage] = useQueryParam('page', NumberParam);
   const lastPage = howManyPages(items.length, pageSize);
-  // change page to 1 if the page number is not valid
-  if (items && page && page > lastPage) {
-    setPage(1);
-  }
+  // reset page number to 1 if it is not valid any more
+  useEffect(() => {
+    if (items && page > 1 && page > lastPage) {
+      setPage(1);
+    }
+  }, [items, page, lastPage, setPage]);
 
   const latestItems = useRef(items);
   useEffect(() => {

@@ -56,6 +56,22 @@ class EnvironmentConfig:
     # Assamble the database uri
     if os.getenv("TM_DB", False):
         SQLALCHEMY_DATABASE_URI = os.getenv("TM_DB", None)
+    elif os.getenv("TM_DB_CONNECT_PARAM_JSON", False):
+        """
+        This section reads JSON formatted Database connection parameters passed
+        from AWS Secrets Manager with the ENVVAR key `TM_DB_CONNECT_PARAM_JSON`
+        and forms a valid SQLALCHEMY DATABASE URI
+        """
+        import json
+
+        _params = json.loads(os.getenv("TM_DB_CONNECT_PARAM_JSON", None))
+        SQLALCHEMY_DATABASE_URI = (
+            f"postgresql://{_params.get('username')}"
+            + f":{_params.get('password')}"
+            + f"@{_params.get('host')}"
+            + f":{_params.get('port')}"
+            + f"/{_params.get('dbname')}"
+        )
     else:
         SQLALCHEMY_DATABASE_URI = (
             f"postgresql://{POSTGRES_USER}"
@@ -77,23 +93,25 @@ class EnvironmentConfig:
     TASK_AUTOUNLOCK_AFTER = os.getenv("TM_TASK_AUTOUNLOCK_AFTER", "2h")
 
     # Configuration for sending emails
-    SMTP_SETTINGS = {
-        "host": os.getenv("TM_SMTP_HOST", None),
-        "smtp_user": os.getenv("TM_SMTP_USER", None),
-        "smtp_port": os.getenv("TM_SMTP_PORT", 25),
-        "smtp_password": os.getenv("TM_SMTP_PASSWORD", None),
-    }
+    MAIL_SERVER = os.getenv("TM_SMTP_HOST", None)
+    MAIL_PORT = os.getenv("TM_SMTP_PORT", None)
+    MAIL_USE_TLS = int(os.getenv("TM_SMTP_USE_TLS", False))
+    MAIL_USE_SSL = int(os.getenv("TM_SMTP_USE_SSL", False))
+    MAIL_USERNAME = os.getenv("TM_SMTP_USER", None)
+    MAIL_PASSWORD = os.getenv("TM_SMTP_PASSWORD", None)
+    MAIL_DEFAULT_SENDER = os.getenv("TM_EMAIL_FROM_ADDRESS", None)
+    MAIL_DEBUG = True if LOG_LEVEL == "DEBUG" else False
 
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
     SUPPORTED_LANGUAGES = {
         "codes": os.getenv(
             "TM_SUPPORTED_LANGUAGES_CODES",
-            "ar, cs, de, el, en, es, fa_IR, fr, he, hu, id, it, ja, mg, ml, nl_NL, pt, pt_BR, ru, sv, sw, tl, tr, uk, zh_TW",  # noqa
+            "ar, cs, de, el, en, es, fa_IR, fr, he, hu, id, it, ja, ko, mg, ml, nl_NL, pt, pt_BR, ru, sv, sw, tl, tr, uk, zh_TW",  # noqa
         ),
         "languages": os.getenv(
             "TM_SUPPORTED_LANGUAGES",
-            "عربى, Česky, Deutsch, Ελληνικά, English, Español, فارسی, Français, עברית, Magyar, Indonesia, Italiano, 日本語, Malagasy, Malayalam, Nederlands, Português, Português (Brasil), Русский язык, Svenska, Kiswahili, Filipino (Tagalog), Türkçe, Українська, 中国台湾",  # noqa
+            "عربى, Čeština, Deutsch, Ελληνικά, English, Español, فارسی, Français, עברית, Magyar, Indonesia, Italiano, 日本語, 한국어, Malagasy, Malayalam, Nederlands, Português, Português (Brasil), Русский язык, Svenska, Kiswahili, Filipino (Tagalog), Türkçe, Українська, 繁體中文",  # noqa
         ),
     }
 
@@ -119,3 +137,18 @@ class EnvironmentConfig:
 
     # Sentry backend DSN
     SENTRY_BACKEND_DSN = os.getenv("TM_SENTRY_BACKEND_DSN", None)
+
+
+class TestEnvironmentConfig(EnvironmentConfig):
+    POSTGRES_USER = os.getenv("POSTGRES_USER", None)
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", None)
+    POSTGRES_ENDPOINT = os.getenv("POSTGRES_ENDPOINT", "localhost")
+    POSTGRES_DB = os.getenv("POSTGRES_DB", None)
+    POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+    SQLALCHEMY_DATABASE_URI = (
+        f"postgresql://{POSTGRES_USER}"
+        + f":{POSTGRES_PASSWORD}"
+        + f"@{POSTGRES_ENDPOINT}:"
+        + f"{POSTGRES_PORT}"
+        + f"/test_{POSTGRES_DB}"
+    )

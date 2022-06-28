@@ -7,6 +7,7 @@ from shapely.geometry import Polygon, box
 from cachetools import TTLCache, cached
 
 from backend import db
+from backend.api.utils import validate_date_input
 from backend.models.dtos.project_dto import (
     ProjectSearchDTO,
     ProjectSearchResultsDTO,
@@ -47,7 +48,7 @@ MAX_AREA = math.pow(1250 * 4275 * 1.5, 2)
 
 
 class ProjectSearchServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling mapping """
+    """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
         if current_app:
@@ -55,7 +56,7 @@ class ProjectSearchServiceError(Exception):
 
 
 class BBoxTooBigError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling mapping """
+    """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
         if current_app:
@@ -161,7 +162,13 @@ class ProjectSearchService:
                 Project.id, func.count(distinct(TaskHistory.user_id)).label("total")
             )
             .filter(Project.id.in_(paginated_projects_ids))
-            .outerjoin(TaskHistory, TaskHistory.project_id == Project.id)
+            .outerjoin(
+                TaskHistory,
+                and_(
+                    TaskHistory.project_id == Project.id,
+                    TaskHistory.action != "COMMENT",
+                ),
+            )
             .group_by(Project.id)
             .all()
         )
@@ -171,7 +178,7 @@ class ProjectSearchService:
     @staticmethod
     @cached(search_cache)
     def search_projects(search_dto: ProjectSearchDTO, user) -> ProjectSearchResultsDTO:
-        """ Searches all projects for matches to the criteria provided by the user """
+        """Searches all projects for matches to the criteria provided by the user"""
         all_results, paginated_results = ProjectSearchService._filter_projects(
             search_dto, user
         )
@@ -210,7 +217,7 @@ class ProjectSearchService:
 
     @staticmethod
     def _filter_projects(search_dto: ProjectSearchDTO, user):
-        """ Filters all projects based on criteria provided by user"""
+        """Filters all projects based on criteria provided by user"""
 
         query = ProjectSearchService.create_search_query(user)
 
@@ -288,9 +295,11 @@ class ProjectSearchService:
 
         if search_dto.text_search:
             # We construct an OR search, so any projects that contain or more of the search terms should be returned
-            or_search = " | ".join(
-                [x for x in search_dto.text_search.split(" ") if x != ""]
+            invalid_ts_chars = "@|&!><\\():"
+            search_text = "".join(
+                char for char in search_dto.text_search if char not in invalid_ts_chars
             )
+            or_search = " | ".join([x for x in search_text.split(" ") if x != ""])
             opts = [
                 ProjectInfo.text_searchable.match(
                     or_search, postgresql_regconfig="english"
@@ -312,6 +321,22 @@ class ProjectSearchService:
             query = query.filter(
                 sq.c.country.ilike("%{}%".format(search_dto.country))
             ).filter(Project.id == sq.c.id)
+
+        if search_dto.last_updated_gte:
+            last_updated_gte = validate_date_input(search_dto.last_updated_gte)
+            query = query.filter(Project.last_updated >= last_updated_gte)
+
+        if search_dto.last_updated_lte:
+            last_updated_lte = validate_date_input(search_dto.last_updated_lte)
+            query = query.filter(Project.last_updated <= last_updated_lte)
+
+        if search_dto.created_gte:
+            created_gte = validate_date_input(search_dto.created_gte)
+            query = query.filter(Project.created >= created_gte)
+
+        if search_dto.created_lte:
+            created_lte = validate_date_input(search_dto.created_lte)
+            query = query.filter(Project.created <= created_lte)
 
         order_by = search_dto.order_by
         if search_dto.order_by_type == "DESC":
@@ -449,7 +474,9 @@ class ProjectSearchService:
         # validate the bbox area is less than or equal to the max area allowed to prevent
         # abuse of the api or performance issues from large requests
         if not ProjectSearchService.validate_bbox_area(polygon):
-            raise BBoxTooBigError("Requested bounding box is too large")
+            raise BBoxTooBigError(
+                "BBoxTooBigError- Requested bounding box is too large"
+            )
 
         # get projects intersecting the polygon for created by the author_id
         intersecting_projects = ProjectSearchService._get_intersecting_projects(
@@ -481,7 +508,7 @@ class ProjectSearchService:
 
     @staticmethod
     def _get_intersecting_projects(search_polygon: Polygon, author_id: int):
-        """Executes a database query to get the intersecting projects created by the author if provided """
+        """Executes a database query to get the intersecting projects created by the author if provided"""
 
         query = db.session.query(
             Project.id,
@@ -508,7 +535,7 @@ class ProjectSearchService:
 
     @staticmethod
     def _make_4326_polygon_from_bbox(bbox: list, srid: int) -> Polygon:
-        """ make a shapely Polygon in SRID 4326 from bbox and srid"""
+        """make a shapely Polygon in SRID 4326 from bbox and srid"""
         try:
             polygon = box(bbox[0], bbox[1], bbox[2], bbox[3])
             if not srid == 4326:
@@ -521,13 +548,13 @@ class ProjectSearchService:
 
     @staticmethod
     def _get_area_sqm(polygon: Polygon) -> float:
-        """ get the area of the polygon in square metres """
+        """get the area of the polygon in square metres"""
         return db.engine.execute(
             ST_Area(ST_Transform(shape.from_shape(polygon, 4326), 3857))
         ).scalar()
 
     @staticmethod
     def validate_bbox_area(polygon: Polygon) -> bool:
-        """ check polygon does not exceed maximim allowed area"""
+        """check polygon does not exceed maximim allowed area"""
         area = ProjectSearchService._get_area_sqm(polygon)
         return area <= MAX_AREA

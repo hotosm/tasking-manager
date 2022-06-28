@@ -42,15 +42,15 @@ describe('ProjectStats dashboard', () => {
     await waitFor(() => container.querySelector('[aria-valuenow="28"]'));
 
     expect(screen.getByText('Edits')).toBeInTheDocument();
-    expect(screen.getByText('987654321')).toBeInTheDocument();
-    expect(screen.getByText('123456789')).toBeInTheDocument();
+    expect(screen.getByText('987,654,321')).toBeInTheDocument();
+    expect(screen.getByText('123,456,789')).toBeInTheDocument();
     expect(screen.getByText('Changesets')).toBeInTheDocument();
     expect(screen.getByText('Total map edits')).toBeInTheDocument();
     expect(screen.getByText('Tasks by status')).toBeInTheDocument();
-    expect(screen.getByText('Contributors')).toBeInTheDocument();
     expect(screen.getByText('Project timeline')).toBeInTheDocument();
-
     await waitFor(() => screen.getByText('Time statistics'));
     expect(screen.getByText('Time statistics')).toBeInTheDocument();
-  }, 10000);
+    await waitFor(() => screen.getByText('Contributors'));
+    expect(screen.getByText('Contributors')).toBeInTheDocument();
+  });
 });

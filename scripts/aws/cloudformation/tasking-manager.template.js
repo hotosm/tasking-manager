@@ -38,10 +38,30 @@ const Parameters = {
     Type: 'String',
     Description: 'POSTGRES_USER'
   },
-  DatabaseSize: {
+  DatabaseEngineVersion: {
+    Description: 'AWS PostgreSQL Engine version',
+    Type: 'String',
+    Default: '11.12'
+  },
+  DatabaseInstanceType: {
+    Description: 'Database instance type',
+    Type: 'String',
+    Default: 'db.t3.xlarge'
+  },
+  DatabaseDiskSize: {
     Description: 'Database size in GB',
     Type: 'String',
     Default: '100'
+  },
+  DatabaseParameterGroupName: {
+    Description: 'Name of the customized parameter group for the database',
+    Type: 'String',
+    Default: 'tm3-logging-postgres11'
+  },
+  DatabaseSnapshotRetentionPeriod: {
+    Description: 'Retention period for automatic (scheduled) snapshots in days',
+    Type: 'Number',
+    Default: 10
   },
   ELBSubnets: {
     Description: 'ELB subnets',
@@ -129,6 +149,10 @@ const Parameters = {
   SentryBackendDSN: {
     Description: "DSN for sentry",
     Type: 'String'
+  },
+  TaskingManagerLogo: {
+    Description: "URL for logo",
+    Type: "String"
   }
 };
 
@@ -310,52 +334,43 @@ const Resources = {
     },
     Properties: {
       IamInstanceProfile: cf.ref('TaskingManagerEC2InstanceProfile'),
-      ImageId: 'ami-0565af6e282977273',
+      ImageId: 'ami-00fa576fb10a52a1c',
       InstanceType: 'c5d.large',
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
       UserData: cf.userData([
         '#!/bin/bash',
         'set -x',
+        'sleep 60',
         'export DEBIAN_FRONTEND=noninteractive',
         'export LC_ALL="en_US.UTF-8"',
         'export LC_CTYPE="en_US.UTF-8"',
         'dpkg-reconfigure --frontend=noninteractive locales',
         'sudo apt-get -y update',
         'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade',
-        'sudo add-apt-repository ppa:deadsnakes/ppa -y',
-        'sudo apt-get update',
-        'sudo apt-get -y install python3.6',
-        'sudo apt-get -y install python3.6-dev',
-        'sudo apt-get -y install python3.6-venv',
         'sudo apt-get -y install curl',
         'wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -',
         'sudo sh -c \'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list\'',
         'sudo apt-get update -y',
-        'sudo apt-get install -y postgresql-11',
-        'sudo apt-get -y install postgresql-11-postgis',
-        'sudo apt-get -y install postgresql-11-postgis-scripts',
+        'sudo apt-get install -y postgresql-12',
+        'sudo apt-get -y install postgresql-12-postgis-3',
+        'sudo apt-get -y install postgresql-12-postgis-3-scripts',
         'sudo apt-get -y install postgis',
         'sudo apt-get -y install libpq-dev',
         'sudo apt-get -y install libxml2',
         'sudo apt-get -y install wget libxml2-dev',
-        'sudo apt-get -y install libgeos-3.5.0',
+        'sudo apt-get -y install libgeos-3.8.0',
         'sudo apt-get -y install libgeos-dev',
-        'sudo apt-get -y install libproj9',
+        'sudo apt-get -y install libproj15',
         'sudo apt-get -y install libproj-dev',
-        'sudo apt-get -y install python-pip libgdal1-dev',
+        'sudo apt-get -y install python3-pip libgdal-dev libpq-dev python3-psycopg2 python3.8-venv',
         'sudo apt-get -y install libjson-c-dev',
         'sudo apt-get -y install git',
         'sudo apt-get -y install awscli',
         'sudo apt-get -y install ruby',
-        'pushd /home/ubuntu',
-        'wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install',
-        'chmod +x ./install && sudo ./install auto',
-        'sudo systemctl start codedeploy-agent',
-        'popd',
         'git clone --recursive https://github.com/hotosm/tasking-manager.git',
         'cd tasking-manager/',
         cf.sub('git reset --hard ${GitSha}'),
-        'python3.6 -m venv ./venv',
+        'python3 -m venv ./venv',
         '. ./venv/bin/activate',
         'pip install --upgrade pip',
         'pip install -r requirements.txt',
@@ -363,8 +378,8 @@ const Resources = {
         'export LC_ALL=C',
         'wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb',
         'dpkg -i /tmp/amazon-cloudwatch-agent.deb',
-        'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz',
-        'pip2 install aws-cfn-bootstrap-latest.tar.gz',
+        'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz',
+        'python3 -m easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-py3-latest.tar.gz',
         'echo "Exporting environment variables:"',
         cf.sub('export NEW_RELIC_LICENSE=${NewRelicLicense}'),
         cf.join('', ['export POSTGRES_ENDPOINT=', cf.getAtt('TaskingManagerRDS','Endpoint.Address')]),
@@ -387,18 +402,24 @@ const Resources = {
         cf.sub('export TM_LOG_DIR="${TaskingManagerLogDirectory}"'),
         cf.sub('export TM_ORG_NAME="${TaskingManagerOrgName}"'),
         cf.sub('export TM_ORG_CODE="${TaskingManagerOrgCode}"'),
+        cf.sub('export TM_ORG_LOGO="${TaskingManagerLogo}"'),
         cf.sub('export TM_IMAGE_UPLOAD_API_URL="${TaskingManagerImageUploadAPIURL}"'),
         cf.sub('export TM_IMAGE_UPLOAD_API_KEY="${TaskingManagerImageUploadAPIKey}"'),
         'psql "host=$POSTGRES_ENDPOINT dbname=$POSTGRES_DB user=$POSTGRES_USER password=$POSTGRES_PASSWORD" -c "CREATE EXTENSION IF NOT EXISTS postgis"',
         cf.if('DatabaseDumpFileGiven', cf.sub('aws s3 cp ${DatabaseDump} dump.sql; sudo -u postgres psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_ENDPOINT/$POSTGRES_DB" < dump.sql'), ''),
-        './venv/bin/python3.6 manage.py db upgrade',
+        './venv/bin/python3 manage.py db upgrade',
         'echo "------------------------------------------------------------"',
+        'pushd /home/ubuntu',
+        'wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install',
+        'chmod +x ./install && sudo ./install auto',
+        'sudo systemctl start codedeploy-agent',
+        'popd',
         cf.sub('export NEW_RELIC_LICENSE_KEY="${NewRelicLicense}"'),
         cf.sub('export TM_SENTRY_BACKEND_DSN="${SentryBackendDSN}"'),
         'export NEW_RELIC_ENVIRONMENT=$TM_ENVIRONMENT',
         cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
-        cf.sub('sudo cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
-        cf.sub('cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
+        cf.sub('sudo /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource TaskingManagerLaunchConfiguration --region ${AWS::Region} --configsets default'),
+        cf.sub('/opt/aws/bin/cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
       ]),
       KeyName: 'mbtiles'
     }
@@ -608,18 +629,21 @@ const Resources = {
   },
   TaskingManagerRDS: {
     Type: 'AWS::RDS::DBInstance',
+    Metadata: {
+      Todo: 'Spin out database components into its own cloudformation template'
+    },
     Properties: {
         Engine: 'postgres',
         DBName: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresDB')),
-        EngineVersion: '11.5',
+        EngineVersion: cf.ref('DatabaseEngineVersion'),
         MasterUsername: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresUser')),
         MasterUserPassword: cf.if('UseASnapshot', cf.noValue, cf.ref('PostgresPassword')),
-        AllocatedStorage: cf.ref('DatabaseSize'),
-        BackupRetentionPeriod: 10,
+        AllocatedStorage: cf.ref('DatabaseDiskSize'),
+        BackupRetentionPeriod: cf.ref('DatabaseSnapshotRetentionPeriod'),
         StorageType: 'gp2',
-        DBParameterGroupName: 'tm3-logging-postgres11',
+        DBParameterGroupName: cf.ref('DatabaseParameterGroupName'),
         EnableCloudwatchLogsExports: ['postgresql'],
-        DBInstanceClass: cf.if('IsTaskingManagerProduction', 'db.t3.2xlarge', 'db.t2.small'),
+        DBInstanceClass: cf.ref('DatabaseInstanceType'),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
     }

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { redirectTo } from '@reach/router';
+import { useNavigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import Popup from 'reactjs-popup';
 
@@ -11,21 +11,22 @@ import { Button } from '../button';
 import { AlertIcon } from '../svgIcons';
 
 export function DeleteModal({ id, name, type, className }: Object) {
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.get('token'));
   const [deleteStatus, setDeleteStatus] = useState(null);
   const [error, setErrorMessage] = useState(null);
-  useEffect(() => {
-    if (deleteStatus === 'success' && type === 'notifications') {
-      redirectTo(`/inbox`);
-    }
-    if (deleteStatus === 'success') {
-      redirectTo(`/manage/${type}/`);
-    }
-  }, [deleteStatus, type]);
+
   const deleteEntity = () => {
     setDeleteStatus('started');
     fetchLocalJSONAPI(`${type}/${id}/`, token, 'DELETE')
-      .then((success) => setDeleteStatus('success'))
+      .then((success) => {
+        setDeleteStatus('success');
+        if (type === 'notifications') {
+          setTimeout(() => navigate(`/inbox`), 750);
+        } else {
+          setTimeout(() => navigate(`/manage/${type}`), 750);
+        }
+      })
       .catch((e) => {
         setDeleteStatus('failure');
         setErrorMessage(e.message);
@@ -75,13 +76,24 @@ export function DeleteModal({ id, name, type, className }: Object) {
                 </div>
               </>
             )}
-            {deleteStatus === 'failure' && (
-              <>
-                <h3 className="barlow-condensed f3">
+            {deleteStatus && (
+              <h3 className="barlow-condensed f3">
+                {deleteStatus === 'started' && (
+                  <>
+                    <FormattedMessage {...messages.processing} />
+                    &hellip;
+                  </>
+                )}
+                {deleteStatus === 'success' && (
+                  <FormattedMessage {...messages[`success_${type}`]} />
+                )}
+                {deleteStatus === 'failure' && (
                   <FormattedMessage {...messages[`failure_${type}`]} />
-                </h3>
-                <p>{error}</p>
-              </>
+                )}
+              </h3>
+            )}
+            {deleteStatus === 'failure' && (
+              <p>{(error && <FormattedMessage {...messages[`${error}Error`]} />) || error}</p>
             )}
           </div>
         </div>

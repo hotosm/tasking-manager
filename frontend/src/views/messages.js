@@ -46,15 +46,39 @@ export default defineMessages({
   },
   loginRequired: {
     id: 'loginPage.title',
-    defaultMessage: 'Login or register an account',
+    defaultMessage: 'Sign in to {org} Tasking Manager',
+  },
+  loginWithOSM: {
+    id: 'loginPage.text.login',
+    defaultMessage: 'You can log in with an OpenStreetMap account.',
+  },
+  createAccount: {
+    id: 'loginPage.text.create_account',
+    defaultMessage: 'Or create a new one to start mapping.',
+  },
+  managers: {
+    id: 'management.managers',
+    defaultMessage: 'Managers',
   },
   manageUsers: {
     id: 'management.users.title',
     defaultMessage: 'Manage users',
   },
+  newUsers: {
+    id: 'management.stats.users.title',
+    defaultMessage: 'New users',
+  },
+  totalFeatures: {
+    id: 'management.stats.features',
+    defaultMessage: 'Total features',
+  },
   newOrganisation: {
     id: 'teamsAndOrgs.management.organisation.creation',
     defaultMessage: 'Create new organization',
+  },
+  editOrganisation: {
+    id: 'teamsAndOrgs.management.organisation.edit',
+    defaultMessage: 'Edit organization',
   },
   newTeam: {
     id: 'teamsAndOrgs.management.team.creation',
@@ -100,6 +124,26 @@ export default defineMessages({
     id: 'teamsAndOrgs.management.organisation.manage.error',
     defaultMessage:
       'You are not a manager of this organization, so you are not allowed to edit it.',
+  },
+  tasksStatistics: {
+    id: 'teamsAndOrgs.management.organisation.stats',
+    defaultMessage: 'Tasks statistics',
+  },
+  statistics: {
+    id: 'teamsAndOrgs.management.organisation.activity.stats',
+    defaultMessage: 'Statistics',
+  },
+  remainingTasks: {
+    id: 'teamsAndOrgs.management.organisation.remaining_tasks',
+    defaultMessage: 'Total remaining',
+  },
+  tier: {
+    id: 'teamsAndOrgs.management.organisation.usage_tier',
+    defaultMessage: 'Tier',
+  },
+  usageLevel: {
+    id: 'teamsAndOrgs.management.organisation.usage_level',
+    defaultMessage: 'Level',
   },
   manageOrganisation: {
     id: 'teamsAndOrgs.management.organisation.manage',
@@ -252,6 +296,14 @@ export default defineMessages({
     id: 'pages.learn.tutorials.osm_step_by_step.description',
     defaultMessage: 'Beginner’s Guide to mapping on OpenStreetMap',
   },
+  learnTMCheatsheetTitle: {
+    id: 'pages.learn.tutorials.cheatsheet.title',
+    defaultMessage: 'Tasking Manager Cheatsheet',
+  },
+  learnTMCheatsheetDescription: {
+    id: 'pages.learn.tutorials.cheatsheet.description',
+    defaultMessage: "TM's concise set of notes used for quick reference",
+  },
   learnOSMTutorialTitle: {
     id: 'pages.learn.tutorials.learnosm.title',
     defaultMessage: 'Administration Guide',
@@ -398,7 +450,7 @@ export default defineMessages({
   learnManageDescription: {
     id: 'pages.learn.manage.description',
     defaultMessage:
-      'You can use the Tasking Manager to set up your own projects. Be sure to be responsible by making sure your skill level matches your ambition. It is good to reach out to the administrators of the Tasking Manager and learn more about what is needed to obtain the permissions to create and manage projects.',
+      'You can use the Tasking Manager to set up your own projects. Be sure to be responsible by making sure your skill level matches your ambition. If you are interested in creating projects please check whether your organization already exists on Tasking Manager by viewing this {organizationsListLink}. If your organization already exists on Tasking Manager please contact one of your listed organization managers. If your organization does not exist, feel free to register your interest in creating projects by completing this {createNewOrganizationFormLink}.',
   },
   learnManageStepJoinTitle: {
     id: 'pages.learn.manage.steps.join.title',
@@ -408,6 +460,14 @@ export default defineMessages({
     id: 'pages.learn.manage.steps.join.description',
     defaultMessage:
       'The Tasking Manager allows you to create projects as part of a community or organization. Either get in touch with one you know, or request the admins to add your group to the Tasking Manager.',
+  },
+  list: {
+    id: 'pages.learn.manage.list',
+    defaultMessage: 'list',
+  },
+  form: {
+    id: 'pages.learn.manage.form',
+    defaultMessage: 'form',
   },
   learnManageStepCreateTitle: {
     id: 'pages.learn.manage.steps.create.title',
@@ -582,7 +642,11 @@ export default defineMessages({
     id: 'pages.edit_project.actions.update.success',
     defaultMessage: 'Project updated successfully.',
   },
-  updateError: {
+  saveProjectError: {
+    id: 'pages.edit_project.actions.update.data_error',
+    defaultMessage: 'It was not possible to save the project.',
+  },
+  serverError: {
     id: 'pages.edit_project.actions.update.error',
     defaultMessage:
       'Saving the project failed because of a Server Error. Please try again later or contact the administrator if problem persists.',
@@ -590,12 +654,16 @@ export default defineMessages({
   missingFields: {
     id: 'pages.edit_project.actions.missing_fields',
     defaultMessage:
-      'Saving the project failed because you need to provide information for these required fields:',
+      '{number, plural, one {One required field is missing:} other {Some required fields are missing:}}',
   },
   missingFieldsForLocale: {
     id: 'pages.edit_project.actions.missing_fields_for_locale',
+    defaultMessage: "Missing information in the project's default language ({locale}):",
+  },
+  noTeamsAssigned: {
+    id: 'pages.edit_project.actions.missing_fields_for_teams',
     defaultMessage:
-      'Saving the project failed because you need to provide information for these fields in your default language ({locale}):',
+      '{mapping, select, true {Mapping} other {{validation, select, true {Validation} other {}}}} {mapping, select, true {{validation, select, true {and validation} other {}}} other {}} permissions have been set only to team members but no team has been added.',
   },
   projectEditSection_description: {
     id: 'pages.edit_project.sections.description',
@@ -636,5 +704,9 @@ export default defineMessages({
   duplicateCampaign: {
     id: 'pages.create_campaign.duplicate',
     defaultMessage: 'A campaign with the same name already exists',
+  },
+  campaignError: {
+    id: 'pages.create_campaign.error',
+    defaultMessage: 'There was an error saving this campaign.',
   },
 });

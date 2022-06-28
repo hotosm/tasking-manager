@@ -1,6 +1,7 @@
 from backend import db
 from flask import current_app
 from sqlalchemy.exc import IntegrityError
+from psycopg2.errors import UniqueViolation, NotNullViolation
 from backend.models.dtos.campaign_dto import (
     CampaignDTO,
     NewCampaignDTO,
@@ -23,6 +24,15 @@ class CampaignService:
     def get_campaign(campaign_id: int) -> Campaign:
         """Gets the specified campaign"""
         campaign = Campaign.query.get(campaign_id)
+
+        if campaign is None:
+            raise NotFound()
+
+        return campaign
+
+    @staticmethod
+    def get_campaign_by_name(campaign_name: str) -> Campaign:
+        campaign = Campaign.query.filter_by(name=campaign_name).first()
 
         if campaign is None:
             raise NotFound()
@@ -63,7 +73,7 @@ class CampaignService:
 
     @staticmethod
     def delete_project_campaign(project_id: int, campaign_id: int):
-        """ Delete campaign for a project"""
+        """Delete campaign for a project"""
         campaign = Campaign.query.get(campaign_id)
         project = Project.query.get(project_id)
         project.campaign.remove(campaign)
@@ -73,14 +83,14 @@ class CampaignService:
 
     @staticmethod
     def get_all_campaigns() -> CampaignListDTO:
-        """ Returns a list of all campaigns """
+        """Returns a list of all campaigns"""
         query = Campaign.query.order_by(Campaign.name).distinct()
 
         return Campaign.campaign_list_as_dto(query)
 
     @staticmethod
     def create_campaign(campaign_dto: NewCampaignDTO):
-        """ Creates a new campaign """
+        """Creates a new campaign"""
         campaign = Campaign.from_dto(campaign_dto)
         try:
             campaign.create()
@@ -91,8 +101,10 @@ class CampaignService:
                 db.session.commit()
         except IntegrityError as e:
             current_app.logger.info("Integrity error: {}".format(e.args[0]))
-            raise ValueError()
-
+            if isinstance(e.orig, UniqueViolation):
+                raise ValueError("NameExists- Campaign name already exists") from e
+            if isinstance(e.orig, NotNullViolation):
+                raise ValueError("NullName- Campaign name cannot be null") from e
         return campaign
 
     @staticmethod
@@ -108,7 +120,7 @@ class CampaignService:
 
     @staticmethod
     def create_campaign_organisation(organisation_id: int, campaign_id: int):
-        """ Creates new campaign from DTO """
+        """Creates new campaign from DTO"""
         statement = campaign_organisations.insert().values(
             campaign_id=campaign_id, organisation_id=organisation_id
         )
@@ -121,7 +133,7 @@ class CampaignService:
 
     @staticmethod
     def get_organisation_campaigns_as_dto(organisation_id: int) -> CampaignListDTO:
-        """ Gets all the campaigns for a specified project """
+        """Gets all the campaigns for a specified project"""
         query = (
             Campaign.query.join(campaign_organisations)
             .filter(campaign_organisations.c.organisation_id == organisation_id)
@@ -142,7 +154,7 @@ class CampaignService:
 
     @staticmethod
     def delete_organisation_campaign(organisation_id: int, campaign_id: int):
-        """ Delete campaign for a organisation"""
+        """Delete campaign for a organisation"""
         campaign = Campaign.query.get(campaign_id)
         org = Organisation.query.get(organisation_id)
         try:

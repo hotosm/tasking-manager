@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
-import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
-import ReactPlaceholder from 'react-placeholder';
-import { Link, redirectTo } from '@reach/router';
+import { Link, useNavigate } from '@reach/router';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
 
@@ -17,18 +15,12 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 
 export const CreateInterest = () => {
   useSetTitleTag('Create new category');
+  const navigate = useNavigate();
   const token = useSelector((state) => state.auth.get('token'));
-  const [newInterestId, setNewInterestId] = useState(null);
-
-  useEffect(() => {
-    if (newInterestId) {
-      redirectTo(`/manage/categories/${newInterestId}`);
-    }
-  }, [newInterestId]);
 
   const createInterest = (payload) => {
     pushToLocalJSONAPI('interests/', JSON.stringify(payload), token, 'POST').then((result) =>
-      setNewInterestId(result.id),
+      navigate(`/manage/categories/${result.id}`),
     );
   };
 
@@ -82,34 +74,22 @@ export const ListInterests = () => {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   // TO DO: filter teams of current user
   const [error, loading, interests] = useFetch(`interests/`);
-
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <div className="w-50-ns w-100 cf ph6-l ph4">
-        <TextBlock rows={1} className="bg-grey-light h3" />
-      </div>
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-    </div>
-  );
+  const isInterestsFetched = !loading && !error;
 
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={!error && !loading}
-    >
-      <InterestsManagement interests={interests.interests} userDetails={userDetails} />
-    </ReactPlaceholder>
+    <InterestsManagement
+      interests={interests.interests}
+      userDetails={userDetails}
+      isInterestsFetched={isInterestsFetched}
+    />
   );
 };
 
 export const EditInterest = (props) => {
-  useSetTitleTag('Edit category');
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [error, loading, interest] = useFetch(`interests/${props.id}/`);
+  useSetTitleTag(`Edit ${interest.name}`);
 
   const [projectsError, projectsLoading, projects] = useFetch(
     `projects/?interests=${props.id}&omitMapResults=true`,

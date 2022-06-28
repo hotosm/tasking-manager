@@ -2,7 +2,9 @@ import { rest } from 'msw';
 
 import { getProjectSummary, getProjectStats } from './mockData/projects';
 import { featuredProjects } from './mockData/featuredProjects';
+import { newUsersStats } from './mockData/userStats';
 import { projectContributions, projectContributionsByDay } from './mockData/contributions';
+import { usersList } from './mockData/userList';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL } from '../../config';
 
@@ -29,6 +31,12 @@ const handlers = [
   }),
   rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
     return res(ctx.json({ Success: 'Message deleted' }));
+  }),
+  rest.get(API_URL + 'users/statistics/', async (req, res, ctx) => {
+    return res(ctx.json(newUsersStats));
+  }),
+  rest.get(API_URL + 'users', async (req, res, ctx) => {
+    return res(ctx.json(usersList));
   }),
 ];
 
