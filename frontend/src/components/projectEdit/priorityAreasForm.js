@@ -244,7 +244,9 @@ export const PriorityAreasForm = () => {
   }, [mapObj.map, mapObj.draw, projectInfo, setProjectInfo, drawPriorityAreas]);
 
   const clearAll = () => {
+    const currentDrawMode = mapObj.draw.getMode();
     mapObj.draw.deleteAll();
+    mapObj.draw.changeMode(currentDrawMode);
     mapObj.map.getSource('priority_areas').setData(featureCollection([]));
     setProjectInfo({ ...projectInfo, priorityAreas: [] });
   };
