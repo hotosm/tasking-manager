@@ -57,6 +57,7 @@ class SMTPService:
         subject: str,
         content: str,
         message_type: int,
+        project_name: str,
     ):
         """Send an email to user to alert that they have a new message."""
 
@@ -83,6 +84,7 @@ class SMTPService:
             "FROM_USERNAME": from_username,
             "PROJECT_LINK": project_link,
             "PROJECT_ID": str(project_id) if project_id is not None else None,
+            "PROJECT_NAME": project_name,
             "TASK_LINK": task_link,
             "TASK_ID": str(task_id) if task_id is not None else None,
             "PROFILE_LINK": inbox_url,
