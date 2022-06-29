@@ -13,7 +13,7 @@ from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType, NotFound
 from backend.models.postgis.notification import Notification
-from backend.models.postgis.project import Project
+from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
 from backend.models.postgis.statuses import TeamRoles
 from backend.services.messaging.smtp_service import SMTPService
@@ -209,6 +209,10 @@ class MessageService:
     ):
         """Will send a canned message to anyone @'d in a comment"""
         usernames = MessageService._parse_message_for_username(comment, project_id)
+        project = Project.get(project_id)
+        project_name = ProjectInfo.get_dto_for_locale(
+            project_id, project.default_locale
+        ).name
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
 
@@ -225,7 +229,7 @@ class MessageService:
                 message.task_id = task_id
                 message.from_user_id = comment_from
                 message.to_user_id = user.id
-                message.subject = f"You were mentioned in a comment in {task_link} of Project {project_id}"
+                message.subject = f"You were mentioned in a comment in {task_link} of project {project_name}"
                 message.message = comment
                 messages.append(dict(message=message, user=user))
 
@@ -380,7 +384,9 @@ class MessageService:
         message.save()
 
     @staticmethod
-    def send_message_after_chat(chat_from: int, chat: str, project_id: int):
+    def send_message_after_chat(
+        chat_from: int, chat: str, project_id: int, project_name: str
+    ):
         """Send alert to user if they were @'d in a chat message"""
         # Because message-all run on background thread it needs it's own app context
         app = create_app()
@@ -388,7 +394,7 @@ class MessageService:
             usernames = MessageService._parse_message_for_username(chat, project_id)
             if len(usernames) != 0:
                 link = MessageService.get_project_link(
-                    project_id, include_chat_section=True
+                    project_id, project_name, include_chat_section=True
                 )
                 messages = []
                 for username in usernames:
@@ -404,7 +410,7 @@ class MessageService:
                     message.project_id = project_id
                     message.from_user_id = chat_from
                     message.to_user_id = user.id
-                    message.subject = f"You were mentioned in {link} chat"
+                    message.subject = f"You were mentioned in project {link} chat"
                     message.message = chat
                     messages.append(dict(message=message, user=user))
 
@@ -681,7 +687,7 @@ class MessageService:
 
     @staticmethod
     def get_project_link(
-        project_id: int, base_url=None, include_chat_section=False
+        project_id: int, project_name: str, base_url=None, include_chat_section=False
     ) -> str:
         """Helper method to generate a link to project chat"""
         if not base_url:
@@ -691,7 +697,7 @@ class MessageService:
         else:
             section = ""
 
-        return f'<a href="{base_url}/projects/{project_id}{section}">Project {project_id}</a>'
+        return f'<a href="{base_url}/projects/{project_id}{section}">{project_name}</a>'
 
     @staticmethod
     def get_user_profile_link(user_name: str, base_url=None) -> str:
