@@ -283,7 +283,7 @@ class MessageService:
                 message.from_user_id = comment_from
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = f"{user_link} left a comment in {task_link} of Project {project_name}"
+                message.subject = f"{user_link} left a comment in {task_link} of project {project_name}"
                 message.message = comment
                 messages.append(
                     dict(message=message, user=user, project_name=project_name)
@@ -467,7 +467,7 @@ class MessageService:
                     message.from_user_id = chat_from
                     message.to_user_id = user.id
                     message.subject = (
-                        f"{from_user_link} left a comment in {project_link}"
+                        f"{from_user_link} left a comment in project {project_link}"
                     )
                     message.message = chat
                     messages.append(
