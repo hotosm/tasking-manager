@@ -72,7 +72,7 @@ class TestChatService(BaseTestCase):
         mock_thread.assert_called()
 
     def test_post_message_raises_error_if_user_not_member_of_allowed_team_in_private_project(
-        self
+        self,
     ):
         # Arrange
         sender = return_canned_user()
