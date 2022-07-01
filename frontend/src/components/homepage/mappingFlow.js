@@ -6,7 +6,7 @@ import { MappingIcon, ValidationIcon, DataUseIcon } from '../svgIcons';
 
 function MappingCard({ image, title, description }: Object) {
   return (
-    <div className="w-100 w-third-l">
+    <div className="w-100 w-third-l pv3">
       <div className="shadow-4 h-100">
         <div className="pa4 ph3-m">
           <div className="red dib">{image}</div>
