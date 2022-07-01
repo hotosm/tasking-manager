@@ -6,8 +6,8 @@ import { MappingIcon, ValidationIcon, DataUseIcon } from '../svgIcons';
 
 function MappingCard({ image, title, description }: Object) {
   return (
-    <div className="w-third-l w-100 dib fl ph2-l pv3">
-      <div className="shadow-4 mh2">
+    <div className="w-100 w-third-l pv3">
+      <div className="shadow-4 h-100">
         <div className="pa4 ph3-m">
           <div className="red dib">{image}</div>
           <h4 className="blue-dark b">
@@ -52,7 +52,7 @@ export function MappingFlow() {
       <p className="pr2 f5 f4-ns blue-dark lh-title mw7 mb4">
         <FormattedMessage {...messages.mappingFlowHeadline} />
       </p>
-      <div className="cf">
+      <div className="flex flex-column flex-row-l" style={{ gap: '2.25rem' }}>
         {cards.map((card, n) => (
           <MappingCard {...card} key={n} />
         ))}
