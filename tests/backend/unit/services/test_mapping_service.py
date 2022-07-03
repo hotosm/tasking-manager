@@ -1,3 +1,4 @@
+from unittest.mock import patch, MagicMock
 from backend.services.mapping_service import (
     MappingService,
     Task,
@@ -11,7 +12,7 @@ from backend.services.mapping_service import (
 )
 from backend.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from backend.models.postgis.task import TaskHistory, TaskAction, User
-from unittest.mock import patch, MagicMock
+from backend.services.messaging.message_service import MessageService
 from tests.backend.base import BaseTestCase
 
 
@@ -127,10 +128,12 @@ class TestMappingService(BaseTestCase):
     @patch.object(Task, "update")
     @patch.object(TaskHistory, "get_last_status")
     @patch.object(TaskHistory, "update_task_locked_with_duration")
+    @patch.object(MessageService, "send_message_after_comment")
     @patch.object(MappingService, "get_task")
     def test_unlock_with_comment_sets_history(
         self,
         mock_task,
+        mock_send_message,
         mock_history,
         mock_update,
         mock_stats,
@@ -147,6 +150,7 @@ class TestMappingService(BaseTestCase):
         test_task = MappingService.unlock_task_after_mapping(self.mapped_task_dto)
 
         # Assert
+        mock_send_message.assert_called()
         self.assertEqual(TaskAction.COMMENT.name, test_task.task_history[0].action)
         self.assertEqual(test_task.task_history[0].action_text, "Test comment")
 

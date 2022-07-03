@@ -81,13 +81,13 @@ class TeamService:
                 active = True
 
             TeamService.add_team_member(team_id, user.id, role, active)
-
             if team.invite_only:
                 team_managers = team.get_team_managers()
-                for member in team_managers:
-                    MessageService.send_request_to_join_team(
-                        user.id, user.username, member.user_id, team.name, team_id
-                    )
+                for manager in team_managers:
+                    if manager.join_request_notifications:
+                        MessageService.send_request_to_join_team(
+                            user.id, user.username, manager.user_id, team.name, team_id
+                        )
 
     @staticmethod
     def send_invite(team_id, from_user_id, username):

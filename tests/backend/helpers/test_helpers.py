@@ -93,11 +93,11 @@ def get_canned_simplified_osm_user_details():
     return data
 
 
-def return_canned_user() -> User:
+def return_canned_user(username=TEST_USERNAME, id=TEST_USER_ID) -> User:
     """Returns a canned user"""
     test_user = User()
-    test_user.username = TEST_USERNAME
-    test_user.id = TEST_USER_ID
+    test_user.username = username
+    test_user.id = id
     test_user.mapping_level = MappingLevel.BEGINNER.value
     test_user.email_address = None
 

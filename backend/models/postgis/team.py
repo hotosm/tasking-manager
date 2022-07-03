@@ -26,7 +26,9 @@ class TeamMembers(db.Model):
     )
     function = db.Column(db.Integer, nullable=False)  # either 'editor' or 'manager'
     active = db.Column(db.Boolean, default=False)
-
+    join_request_notifications = db.Column(
+        db.Boolean, nullable=False, default=False
+    )  # Managers can turn notifications on/off for team join requests
     member = db.relationship(
         User, backref=db.backref("teams", cascade="all, delete-orphan")
     )
@@ -196,6 +198,7 @@ class Team(db.Model):
         member_dto.function = member_function
         member_dto.picture_url = user.picture_url
         member_dto.active = member.active
+        member_dto.join_request_notifications = member.join_request_notifications
         return member_dto
 
     def as_dto_team_project(self, project) -> TeamProjectDTO:

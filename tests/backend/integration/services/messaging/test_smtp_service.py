@@ -17,6 +17,7 @@ class TestSMTPService(BaseTestCase):
         self.from_username = "Aadesh Baral"
         self.message_id = 1
         self.project_id = 1
+        self.project_name = "Test Project"
         self.task_id = 1
         self.subject = "test subject"
         self.content = "test content"
@@ -43,6 +44,7 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
@@ -63,6 +65,7 @@ class TestSMTPService(BaseTestCase):
                 message_id=self.message_id,
                 from_username=self.from_username,
                 project_id=self.project_id,
+                project_name=self.project_name,
                 task_id=self.task_id,
                 subject=self.subject,
                 content=self.content,
@@ -81,6 +84,7 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
@@ -96,6 +100,7 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
@@ -115,6 +120,7 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
