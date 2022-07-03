@@ -4,8 +4,8 @@ from backend.models.postgis.statuses import TeamMemberFunctions, TeamRoles
 from backend.services.team_service import (
     TeamService,
     TeamJoinNotAllowed,
-    MessageService
-    )
+    MessageService,
+)
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     add_user_to_team,
@@ -13,7 +13,7 @@ from tests.backend.helpers.test_helpers import (
     create_canned_project,
     create_canned_team,
     create_canned_user,
-    return_canned_user
+    return_canned_user,
 )
 
 
