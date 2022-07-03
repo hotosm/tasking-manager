@@ -67,18 +67,17 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   }, [showProjectsAOILayer, debouncedGetProjectsAOI, clearProjectsAOI, step]);
 
   useLayoutEffect(() => {
-    const map =
-      mapboxgl.supported() &&
-      new mapboxgl.Map({
-        container: mapRef.current,
-        style: MAP_STYLE,
-        center: [0, 0],
-        zoom: 1.3,
-        attributionControl: false,
-      })
-        .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
-        .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }));
+    if (!mapboxgl.supported()) return;
+    const map = new mapboxgl.Map({
+      container: mapRef.current,
+      style: MAP_STYLE,
+      center: [0, 0],
+      zoom: 1.3,
+      attributionControl: false,
+    })
+      .addControl(new mapboxgl.AttributionControl({ compact: false }))
+      .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
+      .addControl(new mapboxgl.ScaleControl({ unit: 'metric' }));
     if (MAPBOX_TOKEN) {
       map.addControl(
         new MapboxGeocoder({
