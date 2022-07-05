@@ -142,7 +142,7 @@ class UpdateTeamDTO(Model):
     name = StringType()
     logo = StringType()
     description = StringType()
-    invite_only = BooleanType(default=False, serialized_name="inviteOnly")
+    invite_only = BooleanType(serialized_name="inviteOnly")
     visibility = StringType(
         validators=[validate_team_visibility], serialize_when_none=False
     )
