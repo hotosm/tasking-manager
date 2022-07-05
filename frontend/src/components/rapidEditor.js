@@ -101,11 +101,11 @@ export default function RapidEditor({
 
       let osm = iDContext.connection();
       var auth = {
-        urlroot: OSM_SERVER_URL,
+        url: OSM_SERVER_URL,
         client_id: OSM_CLIENT_ID,
         client_secret: OSM_CLIENT_SECRET,
         redirect_uri: OSM_REDIRECT_URI,
-        access_token: session.osm_oauth_token,
+        access_token: session.osm_oauth_token
       };
       osm.switch(auth);
 

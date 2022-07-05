@@ -87,7 +87,7 @@ export default function Editor({ setDisable, comment, presets, imagery, gpxUrl }
 
       let osm = iDContext.connection();
       var auth = {
-        urlroot: OSM_SERVER_URL,
+        url: OSM_SERVER_URL,
         client_id: OSM_CLIENT_ID,
         client_secret: OSM_CLIENT_SECRET,
         redirect_uri: OSM_REDIRECT_URI,
