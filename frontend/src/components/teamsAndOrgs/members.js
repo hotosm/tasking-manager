@@ -8,6 +8,7 @@ import messages from './messages';
 import { UserAvatar } from '../user/avatar';
 import { EditModeControl } from './editMode';
 import { Button } from '../button';
+import { SwitchToggle } from '../formInputs';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { Alert } from '../alert';
 import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
@@ -152,8 +153,20 @@ export function Members({
   );
 }
 
-export function JoinRequests({ requests, teamId, addMembers, updateRequests }: Object) {
+export function JoinRequests({
+  requests,
+  teamId,
+  addMembers,
+  updateRequests,
+  members,
+  updateTeam,
+  isTeamInviteOnly,
+}: Object) {
   const token = useSelector((state) => state.auth.get('token'));
+  const loggedInUsername = useSelector((state) => state.auth.get('userDetails')).username;
+  const isJoinRequestEnabled = members?.filter((member) => member.username === loggedInUsername)[0]
+    ?.joinRequestNotifications;
+  const [isChecked, setIsChecked] = useState(isJoinRequestEnabled);
 
   const acceptRejectRequest = useCallback(
     (user, action) => {
@@ -173,6 +186,18 @@ export function JoinRequests({ requests, teamId, addMembers, updateRequests }: O
     [teamId, requests, updateRequests, addMembers, token],
   );
 
+  const handleJoinRequestNotificationsChange = (e) => {
+    const { checked } = e.target;
+    setIsChecked(checked);
+    let tempMembers = members;
+    const memberIndex = tempMembers.findIndex((member) => member.username === loggedInUsername);
+    Object.assign(tempMembers[memberIndex], {
+      joinRequestNotifications: checked,
+      active: checked.toString(),
+    });
+    updateTeam({ members });
+  };
+
   return (
     <div className="bg-white b--grey-light pa4 ba blue-dark">
       <div className="cf db">
@@ -180,6 +205,18 @@ export function JoinRequests({ requests, teamId, addMembers, updateRequests }: O
           <FormattedMessage {...messages.joinRequests} />
         </h3>
       </div>
+      {isTeamInviteOnly && (
+        <div className="flex justify-between blue-grey">
+          <FormattedMessage {...messages.newJoinRequestNotification} />
+          <div className="fl ml5">
+            <SwitchToggle
+              isChecked={isChecked}
+              onChange={(e) => handleJoinRequestNotificationsChange(e)}
+              labelPosition="right"
+            />
+          </div>
+        </div>
+      )}
       <div className="cf db mt3">
         {requests.map((user, n) => (
           <div className="cf db pt2" key={n}>
@@ -210,7 +247,7 @@ export function JoinRequests({ requests, teamId, addMembers, updateRequests }: O
           </div>
         ))}
         {requests.length === 0 && (
-          <div className="tc">
+          <div className="tc mt3">
             <FormattedMessage {...messages.noRequests} />
           </div>
         )}

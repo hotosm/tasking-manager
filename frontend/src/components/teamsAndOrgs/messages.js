@@ -409,6 +409,11 @@ export default defineMessages({
     id: 'management.teams.invite_only.description',
     defaultMessage: "Managers need to approve a member's request to join.",
   },
+  newJoinRequestNotification: {
+    id: 'management.teams.newJoinRequestNotification',
+    defaultMessage:
+      'Enable for team managers to receive (email) notifications each time a new join request is made',
+  },
   waitingApproval: {
     id: 'teamsAndOrgs.management.teams.messages.waiting_approval',
     defaultMessage: 'Your request to join this team is waiting for approval.',

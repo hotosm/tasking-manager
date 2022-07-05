@@ -339,6 +339,9 @@ export function EditTeam(props) {
           teamId={team.teamId}
           addMembers={addMembers}
           updateRequests={setRequests}
+          members={members}
+          updateTeam={updateTeam}
+          isTeamInviteOnly={team.inviteOnly}
         />
         <div className="h1"></div>
         <MessageMembers teamId={team.teamId} />
