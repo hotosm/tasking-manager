@@ -8,6 +8,7 @@ import messages from './messages';
 import { useFetch } from '../hooks/UseFetch';
 import { useEditTeamAllowed } from '../hooks/UsePermissions';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import useForceUpdate from '../hooks/UseForceUpdate';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
 import {
   getMembersDiff,
@@ -210,7 +211,8 @@ export function CreateTeam() {
 export function EditTeam(props) {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
-  const [error, loading, team] = useFetch(`teams/${props.id}/`);
+  const [forceUpdated, forceUpdate] = useForceUpdate();
+  const [error, loading, team] = useFetch(`teams/${props.id}/`, forceUpdated);
   const [initManagers, setInitManagers] = useState(false);
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
@@ -218,7 +220,7 @@ export function EditTeam(props) {
   const [canUserEditTeam] = useEditTeamAllowed(team);
   const [memberJoinTeamError, setMemberJoinTeamError] = useState(null);
   const [managerJoinTeamError, setManagerJoinTeamError] = useState(null);
-
+ 
   useEffect(() => {
     if (!initManagers && team && team.members) {
       setManagers(filterActiveManagers(team.members));
@@ -276,6 +278,7 @@ export function EditTeam(props) {
 
   const updateTeam = (payload) => {
     pushToLocalJSONAPI(`teams/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
+    forceUpdate();
   };
 
   if (team && team.teamId && !canUserEditTeam) {
@@ -339,7 +342,7 @@ export function EditTeam(props) {
           teamId={team.teamId}
           addMembers={addMembers}
           updateRequests={setRequests}
-          members={members}
+          managers={managers}
           updateTeam={updateTeam}
           isTeamInviteOnly={team.inviteOnly}
         />

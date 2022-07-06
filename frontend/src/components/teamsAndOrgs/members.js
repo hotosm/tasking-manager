@@ -158,15 +158,26 @@ export function JoinRequests({
   teamId,
   addMembers,
   updateRequests,
-  members,
+  managers,
   updateTeam,
   isTeamInviteOnly,
 }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
-  const loggedInUsername = useSelector((state) => state.auth.get('userDetails')).username;
-  const isJoinRequestEnabled = members?.filter((member) => member.username === loggedInUsername)[0]
-    ?.joinRequestNotifications;
-  const [isChecked, setIsChecked] = useState(isJoinRequestEnabled);
+  const { username: loggedInUsername } = useSelector((state) => state.auth.get('userDetails'));
+
+  const showJoinRequestSwitch =
+    isTeamInviteOnly &&
+    managers?.filter(
+      (manager) => manager.username === loggedInUsername && manager.function === 'MANAGER',
+    ).length > 0;
+  const [isChecked, setIsChecked] = useState(false);
+
+  useEffect(() => {
+    const isJoinRequestEnabled = managers.filter(
+      (manager) => manager.username === loggedInUsername,
+    )[0]?.joinRequestNotifications;
+    setIsChecked(isJoinRequestEnabled);
+  }, [loggedInUsername, managers]);
 
   const acceptRejectRequest = useCallback(
     (user, action) => {
@@ -189,13 +200,13 @@ export function JoinRequests({
   const handleJoinRequestNotificationsChange = (e) => {
     const { checked } = e.target;
     setIsChecked(checked);
-    let tempMembers = members;
-    const memberIndex = tempMembers.findIndex((member) => member.username === loggedInUsername);
-    Object.assign(tempMembers[memberIndex], {
+    let member = managers.find((member) => member.username === loggedInUsername);
+
+    Object.assign(member, {
       joinRequestNotifications: checked,
       active: checked.toString(),
     });
-    updateTeam({ members });
+    updateTeam({ members: [member] });
   };
 
   return (
@@ -205,7 +216,7 @@ export function JoinRequests({
           <FormattedMessage {...messages.joinRequests} />
         </h3>
       </div>
-      {isTeamInviteOnly && (
+      {showJoinRequestSwitch && (
         <div className="flex justify-between blue-grey">
           <FormattedMessage {...messages.newJoinRequestNotification} />
           <div className="fl ml5">
