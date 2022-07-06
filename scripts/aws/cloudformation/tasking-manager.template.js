@@ -136,7 +136,7 @@ const Parameters = {
   TaskingManagerSMTPTLS: {
     Description: 'TM_SMTP_USE_TLS environment variable',
     Type: 'Number',
-    Default: 0
+    Default: 1
   },
   TaskingManagerDefaultChangesetComment: {
     Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
