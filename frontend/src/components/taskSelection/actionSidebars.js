@@ -383,7 +383,7 @@ export function CompletionTabForValidation({
       return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
         navigate(
-          (redirectToPreviousProject && directedFrom) || `../tasks/?filter=readyToValidate`,
+          (redirectToPreviousProject && directedFrom) || `../tasks/?filter=MAPPED`,
           {
             state: {
               lastLockedTasksIds: tasksIds,
