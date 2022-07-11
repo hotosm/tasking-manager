@@ -1,58 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome Email Template</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Barlow+Condensed:wght@500&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      html {
-        font-size: 14px;
-      }
-
-      body {
-        font-family: "Archivo", sans-serif;
-        width: 600px;
-        line-height: 1.4;
-        margin: 0;
-        color: #2c3038;
-      }
-
-      p {
-        margin: 0;
-      }
-
-      h1,
-      h2,
-      h3 {
-        font-family: "Barlow Condensed", sans-serif;
-        margin: 0;
-      }
-
-      button {
-        font-family: inherit;
-      }
-    </style>
-  </head>
-
-  <body>
+{% extends "base.html" %}
+{% block content %}
     <div
       style="
         height: 300px;
         width: 600px;
-        background-image: url(./assets/validation-hero.png);
-        display: flex;
+        background-image: url(https://i.imgur.com/KvveWTP.png);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
         justify-content: center;
         align-items: center;
       "
     >
-      <img src="./assets/badge.png" alt="" width="273" height="200" />
     </div>
     <div style="padding: 0 2.357rem; margin-bottom: 3.428rem">
       <h1
@@ -64,50 +23,58 @@
           letter-spacing: 0.75px;
           text-transform: uppercase;
           margin-bottom: 24px;
-          margin-top: 4rem;
+          margin-top: 2rem;
         "
       >
         Validator role unlocked!
       </h1>
       <p style="margin-bottom: 24px">
-        Here&#39;s to you, Amanda Smith! <br />You&#39;ve worked hard on your
+        Here&#39;s to you, {{ values["USERNAME"] }}! <br />You&#39;ve worked hard on your
         mapping skills and it shows. You&#39;ve accomplished a lot to get to
         this moment:
       </p>
-      <div style="display: flex; gap: 32px">
-        <div
-          style="display: flex; flex-direction: column;"
-        >
-          <h3
-            style="
-              font-size: 48px;
-              line-height: 58px;
-              font-weight: 500;
-              color: #d73f3f;
-              align-self: center;
-            "
+      <table style="text-align: center;">
+        <th style="width:150px;">
+          <h3 style="
+            font-size: 48px;
+            line-height: 50px;
+            font-weight: 500;
+            color: #d73f3f;
+            align-self: center;
+            margin: 0;
+          "
           >
-            100
+            {{ values["MAPPED"] }}
           </h3>
-          <p style="display: inline-block; color: #68707f">Tasks mapped</p>
-        </div>
-        <div
-          style="display: flex; flex-direction: column;"
-        >
-          <h3
-            style="
-              font-size: 48px;
-              line-height: 58px;
-              font-weight: 500;
-              color: #d73f3f;
-              align-self: center;
-            "
+        </th>
+        <th style="padding: 0 10px;">
+          &nbsp;
+        </th>
+        <th style="width: 55px;" >
+          <h3 style="
+            font-size: 48px;
+            line-height: 58px;
+            font-weight: 500;
+            color: #d73f3f;
+            align-self: center;
+            margin: 0;
+          "
           >
-            95%
+            {{ values["VALIDATED"] }}
           </h3>
-          <p style="display: inline-block; color: #68707f">Tasks mapped</p>
-        </div>
-      </div>
+        </th>
+        <tr>
+          <td style="color: #68707f;">
+            Tasks mapped
+          </td>
+          <td>
+            &nbsp;
+          </td>
+          <td style="color: #68707f;">
+            Validated
+          </td>
+        </tr>
+      </table> 
       <p
         style="
           font-size: 14px;
@@ -119,18 +86,32 @@
         Now, it’s time to celebrate!
       </p>
 
-      <button
-        style="
-          color: #fff;
-          padding: 11px 24px;
-          background-color: #d73f3f;
-          border-radius: 2px;
-          font-size: 1.142rem;
-          align-self: flex-start;
-        "
-      >
-        Learn to Validate
-      </button>
+      <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 2.285rem; margin-bottom: 3.428rem;">
+        <tbody>
+            <tr>
+                <td style="text-align:center;">
+                    <table >
+                        <tbody>
+                            <tr>
+                                <td style="  padding: 11px 24px;  border: #d73f3f; border-radius:2px;" bgcolor="#d73f3f">
+                                    <a 
+                                      href="{{values['APP_BASE_URL']}}/learn" 
+                                      style="
+                                          font-size:1.142rem; 
+                                          color: #ffffff; 
+                                          text-decoration: none;
+                                          display: inline-block;
+                                      "
+                                      >
+                                        Learn to validate
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+      </table>
     </div>
-  </body>
-</html>
+{% endblock %}

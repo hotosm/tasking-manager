@@ -1,46 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome Email Template</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Barlow+Condensed:wght@500&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      html {
-        font-size: 14px;
-      }
-
-      body {
-        font-family: "Archivo", sans-serif;
-        width: 600px;
-        line-height: 1.4;
-        margin: 0;
-        color: #2c3038;
-      }
-
-      p {
-        margin: 0;
-      }
-
-      h1,
-      h2,
-      h3 {
-        font-family: "Barlow Condensed", sans-serif;
-      }
-
-      button {
-        font-family: inherit;
-      }
-    </style>
-  </head>
-
-  <body>
+{% extends "base.html" %}
+{% block content %}
     <div style="padding: 0 2.357rem; margin-bottom: 3.428rem">
       <h1
         style="
@@ -71,176 +30,96 @@
       >
         These 3 easy steps get you on your way to a great profile:
       </p>
-      <div
-        style="
-          display: flex;
-          flex-direction: column;
-          gap: 1.142rem;
-          mix-blend-mode: normal;
-          position: relative;
-        "
-      >
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 2.142rem;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 2px;
-            padding: 24px;
-            background-color: white;
-            z-index: 2;
-          "
-        >
-          <img
-            src="./assets/checked.png"
-            width="40"
-            height="40"
-            alt="checked logo"
-          />
-          <div>
-            <p
-              style="
-                font-weight: 700;
-                font-size: 1.142rem;
-                line-height: 1;
-                margin-bottom: 0.571rem;
-                text-decoration: line-through;
-              "
-            >
-              Detail your profile
-            </p>
-            <p style="color: #68707f">Add you name, country and email.</p>
-          </div>
-        </div>
-
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 2.142rem;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 2px;
-            padding: 24px;
-            background-color: white;
-            z-index: 2;
-          "
-        >
-          <!-- additional div becauses flex messes up the spacing -->
-          <div>
-            <div
-              style="
-                width: 40px;
-                height: 40px;
-                border: 2px dashed #d73f3f;
-                border-radius: 50%;
-                box-sizing: border-box;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
-              <p
-                style="
-                  font-weight: 700;
-                  font-size: 14px;
-                  line-height: 15px;
-                  color: #d73f3f;
-                "
-              >
-                2
-              </p>
-            </div>
-          </div>
-          <div>
-            <p
-              style="
-                font-weight: 700;
-                font-size: 1.142rem;
-                line-height: 1;
-                margin-bottom: 0.571rem;
-              "
-            >
-              Add a photo
-            </p>
-            <p style="color: #68707f">Add you name, country and email.</p>
-          </div>
-        </div>
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 2.142rem;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 2px;
-            padding: 24px;
-            background-color: white;
-            z-index: 2;
-          "
-        >
-          <div>
-            <div
-              style="
-                width: 40px;
-                height: 40px;
-                border: 2px dashed #d73f3f;
-                border-radius: 50%;
-                box-sizing: border-box;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
-              <p
-                style="
-                  font-weight: 700;
-                  font-size: 14px;
-                  line-height: 15px;
-                  color: #d73f3f;
-                "
-              >
-                3
-              </p>
-            </div>
-          </div>
-          <div>
-            <p
-              style="
-                font-weight: 700;
-                font-size: 1.142rem;
-                line-height: 1;
-                margin-bottom: 0.571rem;
-              "
-            >
-              Add your contact information
-            </p>
-            <p style="color: #68707f">Add your social profiles.</p>
-          </div>
-        </div>
-
-        <img
-          src="./assets/Mask.png"
-          width="534"
-          height="100%"
-          style="position: absolute; top: 33px; left: 33px; z-index: 1"
-          alt="mask image"
-        />
-      </div>
+      <table>
+        <tr>
+          <td>
+            {% for step in values["STEPS"] %}
+              <div  style=" display: inline-block; border: 2px solid #ecebed; padding: 24px; background-color: white; width:464px;">
+                <table>
+                  <tr >
+                    <td>
+                      {% if step.checked %}
+                        <img
+                          src="https://raw.githubusercontent.com/hotosm/tasking-manager/58c1c64687eba4d4b58724c78ac9bf206a20ddc4/backend/services/messaging/templates/assets/checked.png"
+                          width="40"
+                          height="40"
+                          alt="checked logo"
+                        />
+                      {% else %}
+                        <div
+                          style="
+                            width: 40px;
+                            height: 40px;
+                            border: 2px dashed #d73f3f;
+                            border-radius: 50%;
+                            align-items: center;
+                            justify-content: center;
+                          "
+                        >
+                          <p
+                            style="
+                              font-weight: 700;
+                              font-size: 14px;
+                              line-height: 15px;
+                              color: #d73f3f;
+                              padding: 37%;
+                            "
+                          >
+                            {{ loop.index }}
+                          </p>
+                        </div>
+                      {% endif %}
+                    </td>
+                    <td style="
+                      font-weight: 500;
+                      font-size: 1.142rem;
+                      line-height: 1;
+                    "
+                    >
+                      {% if step.checked %}
+                        <p style="margin-left:1.142rem; margin-bottom: 0.571rem; text-decoration: line-through;">
+                      {% else %}
+                        <p style="margin-left:1.142rem; margin-bottom: 0.571rem;">
+                      {% endif %}
+                      {{ step.title }}
+                      </p>
+                      <p style="color: #68707f; margin-left: 1.142rem; font-size: 0.857rem; font-weight: normal;">{{ step.subtitle }}</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            {% endfor %}
+          </td>
+        </tr>
+      </table>
       <!-- button component starts -->
-      <div style="display: flex; justify-content: center; margin-top: 74px">
-        <button
-          style="
-            color: #fff;
-            padding: 11px 24px;
-            background-color: #d73f3f;
-            border-radius: 2px;
-            font-size: 1.142rem;
-          "
-        >
-          Complete my profile
-        </button>
-      </div>
+      <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 2.285rem; margin-bottom: 3.428rem;">
+        <tbody>
+            <tr>
+                <td style="text-align:center;">
+                    <table cellspacing="0" cellpadding="0" style="margin:0 auto;">
+                        <tbody>
+                            <tr>
+                                <td style="  padding: 11px 24px;  border: #d73f3f; border-radius:2px;" bgcolor="#d73f3f">
+                                    <a 
+                                    href="{{values['APP_BASE_URL']}}/settings" 
+                                    style="
+                                        font-size:1.142rem; 
+                                        color: #ffffff; 
+                                        text-decoration: none;
+                                        display: inline-block;
+                                    "
+                                    >
+                                        Complete my profile
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+      </table>
       <!-- button component ends -->
     </div>
-  </body>
-</html>
+{% endblock %}
