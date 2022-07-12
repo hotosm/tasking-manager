@@ -9,6 +9,7 @@ from backend import osm
 from backend.api.utils import TMAPIDecorators
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
+from backend.services.messaging.smtp_service import SMTPService
 from werkzeug import url_quote
 
 token_auth = HTTPTokenAuth(scheme="Token")
@@ -109,6 +110,7 @@ class AuthenticationService:
 
         # Token is valid so update DB and return
         user.set_email_verified_status(is_verified=True)
+        SMTPService.send_welcome_email(user.email_address, user.username)
         return AuthenticationService._get_email_validated_url(True)
 
     @staticmethod
