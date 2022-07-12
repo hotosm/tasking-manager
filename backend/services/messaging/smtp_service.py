@@ -69,6 +69,7 @@ class SMTPService:
         subject: str,
         content: str,
         message_type: int,
+        project_name: str,
     ):
         """Send an email to user to alert that they have a new message."""
 
@@ -95,6 +96,7 @@ class SMTPService:
             "FROM_USERNAME": from_username,
             "PROJECT_LINK": project_link,
             "PROJECT_ID": str(project_id) if project_id is not None else None,
+            "PROJECT_NAME": project_name,
             "TASK_LINK": task_link,
             "TASK_ID": str(task_id) if task_id is not None else None,
             "PROFILE_LINK": inbox_url,
@@ -129,8 +131,14 @@ class SMTPService:
         if current_app.config["LOG_LEVEL"] == "DEBUG":
             current_app.logger.debug(msg.as_string())
         else:
-            mail.send(msg)
-        current_app.logger.debug(f"Email sent {to_address}")
+            try:
+                mail.send(msg)
+                current_app.logger.debug(f"Email sent {to_address}")
+            except Exception as e:
+                # ERROR level logs are automatically captured by sentry so that admins are notified
+                current_app.logger.error(
+                    f"{e}: Sending email failed. Please check SMTP configuration"
+                )
 
     @staticmethod
     def _generate_email_verification_url(email_address: str, user_name: str):

@@ -4,6 +4,7 @@ from flask import current_app
 
 from backend.models.dtos.message_dto import ChatMessageDTO, ProjectChatDTO
 from backend.models.postgis.project_chat import ProjectChat
+from backend.models.postgis.project_info import ProjectInfo
 from backend.services.messaging.message_service import MessageService
 from backend.services.project_service import ProjectService
 from backend.services.project_admin_service import ProjectAdminService
@@ -22,6 +23,9 @@ class ChatService:
         current_app.logger.debug("Posting Chat Message")
 
         project = ProjectService.get_project_by_id(project_id)
+        project_name = ProjectInfo.get_dto_for_locale(
+            project_id, project.default_locale
+        ).name
         is_allowed_user = True
         is_manager_permission = ProjectAdminService.is_user_action_permitted_on_project(
             authenticated_user_id, project_id
@@ -63,7 +67,12 @@ class ChatService:
             db.session.commit()
             threading.Thread(
                 target=MessageService.send_message_after_chat,
-                args=(chat_dto.user_id, chat_message.message, chat_dto.project_id),
+                args=(
+                    chat_dto.user_id,
+                    chat_message.message,
+                    chat_dto.project_id,
+                    project_name,
+                ),
             ).start()
             # Ensure we return latest messages after post
             return ProjectChat.get_messages(chat_dto.project_id, 1, 5)

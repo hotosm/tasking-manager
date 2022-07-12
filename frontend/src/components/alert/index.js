@@ -1,6 +1,12 @@
 import { BanIcon, CheckIcon, InfoIcon, AlertIcon } from '../svgIcons';
 
-export const Alert = ({ type = 'info', compact = false, inline = false, children }) => {
+export const Alert = ({
+  type = 'info',
+  compact = false,
+  inline = false,
+  iconClassName,
+  children,
+}) => {
   const icons = {
     info: InfoIcon,
     success: CheckIcon,
@@ -28,7 +34,7 @@ export const Alert = ({ type = 'info', compact = false, inline = false, children
         color[type]
       }`}
     >
-      <Icon className={`h1 w1 v-top mr2 ${iconColor[type]}`} />
+      <Icon className={`h1 w1 v-top mr2 ${iconColor[type]} ${iconClassName || ''}`} />
       {children}
     </div>
   );
