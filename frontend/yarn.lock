@@ -2377,8 +2377,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@file:../../iD":
-  version "2.22.0-dev"
+"@hotosm/id@^2.20.2":
+  version "2.20.2"
+  resolved "https://registry.npmjs.org/@hotosm/id/-/id-2.20.2.tgz"
+  integrity sha512-5G29dXL1TjpShj8+oTBLnpxydyoO6wyh4o1JqltGqMnyAeFcSrzoDCU6BZ3Kv1d2c7fVPNITwZv9f4dlmnj3rw==
   dependencies:
     "@ideditor/country-coder" "~5.0.3"
     "@ideditor/location-conflation" "~1.0.2"
@@ -2390,14 +2392,14 @@
     abortcontroller-polyfill "^1.4.0"
     aes-js "^3.1.2"
     alif-toolkit "^1.2.9"
-    core-js-bundle "^3.19.0"
+    core-js "^3.6.5"
     diacritics "1.3.0"
     fast-deep-equal "~3.1.1"
     fast-json-stable-stringify "2.1.0"
     lodash-es "~4.17.15"
-    marked "~4.0.12"
-    node-diff3 "~3.1.0"
-    osm-auth "~2.0.0"
+    marked "~2.0.0"
+    node-diff3 "2.1.0"
+    osm-auth "1.1.0"
     pannellum "2.5.6"
     pbf "^3.2.1"
     polygon-clipping "~0.15.1"
@@ -4578,11 +4580,11 @@ axe-core@^4.0.2:
   integrity sha512-5Kgy8Cz6LPC9DJcNb3yjAXTu3XihQgEdnIg50c//zOC/MyLP0Clg+Y8Sh9ZjjnvBrDZU4DgXS9C3T9r4/scGZQ==
 
 axios@^0.21.1:
-  version "0.21.1"
-  resolved "https://registry.npmjs.org/axios/-/axios-0.21.1.tgz"
-  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
+  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
   dependencies:
-    follow-redirects "^1.10.0"
+    follow-redirects "^1.14.0"
 
 axobject-query@^2.2.0:
   version "2.2.0"
@@ -5708,11 +5710,6 @@ copy-descriptor@^0.1.0:
   version "0.1.1"
   resolved "https://registry.npmjs.org/copy-descriptor/-/copy-descriptor-0.1.1.tgz"
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
-
-core-js-bundle@^3.19.0:
-  version "3.23.3"
-  resolved "https://registry.yarnpkg.com/core-js-bundle/-/core-js-bundle-3.23.3.tgz#d7e17ed3ca9d55240e1dcb2abac6738076cb2587"
-  integrity sha512-eP/p378tjDyJNL4xNOZ1nZl4FOQAC73sti/IYn5svWb07Bcs6yZ323we0xb+rWtnLzIWkv6NI41YJO37jMdrKg==
 
 core-js-compat@^3.6.2:
   version "3.6.5"
@@ -7678,10 +7675,10 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
-follow-redirects@^1.0.0, follow-redirects@^1.10.0:
-  version "1.13.0"
-  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.13.0.tgz"
-  integrity sha512-aq6gF1BEKje4a9i9+5jimNFIpq4Q1WiwBToeRK5NvZBd/TRsmW8BsJfOEGkr76TbOyPVD3OVDN910EcUNtRYEA==
+follow-redirects@^1.0.0, follow-redirects@^1.14.0:
+  version "1.15.1"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.1.tgz#0ca6a452306c9b276e4d3127483e29575e207ad5"
+  integrity sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -9649,7 +9646,7 @@ jsesc@~0.5.0:
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-0.5.0.tgz"
   integrity sha1-597mbjXW/Bb3EP6R1c9p9w8IkR0=
 
-jshashes@~1.0.8:
+jshashes@~1.0.0, jshashes@~1.0.8:
   version "1.0.8"
   resolved "https://registry.npmjs.org/jshashes/-/jshashes-1.0.8.tgz"
   integrity sha512-btmQZ/w1rj8Lb6nEwvhjM7nBYoj54yaEFo2PWh3RkxZ8qNwuvOxvQYN/JxVuwoMmdIluL+XwYVJ+pEEZoSYybQ==
@@ -10121,15 +10118,15 @@ marked@^4.0.12:
   resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.12.tgz#2262a4e6fd1afd2f13557726238b69a48b982f7d"
   integrity sha512-hgibXWrEDNBWgGiK18j/4lkS6ihTe9sxtV4Q1OQppb/0zzyPSzoFANBa5MfsG/zgsWklmNnhm0XACZOH/0HBiQ==
 
+marked@~2.0.0:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-2.0.7.tgz#bc5b857a09071b48ce82a1f7304913a993d4b7d1"
+  integrity sha512-BJXxkuIfJchcXOJWTT2DOL+yFWifFv2yGYOUzvXg8Qz610QKw+sHCvTMYwA+qWGhlA2uivBezChZ/pBy1tWdkQ==
+
 marked@~3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/marked/-/marked-3.0.8.tgz#2785f0dc79cbdc6034be4bb4f0f0a396bd3f8aeb"
   integrity sha512-0gVrAjo5m0VZSJb4rpL59K1unJAMb/hm8HRXqasD8VeC8m91ytDPMritgFSlKonfdt+rRYYpP/JfLxgIX8yoSw==
-
-marked@~4.0.12:
-  version "4.0.17"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.17.tgz#1186193d85bb7882159cdcfc57d1dfccaffb3fe9"
-  integrity sha512-Wfk0ATOK5iPxM4ptrORkFemqroz0ZDxp5MWfYA7H/F+wO17NRWV5Ypxi6p3g2Xmw2bKeiYOl6oVnLHKxBA0VhA==
 
 md5.js@^1.3.4:
   version "1.3.5"
@@ -10602,6 +10599,11 @@ no-case@^3.0.3:
     lower-case "^2.0.1"
     tslib "^1.10.0"
 
+node-diff3@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/node-diff3/-/node-diff3-2.1.0.tgz"
+  integrity sha512-m04x9YCoimejmtDeG33RyEiSY+o1oMqavIQC27xprayVxcdKRZyv0m5CY3yVrkhnv0Hg/vTw6AWtJ/0xmI2CLg==
+
 node-diff3@~3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/node-diff3/-/node-diff3-3.1.0.tgz"
@@ -10886,6 +10888,14 @@ obuf@^1.0.0, obuf@^1.1.2:
   resolved "https://registry.npmjs.org/obuf/-/obuf-1.1.2.tgz"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
+ohauth@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/ohauth/-/ohauth-1.0.0.tgz"
+  integrity sha1-wui/877wrkkUR5IiQ+G6cFEX3ks=
+  dependencies:
+    jshashes "~1.0.0"
+    xtend "~4.0.0"
+
 ohauth@~1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/ohauth/-/ohauth-1.0.1.tgz"
@@ -11005,6 +11015,16 @@ os-tmpdir@~1.0.2:
   resolved "https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz"
   integrity sha1-u+Z0BseaqFxc/sdm/lc0VV36EnQ=
 
+osm-auth@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/osm-auth/-/osm-auth-1.1.0.tgz"
+  integrity sha512-e/ecarlh2N/FMfiNa/ZChUIZN8q1LqK4F0iPV4g1MmfHi3/VJ+STJ0qE7ALL3OgHR5IQc3JuI63SCDqHNGt4ew==
+  dependencies:
+    ohauth "~1.0.0"
+    resolve-url "~0.2.1"
+    store "~2.0.4"
+    xtend "~4.0.0"
+
 osm-auth@1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/osm-auth/-/osm-auth-1.1.1.tgz"
@@ -11012,13 +11032,6 @@ osm-auth@1.1.1:
   dependencies:
     ohauth "~1.0.1"
     resolve-url "~0.2.1"
-    store "~2.0.12"
-
-osm-auth@~2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-2.0.0.tgz#c8e9c2de60c179d1fa8ad34da3a029c6eb5e9f38"
-  integrity sha512-6ZBOGAMe8Q/rkhpflmclXFmtnXJmgvX9ScNskrD5by8320nz2KOsyRRtwfNSOL2YNFToM2ZF47YJCY3aiEsS+w==
-  dependencies:
     store "~2.0.12"
 
 osm-polygon-features@^0.9.1:
@@ -13971,7 +13984,7 @@ statuses@^2.0.0:
   resolved "https://registry.npmjs.org/statuses/-/statuses-2.0.0.tgz"
   integrity sha512-w9jNUUQdpuVoYqXxnyOakhckBbOxRaoYqJscyIBYCS5ixyCnO7nQn7zBZvP9zf5QOPZcz2DLUpE3KsNPbJBOFA==
 
-store@~2.0.12:
+store@~2.0.12, store@~2.0.4:
   version "2.0.12"
   resolved "https://registry.npmjs.org/store/-/store-2.0.12.tgz"
   integrity sha1-jFNOKguDH3K3X8XxEZhXxE711ZM=
@@ -15569,7 +15582,7 @@ xmldom@~0.1.16:
   resolved "https://registry.npmjs.org/xmldom/-/xmldom-0.1.31.tgz"
   integrity sha512-yS2uJflVQs6n+CyjHoaBmVSqIDevTAWrzMmjG1Gc7h1qQ7uVozNhEPJAwZXWyGQ/Gafo3fCwrcaokezLPupVyQ==
 
-xtend@^4.0.0, xtend@^4.0.1, xtend@^4.0.2, xtend@~4.0.1:
+xtend@^4.0.0, xtend@^4.0.1, xtend@^4.0.2, xtend@~4.0.0, xtend@~4.0.1:
   version "4.0.2"
   resolved "https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==

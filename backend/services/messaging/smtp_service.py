@@ -29,6 +29,18 @@ class SMTPService:
         return True
 
     @staticmethod
+    def send_welcome_email(to_address: str, username: str):
+        """ Sends email welcoming new user to tasking manager """
+        values = {
+            "USERNAME": username,
+        }
+        html_template = get_template("welcome.html", values)
+
+        subject = "Welcome to Tasking Manager"
+        SMTPService._send_message(to_address, subject, html_template)
+        return True
+
+    @staticmethod
     def send_contact_admin_email(data):
         email_to = current_app.config["EMAIL_CONTACT_ADDRESS"]
         if email_to is None:

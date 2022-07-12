@@ -8,7 +8,6 @@
           font-size-adjust: 0.6;
           line-height: 0.916;
           letter-spacing: 0.75px;
-          text-transform: uppercase;
           margin-bottom: 1.714rem;
           margin-top: 4rem;
         ">
@@ -18,7 +17,7 @@
             Hi, {{values['USERNAME']}} <br /><br />We are so glad to have you as a part of our growing community. Now that you&#39;ve set up your account you are ready to start mapping.
         </p>
     </div>
-    <img src="https://github.com/hotosm/tasking-manager/blob/58c1c64687eba4d4b58724c78ac9bf206a20ddc4/backend/services/messaging/templates/assets/Bitmap.png?raw=true" height="345px" width="610.32px" style="margin-bottom: 3.428rem" alt="TM hero image" />
+    <img src="{{url_for('static', filename='Bitmap.png')}}" height="345px" width="610.32px" style="margin-bottom: 3.428rem" alt="TM hero image" />
     <div>
         <p style="
           width: 87%;
@@ -31,7 +30,7 @@
             We&#39;re here to teach you how to use Tasking Manager in 4 quick and simple steps:
         </p>
 
-        <img src="https://i.imgur.com/qZEPN73.png" height="530px" width="567px" style="margin-left: 33px">
+        <img src="https://raw.githubusercontent.com/hotosm/tasking-manager/59c92150108884f7b6bee9b6108d4ef0d6a33933/backend/services/messaging/templates/assets/learning_steps.png" alt="Learning_steps" height="530px" width="567px" style="margin-left: 33px">
         <!-- table component starts -->
         <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 2.285rem; margin-bottom: 3.428rem;">
             <tbody>
