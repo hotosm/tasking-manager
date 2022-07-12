@@ -24,6 +24,7 @@ jobs:
         name: Configure Postgresql Test database
         command: |
           sudo apt-get install postgresql-client
+          psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
     - run:
         name: Set folder permissions
         command: |
