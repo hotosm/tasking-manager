@@ -229,6 +229,7 @@ workflows:
   build-deploy:
     jobs:
     - build:
+        context: tasking-manager-testing
         filters:
           branches:
             ignore:
