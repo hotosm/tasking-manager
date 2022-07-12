@@ -16,7 +16,7 @@ services:
   backend:
     <<: *backend
     container_name: backend
-    restart: always
+    restart: unless-stopped
     labels:
       - traefik.http.routers.backend.rule=Host(`localhost`) && PathPrefix(`/api/`)
       - traefik.http.services.backend.loadbalancer.server.port=5000
@@ -29,7 +29,7 @@ services:
 
   frontend:
     image: hotosm-tasking-manager:frontend
-    restart: always
+    restart: unless-stopped
     networks:
       - tm-web
     labels:
@@ -39,14 +39,14 @@ services:
   postgresql:
     image: mdillon/postgis:11
     container_name: postgresql
-    restart: always
+    restart: unless-stopped
     env_file: ${ENV_FILE:-tasking-manager.env}
     networks:
       - tm-web
 
   traefik:
     image: traefik:v2.3
-    restart: always
+    restart: unless-stopped
     ports:
       - "80:80"
     volumes:
@@ -59,4 +59,3 @@ services:
 
 networks:
   tm-web:
-    external: true

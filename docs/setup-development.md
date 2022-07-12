@@ -1,6 +1,9 @@
 
 ## Development setup
 
+IN the following your will learn how to install and set up Tasking Manager locally. **Alternatively** you can review how to install a [dockerised setup](./setup-docker.md). That documentation may also complement the following in some aspects.
+
+
 ### Architecture
 
 The Tasking Manager is composed of two parts:
@@ -248,7 +251,3 @@ Finally, add the environmental variable to access the database:
 export TM_DB=postgresql://hottm:hottm@localhost/tasking-manager
 `
 
-
-It is possible to install and run the Tasking Manager using [Docker](https://docker.com) and [Docker Compose](https://docs.docker.com/compose/).
-
-Clone the Tasking Manager repository and use `docker-compose up` to get a working version of the API running.
