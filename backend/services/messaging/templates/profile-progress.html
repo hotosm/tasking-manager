@@ -29,12 +29,20 @@
       >
         These 3 easy steps get you on your way to a great profile:
       </p>
-      <table>
+      <table> <!-- Noncompliant -->
+        <thead>
+          <th>
+          </th>
+        <thead>
         <tr>
           <td>
             {% for step in values["STEPS"] %}
               <div  style=" display: inline-block; border: 2px solid #ecebed; padding: 24px; background-color: white; width:464px;">
-                <table>
+                <table  aria-label="" > <!-- Noncompliant -->
+                  <thead>
+                    <th>
+                    </th>
+                  </thead>
                   <tr >
                     <td>
                       {% if step.checked %}
@@ -90,13 +98,21 @@
             {% endfor %}
           </td>
         </tr>
-      </table>
+      </table> <!-- Noncompliant -->
       <!-- button component starts -->
       <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 2.285rem; margin-bottom: 3.428rem;">
+        <thead>
+        <thead>
+          <th>
+          </th>
         <tbody>
             <tr>
                 <td style="text-align:center;">
-                    <table cellspacing="0" cellpadding="0" style="margin:0 auto;">
+                    <table cellspacing="0" cellpadding="0" style="margin:0 auto;" aria-label=""> <!-- Noncompliant -->
+                        <thead>
+                          <th>
+                          </th>
+                        </thead>
                         <tbody>
                             <tr>
                                 <td style="  padding: 11px 24px;  border: #d73f3f; border-radius:2px;" bgcolor="#d73f3f">

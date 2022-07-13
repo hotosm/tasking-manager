@@ -32,7 +32,7 @@
         mapping skills and it shows. You&#39;ve accomplished a lot to get to
         this moment:
       </p>
-      <table style="text-align: center;">
+      <table style="text-align: center;"> <!-- Noncompliant -->
         <th style="width:150px;">
           <h3 style="
             font-size: 48px;
@@ -85,11 +85,19 @@
         Now, it’s time to celebrate!
       </p>
 
-      <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 2.285rem; margin-bottom: 3.428rem;">
+      <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 2.285rem; margin-bottom: 3.428rem;"> <!-- Noncompliant -->
+        <thead>
+          <th>
+          </th>
+        </thead>
         <tbody>
             <tr>
                 <td style="text-align:center;">
-                    <table >
+                    <table aria-label=""> <!-- Noncompliant -->
+                      <thead>
+                        <th>
+                        </th>
+                      </thead>
                         <tbody>
                             <tr>
                                 <td style="  padding: 11px 24px;  border: #d73f3f; border-radius:2px;" bgcolor="#d73f3f">
