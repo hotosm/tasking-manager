@@ -9,6 +9,7 @@ import messages from './messages';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import { mapboxLayerDefn } from '../projects/projectsMap';
 import { BarListChart } from './barListChart';
+import WebglUnsupported from '../webglUnsupported';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -24,17 +25,18 @@ const UserCountriesMap = ({ projects }) => {
   const mapRef = React.createRef();
 
   useLayoutEffect(() => {
-    setMap(
-      new mapboxgl.Map({
-        container: mapRef.current,
-        style: MAP_STYLE,
-        center: [0, 0],
-        zoom: 0.5,
-        attributionControl: false,
-      })
-        .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
-    );
+    mapboxgl.supported() &&
+      setMap(
+        new mapboxgl.Map({
+          container: mapRef.current,
+          style: MAP_STYLE,
+          center: [0, 0],
+          zoom: 0.5,
+          attributionControl: false,
+        })
+          .addControl(new mapboxgl.AttributionControl({ compact: false }))
+          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
+      );
 
     return () => {
       map && map.remove();
@@ -55,7 +57,11 @@ const UserCountriesMap = ({ projects }) => {
     }
   }, [map, projects.mappedProjects]);
 
-  return <div id="map" className="w-two-thirds-l w-100 h-100 fl" ref={mapRef}></div>;
+  if (!mapboxgl.supported()) {
+    return <WebglUnsupported className="w-two-thirds-l w-100 h-100 fl" />;
+  } else {
+    return <div id="map" className="w-two-thirds-l w-100 h-100 fl" ref={mapRef}></div>;
+  }
 };
 
 export const CountriesMapped = ({ projects, userStats }) => {

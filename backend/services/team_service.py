@@ -49,12 +49,22 @@ class TeamService:
         is_manager = TeamService.is_user_team_manager(team_id, requesting_user)
         team = TeamService.get_team_by_id(team_id)
         user = UserService.get_user_by_username(username)
-
-        if TeamService.is_user_team_member(team.id, user.id):
-            raise TeamJoinNotAllowed(
-                "UserAlreadyInList- "
-                + "User is already a member of this team or has already requested to join"
-            )
+        member = TeamMembers.get(team_id, user.id)
+        if member:
+            if member.function == TeamMemberFunctions[role].value:
+                raise TeamJoinNotAllowed(
+                    "UserAlreadyInList- "
+                    + "User is already a member of this team or has already requested to join"
+                )
+            else:
+                if is_manager:
+                    member.function = TeamMemberFunctions[role].value
+                    member.update()
+                    return {"Success: User role updated"}
+                else:
+                    raise TeamJoinNotAllowed(
+                        "UserJoinDisallowed- User not allowed to join team"
+                    )
 
         if is_manager:
             if role:

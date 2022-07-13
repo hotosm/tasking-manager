@@ -4,6 +4,7 @@ import { Link } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
 import { FormattedMessage } from 'react-intl';
+import { supported } from 'mapbox-gl';
 
 import messages from './messages';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
@@ -61,7 +62,7 @@ const ProjectDetailMap = (props) => {
         loading={props.projectLoading}
         className="dib w-100 fl vh-75"
       />
-      {taskBordersOnly && (
+      {taskBordersOnly && supported() && (
         <div className="cf left-1 top-1 absolute">
           <div className="cf ttu bg-white barlow-condensed f4 pv2">
             <span onClick={(e) => setTaskBordersOnly(false)} className="pb2 mh2 pointer ph2">
