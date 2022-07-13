@@ -19,7 +19,11 @@
   </p>
   <div>
     <!-- card starts here -->
-    <table>
+    <table> <!-- Noncompliant -->
+      <thead>
+        <th>
+        </th>
+      <thead>
       {% for projects in [values["PROJECTS"][:2], values["PROJECTS"][2:]] %}
       <tr>
         {% for project in projects %}
@@ -36,7 +40,7 @@
           <a style="text-decoration: none;" href="{{ values['APP_BASE_URL'] }}/projects/{{ project.id }}" >
             <div class="card-content" style="margin-bottom: 3.7rem; justify-content: left;">
               <table
-                style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; margin-bottom:2.285rem;">
+                style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; margin-bottom:2.285rem;"> <!-- Noncompliant -->
                 <th style="width:60%;">
                   <img style="text-decoration: none; font-weight: normal;" src={{ project.org_logo }}
                     alt="logo of the organization" height="32"/>
@@ -135,7 +139,7 @@
                       margin-top: 4px;
                       align-items: center;
                       width: 100%;
-                    ">
+                    "> <!-- Noncompliant -->
                 <th style="
                         color: #2c3038;
                         font-weight: 500;
