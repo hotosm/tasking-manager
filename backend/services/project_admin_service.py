@@ -284,20 +284,30 @@ class ProjectAdminService:
         project = Project.get(project_id)
 
         # Check permissions for the user (transferring_user_id) who initiatied the action
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            transfering_user_id, project_id
-        ):
-            raise ValueError("UserNotPermitted- User action not permitted")
-        new_owner = UserService.get_user_by_username(username)
-
-        # Check permissions for the new owner - must be an admin or project's org manager or a PM team member
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            new_owner.id, project_id
-        ):
-            raise ValueError(
-                "InvalidNewOwner- New owner must be an admin or project's org manager or a PM team member"
+        is_admin = UserService.is_user_an_admin(transfering_user_id)
+        is_author = UserService.is_user_the_project_author(
+            transfering_user_id, project.author_id
+        )
+        is_org_manager = OrganisationService.is_user_an_org_manager(
+            project.organisation_id, transfering_user_id
+        )
+        if not is_admin and not is_author and not is_org_manager:
+            raise ProjectAdminServiceError(
+                "TransferPermissionError- User does not have permissions to transfer project"
             )
+
+        new_owner = UserService.get_user_by_username(username)
+        # Check permissions for the new owner - must be project's org manager
+        if not OrganisationService.is_user_an_org_manager(
+            project.organisation_id, new_owner.id
+        ):
+            error_message = "InvalidNewOwner- New owner must be project's org manager"
+            if current_app:
+                current_app.logger.debug(error_message)
+            raise ValueError(error_message)
+
         else:
+            project.author_id = new_owner.id
             project.save()
 
     @staticmethod
