@@ -86,6 +86,14 @@ There are two ways to configure Tasking Manager. You can set some environment va
   - `TM_CONSUMER_KEY`=oauth-consumer-key-from-openstreetmap
   - `TM_CONSUMER_SECRET`=oauth-consumer-secret-key-from-openstreetmap
 
+In order to send email correctly, set these variables as well:
+  - `TM_SMTP_HOST`
+  - `TM_SMTP_PORT`
+  - `TM_SMTP_USER`
+  - `TM_SMTP_PASSWORD`
+  - `TM_SMTP_USE_TLS=0`
+  - `TM_SMTP_USE_SSL=1` (Either TLS or SSL can be set to 1 but not both)
+
 #### Build
 
 * Create a Python Virtual Environment, using Python 3.6+:
