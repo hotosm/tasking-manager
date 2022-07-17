@@ -188,6 +188,10 @@ export default defineMessages({
     id: 'management.organisations.type.select',
     defaultMessage: 'Select type',
   },
+  requiredField: {
+    id: 'management.organisations.field.required',
+    defaultMessage: 'Required field',
+  },
   free: {
     id: 'management.organisations.type.free',
     defaultMessage: 'Free',

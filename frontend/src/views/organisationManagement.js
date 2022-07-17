@@ -21,6 +21,7 @@ import { FormSubmitButton, CustomButton } from '../components/button';
 import { ChartLineIcon } from '../components/svgIcons';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { Alert } from '../components/alert';
 
 export function ListOrganisations() {
   useSetTitleTag('Manage organizations');
@@ -65,6 +66,7 @@ export function CreateOrganisation() {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [managers, setManagers] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (userDetails && userDetails.username && managers.length === 0) {
@@ -83,9 +85,11 @@ export function CreateOrganisation() {
   };
   const createOrg = (payload) => {
     payload.managers = managers.map((user) => user.username);
-    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST').then((result) =>
-      navigate(`/manage/organisations/${result.organisationId}`),
-    );
+    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST')
+      .then((result) => navigate(`/manage/organisations/${result.organisationId}`))
+      .catch((err) => {
+        setError(err.message);
+      });
   };
 
   return (
@@ -110,7 +114,18 @@ export function CreateOrganisation() {
               </div>
             </div>
             <div className="bottom-0 right-0 left-0 cf bg-white h3 fixed">
-              <div className="w-80-ns w-60-m w-50 h-100 fl tr">
+              <div className="w-80-ns w-60-m w-50 h-100 fl tr flex justify-between items-center">
+                <div className="cf pv2 ml2">
+                  {error && (
+                    <Alert type="error" compact>
+                      {messages[`orgCreation${error}Error`] ? (
+                        <FormattedMessage {...messages[`orgCreation${error}Error`]} />
+                      ) : (
+                        <FormattedMessage {...messages[`errorFallback`]} />
+                      )}
+                    </Alert>
+                  )}
+                </div>
                 <Link to={'../'}>
                   <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
                     <FormattedMessage {...messages.cancel} />
