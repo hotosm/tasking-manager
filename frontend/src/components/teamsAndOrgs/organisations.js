@@ -8,6 +8,7 @@ import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
+import viewsMessages from '../../views/messages';
 import { IMAGE_UPLOAD_SERVICE } from '../../config';
 import { useUploadImage } from '../../hooks/UseUploadImage';
 import { levels } from '../../hooks/UseOrganisationLevel';
@@ -16,6 +17,7 @@ import { InternalLinkIcon, ClipboardIcon } from '../svgIcons';
 import { Button } from '../button';
 import { UserAvatarList } from '../user/avatar';
 import { nCardPlaceholders } from './organisationsPlaceholder';
+import { Alert } from '../alert';
 
 export function OrgsManagement({
   organisations,
@@ -125,6 +127,19 @@ export function OrganisationForm(props) {
                   />
                 </fieldset>
               </form>
+              {props.errorMessage && (
+                <div className="mt2">
+                  <Alert type="error" compact>
+                    {viewsMessages[`orgCreation${props.errorMessage}Error`] ? (
+                      <FormattedMessage
+                        {...viewsMessages[`orgCreation${props.errorMessage}Error`]}
+                      />
+                    ) : (
+                      <FormattedMessage {...viewsMessages[`errorFallback`]} />
+                    )}
+                  </Alert>
+                </div>
+              )}
             </div>
             {dirtyForm && (
               <div className="cf pt0 h3">
@@ -182,7 +197,8 @@ export function OrgInformation({ hasSlug, formState }) {
     return selected.length ? selected[0].label : <FormattedMessage {...messages.selectTier} />;
   };
 
-  const validateRequired = (value) => (value ? undefined : <FormattedMessage {...messages.requiredField} />);
+  const validateRequired = (value) =>
+    value ? undefined : <FormattedMessage {...messages.requiredField} />;
 
   return (
     <>

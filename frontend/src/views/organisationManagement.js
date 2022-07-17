@@ -160,6 +160,7 @@ export function EditOrganisation(props) {
     `projects/?organisationId=${props.id}&omitMapResults=true&projectStatuses=PUBLISHED,DRAFT,ARCHIVED`,
     props.id,
   );
+  const [errorMessage, setErrorMessage] = useState(null);
   useSetTitleTag(`Edit ${organisation.name}`);
 
   useEffect(() => {
@@ -185,7 +186,9 @@ export function EditOrganisation(props) {
   };
 
   const updateOrg = (payload) => {
-    pushToLocalJSONAPI(`organisations/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
+    pushToLocalJSONAPI(`organisations/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
+      .then(() => setErrorMessage(null))
+      .catch((err) => setErrorMessage(err.message));
   };
 
   return (
@@ -234,6 +237,7 @@ export function EditOrganisation(props) {
               }}
               updateOrg={updateOrg}
               disabledForm={error || loading}
+              errorMessage={errorMessage}
             />
             <Members
               addMembers={addManagers}
