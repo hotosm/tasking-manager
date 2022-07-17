@@ -91,7 +91,7 @@ export default function ProjectEdit({ id }) {
       try {
         const res = await fetchLocalJSONAPI(`projects/${id}/`, token, 'GET');
         setProjectInfo(res);
-      } catch (e) {}
+      } catch (e) { }
     }
     fetchData();
   }, [id, token]);
@@ -240,6 +240,7 @@ export default function ProjectEdit({ id }) {
           <ActionsForm
             projectId={projectInfo.projectId}
             projectName={projectInfo.projectInfo.name}
+            orgId={projectInfo.organisation}
           />
         );
       case 'custom_editor':
