@@ -1,11 +1,13 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
 import { useFetch } from '../../hooks/UseFetch';
 import messages from './messages';
 
 export default function MyProjectsDropdown({ className, setQuery, allQueryParams }) {
-  const [, , projects] = useFetch(`projects/queries/helnershingthapa/touched/`);
+  const username = useSelector((state) => state.auth.get('userDetails').username);
+  const [, , projects] = useFetch(`projects/queries/${username}/touched/`);
 
   const onSortSelect = (projectId) => {
     setQuery(
