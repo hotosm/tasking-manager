@@ -21,9 +21,9 @@ class DropdownContent extends React.PureComponent {
       if (!this.props.value || !this.props.onChange) {
         if (!label) return;
         if (data.href && data.internalLink) {
-          navigate(data.href)
+          navigate(data.href);
         }
-        return
+        return;
       }
       const value = this.props.value;
       let ourObj = data;

@@ -91,13 +91,13 @@ export const InboxNav = (props) => {
       </div>
       <div className="mt2 mb1 dib lh-copy w-100 cf">
         <div className="w-100 fl dib">
-          <div className="dib w-40">
+          <div className="dib">
             <div className="mv2 dib"></div>
             <FormattedMessage {...contributionsMessages.searchProject}>
               {(msg) => {
                 return (
                   <ProjectSearchBox
-                    className="dib fl mh1 w-40"
+                    className="dib fl mh1"
                     setQuery={setInboxQuery}
                     fullProjectsQuery={inboxQuery}
                     placeholder={msg}

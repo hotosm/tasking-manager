@@ -93,12 +93,14 @@ class EnvironmentConfig:
     TASK_AUTOUNLOCK_AFTER = os.getenv("TM_TASK_AUTOUNLOCK_AFTER", "2h")
 
     # Configuration for sending emails
-    SMTP_SETTINGS = {
-        "host": os.getenv("TM_SMTP_HOST", None),
-        "smtp_user": os.getenv("TM_SMTP_USER", None),
-        "smtp_port": os.getenv("TM_SMTP_PORT", 25),
-        "smtp_password": os.getenv("TM_SMTP_PASSWORD", None),
-    }
+    MAIL_SERVER = os.getenv("TM_SMTP_HOST", None)
+    MAIL_PORT = os.getenv("TM_SMTP_PORT", None)
+    MAIL_USE_TLS = int(os.getenv("TM_SMTP_USE_TLS", False))
+    MAIL_USE_SSL = int(os.getenv("TM_SMTP_USE_SSL", False))
+    MAIL_USERNAME = os.getenv("TM_SMTP_USER", None)
+    MAIL_PASSWORD = os.getenv("TM_SMTP_PASSWORD", None)
+    MAIL_DEFAULT_SENDER = os.getenv("TM_EMAIL_FROM_ADDRESS", None)
+    MAIL_DEBUG = True if LOG_LEVEL == "DEBUG" else False
 
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.

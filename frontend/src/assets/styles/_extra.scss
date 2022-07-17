@@ -287,6 +287,11 @@ div.messageBodyLinks {
     &--is-selected {
       background-color: $white !important;
     }
+
+    &--is-disabled {
+      pointer-events: auto !important;
+      cursor: not-allowed !important;
+    }
   }
 }
 
@@ -316,5 +321,16 @@ div.messageBodyLinks {
     content: '\03b2';
     font-size: 1.2em;
     vertical-align: middle;
+  }
+}
+
+.comment-textarea {
+  box-sizing: border-box;
+
+  &:focus-within {
+    outline: -webkit-focus-ring-color auto 1px;
+    .textareaDetail {
+      border-bottom-color: transparent;
+    }
   }
 }

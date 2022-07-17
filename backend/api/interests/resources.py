@@ -56,27 +56,30 @@ class InterestsAllAPI(Resource):
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"InterestsAllAPI POST: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
         try:
             interest_dto = InterestDTO(request.get_json())
             interest_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             new_interest = InterestService.create(interest_dto.name)
             return new_interest.to_primitive(), 200
         except IntegrityError:
             return (
-                {"error": "Value '{0}' already exists".format(interest_dto.name)},
+                {
+                    "error": "Value '{0}' already exists".format(interest_dto.name),
+                    "SubCode": "NameExists",
+                },
                 400,
             )
         except Exception as e:
             error_msg = f"Interest POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     def get(self):
         """
@@ -98,7 +101,7 @@ class InterestsAllAPI(Resource):
         except Exception as e:
             error_msg = f"Interest GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class InterestsRestAPI(Resource):
@@ -144,7 +147,7 @@ class InterestsRestAPI(Resource):
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"InterestsRestAPI GET: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
         try:
             interest = InterestService.get(interest_id)
@@ -152,7 +155,7 @@ class InterestsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Interest GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def patch(self, interest_id):
@@ -205,14 +208,14 @@ class InterestsRestAPI(Resource):
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"InterestsAllAPI PATCH: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
         try:
             interest_dto = InterestDTO(request.get_json())
             interest_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             update_interest = InterestService.update(interest_id, interest_dto)
@@ -220,7 +223,7 @@ class InterestsRestAPI(Resource):
         except Exception as e:
             error_msg = f"Interest PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def delete(self, interest_id):
@@ -264,14 +267,14 @@ class InterestsRestAPI(Resource):
                 raise ValueError("User not a Org Manager")
         except ValueError as e:
             error_msg = f"InterestsAllAPI DELETE: {str(e)}"
-            return {"Error": error_msg}, 403
+            return {"Error": error_msg, "SubCode": "UserNotPermitted"}, 403
 
         try:
             InterestService.delete(interest_id)
             return {"Success": "Interest deleted"}, 200
         except NotFound:
-            return {"Error": "Interest Not Found"}, 404
+            return {"Error": "Interest Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"License DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

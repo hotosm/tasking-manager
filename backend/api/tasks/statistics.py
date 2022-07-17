@@ -67,11 +67,15 @@ class TasksStatisticsAPI(Resource):
             start_date = validate_date_input(request.args.get("startDate"))
             end_date = validate_date_input(request.args.get("endDate", date.today()))
             if not (start_date):
-                raise KeyError("Missing start date parameter")
+                raise KeyError("MissingDate- Missing start date parameter")
             if end_date < start_date:
-                raise ValueError("Start date must be earlier than end date")
+                raise ValueError(
+                    "InvalidStartDate- Start date must be earlier than end date"
+                )
             if (end_date - start_date) > timedelta(days=366):
-                raise ValueError("Date range can not be bigger than 1 year")
+                raise ValueError(
+                    "InvalidDateRange- Date range can not be bigger than 1 year"
+                )
             organisation_id = request.args.get("organisationId", None, int)
             organisation_name = request.args.get("organisationName", None, str)
             campaign = request.args.get("campaign", None, str)
@@ -90,8 +94,7 @@ class TasksStatisticsAPI(Resource):
             )
             return task_stats.to_primitive(), 200
         except (KeyError, ValueError) as e:
-            error_msg = f"Task Statistics GET - {str(e)}"
-            return {"Error": error_msg}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
             error_msg = f"Task Statistics GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

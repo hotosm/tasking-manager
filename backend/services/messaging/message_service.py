@@ -13,7 +13,7 @@ from backend.models.dtos.message_dto import MessageDTO, MessagesDTO
 from backend.models.dtos.stats_dto import Pagination
 from backend.models.postgis.message import Message, MessageType, NotFound
 from backend.models.postgis.notification import Notification
-from backend.models.postgis.project import Project
+from backend.models.postgis.project import Project, ProjectInfo
 from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
 from backend.models.postgis.statuses import TeamRoles
 from backend.services.messaging.smtp_service import SMTPService
@@ -29,7 +29,7 @@ message_cache = TTLCache(maxsize=512, ttl=30)
 
 
 class MessageServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling mapping """
+    """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
         if current_app:
@@ -65,10 +65,13 @@ class MessageService:
     def send_message_after_validation(
         status: int, validated_by: int, mapped_by: int, task_id: int, project_id: int
     ):
-        """ Sends mapper a notification after their task has been marked valid or invalid """
+        """Sends mapper a notification after their task has been marked valid or invalid"""
         if validated_by == mapped_by:
             return  # No need to send a notification if you've verified your own task
-
+        project = Project.get(project_id)
+        project_name = ProjectInfo.get_dto_for_locale(
+            project_id, project.default_locale
+        ).name
         user = UserService.get_user_by_id(mapped_by)
         text_template = get_txt_template(
             "invalidation_message_en.txt"
@@ -97,11 +100,11 @@ class MessageService:
         validation_message.task_id = task_id
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
-        validation_message.subject = (
-            f"{task_link} mapped by you in Project {project_id} has been {status_text}"
-        )
+        validation_message.subject = f"{task_link} mapped by you in project {project_name} has been {status_text}"
         validation_message.message = text_template
-        messages.append(dict(message=validation_message, user=user))
+        messages.append(
+            dict(message=validation_message, user=user, project_name=project_name)
+        )
 
         # For email alerts
         MessageService._push_messages(messages)
@@ -117,8 +120,12 @@ class MessageService:
 
         with app.app_context():
             contributors = Message.get_all_contributors(project_id)
+            project = Project.get(project_id)
+            project_name = ProjectInfo.get_dto_for_locale(
+                project_id, project.default_locale
+            ).name
             message_dto.message = "A message from {} managers:<br/><br/>{}".format(
-                MessageService.get_project_link(project_id),
+                MessageService.get_project_link(project_id, project_name),
                 markdown(message_dto.message, output_format="html"),
             )
 
@@ -128,7 +135,9 @@ class MessageService:
                 message.message_type = MessageType.BROADCAST.value
                 message.project_id = project_id
                 user = UserService.get_user_by_id(contributor[0])
-                messages.append(dict(message=message, user=user))
+                messages.append(
+                    dict(message=message, user=user, project_name=project_name)
+                )
 
             MessageService._push_messages(messages)
 
@@ -141,6 +150,7 @@ class MessageService:
         for i, message in enumerate(messages):
             user = message.get("user")
             obj = message.get("message")
+            project_name = message.get("project_name")
             # Store message in the database only if mentions option are disabled.
             if (
                 user.mentions_notifications is False
@@ -164,9 +174,14 @@ class MessageService:
             ):
                 messages_objs.append(obj)
                 continue
-            if user.comments_notifications is False and obj.message_type in (
-                MessageType.TASK_COMMENT_NOTIFICATION.value,
-                MessageType.PROJECT_CHAT_NOTIFICATION.value,
+            if (
+                user.projects_comments_notifications is False
+                and obj.message_type == MessageType.PROJECT_CHAT_NOTIFICATION.value
+            ):
+                continue
+            if (
+                user.tasks_comments_notifications is False
+                and obj.message_type == MessageType.TASK_COMMENT_NOTIFICATION.value
             ):
                 continue
             if user.tasks_notifications is False and obj.message_type in (
@@ -187,6 +202,7 @@ class MessageService:
                 clean_html(message["message"].subject),
                 message["message"].message,
                 obj.message_type,
+                project_name,
             )
 
             if i + 1 % 10 == 0:
@@ -202,8 +218,12 @@ class MessageService:
     def send_message_after_comment(
         comment_from: int, comment: str, task_id: int, project_id: int
     ):
-        """ Will send a canned message to anyone @'d in a comment """
+        """Will send a canned message to anyone @'d in a comment"""
         usernames = MessageService._parse_message_for_username(comment, project_id)
+        project = Project.get(project_id)
+        project_name = ProjectInfo.get_dto_for_locale(
+            project_id, project.default_locale
+        ).name
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
 
@@ -220,9 +240,11 @@ class MessageService:
                 message.task_id = task_id
                 message.from_user_id = comment_from
                 message.to_user_id = user.id
-                message.subject = f"You were mentioned in a comment in {task_link} of Project {project_id}"
+                message.subject = f"You were mentioned in a comment in {task_link} of project {project_name}"
                 message.message = comment
-                messages.append(dict(message=message, user=user))
+                messages.append(
+                    dict(message=message, user=user, project_name=project_name)
+                )
 
             MessageService._push_messages(messages)
 
@@ -261,11 +283,11 @@ class MessageService:
                 message.from_user_id = comment_from
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = (
-                    f"{user_link} left a comment in {task_link} of Project {project_id}"
-                )
+                message.subject = f"{user_link} left a comment in {task_link} of project {project_name}"
                 message.message = comment
-                messages.append(dict(message=message, user=user))
+                messages.append(
+                    dict(message=message, user=user, project_name=project_name)
+                )
 
             MessageService._push_messages(messages)
 
@@ -375,15 +397,17 @@ class MessageService:
         message.save()
 
     @staticmethod
-    def send_message_after_chat(chat_from: int, chat: str, project_id: int):
-        """ Send alert to user if they were @'d in a chat message """
+    def send_message_after_chat(
+        chat_from: int, chat: str, project_id: int, project_name: str
+    ):
+        """Send alert to user if they were @'d in a chat message"""
         # Because message-all run on background thread it needs it's own app context
         app = create_app()
         with app.app_context():
             usernames = MessageService._parse_message_for_username(chat, project_id)
             if len(usernames) != 0:
                 link = MessageService.get_project_link(
-                    project_id, include_chat_section=True
+                    project_id, project_name, include_chat_section=True
                 )
                 messages = []
                 for username in usernames:
@@ -399,9 +423,11 @@ class MessageService:
                     message.project_id = project_id
                     message.from_user_id = chat_from
                     message.to_user_id = user.id
-                    message.subject = f"You were mentioned in {link} chat"
+                    message.subject = f"You were mentioned in project {link} chat"
                     message.message = chat
-                    messages.append(dict(message=message, user=user))
+                    messages.append(
+                        dict(message=message, user=user, project_name=project_name)
+                    )
 
                 MessageService._push_messages(messages)
 
@@ -427,7 +453,7 @@ class MessageService:
                 from_user = User.query.get(chat_from)
                 from_user_link = MessageService.get_user_link(from_user.username)
                 project_link = MessageService.get_project_link(
-                    project_id, include_chat_section=True
+                    project_id, project_name, include_chat_section=True
                 )
                 messages = []
                 for user_id in users_to_notify:
@@ -441,10 +467,12 @@ class MessageService:
                     message.from_user_id = chat_from
                     message.to_user_id = user.id
                     message.subject = (
-                        f"{from_user_link} left a comment in {project_link}"
+                        f"{from_user_link} left a comment in project {project_link}"
                     )
                     message.message = chat
-                    messages.append(dict(message=message, user=user))
+                    messages.append(
+                        dict(message=message, user=user, project_name=project_name)
+                    )
 
                 # it's important to keep that line inside the if to avoid duplicated emails
                 MessageService._push_messages(messages)
@@ -477,6 +505,9 @@ class MessageService:
             query_last_active_users = """ select distinct(user_id) from
                                         (select user_id from task_history where project_id = :project_id
                                         order by action_date desc limit 15 ) t """
+            project_name = ProjectInfo.get_dto_for_locale(
+                project.id, project.default_locale
+            ).name
             last_active_users = db.engine.execute(
                 text(query_last_active_users), project_id=project.id
             )
@@ -489,7 +520,7 @@ class MessageService:
                 activity_message.append(user_profile_link)
 
             activity_message = str(activity_message)[1:-1]
-            project_link = MessageService.get_project_link(project.id)
+            project_link = MessageService.get_project_link(project.id, project_name)
             message = Message()
             message.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
             message.project_id = project.id
@@ -500,13 +531,13 @@ class MessageService:
             message.message = (
                 f"{activity_message} contributed to {project_link} recently"
             )
-            messages.append(dict(message=message, user=user))
+            messages.append(dict(message=message, user=user, project_name=project_name))
 
         MessageService._push_messages(messages)
 
     @staticmethod
     def resend_email_validation(user_id: int):
-        """ Resends the email validation email to the logged in user """
+        """Resends the email validation email to the logged in user"""
         user = UserService.get_user_by_id(user_id)
         SMTPService.send_verification_email(user.email_address, user.username)
 
@@ -540,7 +571,7 @@ class MessageService:
 
     @staticmethod
     def _parse_message_for_username(message: str, project_id: int) -> List[str]:
-        """ Extracts all usernames from a comment looks for format @[user name] """
+        """Extracts all usernames from a comment looks for format @[user name]"""
 
         parser = re.compile(r"((?<=@)\w+|\[.+?\])")
 
@@ -559,7 +590,7 @@ class MessageService:
     @staticmethod
     @cached(message_cache)
     def has_user_new_messages(user_id: int) -> dict:
-        """ Determines if the user has any unread messages """
+        """Determines if the user has any unread messages"""
         count = Notification.get_unread_message_count(user_id)
 
         new_messages = False
@@ -582,7 +613,7 @@ class MessageService:
         task_id=None,
         status=None,
     ):
-        """ Get all messages for user """
+        """Get all messages for user"""
         sort_column = Message.__table__.columns.get(sort_by)
         if sort_column is None:
             sort_column = Message.date
@@ -634,7 +665,7 @@ class MessageService:
 
     @staticmethod
     def get_message(message_id: int, user_id: int) -> Message:
-        """ Gets the specified message """
+        """Gets the specified message"""
         message = Message.query.get(message_id)
 
         if message is None:
@@ -642,32 +673,33 @@ class MessageService:
 
         if message.to_user_id != int(user_id):
             raise MessageServiceError(
-                f"User {user_id} attempting to access another users message {message_id}"
+                "AccessOtherUserMessage- "
+                + f"User {user_id} attempting to access another users message {message_id}"
             )
 
         return message
 
     @staticmethod
     def get_message_as_dto(message_id: int, user_id: int):
-        """ Gets the selected message and marks it as read """
+        """Gets the selected message and marks it as read"""
         message = MessageService.get_message(message_id, user_id)
         message.mark_as_read()
         return message.as_dto()
 
     @staticmethod
     def delete_message(message_id: int, user_id: int):
-        """ Deletes the specified message """
+        """Deletes the specified message"""
         message = MessageService.get_message(message_id, user_id)
         message.delete()
 
     @staticmethod
     def delete_multiple_messages(message_ids: list, user_id: int):
-        """ Deletes the specified messages to the user """
+        """Deletes the specified messages to the user"""
         Message.delete_multiple_messages(message_ids, user_id)
 
     @staticmethod
     def get_task_link(project_id: int, task_id: int, base_url=None) -> str:
-        """ Helper method that generates a link to the task """
+        """Helper method that generates a link to the task"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
@@ -675,9 +707,9 @@ class MessageService:
 
     @staticmethod
     def get_project_link(
-        project_id: int, base_url=None, include_chat_section=False
+        project_id: int, project_name: str, base_url=None, include_chat_section=False
     ) -> str:
-        """ Helper method to generate a link to project chat"""
+        """Helper method to generate a link to project chat"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
         if include_chat_section:
@@ -685,11 +717,11 @@ class MessageService:
         else:
             section = ""
 
-        return f'<a href="{base_url}/projects/{project_id}{section}">Project {project_id}</a>'
+        return f'<a href="{base_url}/projects/{project_id}{section}">{project_name}</a>'
 
     @staticmethod
     def get_user_profile_link(user_name: str, base_url=None) -> str:
-        """ Helper method to generate a link to a user profile"""
+        """Helper method to generate a link to a user profile"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 
@@ -697,7 +729,7 @@ class MessageService:
 
     @staticmethod
     def get_user_settings_link(section=None, base_url=None) -> str:
-        """ Helper method to generate a link to a user profile"""
+        """Helper method to generate a link to a user profile"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
 

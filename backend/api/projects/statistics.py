@@ -24,7 +24,7 @@ class ProjectsStatisticsQueriesPopularAPI(Resource):
         except Exception as e:
             error_msg = f"Unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectsStatisticsAPI(Resource):
@@ -62,11 +62,14 @@ class ProjectsStatisticsAPI(Resource):
             summary = ProjectService.get_project_stats(project_id)
             return summary.to_primitive(), 200
         except NotFound:
-            return {"Error": "Project not found"}, 404
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Project Summary GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch project statistics"}, 500
+            return {
+                "Error": "Unable to fetch project statistics",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsStatisticsQueriesUsernameAPI(Resource):
@@ -103,8 +106,11 @@ class ProjectsStatisticsQueriesUsernameAPI(Resource):
             stats_dto = ProjectService.get_project_user_stats(project_id, username)
             return stats_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "User not found"}, 404
+            return {"Error": "User not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch user statistics for project"}, 500
+            return {
+                "Error": "Unable to fetch user statistics for project",
+                "SubCode": "InternalServerError",
+            }, 500

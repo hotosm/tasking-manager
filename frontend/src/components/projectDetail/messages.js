@@ -64,6 +64,10 @@ export default defineMessages({
     id: 'project.detail.typesOfMapping',
     defaultMessage: 'Types of Mapping',
   },
+  private: {
+    id: 'project.detail.private',
+    defaultMessage: 'Private',
+  },
   editProject: {
     id: 'project.detail.editProject',
     defaultMessage: 'Edit project',
@@ -128,6 +132,14 @@ export default defineMessages({
   loginTocomment: {
     id: 'project.detail.questionsAndComments.login',
     defaultMessage: 'Log in to be able to post comments.',
+  },
+  write: {
+    id: 'project.detail.questionsAndComments.write',
+    defaultMessage: 'Write',
+  },
+  preview: {
+    id: 'project.detail.questionsAndComments.preview',
+    defaultMessage: 'Preview',
   },
   post: {
     id: 'project.detail.questionsAndComments.button',
@@ -294,5 +306,17 @@ export default defineMessages({
   shareOnLinkedIn: {
     id: 'project.share.linkedin',
     defaultMessage: 'Share on LinkedIn',
+  },
+  inaccessibleProjectTitle: {
+    id: 'project.inaccessible.title',
+    defaultMessage: "You don't have permission to access this project",
+  },
+  inaccessibleProjectDescription: {
+    id: 'project.inaccessible.description',
+    defaultMessage: 'Please contact the project manager to request access.',
+  },
+  exploreOtherProjects: {
+    id: 'project.inaccessible.exploreOtherProjects',
+    defaultMessage: 'Explore other projects',
   },
 });

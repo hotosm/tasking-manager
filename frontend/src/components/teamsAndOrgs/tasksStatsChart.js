@@ -1,11 +1,23 @@
 import React from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+  TimeScale,
+} from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import 'chartjs-adapter-date-fns';
 import { useIntl } from 'react-intl';
 
 import messages from '../projectDetail/messages';
 import { CHART_COLOURS } from '../../config';
 import { useTimeDiff } from '../../hooks/UseTimeDiff';
 import { formatTasksStatsData, formatTimelineTooltip } from '../../utils/formatChartJSData';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend, TimeScale);
 
 const TasksStatsChart = ({ stats }) => {
   const intl = useIntl();

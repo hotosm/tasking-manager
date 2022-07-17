@@ -55,7 +55,10 @@ class LicensesRestAPI(Resource):
             license_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to create new mapping license"}, 400
+            return {
+                "Error": "Unable to create new mapping license",
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             new_license_id = LicenseService.create_licence(license_dto)
@@ -63,7 +66,10 @@ class LicensesRestAPI(Resource):
         except Exception as e:
             error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to create new mapping license"}, 500
+            return {
+                "Error": "Unable to create new mapping license",
+                "SubCode": "InternalServerError",
+            }, 500
 
     def get(self, license_id):
         """
@@ -92,11 +98,14 @@ class LicensesRestAPI(Resource):
             license_dto = LicenseService.get_license_as_dto(license_id)
             return license_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "License Not Found"}, 404
+            return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch license"}, 500
+            return {
+                "Error": "Unable to fetch license",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -152,17 +161,20 @@ class LicensesRestAPI(Resource):
             license_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             updated_license = LicenseService.update_licence(license_dto)
             return updated_license.to_primitive(), 200
         except NotFound:
-            return {"Error": "License Not Found"}, 404
+            return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"License POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to update license"}, 500
+            return {
+                "Error": "Unable to update license",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @tm.pm_only()
     @token_auth.login_required
@@ -201,11 +213,14 @@ class LicensesRestAPI(Resource):
             LicenseService.delete_license(license_id)
             return {"Success": "License deleted"}, 200
         except NotFound:
-            return {"Error": "License Not Found"}, 404
+            return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"License DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to delete license"}, 500
+            return {
+                "Error": "Unable to delete license",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class LicensesAllAPI(Resource):
@@ -229,8 +244,11 @@ class LicensesAllAPI(Resource):
             licenses_dto = LicenseService.get_all_licenses()
             return licenses_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "License Not Found"}, 404
+            return {"Error": "License Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"License PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch all licenses"}, 500
+            return {
+                "Error": "Unable to fetch all licenses",
+                "SubCode": "InternalServerError",
+            }, 500

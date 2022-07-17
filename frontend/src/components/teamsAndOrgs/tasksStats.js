@@ -1,12 +1,15 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage } from 'react-intl';
-
 import messages from './messages';
 import { useTagAPI } from '../../hooks/UseTagAPI';
 import { useValidateDateRange } from '../../hooks/UseValidateDateRange';
 import { formatFilterCountriesData } from '../../utils/countries';
-import { ProjectFilterSelect, DateFilterPicker } from '../projects/filterSelectFields';
+import {
+  ProjectFilterSelect,
+  DateFilterPicker,
+  DateRangeFilterSelect,
+} from '../projects/filterSelectFields';
 import { TasksStatsSummary } from './tasksStatsSummary';
 
 const TasksStatsChart = React.lazy(() =>
@@ -22,6 +25,7 @@ export const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) 
     campaign: campaignInQuery,
     location: countryInQuery,
   } = query;
+  const [isCustomDateRange, setIsCustomDateRange] = useState(false);
 
   const dateValidation = useValidateDateRange(query);
 
@@ -38,6 +42,7 @@ export const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) 
           selectedValue={startDateInQuery}
           setQueryForChild={setQuery}
           allQueryParamsForChild={query}
+          setIsCustomDateRange={setIsCustomDateRange}
         />
         <DateFilterPicker
           fieldsetName="endDate"
@@ -46,11 +51,24 @@ export const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) 
           selectedValue={endDateInQuery}
           setQueryForChild={setQuery}
           allQueryParamsForChild={query}
+          setIsCustomDateRange={setIsCustomDateRange}
         />
-        <div className="w-40-l w-100 fl">
+        <div className="w-60-l w-100 fl">
+          <DateRangeFilterSelect
+            fieldsetName="dateRange"
+            fieldsetStyle={`${fieldsetStyle} w-20-ns w-100`}
+            titleStyle={titleStyle}
+            selectedValue={startDateInQuery}
+            setQueryForChild={setQuery}
+            allQueryParamsForChild={query}
+            isCustomDateRange={isCustomDateRange}
+            setIsCustomDateRange={setIsCustomDateRange}
+            startDateInQuery={startDateInQuery}
+            endDateInQuery={endDateInQuery}
+          />
           <ProjectFilterSelect
             fieldsetName="campaign"
-            fieldsetStyle={`${fieldsetStyle} w-50-ns w-100`}
+            fieldsetStyle={`${fieldsetStyle} w-30-ns w-100`}
             titleStyle={titleStyle}
             selectedTag={campaignInQuery}
             options={campaignAPIState}
@@ -59,7 +77,7 @@ export const TasksStats = ({ query, setQuery, stats, error, loading, retryFn }) 
           />
           <ProjectFilterSelect
             fieldsetName="location"
-            fieldsetStyle={`${fieldsetStyle} w-50-ns w-100`}
+            fieldsetStyle={`${fieldsetStyle} w-30-ns w-100`}
             titleStyle={titleStyle}
             selectedTag={countryInQuery}
             options={countriesAPIState}

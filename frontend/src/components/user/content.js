@@ -130,7 +130,7 @@ export function HelpCard() {
         <FormattedMessage {...messages.helpTitle} />
       </h3>
       <p>
-        <Link to={'/learn'} className="link red mr4">
+        <Link to={'/learn/map'} className="link red mr4">
           <FormattedMessage {...messages.howToMap} />
         </Link>
         <Link to={'/learn/quickstart'} className="link red mr4">

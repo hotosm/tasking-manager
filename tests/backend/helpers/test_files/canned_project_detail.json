@@ -1,0 +1,151 @@
+{
+    "projectId": 8653,
+    "status": "PUBLISHED",
+    "projectPriority": "MEDIUM",
+    "areaOfInterest": {
+        "type": "MultiPolygon",
+        "coordinates": [
+            [
+                [
+                    [
+                        83.771175,
+                        28.095768
+                    ],
+                    [
+                        83.773586,
+                        28.095757
+                    ],
+                    [
+                        83.773428,
+                        28.094146
+                    ],
+                    [
+                        83.770834,
+                        28.094479
+                    ],
+                    [
+                        83.771175,
+                        28.095768
+                    ]
+                ]
+            ]
+        ]
+    },
+    "aoiBBOX": [
+        83.770834,
+        28.094146,
+        83.773586,
+        28.095768
+    ],
+    "tasks": {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "MultiPolygon",
+                    "coordinates": [
+                        [
+                            [
+                                [
+                                    83.771175,
+                                    28.095768
+                                ],
+                                [
+                                    83.773586,
+                                    28.095757
+                                ],
+                                [
+                                    83.773428,
+                                    28.094146
+                                ],
+                                [
+                                    83.770834,
+                                    28.094479
+                                ],
+                                [
+                                    83.771175,
+                                    28.095768
+                                ]
+                            ]
+                        ]
+                    ]
+                },
+                "properties": {
+                    "taskId": 1,
+                    "taskX": 48018,
+                    "taskY": 38100,
+                    "taskZoom": 16,
+                    "taskIsSquare": false,
+                    "taskStatus": "READY",
+                    "lockedBy": null
+                }
+            }
+        ]
+    },
+    "defaultLocale": "en",
+    "projectInfo": {
+        "locale": "en",
+        "name": "Test",
+        "shortDescription": "",
+        "description": "",
+        "instructions": "",
+        "perTaskInstructions": ""
+    },
+    "projectInfoLocales": [
+        {
+            "locale": "en",
+            "name": "Test",
+            "shortDescription": "Test short description",
+            "description": "Test description",
+            "instructions": "Testing detailed instructions",
+            "perTaskInstructions": "Tests"
+        }
+    ],
+    "mapperLevel": "BEGINNER",
+    "mappingPermission": "ANY",
+    "validationPermission": "LEVEL",
+    "enforceRandomTaskSelection": false,
+    "private": false,
+    "changesetComment": "#hot-tm-stage-project-8653",
+    "osmchaFilterId": null,
+    "dueDate": null,
+    "imagery": null,
+    "idPresets": null,
+    "rapidPowerUser": false,
+    "mappingTypes": [
+        "ROADS",
+        "BUILDINGS"
+    ],
+    "campaigns": [],
+    "organisation": 23,
+    "organisationName": "Kathmandu Living Labs",
+    "organisationSlug": "KLL",
+    "organisationLogo": "https://cdn.hotosm.org/tasking-manager/uploads/1652896455106_main-logo.png",
+    "countryTag": [
+        "Nepal"
+    ],
+    "licenseId": null,
+    "allowedUsernames": [],
+    "priorityAreas": null,
+    "created": "2022-05-19T04:59:47.310401Z",
+    "lastUpdated": "2022-05-19T04:59:47.305580Z",
+    "author": "Aadesh Baral",
+    "activeMappers": 0,
+    "percentMapped": 0,
+    "percentValidated": 0,
+    "percentBadImagery": 0,
+    "taskCreationMode": "GRID",
+    "teams": [],
+    "mappingEditors": [
+        "ID",
+        "JOSM",
+        "CUSTOM"
+    ],
+    "validationEditors": [
+        "ID",
+        "JOSM",
+        "CUSTOM"
+    ],
+    "interests": []
+}

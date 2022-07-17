@@ -43,6 +43,7 @@ export const logout = () => (dispatch) => {
   safeStorage.removeItem('token');
   safeStorage.removeItem('action');
   safeStorage.removeItem('osm_oauth_token');
+  safeStorage.removeItem('tasksSortOrder');
   dispatch(clearUserDetails());
 };
 

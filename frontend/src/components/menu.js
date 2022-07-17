@@ -2,12 +2,14 @@ import React from 'react';
 import { TopNavLink } from './header/NavLink';
 
 export function SectionMenu({ items }: Object) {
-  const isActive = ({ isCurrent }) => {
+  const isActive = (props) => {
+    const splitHref = props.href.split('?')[0];
     const linkCombo = 'link mh2 blue-dark ttc';
-    return isCurrent
+    return splitHref === props.location.pathname
       ? { className: `${linkCombo} bb b--blue-dark bw1 pb1` }
       : { className: linkCombo };
   };
+
   return (
     <div className="cf mb2 pb3 pt3-ns ph4 ph2-m bg-grey-light dib">
       {items.map((item, n) => (

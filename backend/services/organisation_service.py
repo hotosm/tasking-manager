@@ -23,7 +23,7 @@ from backend.services.users.user_service import UserService
 
 
 class OrganisationServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling organisations """
+    """Custom Exception to notify callers an error occurred when handling organisations"""
 
     def __init__(self, message):
         if current_app:
@@ -97,7 +97,7 @@ class OrganisationService:
             return org.id
         except IntegrityError:
             raise OrganisationServiceError(
-                f"Organisation name already exists: {new_organisation_dto.name}"
+                f"NameExists- Organisation name already exists: {new_organisation_dto.name}"
             )
 
     @staticmethod
@@ -117,7 +117,7 @@ class OrganisationService:
 
     @staticmethod
     def delete_organisation(organisation_id: int):
-        """ Deletes an organisation if it has no projects """
+        """Deletes an organisation if it has no projects"""
         org = OrganisationService.get_organisation_by_id(organisation_id)
 
         if org.can_be_deleted():
@@ -130,7 +130,7 @@ class OrganisationService:
     @staticmethod
     def get_organisations(manager_user_id: int):
         if manager_user_id is None:
-            """ Get all organisations """
+            """Get all organisations"""
             return Organisation.get_all_organisations()
         else:
             return Organisation.get_organisations_managed_by_user(manager_user_id)
@@ -151,7 +151,7 @@ class OrganisationService:
 
     @staticmethod
     def get_organisations_managed_by_user(user_id: int):
-        """ Get all organisations a user manages """
+        """Get all organisations a user manages"""
         if UserService.is_user_an_admin(user_id):
             return Organisation.get_all_organisations()
 
@@ -232,15 +232,19 @@ class OrganisationService:
 
     @staticmethod
     def assert_validate_name(org: Organisation, name: str):
-        """ Validates that the organisation name doesn't exist """
+        """Validates that the organisation name doesn't exist"""
         if org.name != name and Organisation.get_organisation_by_name(name) is not None:
-            raise OrganisationServiceError(f"Organisation name already exists: {name}")
+            raise OrganisationServiceError(
+                f"NameExists- Organisation name already exists: {name}"
+            )
 
     @staticmethod
     def assert_validate_users(organisation_dto: OrganisationDTO):
-        """ Validates that the users exist"""
+        """Validates that the users exist"""
         if organisation_dto.managers and len(organisation_dto.managers) == 0:
-            raise OrganisationServiceError("Must have at least one admin")
+            raise OrganisationServiceError(
+                "MustHaveAdmin- Must have at least one admin"
+            )
 
         if organisation_dto.managers and len(organisation_dto.managers) > 0:
             managers = []
@@ -256,7 +260,7 @@ class OrganisationService:
 
     @staticmethod
     def can_user_manage_organisation(organisation_id: int, user_id: int):
-        """ Check that the user is an admin for the org or a global admin"""
+        """Check that the user is an admin for the org or a global admin"""
         if UserService.is_user_an_admin(user_id):
             return True
         else:
@@ -264,7 +268,7 @@ class OrganisationService:
 
     @staticmethod
     def is_user_an_org_manager(organisation_id: int, user_id: int):
-        """ Check that the user is an manager for the org """
+        """Check that the user is an manager for the org"""
 
         org = Organisation.get(organisation_id)
 

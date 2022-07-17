@@ -61,7 +61,12 @@ describe('OrgsManagement with', () => {
   };
   it('isOrgManager = false and isAdmin = false should NOT list organisations', () => {
     const element = createComponentWithIntl(
-      <OrgsManagement organisations={orgData.organisations} isOrgManager={false} isAdmin={false} />,
+      <OrgsManagement
+        organisations={orgData.organisations}
+        isOrgManager={false}
+        isAdmin={false}
+        isOrganisationsFetched={true}
+      />,
     );
     const testInstance = element.root;
     expect(testInstance.findAllByType(FormattedMessage).map((i) => i.props.id)).toContain(
@@ -77,7 +82,12 @@ describe('OrgsManagement with', () => {
 
   it('isOrgManager and isAdmin SHOULD list organisations and have a link to /new ', () => {
     const element = createComponentWithIntl(
-      <OrgsManagement organisations={orgData.organisations} isOrgManager={true} isAdmin={true} />,
+      <OrgsManagement
+        organisations={orgData.organisations}
+        isOrgManager={true}
+        isAdmin={true}
+        isOrganisationsFetched={true}
+      />,
     );
     const testInstance = element.root;
     expect(testInstance.findByType(OrganisationCard).props.details).toStrictEqual(
@@ -99,7 +109,12 @@ describe('OrgsManagement with', () => {
 
   it('OrgsManagement with isOrgManager = true and isAdmin = false SHOULD list organisations, but should NOT have an AddButton', () => {
     const element = createComponentWithIntl(
-      <OrgsManagement organisations={orgData.organisations} isOrgManager={true} isAdmin={false} />,
+      <OrgsManagement
+        organisations={orgData.organisations}
+        isOrgManager={true}
+        isAdmin={false}
+        isOrganisationsFetched={true}
+      />,
     );
     const testInstance = element.root;
     expect(testInstance.findByType(OrganisationCard).props.details).toStrictEqual(
@@ -108,5 +123,31 @@ describe('OrgsManagement with', () => {
     expect(() => testInstance.findByType(AddButton)).toThrow(
       new Error('No instances found with node type: "AddButton"'),
     );
+  });
+
+  it('renders loading placeholder when API is being fetched', () => {
+    const element = createComponentWithIntl(
+      <OrgsManagement
+        organisations={orgData.organisations}
+        isOrgManager={true}
+        isAdmin={false}
+        isOrganisationsFetched={false}
+      />,
+    );
+    const testInstance = element.root;
+    expect(testInstance.findAllByProps({ className: 'show-loading-animation' }).length).toBe(4);
+  });
+
+  it('should not render loading placeholder after API is fetched', () => {
+    const element = createComponentWithIntl(
+      <OrgsManagement
+        organisations={orgData.organisations}
+        isOrgManager={true}
+        isAdmin={false}
+        isOrganisationsFetched={true}
+      />,
+    );
+    const testInstance = element.root;
+    expect(testInstance.findAllByProps({ className: 'show-loading-animation' }).length).toBe(0);
   });
 });

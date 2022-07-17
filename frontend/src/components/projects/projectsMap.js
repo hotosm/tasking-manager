@@ -4,6 +4,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
+import WebglUnsupported from '../webglUnsupported';
 import { MAPBOX_TOKEN, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import mapMarker from '../../assets/img/mapMarker.png';
 
@@ -77,16 +78,16 @@ export const mapboxLayerDefn = (map, mapResults, clickOnProjectID) => {
       'text-halo-color': '#fff',
     },
   });
-  map.on('mouseenter', 'projects-unclustered-points', function(e) {
+  map.on('mouseenter', 'projects-unclustered-points', function (e) {
     // Change the cursor style as a UI indicator.
     map.getCanvas().style.cursor = 'pointer';
   });
-  map.on('mouseleave', 'projects-unclustered-points', function(e) {
+  map.on('mouseleave', 'projects-unclustered-points', function (e) {
     // Change the cursor style as a UI indicator.
     map.getCanvas().style.cursor = '';
   });
 
-  map.on('click', 'projects-unclustered-points', e => {
+  map.on('click', 'projects-unclustered-points', (e) => {
     const value = e.features && e.features[0].properties && e.features[0].properties.projectId;
     clickOnProjectID(value);
   });
@@ -100,11 +101,11 @@ export const ProjectsMap = ({
   className,
 }) => {
   const mapRef = React.createRef();
-  const locale = useSelector(state => state.preferences['locale']);
+  const locale = useSelector((state) => state.preferences['locale']);
   const [map, setMapObj] = useState(null);
 
   const clickOnProjectID = useCallback(
-    projectIdSearch =>
+    (projectIdSearch) =>
       setQuery(
         {
           ...fullProjectsQuery,
@@ -124,17 +125,18 @@ export const ProjectsMap = ({
      https://github.com/openmaptiles/fonts/tree/gh-pages/Open%20Sans%20Regular */
 
     /* I referenced this initially https://philipprost.com/how-to-use-mapbox-gl-with-react-functional-component/ */
-    setMapObj(
-      new mapboxgl.Map({
-        container: mapRef.current,
-        style: MAP_STYLE,
-        center: [0, 0],
-        zoom: 0.5,
-        attributionControl: false,
-      })
-        .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
-    );
+    mapboxgl.supported() &&
+      setMapObj(
+        new mapboxgl.Map({
+          container: mapRef.current,
+          style: MAP_STYLE,
+          center: [0, 0],
+          zoom: 0.5,
+          attributionControl: false,
+        })
+          .addControl(new mapboxgl.AttributionControl({ compact: false }))
+          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
+      );
 
     return () => {
       map && map.remove();
@@ -171,5 +173,9 @@ export const ProjectsMap = ({
     }
   }, [map, mapResults, clickOnProjectID]);
 
-  return <div id="map" className={`vh-75-l vh-50 fr ${className || ''}`} ref={mapRef}></div>;
+  if (!mapboxgl.supported()) {
+    return <WebglUnsupported className={`vh-75-l vh-50 fr ${className || ''}`} />;
+  } else {
+    return <div id="map" className={`vh-75-l vh-50 fr ${className || ''}`} ref={mapRef}></div>;
+  }
 };

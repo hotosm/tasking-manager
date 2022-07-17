@@ -296,6 +296,14 @@ export default defineMessages({
     id: 'pages.learn.tutorials.osm_step_by_step.description',
     defaultMessage: 'Beginner’s Guide to mapping on OpenStreetMap',
   },
+  learnTMCheatsheetTitle: {
+    id: 'pages.learn.tutorials.cheatsheet.title',
+    defaultMessage: 'Tasking Manager Cheatsheet',
+  },
+  learnTMCheatsheetDescription: {
+    id: 'pages.learn.tutorials.cheatsheet.description',
+    defaultMessage: "TM's concise set of notes used for quick reference",
+  },
   learnOSMTutorialTitle: {
     id: 'pages.learn.tutorials.learnosm.title',
     defaultMessage: 'Administration Guide',
@@ -442,7 +450,7 @@ export default defineMessages({
   learnManageDescription: {
     id: 'pages.learn.manage.description',
     defaultMessage:
-      'You can use the Tasking Manager to set up your own projects. Be sure to be responsible by making sure your skill level matches your ambition. It is good to reach out to the administrators of the Tasking Manager and learn more about what is needed to obtain the permissions to create and manage projects.',
+      'You can use the Tasking Manager to set up your own projects. Be sure to be responsible by making sure your skill level matches your ambition. If you are interested in creating projects please check whether your organization already exists on Tasking Manager by viewing this {organizationsListLink}. If your organization already exists on Tasking Manager please contact one of your listed organization managers. If your organization does not exist, feel free to register your interest in creating projects by completing this {createNewOrganizationFormLink}.',
   },
   learnManageStepJoinTitle: {
     id: 'pages.learn.manage.steps.join.title',
@@ -452,6 +460,14 @@ export default defineMessages({
     id: 'pages.learn.manage.steps.join.description',
     defaultMessage:
       'The Tasking Manager allows you to create projects as part of a community or organization. Either get in touch with one you know, or request the admins to add your group to the Tasking Manager.',
+  },
+  list: {
+    id: 'pages.learn.manage.list',
+    defaultMessage: 'list',
+  },
+  form: {
+    id: 'pages.learn.manage.form',
+    defaultMessage: 'form',
   },
   learnManageStepCreateTitle: {
     id: 'pages.learn.manage.steps.create.title',
@@ -643,6 +659,11 @@ export default defineMessages({
   missingFieldsForLocale: {
     id: 'pages.edit_project.actions.missing_fields_for_locale',
     defaultMessage: "Missing information in the project's default language ({locale}):",
+  },
+  noTeamsAssigned: {
+    id: 'pages.edit_project.actions.missing_fields_for_teams',
+    defaultMessage:
+      '{mapping, select, true {Mapping} other {{validation, select, true {Validation} other {}}}} {mapping, select, true {{validation, select, true {and validation} other {}}} other {}} permissions have been set only to team members but no team has been added.',
   },
   projectEditSection_description: {
     id: 'pages.edit_project.sections.description',

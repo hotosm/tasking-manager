@@ -39,7 +39,7 @@ user_filter_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class UserServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when in the User Service """
+    """Custom Exception to notify callers an error occurred when in the User Service"""
 
     def __init__(self, message):
         if current_app:
@@ -173,7 +173,7 @@ class UserService:
     def get_user_dto_by_username(
         requested_username: str, logged_in_user_id: int
     ) -> UserDTO:
-        """Gets user DTO for supplied username """
+        """Gets user DTO for supplied username"""
         requested_user = UserService.get_user_by_username(requested_username)
         logged_in_user = UserService.get_user_by_id(logged_in_user_id)
         UserService.check_and_update_mapper_level(requested_user.id)
@@ -182,7 +182,7 @@ class UserService:
 
     @staticmethod
     def get_user_dto_by_id(user: int, request_user: int) -> UserDTO:
-        """Gets user DTO for supplied user id """
+        """Gets user DTO for supplied user id"""
         user = UserService.get_user_by_id(user)
         if request_user:
             request_username = UserService.get_user_by_id(request_user).username
@@ -258,11 +258,6 @@ class UserService:
         if end_date:
             base_query = base_query.filter(TaskHistory.action_date <= end_date)
 
-        if sort_by == "action_date":
-            base_query = base_query.order_by(func.max(TaskHistory.action_date))
-        elif sort_by == "-action_date":
-            base_query = base_query.order_by(desc(func.max(TaskHistory.action_date)))
-
         user_task_dtos = UserTaskDTOs()
         task_id_list = base_query.subquery()
 
@@ -297,6 +292,15 @@ class UserService:
             ),
         )
         tasks = tasks.add_columns("max", "comments")
+
+        if sort_by == "action_date":
+            tasks = tasks.order_by(sq.c.max)
+        elif sort_by == "-action_date":
+            tasks = tasks.order_by(desc(sq.c.max))
+        elif sort_by == "project_id":
+            tasks = tasks.order_by(sq.c.project_id)
+        elif sort_by == "-project_id":
+            tasks = tasks.order_by(desc(sq.c.project_id))
 
         if project_status:
             tasks = tasks.filter(
@@ -357,6 +361,11 @@ class UserService:
         user_tasks = (
             db.session.query(filtered_actions)
             .filter(filtered_actions.c.user_id == user.id)
+            .distinct(
+                filtered_actions.c.project_id,
+                filtered_actions.c.task_id,
+                filtered_actions.c.action_text,
+            )
             .subquery()
             .alias("user_tasks")
         )
@@ -367,6 +376,11 @@ class UserService:
             .filter(filtered_actions.c.task_id == user_tasks.c.task_id)
             .filter(filtered_actions.c.project_id == user_tasks.c.project_id)
             .filter(filtered_actions.c.action_text != TaskStatus.MAPPED.name)
+            .distinct(
+                filtered_actions.c.project_id,
+                filtered_actions.c.task_id,
+                filtered_actions.c.action_text,
+            )
             .subquery()
             .alias("others_tasks")
         )
@@ -479,18 +493,18 @@ class UserService:
 
     @staticmethod
     def get_all_users(query: UserSearchQuery) -> UserSearchDTO:
-        """ Gets paginated list of users """
+        """Gets paginated list of users"""
         return User.get_all_users(query)
 
     @staticmethod
     @cached(user_filter_cache)
     def filter_users(username: str, project_id: int, page: int) -> UserFilterDTO:
-        """ Gets paginated list of users, filtered by username, for autocomplete """
+        """Gets paginated list of users, filtered by username, for autocomplete"""
         return User.filter_users(username, project_id, page)
 
     @staticmethod
     def is_user_an_admin(user_id: int) -> bool:
-        """ Is the user an admin """
+        """Is the user an admin"""
         user = UserService.get_user_by_id(user_id)
         if UserRole(user.role) == UserRole.ADMIN:
             return True
@@ -499,19 +513,19 @@ class UserService:
 
     @staticmethod
     def is_user_the_project_author(user_id: int, author_id: int) -> bool:
-        """ Is user the author of the project """
+        """Is user the author of the project"""
         return user_id == author_id
 
     @staticmethod
     def get_mapping_level(user_id: int):
-        """ Gets mapping level user is at"""
+        """Gets mapping level user is at"""
         user = UserService.get_user_by_id(user_id)
 
         return MappingLevel(user.mapping_level)
 
     @staticmethod
     def is_user_validator(user_id: int) -> bool:
-        """ Determines if user is a validator """
+        """Determines if user is a validator"""
         user = UserService.get_user_by_id(user_id)
 
         if UserRole(user.role) in [
@@ -523,7 +537,7 @@ class UserService:
 
     @staticmethod
     def is_user_blocked(user_id: int) -> bool:
-        """ Determines if a user is blocked """
+        """Determines if a user is blocked"""
         user = UserService.get_user_by_id(user_id)
 
         if UserRole(user.role) == UserRole.READ_ONLY:
@@ -590,18 +604,18 @@ class UserService:
 
     @staticmethod
     def upsert_mapped_projects(user_id: int, project_id: int):
-        """ Add project to mapped projects if it doesn't exist, otherwise return """
+        """Add project to mapped projects if it doesn't exist, otherwise return"""
         User.upsert_mapped_projects(user_id, project_id)
 
     @staticmethod
     def get_mapped_projects(user_name: str, preferred_locale: str):
-        """ Gets all projects a user has mapped or validated on """
+        """Gets all projects a user has mapped or validated on"""
         user = UserService.get_user_by_username(user_name)
         return User.get_mapped_projects(user.id, preferred_locale)
 
     @staticmethod
     def get_recommended_projects(user_name: str, preferred_locale: str):
-        """ Gets all projects a user has mapped or validated on """
+        """Gets all projects a user has mapped or validated on"""
         from backend.services.project_search_service import ProjectSearchService
 
         limit = 20
@@ -668,14 +682,17 @@ class UserService:
             requested_role = UserRole[role.upper()]
         except KeyError:
             raise UserServiceError(
-                f"Unknown role {role} accepted values are ADMIN, PROJECT_MANAGER, VALIDATOR"
+                "UnknownAddRole- "
+                + f"Unknown role {role} accepted values are ADMIN, PROJECT_MANAGER, VALIDATOR"
             )
 
         admin = UserService.get_user_by_id(admin_user_id)
         admin_role = UserRole(admin.role)
 
         if admin_role != UserRole.ADMIN and requested_role == UserRole.ADMIN:
-            raise UserServiceError("You must be an Admin to assign Admin role")
+            raise UserServiceError(
+                "NeedAdminRole- You must be an Admin to assign Admin role"
+            )
 
         user = UserService.get_user_by_username(username)
         user.set_user_role(requested_role)
@@ -690,7 +707,8 @@ class UserService:
             requested_level = MappingLevel[level.upper()]
         except KeyError:
             raise UserServiceError(
-                f"Unknown role {level} accepted values are BEGINNER, INTERMEDIATE, ADVANCED"
+                "UnknownUserRole- "
+                + f"Unknown role {level} accepted values are BEGINNER, INTERMEDIATE, ADVANCED"
             )
 
         user = UserService.get_user_by_username(username)
@@ -711,13 +729,13 @@ class UserService:
 
     @staticmethod
     def accept_license_terms(user_id: int, license_id: int):
-        """ Saves the fact user has accepted license terms """
+        """Saves the fact user has accepted license terms"""
         user = UserService.get_user_by_id(user_id)
         user.accept_license_terms(license_id)
 
     @staticmethod
     def has_user_accepted_license(user_id: int, license_id: int):
-        """ Checks if user has accepted specified license """
+        """Checks if user has accepted specified license"""
         user = UserService.get_user_by_id(user_id)
         return user.has_user_accepted_licence(license_id)
 
@@ -734,7 +752,7 @@ class UserService:
 
     @staticmethod
     def check_and_update_mapper_level(user_id: int):
-        """ Check users mapping level and update if they have crossed threshold """
+        """Check users mapping level and update if they have crossed threshold"""
         user = UserService.get_user_by_id(user_id)
         user_level = MappingLevel(user.mapping_level)
 
@@ -783,7 +801,7 @@ class UserService:
 
     @staticmethod
     def refresh_mapper_level() -> int:
-        """ Helper function to run thru all users in the DB and update their mapper level """
+        """Helper function to run thru all users in the DB and update their mapper level"""
         users = User.get_all_users_not_paginated()
         users_updated = 1
         total_users = len(users)

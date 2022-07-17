@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from '@reach/router';
+import { Link, navigate, useLocation } from '@reach/router';
 import ReactTooltip from 'react-tooltip';
 import DOMPurify from 'dompurify';
 import { FormattedMessage } from 'react-intl';
@@ -13,7 +13,6 @@ import { UserAvatar } from '../user/avatar';
 import { DeleteButton } from '../teamsAndOrgs/management';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
-import { navigate, useLocation } from '@reach/router';
 
 export const rawHtmlNotification = (notificationHtml) => ({
   __html: DOMPurify.sanitize(notificationHtml),
@@ -69,11 +68,14 @@ export function NotificationCard({
   const token = useSelector((state) => state.auth.get('token'));
   const location = useLocation();
   const setMessageAsRead = (messageId) => {
-    fetchLocalJSONAPI(`notifications/${messageId}/`, token).then(() => retryFn());
+    fetchLocalJSONAPI(`notifications/${messageId}/`, token).then(() => {
+      retryFn();
+    });
   };
+
   const deleteNotification = (id) => {
     fetchLocalJSONAPI(`notifications/${id}/`, token, 'DELETE')
-      .then((success) => {
+      .then(() => {
         setSelected(selected.filter((i) => i !== id));
         retryFn();
       })
@@ -83,7 +85,10 @@ export function NotificationCard({
   };
 
   const replacedSubject = subject.replace('task=', 'search=');
-  const openMessage = () => navigate(`/inbox/message/${messageId}/${location.search}`);
+  const openMessage = () => {
+    setMessageAsRead(messageId);
+    navigate(`/inbox/message/${messageId}/${location.search}`);
+  };
 
   return (
     <article

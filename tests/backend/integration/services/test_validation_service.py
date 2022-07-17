@@ -1,4 +1,4 @@
-from backend.services.validator_service import ValidatorService
+from backend.services.validator_service import ValidatorService, TaskStatus
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
 
@@ -13,7 +13,6 @@ class TestValidationService(BaseTestCase):
 
         # Act
         ValidatorService.validate_all_tasks(self.test_project.id, self.test_user.id)
-
         # Assert
         self.assertEqual(
             self.test_project.tasks_validated, self.test_project.total_tasks
@@ -35,13 +34,15 @@ class TestValidationService(BaseTestCase):
         ValidatorService.invalidate_all_tasks(self.test_project.id, self.test_user.id)
 
         for task in self.test_project.tasks:
-            self.assertIsNone(task.mapped_by)
-            self.assertIsNone(task.validated_by)
+            # Only check for validated tasks as there is one task is set as  bad imagery while creating test_project
+            if task.task_status == TaskStatus.VALIDATED.value:
+                self.assertIsNone(task.mapped_by)
+                self.assertIsNone(task.validated_by)
 
     def test_mapped_by_and_validated_by_is_set_after_validating_all(self):
 
         ValidatorService.validate_all_tasks(self.test_project.id, self.test_user.id)
-
         for task in self.test_project.tasks:
-            self.assertIsNotNone(task.mapped_by)
-            self.assertEqual(task.validated_by, self.test_user.id)
+            if task.task_status == TaskStatus.VALIDATED.value:
+                self.assertIsNotNone(task.mapped_by)
+                self.assertEqual(task.validated_by, self.test_user.id)

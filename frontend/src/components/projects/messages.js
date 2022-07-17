@@ -36,6 +36,38 @@ export default defineMessages({
     id: 'navFilters.endDatePlace.placeholder',
     defaultMessage: 'Click to select an end date',
   },
+  dateRange: {
+    id: 'navFilters.dateRange',
+    defaultMessage: 'Date Range',
+  },
+  thisWeek: {
+    id: 'navFilters.thisWeek',
+    defaultMessage: 'This week',
+  },
+  thisMonth: {
+    id: 'navFilters.thisMonth',
+    defaultMessage: 'This month',
+  },
+  thisYear: {
+    id: 'navFilters.thisYear',
+    defaultMessage: 'This year',
+  },
+  lastWeek: {
+    id: 'navFilters.lastWeek',
+    defaultMessage: 'Last week',
+  },
+  lastMonth: {
+    id: 'navFilters.lastMonth',
+    defaultMessage: 'Last month',
+  },
+  lastYear: {
+    id: 'navFilters.lastYear',
+    defaultMessage: 'Last year',
+  },
+  customRange: {
+    id: 'navFilters.customRange',
+    defaultMessage: 'Custom range',
+  },
   showMapToggle: {
     id: 'project.nav.showMapToggle',
     defaultMessage: 'Show map',

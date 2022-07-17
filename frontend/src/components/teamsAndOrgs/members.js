@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from '@reach/router';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -9,6 +9,8 @@ import { UserAvatar } from '../user/avatar';
 import { EditModeControl } from './editMode';
 import { Button } from '../button';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
+import { Alert } from '../alert';
+import { useOnClickOutside } from '../../hooks/UseOnClickOutside';
 
 export function Members({
   addMembers,
@@ -17,6 +19,10 @@ export function Members({
   resetMembersFn,
   members,
   type,
+  memberJoinTeamError,
+  setMemberJoinTeamError,
+  managerJoinTeamError,
+  setManagerJoinTeamError,
 }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const [editMode, setEditMode] = useState(false);
@@ -26,6 +32,10 @@ export function Members({
   if (type === 'members') {
     title = <FormattedMessage {...messages.members} />;
   }
+  const errorRef = useRef(null);
+  useOnClickOutside(errorRef, () => {
+    setMemberJoinTeamError?.(null) || setManagerJoinTeamError?.(null);
+  });
 
   // store the first array of members in order to restore it if the user cancels an
   // add and remove members operation
@@ -50,6 +60,20 @@ export function Members({
       }, 1000);
     });
 
+  const doesMemberExistInTeam = (username) =>
+    members.some((member) => member.username === username);
+
+  const formatOptionLabel = (member, menu) => (
+    <>
+      <div>{member.username}</div>
+      {doesMemberExistInTeam(member.username) && menu.context === 'menu' && (
+        <div className="f7 lh-copy gray">
+          <FormattedMessage {...messages.alreadyInTeam} />
+        </div>
+      )}
+    </>
+  );
+
   return (
     <>
       <div className={`bg-white b--grey-light pa4 ${editMode ? 'bt bl br' : 'ba'}`}>
@@ -66,6 +90,8 @@ export function Members({
               defaultOptions
               placeholder={selectPlaceHolder}
               isClearable={false}
+              isOptionDisabled={(option) => doesMemberExistInTeam(option.username)}
+              formatOptionLabel={(option, menu) => formatOptionLabel(option, menu)}
               getOptionLabel={(option) => option.username}
               getOptionValue={(option) => option.username}
               loadOptions={promiseOptions}
@@ -86,6 +112,20 @@ export function Members({
               editMode={members.length > 1 && editMode}
             />
           ))}
+          {members.length === 0 && (
+            <div className="tc mt3">
+              <FormattedMessage {...messages.noMembers} />
+            </div>
+          )}
+          {(memberJoinTeamError || managerJoinTeamError) && (
+            <div className="cf pv2" ref={errorRef}>
+              <Alert type="error">
+                <FormattedMessage
+                  {...messages[`${memberJoinTeamError || managerJoinTeamError}Error`]}
+                />
+              </Alert>
+            </div>
+          )}
         </div>
       </div>
       {editMode && (

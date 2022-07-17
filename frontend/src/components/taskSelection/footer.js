@@ -85,7 +85,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
           ).length,
       );
       if (!mappedTasks.length) {
-        setLockError('No mapped tasks selected');
+        setLockError('noMappedTasksSelected');
       } else {
         setIsPending(true);
         pushToLocalJSONAPI(
@@ -108,7 +108,9 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       )
         .then((res) => {
           lockSuccess('LOCKED_FOR_MAPPING', 'map', windowObjectReference);
-          window.location.reload();
+          if (editor !== 'JOSM') {
+            window.location.reload();
+          }
         })
         .catch((e) => lockFailed(windowObjectReference, e.message));
     }
@@ -137,23 +139,28 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
     ) {
       const validationEditorOptions = getEditors(project.validationEditors, project.customEditor);
       setEditorOptions(validationEditorOptions);
-      // activate defaultUserEditor if it's allowed. If not, use the first allowed editor for validation
-      if (project.validationEditors.includes(defaultUserEditor)) {
-        setEditor(defaultUserEditor);
-      } else {
-        updateEditor(validationEditorOptions);
+      if (!project.validationEditors.includes(editor)) {
+        // activate defaultUserEditor if it's allowed. If not, use the first allowed editor for validation
+        if (project.validationEditors.includes(defaultUserEditor)) {
+          setEditor(defaultUserEditor);
+        } else {
+          updateEditor(validationEditorOptions);
+        }
       }
     } else {
       const mappingEditorOptions = getEditors(project.mappingEditors, project.customEditor);
       setEditorOptions(mappingEditorOptions);
-      // activate defaultUserEditor if it's allowed. If not, use the first allowed editor
-      if (project.mappingEditors.includes(defaultUserEditor)) {
-        setEditor(defaultUserEditor);
-      } else {
-        updateEditor(mappingEditorOptions);
+      if (!project.mappingEditors.includes(editor)) {
+        // activate defaultUserEditor if it's allowed. If not, use the first allowed editor
+        if (project.mappingEditors.includes(defaultUserEditor)) {
+          setEditor(defaultUserEditor);
+        } else {
+          updateEditor(mappingEditorOptions);
+        }
       }
     }
   }, [
+    editor,
     taskAction,
     project.mappingEditors,
     project.validationEditors,

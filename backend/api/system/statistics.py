@@ -37,4 +37,7 @@ class SystemStatisticsAPI(Resource):
         except Exception as e:
             error_msg = f"Unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch summary statistics"}, 500
+            return {
+                "Error": "Unable to fetch summary statistics",
+                "SubCode": "InternalServerError",
+            }, 500

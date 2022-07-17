@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
-import { RectShape } from 'react-placeholder/lib/placeholders';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 
@@ -32,37 +31,31 @@ export function ListOrganisations() {
   );
   const [organisations, setOrganisations] = useState(null);
   const [userOrgsOnly, setUserOrgsOnly] = useState(userDetails.role === 'ADMIN' ? false : true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
+      setLoading(true);
       const queryParam = `${userOrgsOnly ? `?manager_user_id=${userDetails.id}` : ''}`;
-      fetchLocalJSONAPI(`organisations/${queryParam}`, token).then((orgs) =>
-        setOrganisations(orgs.organisations),
-      );
+      fetchLocalJSONAPI(`organisations/${queryParam}`, token)
+        .then((orgs) => {
+          setOrganisations(orgs.organisations);
+          setLoading(false);
+        })
+        .catch((err) => setError(err));
     }
   }, [userDetails, token, userOrgsOnly]);
 
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <RectShape className="bg-white dib mv2" style={{ width: 700, height: 250 }} />
-      <RectShape className="bg-white dib mv2" style={{ width: 700, height: 250 }} />
-    </div>
-  );
-
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={organisations !== null}
-    >
-      <OrgsManagement
-        organisations={organisations}
-        userOrgsOnly={userOrgsOnly}
-        setUserOrgsOnly={setUserOrgsOnly}
-        isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
-        isAdmin={userDetails.role === 'ADMIN'}
-      />
-    </ReactPlaceholder>
+    <OrgsManagement
+      organisations={organisations}
+      userOrgsOnly={userOrgsOnly}
+      setUserOrgsOnly={setUserOrgsOnly}
+      isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
+      isAdmin={userDetails.role === 'ADMIN'}
+      isOrganisationsFetched={!loading && !error}
+    />
   );
 }
 
@@ -149,7 +142,7 @@ export function EditOrganisation(props) {
   const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?organisationId=${props.id}&omitMapResults=true`,
+    `projects/?organisationId=${props.id}&omitMapResults=true&projectStatuses=PUBLISHED,DRAFT,ARCHIVED`,
     props.id,
   );
   useSetTitleTag(`Edit ${organisation.name}`);

@@ -9,6 +9,7 @@ from backend.services.users.authentication_service import (
 )
 
 
+
 class SystemAuthenticationLoginAPI(Resource):
     def get(self):
         """
@@ -88,7 +89,7 @@ class SystemAuthenticationCallbackAPI(Resource):
             user_params["session"] = osm_resp
             return user_params, 200
         except AuthServiceError:
-            return {"Error": "Unable to authenticate"}, 500
+            return {"Error": "Unable to authenticate", "SubCode": "AuthError"}, 500
 
 
 class SystemAuthenticationEmailAPI(Resource):
@@ -122,8 +123,11 @@ class SystemAuthenticationEmailAPI(Resource):
 
             return {"Status": "OK"}, 200
         except AuthServiceError:
-            return {"Error": "Unable to authenticate"}, 403
+            return {"Error": "Unable to authenticate", "SubCode": "AuthError"}, 403
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to authenticate"}, 500
+            return {
+                "Error": "Unable to authenticate",
+                "SubCode": "InternalServerError",
+            }, 500

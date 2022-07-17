@@ -13,7 +13,7 @@ from backend.models.postgis.utils import NotFound, InvalidGeoJson
 
 
 class SplitServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling splitting tasks """
+    """Custom Exception to notify callers an error occurred when handling splitting tasks"""
 
     def __init__(self, message):
         if current_app:
@@ -179,14 +179,18 @@ class SplitService:
         if (
             original_task.zoom and original_task.zoom >= 18
         ) or original_task_area_m < 25000:
-            raise SplitServiceError("Task is too small to be split")
+            raise SplitServiceError("SmallToSplit- Task is too small to be split")
 
         # check its locked for mapping by the current user
         if TaskStatus(original_task.task_status) != TaskStatus.LOCKED_FOR_MAPPING:
-            raise SplitServiceError("Status must be LOCKED_FOR_MAPPING to split")
+            raise SplitServiceError(
+                "LockToSplit- Status must be LOCKED_FOR_MAPPING to split"
+            )
 
         if original_task.locked_by != split_task_dto.user_id:
-            raise SplitServiceError("Attempting to split a task owned by another user")
+            raise SplitServiceError(
+                "SplitOtherUserTask- Attempting to split a task owned by another user"
+            )
 
         # create new geometries from the task geometry
         try:
@@ -204,7 +208,9 @@ class SplitService:
             # Sanity check: ensure the new task geometry intersects the original task geometry
             new_geometry = shapely_shape(new_task_geojson.geometry)
             if not new_geometry.intersects(original_geometry):
-                raise InvalidGeoJson("New split task does not intersect original task")
+                raise InvalidGeoJson(
+                    "SplitGeoJsonError- New split task does not intersect original task"
+                )
 
             # insert new tasks into database
             i = i + 1
@@ -240,7 +246,7 @@ class SplitService:
             raise
 
         # update project task counts
-        project = Project.query.get(split_task_dto.project_id)
+        project = Project.get(split_task_dto.project_id)
         project.total_tasks = project.tasks.count()
         # update bad imagery because we may have split a bad imagery tile
         project.tasks_bad_imagery = project.tasks.filter(

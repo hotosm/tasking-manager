@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { navigate } from '@reach/router';
+import { navigate, useLocation } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import Popup from 'reactjs-popup';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -12,7 +12,7 @@ import { HeaderLine } from '../projectDetail/header';
 import { Button } from '../button';
 import Portal from '../portal';
 import { SidebarIcon } from '../svgIcons';
-import { openEditor, getTaskGpxUrl, formatImageryUrl } from '../../utils/openEditor';
+import { openEditor, getTaskGpxUrl, formatImageryUrl, formatJosmUrl } from '../../utils/openEditor';
 import { getTaskContributors } from '../../utils/getTaskContributors';
 import { TaskHistory } from './taskActivity';
 import { ChangesetCommentTags } from './changesetComment';
@@ -26,31 +26,34 @@ import {
   CompletionTabForValidation,
   SidebarToggle,
   ReopenEditor,
+  UnsavedMapChangesModalContent,
 } from './actionSidebars';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { MultipleTaskHistoriesAccordion } from './multipleTaskHistories';
 import { ResourcesTab } from './resourcesTab';
 import { ActionTabsNav } from './actionTabsNav';
-
+import { LockedTaskModalContent } from './lockedTasks';
 const Editor = React.lazy(() => import('../editor'));
 const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 
 export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
+  const location = useLocation();
   useSetProjectPageTitleTag(project);
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [isJosmError, setIsJosmError] = useState(false);
   const tasksIds = useMemo(
     () =>
       activeTasks
         ? activeTasks
-            .map((task) => task.taskId)
-            .sort((n1, n2) => {
-              // in ascending order
-              return n1 - n2;
-            })
+          .map((task) => task.taskId)
+          .sort((n1, n2) => {
+            // in ascending order
+            return n1 - n2;
+          })
         : [],
     [activeTasks],
   );
@@ -61,6 +64,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [validationStatus, setValidationStatus] = useState({});
   const [historyTabChecked, setHistoryTabChecked] = useState(false);
   const [multipleTasksInfo, setMultipleTasksInfo] = useState({});
+  const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const intl = useIntl();
 
   const activeTask = activeTasks && activeTasks[0];
@@ -129,25 +133,51 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
     }
   }, [editor, project, projectIsReady, userDetails.defaultEditor, action, tasks, tasksIds]);
 
-  const callEditor = (arr) => {
-    setActiveEditor(arr[0].value);
-    const url = openEditor(
-      arr[0].value,
-      project,
-      tasks,
-      tasksIds,
-      [window.innerWidth, window.innerHeight],
-      null,
-    );
-    if (url) {
-      navigate(`./${url}`);
+  useEffect(() => {
+    if (location.state?.directedFrom) {
+      localStorage.setItem('lastProjectPathname', location.state.directedFrom);
     } else {
-      navigate(`./?editor=${arr[0].value}`);
+      localStorage.removeItem('lastProjectPathname');
     }
-    window.location.reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const callEditor = async (arr) => {
+    setIsJosmError(false);
+    if (!disabled) {
+      setActiveEditor(arr[0].value);
+      const url = openEditor(
+        arr[0].value,
+        project,
+        tasks,
+        tasksIds,
+        [window.innerWidth, window.innerHeight],
+        null,
+      );
+      if (url) {
+        navigate(`./${url}`);
+        if (arr[0].value === 'JOSM') {
+          try {
+            await fetch(formatJosmUrl('version', { jsonp: 'checkJOSM' }));
+          } catch (e) {
+            setIsJosmError(true);
+            return;
+          }
+        }
+      } else {
+        navigate(`./?editor=${arr[0].value}`);
+      }
+    } else {
+      // we need to return a promise in order to be called by useAsync
+      return new Promise((resolve, reject) => {
+        setShowMapChangesModal('reload editor');
+        resolve();
+      });
+    }
   };
 
   return (
+    <>
     <Portal>
       <div className="cf w-100 vh-minus-77-ns overflow-y-hidden">
         <div className={`fl h-100 relative ${showSidebar ? 'w-70' : 'w-100-minus-4rem'}`}>
@@ -300,6 +330,17 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                         editor={activeEditor}
                         callEditor={callEditor}
                       />
+                      {disabled && showMapChangesModal && (
+                        <Popup
+                          modal
+                          open
+                          closeOnEscape={true}
+                          closeOnDocumentClick={true}
+                          onClose={() => setShowMapChangesModal(null)}
+                        >
+                          {(close) => <UnsavedMapChangesModalContent close={close} action={showMapChangesModal} />}
+                        </Popup>
+                      )}
                       {(editor === 'ID' || editor === 'RAPID') && (
                         <Popup
                           modal
@@ -388,5 +429,17 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
         )}
       </div>
     </Portal>
+    {isJosmError && (
+        <Popup
+          modal
+          open
+          closeOnEscape={true}
+          closeOnDocumentClick={true}
+          onClose={() => setIsJosmError(false)}
+        >
+          {(close) => <LockedTaskModalContent project={project} error="JOSM" close={close} />}
+        </Popup>
+      )}
+    </>
   );
 }
