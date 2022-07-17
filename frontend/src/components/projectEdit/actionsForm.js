@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import Select from 'react-select';
@@ -10,7 +10,7 @@ import messages from './messages';
 import { Button } from '../button';
 import { Alert } from '../alert';
 import { DeleteModal } from '../deleteModal';
-import { styleClasses } from '../../views/projectEdit';
+import { styleClasses, StateContext } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useOnDrop } from '../../hooks/UseUploadImage';
 import { useAsync } from '../../hooks/UseAsync';
@@ -364,6 +364,7 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
 
 const TransferProject = ({ projectId, orgId }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
+  const { projectInfo, } = useContext(StateContext);
   const [username, setUsername] = useState('');
   const [, , organisation] = useFetch(`organisations/${orgId}/?omitManagerList=false`)
 
@@ -375,7 +376,16 @@ const TransferProject = ({ projectId, orgId }: Object) => {
   const handleSelect = (value) => {
     setUsername(value);
   };
-
+  const { username: loggedInUsername, role: loggedInUserRole } = useSelector((state) => state.auth.get('userDetails'));
+  const hasAccess = (
+    organisation.managers?.includes(loggedInUsername) ||
+    loggedInUserRole === 'ADMIN' ||
+    loggedInUsername === projectInfo.author
+  );
+  const isDisabled = () => {
+    return (
+      transferOwnershipAsync.status === 'pending' || !username || !hasAccess)
+  };
   const transferOwnership = () => {
     return pushToLocalJSONAPI(
       `projects/${projectId}/actions/transfer-ownership/`,
@@ -403,7 +413,7 @@ const TransferProject = ({ projectId, orgId }: Object) => {
       <Button
         onClick={() => transferOwnershipAsync.execute()}
         loading={transferOwnershipAsync.status === 'pending'}
-        disabled={transferOwnershipAsync.status === 'pending'}
+        disabled={isDisabled()}
         className={styleClasses.buttonClass}
       >
         <FormattedMessage {...messages.transferProject} />
