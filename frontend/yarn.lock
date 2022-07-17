@@ -2377,10 +2377,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@hotosm/id@HelNershingThapa/iD.git#osm-auth2.0":
-  version "2.20.2"
-  resolved "https://registry.npmjs.org/@hotosm/id/-/id-2.20.2.tgz"
-  integrity sha512-5G29dXL1TjpShj8+oTBLnpxydyoO6wyh4o1JqltGqMnyAeFcSrzoDCU6BZ3Kv1d2c7fVPNITwZv9f4dlmnj3rw==
+"@hotosm/id@^2.21.1":
+  version "2.21.1"
+  resolved "https://registry.yarnpkg.com/@hotosm/id/-/id-2.21.1.tgz#ba24ddd4731c0253403237a760711091b68d4cd1"
+  integrity sha512-Q2DrTaOEcpcEbILeRI/6UrxRyMPlb6d0jy2Dlh33ZoRB+0owoMWFMeAgwtU3Sikd7hlWF9D6JXwV2hKAPcDPwg==
   dependencies:
     "@ideditor/country-coder" "~5.0.3"
     "@ideditor/location-conflation" "~1.0.2"
@@ -2392,14 +2392,14 @@
     abortcontroller-polyfill "^1.4.0"
     aes-js "^3.1.2"
     alif-toolkit "^1.2.9"
-    core-js "^3.6.5"
+    core-js-bundle "^3.19.0"
     diacritics "1.3.0"
     fast-deep-equal "~3.1.1"
     fast-json-stable-stringify "2.1.0"
     lodash-es "~4.17.15"
-    marked "~2.0.0"
-    node-diff3 "2.1.0"
-    osm-auth "git+https://github.com/HelNershingThapa/osm-auth.git"
+    marked "~4.0.12"
+    node-diff3 "~3.1.0"
+    osm-auth "~2.0.0"
     pannellum "2.5.6"
     pbf "^3.2.1"
     polygon-clipping "~0.15.1"
@@ -4115,7 +4115,6 @@ JSONStream@0.8.0:
 
 RapiD@facebookincubator/rapid#rapid-v1.1.8-tm.1:
   version "1.1.8-tm.1"
-  uid dcd0f97a7e569e237e75aa3650987f39966d9f13
   resolved "https://codeload.github.com/facebookincubator/rapid/tar.gz/dcd0f97a7e569e237e75aa3650987f39966d9f13"
   dependencies:
     "@id-sdk/math" "~3.0.0-pre.10"
@@ -5712,6 +5711,11 @@ copy-descriptor@^0.1.0:
   version "0.1.1"
   resolved "https://registry.npmjs.org/copy-descriptor/-/copy-descriptor-0.1.1.tgz"
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
+
+core-js-bundle@^3.19.0:
+  version "3.23.4"
+  resolved "https://registry.yarnpkg.com/core-js-bundle/-/core-js-bundle-3.23.4.tgz#fb4ea6b4d5a0ba3166da1c8936bc18b9328a292b"
+  integrity sha512-E5kP515mQPnHj0LL0Z4UyQ8VHrhugJaq3GOropUnR/fU3QA3Xxs3vRgt6CwNDpgHYiruDa0jqHwNHwk5FbcwFg==
 
 core-js-compat@^3.6.2:
   version "3.6.5"
@@ -9657,11 +9661,6 @@ jsesc@~0.5.0:
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-0.5.0.tgz"
   integrity sha1-597mbjXW/Bb3EP6R1c9p9w8IkR0=
 
-jshashes@~1.0.8:
-  version "1.0.8"
-  resolved "https://registry.npmjs.org/jshashes/-/jshashes-1.0.8.tgz"
-  integrity sha512-btmQZ/w1rj8Lb6nEwvhjM7nBYoj54yaEFo2PWh3RkxZ8qNwuvOxvQYN/JxVuwoMmdIluL+XwYVJ+pEEZoSYybQ==
-
 json-buffer@3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/json-buffer/-/json-buffer-3.0.0.tgz"
@@ -10129,15 +10128,15 @@ marked@^4.0.12:
   resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.12.tgz#2262a4e6fd1afd2f13557726238b69a48b982f7d"
   integrity sha512-hgibXWrEDNBWgGiK18j/4lkS6ihTe9sxtV4Q1OQppb/0zzyPSzoFANBa5MfsG/zgsWklmNnhm0XACZOH/0HBiQ==
 
-marked@~2.0.0:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-2.0.7.tgz#bc5b857a09071b48ce82a1f7304913a993d4b7d1"
-  integrity sha512-BJXxkuIfJchcXOJWTT2DOL+yFWifFv2yGYOUzvXg8Qz610QKw+sHCvTMYwA+qWGhlA2uivBezChZ/pBy1tWdkQ==
-
 marked@~3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/marked/-/marked-3.0.8.tgz#2785f0dc79cbdc6034be4bb4f0f0a396bd3f8aeb"
   integrity sha512-0gVrAjo5m0VZSJb4rpL59K1unJAMb/hm8HRXqasD8VeC8m91ytDPMritgFSlKonfdt+rRYYpP/JfLxgIX8yoSw==
+
+marked@~4.0.12:
+  version "4.0.18"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.18.tgz#cd0ac54b2e5610cfb90e8fd46ccaa8292c9ed569"
+  integrity sha512-wbLDJ7Zh0sqA0Vdg6aqlbT+yPxqLblpAZh1mK2+AO2twQkPywvvqQNfEPVwSSRjZ7dZcdeVBIAgiO7MMp3Dszw==
 
 md5.js@^1.3.4:
   version "1.3.5"
@@ -10610,11 +10609,6 @@ no-case@^3.0.3:
     lower-case "^2.0.1"
     tslib "^1.10.0"
 
-node-diff3@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/node-diff3/-/node-diff3-2.1.0.tgz"
-  integrity sha512-m04x9YCoimejmtDeG33RyEiSY+o1oMqavIQC27xprayVxcdKRZyv0m5CY3yVrkhnv0Hg/vTw6AWtJ/0xmI2CLg==
-
 node-diff3@~3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/node-diff3/-/node-diff3-3.1.0.tgz"
@@ -10899,20 +10893,9 @@ obuf@^1.0.0, obuf@^1.1.2:
   resolved "https://registry.npmjs.org/obuf/-/obuf-1.1.2.tgz"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
-ohauth@~1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/ohauth/-/ohauth-1.0.0.tgz"
-  integrity sha1-wui/877wrkkUR5IiQ+G6cFEX3ks=
-  dependencies:
-    jshashes "~1.0.0"
-    xtend "~4.0.0"
-
-ohauth@~1.0.1:
+"ohauth@git+https://github.com/HelNershingThapa/ohauth.git":
   version "1.0.1"
-  resolved "https://registry.npmjs.org/ohauth/-/ohauth-1.0.1.tgz"
-  integrity sha512-R9ZUN3+FVCwzeOOHCJpzA9jw/byRxp5O9X06mTL6Sp/LIQn/rLrMv6cwYctX+hoIKzRUsalGJXZ1kG5wBmSskQ==
-  dependencies:
-    jshashes "~1.0.8"
+  resolved "git+https://github.com/HelNershingThapa/ohauth.git#53b8500a1bae7eda46fa631c6028fca075c50efb"
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -11026,23 +11009,18 @@ os-tmpdir@~1.0.2:
   resolved "https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz"
   integrity sha1-u+Z0BseaqFxc/sdm/lc0VV36EnQ=
 
-osm-auth@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/osm-auth/-/osm-auth-1.1.0.tgz"
-  integrity sha512-e/ecarlh2N/FMfiNa/ZChUIZN8q1LqK4F0iPV4g1MmfHi3/VJ+STJ0qE7ALL3OgHR5IQc3JuI63SCDqHNGt4ew==
-  dependencies:
-    ohauth "~1.0.0"
-    resolve-url "~0.2.1"
-    store "~2.0.4"
-    xtend "~4.0.0"
-
 osm-auth@1.1.1:
   version "1.1.1"
-  resolved "https://registry.npmjs.org/osm-auth/-/osm-auth-1.1.1.tgz"
-  integrity sha512-U2Q7wvjcLJSi7P1a4JKIgTSvWlVq2rqCsjYLHX/cMeIuiMDM8y0B/LQCQyvM7KKJa1juk3Do35dhlwPGxtxc/Q==
+  resolved "git+https://github.com/HelNershingThapa/osm-auth.git#5d1215f9fa06a3e4457b7495330dae1698f68046"
   dependencies:
     ohauth "git+https://github.com/HelNershingThapa/ohauth.git"
-    resolve-url "~0.2.1"
+    store "~2.0.12"
+
+osm-auth@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/osm-auth/-/osm-auth-2.0.0.tgz#c8e9c2de60c179d1fa8ad34da3a029c6eb5e9f38"
+  integrity sha512-6ZBOGAMe8Q/rkhpflmclXFmtnXJmgvX9ScNskrD5by8320nz2KOsyRRtwfNSOL2YNFToM2ZF47YJCY3aiEsS+w==
+  dependencies:
     store "~2.0.12"
 
 osm-polygon-features@^0.9.1:
@@ -11435,14 +11413,7 @@ pnp-webpack-plugin@1.6.4:
   dependencies:
     ts-pnp "^1.1.6"
 
-polygon-clipping@^0.15.2:
-  version "0.15.2"
-  resolved "https://registry.yarnpkg.com/polygon-clipping/-/polygon-clipping-0.15.2.tgz#076199182bf23a4a6cf6c7003f3b81ecf30b2cb8"
-  integrity sha512-qsUFQSY4nA++1/b76dy0BJGwL0FZAk05Y4hZprctLIhAddE8KUUr3TxIF4sAxIQtjH9xvaBe3raaRQrcSI4wlA==
-  dependencies:
-    splaytree "^3.1.0"
-
-polygon-clipping@~0.15.1, polygon-clipping@~0.15.3:
+polygon-clipping@^0.15.3, polygon-clipping@~0.15.1, polygon-clipping@~0.15.3:
   version "0.15.3"
   resolved "https://registry.npmjs.org/polygon-clipping/-/polygon-clipping-0.15.3.tgz"
   integrity sha512-ho0Xx5DLkgxRx/+n4O74XyJ67DcyN3Tu9bGYKsnTukGAW6ssnuak6Mwcyb1wHy9MZc9xsUWqIoiazkZB5weECg==
@@ -13153,7 +13124,7 @@ resolve-url-loader@^3.1.2:
     rework-visit "1.0.0"
     source-map "0.6.1"
 
-resolve-url@^0.2.1, resolve-url@~0.2.1:
+resolve-url@^0.2.1:
   version "0.2.1"
   resolved "https://registry.npmjs.org/resolve-url/-/resolve-url-0.2.1.tgz"
   integrity sha1-LGN/53yJOv0qZj/iGqkIAGjiBSo=
@@ -14002,7 +13973,7 @@ statuses@^2.0.0:
   resolved "https://registry.npmjs.org/statuses/-/statuses-2.0.0.tgz"
   integrity sha512-w9jNUUQdpuVoYqXxnyOakhckBbOxRaoYqJscyIBYCS5ixyCnO7nQn7zBZvP9zf5QOPZcz2DLUpE3KsNPbJBOFA==
 
-store@~2.0.12, store@~2.0.4:
+store@~2.0.12:
   version "2.0.12"
   resolved "https://registry.npmjs.org/store/-/store-2.0.12.tgz"
   integrity sha1-jFNOKguDH3K3X8XxEZhXxE711ZM=

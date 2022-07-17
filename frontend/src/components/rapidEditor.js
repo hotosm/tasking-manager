@@ -95,7 +95,7 @@ export default function RapidEditor({
 
       let osm = RapiDContext.connection();
       const auth = {
-        urlroot: OSM_SERVER_URL,
+        url: OSM_SERVER_URL,
         client_id: OSM_CLIENT_ID,
         client_secret: OSM_CLIENT_SECRET,
         redirect_uri: OSM_REDIRECT_URI,

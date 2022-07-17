@@ -8,7 +8,7 @@
     "@formatjs/intl-pluralrules": "^4.0.27",
     "@formatjs/intl-relativetimeformat": "^9.1.6",
     "@formatjs/macro": "^0.2.8",
-    "@hotosm/id": "HelNershingThapa/iD.git#osm-auth2.0",
+    "@hotosm/id": "^2.21.1",
     "@hotosm/iso-countries-languages": "^1.1.2",
     "@lokibai/react-use-copy-clipboard": "^1.0.4",
     "@mapbox/geo-viewport": "^0.5.0",
