@@ -18,10 +18,12 @@ from backend.models.postgis.task import TaskStatus, TaskAction, TaskHistory
 from backend.models.postgis.statuses import TeamRoles
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.messaging.template_service import (
+    get_template,
     get_txt_template,
     template_var_replacing,
     clean_html,
 )
+from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService, User
 
 
@@ -273,6 +275,56 @@ class MessageService:
                 messages.append(dict(message=message, user=user))
 
             MessageService._push_messages(messages)
+
+    @staticmethod
+    def send_project_transfer_message(
+        project_id: int,
+        transferred_to: str,
+        transferred_by: str,
+    ):
+        """Will send a message to the manager of the organization after a project is transferred"""
+        app = (
+            create_app()
+        )  # Because message-all run on background thread it needs it's own app context
+
+        with app.app_context():
+            project = Project.get(project_id)
+            project_name = project.get_project_title(project.default_locale)
+
+            message = Message()
+            message.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
+            message.subject = (
+                f"Project {project_name} was transferred to {transferred_to}"
+            )
+            message.message = (
+                f"Project {project_name} associated with your "
+                + f"organisation {project.organisation.name} was transferred to {transferred_to} by {transferred_by}."
+            )
+            values = {
+                "PROJECT_ORG_NAME": project.organisation.name,
+                "PROJECT_ORG_ID": project.organisation_id,
+                "PROJECT_NAME": project_name,
+                "PROJECT_ID": project_id,
+                "TRANSFERRED_TO": transferred_to,
+                "TRANSFERRED_BY": transferred_by,
+            }
+            html_template = get_template("project_transfer_alert_en.html", values)
+
+            managers = OrganisationService.get_organisation_by_id_as_dto(
+                project.organisation_id, User.get_by_username(transferred_by).id, False
+            ).managers
+            for manager in managers:
+                manager = UserService.get_user_by_username(manager.username)
+                message.to_user_id = manager.id
+                message.save()
+                if manager.email_address:
+                    if manager.is_email_verified:
+                        SMTPService._send_message(
+                            manager.email_address,
+                            message.subject,
+                            html_template,
+                            message.message,
+                        )
 
     @staticmethod
     def get_user_link(username: str):
@@ -681,7 +733,7 @@ class MessageService:
 
     @staticmethod
     def get_project_link(
-        project_id: int, base_url=None, include_chat_section=False
+        project_id: int, project_name: str, base_url=None, include_chat_section=False
     ) -> str:
         """Helper method to generate a link to project chat"""
         if not base_url:
@@ -691,7 +743,7 @@ class MessageService:
         else:
             section = ""
 
-        return f'<a href="{base_url}/projects/{project_id}{section}">Project {project_id}</a>'
+        return f'<a href="{base_url}/projects/{project_id}{section}">{project_name}</a>'
 
     @staticmethod
     def get_user_profile_link(user_name: str, base_url=None) -> str:
@@ -708,3 +760,13 @@ class MessageService:
             base_url = current_app.config["APP_BASE_URL"]
 
         return f'<a href="{base_url}/settings#{section}">User Settings</a>'
+
+    @staticmethod
+    def get_organisation_link(
+        organisation_id: int, organisation_name: str, base_url=None
+    ) -> str:
+        """Helper method to generate a link to a user profile"""
+        if not base_url:
+            base_url = current_app.config["APP_BASE_URL"]
+
+        return f'<a href="{base_url}/organisations/{organisation_id}">{organisation_name}</a>'

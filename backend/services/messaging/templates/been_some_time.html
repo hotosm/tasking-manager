@@ -19,7 +19,7 @@
   </p>
   <div>
     <!-- card starts here -->
-    <table> <!-- Noncompliant -->
+    <table aria-label="" > <!-- Noncompliant -->
       <thead>
         <th>
         </th>
@@ -40,6 +40,7 @@
           <a style="text-decoration: none;" href="{{ values['APP_BASE_URL'] }}/projects/{{ project.id }}" >
             <div class="card-content" style="margin-bottom: 3.7rem; justify-content: left;">
               <table
+                aria-label=""
                 style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; margin-bottom:2.285rem;"> <!-- Noncompliant -->
                 <th style="width:60%;">
                   <img style="text-decoration: none; font-weight: normal;" src={{ project.org_logo }}
@@ -135,11 +136,14 @@
                   </div>
                 </div>
               </div>
-              <table style="
-                      margin-top: 4px;
-                      align-items: center;
-                      width: 100%;
-                    "> <!-- Noncompliant -->
+              <table 
+                style="
+                  margin-top: 4px;
+                  align-items: center;
+                  width: 100%;
+                  "
+                aria-label=""
+                > <!-- Noncompliant -->
                 <th style="
                         color: #2c3038;
                         font-weight: 500;
