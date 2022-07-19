@@ -4,6 +4,12 @@ jobs:
     working_directory: /home/circleci/app
     docker:
     - image: cimg/python:3.7-node
+      environment:
+        SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
+    - image: cimg/postgres:14.2-postgis
+      environment:
+        POSTGRES_USER: taskingmanager
+        POSTGRES_DB: test_tm
     steps:
     - checkout
     - setup_remote_docker
@@ -14,6 +20,11 @@ jobs:
           sudo apt-get install -y libgeos-dev # Required for shapely
           sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
           pip install awscli --upgrade
+    - run:
+        name: Configure Postgresql Test database
+        command: |
+          sudo apt-get install postgresql-client
+          psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
     - run:
         name: Set folder permissions
         command: |
@@ -219,6 +230,7 @@ workflows:
   build-deploy:
     jobs:
     - build:
+        context: tasking-manager-testing
         filters:
           branches:
             ignore:
