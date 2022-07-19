@@ -221,8 +221,9 @@ class MessageService:
         """Will send a canned message to anyone @'d in a comment"""
         usernames = MessageService._parse_message_for_username(comment, project_id)
         project = Project.get(project_id)
+        default_locale = project.default_locale if project else 'en'
         project_name = ProjectInfo.get_dto_for_locale(
-            project_id, project.default_locale
+            project_id, default_locale
         ).name
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)

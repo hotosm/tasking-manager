@@ -1,4 +1,5 @@
 from urllib.parse import urlparse, parse_qs
+from flask import current_app
 
 from backend.services.users.authentication_service import AuthenticationService
 from backend.services.messaging.smtp_service import SMTPService
@@ -53,7 +54,7 @@ class TestAuthenticationService(BaseTestCase):
         # Act- Use context manager to avoid working outside of request context
         with self.app.test_request_context():
             authorize_params = AuthenticationService.generate_authorize_url(
-                callback="https://localhost:3000/authorized/"
+                callback=current_app.config["APP_BASE_URL"]+"/authorized/"
             )
         # Arrange
         parsed_url = urlparse(authorize_params.get("auth_url"))

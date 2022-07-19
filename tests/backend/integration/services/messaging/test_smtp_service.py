@@ -17,6 +17,7 @@ class TestSMTPService(BaseTestCase):
         self.from_username = "Aadesh Baral"
         self.message_id = 1
         self.project_id = 1
+        self.project_name = 'test_project'
         self.task_id = 1
         self.subject = "test subject"
         self.content = "test content"
@@ -47,6 +48,7 @@ class TestSMTPService(BaseTestCase):
             subject=self.subject,
             content=self.content,
             message_type=self.message_type,
+            project_name=self.project_name
         )
         self.assertTrue(sent_alert)
 
@@ -67,6 +69,7 @@ class TestSMTPService(BaseTestCase):
                 subject=self.subject,
                 content=self.content,
                 message_type=self.message_type,
+                project_name=self.project_name
             )
             self.assertTrue(sent_alert)
 
@@ -85,6 +88,7 @@ class TestSMTPService(BaseTestCase):
             subject=self.subject,
             content=self.content,
             message_type=self.message_type,
+            project_name=self.project_name
         )
         self.assertFalse(sent_alert)
 
@@ -100,6 +104,7 @@ class TestSMTPService(BaseTestCase):
             subject=self.subject,
             content=self.content,
             message_type=self.message_type,
+            project_name=self.project_name
         )
         self.assertFalse(sent_alert)
 
@@ -119,6 +124,7 @@ class TestSMTPService(BaseTestCase):
             subject=self.subject,
             content=self.content,
             message_type=self.message_type,
+            project_name=self.project_name
         )
         # Assert
         self.assertTrue(sent_alert)
