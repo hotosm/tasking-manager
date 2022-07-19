@@ -3,9 +3,9 @@ import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { ProjectSearchBox } from '../projects/projectSearchBox';
 import { useTaskContributionQueryParams, stringify } from '../../hooks/UseTaskContributionAPI';
 import MyTasksOrderDropdown from './myTasksOrderDropdown';
+import MyProjectsDropdown from './myProjectsDropdown';
 
 const isActiveButton = (buttonName, contributionQuery) => {
   let isActive = false;
@@ -47,19 +47,11 @@ export const MyTasksNav = (props) => {
       <div className="mt2 mb1 dib lh-copy w-100 cf">
         <div className="w-100 fl dib">
           <div className="dib">
-            <div className="mv2 dib"></div>
-            <FormattedMessage {...messages.searchProject}>
-              {(msg) => {
-                return (
-                  <ProjectSearchBox
-                    className="dib fl mh1"
-                    setQuery={setContributionsQuery}
-                    fullProjectsQuery={contributionsQuery}
-                    placeholder={msg}
-                  />
-                );
-              }}
-            </FormattedMessage>
+            <MyProjectsDropdown
+              className={`fl f5 mt1 mt2-ns`}
+              setQuery={setContributionsQuery}
+              allQueryParams={contributionsQuery}
+            />
             <MyTasksOrderDropdown
               className={`fl f5 mt1 mt2-ns`}
               setQuery={setContributionsQuery}

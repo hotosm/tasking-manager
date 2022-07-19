@@ -8,6 +8,7 @@ import ReactPlaceholder from 'react-placeholder';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import messages from './messages';
+import viewsMessages from '../../views/messages';
 import { IMAGE_UPLOAD_SERVICE } from '../../config';
 import { useUploadImage } from '../../hooks/UseUploadImage';
 import { levels } from '../../hooks/UseOrganisationLevel';
@@ -16,6 +17,7 @@ import { InternalLinkIcon, ClipboardIcon } from '../svgIcons';
 import { Button } from '../button';
 import { UserAvatarList } from '../user/avatar';
 import { nCardPlaceholders } from './organisationsPlaceholder';
+import { Alert } from '../alert';
 
 export function OrgsManagement({
   organisations,
@@ -125,6 +127,19 @@ export function OrganisationForm(props) {
                   />
                 </fieldset>
               </form>
+              {props.errorMessage && (
+                <div className="mt2">
+                  <Alert type="error" compact>
+                    {viewsMessages[`orgCreation${props.errorMessage}Error`] ? (
+                      <FormattedMessage
+                        {...viewsMessages[`orgCreation${props.errorMessage}Error`]}
+                      />
+                    ) : (
+                      <FormattedMessage {...viewsMessages[`errorFallback`]} />
+                    )}
+                  </Alert>
+                </div>
+              )}
             </div>
             {dirtyForm && (
               <div className="cf pt0 h3">
@@ -181,6 +196,9 @@ export function OrgInformation({ hasSlug, formState }) {
     const selected = TIER_OPTIONS.filter((tier) => value === tier.value);
     return selected.length ? selected[0].label : <FormattedMessage {...messages.selectTier} />;
   };
+
+  const validateRequired = (value) =>
+    value ? undefined : <FormattedMessage {...messages.requiredField} />;
 
   return (
     <>
@@ -242,16 +260,21 @@ export function OrgInformation({ hasSlug, formState }) {
               <label className={labelClasses}>
                 <FormattedMessage {...messages.type} />
               </label>
-              <Field name="type" className={fieldClasses} required>
+              <Field name="type" className={fieldClasses} validate={validateRequired}>
                 {(props) => (
-                  <Select
-                    classNamePrefix="react-select"
-                    isClearable={false}
-                    options={TYPE_OPTIONS}
-                    placeholder={getTypePlaceholder(props.input.value)}
-                    onChange={(value) => props.input.onChange(value.value)}
-                    className="z-5"
-                  />
+                  <>
+                    <Select
+                      classNamePrefix="react-select"
+                      isClearable={false}
+                      options={TYPE_OPTIONS}
+                      placeholder={getTypePlaceholder(props.input.value)}
+                      onChange={(value) => props.input.onChange(value.value)}
+                      className="z-5"
+                    />
+                    {props.meta.error && props.meta.touched && (
+                      <span className="mt3 red">{props.meta.error}</span>
+                    )}
+                  </>
                 )}
               </Field>
             </div>
@@ -260,16 +283,21 @@ export function OrgInformation({ hasSlug, formState }) {
                 <label className={labelClasses}>
                   <FormattedMessage {...messages.subscribedTier} />
                 </label>
-                <Field name="subscriptionTier" className={fieldClasses} required>
+                <Field name="subscriptionTier" className={fieldClasses} validate={validateRequired}>
                   {(props) => (
-                    <Select
-                      classNamePrefix="react-select"
-                      isClearable={false}
-                      options={TIER_OPTIONS}
-                      placeholder={getTierPlaceholder(props.input.value)}
-                      onChange={(value) => props.input.onChange(value.value)}
-                      className="z-4"
-                    />
+                    <>
+                      <Select
+                        classNamePrefix="react-select"
+                        isClearable={false}
+                        options={TIER_OPTIONS}
+                        placeholder={getTierPlaceholder(props.input.value)}
+                        onChange={(value) => props.input.onChange(value.value)}
+                        className="z-4"
+                      />
+                      {props.meta.error && props.meta.touched && (
+                        <span className="mt3 red">{props.meta.error}</span>
+                      )}
+                    </>
                   )}
                 </Field>
               </div>
@@ -281,7 +309,7 @@ export function OrgInformation({ hasSlug, formState }) {
           <FormattedMessage {...messages.image} />
         </label>
         {IMAGE_UPLOAD_SERVICE ? (
-          <Field name="logo" className={fieldClasses} required>
+          <Field name="logo" className={fieldClasses}>
             {(fieldProps) => (
               <>
                 <input
@@ -308,7 +336,7 @@ export function OrgInformation({ hasSlug, formState }) {
             )}
           </Field>
         ) : (
-          <Field name="logo" component="input" type="text" className={fieldClasses} required />
+          <Field name="logo" component="input" type="text" className={fieldClasses} />
         )}
       </div>
     </>
