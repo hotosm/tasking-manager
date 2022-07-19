@@ -259,7 +259,7 @@ export default function ProjectEdit({ id }) {
       <h2 className="pb2 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
         <FormattedMessage {...messages.editProject} />
       </h2>
-      <div className="fl w-30-l w-100 ph0-ns ph4-m ph2 pb4">
+      <div className="fl w-30-l w-100 ph0-ns ph4-m ph2 pb4 sticky-top-l">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={8}
