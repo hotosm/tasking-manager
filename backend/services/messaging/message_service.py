@@ -334,14 +334,13 @@ class MessageService:
                 manager = UserService.get_user_by_username(manager.username)
                 message.to_user_id = manager.id
                 message.save()
-                if manager.email_address:
-                    if manager.is_email_verified:
-                        SMTPService._send_message(
-                            manager.email_address,
-                            message.subject,
-                            html_template,
-                            message.message,
-                        )
+                if manager.email_address and manager.is_email_verified:
+                    SMTPService._send_message(
+                        manager.email_address,
+                        message.subject,
+                        html_template,
+                        message.message,
+                    )
 
     @staticmethod
     def get_user_link(username: str):
