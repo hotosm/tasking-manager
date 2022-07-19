@@ -70,7 +70,7 @@ export const ProjectsPage = (props) => {
             state={state}
             fullProjectsQuery={fullProjectsQuery}
             setQuery={setProjectQuery}
-            className={`dib w-40-l w-100 fl sticky-top`}
+            className={`dib w-40-l w-100 fl sticky-top-l`}
           />
         )}
       </section>
@@ -142,7 +142,7 @@ export const UserProjectsPage = (props) => {
             state={state}
             fullProjectsQuery={fullProjectsQuery}
             setQuery={setProjectQuery}
-            className={`dib w-40-l w-100 fl sticky-top`}
+            className={`dib w-40-l w-100 fl sticky-top-l`}
           />
         )}
       </section>

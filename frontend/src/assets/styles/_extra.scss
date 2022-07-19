@@ -73,6 +73,10 @@ html {
   .mw-36rem-l {
     max-width: 36rem;
   }
+  .sticky-top-l {
+    position: sticky !important;
+    top: 0;
+  }
 }
 
 @media screen and (max-width: 60em) {
