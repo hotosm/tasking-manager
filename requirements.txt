@@ -9,13 +9,14 @@ cachetools==4.1.1
 certifi==2020.6.20
 chardet==3.0.4
 Click==7.1.2
-coverage==5.3
+coverage==6.4
 entrypoints==0.3
 flake8==3.8.4
 Flask==1.1.2
 Flask-Cors==3.0.9
 Flask-HTTPAuth==4.1.0
 Flask-Migrate==2.5.3
+Flask-Mail==0.9.1
 Flask-OAuthlib==0.9.4
 Flask-RESTful==0.3.8
 Flask-Script==2.0.6

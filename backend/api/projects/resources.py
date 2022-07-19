@@ -112,7 +112,10 @@ class ProjectsRestAPI(Resource):
 
                 return project_dto, 200
             else:
-                return {"Error": "Private Project", "SubCode": "PrivateProject"}, 403
+                return {
+                    "Error": "User not permitted: Private Project",
+                    "SubCode": "PrivateProject",
+                }, 403
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError as e:

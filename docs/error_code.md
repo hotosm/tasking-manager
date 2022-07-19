@@ -44,7 +44,8 @@ In addition to descriptive error text, error messages also contains SubCodes. Wh
 | 403  | UserNotAllowed           | Mapping not allowed because: User not on allowed list                              |
 | 403  | UserNotPermitted         | User action not permitted                                                          |
 | 403  | UserPermissionError      | User is not a manager of the project                                               |
-| 403  | PrivateProject           | Private project                                                                    |
+| 403  | PrivateProject           | User not permitted: Private Project       
+|
 | 403  | ProjectNotFetched        | Unable to fetch project                                                            |
 | 403  | NotPermittedToCreate     | User is not permitted to create project                                            |
 | 400  | MustBeFeatureCollection  | GeoJson must be FeatureCollection                                                  |

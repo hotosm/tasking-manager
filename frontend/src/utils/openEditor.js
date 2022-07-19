@@ -15,7 +15,7 @@ export function openEditor(
   }
   const { center, zoom } = getCentroidAndZoomFromSelectedTasks(tasks, selectedTasks, windowSize);
   if (['ID', 'RAPID'].includes(editor)) {
-    return getIdUrl(project, center, zoom, selectedTasks, ('?editor=' + editor));
+    return getIdUrl(project, center, zoom, selectedTasks, '?editor=' + editor);
   }
   if (windowObjectReference == null || windowObjectReference.closed) {
     windowObjectReference = window.open('', `iD-${project}-${selectedTasks}`);
@@ -75,8 +75,14 @@ export function getPotlatch2Url(centroid, zoomLevel) {
 export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl) {
   const base = customUrl ? formatCustomUrl(customUrl) : `${ID_EDITOR_URL}`;
   let url = base + '#map=' + [zoomLevel, centroid[1], centroid[0]].join('/');
+  // add the extraParams
+  if (project.extraIdParams) {
+    let extraParams = formatExtraParams(project.extraIdParams);
+    if (!extraParams.startsWith('&')) extraParams = `&${extraParams}`;
+    url += extraParams;
+  }
   // the other URL params are only needed by external iD editors
-  if (!['?editor=ID','?editor=RAPID'].includes(customUrl)) {
+  if (!['?editor=ID', '?editor=RAPID'].includes(customUrl)) {
     if (project.changesetComment) {
       url += '&comment=' + encodeURIComponent(project.changesetComment);
     }
@@ -96,6 +102,17 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl)
     }
   }
   return url;
+}
+
+export const formatExtraParams = (values) => {
+  let extraParams = '';
+  values.split('&')
+    .filter((term) => term)
+    .forEach((term) => {
+      const [key, value] = term.split('=');
+      extraParams += `&${key}=${encodeURIComponent(value)}`;
+    });
+  return extraParams;
 }
 
 export const sendJosmCommands = async (project, tasks, selectedTasks, windowSize, taskBbox) => {
@@ -120,8 +137,7 @@ function loadTasksBoundaries(project, selectedTasks) {
   const emptyTaskLayerParams = {
     new_layer: true,
     layer_name: layerName,
-    data:
-      '<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>',
+    data: '<?xml version="1.0" encoding="utf8"?><osm generator="JOSM" upload="never" version="0.6"></osm>',
   };
   const tmTaskLayerParams = {
     new_layer: false,

@@ -17,7 +17,7 @@ const parseMarkdown = (markdownText) => {
             return m.index;
           }
         },
-        tokenizer: function(src) {
+        tokenizer: function (src) {
           const match = VIDEO_TAG_REGEXP.exec(src);
 
           if (match) {
@@ -25,11 +25,11 @@ const parseMarkdown = (markdownText) => {
               type: 'videoExt',
               raw: match[0],
               text: match[1].trim(),
-              tokens: []
+              tokens: [],
             };
           }
         },
-        renderer: function(token) {
+        renderer: function (token) {
           const videoId = token.text;
 
           return `
@@ -43,17 +43,16 @@ const parseMarkdown = (markdownText) => {
               allowfullscreen>
             </iframe>
           `;
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
   return marked.parse(markdownText);
-}
+};
 
 /* per https://stackoverflow.com/a/34688574/272018 */
 export const htmlFromMarkdown = (markdownText) => {
   DOMPurify.addHook('afterSanitizeAttributes', function (node) {
-
     // set all elements owning target to target=_blank
     if ('target' in node) {
       node.setAttribute('target', '_blank');
@@ -67,11 +66,11 @@ export const htmlFromMarkdown = (markdownText) => {
     }
   });
 
-  DOMPurify.addHook("uponSanitizeElement", (node, data) => {
-    if (data.tagName === "iframe") {
-      const src = node.getAttribute("src") || "";
+  DOMPurify.addHook('uponSanitizeElement', (node, data) => {
+    if (data.tagName === 'iframe') {
+      const src = node.getAttribute('src') || '';
       // allow only youtube urls to be embedded in iframes
-      if (!src.startsWith("https://www.youtube.com/embed/")) {
+      if (!src.startsWith('https://www.youtube.com/embed/')) {
         return node.parentNode?.removeChild(node);
       }
     }
@@ -79,7 +78,7 @@ export const htmlFromMarkdown = (markdownText) => {
 
   const config = {
     ADD_TAGS: ['iframe'],
-    ADD_ATTR: ["allow", "allowfullscreen", "frameborder"]
+    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder'],
   };
 
   return { __html: DOMPurify.sanitize(parseMarkdown(markdownText), config) };

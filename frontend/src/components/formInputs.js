@@ -21,7 +21,13 @@ export const RadioField = ({ name, value, className }: Object) => (
   />
 );
 
-export const SwitchToggle = ({ label, isChecked, onChange, labelPosition, small = false }: Object) => (
+export const SwitchToggle = ({
+  label,
+  isChecked,
+  onChange,
+  labelPosition,
+  small = false,
+}: Object) => (
   <div className="v-mid justify-center bg-grey-dark">
     {label && labelPosition !== 'right' && <span className="di mr2 nowrap f6 dn-m">{label}</span>}
     <div className="relative dib">
@@ -31,8 +37,18 @@ export const SwitchToggle = ({ label, isChecked, onChange, labelPosition, small 
         checked={isChecked}
         onChange={onChange}
       />
-      <div className={`relative z-1 dib ${small ? 'w2 h1' : 'w3 h2'} bg-blue-grey overflow-hidden br4 v-mid bg-animate checkbox-wrapper`}>
-        <div className={`absolute right-auto left-0 ${small ? 'w1 h1' : 'w2 h2'} br4 bg-white ba b-grey-light shadow-4 t-cb bg-animate ${small ? 'checkbox-toggle-sm' : 'checkbox-toggle'}`}></div>
+      <div
+        className={`relative z-1 dib ${
+          small ? 'w2 h1' : 'w3 h2'
+        } bg-blue-grey overflow-hidden br4 v-mid bg-animate checkbox-wrapper`}
+      >
+        <div
+          className={`absolute right-auto left-0 ${
+            small ? 'w1 h1' : 'w2 h2'
+          } br4 bg-white ba b-grey-light shadow-4 t-cb bg-animate ${
+            small ? 'checkbox-toggle-sm' : 'checkbox-toggle'
+          }`}
+        ></div>
       </div>
     </div>
     {label && labelPosition === 'right' && <span className="di ml2 f6">{label}</span>}

@@ -9,6 +9,7 @@ import { useFetch } from '../hooks/UseFetch';
 import { useEditTeamAllowed } from '../hooks/UsePermissions';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import { useForceUpdate } from '../hooks/UseForceUpdate';
 import {
   getMembersDiff,
   filterActiveMembers,
@@ -210,7 +211,8 @@ export function CreateTeam() {
 export function EditTeam(props) {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
-  const [error, loading, team] = useFetch(`teams/${props.id}/`);
+  const [forceUpdated, forceUpdate] = useForceUpdate();
+  const [error, loading, team] = useFetch(`teams/${props.id}/`, forceUpdated);
   const [initManagers, setInitManagers] = useState(false);
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
@@ -227,6 +229,14 @@ export function EditTeam(props) {
       setInitManagers(true);
     }
   }, [team, managers, initManagers]);
+
+  useEffect(() => {
+    if (team && team.members) {
+      setManagers(filterActiveManagers(team.members));
+      setMembers(filterActiveMembers(team.members));
+    }
+  }, [team]);
+
   useSetTitleTag(`Edit ${team.name}`);
 
   const addManagers = (values) => {
@@ -259,6 +269,7 @@ export function EditTeam(props) {
     team.members = team.members
       .filter((user) => user.function === 'MEMBER' || user.active === false)
       .concat(managers);
+    forceUpdate();
   };
   const updateMembers = () => {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, members);
@@ -272,6 +283,7 @@ export function EditTeam(props) {
     team.members = team.members
       .filter((user) => user.function === 'MANAGER' || user.active === false)
       .concat(members);
+    forceUpdate();
   };
 
   const updateTeam = (payload) => {

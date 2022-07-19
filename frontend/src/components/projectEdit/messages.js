@@ -588,4 +588,32 @@ export default defineMessages({
     defaultMessage:
       'This will remove the custom editor from the project. Are you sure you don\'t want to disable the custom editor by toggling the "Enabled" checkbox above?',
   },
+  noMappingEditor: {
+    id: 'projects.formInputs.noMappingEditor',
+    defaultMessage: 'At least one editor must be enabled for mapping',
+  },
+  noValidationEditor: {
+    id: 'projects.formInputs.noValidationEditor',
+    defaultMessage: 'At least one editor must be enabled for validation',
+  },
+  extraIdParams: {
+    id: 'projects.formInputs.extraIdParams',
+    defaultMessage:
+      'Additional iD URL parameters',
+  },
+  extraIdParamsDescription: {
+    id: 'projects.formInputs.extraIdParams.description',
+    defaultMessage:
+      'Any additional URL parameters that you want include when loading iD editor (both the embedded and the external ones). Use & to separate different parameters. Example: {text}.',
+  },
+  extraIdParamsDescriptionLink: {
+    id: 'projects.formInputs.extraIdParams.description.link',
+    defaultMessage:
+      'Check the {link} for more information.',
+  },
+  iDAPIDocs: {
+    id: 'projects.formInputs.extraIdParams.iDAPIDocs',
+    defaultMessage:
+      'iD editor documentation',
+  },
 });

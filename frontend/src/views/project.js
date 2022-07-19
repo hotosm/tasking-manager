@@ -9,6 +9,7 @@ import { ProjectDetail } from '../components/projectDetail/index';
 import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
 import { ProjectSearchResults } from '../components/projects/projectSearchResults';
 import { ProjectsMap } from '../components/projects/projectsMap';
+import PrivateProjectError from '../components/projectDetail/privateProjectError';
 import {
   useProjectsQueryAPI,
   useExploreProjectsQueryParams,
@@ -69,7 +70,7 @@ export const ProjectsPage = (props) => {
             state={state}
             fullProjectsQuery={fullProjectsQuery}
             setQuery={setProjectQuery}
-            className={`dib w-40-l w-100 fl`}
+            className={`dib w-40-l w-100 fl sticky-top-l`}
           />
         )}
       </section>
@@ -141,7 +142,7 @@ export const UserProjectsPage = (props) => {
             state={state}
             fullProjectsQuery={fullProjectsQuery}
             setQuery={setProjectQuery}
-            className={`dib w-40-l w-100 fl`}
+            className={`dib w-40-l w-100 fl sticky-top-l`}
           />
         )}
       </section>
@@ -179,7 +180,7 @@ export const ProjectDetailPage = (props) => {
 
   return (
     <ReactPlaceholder showLoadingAnimation={true} rows={30} delay={1000} ready={loading === false}>
-      {!error ? (
+      {!error && (
         <ProjectDetail
           project={data}
           projectLoading={loading}
@@ -188,8 +189,15 @@ export const ProjectDetailPage = (props) => {
           navigate={props.navigate}
           type="detail"
         />
-      ) : (
-        <NotFound projectId={props.id} />
+      )}
+      {error && (
+        <>
+          {error.message === 'PrivateProject' ? (
+            <PrivateProjectError />
+          ) : (
+            <NotFound projectId={props.id} />
+          )}
+        </>
       )}
     </ReactPlaceholder>
   );

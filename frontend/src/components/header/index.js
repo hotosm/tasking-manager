@@ -31,7 +31,7 @@ function getMenuItensForUser(userDetails, organisations) {
       authenticated: true,
     },
     { label: messages.manage, link: 'manage', authenticated: true, manager: true },
-    { label: messages.learn, link: 'learn', showAlways: true },
+    { label: messages.learn, link: 'learn/map', showAlways: true },
     { label: messages.about, link: 'about', showAlways: true },
   ];
   if (SERVICE_DESK) {

@@ -95,7 +95,7 @@ let App = (props) => {
                   <ProjectStats path="projects/:id/stats" />
                   <OrganisationStats path="organisations/:id/stats/" />
                   <OrganisationDetail path="organisations/:slug/" />
-                  <LearnPage path="learn" />
+                  <LearnPage path="learn/:type" />
                   <QuickstartPage path="learn/quickstart" />
                   <AboutPage path="about" />
                   <ContactPage path="contact/" />

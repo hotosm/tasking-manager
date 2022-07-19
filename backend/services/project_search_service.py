@@ -295,8 +295,9 @@ class ProjectSearchService:
 
         if search_dto.text_search:
             # We construct an OR search, so any projects that contain or more of the search terms should be returned
+            invalid_ts_chars = "@|&!><\\():"
             search_text = "".join(
-                char for char in search_dto.text_search if char.isalnum() or char == " "
+                char for char in search_dto.text_search if char not in invalid_ts_chars
             )
             or_search = " | ".join([x for x in search_text.split(" ") if x != ""])
             opts = [

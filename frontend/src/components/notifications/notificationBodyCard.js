@@ -42,6 +42,8 @@ export const NotificationBodyModal = (props) => {
           margin: '5em auto auto',
           border: '1px solid rgb(187, 187, 187)',
           padding: '5px',
+          overflowY: 'auto',
+          maxHeight: 'calc(100vh - 10em)',
         }}
       >
         <div className={`di fl tl pa3 mb3 w-100 fw5 bb b--tan`}>

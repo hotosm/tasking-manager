@@ -16,7 +16,6 @@ import { TASK_COLOURS } from '../../config';
 import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon, InternalLinkIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
-import { CustomButton } from '../button';
 
 export function TaskStatus({ status, lockHolder }: Object) {
   const isReadyOrLockedForMapping = ['READY', 'LOCKED_FOR_MAPPING'].includes(status);
@@ -137,46 +136,37 @@ function TaskItem({
 }
 
 export function TaskFilter({ userCanValidate, statusFilter, setStatusFn }: Object) {
-  const activeClass = 'bg-blue-grey white';
-  const inactiveClass = 'bg-white blue-grey';
+  const options = [
+    { label: <FormattedMessage {...messages.filterAll} />, value: 'ALL' },
+    { label: <FormattedMessage {...messages.filterReadyToMap} />, value: 'READY' },
+    ...(userCanValidate
+      ? [
+          {
+            label: <FormattedMessage {...messages.filterReadyToValidate} />,
+            value: 'MAPPED',
+          },
+        ]
+      : []),
+    {
+      label: <FormattedMessage {...messages.taskStatus_INVALIDATED} />,
+      value: 'INVALIDATED',
+    },
+    {
+      label: <FormattedMessage {...messages.taskStatus_VALIDATED} />,
+      value: 'VALIDATED',
+    },
+    { label: <FormattedMessage {...messages.taskStatus_BADIMAGERY} />, value: 'BADIMAGERY' },
+    { label: <FormattedMessage {...messages.taskStatus_LOCKED} />, value: 'LOCKED' },
+  ];
 
   return (
-    <div className="pv1">
-      <CustomButton
-        onClick={() => setStatusFn('all')}
-        className={`dbi bn ph3 pv2 ${
-          !statusFilter || statusFilter === 'all' ? activeClass : inactiveClass
-        }`}
-      >
-        <FormattedMessage {...messages.filterAll} />
-      </CustomButton>
-      <CustomButton
-        onClick={() => setStatusFn('readyToMap')}
-        className={`dbi bn ph3 pv2 ${statusFilter === 'readyToMap' ? activeClass : inactiveClass}`}
-      >
-        <FormattedMessage {...messages.filterReadyToMap} />
-      </CustomButton>
-      {userCanValidate && (
-        <>
-          <CustomButton
-            onClick={() => setStatusFn('readyToValidate')}
-            className={`dbi bn ph3 pv2 ${
-              statusFilter === 'readyToValidate' ? activeClass : inactiveClass
-            }`}
-          >
-            <FormattedMessage {...messages.filterReadyToValidate} />
-          </CustomButton>
-          <CustomButton
-            onClick={() => setStatusFn('unavailable')}
-            className={`dbi bn ph3 pv2 ${
-              statusFilter === 'unavailable' ? activeClass : inactiveClass
-            }`}
-          >
-            <FormattedMessage {...messages.taskStatus_BADIMAGERY} />
-          </CustomButton>
-        </>
-      )}
-    </div>
+    <Dropdown
+      onChange={(e) => setStatusFn(e[0].value)}
+      value={statusFilter || 'ALL'}
+      options={options}
+      display={statusFilter || <FormattedMessage {...messages.filterAll} />}
+      className="blue-dark bg-white pv2 ph2 ba b--grey-light"
+    />
   );
 }
 
@@ -214,22 +204,24 @@ export function TaskList({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const getTasksByStatus = (tasks, filter) => {
+    switch (filter) {
+      case 'ALL':
+        return tasks;
+      case 'LOCKED':
+        return tasks.filter((task) =>
+          ['LOCKED_FOR_MAPPING', 'LOCKED_FOR_VALIDATION'].includes(task.properties.taskStatus),
+        );
+      default:
+        return tasks.filter((task) => task.properties.taskStatus === filter);
+    }
+  };
+
   useEffect(() => {
     if (tasks && tasks.features) {
       let newTasks = tasks.features;
-      if (statusFilter === 'readyToMap') {
-        newTasks = newTasks.filter((task) =>
-          ['READY', 'INVALIDATED'].includes(task.properties.taskStatus),
-        );
-      }
-      if (statusFilter === 'readyToValidate') {
-        newTasks = newTasks.filter((task) =>
-          ['MAPPED', 'BADIMAGERY'].includes(task.properties.taskStatus),
-        );
-      }
-      if (statusFilter === 'unavailable') {
-        newTasks = newTasks.filter((task) => task.properties.taskStatus === 'BADIMAGERY');
-      }
+      newTasks = getTasksByStatus(newTasks, statusFilter || 'ALL');
+
       if (textSearch) {
         if (Number(textSearch)) {
           newTasks = newTasks.filter(
@@ -269,8 +261,8 @@ export function TaskList({
 
   return (
     <div className="cf">
-      <div className="cf">
-        <div className="w-40-l w-50-m w-100 dib v-mid pr2 pv1 relative">
+      <div className="flex items-center flex-wrap" style={{ gap: '0.5rem' }}>
+        <div className="w-40-l w-50-m w-100 relative">
           <FormattedMessage {...messages.filterPlaceholder}>
             {(msg) => {
               return (
@@ -288,26 +280,23 @@ export function TaskList({
             onClick={() => {
               setTextSearch('');
             }}
-            className={`absolute w1 h1 top-0 red pt3 pointer pr3 right-0 ${
-              textSearch ? 'dib' : 'dn'
-            }`}
+            className={`absolute top-0 right-0 w1 h1 red pointer pr2 ${textSearch ? 'dib' : 'dn'}`}
+            style={{ top: '12px' }}
           />
         </div>
-        <div className="w-60-l w-50-m w-100 dib pv1">
-          <Dropdown
-            onChange={updateSortingOption}
-            value={sortBy || 'date'}
-            options={sortingOptions}
-            display={sortBy || <FormattedMessage {...messages.sortById} />}
-            className="blue-dark bg-white mr1 v-mid pv2 ph2 ba b--grey-light"
-          />
-        </div>
+        <TaskFilter
+          userCanValidate={userCanValidate}
+          statusFilter={statusFilter}
+          setStatusFn={setStatusFilter}
+        />
+        <Dropdown
+          onChange={updateSortingOption}
+          value={sortBy || 'date'}
+          options={sortingOptions}
+          display={sortBy || <FormattedMessage {...messages.sortById} />}
+          className="blue-dark bg-white pv2 ph2 ba b--grey-light"
+        />
       </div>
-      <TaskFilter
-        userCanValidate={userCanValidate}
-        statusFilter={statusFilter}
-        setStatusFn={setStatusFilter}
-      />
       <ReactPlaceholder
         showLoadingAnimation={true}
         rows={6}

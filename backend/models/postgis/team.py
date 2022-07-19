@@ -44,6 +44,15 @@ class TeamMembers(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def update(self):
+        """ Updates the current model in the DB """
+        db.session.commit()
+
+    @staticmethod
+    def get(team_id: int, user_id: int):
+        """ Returns a team member by team_id and user_id """
+        return TeamMembers.query.filter_by(team_id=team_id, user_id=user_id).first()
+
 
 class Team(db.Model):
     """ Describes a team """

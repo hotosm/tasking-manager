@@ -149,6 +149,7 @@ class Project(db.Model):
     imagery = db.Column(db.String)
     josm_preset = db.Column(db.String)
     id_presets = db.Column(ARRAY(db.String))
+    extra_id_params = db.Column(db.String)
     rapid_power_user = db.Column(db.Boolean, default=False)
     last_updated = db.Column(db.DateTime, default=timestamp)
     license_id = db.Column(db.Integer, db.ForeignKey("licenses.id", name="fk_licenses"))
@@ -377,6 +378,7 @@ class Project(db.Model):
         self.imagery = project_dto.imagery
         self.josm_preset = project_dto.josm_preset
         self.id_presets = project_dto.id_presets
+        self.extra_id_params = project_dto.extra_id_params
         self.rapid_power_user = project_dto.rapid_power_user
         self.last_updated = timestamp()
         self.license_id = project_dto.license_id
@@ -844,6 +846,7 @@ class Project(db.Model):
         summary.license_id = self.license_id
         summary.status = ProjectStatus(self.status).name
         summary.id_presets = self.id_presets
+        summary.extra_id_params = self.extra_id_params
         summary.rapid_power_user = self.rapid_power_user
         summary.imagery = self.imagery
         if self.organisation_id:
@@ -1008,6 +1011,7 @@ class Project(db.Model):
         base_dto.imagery = self.imagery
         base_dto.josm_preset = self.josm_preset
         base_dto.id_presets = self.id_presets
+        base_dto.extra_id_params = self.extra_id_params
         base_dto.rapid_power_user = self.rapid_power_user
         base_dto.country_tag = self.country
         base_dto.organisation_id = self.organisation_id
