@@ -49,22 +49,6 @@ class TestAuthenticationService(BaseTestCase):
         parsed_url = urlparse(auth_failed_url)
         self.assertEqual(parsed_url.path, "/validate-email")
 
-    def test_generate_authorize_url_returns_required_params(self):
-        # Act- Use context manager to avoid working outside of request context
-        with self.app.test_request_context():
-            authorize_params = AuthenticationService.generate_authorize_url(
-                callback="https://localhost:3000/authorized/"
-            )
-        # Arrange
-        parsed_url = urlparse(authorize_params.get("auth_url"))
-
-        # Assert
-        self.assertIn("auth_url", authorize_params)
-        self.assertIn("oauth_token", authorize_params)
-        self.assertIn("oauth_token_secret", authorize_params)
-        self.assertEqual(parsed_url.netloc, "www.openstreetmap.org")
-        self.assertEqual(parsed_url.path, "/oauth/authorize")
-
     def test_can_parse_email_verification_token(self):
         # Arrange - Generate valid email verification url
         test_email = "test@test.com"

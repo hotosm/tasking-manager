@@ -9,6 +9,7 @@ from backend.services.mapping_service import (
     MappingNotAllowed,
     UserLicenseError,
 )
+from backend.models.postgis.project_info import ProjectInfo
 from backend.models.dtos.mapping_dto import MappedTaskDTO, LockTaskDTO
 from backend.models.postgis.task import TaskHistory, TaskAction, User
 from unittest.mock import patch, MagicMock
@@ -122,6 +123,7 @@ class TestMappingService(BaseTestCase):
         with self.assertRaises(MappingServiceError):
             MappingService.unlock_task_after_mapping(self.mapped_task_dto)
 
+    @patch.object(ProjectInfo, "get_dto_for_locale")
     @patch.object(Task, "get_per_task_instructions")
     @patch.object(StatsService, "update_stats_after_task_state_change")
     @patch.object(Task, "update")
@@ -136,13 +138,14 @@ class TestMappingService(BaseTestCase):
         mock_stats,
         mock_instructions,
         mock_state,
+        mock_project_name,
     ):
         # Arrange
         self.task_stub.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
         self.mapped_task_dto.comment = "Test comment"
         mock_task.return_value = self.task_stub
         mock_state.return_value = TaskStatus.LOCKED_FOR_MAPPING
-
+        mock_project_name.name.return_value = "Test project"
         # Act
         test_task = MappingService.unlock_task_after_mapping(self.mapped_task_dto)
 
