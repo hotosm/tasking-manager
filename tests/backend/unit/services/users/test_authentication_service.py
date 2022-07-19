@@ -54,7 +54,7 @@ class TestAuthenticationService(BaseTestCase):
         # Act- Use context manager to avoid working outside of request context
         with self.app.test_request_context():
             authorize_params = AuthenticationService.generate_authorize_url(
-                callback=current_app.config["APP_BASE_URL"]+"/authorized/"
+                callback=current_app.config["APP_BASE_URL"] + "/authorized/"
             )
         # Arrange
         parsed_url = urlparse(authorize_params.get("auth_url"))

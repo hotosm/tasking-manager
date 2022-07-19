@@ -138,7 +138,7 @@ class TestMappingService(BaseTestCase):
         mock_stats,
         mock_instructions,
         mock_state,
-        mock_project_name
+        mock_project_name,
     ):
         # Arrange
         self.task_stub.task_status = TaskStatus.LOCKED_FOR_MAPPING.value
