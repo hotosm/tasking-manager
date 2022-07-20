@@ -1164,6 +1164,14 @@ class Project(db.Model):
                 return int(tasks_validated / (total_tasks - tasks_bad_imagery) * 100)
             elif target == "bad_imagery":
                 return int((tasks_bad_imagery / total_tasks) * 100)
+            elif target == "project_completion":
+                # To calculate project completion we assign 2 points to each task
+                # one for mapping and one for validation
+                return int(
+                    (tasks_mapped + (tasks_validated * 2))
+                    / ((total_tasks - tasks_bad_imagery) * 2)
+                    * 100
+                )
         except ZeroDivisionError:
             return 0
 

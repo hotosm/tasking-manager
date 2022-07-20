@@ -190,7 +190,7 @@ class ValidatorService:
                 issues=task_mapping_issues,
             )
             dtos.append(task.as_dto_with_instructions(validated_dto.preferred_locale))
-
+        ProjectService.send_email_on_project_progress(validated_dto.project_id)
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
 
