@@ -85,15 +85,18 @@ export function Members({
           {editMode && (
             <AsyncSelect
               classNamePrefix="react-select"
+              autoFocus
               isMulti
               cacheOptions
-              defaultOptions
               placeholder={selectPlaceHolder}
               isClearable={false}
               isOptionDisabled={(option) => doesMemberExistInTeam(option.username)}
               formatOptionLabel={(option, menu) => formatOptionLabel(option, menu)}
               getOptionLabel={(option) => option.username}
               getOptionValue={(option) => option.username}
+              noOptionsMessage={({ inputValue }) =>
+                inputValue ? <FormattedMessage {...messages.noOptions} /> : null
+              }
               loadOptions={promiseOptions}
               onChange={(values) => addMembers(values || [])}
               className="z-2"
