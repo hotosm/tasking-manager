@@ -94,6 +94,7 @@ There are two ways to configure Tasking Manager. You can set some environment va
     * Linux/Mac:
         * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
         * ```pip install --upgrade pdm```
+        * ```pdm config --global python.use_venv False```
         * ```pdm --pep582 >> ~/.bash_profile```
         * ```source ~/.bash_profile```
         * ```pdm install```

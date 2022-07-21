@@ -55,6 +55,7 @@ and ask the person to check on the error.
   a. backend dependency installation:
     * First ensure the Python version in `pyproject.toml:requires-python` is installed on your system.
     * `pip install --upgrade pdm`
+    * `pdm config --global python.use_venv False`
     * `eval "$(pdm --pep582)"`
     * `pdm install`
   b. introduced database migrations: `python manage.py db upgrade`
@@ -105,6 +106,7 @@ git pull https://github.com/author/tasking-manager.git branchname
 Make sure that python dependencies are up to date:
 
 * `pip install --upgrade pdm`
+* `pdm config --global python.use_venv False`
 * `eval "$(pdm --pep582)"`
 * `pdm install`
 

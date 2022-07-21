@@ -392,6 +392,7 @@ const Resources = {
         cf.sub('git reset --hard ${GitSha}'),
         'pip install --upgrade pip',
         'pip install --upgrade pdm',
+        'pdm config --global python.use_venv False'
         'eval "$(pdm --pep582)"',
         'pdm install',
         'echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf',
