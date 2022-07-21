@@ -24,8 +24,9 @@ RUN apk update && \
 # Setup backend Python dependencies
 COPY pyproject.toml pdm.lock README.md ./
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir pdm
-RUN pdm install --prod --no-lock --no-editable
+    && pip install --no-cache-dir pdm==2.0.2 \
+    && pdm config python.use_venv false
+RUN pdm install --prod --no-editable
 
 # Setup backend runtime dependencies
 FROM base

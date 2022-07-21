@@ -30,6 +30,7 @@ RUN git clone --depth=1 git://github.com/hotosm/tasking-manager.git \
 # Setup backend dependencies
 COPY pyproject.toml pdm.lock README.md ./
 RUN pip install --no-cache-dir pdm \
+    && pdm config python.use_venv false \
     && pdm install --prod --no-lock --no-editable
 
 # Setup and build frontend
