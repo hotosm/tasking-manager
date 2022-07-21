@@ -69,10 +69,14 @@ dependencies = [
     "urllib3==1.25.10",
     "webencodings==0.5.1",
     "werkzeug==0.16.1",
+    "flask-mail==0.9.1",
 ]
-requires-python = ">=3.7,<=3.8"
+requires-python = ">=3.7,<=3.8.13"
 readme = "README.md"
 license = {text = "BSD-2-Clause"}
+
+[tool]
+[tool.pdm]
 
 [build-system]
 requires = ["pdm-pep517"]
