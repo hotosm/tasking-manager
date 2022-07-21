@@ -37,7 +37,7 @@ export default defineMessages({
   license: {
     id: 'footer.license',
     defaultMessage:
-      'This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.',
+      'Images and screenshots of the Tasking Manager may be shared under a Creative Commons Attribution-Sharealike 4.0 International License',
   },
   mappingLevelALL: {
     id: 'mapping.level.all',
