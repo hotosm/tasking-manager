@@ -366,7 +366,7 @@ const TransferProject = ({ projectId, orgId }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
   const { projectInfo, } = useContext(StateContext);
   const [username, setUsername] = useState('');
-  const [, , organisation] = useFetch(`organisations/${orgId}/?omitManagerList=false`)
+  const [, loadingOptions, organisation] = useFetch(`organisations/${orgId}/?omitManagerList=false`)
 
   const options = organisation.managers?.map(({ username }) => ({
     label: username,
@@ -408,6 +408,7 @@ const TransferProject = ({ projectId, orgId }: Object) => {
         onChange={(e) => handleSelect(e?.value)}
         value={options?.find(manager => manager.value === username)}
         options={options}
+        isLoading = {loadingOptions}
       >
       </Select>
       <Button
