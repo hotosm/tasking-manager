@@ -48,6 +48,14 @@ export default defineMessages({
     id: 'deleteModal.button.delete',
     defaultMessage: 'Delete',
   },
+  InternalServerErrorError: {
+    id: 'deleteModal.status.failure.InternalServerErrorError',
+    defaultMessage: "Something has gone wrong on the server, but the server could not be more specific on what the exact problem is.",
+  },
+  HasMappedTasksError: {
+    id: 'deleteModal.status.failure.HasMappedTasksError',
+    defaultMessage: "Project has mapped tasks, cannot be deleted.",
+  },
   cancel: {
     id: 'deleteModal.button.cancel',
     defaultMessage: 'Cancel',
