@@ -102,6 +102,7 @@ class TestTeamService(BaseTestCase):
         # Arrange
         test_team = create_canned_team()
         test_user = create_canned_user()
+        add_user_to_team(test_team, test_user, TeamMemberFunctions.MEMBER.value, True)
         mock_is_team_member.return_value = True
         # Act/Assert
         with self.assertRaises(TeamJoinNotAllowed):

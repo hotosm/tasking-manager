@@ -10,7 +10,6 @@ import { useEditTeamAllowed } from '../hooks/UsePermissions';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import useForceUpdate from '../hooks/UseForceUpdate';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
-import { useForceUpdate } from '../hooks/UseForceUpdate';
 import {
   getMembersDiff,
   filterActiveMembers,
