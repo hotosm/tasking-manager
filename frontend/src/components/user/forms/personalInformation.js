@@ -62,15 +62,18 @@ function _PersonalInformationForm(props) {
       <FormattedMessage {...messages.urlDetectedError} />
     ) : undefined;
 
+  async function handleFormSubmit(values) {
+    await props.pushUserDetails(prepareUserDetailsToPush(values, formFields), props.token, true);
+  }
+
   return (
     <div className="bg-white shadow-4 pa4 mb3">
       <h3 className="f3 blue-dark mt0 fw6">
         <FormattedMessage {...messages.personalInfo} />
       </h3>
       <Form
-        onSubmit={(values) =>
-          props.pushUserDetails(prepareUserDetailsToPush(values, formFields), props.token, true)
-        }
+        subscription={{ submitting: true, pristine: true }}
+        onSubmit={handleFormSubmit}
         initialValues={props.userDetails}
         render={({ handleSubmit, pristine, form, submitting, values, hasValidationErrors }) => (
           <form onSubmit={handleSubmit} className="blue-grey">
@@ -287,9 +290,10 @@ function _PersonalInformationForm(props) {
               </div>
               <div className="pt2">
                 <FormSubmitButton
-                  disabled={submitting || pristine || hasValidationErrors}
+                  disabled={pristine || hasValidationErrors}
                   className="bg-blue-dark white mh1 mv2"
                   disabledClassName="bg-grey-light white mh1 mv2"
+                  loading={submitting}
                 >
                   <FormattedMessage {...messages.save} />
                 </FormSubmitButton>
