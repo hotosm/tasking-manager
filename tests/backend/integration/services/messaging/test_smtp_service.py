@@ -44,11 +44,11 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
             message_type=self.message_type,
-            project_name=self.project_name,
         )
         self.assertTrue(sent_alert)
 
@@ -65,11 +65,11 @@ class TestSMTPService(BaseTestCase):
                 message_id=self.message_id,
                 from_username=self.from_username,
                 project_id=self.project_id,
+                project_name=self.project_name,
                 task_id=self.task_id,
                 subject=self.subject,
                 content=self.content,
                 message_type=self.message_type,
-                project_name=self.project_name,
             )
             self.assertTrue(sent_alert)
 
@@ -84,11 +84,11 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
             message_type=self.message_type,
-            project_name=self.project_name,
         )
         self.assertFalse(sent_alert)
 
@@ -100,11 +100,11 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
             message_type=self.message_type,
-            project_name=self.project_name,
         )
         self.assertFalse(sent_alert)
 
@@ -120,11 +120,11 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
             message_type=self.message_type,
-            project_name=self.project_name,
         )
         # Assert
         self.assertTrue(sent_alert)

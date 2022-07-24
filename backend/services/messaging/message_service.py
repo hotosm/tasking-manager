@@ -171,7 +171,7 @@ class MessageService:
             ):
                 continue
             if (
-                user.teams_notifications is False
+                user.teams_announcement_notifications is False
                 and obj.message_type == MessageType.TEAM_BROADCAST.value
             ):
                 messages_objs.append(obj)
@@ -371,8 +371,9 @@ class MessageService:
             MessageService.get_user_link(from_username),
             MessageService.get_team_link(team_name, team_id, True),
         )
-        message.add_message()
-        message.save()
+        MessageService._push_messages(
+            [dict(message=message, user=User.query.get(to_user))]
+        )
 
     @staticmethod
     def accept_reject_request_to_join_team(
