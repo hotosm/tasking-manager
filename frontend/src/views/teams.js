@@ -10,6 +10,7 @@ import { useEditTeamAllowed } from '../hooks/UsePermissions';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import useForceUpdate from '../hooks/UseForceUpdate';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../network/genericJSONRequest';
+import { useForceUpdate } from '../hooks/UseForceUpdate';
 import {
   getMembersDiff,
   filterActiveMembers,
@@ -229,6 +230,14 @@ export function EditTeam(props) {
       setInitManagers(true);
     }
   }, [team, managers, initManagers]);
+
+  useEffect(() => {
+    if (team && team.members) {
+      setManagers(filterActiveManagers(team.members));
+      setMembers(filterActiveMembers(team.members));
+    }
+  }, [team]);
+
   useSetTitleTag(`Edit ${team.name}`);
 
   const addManagers = (values) => {
@@ -261,6 +270,7 @@ export function EditTeam(props) {
     team.members = team.members
       .filter((user) => user.function === 'MEMBER' || user.active === false)
       .concat(managers);
+    forceUpdate();
   };
   const updateMembers = () => {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, members);
@@ -274,6 +284,7 @@ export function EditTeam(props) {
     team.members = team.members
       .filter((user) => user.function === 'MANAGER' || user.active === false)
       .concat(members);
+    forceUpdate();
   };
 
   const updateTeam = (payload) => {

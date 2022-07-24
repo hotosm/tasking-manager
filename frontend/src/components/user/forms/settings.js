@@ -69,7 +69,7 @@ function _UserSettingsForm(props) {
         </CustomField>
         {props.userDetails.role === 'MAPPER' && (
           <CustomField labelId="becomeValidator" descriptionId="becomeValidatorDescription">
-            <Link to="/learn">
+            <Link to="/learn/validate">
               <Button className="bg-blue-dark white mh1 mv2 dib">
                 <FormattedMessage {...messages.learnHow} />
               </Button>

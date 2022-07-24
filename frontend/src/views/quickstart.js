@@ -109,7 +109,7 @@ export function QuickstartPage() {
       img: QuickstartStep8Picture,
       values: {
         learnPage: (
-          <Link className="link red fw5" to="/learn">
+          <Link className="link red fw5" to="/learn/map">
             <FormattedMessage {...messages.learnPages} />
           </Link>
         ),

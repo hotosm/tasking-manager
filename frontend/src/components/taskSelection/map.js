@@ -6,6 +6,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { FormattedMessage } from 'react-intl';
 
+import WebglUnsupported from '../webglUnsupported';
 import messages from './messages';
 import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
@@ -50,17 +51,18 @@ export const TasksMap = ({
     /* May be able to refactor this to just take
      * advantage of useRef instead inside other useLayoutEffect() */
     /* I referenced this initially https://philipprost.com/how-to-use-mapbox-gl-with-react-functional-component/ */
-    setMapObj(
-      new mapboxgl.Map({
-        container: mapRef.current,
-        style: MAP_STYLE,
-        center: [0, 0],
-        zoom: 1,
-        attributionControl: false,
-      })
-        .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
-    );
+    mapboxgl.supported() &&
+      setMapObj(
+        new mapboxgl.Map({
+          container: mapRef.current,
+          style: MAP_STYLE,
+          center: [0, 0],
+          zoom: 1,
+          attributionControl: false,
+        })
+          .addControl(new mapboxgl.AttributionControl({ compact: false }))
+          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
+      );
 
     return () => {
       map && map.remove();
@@ -99,7 +101,7 @@ export const TasksMap = ({
 
     const updateTMZoom = () => {
       // fit bounds to last mapped/validated task(s), if exists
-      // otherwise fit bounds to all tasks 
+      // otherwise fit bounds to all tasks
       if (zoomedTaskId?.length > 0) {
         const lastLockedTasks = mapResults.features.filter((task) =>
           zoomedTaskId.includes(task.properties.taskId),
@@ -463,14 +465,18 @@ export const TasksMap = ({
     zoomedTaskId,
   ]);
 
-  return (
-    <>
-      {showTaskIds && hoveredTaskId && (
-        <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 ">
-          <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
-        </div>
-      )}
-      <div id="map" className={className} ref={mapRef}></div>
-    </>
-  );
+  if (!mapboxgl.supported()) {
+    return <WebglUnsupported className={`vh-75-l vh-50 fr ${className || ''}`} />;
+  } else {
+    return (
+      <>
+        {showTaskIds && hoveredTaskId && (
+          <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 ">
+            <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
+          </div>
+        )}
+        <div id="map" className={className} ref={mapRef}></div>
+      </>
+    );
+  }
 };

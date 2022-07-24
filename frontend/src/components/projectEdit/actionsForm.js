@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
+import Select from 'react-select';
 import { navigate } from '@reach/router';
 import { useDropzone } from 'react-dropzone';
 import { FormattedMessage } from 'react-intl';
@@ -9,13 +10,14 @@ import messages from './messages';
 import { Button } from '../button';
 import { Alert } from '../alert';
 import { DeleteModal } from '../deleteModal';
-import { styleClasses } from '../../views/projectEdit';
+import { styleClasses, StateContext } from '../../views/projectEdit';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useOnDrop } from '../../hooks/UseUploadImage';
 import { useAsync } from '../../hooks/UseAsync';
 import FileRejections from '../comments/fileRejections';
 import DropzoneUploadStatus from '../comments/uploadStatus';
 import { DROPZONE_SETTINGS } from '../../config';
+import { useFetch } from '../../hooks/UseFetch';
 
 const ActionStatus = ({ status, action }) => {
   let successMessage = '';
@@ -360,22 +362,30 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
   );
 };
 
-const TransferProject = ({ projectId }: Object) => {
+const TransferProject = ({ projectId, orgId }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
+  const { projectInfo, } = useContext(StateContext);
   const [username, setUsername] = useState('');
-  const [users, setUsers] = useState([]);
-  const handleUsers = (e) => {
-    const fetchUsers = (user) => {
-      fetchLocalJSONAPI(`users/?username=${user}&role=ADMIN`, token)
-        .then((res) => setUsers(res.users.map((user) => user.username)))
-        .catch((e) => setUsers([]));
-    };
+  const [, loadingOptions, organisation] = useFetch(`organisations/${orgId}/?omitManagerList=false`)
 
-    const user = e.target.value;
-    setUsername(user);
-    fetchUsers(user);
+  const options = organisation.managers?.map(({ username }) => ({
+    label: username,
+    value: username,
+  }));
+
+  const handleSelect = (value) => {
+    setUsername(value);
   };
-
+  const { username: loggedInUsername, role: loggedInUserRole } = useSelector((state) => state.auth.get('userDetails'));
+  const hasAccess = (
+    organisation.managers?.includes(loggedInUsername) ||
+    loggedInUserRole === 'ADMIN' ||
+    loggedInUsername === projectInfo.author
+  );
+  const isDisabled = () => {
+    return (
+      transferOwnershipAsync.status === 'pending' || !username || !hasAccess)
+  };
   const transferOwnership = () => {
     return pushToLocalJSONAPI(
       `projects/${projectId}/actions/transfer-ownership/`,
@@ -388,41 +398,23 @@ const TransferProject = ({ projectId }: Object) => {
 
   return (
     <div>
-      <Popup
-        contentStyle={{ padding: 0, border: 0 }}
-        arrow={false}
-        trigger={
-          <input
-            className={styleClasses.inputClass.replace('80', '40') + ' pa2 fl mr2'}
-            type="text"
-            value={username}
-            name="transferuser"
-            onChange={handleUsers}
-          />
-        }
-        on="focus"
-        position="bottom left"
-        open={users.length !== 0 ? true : false}
+      <Select
+        classNamePrefix="react-select"
+        isClearable={true}
+        isMulti={false}
+        className="w-40 fl pr2 z-3"
+        getOptionLabel={({ label }) => label}
+        getOptionValue={({ value }) => value}
+        onChange={(e) => handleSelect(e?.value)}
+        value={options?.find(manager => manager.value === username)}
+        options={options}
+        isLoading = {loadingOptions}
       >
-        <div>
-          {users.map((u, n) => (
-            <span
-              className="db pa1 pointer"
-              key={n}
-              onClick={() => {
-                setUsername(u);
-                setUsers([]);
-              }}
-            >
-              {u}
-            </span>
-          ))}
-        </div>
-      </Popup>
+      </Select>
       <Button
         onClick={() => transferOwnershipAsync.execute()}
         loading={transferOwnershipAsync.status === 'pending'}
-        disabled={transferOwnershipAsync.status === 'pending'}
+        disabled={isDisabled()}
         className={styleClasses.buttonClass}
       >
         <FormattedMessage {...messages.transferProject} />
@@ -434,7 +426,7 @@ const TransferProject = ({ projectId }: Object) => {
   );
 };
 
-export const ActionsForm = ({ projectId, projectName }: Object) => {
+export const ActionsForm = ({ projectId, projectName, orgId }: Object) => {
   return (
     <div className="w-100">
       <div className={styleClasses.divClass}>
@@ -551,7 +543,7 @@ export const ActionsForm = ({ projectId, projectName }: Object) => {
         <p className={styleClasses.pClass}>
           <FormattedMessage {...messages.transferProjectAlert} />
         </p>
-        <TransferProject projectId={projectId} />
+        <TransferProject projectId={projectId} orgId={orgId} />
       </div>
 
       <div className={styleClasses.divClass}>

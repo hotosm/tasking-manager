@@ -35,7 +35,7 @@ class TestMappingService(BaseTestCase):
         gpx_hash = hashlib.md5(gpx_xml_str.encode("utf-8")).hexdigest()
 
         # Assert
-        self.assertEqual(gpx_hash, "17c95ad7772b6b264c3a7eaafcb7c0aa")
+        self.assertEqual(gpx_hash, "b91f7361cc1d6d9433cf393609103272")
 
     @patch.object(Task, "get_all_tasks")
     def test_gpx_xml_file_generated_correctly_all_tasks(self, mock_task):
@@ -55,7 +55,7 @@ class TestMappingService(BaseTestCase):
         gpx_hash = hashlib.md5(gpx_xml_str.encode("utf-8")).hexdigest()
 
         # Assert
-        self.assertEqual(gpx_hash, "17c95ad7772b6b264c3a7eaafcb7c0aa")
+        self.assertEqual(gpx_hash, "b91f7361cc1d6d9433cf393609103272")
 
     @patch.object(Task, "get_tasks")
     def test_osm_xml_file_generated_correctly(self, mock_task):
@@ -74,7 +74,7 @@ class TestMappingService(BaseTestCase):
         osm_hash = hashlib.md5(osm_xml_str.encode("utf-8")).hexdigest()
 
         # Assert
-        self.assertEqual(osm_hash, "6f51169314543c73eb2e2a94ad17ffd9")
+        self.assertEqual(osm_hash, "eafd0760a0d372e2ab139e25a2d300f1")
 
     @patch.object(Task, "get_all_tasks")
     def test_osm_xml_file_generated_correctly_all_tasks(self, mock_task):
@@ -93,7 +93,7 @@ class TestMappingService(BaseTestCase):
         osm_hash = hashlib.md5(osm_xml_str.encode("utf-8")).hexdigest()
 
         # Assert
-        self.assertEqual(osm_hash, "6f51169314543c73eb2e2a94ad17ffd9")
+        self.assertEqual(osm_hash, "eafd0760a0d372e2ab139e25a2d300f1")
 
     def test_map_all_sets_counters_correctly(self):
         if self.skip_tests:

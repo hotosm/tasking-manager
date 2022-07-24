@@ -262,7 +262,7 @@ export function TaskList({
   return (
     <div className="cf">
       <div className="flex items-center flex-wrap" style={{ gap: '0.5rem' }}>
-        <div className="w-40-l w-50-m w-100">
+        <div className="w-40-l w-50-m w-100 relative">
           <FormattedMessage {...messages.filterPlaceholder}>
             {(msg) => {
               return (
@@ -280,9 +280,8 @@ export function TaskList({
             onClick={() => {
               setTextSearch('');
             }}
-            className={`absolute w1 h1 top-0 red pt3 pointer pr3 right-0 ${
-              textSearch ? 'dib' : 'dn'
-            }`}
+            className={`absolute top-0 right-0 w1 h1 red pointer pr2 ${textSearch ? 'dib' : 'dn'}`}
+            style={{ top: '12px' }}
           />
         </div>
         <TaskFilter

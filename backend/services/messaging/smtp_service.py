@@ -29,6 +29,18 @@ class SMTPService:
         return True
 
     @staticmethod
+    def send_welcome_email(to_address: str, username: str):
+        """ Sends email welcoming new user to tasking manager """
+        values = {
+            "USERNAME": username,
+        }
+        html_template = get_template("welcome.html", values)
+
+        subject = "Welcome to Tasking Manager"
+        SMTPService._send_message(to_address, subject, html_template)
+        return True
+
+    @staticmethod
     def send_contact_admin_email(data):
         email_to = current_app.config["EMAIL_CONTACT_ADDRESS"]
         if email_to is None:
@@ -119,8 +131,14 @@ class SMTPService:
         if current_app.config["LOG_LEVEL"] == "DEBUG":
             current_app.logger.debug(msg.as_string())
         else:
-            mail.send(msg)
-        current_app.logger.debug(f"Email sent {to_address}")
+            try:
+                mail.send(msg)
+                current_app.logger.debug(f"Email sent {to_address}")
+            except Exception as e:
+                # ERROR level logs are automatically captured by sentry so that admins are notified
+                current_app.logger.error(
+                    f"{e}: Sending email failed. Please check SMTP configuration"
+                )
 
     @staticmethod
     def _generate_email_verification_url(email_address: str, user_name: str):

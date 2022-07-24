@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from '@reach/router';
+import { Link, navigate, useParams } from '@reach/router';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
@@ -23,8 +23,15 @@ import TechnicalLogo from '../assets/img/icons/technical.jpg';
 import LearnOSMLogo from '../assets/img/learn-osm-logo.svg';
 import QuickstartLogo from '../assets/img/info-logo.svg';
 
-const LearnNav = ({ sections, section, setSection }) => {
+const LearnNav = ({ sections, section, setSection, urlParamToSection }) => {
   useSetTitleTag('Learn');
+
+  const handleClick = (s) => {
+    const typeInUrl = Object.keys(urlParamToSection).find((key) => urlParamToSection[key] === s);
+    setSection(s);
+    navigate(`/learn/${typeInUrl}`);
+  };
+
   return (
     <div className="w-50 w-100-m">
       <ul className="pa0 ma0 list bg-tan dib">
@@ -33,7 +40,9 @@ const LearnNav = ({ sections, section, setSection }) => {
             className={`f5 dib mh3 pt3 link pointer no-underline ${
               section === s ? 'bb b--blue-dark bw1 pb1' : 'pb3'
             }`}
-            onClick={() => setSection(s)}
+            onClick={() => {
+              handleClick(s);
+            }}
             key={s}
           >
             <FormattedMessage {...messages[s]} />
@@ -362,7 +371,7 @@ const LearnToMap = ({ section }) => {
   const tutorials = [
     {
       message: 'learnQuickStartTutorial',
-      url: 'learn/quickstart',
+      url: 'quickstart',
       img: QuickstartLogo,
     },
     {
@@ -421,14 +430,22 @@ const getSection = (section, sections) => {
 };
 
 export const LearnPage = () => {
+  const { type } = useParams();
   const sections = ['learnMapTitle', 'learnValidateTitle', 'learnManageTitle'];
+  const urlParamToSection = { map: sections[0], validate: sections[1], manage: sections[2] };
 
-  const [section, setSection] = useState(sections[0]);
+  const [section, setSection] = useState(urlParamToSection[type]);
+
   return (
     <div className="pt180 pull-center blue-dark">
       <TopBar pageName={<FormattedMessage {...messages.learn} />} />
       <div className="ph6-l ph4-m ph2">
-        <LearnNav sections={sections} section={section} setSection={setSection} />
+        <LearnNav
+          sections={sections}
+          section={section}
+          setSection={setSection}
+          urlParamToSection={urlParamToSection}
+        />
         <div className="w-100 mt3">{getSection(section, sections)}</div>
       </div>
     </div>

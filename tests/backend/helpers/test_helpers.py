@@ -3,6 +3,9 @@ import json
 import os
 from typing import Tuple
 import xml.etree.ElementTree as ET
+from backend.models.dtos.organisation_dto import (
+    UpdateOrganisationDTO,
+)
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
@@ -226,6 +229,14 @@ def add_user_to_team(team: Team, user: User, role: int, is_active: bool) -> Team
     team_member.create()
 
     return team_member
+
+
+def add_manager_to_organisation(organisation: Organisation, user: User):
+    org_dto = UpdateOrganisationDTO()
+    org_dto.managers = [user.username]
+    organisation.update(org_dto)
+    organisation.save()
+    return user.username
 
 
 def assign_team_to_project(project: Project, team: Team, role: int) -> ProjectTeams:

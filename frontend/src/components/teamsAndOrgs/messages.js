@@ -36,6 +36,10 @@ export default defineMessages({
     id: 'management.members.alreadyInTeam',
     defaultMessage: 'Already in team',
   },
+  noOptions: {
+    id: 'management.members.search.noOptions',
+    defaultMessage: 'No options',
+  },
   UserAlreadyInListError: {
     id: 'management.members.UserAlreadyInListError',
     defaultMessage: 'User is already a member of this team or has already requested to join.',
@@ -187,6 +191,10 @@ export default defineMessages({
   selectType: {
     id: 'management.organisations.type.select',
     defaultMessage: 'Select type',
+  },
+  requiredField: {
+    id: 'management.organisations.field.required',
+    defaultMessage: 'Required field',
   },
   free: {
     id: 'management.organisations.type.free',

@@ -24,6 +24,7 @@ import {
 } from '../../utils/geoFileFunctions';
 import { getErrorMsg } from '../projectCreate/fileUploadErrors';
 import { Alert } from '../alert';
+import WebglUnsupported from '../webglUnsupported';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 try {
@@ -118,16 +119,18 @@ export const PriorityAreasForm = () => {
   });
 
   useLayoutEffect(() => {
-    const map = new mapboxgl.Map({
-      container: mapRef.current,
-      style: MAP_STYLE,
-      center: [0, 0],
-      zoom: 1,
-      attributionControl: false,
-    })
-      .addControl(new mapboxgl.AttributionControl({ compact: false }))
-      .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
-      .addControl(new mapboxgl.NavigationControl());
+    const map =
+      mapboxgl.supported() &&
+      new mapboxgl.Map({
+        container: mapRef.current,
+        style: MAP_STYLE,
+        center: [0, 0],
+        zoom: 1,
+        attributionControl: false,
+      })
+        .addControl(new mapboxgl.AttributionControl({ compact: false }))
+        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' }))
+        .addControl(new mapboxgl.NavigationControl());
 
     setMapObj({ ...mapObj, map: map });
 
@@ -224,7 +227,7 @@ export const PriorityAreasForm = () => {
   };
 
   useLayoutEffect(() => {
-    if (mapObj.map !== null) {
+    if (mapObj.map !== null && mapboxgl.supported()) {
       mapObj.map.on('load', () => {
         mapObj.map.addControl(mapObj.draw);
         addMapLayers(mapObj.map);
@@ -251,58 +254,63 @@ export const PriorityAreasForm = () => {
     setProjectInfo({ ...projectInfo, priorityAreas: [] });
   };
 
-  return (
-    <div className="w-100" {...getRootProps()}>
-      <div className="relative">
-        <div className="cf absolute bg-white o-90 top-1 left-1 pa3 mw6 z-4 br1">
-          <p className={styleClasses.pClass}>
-            <FormattedMessage {...messages.priorityAreasDescription} />
-          </p>
-          <div>
-            <CustomButton
-              className={`bg-white ph3 pv2 mr2 ba ${
-                activeMode === 'draw_polygon' ? 'red b--red' : 'blue-dark b--grey-light'
-              }`}
-              onClick={drawPolygonHandler}
-            >
-              <MappedIcon className="h1 w1 pb1 v-mid mr2" />
-              <FormattedMessage {...messages.drawPolygon} />
-            </CustomButton>
-
-            <CustomButton
-              className={`bg-white ph3 pv2 mr2 ba ${
-                activeMode === 'draw_rectangle' ? 'red b--red' : 'blue-dark b--grey-light'
-              }`}
-              onClick={drawRectangleHandler}
-            >
-              <MappedSquareIcon className="h1 w1 pb1 v-mid mr2" />
-              <FormattedMessage {...messages.drawRectangle} />
-            </CustomButton>
-            <CustomButton className="bg-white blue-dark ba b--grey-light ph3 pv2" onClick={open}>
-              <FileImportIcon className="h1 w1 v-mid mr2" />
-              <FormattedMessage {...messages.selectFile} />
-            </CustomButton>
-            <input {...getInputProps()} />
-            <p className="f6 blue-grey lh-title mt3">
-              <FormattedMessage {...messages.importDescription} />
+  if (!mapboxgl.supported()) {
+    return <WebglUnsupported className="vh-75 w-100 bg-white" />;
+  } else {
+    return (
+      <div className="w-100" {...getRootProps()}>
+        <div className="relative">
+          <div className="cf absolute bg-white o-90 top-1 left-1 pa3 mw6 z-4 br1">
+            <p className={styleClasses.pClass}>
+              <FormattedMessage {...messages.priorityAreasDescription} />
             </p>
-            <p className="f5 mb0">
+            <div>
               <CustomButton
-                onClick={clearAll}
-                className="bg-white ph3 pv2 mr2 blue-dark ba b--grey-light"
+                className={`bg-white ph3 pv2 mr2 ba ${
+                  activeMode === 'draw_polygon' ? 'red b--red' : 'blue-dark b--grey-light'
+                }`}
+                onClick={drawPolygonHandler}
               >
-                <WasteIcon className="h1 w1 pb1 v-mid mr2" />
-                <FormattedMessage {...messages.clearAll} />
+                <MappedIcon className="h1 w1 pb1 v-mid mr2" />
+                <FormattedMessage {...messages.drawPolygon} />
               </CustomButton>
-            </p>
+
+              <CustomButton
+                className={`bg-white ph3 pv2 mr2 ba ${
+                  activeMode === 'draw_rectangle' ? 'red b--red' : 'blue-dark b--grey-light'
+                }`}
+                onClick={drawRectangleHandler}
+              >
+                <MappedSquareIcon className="h1 w1 pb1 v-mid mr2" />
+                <FormattedMessage {...messages.drawRectangle} />
+              </CustomButton>
+              <CustomButton className="bg-white blue-dark ba b--grey-light ph3 pv2" onClick={open}>
+                <FileImportIcon className="h1 w1 v-mid mr2" />
+                <FormattedMessage {...messages.selectFile} />
+              </CustomButton>
+              <input {...getInputProps()} />
+              <p className="f6 blue-grey lh-title mt3">
+                <FormattedMessage {...messages.importDescription} />
+              </p>
+              <p className="f5 mb0">
+                <CustomButton
+                  onClick={clearAll}
+                  className="bg-white ph3 pv2 mr2 blue-dark ba b--grey-light"
+                >
+                  <WasteIcon className="h1 w1 pb1 v-mid mr2" />
+                  <FormattedMessage {...messages.clearAll} />
+                </CustomButton>
+              </p>
+            </div>
+            {error.error === true && <Alert type="error">{error.message}</Alert>}
           </div>
-          {error.error === true && <Alert type="error">{error.message}</Alert>}
+          <div className="absolute top-0 right-0 z-5 mr2">
+            <BasemapMenu map={mapObj.map} />
+          </div>
+
+          <div id="priority-area-map" ref={mapRef} className="vh-75 w-100 bg-white"></div>
         </div>
-        <div className="absolute top-0 right-0 z-5 mr2">
-          <BasemapMenu map={mapObj.map} />
-        </div>
-        <div id="priority-area-map" ref={mapRef} className="vh-75 w-100 bg-white"></div>
       </div>
-    </div>
-  );
+    );
+  }
 };
