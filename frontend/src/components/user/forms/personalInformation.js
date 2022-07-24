@@ -85,6 +85,7 @@ function _PersonalInformationForm(props) {
                   component="input"
                   type="text"
                   className={fieldClasses}
+                  required
                   autoComplete="name"
                 />
               </div>
