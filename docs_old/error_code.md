@@ -11,7 +11,7 @@ When the TM API returns error messages, it does so in JSON format. For example, 
 ### Error Codes
 In addition to descriptive error text, error messages also contains SubCodes. While the **text for an error message may change, the SubCode will stay the same**.
 
-| Code | Subcode                  | Text                                                                            |
+| Code | Subcode                  | Text                                                                               |
 | ---- | ------------------------ | ---------------------------------------------------------------------------------- |
 | 403  | AlreadyFeatured          | Project is already featured                                                        |
 | 403  | CannotValidateMappedTask | Tasks cannot be validated by the same user who marked task as mapped or badimagery |
@@ -19,7 +19,7 @@ In addition to descriptive error text, error messages also contains SubCodes. Wh
 | 400  | InvalidData              | Error validating request                                                           |
 | 400  | InvalidDateRange         | Date range can not be bigger than 1 year                                           |
 | 400  | InvalidMultipolygon      | Area of Interest: Invalid MultiPolygon                                             |
-| 403  | InvalidNewOwner          | New owner must be an admin or project's org manager or a PM team member            |
+| 403  | InvalidNewOwner          | New owner must be project's org manager                                            |
 | 400  | InvalidStartDate         | Start date must be earlier than end date                                           |
 | 403  | InvalidTaskState         | Task in invalid state for mapping                                                  |
 | 403  | InvalidUnlockState       | Can only set status to MAPPED, BADIMAGERY, READY after mapping                     |
@@ -44,8 +44,7 @@ In addition to descriptive error text, error messages also contains SubCodes. Wh
 | 403  | UserNotAllowed           | Mapping not allowed because: User not on allowed list                              |
 | 403  | UserNotPermitted         | User action not permitted                                                          |
 | 403  | UserPermissionError      | User is not a manager of the project                                               |
-| 403  | PrivateProject           | User not permitted: Private Project       
-|
+| 403  | PrivateProject           | User not permitted: Private Project                                                |
 | 403  | ProjectNotFetched        | Unable to fetch project                                                            |
 | 403  | NotPermittedToCreate     | User is not permitted to create project                                            |
 | 400  | MustBeFeatureCollection  | GeoJson must be FeatureCollection                                                  |
@@ -86,3 +85,4 @@ In addition to descriptive error text, error messages also contains SubCodes. Wh
 | 403  | MustHaveAdmin            | Must have at least one admin                                                       |
 | 403  | LoginToFilterManager     | Filter by manager\_user\_id is not allowed to unauthenticated requests             |
 | 400  | SelfIntersectingAOI      | Invalid geometry. Polygon is self-intersecting                                     |
+| 400  | TransferPermissionError  | Project ownership transfer is only allowed to TM Admin, Organization admin and project author|               

@@ -3,6 +3,9 @@ import json
 import os
 from typing import Tuple
 import xml.etree.ElementTree as ET
+from backend.models.dtos.organisation_dto import (
+    UpdateOrganisationDTO,
+)
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
@@ -93,11 +96,11 @@ def get_canned_simplified_osm_user_details():
     return data
 
 
-def return_canned_user() -> User:
+def return_canned_user(username=TEST_USERNAME, id=TEST_USER_ID) -> User:
     """Returns a canned user"""
     test_user = User()
-    test_user.username = TEST_USERNAME
-    test_user.id = TEST_USER_ID
+    test_user.username = username
+    test_user.id = id
     test_user.mapping_level = MappingLevel.BEGINNER.value
     test_user.email_address = None
 
@@ -226,6 +229,14 @@ def add_user_to_team(team: Team, user: User, role: int, is_active: bool) -> Team
     team_member.create()
 
     return team_member
+
+
+def add_manager_to_organisation(organisation: Organisation, user: User):
+    org_dto = UpdateOrganisationDTO()
+    org_dto.managers = [user.username]
+    organisation.update(org_dto)
+    organisation.save()
+    return user.username
 
 
 def assign_team_to_project(project: Project, team: Team, role: int) -> ProjectTeams:
