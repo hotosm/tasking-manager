@@ -107,7 +107,7 @@ class User(db.Model):
 
             try:
                 is_field_nullable = self.__table__.columns[attr].nullable
-                if is_field_nullable and value is not None:
+                if is_field_nullable:
                     setattr(self, attr, value)
                 elif value is not None:
                     setattr(self, attr, value)
