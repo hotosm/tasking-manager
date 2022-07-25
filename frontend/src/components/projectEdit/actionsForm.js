@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Popup from 'reactjs-popup';
 import Select from 'react-select';
@@ -17,7 +17,6 @@ import { useAsync } from '../../hooks/UseAsync';
 import FileRejections from '../comments/fileRejections';
 import DropzoneUploadStatus from '../comments/uploadStatus';
 import { DROPZONE_SETTINGS } from '../../config';
-import { useFetch } from '../../hooks/UseFetch';
 
 const ActionStatus = ({ status, action }) => {
   let successMessage = '';
@@ -366,19 +365,44 @@ const TransferProject = ({ projectId, orgId }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
   const { projectInfo, } = useContext(StateContext);
   const [username, setUsername] = useState('');
-  const [, loadingOptions, organisation] = useFetch(`organisations/${orgId}/?omitManagerList=false`)
+  const [managers, setManagers] = useState([]);
+  const [admins, setAdmins] = useState([]);
+  const [isFetchingOptions, setIsFetchingOptions] = useState(true);
 
-  const options = organisation.managers?.map(({ username }) => ({
-    label: username,
-    value: username,
-  }));
+  useEffect(() => {
+    fetchLocalJSONAPI(`organisations/${orgId}/?omitManagerList=false`, token).then((r) =>
+      setManagers(r.managers.map((m) => m.username))).then(() =>
+        setIsFetchingOptions(false));
+
+    fetchLocalJSONAPI(`users/?pagination=false`, token).then((t) =>
+      setAdmins(t.users.map((u) => u.username)))
+  }, [token, orgId]);
+
+  const optionsExtended = [
+    {
+      label: projectInfo.organisationName,
+      options: managers?.map(manager => ({
+        label: manager,
+        value: manager,
+      }))
+    },
+    {
+      label: <FormattedMessage {...messages.admins} />,
+      options: admins?.filter(
+        admin => !managers?.includes(admin)
+      ).map(adminName => ({
+        label: adminName,
+        value: adminName,
+      }))
+    },
+  ];
 
   const handleSelect = (value) => {
     setUsername(value);
   };
   const { username: loggedInUsername, role: loggedInUserRole } = useSelector((state) => state.auth.get('userDetails'));
   const hasAccess = (
-    organisation.managers?.includes(loggedInUsername) ||
+    managers?.includes(loggedInUsername) ||
     loggedInUserRole === 'ADMIN' ||
     loggedInUsername === projectInfo.author
   );
@@ -400,15 +424,13 @@ const TransferProject = ({ projectId, orgId }: Object) => {
     <div>
       <Select
         classNamePrefix="react-select"
-        isClearable={true}
-        isMulti={false}
         className="w-40 fl pr2 z-3"
         getOptionLabel={({ label }) => label}
         getOptionValue={({ value }) => value}
         onChange={(e) => handleSelect(e?.value)}
-        value={options?.find(manager => manager.value === username)}
-        options={options}
-        isLoading = {loadingOptions}
+        value={optionsExtended?.find(manager => manager.value === username)}
+        options={optionsExtended}
+        isLoading={isFetchingOptions}
       >
       </Select>
       <Button

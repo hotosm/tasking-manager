@@ -38,6 +38,10 @@ export default defineMessages({
     defaultMessage:
       'Organization that is coordinating the project, if there is any. The managers of that organization will have administration rights over the project.',
   },
+  admins: {
+    id: 'projects.formInputs.admins.title',
+    defaultMessage: 'TM Admins',
+  },
   selectImagery: {
     id: 'projects.formInputs.imagery.select',
     defaultMessage: 'Select imagery',

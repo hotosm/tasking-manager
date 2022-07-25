@@ -153,9 +153,13 @@ class User(db.Model):
             roles = query.role.split(",")
             role_array = [UserRole[role].value for role in roles]
             base = base.filter(User.role.in_(role_array))
-
-        results = base.order_by(User.username).paginate(query.page, 20, True)
-
+        if query.pagination:
+            results = base.order_by(User.username).paginate(
+                query.page, query.per_page, True
+            )
+        else:
+            per_page = base.count()
+            results = base.order_by(User.username).paginate(per_page=per_page)
         dto = UserSearchDTO()
         for result in results.items:
             listed_user = ListedUser()
@@ -166,8 +170,8 @@ class User(db.Model):
             listed_user.role = UserRole(result.role).name
 
             dto.users.append(listed_user)
-
-        dto.pagination = Pagination(results)
+        if query.pagination:
+            dto.pagination = Pagination(results)
         return dto
 
     @staticmethod

@@ -19,7 +19,7 @@ In addition to descriptive error text, error messages also contains SubCodes. Wh
 | 400  | InvalidData              | Error validating request                                                           |
 | 400  | InvalidDateRange         | Date range can not be bigger than 1 year                                           |
 | 400  | InvalidMultipolygon      | Area of Interest: Invalid MultiPolygon                                             |
-| 403  | InvalidNewOwner          | New owner must be project's org manager                                            |
+| 403  | InvalidNewOwner          | New owner must be project's org manager or TM admin                                |
 | 400  | InvalidStartDate         | Start date must be earlier than end date                                           |
 | 403  | InvalidTaskState         | Task in invalid state for mapping                                                  |
 | 403  | InvalidUnlockState       | Can only set status to MAPPED, BADIMAGERY, READY after mapping                     |

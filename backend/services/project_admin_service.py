@@ -297,16 +297,20 @@ class ProjectAdminService:
         is_org_manager = OrganisationService.is_user_an_org_manager(
             project.organisation_id, transfering_user_id
         )
-        if not is_admin and not is_author and not is_org_manager:
+        if not (is_admin or is_author or is_org_manager):
             raise ProjectAdminServiceError(
                 "TransferPermissionError- User does not have permissions to transfer project"
             )
 
         # Check permissions for the new owner - must be project's org manager
-        if not OrganisationService.is_user_an_org_manager(
+        is_new_owner_org_manager = OrganisationService.is_user_an_org_manager(
             project.organisation_id, new_owner.id
-        ):
-            error_message = "InvalidNewOwner- New owner must be project's org manager"
+        )
+        is_new_owner_admin = UserService.is_user_an_admin(new_owner.id)
+        if not (is_new_owner_org_manager or is_new_owner_admin):
+            error_message = (
+                "InvalidNewOwner- New owner must be project's org manager or TM admin"
+            )
             if current_app:
                 current_app.logger.debug(error_message)
             raise ValueError(error_message)
