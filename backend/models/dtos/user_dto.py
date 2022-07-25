@@ -190,6 +190,8 @@ class UserSearchQuery(Model):
         serialized_name="mappingLevel", validators=[is_known_mapping_level]
     )
     page = IntType()
+    pagination = BooleanType(default=True)
+    per_page = IntType(default=20, serialized_name="perPage")
 
     def __hash__(self):
         """Make object hashable so we can cache user searches"""
