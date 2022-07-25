@@ -6,7 +6,10 @@ from schematics.exceptions import DataError
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.grid_dto import GridDTO
 from backend.services.project_service import ProjectService, NotFound
-from backend.services.project_admin_service import ProjectAdminService
+from backend.services.project_admin_service import (
+    ProjectAdminService,
+    ProjectAdminServiceError,
+)
 from backend.services.grid.grid_service import GridService
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import token_auth, tm
@@ -63,7 +66,7 @@ class ProjectsActionsTransferAPI(Resource):
                 project_id, authenticated_user_id, username
             )
             return {"Success": "Project Transferred"}, 200
-        except ValueError as e:
+        except (ValueError, ProjectAdminServiceError) as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"ProjectsActionsTransferAPI POST - unhandled error: {str(e)}"

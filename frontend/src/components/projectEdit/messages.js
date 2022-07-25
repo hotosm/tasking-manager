@@ -38,6 +38,10 @@ export default defineMessages({
     defaultMessage:
       'Organization that is coordinating the project, if there is any. The managers of that organization will have administration rights over the project.',
   },
+  admins: {
+    id: 'projects.formInputs.admins.title',
+    defaultMessage: 'TM Admins',
+  },
   selectImagery: {
     id: 'projects.formInputs.imagery.select',
     defaultMessage: 'Select imagery',
@@ -247,7 +251,8 @@ export default defineMessages({
   },
   transferProjectAlert: {
     id: 'projects.actions.transfer_project.alert',
-    defaultMessage: 'In case of wrong transfer, contact the new owner to revert the change.',
+    defaultMessage:
+      'This feature is only available to the project author, organisation manager and TM admin.',
   },
   transferProjectSuccess: {
     id: 'projects.actions.transfer_project.success',
@@ -598,8 +603,7 @@ export default defineMessages({
   },
   extraIdParams: {
     id: 'projects.formInputs.extraIdParams',
-    defaultMessage:
-      'Additional iD URL parameters',
+    defaultMessage: 'Additional iD URL parameters',
   },
   extraIdParamsDescription: {
     id: 'projects.formInputs.extraIdParams.description',
@@ -608,12 +612,10 @@ export default defineMessages({
   },
   extraIdParamsDescriptionLink: {
     id: 'projects.formInputs.extraIdParams.description.link',
-    defaultMessage:
-      'Check the {link} for more information.',
+    defaultMessage: 'Check the {link} for more information.',
   },
   iDAPIDocs: {
     id: 'projects.formInputs.extraIdParams.iDAPIDocs',
-    defaultMessage:
-      'iD editor documentation',
+    defaultMessage: 'iD editor documentation',
   },
 });

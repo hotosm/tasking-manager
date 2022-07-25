@@ -35,7 +35,12 @@ function getMenuItensForUser(userDetails, organisations) {
     { label: messages.about, link: 'about', showAlways: true },
   ];
   if (SERVICE_DESK) {
-    menuItems.push({ label: messages.support, link: SERVICE_DESK, showAlways: true, serviceDesk: true });
+    menuItems.push({
+      label: messages.support,
+      link: SERVICE_DESK,
+      showAlways: true,
+      serviceDesk: true,
+    });
   }
 
   let filteredMenuItems;

@@ -61,7 +61,9 @@ class User(db.Model):
     projects_notifications = db.Column(db.Boolean, default=True, nullable=False)
     tasks_notifications = db.Column(db.Boolean, default=True, nullable=False)
     tasks_comments_notifications = db.Column(db.Boolean, default=False, nullable=False)
-    teams_notifications = db.Column(db.Boolean, default=True, nullable=False)
+    teams_announcement_notifications = db.Column(
+        db.Boolean, default=True, nullable=False
+    )
     date_registered = db.Column(db.DateTime, default=timestamp)
     # Represents the date the user last had one of their tasks validated
     last_validation_date = db.Column(db.DateTime, default=timestamp)
@@ -151,9 +153,13 @@ class User(db.Model):
             roles = query.role.split(",")
             role_array = [UserRole[role].value for role in roles]
             base = base.filter(User.role.in_(role_array))
-
-        results = base.order_by(User.username).paginate(query.page, 20, True)
-
+        if query.pagination:
+            results = base.order_by(User.username).paginate(
+                query.page, query.per_page, True
+            )
+        else:
+            per_page = base.count()
+            results = base.order_by(User.username).paginate(per_page=per_page)
         dto = UserSearchDTO()
         for result in results.items:
             listed_user = ListedUser()
@@ -164,8 +170,8 @@ class User(db.Model):
             listed_user.role = UserRole(result.role).name
 
             dto.users.append(listed_user)
-
-        dto.pagination = Pagination(results)
+        if query.pagination:
+            dto.pagination = Pagination(results)
         return dto
 
     @staticmethod
@@ -364,7 +370,9 @@ class User(db.Model):
         user_dto.projects_comments_notifications = self.projects_comments_notifications
         user_dto.tasks_notifications = self.tasks_notifications
         user_dto.tasks_comments_notifications = self.tasks_comments_notifications
-        user_dto.teams_notifications = self.teams_notifications
+        user_dto.teams_announcement_notifications = (
+            self.teams_announcement_notifications
+        )
 
         if self.username == logged_in_username:
             # Only return email address and gender information when logged in user is looking at their own profile

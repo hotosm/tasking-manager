@@ -11,7 +11,7 @@ export const NavLink = ({ partial = true, ...props }) => (
   />
 );
 
-export const TopNavLink = props => {
+export const TopNavLink = (props) => {
   const { isActive, ...otherProps } = props;
   return (
     <Link getProps={isActive} {...otherProps}>

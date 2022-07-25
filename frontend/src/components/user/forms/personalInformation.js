@@ -52,8 +52,10 @@ function _PersonalInformationForm(props) {
       .catch(() => setResend(false));
   };
 
-  const composeValidators = (...validators) => (value) =>
-    validators.reduce((error, validator) => error || validator(value), undefined);
+  const composeValidators =
+    (...validators) =>
+    (value) =>
+      validators.reduce((error, validator) => error || validator(value), undefined);
   const isUrl = (value) =>
     value &&
     value.match(

@@ -41,6 +41,9 @@ class TeamMembersDTO(Model):
     username = StringType(required=True)
     function = StringType(required=True, validators=[validate_team_member_function])
     active = StringType()
+    join_request_notifications = BooleanType(
+        default=False, serialized_name="joinRequestNotifications"
+    )
     picture_url = StringType(serialized_name="pictureUrl")
 
 
@@ -139,7 +142,7 @@ class UpdateTeamDTO(Model):
     name = StringType()
     logo = StringType()
     description = StringType()
-    invite_only = BooleanType(default=False, serialized_name="inviteOnly")
+    invite_only = BooleanType(serialized_name="inviteOnly")
     visibility = StringType(
         validators=[validate_team_visibility], serialize_when_none=False
     )

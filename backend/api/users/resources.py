@@ -1,3 +1,4 @@
+from distutils.util import strtobool
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
@@ -78,6 +79,16 @@ class UsersAllAPI(Resource):
               description: Page of results user requested
               type: integer
             - in: query
+              name: pagination
+              description: Whether to return paginated results
+              type: boolean
+              default: true
+            - in: query
+              name: per_page
+              description: Number of results per page
+              type: integer
+              default: 20
+            - in: query
               name: username
               description: Full or part username
               type: string
@@ -99,9 +110,12 @@ class UsersAllAPI(Resource):
         """
         try:
             query = UserSearchQuery()
-            query.page = (
-                int(request.args.get("page")) if request.args.get("page") else 1
-            )
+            query.pagination = strtobool(request.args.get("pagination", "True"))
+            if query.pagination:
+                query.page = (
+                    int(request.args.get("page")) if request.args.get("page") else 1
+                )
+            query.per_page = request.args.get("perPage", 20)
             query.username = request.args.get("username")
             query.mapping_level = request.args.get("level")
             query.role = request.args.get("role")

@@ -127,11 +127,12 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
           <FormattedMessage {...messages.randomTaskSelectionDescription} />
         </p>
       </div>
-      {(projectInfo.mappingEditors.includes('RAPID') || projectInfo.validationEditors.includes('RAPID')) && (
+      {(projectInfo.mappingEditors.includes('RAPID') ||
+        projectInfo.validationEditors.includes('RAPID')) && (
         <div className={styleClasses.divClass}>
-          <label className={styleClasses.labelClass} >
+          <label className={styleClasses.labelClass}>
             <FormattedMessage {...messages.rapidPowerUser} />
-            <div className={'rapid-beta'}/>
+            <div className={'rapid-beta'} />
           </label>
 
           <SwitchToggle
@@ -141,7 +142,7 @@ export const SettingsForm = ({ languages, defaultLocale }) => {
             onChange={() =>
               setProjectInfo({
                 ...projectInfo,
-                rapidPowerUser: !projectInfo.rapidPowerUser
+                rapidPowerUser: !projectInfo.rapidPowerUser,
               })
             }
           />

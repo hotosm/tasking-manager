@@ -240,6 +240,7 @@ export default function ProjectEdit({ id }) {
           <ActionsForm
             projectId={projectInfo.projectId}
             projectName={projectInfo.projectInfo.name}
+            orgId={projectInfo.organisation}
           />
         );
       case 'custom_editor':

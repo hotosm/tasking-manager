@@ -72,10 +72,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
     }
     let windowObjectReference;
     if (!['JOSM', 'ID', 'RAPID'].includes(editor)) {
-      windowObjectReference = window.open(
-        '',
-        `TM-${project.projectId}-${selectedTasks}`,
-      );
+      windowObjectReference = window.open('', `TM-${project.projectId}-${selectedTasks}`);
     }
     if (['validateSelectedTask', 'validateAnotherTask', 'validateATask'].includes(taskAction)) {
       const mappedTasks = selectedTasks.filter(

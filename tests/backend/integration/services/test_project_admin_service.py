@@ -1,8 +1,10 @@
 from unittest.mock import patch, MagicMock
 import json
+from flask import current_app
 
 from backend.models.postgis.project import Project, User, NotFound, ProjectPriority
 from backend.models.postgis.statuses import UserRole, MappingLevel
+from backend.services.messaging.message_service import MessageService
 from backend.services.team_service import TeamService
 from tests.backend.base import BaseTestCase
 from backend.models.dtos.organisation_dto import ListOrganisationsDTO
@@ -20,6 +22,7 @@ from backend.models.dtos.project_dto import (
 from backend.services.organisation_service import OrganisationService
 from backend.services.users.user_service import UserService
 from tests.backend.helpers.test_helpers import (
+    add_manager_to_organisation,
     create_canned_project,
     return_canned_draft_project_json,
     return_canned_user,
@@ -420,4 +423,64 @@ class TestProjectAdminService(BaseTestCase):
         )
         self.assertEqual(
             updated_project.priority, ProjectPriority[dto.project_priority].value
+        )
+
+    @patch.object(MessageService, "send_project_transfer_message")
+    def test_project_transfer_to_(self, mock_send_message):
+        test_project, test_author = create_canned_project()
+        test_organisation = create_canned_organisation()
+        test_user = return_canned_user("TEST_USER", 11111)
+        test_user.create()
+        test_manager = return_canned_user("TEST_MANAGER", 22222)
+        test_manager.create()
+        test_project.organisation = test_organisation
+        test_project.organisation_id = test_organisation.id
+        add_manager_to_organisation(test_organisation, test_manager)
+
+        # Test error is raised if initiating user is not permitted to transfer project
+        current_app.logger.debug(
+            "Testing error is raised if initiating user is not permitted to transfer project"
+        )
+        with self.assertRaises(ProjectAdminServiceError):
+            ProjectAdminService.transfer_project_to(
+                test_project.id, test_user.id, test_manager.username
+            )
+
+        # Test error is raised if transferred to user who is not a manager of the organisation
+        current_app.logger.debug(
+            "Testing error is raised if transferred to user who is not a manager of the organisation"
+        )
+        with self.assertRaises(ValueError):
+            ProjectAdminService.transfer_project_to(
+                test_project.id, test_manager.id, test_user.username
+            )
+
+        # Test project author can transfer project
+        current_app.logger.debug("Testing project author can transfer project")
+        ProjectAdminService.transfer_project_to(
+            test_project.id, test_author.id, test_manager.username
+        )
+        mock_send_message.assert_called_with(
+            test_project.id, test_manager.username, test_author.username
+        )
+
+        # Test admin can transfer project
+        current_app.logger.debug("Testing admin can transfer project")
+        test_user.role = UserRole.ADMIN.value
+        test_project.author = test_author
+        ProjectAdminService.transfer_project_to(
+            test_project.id, test_user.id, test_manager.username
+        )
+        mock_send_message.assert_called_with(
+            test_project.id, test_manager.username, test_user.username
+        )
+
+        # Test org manager can transfer project
+        current_app.logger.debug("Testing org manager can transfer project")
+        test_project.author = test_author
+        ProjectAdminService.transfer_project_to(
+            test_project.id, test_manager.id, test_manager.username
+        )
+        mock_send_message.assert_called_with(
+            test_project.id, test_manager.username, test_manager.username
         )
