@@ -11,8 +11,8 @@ export const ExtraIdParams = ({ value, setProjectInfo }) => {
       onChange={onInputChange}
       type="text"
       name={`extraIdParams`}
-      placeholder='disabled_features=buildings&offset=-10,5'
+      placeholder="disabled_features=buildings&offset=-10,5"
       value={value}
     />
   );
-}
+};

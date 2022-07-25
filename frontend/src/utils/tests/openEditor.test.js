@@ -218,7 +218,7 @@ describe('formatImageryUrl', () => {
 describe('formatExtraParams', () => {
   it('returns the parameter values formated as URI component', () => {
     expect(
-      formatExtraParams('&validationDisable=crossing_ways/highway*&photo_user=user1,user2')
+      formatExtraParams('&validationDisable=crossing_ways/highway*&photo_user=user1,user2'),
     ).toBe('&validationDisable=crossing_ways%2Fhighway*&photo_user=user1%2Cuser2');
   });
 });

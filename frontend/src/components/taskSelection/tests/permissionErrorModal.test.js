@@ -14,7 +14,7 @@ describe('test if UserPermissionErrorContent', () => {
     percentBadImagery: 0,
   };
   let value = false;
-  const closeTestFn = v => (value = v);
+  const closeTestFn = (v) => (value = v);
   const element = createComponentWithIntl(
     <UserPermissionErrorContent
       project={project}

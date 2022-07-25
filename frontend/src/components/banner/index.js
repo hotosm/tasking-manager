@@ -11,10 +11,10 @@ export function Banner() {
     if (!localStorage.getItem('optout-closed')) {
       form.style.display = 'grid';
     }
-    document.getElementById('optout-agree').onclick = function() {
+    document.getElementById('optout-agree').onclick = function () {
       setAgree();
     };
-    document.getElementById('optout-disagree').onclick = function() {
+    document.getElementById('optout-disagree').onclick = function () {
       setDisagree();
     };
   }
@@ -83,7 +83,7 @@ export function DonationBanner() {
     if (!localStorage.getItem('donation-closed')) {
       form.style.display = 'grid';
     }
-    document.getElementById('donation-close').onclick = function() {
+    document.getElementById('donation-close').onclick = function () {
       closeForm();
     };
   }
@@ -107,12 +107,10 @@ export function DonationBanner() {
             target="_blank"
             rel="noopener noreferrer"
           >
-              2021 HOT Summit
+            2021 HOT Summit
           </a>
         </p>
-        <p>
-              Join the virtual HOT Summit 2021 on November 22! All are invited; RSVP for free.
-        </p>
+        <p>Join the virtual HOT Summit 2021 on November 22! All are invited; RSVP for free.</p>
         <div id="donation-buttons">
           <div className="white bg-red pv2 ph3 mh1 br1 dib fw6 pointer" id="donation-close">
             Close
@@ -130,10 +128,12 @@ export function ArchivalNotificationBanner() {
     if (!localStorage.getItem('archival-notification-closed')) {
       form.style.display = 'grid';
     }
-    document.getElementById('archival-notification-learnmore').onclick = function() {
-      openWikiLink('/Humanitarian_OSM_Team/Working_groups/Data_Quality_Control_and_Assurance/Tasking_Manager_Project_Gardening');
+    document.getElementById('archival-notification-learnmore').onclick = function () {
+      openWikiLink(
+        '/Humanitarian_OSM_Team/Working_groups/Data_Quality_Control_and_Assurance/Tasking_Manager_Project_Gardening',
+      );
     };
-    document.getElementById('archival-notification-close').onclick = function() {
+    document.getElementById('archival-notification-close').onclick = function () {
       closeForm();
     };
   }
@@ -143,10 +143,7 @@ export function ArchivalNotificationBanner() {
     localStorage.setItem('archival-notification-closed', 'true');
   }
   function openWikiLink(path) {
-    window.open(
-      'https://wiki.openstreetmap.org/wiki' + path,
-      '_blank',
-    );
+    window.open('https://wiki.openstreetmap.org/wiki' + path, '_blank');
     closeForm();
   }
 
@@ -160,7 +157,9 @@ export function ArchivalNotificationBanner() {
           <a
             id="privlink"
             className="red link f4 fw6"
-            href={'https://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Team/Working_groups/Data_Quality_Control_and_Assurance/Tasking_Manager_Project_Gardening'}
+            href={
+              'https://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Team/Working_groups/Data_Quality_Control_and_Assurance/Tasking_Manager_Project_Gardening'
+            }
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -171,10 +170,16 @@ export function ArchivalNotificationBanner() {
           <FormattedMessage {...messages.archivalNotificationText} />
         </p>
         <div id="archival-notification-buttons">
-          <div className="white bg-red pv2 ph3 mh1 br1 dib fw6 pointer" id="archival-notification-learnmore">
+          <div
+            className="white bg-red pv2 ph3 mh1 br1 dib fw6 pointer"
+            id="archival-notification-learnmore"
+          >
             <FormattedMessage {...messages.learnMore} />
           </div>
-          <div className="white bg-red pv2 ph3 mh1 br1 dib fw6 pointer" id="archival-notification-close">
+          <div
+            className="white bg-red pv2 ph3 mh1 br1 dib fw6 pointer"
+            id="archival-notification-close"
+          >
             <FormattedMessage {...messages.close} />
           </div>
         </div>

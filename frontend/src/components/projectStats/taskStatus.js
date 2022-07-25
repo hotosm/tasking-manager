@@ -1,5 +1,13 @@
 import React from 'react';
-import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale,Tooltip, Legend } from 'chart.js';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -9,7 +17,7 @@ import { formatChartData, formatTooltip } from '../../utils/formatChartJSData';
 import { TASK_COLOURS } from '../../config';
 import { StatsCardContent } from '../statsCard';
 
-ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale,Tooltip, Legend);
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const TasksByStatus = ({ stats }) => {
   const intl = useIntl();

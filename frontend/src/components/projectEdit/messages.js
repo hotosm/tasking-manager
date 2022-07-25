@@ -251,7 +251,8 @@ export default defineMessages({
   },
   transferProjectAlert: {
     id: 'projects.actions.transfer_project.alert',
-    defaultMessage: 'This feature is only available to the project author, organisation manager and TM admin.',
+    defaultMessage:
+      'This feature is only available to the project author, organisation manager and TM admin.',
   },
   transferProjectSuccess: {
     id: 'projects.actions.transfer_project.success',
@@ -602,8 +603,7 @@ export default defineMessages({
   },
   extraIdParams: {
     id: 'projects.formInputs.extraIdParams',
-    defaultMessage:
-      'Additional iD URL parameters',
+    defaultMessage: 'Additional iD URL parameters',
   },
   extraIdParamsDescription: {
     id: 'projects.formInputs.extraIdParams.description',
@@ -612,12 +612,10 @@ export default defineMessages({
   },
   extraIdParamsDescriptionLink: {
     id: 'projects.formInputs.extraIdParams.description.link',
-    defaultMessage:
-      'Check the {link} for more information.',
+    defaultMessage: 'Check the {link} for more information.',
   },
   iDAPIDocs: {
     id: 'projects.formInputs.extraIdParams.iDAPIDocs',
-    defaultMessage:
-      'iD editor documentation',
+    defaultMessage: 'iD editor documentation',
   },
 });

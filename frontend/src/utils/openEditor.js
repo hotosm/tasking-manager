@@ -106,14 +106,15 @@ export function getIdUrl(project, centroid, zoomLevel, selectedTasks, customUrl)
 
 export const formatExtraParams = (values) => {
   let extraParams = '';
-  values.split('&')
+  values
+    .split('&')
     .filter((term) => term)
     .forEach((term) => {
       const [key, value] = term.split('=');
       extraParams += `&${key}=${encodeURIComponent(value)}`;
     });
   return extraParams;
-}
+};
 
 export const sendJosmCommands = async (project, tasks, selectedTasks, windowSize, taskBbox) => {
   await loadTasksBoundaries(project, selectedTasks);

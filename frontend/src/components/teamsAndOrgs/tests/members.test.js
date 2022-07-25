@@ -19,7 +19,7 @@ describe('test JoinRequest list', () => {
   ];
   const element = createComponentWithIntl(
     <Provider store={store}>
-      <JoinRequests requests={requests} managers={[]}/>
+      <JoinRequests requests={requests} managers={[]} />
     </Provider>,
   );
   const testInstance = element.root;
@@ -53,7 +53,7 @@ describe('test JoinRequest list', () => {
 describe('test JoinRequest list without requests', () => {
   const element = createComponentWithIntl(
     <Provider store={store}>
-      <JoinRequests requests={[]} managers={[]}/>
+      <JoinRequests requests={[]} managers={[]} />
     </Provider>,
   );
   const testInstance = element.root;

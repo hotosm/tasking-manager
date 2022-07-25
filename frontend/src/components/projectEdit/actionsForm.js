@@ -363,52 +363,53 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
 
 const TransferProject = ({ projectId, orgId }: Object) => {
   const token = useSelector((state) => state.auth.get('token'));
-  const { projectInfo, } = useContext(StateContext);
+  const { projectInfo } = useContext(StateContext);
   const [username, setUsername] = useState('');
   const [managers, setManagers] = useState([]);
   const [admins, setAdmins] = useState([]);
   const [isFetchingOptions, setIsFetchingOptions] = useState(true);
 
   useEffect(() => {
-    fetchLocalJSONAPI(`organisations/${orgId}/?omitManagerList=false`, token).then((r) =>
-      setManagers(r.managers.map((m) => m.username))).then(() =>
-        setIsFetchingOptions(false));
+    fetchLocalJSONAPI(`organisations/${orgId}/?omitManagerList=false`, token)
+      .then((r) => setManagers(r.managers.map((m) => m.username)))
+      .then(() => setIsFetchingOptions(false));
 
     fetchLocalJSONAPI(`users/?pagination=false`, token).then((t) =>
-      setAdmins(t.users.map((u) => u.username)))
+      setAdmins(t.users.map((u) => u.username)),
+    );
   }, [token, orgId]);
 
   const optionsExtended = [
     {
       label: projectInfo.organisationName,
-      options: managers?.map(manager => ({
+      options: managers?.map((manager) => ({
         label: manager,
         value: manager,
-      }))
+      })),
     },
     {
       label: <FormattedMessage {...messages.admins} />,
-      options: admins?.filter(
-        admin => !managers?.includes(admin)
-      ).map(adminName => ({
-        label: adminName,
-        value: adminName,
-      }))
+      options: admins
+        ?.filter((admin) => !managers?.includes(admin))
+        .map((adminName) => ({
+          label: adminName,
+          value: adminName,
+        })),
     },
   ];
 
   const handleSelect = (value) => {
     setUsername(value);
   };
-  const { username: loggedInUsername, role: loggedInUserRole } = useSelector((state) => state.auth.get('userDetails'));
-  const hasAccess = (
+  const { username: loggedInUsername, role: loggedInUserRole } = useSelector((state) =>
+    state.auth.get('userDetails'),
+  );
+  const hasAccess =
     managers?.includes(loggedInUsername) ||
     loggedInUserRole === 'ADMIN' ||
-    loggedInUsername === projectInfo.author
-  );
+    loggedInUsername === projectInfo.author;
   const isDisabled = () => {
-    return (
-      transferOwnershipAsync.status === 'pending' || !username || !hasAccess)
+    return transferOwnershipAsync.status === 'pending' || !username || !hasAccess;
   };
   const transferOwnership = () => {
     return pushToLocalJSONAPI(
@@ -428,11 +429,10 @@ const TransferProject = ({ projectId, orgId }: Object) => {
         getOptionLabel={({ label }) => label}
         getOptionValue={({ value }) => value}
         onChange={(e) => handleSelect(e?.value)}
-        value={optionsExtended?.find(manager => manager.value === username)}
+        value={optionsExtended?.find((manager) => manager.value === username)}
         options={optionsExtended}
         isLoading={isFetchingOptions}
-      >
-      </Select>
+      ></Select>
       <Button
         onClick={() => transferOwnershipAsync.execute()}
         loading={transferOwnershipAsync.status === 'pending'}

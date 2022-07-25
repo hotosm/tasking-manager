@@ -220,7 +220,7 @@ export function EditTeam(props) {
   const [canUserEditTeam] = useEditTeamAllowed(team);
   const [memberJoinTeamError, setMemberJoinTeamError] = useState(null);
   const [managerJoinTeamError, setManagerJoinTeamError] = useState(null);
- 
+
   useEffect(() => {
     if (!initManagers && team && team.members) {
       setManagers(filterActiveManagers(team.members));
