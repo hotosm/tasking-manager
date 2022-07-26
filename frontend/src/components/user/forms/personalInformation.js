@@ -192,7 +192,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                   <label className={labelClasses}>
                     <FormattedMessage {...messages.country} />
                   </label>
-                  <UserCountrySelect className={fieldClasses} />
+                  <UserCountrySelect className={fieldClasses} isDisabled={submitting} />
                 </div>
                 {textInputFields.map((field) => (
                   <div key={field.name}>
