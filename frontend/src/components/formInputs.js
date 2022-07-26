@@ -102,7 +102,7 @@ export function OrganisationSelectInput({ className }) {
   );
 }
 
-export function UserCountrySelect({ className }: Object) {
+export function UserCountrySelect({ className, isDisabled = false }: Object) {
   const locale = useSelector((state) => state.preferences.locale);
   const [options, setOptions] = useState([]);
 
@@ -125,6 +125,7 @@ export function UserCountrySelect({ className }: Object) {
       {(props) => (
         <Select
           classNamePrefix="react-select"
+          isDisabled={isDisabled}
           isClearable={false}
           options={options}
           placeholder={
