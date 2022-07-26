@@ -160,8 +160,7 @@ function _PersonalInformationForm(props) {
                     type="text"
                     className={fieldClasses}
                     autoComplete="address-level2"
-                    allowNull
-                    parse={(value) => (!value.trim() ? null : value)}
+                    parse={(value) => (!value.trim() ? '' : value)}
                   />
                 </div>
                 <div className="w-100 w-50-ns fl pl3-ns">
@@ -181,8 +180,7 @@ function _PersonalInformationForm(props) {
                     component="input"
                     type="text"
                     validate={composeValidators(isUrl)}
-                    allowNull
-                    parse={(value) => (!value.trim() ? null : value)}
+                    parse={(value) => (!value.trim() ? '' : value)}
                   >
                     {({ input, meta }) => (
                       <div>
@@ -199,8 +197,7 @@ function _PersonalInformationForm(props) {
                     component="input"
                     type="text"
                     validate={composeValidators(isUrl)}
-                    allowNull
-                    parse={(value) => (!value.trim() ? null : value)}
+                    parse={(value) => (!value.trim() ? '' : value)}
                   >
                     {({ input, meta }) => (
                       <div>
@@ -219,8 +216,7 @@ function _PersonalInformationForm(props) {
                     component="input"
                     type="text"
                     validate={composeValidators(isUrl)}
-                    allowNull
-                    parse={(value) => (!value.trim() ? null : value)}
+                    parse={(value) => (!value.trim() ? '' : value)}
                   >
                     {({ input, meta }) => (
                       <div>
@@ -237,8 +233,7 @@ function _PersonalInformationForm(props) {
                     component="input"
                     type="text"
                     validate={composeValidators(isUrl)}
-                    allowNull
-                    parse={(value) => (!value.trim() ? null : value)}
+                    parse={(value) => (!value.trim() ? '' : value)}
                   >
                     {({ input, meta }) => (
                       <div>
