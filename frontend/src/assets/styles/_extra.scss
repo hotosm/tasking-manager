@@ -8,13 +8,16 @@ html {
     max-height: 100vh;
     overflow-y: scroll;
   }
+
   .video-popup-content {
     width: 90% !important;
   }
+
   .user-popup-content {
     width: 70% !important;
     left: 15% !important;
   }
+
   .user-popup-overlay {
     background-color: $blue-dark;
     opacity: 0.8;
@@ -23,31 +26,49 @@ html {
 
 @media screen and (min-width: 30em) {
   #jumbotron {
+
     video,
     img {
       object-position: 0 0;
     }
   }
+
   .vh-minus-200-ns {
     height: calc(100vh - 200px);
   }
+
   .vh-minus-185-ns {
     height: calc(100vh - 185px);
   }
+
   .vh-minus-122-ns {
     height: calc(100vh - 122px);
   }
+
   .vh-minus-77-ns {
     height: calc(100vh - 77px);
   }
+
   .popup-content {
     width: 44% !important;
   }
+
   .video-popup-content {
     width: 66% !important;
   }
+
   .user-popup-content {
     width: 13% !important;
+  }
+
+  .flex-two-items-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4%,
+  }
+
+  .flex-two-items-row>div {
+    flex: 46%
   }
 }
 
@@ -67,22 +88,28 @@ html {
   .bg-split-blue-white {
     background: linear-gradient(to right, $blue-dark, $blue-dark 80%, $white 20%, $white);
   }
+
   .f-4rem-l {
     font-size: 4rem;
   }
+
   .mw-36rem-l {
     max-width: 36rem;
   }
+
   .sticky-top-l {
     position: sticky !important;
     top: 0;
   }
+
+
 }
 
 @media screen and (max-width: 60em) {
   .mw-20rem {
     max-width: 20rem;
   }
+
   .bg-split-blue-white {
     background: linear-gradient(to bottom, $blue-dark, $blue-dark 80%, $white 20%, $white);
   }
@@ -101,6 +128,7 @@ html {
 .hhalf {
   height: 0.5rem;
 }
+
 .whalf {
   width: 0.5rem;
 }
@@ -120,12 +148,15 @@ a:focus,
 a:active {
   outline: 0;
 }
+
 /* TOGGLE for Show Map*/
 .t-cb {
   transition: all 0.3s cubic-bezier(0.33, 1, 0.66, 1);
-} // Custom class
+}
 
-.checkbox:checked + .checkbox-wrapper {
+// Custom class
+
+.checkbox:checked+.checkbox-wrapper {
   background-color: $red; // @extend .bg-green;
 
   .checkbox-toggle {
@@ -140,6 +171,7 @@ a:active {
     border-color: $red;
   }
 }
+
 .checkbox-toggle:hover {
   border: dashed red !important;
 }
@@ -147,6 +179,7 @@ a:active {
 .radio-input {
   background-color: $white;
 }
+
 .radio-input:checked {
   background-color: $red;
   border: none;
@@ -155,8 +188,9 @@ a:active {
 /* mapping type by RADIO BUTTONs
 https://codepen.io/nielsenramon/pen/mLMeLY
  */
-.radiobutton:checked + .radiobutton-wrapper {
+.radiobutton:checked+.radiobutton-wrapper {
   background-color: $red; // @extend .bg-white;
+
   div {
     border-color: $white; // @extend .b--white;
   }
@@ -166,12 +200,15 @@ https://codepen.io/nielsenramon/pen/mLMeLY
   h1 {
     font-size: 1.25rem;
   }
+
   h2 {
     font-size: 1.125rem;
   }
+
   h3 {
     font-size: 1rem;
   }
+
   a {
     color: $red;
     text-decoration: none;
@@ -200,29 +237,34 @@ textarea:disabled {
 
 div.messageSubjectLinks,
 strong.messageSubjectLinks {
-  & > a {
+  &>a {
     color: $blue-dark;
     text-decoration: none;
     font-weight: 700;
   }
-  & > a:hover {
-    & > a {
+
+  &>a:hover {
+    &>a {
       color: $red;
     }
+
     color: $red;
   }
+
   color: $blue-grey;
-  &.bodycard > a {
+
+  &.bodycard>a {
     text-decoration: underline;
   }
 }
 
 div.messageBodyLinks {
-  & > a {
+  &>a {
     color: $red;
     text-decoration: none;
     font-weight: 600;
   }
+
   color: $blue-grey;
 }
 
@@ -230,6 +272,7 @@ div.messageBodyLinks {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -239,7 +282,8 @@ div.messageBodyLinks {
   width: calc(100% - 4rem);
 }
 
-.mapbox-improve-map, a[href="https://www.mapbox.com/map-feedback/"] {
+.mapbox-improve-map,
+a[href="https://www.mapbox.com/map-feedback/"] {
   display: none;
 }
 
@@ -263,33 +307,35 @@ div.messageBodyLinks {
 
 .react-select {
   &__control {
-    border-color: $grey-light !important;
+    border-color: $grey-light  !important;
     min-height: 1.5rem !important;
     border-radius: .125rem !important;
 
     &--is-focused {
-      box-shadow: 0 0 1px $grey-light !important;
+      box-shadow: 0 0 1px $grey-light  !important;
     }
 
     &:hover {
-      border-color: $grey-light !important;
+      border-color: $grey-light  !important;
     }
   }
 
   &__placeholder {
-    color: $blue-dark !important;
+    color: $blue-dark  !important;
   }
 
   &__option {
-    color: $blue-dark !important;
+    color: $blue-dark  !important;
 
-    &:hover, &:active, &--is-focused {
-      background-color: $tan !important;
+    &:hover,
+    &:active,
+    &--is-focused {
+      background-color: $tan  !important;
       cursor: pointer;
     }
 
     &--is-selected {
-      background-color: $white !important;
+      background-color: $white  !important;
     }
 
     &--is-disabled {
@@ -299,7 +345,8 @@ div.messageBodyLinks {
   }
 }
 
-#project-creation-map, #priority-area-map {
+#project-creation-map,
+#priority-area-map {
   .mapboxgl-ctrl-top-right {
     top: 2.5rem;
   }
@@ -316,10 +363,10 @@ div.messageBodyLinks {
   height: 1.8em;
   border: 1px solid #909;
   border-radius: 5px;
-  background: rgb(203,16,237);
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(6%, rgba(108,1,167,1)), color-stop(50%, rgba(203,16,237,1)), color-stop(90%, rgb(229, 140, 253)), to(rgb(201, 42, 251)));
-  background: -o-linear-gradient(bottom, rgba(108,1,167,1) 6%, rgba(203,16,237,1) 50%, rgb(229, 140, 253) 90%, rgb(201, 42, 251) 100%);
-  background: linear-gradient(0deg, rgba(108,1,167,1) 6%, rgba(203,16,237,1) 50%, rgb(229, 140, 253) 90%, rgb(201, 42, 251) 100%);
+  background: rgb(203, 16, 237);
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(6%, rgba(108, 1, 167, 1)), color-stop(50%, rgba(203, 16, 237, 1)), color-stop(90%, rgb(229, 140, 253)), to(rgb(201, 42, 251)));
+  background: -o-linear-gradient(bottom, rgba(108, 1, 167, 1) 6%, rgba(203, 16, 237, 1) 50%, rgb(229, 140, 253) 90%, rgb(201, 42, 251) 100%);
+  background: linear-gradient(0deg, rgba(108, 1, 167, 1) 6%, rgba(203, 16, 237, 1) 50%, rgb(229, 140, 253) 90%, rgb(201, 42, 251) 100%);
 
   &:before {
     content: '\03b2';
@@ -333,6 +380,7 @@ div.messageBodyLinks {
 
   &:focus-within {
     outline: -webkit-focus-ring-color auto 1px;
+
     .textareaDetail {
       border-bottom-color: transparent;
     }
