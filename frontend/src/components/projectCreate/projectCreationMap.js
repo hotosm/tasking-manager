@@ -7,6 +7,7 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import { useDropzone } from 'react-dropzone';
+import { mapboxLayerDefn } from '../projects/projectsMap';
 
 import {
   MAPBOX_TOKEN,
@@ -32,23 +33,31 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const token = useSelector((state) => state.auth.get('token'));
-  const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(false);
+  const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(true);
   const [aoiCanBeActivated, setAOICanBeActivated] = useState(false);
+  const [existingProjectsList, setExistingProjectsList] = useState([]);
+  const [isAoiLoading, setIsAoiLoading] = useState(false);
   const [debouncedGetProjectsAOI] = useDebouncedCallback(() => getProjectsAOI(), 1500);
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: step === 1 ? uploadFile : () => {}, // drag&drop is activated only on the first step
     noClick: true,
     noKeyboard: true,
   });
-  const minZoomLevelToAOIVisualization = 11;
+  const minZoomLevelToAOIVisualization = 9;
+
+  useEffect(() => {
+    fetchLocalJSONAPI('projects/').then((res) => setExistingProjectsList(res.mapResults));
+  }, []);
 
   const getProjectsAOI = () => {
     if (aoiCanBeActivated && showProjectsAOILayer && step === 1) {
+      setIsAoiLoading(true);
       let bounds = mapObj.map.getBounds();
       let bbox = `${bounds._sw.lng},${bounds._sw.lat},${bounds._ne.lng},${bounds._ne.lat}`;
-      fetchLocalJSONAPI(`projects/queries/bbox/?bbox=${bbox}&srid=4326`, token).then((res) =>
-        mapObj.map.getSource('otherProjects').setData(res),
-      );
+      fetchLocalJSONAPI(`projects/queries/bbox/?bbox=${bbox}&srid=4326`, token).then((res) => {
+        mapObj.map.getSource('otherProjects').setData(res);
+        setIsAoiLoading(false);
+      });
     }
   };
 
@@ -187,6 +196,41 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
     }
   };
 
+  const noop = () => {};
+
+  useLayoutEffect(() => {
+    /* docs: https://docs.mapbox.com/mapbox-gl-js/example/cluster/ */
+    const { map } = mapObj;
+
+    const someResultsReady =
+      existingProjectsList &&
+      existingProjectsList.features &&
+      existingProjectsList.features.length > 0;
+
+    const mapReadyProjectsReady =
+      map !== null &&
+      map.isStyleLoaded() &&
+      map.getSource('projects') === undefined &&
+      someResultsReady;
+    const projectsReadyMapLoading =
+      map !== null &&
+      !map.isStyleLoaded() &&
+      map.getSource('projects') === undefined &&
+      someResultsReady;
+
+    /* set up style/sources for the map, either immediately or on base load */
+    if (mapReadyProjectsReady) {
+      mapboxLayerDefn(map, existingProjectsList, noop, true);
+    } else if (projectsReadyMapLoading) {
+      map.on('load', () => mapboxLayerDefn(map, existingProjectsList, noop, true));
+    }
+
+    /* refill the source on existingProjectsList changes */
+    if (map !== null && map.getSource('projects') !== undefined && someResultsReady) {
+      map.getSource('projects').setData(existingProjectsList);
+    }
+  }, [mapObj, existingProjectsList]);
+
   useLayoutEffect(() => {
     if (mapObj.map !== null && mapboxgl.supported()) {
       mapObj.map.on('moveend', (event) => {
@@ -247,6 +291,7 @@ const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step,
               isActive={showProjectsAOILayer}
               setActive={setShowProjectsAOILayer}
               disabled={!aoiCanBeActivated}
+              isAoiLoading={isAoiLoading}
             />
           )}
           <BasemapMenu map={mapObj.map} />
