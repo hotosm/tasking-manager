@@ -81,7 +81,7 @@ const SocialMedia = ({ data }) => {
         </li>
       )}
       {socialMediaItems.map((i) => {
-        if (data[i] === null) {
+        if (!data[i]) {
           return null;
         }
 
