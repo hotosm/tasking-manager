@@ -13,7 +13,7 @@ import MissingMapsLogo from '../../assets/img/organizations/missingmaps.png';
 import SlackLogo from '../../assets/img/icons/slack.png';
 import { OSM_SERVER_URL, ORG_CODE } from '../../config';
 
-const SocialMedia = ({ data }) => {
+export const SocialMedia = ({ data }) => {
   const intl = useIntl();
   const socialMediaItems = ['twitterId', 'facebookId', 'linkedinId'];
 
