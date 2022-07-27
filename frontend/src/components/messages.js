@@ -34,6 +34,11 @@ export default defineMessages({
     id: 'footer.privacyPolicy',
     defaultMessage: 'Privacy Policy',
   },
+  license: {
+    id: 'footer.license',
+    defaultMessage:
+      'Images and screenshots of the Tasking Manager may be shared under a Creative Commons Attribution-Sharealike 4.0 International License',
+  },
   mappingLevelALL: {
     id: 'mapping.level.all',
     defaultMessage: 'All levels',

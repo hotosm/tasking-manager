@@ -5,7 +5,10 @@ from backend.services.messaging.message_service import MessageService
 from backend.models.postgis.statuses import TaskStatus
 from backend.models.postgis.message import MessageType
 from backend.models.postgis.task import Task
+from backend.services.messaging.smtp_service import SMTPService
 from tests.backend.helpers.test_helpers import (
+    add_manager_to_organisation,
+    create_canned_organisation,
     return_canned_user,
     create_canned_project,
     update_project_with_info,
@@ -98,3 +101,18 @@ class TestMessageService(BaseTestCase):
         )
         # Assert
         mock_push_message.assert_called()
+
+    @patch.object(SMTPService, "_send_message")
+    def test_send_project_transfer_messgae(self, mock_send_message):
+        test_project, test_author = create_canned_project()
+        test_user = return_canned_user("test_user", 11111)
+        test_user.email_address = "test@hotmalinator.com"
+        test_user.is_email_verified = True
+        test_user.create()
+        test_organisation = create_canned_organisation()
+        test_project.organisation = test_organisation
+        add_manager_to_organisation(test_organisation, test_user)
+        MessageService.send_project_transfer_message(
+            test_project.id, test_user.username, test_author.username
+        )
+        mock_send_message.assert_called()

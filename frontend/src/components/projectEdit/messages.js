@@ -247,7 +247,7 @@ export default defineMessages({
   },
   transferProjectAlert: {
     id: 'projects.actions.transfer_project.alert',
-    defaultMessage: 'In case of wrong transfer, contact the new owner to revert the change.',
+    defaultMessage: 'This feature is only available to the project author, organisation manager and TM admin.',
   },
   transferProjectSuccess: {
     id: 'projects.actions.transfer_project.success',
