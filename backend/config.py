@@ -102,6 +102,9 @@ class EnvironmentConfig:
     MAIL_DEFAULT_SENDER = os.getenv("TM_EMAIL_FROM_ADDRESS", None)
     MAIL_DEBUG = True if LOG_LEVEL == "DEBUG" else False
 
+    # If disabled project update emails will not be sent.
+    SEND_PROJECT_EMAIL_UPDATES = os.getenv("TM_SEND_PROJECT_EMAIL_UPDATES", True)
+
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
     SUPPORTED_LANGUAGES = {

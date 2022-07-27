@@ -1,4 +1,6 @@
 from unittest.mock import patch
+from flask import current_app
+
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.project_service import (
     ProjectService,
@@ -18,6 +20,12 @@ from tests.backend.base import BaseTestCase
 
 
 class TestProjectService(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        current_app.config[
+            "SEND_PROJECT_EMAIL_UPDATES"
+        ] = True  # Set to true to test email sending
+
     @patch.object(Project, "get")
     def test_project_service_raises_error_if_project_not_found(self, mock_project):
         mock_project.return_value = None
@@ -234,4 +242,37 @@ class TestProjectService(BaseTestCase):
         # Act
         ProjectService.send_email_on_project_progress(1)
         # Assert
+        self.assertFalse(mock_send_email.called)
+
+    @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
+    @patch.object(Project, "calculate_tasks_percent")
+    @patch.object(ProjectService, "get_project_by_id")
+    def test_send_email_on_project_progress_doesnt_send_email_if_email_already_sent(
+        self, mock_project, mock_project_completion, mock_send_email
+    ):
+        # Arrange
+        canned_project = Project()
+        canned_project.progress_email_sent = True
+        mock_project.return_value = canned_project
+        mock_project.progress_email_sent.return_value = True
+        mock_project_completion.return_value = 50
+        # Act
+        ProjectService.send_email_on_project_progress(1)
+        # Assert
+        self.assertFalse(mock_send_email.called)
+
+    @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
+    @patch.object(ProjectService, "get_project_by_id")
+    def test_send_email_on_project_progress_doesnt_send_email_if_send_project_update_email_is_disabled(
+        self, mock_project, mock_send_email
+    ):
+        # Arrange
+        mock_project.return_value = Project()
+        current_app.config["SEND_PROJECT_EMAIL_UPDATES"] = False
+        # Act
+        ProjectService.send_email_on_project_progress(1)
+        # Assert
+        current_app.config[
+            "SEND_PROJECT_EMAIL_UPDATES"
+        ] = True  # Set to true for other tests
         self.assertFalse(mock_send_email.called)

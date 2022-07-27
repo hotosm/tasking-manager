@@ -152,6 +152,7 @@ class Project(db.Model):
     extra_id_params = db.Column(db.String)
     rapid_power_user = db.Column(db.Boolean, default=False)
     last_updated = db.Column(db.DateTime, default=timestamp)
+    progress_email_sent = db.Column(db.Boolean, default=False)
     license_id = db.Column(db.Integer, db.ForeignKey("licenses.id", name="fk_licenses"))
     geometry = db.Column(Geometry("MULTIPOLYGON", srid=4326), nullable=False)
     centroid = db.Column(Geometry("POINT", srid=4326), nullable=False)
