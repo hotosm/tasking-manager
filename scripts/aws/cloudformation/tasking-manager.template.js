@@ -140,6 +140,12 @@ const Parameters = {
     AllowedValues: ['1', '0'],
     Default: '1'
   },
+  TaskingManagerSendProjectUpdateEmails:{
+    Description: 'TM_SEND_PROJECT_UPDATE_EMAILS environment variable',
+    Type: 'Number',
+    AllowedValues: ['1', '0'],
+    Default: '1'
+  },
   TaskingManagerDefaultChangesetComment: {
     Description: 'TM_DEFAULT_CHANGESET_COMMENT environment variable',
     Type: 'String'

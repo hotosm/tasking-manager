@@ -149,7 +149,7 @@ class MappingService:
             )
 
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
-
+        ProjectService.send_email_on_project_progress(mapped_task.project_id)
         return task.as_dto_with_instructions(mapped_task.preferred_locale)
 
     @staticmethod

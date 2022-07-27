@@ -3,7 +3,9 @@ from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from flask_mail import Message
 
-from backend import mail
+from backend import mail, create_app
+from backend.models.postgis.message import Message as PostgisMessage
+from backend.models.postgis.statuses import EncouragingEmailType
 from backend.services.messaging.template_service import (
     get_template,
     format_username_link,
@@ -56,6 +58,65 @@ class SMTPService:
 
         subject = "New contact from {name}".format(name=data.get("name"))
         SMTPService._send_message(email_to, subject, message, message)
+
+    @staticmethod
+    def send_email_to_contributors_on_project_progress(
+        email_type: str,
+        project_id: int = None,
+        project_name: str = None,
+        project_completion: int = None,
+    ):
+        """ Sends an encouraging email to a users when a project they have contributed to make progress"""
+        from backend.services.users.user_service import UserService
+
+        app = (
+            create_app()
+        )  # Because message-all run on background thread it needs it's own app context
+        with app.app_context():
+            if email_type == EncouragingEmailType.PROJECT_PROGRESS.value:
+                subject = "The project you have contributed to has made progress."
+            elif email_type == EncouragingEmailType.PROJECT_COMPLETE.value:
+                subject = "The project you have contributed to has been completed."
+            values = {
+                "EMAIL_TYPE": email_type,
+                "PROJECT_ID": project_id,
+                "PROJECT_NAME": project_name,
+                "PROJECT_COMPLETION": project_completion,
+            }
+            contributor_ids = PostgisMessage.get_all_contributors(project_id)
+            for contributor_id in contributor_ids:
+                contributor = UserService.get_user_by_id(contributor_id[0])
+                values["USERNAME"] = contributor.username
+                if email_type == EncouragingEmailType.PROJECT_COMPLETE.value:
+                    recommended_projects = UserService.get_recommended_projects(
+                        contributor.username, "en"
+                    ).results
+                    projects = []
+                    for recommended_project in recommended_projects:
+                        projects.append(
+                            {
+                                "org_logo": recommended_project.organisation_logo,
+                                "priority": recommended_project.priority,
+                                "name": recommended_project.name,
+                                "id": recommended_project.project_id,
+                                "description": recommended_project.short_description,
+                                "total_contributors": recommended_project.total_contributors,
+                                "difficulty": recommended_project.mapper_level,
+                                "progress": recommended_project.percent_mapped,
+                                "due_date": recommended_project.due_date,
+                            }
+                        )
+
+                    values["PROJECTS"] = projects
+                html_template = get_template("encourage_mapper_en.html", values)
+                if (
+                    contributor.email_address
+                    and contributor.is_email_verified
+                    and contributor.projects_notifications
+                ):
+                    SMTPService._send_message(
+                        contributor.email_address, subject, html_template
+                    )
 
     @staticmethod
     def send_email_alert(

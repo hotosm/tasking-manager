@@ -158,3 +158,11 @@ class OrganisationType(Enum):
     FREE = 1
     DISCOUNTED = 2
     FULL_FEE = 3
+
+
+class EncouragingEmailType(Enum):
+    """ Describes the type of encouraging email sent to users """
+
+    PROJECT_PROGRESS = 1  # Send encouraging email to mappers when a project they have contributed to make progress
+    PROJECT_COMPLETE = 2  # Send encouraging email to mappers when a project they have contributed to is complete
+    BEEN_SOME_TIME = 3  # Send encouraging email to mappers who haven't been active for some time on the site
