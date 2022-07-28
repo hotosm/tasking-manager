@@ -179,7 +179,7 @@
   "notifications.navFilters.error.simple": "Error loading the {xWord}",
   "notifications.pagination.count": "Showing {number} of {total}",
   "notifications.nav.new.one": "1 new message",
-  "notifications.nav.new.plural": "{n} new messages",
+  "notifications.nav.new.plural": "{n} new ",
   "notifications.nav.viewAll": "View all",
   "notifications.nav.goToNotifications": "Go to notifications",
   "notifications.nav.noUnread": "No unread messages",
