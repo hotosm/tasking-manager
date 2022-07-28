@@ -102,7 +102,10 @@ class MessageService:
         validation_message.task_id = task_id
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
-        validation_message.subject = f"{task_link} mapped by you in project {project_name} has been {status_text}"
+        validation_message.subject = (
+            f"{task_link} mapped by you in Project "
+            + f"{project_name} #{project_id} has been {status_text}"
+        )
         validation_message.message = text_template
         messages.append(
             dict(message=validation_message, user=user, project_name=project_name)
@@ -241,7 +244,10 @@ class MessageService:
                 message.task_id = task_id
                 message.from_user_id = comment_from
                 message.to_user_id = user.id
-                message.subject = f"You were mentioned in a comment in {task_link} of project {project_name}"
+                message.subject = (
+                    f"You were mentioned in a comment in {task_link} "
+                    + f"of Project {project_name} #{project_id}"
+                )
                 message.message = comment
                 messages.append(
                     dict(message=message, user=user, project_name=project_name)
@@ -284,7 +290,7 @@ class MessageService:
                 message.from_user_id = comment_from
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = f"{user_link} left a comment in {task_link} of project {project_name}"
+                message.subject = f"{user_link} left a comment in {task_link} of Project {project_name} #{project_id}"
                 message.message = comment
                 messages.append(
                     dict(message=message, user=user, project_name=project_name)
@@ -309,11 +315,9 @@ class MessageService:
 
             message = Message()
             message.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
-            message.subject = (
-                f"Project {project_name} was transferred to {transferred_to}"
-            )
+            message.subject = f"Project {project_name} #{project_id} was transferred to {transferred_to}"
             message.message = (
-                f"Project {project_name} associated with your "
+                f"Project {project_name} #{project_id} associated with your"
                 + f"organisation {project.organisation.name} was transferred to {transferred_to} by {transferred_by}."
             )
             values = {
@@ -474,7 +478,7 @@ class MessageService:
                     message.project_id = project_id
                     message.from_user_id = chat_from
                     message.to_user_id = user.id
-                    message.subject = f"You were mentioned in project {link} chat"
+                    message.subject = f"You were mentioned in Project {link} chat"
                     message.message = chat
                     messages.append(
                         dict(message=message, user=user, project_name=project_name)
@@ -768,7 +772,7 @@ class MessageService:
         else:
             section = ""
 
-        return f'<a href="{base_url}/projects/{project_id}{section}">{project_name}</a>'
+        return f'<a href="{base_url}/projects/{project_id}{section}">{project_name} #{project_id}</a>'
 
     @staticmethod
     def get_user_profile_link(user_name: str, base_url=None) -> str:
