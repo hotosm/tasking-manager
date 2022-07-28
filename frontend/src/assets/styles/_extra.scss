@@ -391,3 +391,14 @@ a[href="https://www.mapbox.com/map-feedback/"] {
   position: sticky !important;
   top: 0;
 }
+
+.notifications-header {
+  h3 {
+    letter-spacing: -0.110252px;
+    line-height: 20px;
+  }
+}
+
+.notifications-header>div {
+  padding: 1.5rem;
+}

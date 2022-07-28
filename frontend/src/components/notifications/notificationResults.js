@@ -71,7 +71,7 @@ export const NotificationResults = ({
           </div>
         </div>
       ) : null}
-      <div className={`cf ${!useMiniCard ? 'ml1 db' : 'dib'}`}>
+      <div className={`cf ${!useMiniCard ? 'ml1 db' : 'dib'}`} style={{ padding: '0 1.5rem' }}>
         <ReactPlaceholder ready={!loading && stateNotifications} type="media" rows={10}>
           <NotificationCards
             pageOfCards={stateNotifications}
