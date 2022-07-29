@@ -30,7 +30,7 @@ Each environment has its own set of environment variables which are stored as se
 
 ## Automated Tests
 
-For each Pull Request and branch, the CI runs a set of frontend and backend tests. We have a context in place for setting the database called "tasking-manager-testing", with the following environment variables: 
+For each Pull Request and branch, the CI runs a set of frontend and backend tests. We have a context in place called "tasking-manager-testing" for setting up the database with the following environment variables: 
 
 - POSTGRES_DB	
 - POSTGRES_ENDPOINT	
