@@ -173,7 +173,6 @@ class TestSMTPService(BaseTestCase):
         # Act/Assert
         SMTPService._send_message(to_address, subject, content, content)
 
-    @patch.object(UserService, "get_recommended_projects")
     @patch.object(SMTPService, "_send_message")
     @patch.object(UserService, "get_user_by_id")
     @patch.object(Message, "get_all_contributors")
@@ -182,7 +181,6 @@ class TestSMTPService(BaseTestCase):
         mock_get_all_contributors,
         mock_get_user_by_id,
         mock_send_message,
-        mock_recommended_projects,
     ):
         # Arrange
         mock_get_all_contributors.return_value = [(123456,)]
@@ -210,9 +208,3 @@ class TestSMTPService(BaseTestCase):
             EncouragingEmailType.PROJECT_PROGRESS.value, 1, "test", 50
         )
         mock_send_message.assert_called()
-
-        # Test Recommended projects is sent on project complete email
-        SMTPService.send_email_to_contributors_on_project_progress(
-            EncouragingEmailType.PROJECT_COMPLETE.value, 1, "test", 50
-        )
-        mock_recommended_projects.assert_called()
