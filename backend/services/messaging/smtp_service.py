@@ -87,12 +87,12 @@ class SMTPService:
             for contributor_id in contributor_ids:
                 contributor = UserService.get_user_by_id(contributor_id[0])
                 values["USERNAME"] = contributor.username
-                if email_type == EncouragingEmailType.PROJECT_COMPLETE.value:
+                if email_type == EncouragingEmailType.BEEN_SOME_TIME.value:
                     recommended_projects = UserService.get_recommended_projects(
                         contributor.username, "en"
                     ).results
                     projects = []
-                    for recommended_project in recommended_projects:
+                    for recommended_project in recommended_projects[:4]:
                         projects.append(
                             {
                                 "org_logo": recommended_project.organisation_logo,

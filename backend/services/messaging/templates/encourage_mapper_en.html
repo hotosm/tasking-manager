@@ -13,7 +13,7 @@
         ">
         Hi {{ values["USERNAME"] }}
     </h1>
-    <p style="margin-bottom: 1.714rem">
+    <p style="margin-bottom: 1.714rem; line-height: 1.5;">
       you recently participated in the mapping project - 
       <a style="color: #d73f3f; font-weight: 700" href="{{values['APP_BASE_URL']}}/projects/{{values['PROJECT_ID']}}">{{values['PROJECT_NAME']}}</a> - on the 
       <a style="color: #d73f3f; font-weight: 700" href="{{values['APP_BASE_URL']}}">{{values["ORG_CODE"]}} Tasking Manager</a>.
@@ -36,13 +36,13 @@
           ">
           Hi {{ values["USERNAME"] }}
       </h1>
-      <p style="margin-bottom: 1.714rem">
+      <p style="margin-bottom: 1.714rem; line-height: 1.5;">
         you recently participated in the mapping project - 
         <a style="color: #d73f3f; font-weight: 700" href="{{values['APP_BASE_URL']}}/projects/{{values['PROJECT_ID']}}">{{values['PROJECT_NAME']}}</a> - on the 
         <a style="color: #d73f3f; font-weight: 700" href="{{values['APP_BASE_URL']}}">{{values["ORG_CODE"]}} Tasking Manager</a>.
         We want to inform you the project has been completed. It is time to celebrate! 
         <br>
-        Do you want to continue? How about exploring this list of projects we selected for you?
+        Do you want to continue? Find the suitable project for you here: <a href="{{values['APP_BASE_URL']}}/explore">{{values['APP_BASE_URL']}}/explore</a>
       </p>
     </div>
   {% elif values["EMAIL_TYPE"]==3 %}
@@ -65,7 +65,7 @@
       </p>
     </div>
   {% endif %}
-  {% if values["EMAIL_TYPE"] !=1 %}
+  {% if values["EMAIL_TYPE"] ==3 %}
     <div>
       <!-- card starts here -->
       <table aria-label=""> <!-- Noncompliant -->
@@ -142,6 +142,7 @@
                       font-weight: 700;
                       margin-bottom: 16px;
                       color: #2c3038;
+                      overflow-y: hidden;
                     ">
                   {{ project.name }}
                 </p>
@@ -151,6 +152,7 @@
                       color: #68707f;
                       height: 65px;
                       font-weight: 500;
+                      overflow-y: hidden;
                     ">
                   {{ project.description }}
                 </p>
