@@ -374,7 +374,7 @@ const TransferProject = ({ projectId, orgId }: Object) => {
       .then((r) => setManagers(r.managers.map((m) => m.username)))
       .then(() => setIsFetchingOptions(false));
 
-    fetchLocalJSONAPI(`users/?pagination=false`, token).then((t) =>
+    fetchLocalJSONAPI(`users/?pagination=false&role=ADMIN`, token).then((t) =>
       setAdmins(t.users.map((u) => u.username)),
     );
   }, [token, orgId]);
