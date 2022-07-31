@@ -28,6 +28,10 @@ export default defineMessages({
     id: 'project.tasks.unsaved_map_changes.actions.close_modal',
     defaultMessage: 'Close',
   },
+  cantValidateMappedTask: {
+    id: 'project.tasks.select.cantValidateMappedTask',
+    defaultMessage: 'You cannot validate tasks that you mapped',
+  },
   noMappedTasksSelectedError: {
     id: 'project.tasks.no_mapped_tasks_selected',
     defaultMessage: 'No mapped tasks selected',
