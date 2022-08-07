@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+{% block content %}
+<div
+  style="
+    border: 1px solid #d8dee4;
+    padding: 16px 32px 0px 32px;
+    border-radius: 5px;
+  ">
+    <p style="text-align:right; font-size: 12px; color:#68707f;">
+      {{values["START_DATE"]}} - {{values["END_DATE"]}}
+    </p>
+    <div
+      style="
+        border-bottom: 1px solid #d8dee4;
+        padding-bottom: 8px; 
+        margin-bottom: 16px;
+        line-height: 1.5;
+      ">
+        <p style="font-size:14px">Hi, {{values["USERNAME"]}}</p>
+        <p style="color: #24292F; font-size: 14px;">
+          This is the weekly update for your project:
+          <a
+            style="
+              text-decoration: none;
+              color: #d73f3f;
+              font-weight:700;"
+              href="{{values['APP_BASE_URL']}}/projects/{{values['PROJECT_ID']}}"
+            >
+            {{values["PROJECT_NAME"]}} - #{{values["PROJECT_ID"]}}
+          </a>
+        </p>
+        
+    </div>
+    <div style="margin: 22px 0px">
+      <h1
+        style="
+          font-weight: 500;
+          font-size: 1.2rem;
+          line-height: 0.916;
+          margin: 16px 0;
+        "
+        >
+        Total project progress so far:
+      </h1>
+      <table aria-label="" style="text-align: center;"> <!-- Noncompliant -->
+        <th style="width:100px;">
+          <h3 style="
+            font-size: 32px;
+            line-height: 1.2;
+            font-weight: 500;
+            color: #d73f3f;
+            align-self: center;
+            margin: 0;
+          "
+          >
+          {{values["TOTAL_PERCENTAGE_MAPPED"]}}%
+          </h3>
+        </th>
+        <th style="padding: 0 10px;">
+          &nbsp;
+        </th>
+        <th style="width: 100px;" >
+          <h3 style="
+            font-size: 32px;
+            line-height: 1.2;
+            font-weight: 500;
+            color: #d73f3f;
+            align-self: center;
+            margin: 0;
+          "
+          >
+            {{values["TOTAL_PERCENTAGE_VALIDATED"]}}%
+          </h3>
+        </th>
+        <th style="width: 150px;" >
+          <h3 style="
+            font-size: 32px;
+            line-height: 1.2;
+            font-weight: 500;
+            color: #d73f3f;
+            align-self: center;
+            margin: 0;
+          "
+          >
+            {{values["TOTAL_BUILDINGS_MAPPED"]}}
+          </h3>
+        </th>
+        <th style="width: 120px;" >
+          <h3 style="
+            font-size: 32px;
+            line-height: 1.2;
+            font-weight: 500;
+            color: #d73f3f;
+            align-self: center;
+            margin: 0;
+          "
+          >
+            {{values["TOTAL_ROAD_MAPPED"]}}
+          </h3>
+        </th>
+        <tr>
+          <td style="color: #68707f;">
+            Tasks mapped
+          </td>
+          <td>
+            &nbsp;
+          </td>
+          <td style="color: #68707f;">
+            Tasks validated
+          </td>
+          <td style="color: #68707f;">
+            Buildings mapped
+          </td>
+          <td style="color: #68707f;">
+            Km road mapped
+          </td>
+        </tr>
+      </table> 
+    </div>
+    <div>
+      <h1 style="
+          font-weight: 500;
+          font-size: 1.2rem;
+          line-height: 0.916;
+          margin: 16px 0px;">
+          This week's activity overview:
+      </h1>
+      <table aria-label="">
+          <th 
+            style="
+            width:120px;
+            height: 87px;
+            border-radius: 5px;
+            background-color:#b5ecf5;
+            font-size: 10px;
+            color: #168b9e;
+            ">
+            Mapped
+            <p style="font-size: 28px">{{values["MAPPED_THIS_PERIOD"]}}</p>
+            tasks
+          </th>
+          <th></th>
+          <th 
+            style="
+              width:120px;
+              height: 87px;
+              border-radius: 5px;
+              background-color:#64d1ae;
+              font-size: 10px;
+              color: #367562;
+            ">
+              Validated
+              <p style="font-size: 28px">{{values["VALIDATED_THIS_PERIOD"]}}</p>
+              tasks
+          </th>
+          <th></th>
+          <th
+            style="
+            width:120px;
+            height: 87px;
+            border-radius: 5px;
+            background-color:#FCECA4;
+            font-size: 10px;
+            color: #a38f2f;
+            ">
+            Invalidated 
+            <p style="font-size: 28px">{{values["INVALIDATED_THIS_PERIOD"]}}</p>
+            tasks
+          </th>
+          <th></th>
+          <th 
+            style="
+              width:120px;
+              height: 87px;
+              border-radius:5px;
+              background-color:#DEDFE6;
+              font-size: 10px;
+              color: #8e8f91;
+            ">
+              Bad Imagery 
+              <p style="font-size: 28px">{{values["BADIMAGERY_THIS_PERIOD"]}}</p>
+              tasks
+          </th>
+      </table>
+      <p style="color: #68707f; margin:16px 0px; line-height: 1.5;">
+        <span style="color:#24292F; ">{{values["CONTRIBUTORS"]}}</span> 
+        total contributors this week
+      </p>
+      <p
+        style="font-size:12px;
+        line-height: 1.2;
+        font-weight: 500;
+        color: #68707f;
+        margin-top: 16px;
+        ">
+        For more stats related to this project please visit 
+        <a
+          style="text-decoration: none;
+            color: #d73f3f;
+            font-weight:700"
+          href="{{values['APP_BASE_URL']}}/projects/{{values['PROJECT_ID']}}/stats
+          ">
+          project stats page
+        </a>.
+      </p>
+    </div>
+</div>
+{% endblock %}

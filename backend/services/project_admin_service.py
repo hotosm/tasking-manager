@@ -350,3 +350,24 @@ class ProjectAdminService:
                     )
 
         return is_admin or is_author or is_org_manager or is_manager_team
+
+    @staticmethod
+    def get_project_managers(project_id: int):
+        """Get all project managers"""
+        managers = []
+        project = ProjectAdminService._get_project_by_id(project_id)
+        # Author has manager role by default
+        managers.append(project.author.username)
+        # Managers of organization associated with the project also has project manager role
+        managers.extend([manager.username for manager in project.organisation.managers])
+        # Add members of team with PM role in a project
+        teams_dto = TeamService.get_project_teams_as_dto(project_id)
+        teams_allowed = [
+            team_dto
+            for team_dto in teams_dto.teams
+            if team_dto.role == TeamRoles.PROJECT_MANAGER.value
+        ]
+        if teams_allowed:
+            for teams_dto in teams_allowed:
+                managers.extend([member.username for member in teams_dto.members])
+        return set(managers)  # Remove duplicates
