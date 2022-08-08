@@ -84,6 +84,8 @@ class MessageService:
             "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
         )
         task_link = MessageService.get_task_link(project_id, task_id)
+        project_link = MessageService.get_project_link(project_id, project_name)
+
         replace_list = [
             ["[USERNAME]", user.username],
             ["[TASK_LINK]", task_link],
@@ -104,7 +106,7 @@ class MessageService:
         validation_message.to_user_id = mapped_by
         validation_message.subject = (
             f"{task_link} mapped by you in Project "
-            + f"{project_name} #{project_id} has been {status_text}"
+            + f"{project_link} has been {status_text}"
         )
         validation_message.message = text_template
         messages.append(
@@ -230,6 +232,7 @@ class MessageService:
         project_name = ProjectInfo.get_dto_for_locale(project_id, default_locale).name
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
+            project_link = MessageService.get_project_link(project_id, project_name)
 
             messages = []
             for username in usernames:
@@ -246,7 +249,7 @@ class MessageService:
                 message.to_user_id = user.id
                 message.subject = (
                     f"You were mentioned in a comment in {task_link} "
-                    + f"of Project {project_name} #{project_id}"
+                    + f"of Project {project_link}"
                 )
                 message.message = comment
                 messages.append(
@@ -273,6 +276,8 @@ class MessageService:
             user_link = MessageService.get_user_link(user_from.username)
 
             task_link = MessageService.get_task_link(project_id, task_id)
+            project_link = MessageService.get_project_link(project_id, project_name)
+
             messages = []
             for user_id in contributed_users:
                 try:
@@ -290,7 +295,7 @@ class MessageService:
                 message.from_user_id = comment_from
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = f"{user_link} left a comment in {task_link} of Project {project_name} #{project_id}"
+                message.subject = f"{user_link} left a comment in {task_link} of Project {project_link}"
                 message.message = comment
                 messages.append(
                     dict(message=message, user=user, project_name=project_name)
@@ -312,10 +317,13 @@ class MessageService:
         with app.app_context():
             project = Project.get(project_id)
             project_name = project.get_project_title(project.default_locale)
+            project_link = MessageService.get_project_link(project_id, project_name)
 
             message = Message()
-            message.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
-            message.subject = f"Project {project_name} #{project_id} was transferred to {transferred_to}"
+            message.message_type = MessageType.SYSTEM.value
+            message.subject = (
+                f"Project {project_link} was transferred to {transferred_to}"
+            )
             message.message = (
                 f"Project {project_name} #{project_id} associated with your"
                 + f"organisation {project.organisation.name} was transferred to {transferred_to} by {transferred_by}."
