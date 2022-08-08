@@ -76,7 +76,16 @@ export const NotificationBodyModal = (props) => {
 
 export function NotificationBodyCard({
   loading,
-  card: { messageId, name, messageType, fromUsername, subject, message, sentDate },
+  card: {
+    messageId,
+    name,
+    messageType,
+    fromUsername,
+    displayPictureUrl,
+    subject,
+    message,
+    sentDate,
+  },
 }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const location = useLocation();
@@ -107,7 +116,12 @@ export function NotificationBodyCard({
       <article className={`db  base-font mb3 mh2 blue-dark mw8`}>
         <div className={`dib`}>
           <div className="fl pl2">
-            <MessageAvatar fromUsername={fromUsername} messageType={messageType} size={'medium'} />
+            <MessageAvatar
+              fromUsername={fromUsername}
+              displayPictureUrl={displayPictureUrl}
+              messageType={messageType}
+              size={'medium'}
+            />
           </div>
 
           {showASendingUser && <div className={`pl5 f6 blue-dark fw5`}>{showASendingUser}</div>}

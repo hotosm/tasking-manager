@@ -113,7 +113,7 @@ class UserService:
         if user.username != osm_username:
             user.update_username(osm_username)
 
-        if picture_url is not None and user.picture_url != picture_url:
+        if user.picture_url != picture_url:
             user.update_picture_url(picture_url)
 
         return user

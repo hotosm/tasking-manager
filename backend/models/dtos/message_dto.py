@@ -22,6 +22,7 @@ class MessageDTO(Model):
     )
     from_user_id = IntType(required=True, serialize_when_none=False)
     from_username = StringType(serialized_name="fromUsername", default="")
+    display_picture_url = StringType(serialized_name="displayPictureUrl", default="")
     project_id = IntType(serialized_name="projectId")
     project_title = StringType(serialized_name="projectTitle")
     task_id = IntType(serialized_name="taskId")
