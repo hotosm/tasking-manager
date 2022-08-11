@@ -186,7 +186,7 @@ describe('TeamsManagement component', () => {
     expect(getByText('My Best Team')).toBeInTheDocument();
     expect(getByText('Managers')).toBeInTheDocument();
     expect(getByText('Team members')).toBeInTheDocument();
-    expect(getByText('My Best Team').closest('a').href).toContain('/manage/teams/3/');
+    expect(getByText('My Best Team').closest('a').href).toContain('/teams/3/membership/');
   });
 
   it('renders relevant text if user is not a member of any team', async () => {
