@@ -57,7 +57,7 @@ export function Jumbotron() {
   return (
     <div id="jumbotron" className="white relative jumbotron-primary">
       <div className="truncate relative h-100">
-        {"https://cdn.hotosm.org/tasking-manager/mapping.mp4" && width > 824 ? (
+        {HOMEPAGE_VIDEO_URL && width > 824 ? (
           <video
             className="w-100 h-100 object-fit-cover"
             style={{ zIndex: 0 }}
@@ -65,7 +65,7 @@ export function Jumbotron() {
             loop
             autoPlay
           >
-            <source src={"https://cdn.hotosm.org/tasking-manager/mapping.mp4"} type="video/mp4"></source>
+            <source src={HOMEPAGE_VIDEO_URL} type="video/mp4"></source>
           </video>
         ) : (
           <img
