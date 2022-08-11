@@ -51,7 +51,7 @@ export function TeamsManagement({
         ready={isTeamsFetched}
       >
         {teams?.length ? (
-          teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)
+          teams.map((team, n) => <TeamCard team={team} key={n} />)
         ) : (
           <div className="pb3 pt2">
             <FormattedMessage {...messages.noTeams} />
@@ -90,11 +90,9 @@ export function Teams({ teams, viewAllQuery, showAddButton = false, isReady, bor
   );
 }
 
-export function TeamCard({ team, managementView }: Object) {
+export function TeamCard({ team }: Object) {
   return (
-    <Link
-      to={managementView ? `/manage/teams/${team.teamId}/` : `/teams/${team.teamId}/membership/`}
-    >
+    <Link to={`/teams/${team.teamId}/membership/`}>
       <article className="fl w-30-l base-font w-50-m w-100 mb3 pr3 blue-dark mw5">
         <div className="bg-white ph3 pb3 ba br1 b--grey-light shadow-hover">
           <h3 className="f4 fw6 h3 lh-title mt3 mb2 overflow-y-hidden" title={team.name}>
