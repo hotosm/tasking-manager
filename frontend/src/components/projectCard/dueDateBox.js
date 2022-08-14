@@ -5,8 +5,14 @@ import ReactTooltip from 'react-tooltip';
 
 import { ClockIcon } from '../svgIcons';
 import messages from './messages';
+import { TimerIcon } from '../svgIcons/timer';
 
-export function DueDateBox({ dueDate, intervalMili, align = 'right', tooltipMsg }: Object) {
+export function DueDateBox({
+  dueDate,
+  intervalMili,
+  tooltipMsg,
+  isTaskStatusPage = false,
+}: Object) {
   const intl = useIntl();
   const [timer, setTimer] = useState(Date.now());
   useEffect(() => {
@@ -45,10 +51,11 @@ export function DueDateBox({ dueDate, intervalMili, align = 'right', tooltipMsg 
           } ${intervalMili ? '' : 'mw4'}`}
           data-tip={tooltipMsg}
         >
-          <span>
-            <ClockIcon className="absolute pl1 top-0 pt1 left-0" />
-          </span>
-          <span className="pl3 ml1 v-mid">
+          {!isTaskStatusPage ? (
+            <ClockIcon height="12px" width="12px" />
+          ) : (
+            <TimerIcon height="12px" width="12px" />
+          )}
             <FormattedMessage
               className="indent"
               {...messages['dueDateRelativeRemainingDays']}

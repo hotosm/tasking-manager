@@ -266,7 +266,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                     ))}
                   </h3>
                   <div className="db" title={intl.formatMessage(messages.timeToUnlock)}>
-                    <DueDateBox dueDate={timer} align="left" intervalMili={60000} />
+                    <DueDateBox dueDate={timer} isTaskStatusPage intervalMili={60000} />
                   </div>
                 </div>
                 <div className="cf">
