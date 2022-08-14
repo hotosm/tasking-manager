@@ -220,6 +220,8 @@
   "project.card.edit_project.button": "Edit",
   "project.card.project_page.button": "Project Page",
   "project.card.project_tasks.button": "Tasks",
+  "project.detail.noDueDate": "No due date specified",
+  "project.detail.dueDateExpired": "Due date expired",
   "management.projects.create.title": "Create new project",
   "management.projects.clone.message": "The new project will be a clone of the project #{id} ({name}).",
   "management.projects.create.clone": "Clone",
