@@ -12,6 +12,7 @@ export function DueDateBox({
   intervalMili,
   tooltipMsg,
   isTaskStatusPage = false,
+  isProjectDetailPage = false,
 }: Object) {
   const intl = useIntl();
   const [timer, setTimer] = useState(Date.now());
@@ -69,6 +70,22 @@ export function DueDateBox({
       </>
     );
   } else {
-    return null;
+    return (
+      isProjectDetailPage && (
+        <span
+          className="inline-flex items-center lh-solid f8 br1 ph2 link bg-tan blue-grey"
+          style={{ paddingTop: '0.375rem', paddingBottom: '0.375rem' }}
+        >
+          <ClockIcon height="12px" width="12px" />
+          <span className="pl1">
+            {dueDate ? (
+              <FormattedMessage {...messages.dueDateExpired} />
+            ) : (
+              <FormattedMessage {...messages.noDueDate} />
+            )}
+          </span>
+        </span>
+      )
+    );
   }
 }

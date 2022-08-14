@@ -52,7 +52,7 @@ describe('test DueDate', () => {
         <DueDateBox dueDate={1000 * 540 + Date.now()} intervalMili={true} isTaskStatusPage />
       </ReduxIntlProviders>,
     );
-    // A title tag has been added to the timer svg which we can access 
+    // A title tag has been added to the timer svg which we can access
     expect(
       screen.getByRole('img', {
         name: 'Timer',
@@ -75,5 +75,32 @@ describe('test DueDate', () => {
         name: 'Timer',
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it('should display text when no due date is specified', () => {
+    render(
+      <ReduxIntlProviders>
+        <DueDateBox dueDate={null} isProjectDetailPage />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText('No due date specified')).toBeInTheDocument();
+  });
+
+  it('should display due date expiration message when due date has expired', () => {
+    render(
+      <ReduxIntlProviders>
+        <DueDateBox dueDate={Date.now() - 1000} isProjectDetailPage />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.getByText('Due date expired')).toBeInTheDocument();
+  });
+
+  it('should not display messages for pages other than the project detail page', () => {
+    render(
+      <ReduxIntlProviders>
+        <DueDateBox dueDate={Date.now() - 1000} isProjectDetailPage={false} />
+      </ReduxIntlProviders>,
+    );
+    expect(screen.queryByText('Due date expired')).not.toBeInTheDocument();
   });
 });

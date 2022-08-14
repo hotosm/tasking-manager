@@ -69,6 +69,7 @@ export function ProjectInfoPanel({ project, tasks, contributors, type }: Object)
         <DueDateBox
           dueDate={project.dueDate}
           tooltipMsg={intl.formatMessage(messages.dueDateTooltip)}
+          isProjectDetailPage
         />
       </div>
     </ReactPlaceholder>
