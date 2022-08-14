@@ -1,6 +1,7 @@
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
+from backend import limiter, EnvironmentConfig
 from backend.models.dtos.campaign_dto import CampaignDTO, NewCampaignDTO
 from backend.services.campaign_service import CampaignService
 from backend.services.organisation_service import OrganisationService
@@ -212,6 +213,11 @@ class CampaignsRestAPI(Resource):
 
 
 class CampaignsAllAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     def get(self):
         """
         Get all active campaigns

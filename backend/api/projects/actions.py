@@ -3,6 +3,7 @@ import threading
 from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 
+from backend import limiter, EnvironmentConfig
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.grid_dto import GridDTO
 from backend.services.project_service import ProjectService, NotFound
@@ -78,6 +79,11 @@ class ProjectsActionsTransferAPI(Resource):
 
 
 class ProjectsActionsMessageContributorsAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -355,6 +361,11 @@ class ProjectsActionsSetInterestsAPI(Resource):
 
 
 class ProjectActionsIntersectingTilesAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @tm.pm_only()
     @token_auth.login_required
     def post(self):

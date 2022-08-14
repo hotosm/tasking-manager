@@ -2,6 +2,7 @@ from flask_restful import Resource, request, current_app
 from schematics.exceptions import DataError
 import threading
 
+from backend import limiter, EnvironmentConfig
 from backend.models.dtos.message_dto import MessageDTO
 from backend.services.team_service import TeamService, NotFound, TeamJoinNotAllowed
 from backend.services.users.authentication_service import token_auth, tm
@@ -252,6 +253,11 @@ class TeamsActionsLeaveAPI(Resource):
 
 
 class TeamsActionsMessageMembersAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required
     def post(self, team_id):
         """

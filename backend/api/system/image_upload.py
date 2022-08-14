@@ -3,10 +3,16 @@ import json
 
 from flask_restful import Resource, request, current_app
 
+from backend import limiter, EnvironmentConfig
 from backend.services.users.authentication_service import token_auth
 
 
 class SystemImageUploadRestAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required
     def post(self):
         """

@@ -2,13 +2,15 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, redirect
+from flask import Flask, redirect, make_response, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from backend.config import EnvironmentConfig
 
@@ -35,6 +37,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()
 oauth = OAuth()
+limiter = Limiter(key_func=get_remote_address)
 
 osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
 
@@ -64,6 +67,7 @@ def create_app(env="backend.config.EnvironmentConfig"):
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
+    limiter.init_app(app)
 
     app.logger.debug("Add root redirect route")
 

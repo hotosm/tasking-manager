@@ -105,6 +105,11 @@ class EnvironmentConfig:
     # If disabled project update emails will not be sent.
     SEND_PROJECT_EMAIL_UPDATES = int(os.getenv("TM_SEND_PROJECT_EMAIL_UPDATES", True))
 
+    # Threshold for rate limiting api calls
+    DEFAULT_RATE_LIMIT_THRESHOLD = os.getenv(
+        "TM_API_RATE_LIMIT_THRESHOLD", "100 per hour"
+    )
+
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
     SUPPORTED_LANGUAGES = {
