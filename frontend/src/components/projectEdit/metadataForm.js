@@ -150,7 +150,7 @@ export const MetadataForm = () => {
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
-          <FormattedMessage {...messages.extraIdParams} />*
+          <FormattedMessage {...messages.extraIdParams} />
         </label>
         <p className={styleClasses.pClass}>
           <FormattedMessage
