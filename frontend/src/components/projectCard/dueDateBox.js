@@ -42,20 +42,20 @@ export function DueDateBox({
     return (
       <>
         <span
-          className={`dib relative lh-solid f7 tr br1 link ph1 pv2 truncate ${
-            align === 'right' ? 'fr' : 'fl'
-          } ${
+          className={`inline-flex items-center lh-solid f8 br1 ph2 link ${
             milliDifference < 60000 * 20 && intervalMili !== undefined
-              ? 'bg-red white fw6'
-              : 'bg-grey-light blue-grey'
+              ? 'bg-red white'
+              : 'bg-tan blue-grey'
           } ${intervalMili ? '' : 'mw4'}`}
           data-tip={tooltipMsg}
+          style={{ paddingTop: '0.375rem', paddingBottom: '0.375rem' }}
         >
           {!isTaskStatusPage ? (
             <ClockIcon height="12px" width="12px" />
           ) : (
             <TimerIcon height="12px" width="12px" />
           )}
+          <span className="pl1">
             <FormattedMessage
               className="indent"
               {...messages['dueDateRelativeRemainingDays']}
