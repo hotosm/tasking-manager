@@ -37,7 +37,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()
 oauth = OAuth()
-limiter = Limiter(key_func=get_remote_address)
+limiter = Limiter(key_func=get_remote_address, headers_enabled=True)
 
 osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
 
@@ -125,9 +125,16 @@ def add_api_endpoints(app):
     """
     Define the routes the API exposes using Flask-Restful.
     """
-    app.logger.debug("Adding routes to API endpoints")
-    api = Api(app)
+    rate_limit_error = {
+        "RateLimitExceeded": {
+            "SubCode": "RateLimitExceeded",
+            "message": "You have exceeded the rate limit. Please try again later.",
+            "status": 429,
+        }
+    }
+    api = Api(app, errors=rate_limit_error)
 
+    app.logger.debug("Adding routes to API endpoints")
     # Projects API import
     from backend.api.projects.resources import (
         ProjectsRestAPI,
