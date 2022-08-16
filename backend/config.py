@@ -109,6 +109,13 @@ class EnvironmentConfig:
     DEFAULT_RATE_LIMIT_THRESHOLD = os.getenv(
         "TM_API_RATE_LIMIT_THRESHOLD", "100 per hour"
     )
+    # Memcache configuration
+    MEMCACHED_PORT = os.getenv("TM_MEMCACHE_PORT", None)
+    MEMCACHED_HOST = os.getenv("TM_MEMCACHE_HOST", None)
+    if MEMCACHED_PORT and MEMCACHED_HOST:
+        MEMCACHED_URI = f"memcached://{MEMCACHED_HOST}:{MEMCACHED_PORT}"
+    else:
+        MEMCACHED_URI = None
 
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.

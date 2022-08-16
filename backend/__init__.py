@@ -2,7 +2,7 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask, redirect, make_response, jsonify
+from flask import Flask, redirect
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_oauthlib.client import OAuth
@@ -37,8 +37,11 @@ db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()
 oauth = OAuth()
-limiter = Limiter(key_func=get_remote_address, headers_enabled=True)
-
+limiter = Limiter(
+    storage_uri=EnvironmentConfig.MEMCACHED_URI,
+    key_func=get_remote_address,
+    headers_enabled=True,
+)
 osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
 
 # Import all models so that they are registered with SQLAlchemy
@@ -130,7 +133,12 @@ def add_api_endpoints(app):
             "SubCode": "RateLimitExceeded",
             "message": "You have exceeded the rate limit. Please try again later.",
             "status": 429,
-        }
+        },
+        "MemcacheUnexpectedCloseError": {
+            "SubCode": "MemcacheUnexpectedCloseError",
+            "message": "Connection to Memcache server lost.",
+            "status": 500,
+        },
     }
     api = Api(app, errors=rate_limit_error)
 
