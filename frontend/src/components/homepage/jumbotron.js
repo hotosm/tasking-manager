@@ -78,10 +78,10 @@ export function Jumbotron() {
       </div>
       <div className="absolute top-0 pl6-l pl4 pv5-ns pv3 z-1 h-100">
         <div className="flex flex-column justify-center h-100">
-          <h3 className="mw7-ns mw-20rem f-4rem-l f2 ttu barlow-condensed fw8 ma0">
+          <h3 className="f-4rem-l f2 ttu barlow-condensed fw8 ma0">
             <FormattedMessage {...messages.jumbotronTitle} />
           </h3>
-          <p className="pr2 f5 f3-ns mw7-l mw6-m mw5 mb4">
+          <p className="pr2 f5 f3-ns mb4">
             <FormattedMessage {...messages.jumbotronHeadLine} />
           </p>
           <JumbotronButtons />

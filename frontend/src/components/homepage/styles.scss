@@ -1,20 +1,18 @@
 .jumbotron-primary {
-  height: 714px;
+  height: 600px;
 
   @media screen and (max-width: 30em) {
     height: 500px;
   }
 
   h3 {
-    max-width: 500px;
-
     @media screen and (min-width: 30em) {
       font-size: 4rem;
     }
   }
 
   p {
-    width: 400px;
+    max-width: 28.5rem;
     line-height: 1.28;
   }
 }
