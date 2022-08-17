@@ -465,6 +465,7 @@
   "projects.formInputs.changesetComment": "Changeset comment",
   "projects.formInputs.changesetComment.example": "Example: #hotosm-project-470 #missingmaps Buildings mapping.",
   "projects.formInputs.changesetComment.description": "Default comments added to uploaded changeset comment field. Users should also be encouraged to add text describing what they mapped. Hashtags are sometimes used for analysis later, but should be human informative and not overused, #group #event for example.",
+  "projects.formInputs.non_editable_comment": "This default comment is not editable.",
   "project.formInputs.priority.options.urgent": "Urgent",
   "project.formInputs.priority.options.high": "High",
   "project.formInputs.priority.options.medium": "Medium",

@@ -476,6 +476,10 @@ export default defineMessages({
     defaultMessage:
       'Default comments added to uploaded changeset comment field. Users should also be encouraged to add text describing what they mapped. Hashtags are sometimes used for analysis later, but should be human informative and not overused, #group #event for example.',
   },
+  nonEditableComment: {
+    id: 'projects.formInputs.non_editable_comment',
+    defaultMessage: 'This default comment is not editable.',
+  },
   projectPriorityURGENT: {
     id: 'project.formInputs.priority.options.urgent',
     defaultMessage: 'Urgent',
