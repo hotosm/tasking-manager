@@ -166,3 +166,10 @@ class EncouragingEmailType(Enum):
     PROJECT_PROGRESS = 1  # Send encouraging email to mappers when a project they have contributed to make progress
     PROJECT_COMPLETE = 2  # Send encouraging email to mappers when a project they have contributed to is complete
     BEEN_SOME_TIME = 3  # Send encouraging email to mappers who haven't been active for some time on the site
+
+
+class BannerType(Enum):
+    """ Describes the type of banner a user can see """
+
+    INFO = 1
+    WARNING = 2
