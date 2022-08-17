@@ -38,7 +38,7 @@ migrate = Migrate()
 mail = Mail()
 oauth = OAuth()
 limiter = Limiter(
-    storage_uri=EnvironmentConfig.MEMCACHED_URI,
+    storage_uri=EnvironmentConfig.REDIS_URI,
     key_func=get_remote_address,
     headers_enabled=True,
 )
@@ -134,9 +134,9 @@ def add_api_endpoints(app):
             "message": "You have exceeded the rate limit. Please try again later.",
             "status": 429,
         },
-        "MemcacheUnexpectedCloseError": {
-            "SubCode": "MemcacheUnexpectedCloseError",
-            "message": "Connection to Memcache server lost.",
+        "ConnectionError": {
+            "SubCode": "RedisConnectionError",
+            "message": "Connection to Redis server refused.",
             "status": 500,
         },
     }

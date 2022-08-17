@@ -17,6 +17,9 @@ services:
     <<: *backend
     container_name: backend
     restart: always
+    depends_on:
+      - postgresql
+      - redis
     labels:
       - traefik.http.routers.backend.rule=Host(`localhost`) && PathPrefix(`/api/`)
       - traefik.http.services.backend.loadbalancer.server.port=5000
@@ -43,7 +46,14 @@ services:
     env_file: ${ENV_FILE:-tasking-manager.env}
     networks:
       - tm-web
-
+  redis:
+    image: bitnami/redis:7.0.4
+    container_name: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    restart: always
+    networks:
+      - tm-web
   traefik:
     image: traefik:v2.3
     restart: always

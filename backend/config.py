@@ -110,12 +110,12 @@ class EnvironmentConfig:
         "TM_API_RATE_LIMIT_THRESHOLD", "100 per hour"
     )
     # Memcache configuration
-    MEMCACHED_PORT = os.getenv("TM_MEMCACHE_PORT", None)
-    MEMCACHED_HOST = os.getenv("TM_MEMCACHE_HOST", None)
-    if MEMCACHED_PORT and MEMCACHED_HOST:
-        MEMCACHED_URI = f"memcached://{MEMCACHED_HOST}:{MEMCACHED_PORT}"
+    REDIS_PORT = os.getenv("TM_REDIS_PORT", None)
+    REDIS_HOST = os.getenv("TM_REDIS_HOST", None)
+    if REDIS_PORT and REDIS_HOST:
+        REDIS_URI = f"redis://{REDIS_HOST}:{REDIS_PORT}"
     else:
-        MEMCACHED_URI = None
+        REDIS_URI = None
 
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
