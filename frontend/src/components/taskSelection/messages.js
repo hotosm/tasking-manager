@@ -212,6 +212,11 @@ export default defineMessages({
     id: 'project.instructions',
     defaultMessage: 'Instructions',
   },
+  projectIsArchived: {
+    id: 'project.isArchived',
+    defaultMessage:
+      'This project is archived and read-only. You can view the project, but you cannot update tasks.',
+  },
   changesetComment: {
     id: 'project.changesetComment',
     defaultMessage: 'Changeset comment',

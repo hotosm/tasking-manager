@@ -323,6 +323,7 @@ export function TaskSelection({ project, type, loading }: Object) {
                     <>
                       <ProjectInstructions
                         instructions={project.projectInfo && project.projectInfo.instructions}
+                        isProjectArchived={project.status === 'ARCHIVED'}
                       />
                       <ChangesetCommentTags tags={project.changesetComment} />
                     </>
