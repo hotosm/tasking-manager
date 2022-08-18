@@ -1,12 +1,12 @@
 from flask import current_app
 from flask_restful import Resource, request
 from schematics.exceptions import DataError
-from ...models.postgis.banner import Banner
 
-from backend.services.users.authentication_service import token_auth
-from backend.services.users.user_service import UserService
+from backend.models.postgis.banner import Banner
 from backend.models.dtos.banner_dto import BannerDTO
 from backend.models.postgis.statuses import UserRole
+from backend.services.users.authentication_service import token_auth
+from backend.services.users.user_service import UserService
 
 
 class SystemBannerAPI(Resource):
@@ -85,7 +85,10 @@ class SystemBannerAPI(Resource):
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return {"Error": "Unable to create project", "SubCode": "InvalidData"}, 400
-       
+
+        banner_dto.message = Banner.to_html(
+            banner_dto.message
+        )  # Convert the markdown message to html
         banner = Banner.get()
         banner.update_from_dto(banner_dto)
         return banner.as_dto().to_primitive(), 200
