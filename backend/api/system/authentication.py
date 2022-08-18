@@ -1,7 +1,7 @@
 from flask import session, current_app, redirect, request
 from flask_restful import Resource
 
-from backend import osm
+from backend import osm, limiter, EnvironmentConfig
 from backend.services.users.authentication_service import (
     AuthenticationService,
     AuthServiceError,
@@ -17,6 +17,11 @@ def get_oauth_token():
 
 
 class SystemAuthenticationLoginAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["GET"])
+    ]
+
     def get(self):
         """
         Redirects user to OSM to authenticate
@@ -44,6 +49,11 @@ class SystemAuthenticationLoginAPI(Resource):
 
 
 class SystemAuthenticationCallbackAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["GET"])
+    ]
+
     def get(self):
         """
         Handles the OSM OAuth callback

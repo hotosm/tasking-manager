@@ -2,6 +2,7 @@ from flask import jsonify
 from flask_restful import Resource, request, current_app
 from flask_swagger import swagger
 
+from backend import limiter, EnvironmentConfig
 from backend.services.settings_service import SettingsService
 from backend.services.messaging.smtp_service import SMTPService
 
@@ -184,6 +185,11 @@ class SystemLanguagesAPI(Resource):
 
 
 class SystemContactAdminRestAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     def post(self):
         """
         Send an email to the system admin

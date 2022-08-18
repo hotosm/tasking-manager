@@ -2,6 +2,7 @@ from json import JSONEncoder
 from datetime import date, timedelta
 from flask_restful import Resource, request, current_app
 
+from backend import limiter, EnvironmentConfig
 from backend.services.users.user_service import UserService, NotFound
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
@@ -98,6 +99,11 @@ class UsersStatisticsInterestsAPI(Resource):
 
 
 class UsersStatisticsAllAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["GET"])
+    ]
+
     @token_auth.login_required
     def get(self):
         """

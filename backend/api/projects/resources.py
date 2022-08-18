@@ -4,6 +4,8 @@ from flask import send_file
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 from distutils.util import strtobool
+
+from backend import limiter, EnvironmentConfig
 from backend.models.dtos.project_dto import (
     DraftProjectDTO,
     ProjectDTO,
@@ -32,6 +34,11 @@ from backend.services.project_admin_service import (
 
 
 class ProjectsRestAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required(optional=True)
     def get(self, project_id):
         """

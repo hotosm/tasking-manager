@@ -1,6 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
+from backend import limiter, EnvironmentConfig
 from backend.models.dtos.grid_dto import SplitTaskDTO
 from backend.models.postgis.utils import NotFound, InvalidGeoJson
 from backend.services.grid.split_service import SplitService, SplitServiceError
@@ -196,6 +197,11 @@ class TasksActionsMappingStopAPI(Resource):
 
 
 class TasksActionsMappingUnlockAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required
     def post(self, project_id, task_id):
         """
@@ -519,6 +525,11 @@ class TasksActionsValidationStopAPI(Resource):
 
 
 class TasksActionsValidationUnlockAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -599,6 +610,11 @@ class TasksActionsValidationUnlockAPI(Resource):
 
 
 class TasksActionsMapAllAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -656,6 +672,11 @@ class TasksActionsMapAllAPI(Resource):
 
 
 class TasksActionsValidateAllAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -713,6 +734,11 @@ class TasksActionsValidateAllAPI(Resource):
 
 
 class TasksActionsInvalidateAllAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -770,6 +796,11 @@ class TasksActionsInvalidateAllAPI(Resource):
 
 
 class TasksActionsResetBadImageryAllAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required
     def post(self, project_id):
         """
@@ -829,6 +860,11 @@ class TasksActionsResetBadImageryAllAPI(Resource):
 
 
 class TasksActionsResetAllAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     @token_auth.login_required
     def post(self, project_id):
         """

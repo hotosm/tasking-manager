@@ -9,6 +9,8 @@ from flask_oauthlib.client import OAuth
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from backend.config import EnvironmentConfig
 
@@ -35,7 +37,11 @@ db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()
 oauth = OAuth()
-
+limiter = Limiter(
+    storage_uri=EnvironmentConfig.REDIS_URI,
+    key_func=get_remote_address,
+    headers_enabled=True,
+)
 osm = oauth.remote_app("osm", app_key="OSM_OAUTH_SETTINGS")
 
 # Import all models so that they are registered with SQLAlchemy
@@ -64,6 +70,7 @@ def create_app(env="backend.config.EnvironmentConfig"):
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
+    limiter.init_app(app)
 
     app.logger.debug("Add root redirect route")
 
@@ -121,9 +128,21 @@ def add_api_endpoints(app):
     """
     Define the routes the API exposes using Flask-Restful.
     """
-    app.logger.debug("Adding routes to API endpoints")
-    api = Api(app)
+    rate_limit_error = {
+        "RateLimitExceeded": {
+            "SubCode": "RateLimitExceeded",
+            "message": "You have exceeded the rate limit. Please try again later.",
+            "status": 429,
+        },
+        "ConnectionError": {
+            "SubCode": "RedisConnectionError",
+            "message": "Connection to Redis server refused.",
+            "status": 500,
+        },
+    }
+    api = Api(app, errors=rate_limit_error)
 
+    app.logger.debug("Adding routes to API endpoints")
     # Projects API import
     from backend.api.projects.resources import (
         ProjectsRestAPI,

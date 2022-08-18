@@ -1,4 +1,6 @@
 from flask_restful import Resource, current_app
+
+from backend import limiter, EnvironmentConfig
 from backend.services.stats_service import NotFound, StatsService
 from backend.services.project_service import ProjectService
 
@@ -28,6 +30,11 @@ class ProjectsStatisticsQueriesPopularAPI(Resource):
 
 
 class ProjectsStatisticsAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["GET"])
+    ]
+
     def get(self, project_id):
         """
         Get Project Stats

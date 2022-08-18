@@ -1,6 +1,7 @@
 from flask_restful import Resource, current_app, request
 from schematics.exceptions import DataError
 
+from backend import limiter, EnvironmentConfig
 from backend.models.dtos.user_dto import UserDTO, UserRegisterEmailDTO
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import token_auth, tm
@@ -314,6 +315,11 @@ class UsersActionsVerifyEmailAPI(Resource):
 
 
 class UsersActionsRegisterEmailAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["POST"])
+    ]
+
     def post(self):
         """
         Registers users without OpenStreetMap account

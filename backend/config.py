@@ -105,6 +105,18 @@ class EnvironmentConfig:
     # If disabled project update emails will not be sent.
     SEND_PROJECT_EMAIL_UPDATES = int(os.getenv("TM_SEND_PROJECT_EMAIL_UPDATES", True))
 
+    # Threshold for rate limiting api calls
+    DEFAULT_RATE_LIMIT_THRESHOLD = os.getenv(
+        "TM_API_RATE_LIMIT_THRESHOLD", "100 per hour"
+    )
+    # Memcache configuration
+    REDIS_PORT = os.getenv("TM_REDIS_PORT", None)
+    REDIS_HOST = os.getenv("TM_REDIS_HOST", None)
+    if REDIS_PORT and REDIS_HOST:
+        REDIS_URI = f"redis://{REDIS_HOST}:{REDIS_PORT}"
+    else:
+        REDIS_URI = None
+
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
     SUPPORTED_LANGUAGES = {

@@ -1,11 +1,17 @@
 from flask_restful import Resource, current_app, request
 from dateutil.parser import parse as date_parse
 
+from backend import limiter, EnvironmentConfig
 from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService, NotFound
 
 
 class UsersTasksAPI(Resource):
+
+    decorators = [
+        limiter.limit(EnvironmentConfig.DEFAULT_RATE_LIMIT_THRESHOLD, methods=["GET"])
+    ]
+
     @token_auth.login_required
     def get(self, user_id):
         """
