@@ -47,11 +47,11 @@ class SystemBannerAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for updating the banner. Banner message can be written in markdown
+              description: JSON object for updating the banner. Message can be written in markdown (max 255 chars)
               schema:
                 properties:
                     message:
-                        description: The message to display on the banner in markdown
+                        description: The message to display on the banner. Max 255 characters allowed.
                         required: true
                         type: string
                         default: Welcome to the Tasking Manager
@@ -70,21 +70,21 @@ class SystemBannerAPI(Resource):
                 description: Forbidden
         """
 
-        # Check user permission for this action
-        authenticated_user_id = token_auth.current_user()
-        authenticated_user = UserService.get_user_by_id(authenticated_user_id)
-
-        if authenticated_user.role != UserRole.ADMIN.value:
-            return {
-                "Error": "Banner can only be updated by system admins",
-                "SubCode": "OnlyAdminAccess",
-            }, 403
         try:
             banner_dto = BannerDTO(request.get_json())
             banner_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
             return {"Error": "Unable to create project", "SubCode": "InvalidData"}, 400
+
+        # Check user permission for this action
+        authenticated_user_id = token_auth.current_user()
+        authenticated_user = UserService.get_user_by_id(authenticated_user_id)
+        if authenticated_user.role != UserRole.ADMIN.value:
+            return {
+                "Error": "Banner can only be updated by system admins",
+                "SubCode": "OnlyAdminAccess",
+            }, 403
 
         banner_dto.message = Banner.to_html(
             banner_dto.message
