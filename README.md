@@ -23,15 +23,6 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 * [Learn about vesions and releases](./docs/developers/versions-and-releases.md)
 * Help us and submit [pull requests](https://github.com/hotosm/tasking-manager/pulls)
 
-## Sysadmins
-
-* [architecture](./docs/sysadmins/architecture.md)
-* [ci-cd](./docs/sysadmins/ci-cd.md)
-* [deployment](./docs/sysadmins/deployment.md)
-* [monitoring-logging](./docs/sysadmins/monitoring-logging.md)
-* [networking-connectivity](./docs/sysadmins/networking-connectivity.md)
-* [security-reliability-processes](./docs/sysadmins/security-reliability-processes.md)
-
 ## Instances
 * [HOT Tasking Manager (production)](https://tasks.hotosm.org)
 * [HOT Tasking Manager (staging)](https://tasks-stage.hotosm.org)
