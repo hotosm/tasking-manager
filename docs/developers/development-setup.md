@@ -255,12 +255,9 @@ It is possible to install and run the Tasking Manager using [Docker](https://doc
 
 Clone the Tasking Manager repository and use `docker-compose up` to get a working version of the API running.
 
-## Sysadmins
+## Sysadmins guide
 
-* [architecture](./docs/sysadmins/architecture.md)
-* [ci-cd](./docs/sysadmins/ci-cd.md)
-* [deployment](./docs/sysadmins/deployment.md)
-* [monitoring-logging](./docs/sysadmins/monitoring-logging.md)
-* [networking-connectivity](./docs/sysadmins/networking-connectivity.md)
-* [security-reliability-processes](./docs/sysadmins/security-reliability-processes.md)
+* [System architecture](../sysadmins/architecture.md)
+* [Managing CI/CD with CircleCI](../sysadmins/ci-cd.md)
+* [Deployment Guide](../sysadmins/deployment.md)
 
