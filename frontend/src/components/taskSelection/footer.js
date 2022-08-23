@@ -63,6 +63,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
       project.status === 'ARCHIVED'
     ) {
       navigate(`/explore/`);
+      return;
     }
     // then pass to the JOSM check and validate/map checks
     if (editor === 'JOSM' && !window.safari) {
