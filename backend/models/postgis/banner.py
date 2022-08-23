@@ -73,7 +73,7 @@ class Banner(db.Model):
             markdown(mark_down_text, output_format="html"),
             tags=allowed_tags,
             attributes=allowed_atrributes,
-            strip=True
+            strip=True,
         )
         clean_message = bleach.linkify(clean_message)
         return clean_message

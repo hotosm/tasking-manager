@@ -129,10 +129,12 @@ class EnvironmentConfig:
     }
 
     # Some more definitions (not overridable)
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_size": 10,
+        "max_overflow": 10,
+    }
     SEND_FILE_MAX_AGE_DEFAULT = 0
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_POOL_SIZE = 10
-    SQLALCHEMY_MAX_OVERFLOW = 10
 
     # Image upload Api
     IMAGE_UPLOAD_API_KEY = os.getenv("TM_IMAGE_UPLOAD_API_KEY", None)
