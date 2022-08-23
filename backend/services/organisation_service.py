@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
@@ -137,12 +138,18 @@ class OrganisationService:
 
     @staticmethod
     def get_organisations_as_dto(
-        manager_user_id: int, authenticated_user_id: int, omit_managers: bool
+        manager_user_id: int,
+        authenticated_user_id: int,
+        omit_managers: bool,
+        omit_stats: bool,
     ):
         orgs = OrganisationService.get_organisations(manager_user_id)
         orgs_dto = ListOrganisationsDTO()
         for org in orgs:
             org_dto = org.as_dto(omit_managers)
+            if not omit_stats:
+                year = datetime.today().strftime("%Y")
+                org_dto.stats = OrganisationService.get_organisation_stats(org.id, year)
             if not authenticated_user_id:
                 del org_dto.managers
             orgs_dto.organisations.append(org_dto)
@@ -179,10 +186,14 @@ class OrganisationService:
         return projects
 
     @staticmethod
-    def get_organisation_stats(organisation_id: int) -> OrganizationStatsDTO:
+    def get_organisation_stats(organisation_id: int, year: int) -> OrganizationStatsDTO:
         projects = db.session.query(Project.id, Project.status).filter(
             Project.organisation_id == organisation_id
         )
+        if year:
+            start_date = f"{year}/01/01"
+            projects.filter(Project.created.between(start_date, datetime.today()))
+
         published_projects = projects.filter(
             Project.status == ProjectStatus.PUBLISHED.value
         )
