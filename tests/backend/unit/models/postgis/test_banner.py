@@ -80,6 +80,6 @@ class TestBanner(BaseTestCase):
         self.create_banner()
         # Act
         banner = Banner.get()
-        html = banner.to_html(f"# {self.message}")
+        html = banner.to_html(f"### {self.message}")
         # Assert
-        self.assertEqual(html, f"<h1>{self.message}</h1>")
+        self.assertEqual(html, f"<h3>{self.message}</h3>")

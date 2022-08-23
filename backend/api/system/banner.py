@@ -47,7 +47,9 @@ class SystemBannerAPI(Resource):
             - in: body
               name: body
               required: true
-              description: JSON object for updating the banner. Message can be written in markdown (max 255 chars)
+              description: JSON object for updating the banner. Message can be written in markdown (max 255 chars) \n
+                \n
+                Allowed tags are `a`, `b`, `i`, `h3`, `h4`, `h5`, `h6`, `p`, `pre`, `strong`
               schema:
                 properties:
                     message:

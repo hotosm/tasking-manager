@@ -59,14 +59,11 @@ class Banner(db.Model):
         allowed_tags = [
             "a",
             "b",
-            "blockquote",
-            "br",
-            "code",
-            "em",
-            "h1",
-            "h2",
-            "h3",
             "i",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
             "p",
             "pre",
             "strong",
@@ -76,6 +73,7 @@ class Banner(db.Model):
             markdown(mark_down_text, output_format="html"),
             tags=allowed_tags,
             attributes=allowed_atrributes,
+            strip=True
         )
         clean_message = bleach.linkify(clean_message)
         return clean_message

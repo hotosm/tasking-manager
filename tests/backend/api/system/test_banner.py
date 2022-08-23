@@ -28,7 +28,7 @@ class TestBannerAPI(BaseTestCase):
         )
         session_token = base64.b64encode(session_token.encode("utf-8"))
         session_token = "Token " + session_token.decode("utf-8")
-        banner_message = "# Updated message"
+        banner_message = "### Updated message"
 
         # Test returns 400 Bad Request for invalid JSON
         response = self.client.patch(
@@ -60,5 +60,5 @@ class TestBannerAPI(BaseTestCase):
         )
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json["message"], "<h1>Updated message</h1>")
+        self.assertEqual(response.json["message"], "<h3>Updated message</h3>")
         self.assertTrue(response.json["visible"])
