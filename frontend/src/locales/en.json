@@ -357,6 +357,7 @@
   "projects.formInputs.privacy.field": "Private project",
   "projects.formInputs.privacy.description": "Private means that only the users that are project team members can access, map or validate this project. This option overrides the mapping and validation permissions.",
   "projects.formInputs.teams.title": "Teams",
+  "projects.teams.teamsPermissionNote": "Note: Mappers have mapping permissions. Validators have mapping and validation permissions. Project managers have mapping and validation permissions as well as the access to the management sections.",
   "projects.formInputs.organisation.title": "Organization",
   "projects.formInputs.campaign.title": "Campaign",
   "projects.formInputs.categories.title": "Categories",

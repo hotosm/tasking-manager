@@ -21,6 +21,11 @@ export default defineMessages({
     id: 'projects.formInputs.teams.title',
     defaultMessage: 'Teams',
   },
+  teamsPermissionNote: {
+    id: 'projects.teams.teamsPermissionNote',
+    defaultMessage:
+      'Note: Mappers have mapping permissions. Validators have mapping and validation permissions. Project managers have mapping and validation permissions as well as the access to the management sections.',
+  },
   organisation: {
     id: 'projects.formInputs.organisation.title',
     defaultMessage: 'Organization',
