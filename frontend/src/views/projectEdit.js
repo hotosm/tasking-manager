@@ -141,13 +141,16 @@ export default function ProjectEdit({ id }) {
     if (nonLocaleMissingFields.length) {
       missingFields.push({ locale: null, fields: nonLocaleMissingFields });
     }
-
+    const { teams, mappingPermission, validationPermission } = projectInfo;
     const doesMappingTeamNotExist =
-      ['TEAMS', 'TEAMS_LEVEL'].includes(projectInfo.mappingPermission) &&
-      projectInfo.teams.filter((team) => team.role === 'MAPPER').length === 0;
+      ['TEAMS', 'TEAMS_LEVEL'].includes(mappingPermission) &&
+      teams.filter((team) => team.role === 'MAPPER').length === 0 &&
+      teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
+      teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
     const doesValidationTeamNotExist =
-      ['TEAMS', 'TEAMS_LEVEL'].includes(projectInfo.validationPermission) &&
-      projectInfo.teams.filter((team) => team.role === 'VALIDATOR').length === 0;
+      ['TEAMS', 'TEAMS_LEVEL'].includes(validationPermission) &&
+      teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
+      teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
     if (doesMappingTeamNotExist || doesValidationTeamNotExist) {
       missingFields.push({ type: 'noTeamsAssigned' });
     }
@@ -333,13 +336,16 @@ export default function ProjectEdit({ id }) {
 const ErrorTitle = ({ locale, numberOfMissingFields, type, projectInfo }) => {
   if (type === 'noTeamsAssigned') {
     // message if mapping or validation permissions is set to team only but no team has been added
-    const { mappingPermission, validationPermission, teams } = projectInfo;
+    const { teams, mappingPermission, validationPermission } = projectInfo;
     const doesMappingTeamNotExist =
       ['TEAMS', 'TEAMS_LEVEL'].includes(mappingPermission) &&
-      teams.filter((team) => team.role === 'MAPPER').length === 0;
+      teams.filter((team) => team.role === 'MAPPER').length === 0 &&
+      teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
+      teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
     const doesValidationTeamNotExist =
       ['TEAMS', 'TEAMS_LEVEL'].includes(validationPermission) &&
-      teams.filter((team) => team.role === 'VALIDATOR').length === 0;
+      teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
+      teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
 
     return (
       <FormattedMessage
