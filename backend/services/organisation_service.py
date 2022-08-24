@@ -192,7 +192,9 @@ class OrganisationService:
         )
         if year:
             start_date = f"{year}/01/01"
-            projects.filter(Project.created.between(start_date, datetime.today()))
+            projects = projects.filter(
+                Project.created.between(start_date, datetime.today())
+            )
 
         published_projects = projects.filter(
             Project.status == ProjectStatus.PUBLISHED.value
