@@ -4,7 +4,6 @@ import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
 import 'react-placeholder/lib/reactPlaceholder.css';
 
-import { ProjectCardPaginator } from './projectCardPaginator';
 import { nCardPlaceholders } from '../projectCard/nCardPlaceholder';
 import { ProjectCard } from '../projectCard/projectCard';
 import messages from './messages';
