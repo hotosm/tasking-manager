@@ -1,0 +1,26 @@
+.project-card {
+  padding: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.project-card-with-btn {
+  padding: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.project-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.project-desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+}

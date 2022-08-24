@@ -52,8 +52,8 @@ export function MappingFlow() {
       <p className="pr2 f125 f4-ns blue-dark lh-title mw7 mb4 mappingFlowHeadline">
         <FormattedMessage {...messages.mappingFlowHeadline} />
       </p>
-      <div className="cards-container-parent">
-        <div className="flex flex-column flex-row-l cards-container">
+      <div className="flow-cards-container-parent">
+        <div className="flex flex-column flex-row-l flow-cards-container">
           {cards.map((card, n) => (
             <MappingCard {...card} key={n} />
           ))}

@@ -178,7 +178,7 @@ export default defineMessages({
   },
   paginationCount: {
     id: 'project.pagination.count',
-    defaultMessage: 'Showing {number} of {total}',
+    defaultMessage: 'Showing {number} of {total} projects',
   },
   clearFilters: {
     id: 'project.nav.clearFilters',

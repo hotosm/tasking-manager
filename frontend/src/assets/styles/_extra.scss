@@ -26,7 +26,6 @@ html {
 
 @media screen and (min-width: 30em) {
   #jumbotron {
-
     video,
     img {
       object-position: 0 40%;
@@ -64,11 +63,11 @@ html {
   .flex-two-items-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 4%,
+    gap: 4%;
   }
 
-  .flex-two-items-row>div {
-    flex: 46%
+  .flex-two-items-row > div {
+    flex: 46%;
   }
 }
 
@@ -101,8 +100,6 @@ html {
     position: sticky !important;
     top: 0;
   }
-
-
 }
 
 @media screen and (max-width: 60em) {
@@ -156,7 +153,7 @@ a:active {
 
 // Custom class
 
-.checkbox:checked+.checkbox-wrapper {
+.checkbox:checked + .checkbox-wrapper {
   background-color: $red; // @extend .bg-green;
 
   .checkbox-toggle {
@@ -188,7 +185,7 @@ a:active {
 /* mapping type by RADIO BUTTONs
 https://codepen.io/nielsenramon/pen/mLMeLY
  */
-.radiobutton:checked+.radiobutton-wrapper {
+.radiobutton:checked + .radiobutton-wrapper {
   background-color: $red; // @extend .bg-white;
 
   div {
@@ -237,14 +234,14 @@ textarea:disabled {
 
 div.messageSubjectLinks,
 strong.messageSubjectLinks {
-  &>a {
+  & > a {
     color: $blue-dark;
     text-decoration: none;
     font-weight: 700;
   }
 
-  &>a:hover {
-    &>a {
+  & > a:hover {
+    & > a {
       color: $red;
     }
 
@@ -253,13 +250,13 @@ strong.messageSubjectLinks {
 
   color: $blue-grey;
 
-  &.bodycard>a {
+  &.bodycard > a {
     text-decoration: underline;
   }
 }
 
 div.messageBodyLinks {
-  &>a {
+  & > a {
     color: $red;
     text-decoration: none;
     font-weight: 600;
@@ -283,7 +280,8 @@ div.messageBodyLinks {
 }
 
 .mapbox-improve-map,
-a[href="https://www.mapbox.com/map-feedback/"] {
+a[href="https://www.mapbox.com/map-feedback/"]
+{
   display: none;
 }
 
@@ -302,40 +300,40 @@ a[href="https://www.mapbox.com/map-feedback/"] {
 }
 
 .overflow-empty {
-  text-overflow: "";
+  text-overflow: '';
 }
 
 .react-select {
   &__control {
-    border-color: $grey-light  !important;
+    border-color: $grey-light !important;
     min-height: 1.5rem !important;
-    border-radius: .125rem !important;
+    border-radius: 0.125rem !important;
 
     &--is-focused {
-      box-shadow: 0 0 1px $grey-light  !important;
+      box-shadow: 0 0 1px $grey-light !important;
     }
 
     &:hover {
-      border-color: $grey-light  !important;
+      border-color: $grey-light !important;
     }
   }
 
   &__placeholder {
-    color: $blue-dark  !important;
+    color: $blue-dark !important;
   }
 
   &__option {
-    color: $blue-dark  !important;
+    color: $blue-dark !important;
 
     &:hover,
     &:active,
     &--is-focused {
-      background-color: $tan  !important;
+      background-color: $tan !important;
       cursor: pointer;
     }
 
     &--is-selected {
-      background-color: $white  !important;
+      background-color: $white !important;
     }
 
     &--is-disabled {
@@ -364,9 +362,29 @@ a[href="https://www.mapbox.com/map-feedback/"] {
   border: 1px solid #909;
   border-radius: 5px;
   background: rgb(203, 16, 237);
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(6%, rgba(108, 1, 167, 1)), color-stop(50%, rgba(203, 16, 237, 1)), color-stop(90%, rgb(229, 140, 253)), to(rgb(201, 42, 251)));
-  background: -o-linear-gradient(bottom, rgba(108, 1, 167, 1) 6%, rgba(203, 16, 237, 1) 50%, rgb(229, 140, 253) 90%, rgb(201, 42, 251) 100%);
-  background: linear-gradient(0deg, rgba(108, 1, 167, 1) 6%, rgba(203, 16, 237, 1) 50%, rgb(229, 140, 253) 90%, rgb(201, 42, 251) 100%);
+  background: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(6%, rgba(108, 1, 167, 1)),
+    color-stop(50%, rgba(203, 16, 237, 1)),
+    color-stop(90%, rgb(229, 140, 253)),
+    to(rgb(201, 42, 251))
+  );
+  background: -o-linear-gradient(
+    bottom,
+    rgba(108, 1, 167, 1) 6%,
+    rgba(203, 16, 237, 1) 50%,
+    rgb(229, 140, 253) 90%,
+    rgb(201, 42, 251) 100%
+  );
+  background: linear-gradient(
+    0deg,
+    rgba(108, 1, 167, 1) 6%,
+    rgba(203, 16, 237, 1) 50%,
+    rgb(229, 140, 253) 90%,
+    rgb(201, 42, 251) 100%
+  );
 
   &:before {
     content: '\03b2';
@@ -399,6 +417,37 @@ a[href="https://www.mapbox.com/map-feedback/"] {
   }
 }
 
-.notifications-header>div {
+.notifications-header > div {
   padding: 1.5rem;
+}
+
+.explore-projects-container {
+  display: grid;
+  gap: 1.875rem;
+}
+
+.one-column {
+  grid-template-columns: 1fr;
+}
+
+.two-column {
+  grid-template-columns: 6fr 4fr;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  grid-auto-rows: 370px;
+}
+
+.b--card {
+  border-color: #ecebed;
+}
+
+.explore-projects-map {
+  height: calc(100vh - 190px);
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
 }
