@@ -14,5 +14,5 @@ it('renders loading placeholder when API is being fetched', () => {
       name: /projects/i,
     }),
   ).toBeInTheDocument();
-  expect(container.getElementsByClassName('show-loading-animation')).toHaveLength(16);
+  expect(container.getElementsByClassName('show-loading-animation')).toHaveLength(20);
 });

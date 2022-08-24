@@ -52,6 +52,32 @@
     }
   }
 
+  .flow-cards-container-parent {
+    position: relative;
+    z-index: 1;
+  }
+
+  .flow-cards-container {
+    position: relative;
+    margin-bottom: 6.25rem;
+    gap: 2.25rem;
+  }
+
+  .flow-cards-container:before {
+    content: '';
+    width: 100%;
+    height: 75%;
+    background-image: url('../../assets/img/mask.png');
+    position: absolute;
+    bottom: -32px; //adjust your positioning as necessary
+    right: -32px;
+    z-index: -1;
+
+    @media screen and (max-width: 60em) {
+      height: 90%;
+    }
+  }
+
   .mappingFlowHeadline {
     font-size: 1.125rem;
     line-height: 1.44;
@@ -69,32 +95,6 @@
 
   p {
     line-height: 1.44;
-  }
-}
-
-.cards-container-parent {
-  position: relative;
-  z-index: 1;
-}
-
-.cards-container {
-  position: relative;
-  margin-bottom: 6.25rem;
-  gap: 2.25rem;
-}
-
-.cards-container:before {
-  content: '';
-  width: 100%;
-  height: 75%;
-  background-image: url('../../assets/img/mask.png');
-  position: absolute;
-  bottom: -32px; //adjust your positioning as necessary
-  right: -32px;
-  z-index: -1;
-
-  @media screen and (max-width: 60em) {
-    height: 90%;
   }
 }
 

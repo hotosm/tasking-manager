@@ -545,7 +545,7 @@
   "project.nav.created": "Created by me",
   "project.nav.draft": "Draft",
   "project.nav.archived": "Archived",
-  "project.pagination.count": "Showing {number} of {total}",
+  "project.pagination.count": "Showing {number} of {total} projects",
   "project.nav.clearFilters": "Clear filters",
   "project.sortby": "Sort by",
   "project.sortby.id.descending": "New projects",

@@ -176,8 +176,8 @@ export const ProjectsMap = ({
   }, [map, mapResults, clickOnProjectID]);
 
   if (!mapboxgl.supported()) {
-    return <WebglUnsupported className={`vh-75-l vh-50 fr ${className || ''}`} />;
+    return <WebglUnsupported className={`h-100 w-100  ${className || ''}`} />;
   } else {
-    return <div id="map" className={`vh-75-l vh-50 fr ${className || ''}`} ref={mapRef}></div>;
+    return <div id="map" className={`h-100 w-100 ${className || ''}`} ref={mapRef}></div>;
   }
 };

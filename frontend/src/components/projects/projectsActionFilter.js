@@ -57,7 +57,7 @@ export const ProjectsActionFilter = ({ setQuery, fullProjectsQuery }) => {
         { label: <FormattedMessage {...messages.archived} />, value: 'ARCHIVED' },
       ]}
       display={'Action'}
-      className={'ba b--grey-light bg-white mr1 f6 v-mid dn dib-ns pv2'}
+      className={'ba b--tan bg-white mr3 f6 v-mid dn dib-ns pv2 br1 pl3 fw5 blue-dark'}
     />
   );
 };
