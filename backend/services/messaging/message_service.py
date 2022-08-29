@@ -83,7 +83,7 @@ class MessageService:
         status_text = (
             "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
         )
-        task_link = MessageService.get_task_link(project_id, task_id)
+        task_link = MessageService.get_task_link(project_id, task_id, highlight=True)
         project_link = MessageService.get_project_link(project_id, project_name)
 
         replace_list = [
@@ -132,7 +132,9 @@ class MessageService:
                 project_id, project.default_locale
             ).name
             message_dto.message = "A message from {} managers:<br/><br/>{}".format(
-                MessageService.get_project_link(project_id, project_name),
+                MessageService.get_project_link(
+                    project_id, project_name, highlight=True
+                ),
                 markdown(message_dto.message, output_format="html"),
             )
 
@@ -317,13 +319,10 @@ class MessageService:
         with app.app_context():
             project = Project.get(project_id)
             project_name = project.get_project_title(project.default_locale)
-            project_link = MessageService.get_project_link(project_id, project_name)
 
             message = Message()
             message.message_type = MessageType.SYSTEM.value
-            message.subject = (
-                f"Project {project_link} was transferred to {transferred_to}"
-            )
+            message.subject = f"Project {project_name} #{project_id} was transferred to {transferred_to}"
             message.message = (
                 f"Project {project_name} #{project_id} associated with your"
                 + f"organisation {project.organisation.name} was transferred to {transferred_to} by {transferred_by}."
@@ -761,16 +760,24 @@ class MessageService:
         Message.delete_multiple_messages(message_ids, user_id)
 
     @staticmethod
-    def get_task_link(project_id: int, task_id: int, base_url=None) -> str:
+    def get_task_link(
+        project_id: int, task_id: int, base_url=None, highlight=False
+    ) -> str:
         """Helper method that generates a link to the task"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
-
-        return f'<a href="{base_url}/projects/{project_id}/tasks/?search={task_id}">Task {task_id}</a>'
+        style = ""
+        if highlight:
+            style = "color: #d73f3f"
+        return f'<a style="{style}" href="{base_url}/projects/{project_id}/tasks/?search={task_id}">Task {task_id}</a>'
 
     @staticmethod
     def get_project_link(
-        project_id: int, project_name: str, base_url=None, include_chat_section=False
+        project_id: int,
+        project_name: str,
+        base_url=None,
+        include_chat_section=False,
+        highlight=False,
     ) -> str:
         """Helper method to generate a link to project chat"""
         if not base_url:
@@ -779,8 +786,11 @@ class MessageService:
             section = "#questionsAndComments"
         else:
             section = ""
+        style = ""
+        if highlight:
+            style = "color: #d73f3f"
 
-        return f'<a href="{base_url}/projects/{project_id}{section}">{project_name} #{project_id}</a>'
+        return f'<a style="{style}" href="{base_url}/projects/{project_id}{section}">{project_name} #{project_id}</a>'
 
     @staticmethod
     def get_user_profile_link(user_name: str, base_url=None) -> str:
