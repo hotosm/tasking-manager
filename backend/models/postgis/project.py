@@ -346,7 +346,8 @@ class Project(db.Model):
         for field in ["interests", "campaign"]:
             value = getattr(orig, field)
             setattr(new_proj, field, value)
-        new_proj.custom_editor = orig.custom_editor
+        if orig.custom_editor:
+            new_proj.custom_editor = orig.custom_editor.clone_to_project(new_proj.id)
 
         return new_proj
 

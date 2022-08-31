@@ -44,3 +44,11 @@ class CustomEditor(db.Model):
         dto.url = self.url
 
         return dto
+
+    def clone_to_project(self, project_id: int):
+        new_editor = CustomEditor()
+        new_editor.project_id = project_id
+        new_editor.name = self.name
+        new_editor.description = self.description
+        new_editor.url = self.url
+        return new_editor
