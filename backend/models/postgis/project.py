@@ -212,7 +212,9 @@ class Project(db.Model):
         cascade="all, delete-orphan",
         single_parent=True,
     )
-    custom_editor = db.relationship(CustomEditor, uselist=False)
+    custom_editor = db.relationship(
+        CustomEditor, cascade="all, delete-orphan", uselist=False
+    )
     favorited = db.relationship(User, secondary=project_favorites, backref="favorites")
     organisation = db.relationship(Organisation, backref="projects")
     campaign = db.relationship(
