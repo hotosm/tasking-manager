@@ -9,9 +9,9 @@ import { PaginatorLine } from '../paginator';
   pageNum,
   setPageFn,
 */
-export const ProjectCardPaginator = props => {
+export const ProjectCardPaginator = (props) => {
   const apiIsFetched = !props.projectAPIstate.isError && !props.projectAPIstate.isLoading;
-  const changeToPage = value => {
+  const changeToPage = (value) => {
     apiIsFetched &&
       props.setQueryParam(
         {

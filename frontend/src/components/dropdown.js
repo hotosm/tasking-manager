@@ -172,8 +172,8 @@ export class _Dropdown extends React.PureComponent {
     return (
       <div className="dib pointer relative">
         <CustomButton onClick={this.toggleDropdown} className={`${this.props.className || ''}`}>
-          {this.getActiveOrDisplay()}{' '}
-          <ChevronDownIcon style={{ height: '14px' }} className="pl2 v-mid" />
+          {this.getActiveOrDisplay()}
+          <ChevronDownIcon style={{ height: '12px' }} className="pl2 v-mid pr1" />
         </CustomButton>
         {this.state.display && (
           <DropdownContent

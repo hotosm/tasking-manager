@@ -152,6 +152,7 @@ class Project(db.Model):
     extra_id_params = db.Column(db.String)
     rapid_power_user = db.Column(db.Boolean, default=False)
     last_updated = db.Column(db.DateTime, default=timestamp)
+    progress_email_sent = db.Column(db.Boolean, default=False)
     license_id = db.Column(db.Integer, db.ForeignKey("licenses.id", name="fk_licenses"))
     geometry = db.Column(Geometry("MULTIPOLYGON", srid=4326), nullable=False)
     centroid = db.Column(Geometry("POINT", srid=4326), nullable=False)
@@ -345,7 +346,8 @@ class Project(db.Model):
         for field in ["interests", "campaign"]:
             value = getattr(orig, field)
             setattr(new_proj, field, value)
-        new_proj.custom_editor = orig.custom_editor
+        if orig.custom_editor:
+            new_proj.custom_editor = orig.custom_editor.clone_to_project(new_proj.id)
 
         return new_proj
 
@@ -1164,6 +1166,14 @@ class Project(db.Model):
                 return int(tasks_validated / (total_tasks - tasks_bad_imagery) * 100)
             elif target == "bad_imagery":
                 return int((tasks_bad_imagery / total_tasks) * 100)
+            elif target == "project_completion":
+                # To calculate project completion we assign 2 points to each task
+                # one for mapping and one for validation
+                return int(
+                    (tasks_mapped + (tasks_validated * 2))
+                    / ((total_tasks - tasks_bad_imagery) * 2)
+                    * 100
+                )
         except ZeroDivisionError:
             return 0
 

@@ -81,7 +81,7 @@ const ImageryField = ({ imagery, setProjectInfo }) => {
     }
   };
 
-  const exampleUrl = "tms[22]:https://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png"
+  const exampleUrl = 'tms[22]:https://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png';
 
   return (
     <>
@@ -106,7 +106,13 @@ const ImageryField = ({ imagery, setProjectInfo }) => {
           <p className={styleClasses.pClass}>
             <FormattedMessage
               {...messages.imageryURLNote}
-              values={{ exampleUrl: <span className="db"><Code>{exampleUrl}</Code></span> }}
+              values={{
+                exampleUrl: (
+                  <span className="db">
+                    <Code>{exampleUrl}</Code>
+                  </span>
+                ),
+              }}
             />
           </p>
         </>

@@ -9,9 +9,9 @@ import {
   GithubIcon,
   InstagramIcon,
   ExternalLinkIcon,
-} from './svgIcons';
-import messages from './messages';
-import { getMenuItensForUser } from './header';
+} from '../svgIcons';
+import messages from '../messages';
+import { getMenuItensForUser } from '../header';
 import {
   ORG_TWITTER,
   ORG_GITHUB,
@@ -19,7 +19,8 @@ import {
   ORG_FB,
   ORG_YOUTUBE,
   ORG_PRIVACY_POLICY_URL,
-} from '../config';
+} from '../../config';
+import './styles.scss';
 
 const socialNetworks = [
   { link: ORG_TWITTER, icon: <TwitterIcon style={{ height: '20px', width: '20px' }} /> },
@@ -42,18 +43,18 @@ export function Footer({ location }: Object) {
     return <></>;
   } else {
     return (
-      <footer className="ph3 ph6-l pb5 pt4 white bg-blue-dark">
-        <div className="cf">
-          <div className="pt2 w-50-l w-100 fl mb2 f3-l lh-title">
+      <footer className="ph3 ph6-l pb4 white bg-blue-dark">
+        <div className="footer-ctr-top flex justify-between flex-column flex-row-ns">
+          <p className="ma0 f5 f3-ns lh-title">
             <FormattedMessage {...messages.definition} />
-          </div>
-          <div className="pt2 mb2 w-50-l w-100 tl tr-l fr">
+          </p>
+          <div className="menuItems">
             {getMenuItensForUser(userDetails).map((item) => (
               <Fragment key={item.label.id}>
                 {!item.serviceDesk ? (
                   <Link
                     to={item.link}
-                    className="link barlow-condensed white f5 ttu di-l dib pt3 pt3-m ml4-l w-100 w-auto-l"
+                    className="link barlow-condensed white f5 fw5 ttu di-l dib ml4-l w-100 w-auto-l nowrap"
                   >
                     <FormattedMessage {...item.label} />
                   </Link>
@@ -62,7 +63,7 @@ export function Footer({ location }: Object) {
                     href={item.link}
                     target="_blank"
                     rel="noreferrer"
-                    className="link barlow-condensed white f5 ttu di-l dib pt3 pt3-m ml4-l w-100 w-auto-l nowrap"
+                    className="link barlow-condensed white f5 fw5 ttu di-l dib ml4-l w-100 w-auto-l nowrap"
                   >
                     <FormattedMessage {...item.label} />
                     <ExternalLinkIcon className="pl2 v-cen" style={{ height: '11px' }} />
@@ -70,34 +71,51 @@ export function Footer({ location }: Object) {
                 )}
               </Fragment>
             ))}
-            <p className="pt5-l pt4 pb3">
+          </div>
+        </div>
+        <div className="flex justify-between flex-column flex-row-ns">
+          <div className="pt2 mb2 f6 w-50-l w-100">
+            <div className="pb3 lh-title mw6">
+              <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">
+                <img
+                  className="mb1"
+                  src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
+                  alt="Creative Commons License"
+                />
+              </a>
+              <br />
+              <a
+                className="link white"
+                href="https://creativecommons.org/licenses/by-sa/4.0/"
+                rel="license"
+              >
+                <FormattedMessage {...messages.license} />
+              </a>
+            </div>
+            <Link to={'about'} className="link white">
+              <FormattedMessage {...messages.credits} />
+            </Link>
+            <div className="pt2 f6 lh-title">
+              <a href={`https://${ORG_PRIVACY_POLICY_URL}`} className="link white">
+                <FormattedMessage {...messages.privacyPolicy} />
+              </a>
+            </div>
+          </div>
+          <div className="pt2 f6 mb2 w-50-l w-100 tl tr-l self-end flex flex-column items-start items-end-ns ">
+            <p className="pb3 flex socials">
               {socialNetworks
                 .filter((item) => item.link)
                 .map((item, n) => (
                   <a
                     key={n}
                     href={item.link}
-                    className="link barlow-condensed white f4 ttu di-l dib ph2"
+                    className="link barlow-condensed white f4 ttu di-l dib"
                   >
                     {item.icon}
                   </a>
                 ))}
             </p>
-          </div>
-        </div>
-        <div className="cf">
-          <div className="pt2 mb2 f7 w-50-l w-100 fl">
-            <Link to={'about'} className="link white">
-              <FormattedMessage {...messages.credits} />
-            </Link>
-            <div className="pt2 f7 lh-title">
-              <a href={`https://${ORG_PRIVACY_POLICY_URL}`} className="link white">
-                <FormattedMessage {...messages.privacyPolicy} />
-              </a>
-            </div>
-          </div>
-          <div className="pt2 f7 mb2 w-50-l w-100 tl tr-l fr">
-            <a href="https://osm.org/about" className="link white pl1">
+            <a href="https://osm.org/about" className="link white">
               <FormattedMessage {...messages.learn} />
             </a>
           </div>

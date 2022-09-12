@@ -3,7 +3,7 @@ import { Link } from '@reach/router';
 import { LoadingIcon } from './svgIcons';
 
 const IconSpace = ({ children }) => <span className="mr2">{children}</span>;
-const AnimatedLoadingIcon = () => (
+export const AnimatedLoadingIcon = () => (
   <IconSpace>
     <LoadingIcon className="h1 w1 v-mid" style={{ animation: 'spin 1s linear infinite' }} />
   </IconSpace>

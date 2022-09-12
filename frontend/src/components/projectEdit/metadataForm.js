@@ -150,7 +150,7 @@ export const MetadataForm = () => {
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
-            <FormattedMessage {...messages.extraIdParams} />*
+          <FormattedMessage {...messages.extraIdParams} />
         </label>
         <p className={styleClasses.pClass}>
           <FormattedMessage
@@ -164,10 +164,7 @@ export const MetadataForm = () => {
             values={{ link: <IdDocsLink /> }}
           />
         </p>
-        <ExtraIdParams
-          value={projectInfo.extraIdParams}
-          setProjectInfo={setProjectInfo}
-        />
+        <ExtraIdParams value={projectInfo.extraIdParams} setProjectInfo={setProjectInfo} />
       </div>
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
@@ -249,7 +246,7 @@ export const MetadataForm = () => {
   );
 };
 
-const IdDocsLink = () =>
+const IdDocsLink = () => (
   <a
     href="https://github.com/openstreetmap/iD/blob/develop/API.md#url-parameters"
     className="red underline link"
@@ -257,4 +254,5 @@ const IdDocsLink = () =>
     rel="noopener noreferrer"
   >
     <FormattedMessage {...messages.iDAPIDocs} />
-  </a>;
+  </a>
+);

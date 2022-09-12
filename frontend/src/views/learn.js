@@ -371,7 +371,7 @@ const LearnToMap = ({ section }) => {
   const tutorials = [
     {
       message: 'learnQuickStartTutorial',
-      url: 'learn/quickstart',
+      url: 'quickstart',
       img: QuickstartLogo,
     },
     {

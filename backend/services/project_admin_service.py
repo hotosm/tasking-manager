@@ -1,5 +1,5 @@
 import json
-
+import threading
 import geojson
 from flask import current_app
 
@@ -12,9 +12,11 @@ from backend.models.dtos.project_dto import (
 from backend.models.postgis.project import Project, Task, ProjectStatus
 from backend.models.postgis.statuses import TaskCreationMode, TeamRoles
 from backend.models.postgis.task import TaskHistory, TaskStatus, TaskAction
+from backend.models.postgis.user import User
 from backend.models.postgis.utils import NotFound, InvalidData, InvalidGeoJson
 from backend.services.grid.grid_service import GridService
 from backend.services.license_service import LicenseService
+from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService
 from backend.services.organisation_service import OrganisationService
 from backend.services.team_service import TeamService
@@ -282,23 +284,44 @@ class ProjectAdminService:
     def transfer_project_to(project_id: int, transfering_user_id: int, username: str):
         """Transfers project from old owner (transfering_user_id) to new owner (username)"""
         project = Project.get(project_id)
+        new_owner = UserService.get_user_by_username(username)
+        # No operation is required if the new owner is same as old owner
+        if username == project.author.username:
+            return
 
         # Check permissions for the user (transferring_user_id) who initiatied the action
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            transfering_user_id, project_id
-        ):
-            raise ValueError("UserNotPermitted- User action not permitted")
-        new_owner = UserService.get_user_by_username(username)
-
-        # Check permissions for the new owner - must be an admin or project's org manager or a PM team member
-        if not ProjectAdminService.is_user_action_permitted_on_project(
-            new_owner.id, project_id
-        ):
-            raise ValueError(
-                "InvalidNewOwner- New owner must be an admin or project's org manager or a PM team member"
+        is_admin = UserService.is_user_an_admin(transfering_user_id)
+        is_author = UserService.is_user_the_project_author(
+            transfering_user_id, project.author_id
+        )
+        is_org_manager = OrganisationService.is_user_an_org_manager(
+            project.organisation_id, transfering_user_id
+        )
+        if not (is_admin or is_author or is_org_manager):
+            raise ProjectAdminServiceError(
+                "TransferPermissionError- User does not have permissions to transfer project"
             )
+
+        # Check permissions for the new owner - must be project's org manager
+        is_new_owner_org_manager = OrganisationService.is_user_an_org_manager(
+            project.organisation_id, new_owner.id
+        )
+        is_new_owner_admin = UserService.is_user_an_admin(new_owner.id)
+        if not (is_new_owner_org_manager or is_new_owner_admin):
+            error_message = (
+                "InvalidNewOwner- New owner must be project's org manager or TM admin"
+            )
+            if current_app:
+                current_app.logger.debug(error_message)
+            raise ValueError(error_message)
         else:
+            transferred_by = User.get_by_id(transfering_user_id).username
+            project.author_id = new_owner.id
             project.save()
+            threading.Thread(
+                target=MessageService.send_project_transfer_message,
+                args=(project_id, username, transferred_by),
+            ).start()
 
     @staticmethod
     def is_user_action_permitted_on_project(

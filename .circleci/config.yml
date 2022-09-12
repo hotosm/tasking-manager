@@ -4,6 +4,12 @@ jobs:
     working_directory: /home/circleci/app
     docker:
     - image: cimg/python:3.7-node
+      environment:
+        SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
+    - image: cimg/postgres:14.2-postgis
+      environment:
+        POSTGRES_USER: taskingmanager
+        POSTGRES_DB: test_tm
     steps:
     - checkout
     - setup_remote_docker
@@ -14,6 +20,11 @@ jobs:
           sudo apt-get install -y libgeos-dev # Required for shapely
           sudo yarn global add @mapbox/cfn-config @mapbox/cloudfriend
           pip install awscli --upgrade
+    - run:
+        name: Configure Postgresql Test database
+        command: |
+          sudo apt-get install postgresql-client
+          psql -h localhost -U $POSTGRES_USER test_$POSTGRES_DB -c "CREATE EXTENSION postgis;"
     - run:
         name: Set folder permissions
         command: |
@@ -48,21 +59,21 @@ jobs:
           cd ${CIRCLE_WORKING_DIRECTORY}/frontend
           CI=true yarn test -w 1
           CI=true GENERATE_SOURCEMAP=false yarn build
-    # - run:
-    #     name: Run backend tests
-    #     command: |
-    #       # Run Python tests
-    #       cd ${CIRCLE_WORKING_DIRECTORY}
-    #       mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
-    #       find ./tests/backend -name "test*.py" -exec chmod -x {} \;
-    #       nosetests ./tests/backend --with-xunit \
-    #         --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
-    #         --with-coverage --cover-erase --cover-package=./backend
-    #       coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
-    # - store_test_results:
-    #     path: tests/backend/results
-    # - store_artifacts:
-    #     path: tests/backend/results
+    - run:
+        name: Run backend tests
+        command: |
+          # Run Python tests
+          cd ${CIRCLE_WORKING_DIRECTORY}
+          mkdir ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results
+          find ./tests/backend -name "test*.py" -exec chmod -x {} \;
+          nosetests ./tests/backend --with-xunit \
+            --xunit-file ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/unitresults.xml \
+            --with-coverage --cover-erase --cover-package=./backend
+          coverage xml -o ${CIRCLE_WORKING_DIRECTORY}/tests/backend/results/coverage.xml
+    - store_test_results:
+        path: tests/backend/results
+    - store_artifacts:
+        path: tests/backend/results
     - save_cache:
         key: node-v1-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
         paths:
@@ -219,6 +230,7 @@ workflows:
   build-deploy:
     jobs:
     - build:
+        context: tasking-manager-testing
         filters:
           branches:
             ignore:

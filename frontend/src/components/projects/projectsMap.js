@@ -22,7 +22,7 @@ const licensedFonts = MAPBOX_TOKEN
   ? ['DIN Offc Pro Medium', 'Arial Unicode MS Bold']
   : ['Open Sans Semibold'];
 
-export const mapboxLayerDefn = (map, mapResults, clickOnProjectID) => {
+export const mapboxLayerDefn = (map, mapResults, clickOnProjectID, disablePoiClick = false) => {
   map.addImage('mapMarker', markerIcon, { width: 15, height: 15, data: markerIcon });
   map.addSource('projects', {
     type: 'geojson',
@@ -80,7 +80,9 @@ export const mapboxLayerDefn = (map, mapResults, clickOnProjectID) => {
   });
   map.on('mouseenter', 'projects-unclustered-points', function (e) {
     // Change the cursor style as a UI indicator.
-    map.getCanvas().style.cursor = 'pointer';
+    if (!disablePoiClick) {
+      map.getCanvas().style.cursor = 'pointer';
+    }
   });
   map.on('mouseleave', 'projects-unclustered-points', function (e) {
     // Change the cursor style as a UI indicator.
@@ -174,8 +176,8 @@ export const ProjectsMap = ({
   }, [map, mapResults, clickOnProjectID]);
 
   if (!mapboxgl.supported()) {
-    return <WebglUnsupported className={`vh-75-l vh-50 fr ${className || ''}`} />;
+    return <WebglUnsupported className={`h-100 w-100  ${className || ''}`} />;
   } else {
-    return <div id="map" className={`vh-75-l vh-50 fr ${className || ''}`} ref={mapRef}></div>;
+    return <div id="map" className={`h-100 w-100 ${className || ''}`} ref={mapRef}></div>;
   }
 };

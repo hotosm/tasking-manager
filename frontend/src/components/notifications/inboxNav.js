@@ -24,32 +24,30 @@ const isActiveButton = (buttonName, projectQuery) => {
 export const InboxNavMini = (props) => {
   return (
     /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
-    <header className="">
-      <div className="cf">
-        <div className="w-100 fl">
-          <h3 className="fl f4 barlow-condensed fw8">
-            <FormattedMessage {...messages.notifications} />
-          </h3>
-          {props.newMsgCount > 0 && (
-            <Link
-              to="/inbox?orderBy=read&orderByType=DESC"
-              onClick={(e) => {
-                props.setPopoutFocus(false);
-              }}
-            >
-              <div className="dib fr br2 core-font b--white ba bg-red grey-light f7 mv3 pa2">
-                {props.newMsgCount === 1 ? (
-                  <FormattedMessage {...messages.oneNewNotification} />
-                ) : (
-                  <FormattedMessage
-                    {...messages.newNotifications}
-                    values={{ n: props.newMsgCount }}
-                  />
-                )}
-              </div>
-            </Link>
-          )}
-        </div>
+    <header className="notifications-header">
+      <div className="w-100 flex justify-between">
+        <h3 className="f4 fw7 ma0 f125">
+          <FormattedMessage {...messages.notifications} />
+        </h3>
+        {props.newMsgCount > 0 && (
+          <Link
+            to="/inbox?orderBy=read&orderByType=DESC"
+            onClick={(e) => {
+              props.setPopoutFocus(false);
+            }}
+          >
+            <div className="flex justify-between items-center fr br2 bg-red f7 lh-solid white ph2 pv1">
+              {props.newMsgCount === 1 ? (
+                <FormattedMessage {...messages.oneNewNotification} />
+              ) : (
+                <FormattedMessage
+                  {...messages.newNotifications}
+                  values={{ n: props.newMsgCount }}
+                />
+              )}
+            </div>
+          </Link>
+        )}
       </div>
     </header>
   );
@@ -59,11 +57,12 @@ export const InboxNavMiniBottom = (props) => {
     /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
     <footer className={`relative h2 w-100 ${props.className || ''}`}>
       <Link
-        className="absolute hover-darken tc pv2 w-100 b--grey-light ba bg-red white f6 no-underline"
+        className="absolute flex items-center justify-center hover-darken tc pv2 w-100 b--grey-light bg-red white f5 no-underline br2 br--bottom"
         to="/inbox"
         onClick={(e) => {
           props.setPopoutFocus(false);
         }}
+        style={{ height: '3rem' }}
       >
         {props.msgCount ? (
           <FormattedMessage {...messages.viewAll} />

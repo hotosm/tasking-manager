@@ -1,4 +1,7 @@
 from unittest.mock import patch
+from flask import current_app
+
+from backend.services.messaging.smtp_service import SMTPService
 from backend.services.project_service import (
     ProjectService,
     Project,
@@ -8,6 +11,7 @@ from backend.services.project_service import (
     UserService,
     MappingNotAllowed,
     ValidatingNotAllowed,
+    ProjectInfo,
 )
 from backend.services.project_service import ProjectAdminService
 from backend.models.dtos.project_dto import LockedTasksForUser
@@ -16,6 +20,12 @@ from tests.backend.base import BaseTestCase
 
 
 class TestProjectService(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        current_app.config[
+            "SEND_PROJECT_EMAIL_UPDATES"
+        ] = True  # Set to true to test email sending
+
     @patch.object(Project, "get")
     def test_project_service_raises_error_if_project_not_found(self, mock_project):
         mock_project.return_value = None
@@ -185,3 +195,84 @@ class TestProjectService(BaseTestCase):
         allowed, reason = ProjectService.is_user_permitted_to_validate(1, 1)
         self.assertFalse(allowed)
         self.assertEqual(reason, ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE)
+
+    @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
+    @patch.object(Project, "calculate_tasks_percent")
+    @patch.object(ProjectInfo, "get_dto_for_locale")
+    @patch.object(ProjectService, "get_project_by_id")
+    def test_send_email_on_project_progress_sends_email_on_fifty_percent_progress(
+        self, mock_project, mock_project_info, mock_project_completion, mock_send_email
+    ):
+        # Arrange
+        mock_project.return_value = Project()
+        mock_project_info.name.return_value = "TEST_PROJECT"
+        mock_project_completion.return_value = 50
+        # Act
+        ProjectService.send_email_on_project_progress(1)
+        # Assert
+        mock_send_email.assert_called()
+
+    @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
+    @patch.object(Project, "calculate_tasks_percent")
+    @patch.object(ProjectInfo, "get_dto_for_locale")
+    @patch.object(ProjectService, "get_project_by_id")
+    def test_send_email_on_project_progress_sends_email_on_project_completion(
+        self, mock_project, mock_project_info, mock_project_completion, mock_send_email
+    ):
+        # Arrange
+        mock_project.return_value = Project()
+        mock_project_info.name.return_value = "TEST_PROJECT"
+        mock_project_completion.return_value = 100
+        # Act
+        ProjectService.send_email_on_project_progress(1)
+        # Assert
+        mock_send_email.assert_called()
+
+    @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
+    @patch.object(Project, "calculate_tasks_percent")
+    @patch.object(ProjectInfo, "get_dto_for_locale")
+    @patch.object(ProjectService, "get_project_by_id")
+    def test_send_email_on_project_progress_doesnt_send_email_except_on_fifty_and_hundred_percent(
+        self, mock_project, mock_project_info, mock_project_completion, mock_send_email
+    ):
+        # Arrange
+        mock_project.return_value = Project()
+        mock_project_info.name.return_value = "TEST_PROJECT"
+        mock_project_completion.return_value = 80
+        # Act
+        ProjectService.send_email_on_project_progress(1)
+        # Assert
+        self.assertFalse(mock_send_email.called)
+
+    @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
+    @patch.object(Project, "calculate_tasks_percent")
+    @patch.object(ProjectService, "get_project_by_id")
+    def test_send_email_on_project_progress_doesnt_send_email_if_email_already_sent(
+        self, mock_project, mock_project_completion, mock_send_email
+    ):
+        # Arrange
+        canned_project = Project()
+        canned_project.progress_email_sent = True
+        mock_project.return_value = canned_project
+        mock_project.progress_email_sent.return_value = True
+        mock_project_completion.return_value = 50
+        # Act
+        ProjectService.send_email_on_project_progress(1)
+        # Assert
+        self.assertFalse(mock_send_email.called)
+
+    @patch.object(SMTPService, "send_email_to_contributors_on_project_progress")
+    @patch.object(ProjectService, "get_project_by_id")
+    def test_send_email_on_project_progress_doesnt_send_email_if_send_project_update_email_is_disabled(
+        self, mock_project, mock_send_email
+    ):
+        # Arrange
+        mock_project.return_value = Project()
+        current_app.config["SEND_PROJECT_EMAIL_UPDATES"] = False
+        # Act
+        ProjectService.send_email_on_project_progress(1)
+        # Assert
+        current_app.config[
+            "SEND_PROJECT_EMAIL_UPDATES"
+        ] = True  # Set to true for other tests
+        self.assertFalse(mock_send_email.called)

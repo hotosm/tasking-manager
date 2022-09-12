@@ -3,8 +3,12 @@ from urllib.parse import urlparse, parse_qs
 from unittest.mock import patch, MagicMock
 from flask import current_app
 
+from backend.models.postgis.message import Message
+from backend.models.postgis.statuses import EncouragingEmailType
 from backend.services.messaging.smtp_service import SMTPService
+from backend.services.users.user_service import UserService
 from tests.backend.base import BaseTestCase
+from tests.backend.helpers.test_helpers import return_canned_user
 
 
 class TestSMTPService(BaseTestCase):
@@ -17,6 +21,7 @@ class TestSMTPService(BaseTestCase):
         self.from_username = "Aadesh Baral"
         self.message_id = 1
         self.project_id = 1
+        self.project_name = "test_project"
         self.task_id = 1
         self.subject = "test subject"
         self.content = "test content"
@@ -43,6 +48,7 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
@@ -63,6 +69,7 @@ class TestSMTPService(BaseTestCase):
                 message_id=self.message_id,
                 from_username=self.from_username,
                 project_id=self.project_id,
+                project_name=self.project_name,
                 task_id=self.task_id,
                 subject=self.subject,
                 content=self.content,
@@ -81,6 +88,7 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
@@ -96,6 +104,7 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
@@ -115,6 +124,7 @@ class TestSMTPService(BaseTestCase):
             message_id=self.message_id,
             from_username=self.from_username,
             project_id=self.project_id,
+            project_name=self.project_name,
             task_id=self.task_id,
             subject=self.subject,
             content=self.content,
@@ -162,3 +172,39 @@ class TestSMTPService(BaseTestCase):
 
         # Act/Assert
         SMTPService._send_message(to_address, subject, content, content)
+
+    @patch.object(SMTPService, "_send_message")
+    @patch.object(UserService, "get_user_by_id")
+    @patch.object(Message, "get_all_contributors")
+    def test_send_email_to_contributors_on_project_progress(
+        self,
+        mock_get_all_contributors,
+        mock_get_user_by_id,
+        mock_send_message,
+    ):
+        # Arrange
+        mock_get_all_contributors.return_value = [(123456,)]
+        test_user = return_canned_user()
+        test_user.email_address = self.to_address
+        mock_get_user_by_id.return_value = test_user
+
+        # Test email is not sent if user email is not verified
+        SMTPService.send_email_to_contributors_on_project_progress(
+            EncouragingEmailType.PROJECT_PROGRESS.value, 1, "test", 50
+        )
+        self.assertFalse(mock_send_message.called)
+
+        # Test email is not sent if user has projects notifications disabled
+        test_user.is_email_verified = True
+        test_user.projects_notifications = False
+        SMTPService.send_email_to_contributors_on_project_progress(
+            EncouragingEmailType.PROJECT_PROGRESS.value, 1, "test", 50
+        )
+        self.assertFalse(mock_send_message.called)
+
+        # Test email is sent if user has projects notifications enabled and email is verified
+        test_user.projects_notifications = True
+        SMTPService.send_email_to_contributors_on_project_progress(
+            EncouragingEmailType.PROJECT_PROGRESS.value, 1, "test", 50
+        )
+        mock_send_message.assert_called()

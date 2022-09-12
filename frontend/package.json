@@ -41,7 +41,7 @@
     "immutable": "^4.1.0",
     "mapbox-gl": "^1.13.1",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
-    "marked": "^4.0.12",
+    "marked": "^4.0.18",
     "osmtogeojson": "^3.0.0-beta.3",
     "query-string": "^7.0.1",
     "react": "^17.0.2",
@@ -84,7 +84,7 @@
     "preparation": "bash -c \"if (test -a ../tasking-manager.env); then grep -hs ^ ../tasking-manager.env .env.expand > .env; else cp .env.expand .env; fi\"",
     "start": "npm run preparation && npm run copy-static && react-scripts start",
     "build": "npm run preparation && npm run update-static && react-scripts build",
-    "prettier": "prettier --write src/**/*.js",
+    "prettier": "prettier --write 'src/**/*.js'",
     "lint": "eslint src",
     "test": "npm run lint && react-scripts test --env=jsdom",
     "coverage": "npm run test -- --coverage --watchAll=false",
@@ -124,3 +124,4 @@
     ]
   }
 }
+

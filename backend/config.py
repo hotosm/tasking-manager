@@ -102,6 +102,9 @@ class EnvironmentConfig:
     MAIL_DEFAULT_SENDER = os.getenv("TM_EMAIL_FROM_ADDRESS", None)
     MAIL_DEBUG = True if LOG_LEVEL == "DEBUG" else False
 
+    # If disabled project update emails will not be sent.
+    SEND_PROJECT_EMAIL_UPDATES = int(os.getenv("TM_SEND_PROJECT_EMAIL_UPDATES", True))
+
     # Languages offered by the Tasking Manager
     # Please note that there must be exactly the same number of Codes as languages.
     SUPPORTED_LANGUAGES = {
@@ -122,10 +125,12 @@ class EnvironmentConfig:
     OAUTH_SCOPE = os.getenv("TM_SCOPE", None)
 
     # Some more definitions (not overridable)
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_size": 10,
+        "max_overflow": 10,
+    }
     SEND_FILE_MAX_AGE_DEFAULT = 0
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_POOL_SIZE = 10
-    SQLALCHEMY_MAX_OVERFLOW = 10
 
     # Image upload Api
     IMAGE_UPLOAD_API_KEY = os.getenv("TM_IMAGE_UPLOAD_API_KEY", None)
@@ -148,3 +153,4 @@ class TestEnvironmentConfig(EnvironmentConfig):
         + f"{POSTGRES_PORT}"
         + f"/test_{POSTGRES_DB}"
     )
+    LOG_LEVEL = "DEBUG"

@@ -106,41 +106,43 @@ export const setAuthDetails = (username, token, osm_oauth_token ) => (
 };
 
 // UPDATES OSM INFORMATION OF THE USER
-export const setUserDetails = (username, encodedToken, update = false) => (dispatch) => {
-  // only trigger the loader if this function is not being triggered to update the user information
-  if (!update) dispatch(setLoader(true));
-  fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encodedToken)
-    .then((osmInfo) => dispatch(updateOSMInfo(osmInfo)))
-    .catch((error) => {
-      console.log(error);
-      dispatch(setLoader(false));
-    });
-  // GET USER DETAILS
-  fetchLocalJSONAPI(`users/queries/${username}/`, encodedToken)
-    .then((userDetails) => {
-      dispatch(updateUserDetails(userDetails));
-      // GET USER ORGS INFO
-      fetchLocalJSONAPI(
-        `organisations/?omitManagerList=true&manager_user_id=${userDetails.id}`,
-        encodedToken,
-      )
-        .then((orgs) =>
-          dispatch(updateOrgsInfo(orgs.organisations.map((org) => org.organisationId))),
+export const setUserDetails =
+  (username, encodedToken, update = false) =>
+  (dispatch) => {
+    // only trigger the loader if this function is not being triggered to update the user information
+    if (!update) dispatch(setLoader(true));
+    fetchLocalJSONAPI(`users/${username}/openstreetmap/`, encodedToken)
+      .then((osmInfo) => dispatch(updateOSMInfo(osmInfo)))
+      .catch((error) => {
+        console.log(error);
+        dispatch(setLoader(false));
+      });
+    // GET USER DETAILS
+    fetchLocalJSONAPI(`users/queries/${username}/`, encodedToken)
+      .then((userDetails) => {
+        dispatch(updateUserDetails(userDetails));
+        // GET USER ORGS INFO
+        fetchLocalJSONAPI(
+          `organisations/?omitManagerList=true&manager_user_id=${userDetails.id}`,
+          encodedToken,
         )
-        .catch((error) => dispatch(updateOrgsInfo([])));
-      fetchLocalJSONAPI(
-        `teams/?omitMemberList=true&team_role=PROJECT_MANAGER&member=${userDetails.id}`,
-        encodedToken,
-      )
-        .then((teams) => dispatch(updatePMsTeams(teams.teams.map((team) => team.teamId))))
-        .catch((error) => dispatch(updatePMsTeams([])));
-      dispatch(setLoader(false));
-    })
-    .catch((error) => {
-      dispatch(logout());
-      dispatch(setLoader(false));
-    });
-};
+          .then((orgs) =>
+            dispatch(updateOrgsInfo(orgs.organisations.map((org) => org.organisationId))),
+          )
+          .catch((error) => dispatch(updateOrgsInfo([])));
+        fetchLocalJSONAPI(
+          `teams/?omitMemberList=true&team_role=PROJECT_MANAGER&member=${userDetails.id}`,
+          encodedToken,
+        )
+          .then((teams) => dispatch(updatePMsTeams(teams.teams.map((team) => team.teamId))))
+          .catch((error) => dispatch(updatePMsTeams([])));
+        dispatch(setLoader(false));
+      })
+      .catch((error) => {
+        dispatch(logout());
+        dispatch(setLoader(false));
+      });
+  };
 
 export const getUserDetails = (state) => (dispatch) => {
   if (state.auth.getIn(['userDetails', 'username'])) {
@@ -150,8 +152,10 @@ export const getUserDetails = (state) => (dispatch) => {
   }
 };
 
-export const pushUserDetails = (userDetails, token, update = false) => (dispatch) => {
-  pushToLocalJSONAPI(`users/me/actions/set-user/`, userDetails, token, 'PATCH').then((data) =>
-    dispatch(setUserDetails(safeStorage.getItem('username'), token, update)),
-  );
-};
+export const pushUserDetails =
+  (userDetails, token, update = false) =>
+  (dispatch) => {
+    pushToLocalJSONAPI(`users/me/actions/set-user/`, userDetails, token, 'PATCH').then((data) =>
+      dispatch(setUserDetails(safeStorage.getItem('username'), token, update)),
+    );
+  };

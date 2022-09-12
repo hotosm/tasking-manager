@@ -382,15 +382,12 @@ export function CompletionTabForValidation({
       };
       return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
-        navigate(
-          (redirectToPreviousProject && directedFrom) || `../tasks/?filter=MAPPED`,
-          {
-            state: {
-              lastLockedTasksIds: tasksIds,
-              lastLockedProjectId: project.projectId,
-            },
+        navigate((redirectToPreviousProject && directedFrom) || `../tasks/?filter=MAPPED`, {
+          state: {
+            lastLockedTasksIds: tasksIds,
+            lastLockedProjectId: project.projectId,
           },
-        );
+        });
       });
     } else if (disabled) {
       return new Promise((resolve, reject) => {

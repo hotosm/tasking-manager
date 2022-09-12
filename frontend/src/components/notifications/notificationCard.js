@@ -22,7 +22,7 @@ export const stripHtmlToText = (notificationHtml) =>
 
 export const typesThatUseSystemAvatar = ['SYSTEM', 'REQUEST_TEAM_NOTIFICATION'];
 
-export const MessageAvatar = ({ messageType, fromUsername, size }: Object) => {
+export const MessageAvatar = ({ messageType, fromUsername, displayPictureUrl, size }: Object) => {
   const checkIsSystem = typesThatUseSystemAvatar.indexOf(messageType) !== -1;
 
   if (!fromUsername && !checkIsSystem) {
@@ -34,10 +34,10 @@ export const MessageAvatar = ({ messageType, fromUsername, size }: Object) => {
       {fromUsername /*picture={null} does a fetch user profile to get pic url */ ? (
         <UserAvatar
           username={fromUsername}
-          picture={null}
+          picture={displayPictureUrl}
           colorClasses="white bg-blue-grey"
           size={size}
-          disableLink={true}
+          disableLink={false}
         />
       ) : (
         checkIsSystem && (
@@ -58,6 +58,7 @@ export function NotificationCard({
   messageId,
   messageType,
   fromUsername,
+  displayPictureUrl,
   subject,
   read,
   sentDate,
@@ -100,7 +101,12 @@ export function NotificationCard({
           <CheckBox activeItems={selected} toggleFn={setSelected} itemId={messageId} />
         </div>
         <div className={`fl dib w2 h3 mr3`}>
-          <MessageAvatar messageType={messageType} fromUsername={fromUsername} size={'medium'} />
+          <MessageAvatar
+            messageType={messageType}
+            fromUsername={fromUsername}
+            displayPictureUrl={displayPictureUrl}
+            size={'medium'}
+          />
         </div>
 
         <strong
@@ -166,22 +172,34 @@ export function NotificationCardMini({
   messageId,
   messageType,
   fromUsername,
+  displayPictureUrl,
   subject,
   sentDate,
 }: Object) {
   return (
     <Link to={`/inbox/message/${messageId}`} className="no-underline hover-red">
-      <article className="db base-font w-100 mb2 hover-red blue-dark">
-        <div className="pr3">
-          <div style={{ width: '1.5rem' }} className="fl w-25 dib h2 ml2 mr3 v-top">
-            <MessageAvatar messageType={messageType} fromUsername={fromUsername} size={'small'} />
+      <article
+        className="db base-font w-100 hover-red blue-dark"
+        style={{ marginBottom: '1.5rem' }}
+      >
+        <div className="flex" style={{ gap: '1rem' }}>
+          <div className="h2 v-top">
+            <MessageAvatar
+              messageType={messageType}
+              fromUsername={fromUsername}
+              displayPictureUrl={displayPictureUrl}
+              size={'medium'}
+            />
           </div>
-          <div
-            className="dib f7 w-75 fl messageSubjectLinks"
-            dangerouslySetInnerHTML={rawHtmlNotification(subject)}
-          ></div>
-          <div className="blue-grey f7 mb1 cf dib">
-            <RelativeTimeWithUnit date={sentDate} />
+          <div>
+            <div
+              className="f7 messageSubjectLinks"
+              style={{ lineHeight: 1.21 }}
+              dangerouslySetInnerHTML={rawHtmlNotification(subject)}
+            ></div>
+            <div className="blue-grey f7 mt2">
+              <RelativeTimeWithUnit date={sentDate} />
+            </div>
           </div>
         </div>
       </article>

@@ -282,6 +282,7 @@ def add_api_endpoints(app):
         SystemLanguagesAPI,
         SystemContactAdminRestAPI,
     )
+    from backend.api.system.banner import SystemBannerAPI
     from backend.api.system.statistics import SystemStatisticsAPI
     from backend.api.system.authentication import (
         SystemAuthenticationEmailAPI,
@@ -789,6 +790,9 @@ def add_api_endpoints(app):
 
     # System endpoint
     api.add_resource(SystemDocsAPI, format_url("system/docs/json/"))
+    api.add_resource(
+        SystemBannerAPI, format_url("system/banner/"), methods=["GET", "PATCH"]
+    )
     api.add_resource(SystemHeartbeatAPI, format_url("system/heartbeat/"))
     api.add_resource(SystemLanguagesAPI, format_url("system/languages/"))
     api.add_resource(SystemStatisticsAPI, format_url("system/statistics/"))

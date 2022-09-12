@@ -21,6 +21,11 @@ export default defineMessages({
     id: 'projects.formInputs.teams.title',
     defaultMessage: 'Teams',
   },
+  teamsPermissionNote: {
+    id: 'projects.teams.teamsPermissionNote',
+    defaultMessage:
+      'Note: Mappers have mapping permissions. Validators have mapping and validation permissions. Project managers have mapping and validation permissions as well as the access to the management sections.',
+  },
   organisation: {
     id: 'projects.formInputs.organisation.title',
     defaultMessage: 'Organization',
@@ -37,6 +42,10 @@ export default defineMessages({
     id: 'projects.formInputs.organisation.description',
     defaultMessage:
       'Organization that is coordinating the project, if there is any. The managers of that organization will have administration rights over the project.',
+  },
+  admins: {
+    id: 'projects.formInputs.admins.title',
+    defaultMessage: 'TM Admins',
   },
   selectImagery: {
     id: 'projects.formInputs.imagery.select',
@@ -247,7 +256,8 @@ export default defineMessages({
   },
   transferProjectAlert: {
     id: 'projects.actions.transfer_project.alert',
-    defaultMessage: 'In case of wrong transfer, contact the new owner to revert the change.',
+    defaultMessage:
+      'This feature is only available to the project author, organisation manager and TM admin.',
   },
   transferProjectSuccess: {
     id: 'projects.actions.transfer_project.success',
@@ -471,6 +481,10 @@ export default defineMessages({
     defaultMessage:
       'Default comments added to uploaded changeset comment field. Users should also be encouraged to add text describing what they mapped. Hashtags are sometimes used for analysis later, but should be human informative and not overused, #group #event for example.',
   },
+  nonEditableComment: {
+    id: 'projects.formInputs.non_editable_comment',
+    defaultMessage: 'This default comment is not editable.',
+  },
   projectPriorityURGENT: {
     id: 'project.formInputs.priority.options.urgent',
     defaultMessage: 'Urgent',
@@ -598,8 +612,7 @@ export default defineMessages({
   },
   extraIdParams: {
     id: 'projects.formInputs.extraIdParams',
-    defaultMessage:
-      'Additional iD URL parameters',
+    defaultMessage: 'Additional iD URL parameters',
   },
   extraIdParamsDescription: {
     id: 'projects.formInputs.extraIdParams.description',
@@ -608,12 +621,10 @@ export default defineMessages({
   },
   extraIdParamsDescriptionLink: {
     id: 'projects.formInputs.extraIdParams.description.link',
-    defaultMessage:
-      'Check the {link} for more information.',
+    defaultMessage: 'Check the {link} for more information.',
   },
   iDAPIDocs: {
     id: 'projects.formInputs.extraIdParams.iDAPIDocs',
-    defaultMessage:
-      'iD editor documentation',
+    defaultMessage: 'iD editor documentation',
   },
 });
