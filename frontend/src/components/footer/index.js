@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useMatch } from '@reach/router';
+import { Link, useMatch as matchPath } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import {
   TwitterIcon,
@@ -48,8 +48,7 @@ export function Footer() {
   ];
   let isFooterEnabled = true;
   footerDisabledPaths.forEach((path) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const match = useMatch(path);
+    const match = matchPath(path);
     if (match !== null) {
       isFooterEnabled = false;
     }
