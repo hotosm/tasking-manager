@@ -886,6 +886,7 @@
   "user.gender.privacy": "Your gender information will be used only for statistics purposes and will not be exposed to other users.",
   "user.email.privacy": "Your email address will be used only to send you notifications and updates about Tasking Manager. It will not be shared with other users or organizations.",
   "user.slack": "Username on {org} Slack",
+  "user.osmCha": "Changesets on OSMCha",
   "user.personalInfo.error": "Type only your username, not the URL.",
   "user.form.save": "Save",
   "user.settings.title": "Settings",
