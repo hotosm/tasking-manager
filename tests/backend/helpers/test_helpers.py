@@ -1,4 +1,5 @@
 import geojson
+import base64
 import json
 import os
 from typing import Tuple
@@ -19,6 +20,7 @@ from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User
 from backend.models.postgis.organisation import Organisation
+from backend.services.users.authentication_service import AuthenticationService
 
 TEST_USER_ID = 777777
 TEST_USERNAME = "Thinkwhere Test"
@@ -105,6 +107,14 @@ def return_canned_user(username=TEST_USERNAME, id=TEST_USER_ID) -> User:
     test_user.email_address = None
 
     return test_user
+
+
+def generate_encoded_token(user_id: int):
+    "Returns encoded session token along with token scheme"
+
+    session_token = AuthenticationService.generate_session_token_for_user(user_id)
+    session_token = base64.b64encode(session_token.encode("utf-8"))
+    return "Token " + session_token.decode("utf-8")
 
 
 def create_canned_user() -> User:
