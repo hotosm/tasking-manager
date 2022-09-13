@@ -9,7 +9,7 @@ This requires [Docker](https://docs.docker.com/get-started/) and [Docker Compose
 ## Configure
 
 * Copy the example configuration file to start your own configuration: `cp example.env tasking-manager.env`.
-* Adjust the `tasking-manager.env` configuration file to fit your configuration.
+* Adjust the `tasking-manager.env` configuration file to fit your configuration. The defaults will create a working local test setup.
 
 ### Authenticate with OpenStreetMap
 
@@ -26,26 +26,22 @@ Afterwards copy the consumer key and secret from OpenStreetMap into your configu
 ## Run the Tasking Manager
 
 * One command to get everything together and start the Tasking Manager: `docker-compose up -d`
-* Visit with your browser [http://localhost:80](http://localhost:80)
-  * The API is available at the same URL [http://localhost:80/api-docs](http://localhost:80/api-docs).
+* Visit with your browser [http://localhost:3000](http://localhost:3000)
+  * The API is available at [http://localhost:5000](http://localhost:5000/api-docs).
 
-For stopping this command do the job: `docker-compose stop`
-And you can check the logs with `docker-compose logs -f`
+Stop the containers with: `docker-compose down` or access the logs with `docker-compose logs -f`
 
 Some functionality in the Tasking Manager and the API need special privileges. You can promote yourself to _Administrator_ after your first login, if you want to use this advanced functionality on your local instance. Log in to the backed database (see below) and change your users _role_ in the *Users* table to **1**.
 
 ### Public host
 
-By default, things are made to work from `localhost`.  If you want to setup a public host, the following settings need to be adapted:
+By default, things are made to work from `localhost`. If you want to setup a public host in production, at least the following settings need to be adapted:
 
 * `tasking-manager.env`:
-  * `TM_APP_BASE_URL=https://your_domain/` e.g. `TM_APP_BASE_URL=https://tasks.smartcitiestransport.com/`
-  * `TM_APP_API_URL=https://your_domain/api`
-* `docker-compose.override.yml`:
-  * ```traefik.http.routers.frontend.rule=Host(`localhost`, `your_domain`)```
-* `docker-compose.yml`:
-  * ```traefik.http.routers.backend.rule=Host(`localhost`, `your_domain`) && PathPrefix(`/api/`)```
-  * ```traefik.http.routers.frontend.rule=Host(`localhost`, `your_domain`)```
+  * `TM_APP_BASE_URL=https://your_domain:3000` e.g. `TM_APP_BASE_URL=https://tasks.smartcitiestransport.com:3000`
+  * `TM_APP_API_URL=https://your_domain:5000`
+  
+Yet, we suggest to use a reverse proxy like [traefik](https://traefik.io/traefik/) to route your traffic and expose the frontend and the api both behind port 80 under different paths. See [docker-compose.traefik.yaml](../docker-compose.traefik.yaml) for an example on how to configure it. Run `docker-compose -f docker-compose.yml -f docker-compose.traefik.yml up -d` and visit [http://localhost](http://localhost) to see it in action. Make sure to update `tasking-manager.env` accordingly.
 
 ### Backend database
 
@@ -59,10 +55,7 @@ In `docker-compose.override.yml`:
 services:
   postgresql:
     volumes:
-      - "postgresql-data:/var/lib/postgresql/data"
-
-volumes:
-  postgresql-data:
+      - "./postgresql-data:/var/lib/postgresql/data"
 ```
 
 #### Database access
@@ -78,7 +71,7 @@ services:
       - a_free_port_on_your_host:5432
 ```
 
-## Using make
+# Using make
 
 The most common docker actions are available in a [make](https://www.gnu.org/software/make/) script for convenience. To start all required services to run tasking manager locally, run
 ```

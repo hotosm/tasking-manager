@@ -1,12 +1,15 @@
 # To use this file, run `docker-compose up`.
 version: "3.4"
 
-x-backend-config: &backend
-  image: hotosm-tasking-manager:backend
+x-template-config: &template
+  build:
+    context: "."
+    dockerfile: "./scripts/docker/Dockerfile.backend"
+  image: hotosm-tasking-manager:base
   env_file: ${ENV_FILE:-tasking-manager.env}
+  volumes:
+    - .:/usr/src/app
   depends_on:
-    - postgresql
-  links:
     - postgresql
   networks:
     - tm-web
@@ -14,46 +17,41 @@ x-backend-config: &backend
 services:
   # Main application
   backend:
-    <<: *backend
-    container_name: backend
+    <<: *template
+    container_name: tm_backend
     restart: unless-stopped
-    labels:
-      - traefik.http.routers.backend.rule=Host(`localhost`) && PathPrefix(`/api/`)
-      - traefik.http.services.backend.loadbalancer.server.port=5000
+    ports:
+      - 5000:5000
 
   migration:
-    <<: *backend
-    container_name: migration
+    <<: *template
+    container_name: tm_migration
     restart: on-failure
     command: python manage.py db upgrade
+    depends_on:
+      - backend
 
   frontend:
+    container_name: tm_frontend
+    build:
+      context: "."
+      dockerfile: "./scripts/docker/Dockerfile.frontend"
     image: hotosm-tasking-manager:frontend
+    volumes:
+      - .:/usr/src/app
     restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - 3000:80
     networks:
       - tm-web
-    labels:
-      - traefik.http.routers.frontend.rule=Host(`localhost`)
-      - traefik.http.services.frontend.loadbalancer.server.port=80
 
   postgresql:
     image: mdillon/postgis:11
     container_name: postgresql
     restart: unless-stopped
     env_file: ${ENV_FILE:-tasking-manager.env}
-    networks:
-      - tm-web
-
-  traefik:
-    image: traefik:v2.3
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command:
-      - --entrypoints.web.address=:80
-      - --providers.docker=true
     networks:
       - tm-web
 
