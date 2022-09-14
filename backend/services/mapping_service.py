@@ -133,7 +133,7 @@ class MappingService:
 
         # Update stats around the change of state
         last_state = TaskHistory.get_last_status(
-            mapped_task.project_id, mapped_task.task_id, True
+            mapped_task.project_id, mapped_task.task_id
         )
         StatsService.update_stats_after_task_state_change(
             mapped_task.project_id, mapped_task.user_id, last_state, new_state

@@ -346,7 +346,6 @@ class ValidatorService:
 
         # Reset counters
         project = ProjectService.get_project_by_id(project_id)
-        project.tasks_mapped = 0
         project.tasks_validated = 0
         project.save()
 
@@ -371,8 +370,8 @@ class ValidatorService:
 
         # Set counters to fully mapped and validated
         project = ProjectService.get_project_by_id(project_id)
-        project.tasks_mapped = project.total_tasks - project.tasks_bad_imagery
-        project.tasks_validated = project.total_tasks
+        project.tasks_validated += project.tasks_mapped
+        project.tasks_mapped = 0
         project.save()
 
     @staticmethod
