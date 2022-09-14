@@ -716,7 +716,7 @@ class TasksActionsInvalidateAllAPI(Resource):
     @token_auth.login_required
     def post(self, project_id):
         """
-        Invalidate all mapped tasks on a project
+        Invalidate all validated tasks on a project
         ---
         tags:
             - tasks
@@ -737,7 +737,7 @@ class TasksActionsInvalidateAllAPI(Resource):
               default: 1
         responses:
             200:
-                description: All mapped tasks invalidated
+                description: All validated tasks invalidated
             401:
                 description: Unauthorized - Invalid credentials
             403:

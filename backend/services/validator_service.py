@@ -335,20 +335,13 @@ class ValidatorService:
 
     @staticmethod
     def invalidate_all_tasks(project_id: int, user_id: int):
-        """Invalidates all mapped tasks on a project"""
-        mapped_tasks = Task.query.filter(
+        """Invalidates all validated tasks on a project"""
+        validated_tasks = Task.query.filter(
             Task.project_id == project_id,
-            ~Task.task_status.in_(
-                [TaskStatus.READY.value, TaskStatus.BADIMAGERY.value]
-            ),
+            Task.task_status == TaskStatus.VALIDATED.value,
         ).all()
-        for task in mapped_tasks:
-            if TaskStatus(task.task_status) not in [
-                TaskStatus.LOCKED_FOR_MAPPING,
-                TaskStatus.LOCKED_FOR_VALIDATION,
-            ]:
-                # Only lock tasks that are not already locked to avoid double lock issue.
-                task.lock_task_for_validating(user_id)
+        for task in validated_tasks:
+            task.lock_task_for_validating(user_id)
             task.unlock_task(user_id, new_state=TaskStatus.INVALIDATED)
 
         # Reset counters
@@ -362,7 +355,7 @@ class ValidatorService:
         """Validates all mapped tasks on a project"""
         tasks_to_validate = Task.query.filter(
             Task.project_id == project_id,
-            Task.task_status != TaskStatus.BADIMAGERY.value,
+            Task.task_status == TaskStatus.MAPPED.value,
         ).all()
 
         for task in tasks_to_validate:

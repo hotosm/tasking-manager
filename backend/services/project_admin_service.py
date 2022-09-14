@@ -181,7 +181,10 @@ class ProjectAdminService:
     @staticmethod
     def reset_all_tasks(project_id: int, user_id: int):
         """Resets all tasks on project, preserving history"""
-        tasks_to_reset = Task.query.filter(Task.project_id == project_id).all()
+        tasks_to_reset = Task.query.filter(
+            Task.project_id == project_id,
+            Task.task_status != TaskStatus.READY.value,
+        ).all()
 
         for task in tasks_to_reset:
             task.set_task_history(
