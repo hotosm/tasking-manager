@@ -20,7 +20,7 @@ describe('SocialMedia component', () => {
       </IntlProviders>,
     );
     // img tag for OSM, Missng Maps and Slack
-    expect(screen.getAllByRole('img')).toHaveLength(3);
+    expect(screen.getAllByRole('img')).toHaveLength(4);
     // SVGs for Facebook, Linkedin, Twitter
     expect(container.querySelectorAll('svg').length).toBe(3);
   });
@@ -35,7 +35,7 @@ describe('SocialMedia component', () => {
       screen.getAllByRole('link', {
         name: 'johndoe',
       }),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
     expect(screen.queryAllByRole('link', { name: 'johndoe' })[0]).toHaveAttribute(
       'href',
       'https://www.openstreetmap.org/user/johndoe',
@@ -43,6 +43,10 @@ describe('SocialMedia component', () => {
     expect(screen.queryAllByRole('link', { name: 'johndoe' })[1]).toHaveAttribute(
       'href',
       'https://www.missingmaps.org/users/#/johndoe',
+    );
+    expect(screen.queryAllByRole('link', { name: 'johndoe' })[2]).toHaveAttribute(
+      'href',
+      'https://osmcha.mapbox.com/?filters={"users":[{"label":"johndoe","value":"johndoe"}]}',
     );
     expect(screen.getByRole('link', { name: 'johndoeTwitter' })).toHaveAttribute(
       'href',

@@ -385,7 +385,7 @@ class OrganisationsStatsAPI(Resource):
         try:
             OrganisationService.get_organisation_by_id(organisation_id)
             organisation_dto = OrganisationService.get_organisation_stats(
-                organisation_id
+                organisation_id, None
             )
             return organisation_dto.to_primitive(), 200
         except NotFound:
@@ -422,6 +422,14 @@ class OrganisationsAllAPI(Resource):
               type: boolean
               description: Set it to true if you don't want the managers list on the response.
               default: False
+            - in: query
+              name: omitOrgStats
+              type: boolean
+              description: Set it to true if you don't want organisation stats on the response. \n
+                \n
+                Adds year to date organisation stats to response if set false.
+              default: True
+
         responses:
             200:
                 description: Organisations found
@@ -455,10 +463,14 @@ class OrganisationsAllAPI(Resource):
 
         # Validate abbreviated.
         omit_managers = strtobool(request.args.get("omitManagerList", "false"))
+        omit_stats = strtobool(request.args.get("omitOrgStats", "true"))
         # Obtain organisations
         try:
             results_dto = OrganisationService.get_organisations_as_dto(
-                manager_user_id, authenticated_user_id, omit_managers
+                manager_user_id,
+                authenticated_user_id,
+                omit_managers,
+                omit_stats,
             )
             return results_dto.to_primitive(), 200
         except NotFound:

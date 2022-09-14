@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from '@reach/router';
+import { Link, useMatch as matchPath } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import {
   TwitterIcon,
@@ -30,17 +30,32 @@ const socialNetworks = [
   { link: ORG_GITHUB, icon: <GithubIcon style={{ height: '20px', width: '20px' }} /> },
 ];
 
-export function Footer({ location }: Object) {
+export function Footer() {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
 
-  const noFooterViews = ['tasks', 'map', 'validate', 'new', 'membership', 'api-docs'];
-  const activeView = location.pathname
-    .split('/')
-    .filter((i) => i !== '')
-    .splice(-1)[0];
+  const footerDisabledPaths = [
+    'projects/:id/tasks',
+    'projects/:id/map',
+    'projects/:id/validate',
+    'manage/organisations/new/',
+    'manage/teams/new',
+    'manage/campaigns/new',
+    'manage/projects/new',
+    'manage/categories/new',
+    'manage/licenses/new',
+    'teams/:id/membership',
+    '/api-docs/',
+  ];
+  let isFooterEnabled = true;
+  footerDisabledPaths.forEach((path) => {
+    const match = matchPath(path);
+    if (match !== null) {
+      isFooterEnabled = false;
+    }
+  });
 
-  if (noFooterViews.includes(activeView)) {
-    return <></>;
+  if (!isFooterEnabled) {
+    return null;
   } else {
     return (
       <footer className="ph3 ph6-l pb4 white bg-blue-dark">
