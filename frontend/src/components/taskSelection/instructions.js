@@ -12,7 +12,7 @@ export function ProjectInstructions({ instructions, isProjectArchived }: Object)
     <>
       {isProjectArchived && (
         <Alert type="warning" compact={false}>
-          <FormattedMessage {...messages.projectIsArchived}/>
+          <FormattedMessage {...messages.projectIsArchived} />
         </Alert>
       )}
       <div

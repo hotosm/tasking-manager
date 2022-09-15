@@ -133,7 +133,7 @@ export const UserProjectsPage = (props) => {
         }
       </MyProjectNav>
       <section className={`${searchResultWidth} explore-projects-container`}>
-        <div className=''>
+        <div className="">
           <ProjectSearchResults
             state={state}
             retryFn={forceUpdate}
