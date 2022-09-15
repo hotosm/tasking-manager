@@ -150,17 +150,17 @@ export default defineMessages({
   },
   invalidateAll: {
     id: 'projects.actions.invalidate_all_tasks.title',
-    defaultMessage: 'Invalidate all tasks',
+    defaultMessage: 'Invalidate all validated tasks',
   },
   invalidateAllConfirmation: {
     id: 'projects.actions.invalidate_all_tasks.confirmation',
     defaultMessage:
-      'Are you sure you want to invalidate all tasks in this project? You cannot undo this.',
+      'Are you sure you want to invalidate all validated tasks in this project? You cannot undo this.',
   },
   invalidateAllDescription: {
     id: 'projects.actions.invalidate_all_tasks.description',
     defaultMessage:
-      "This will mark all tasks (except 'unavailable' ones) as 'more mapping needed'. Please use this only if you are sure of what you are doing.",
+      "This will mark all validated tasks as 'more mapping needed'. Please use this only if you are sure of what you are doing.",
   },
   invalidateAllSuccess: {
     id: 'projects.actions.invalidate_all_tasks.success',
@@ -172,16 +172,16 @@ export default defineMessages({
   },
   validateAllTasks: {
     id: 'projects.actions.validate_all_tasks.title',
-    defaultMessage: 'Validate all tasks',
+    defaultMessage: 'Validate all mapped tasks',
   },
   validateAllTasksConfirmation: {
     id: 'projects.actions.validate_all_tasks.confirmation',
-    defaultMessage: 'Are you sure you want to validate all tasks? You cannot undo this.',
+    defaultMessage: 'Are you sure you want to validate all mapped tasks? You cannot undo this.',
   },
   validateAllTasksDescription: {
     id: 'projects.actions.validate_all_tasks.description',
     defaultMessage:
-      "This will change the status of all tasks (except 'unavailable' ones) to 'finished'. Please use this only if you are sure of what you are doing.",
+      "This will change the status of all mapped tasks to 'finished'. Please use this only if you are sure of what you are doing.",
   },
   validateAllSuccess: {
     id: 'projects.actions.validate_all_tasks.success',

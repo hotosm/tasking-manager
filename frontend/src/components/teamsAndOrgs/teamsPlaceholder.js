@@ -8,7 +8,7 @@ export const teamCardPlaceholderTemplate = () => (_n, i) =>
       className="base-font blue-dark h-100 bg-white ph3 pb3 ba br1 b--card shadow-hover h-100 flex flex-column justify-between"
       key={i}
     >
-      <div className='mt3'>
+      <div className="mt3">
         <TextRow
           className="show-loading-animation mb3"
           color="#CCC"

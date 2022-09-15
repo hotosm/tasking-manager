@@ -26,7 +26,7 @@ export const PermissionsForm = () => {
         </label>
         <TeamSelect />
         <p className="f6 blue-grey w-80 mt2">
-          <FormattedMessage {...messages.teamsPermissionNote} />          
+          <FormattedMessage {...messages.teamsPermissionNote} />
         </p>
       </div>
       <div className={styleClasses.divClass}>
