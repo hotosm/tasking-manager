@@ -22,6 +22,10 @@ html {
     background-color: $blue-dark;
     opacity: 0.8;
   }
+
+  .vh-minus-122 {
+    height: calc(100vh - 122px);
+  }
 }
 
 @media screen and (min-width: 30em) {
