@@ -22,6 +22,10 @@ html {
     background-color: $blue-dark;
     opacity: 0.8;
   }
+
+  .vh-minus-122 {
+    height: calc(100vh - 122px);
+  }
 }
 
 @media screen and (min-width: 30em) {
@@ -450,4 +454,8 @@ a[href="https://www.mapbox.com/map-feedback/"]
   position: sticky;
   top: 0;
   align-self: flex-start;
+}
+
+.shadow-1 {
+  box-shadow: 0px 4px 10px rgb(0 0 0 / 10%);
 }
