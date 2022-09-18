@@ -289,7 +289,7 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
             <FormattedMessage {...messages.organisation} />
           </h4>
           <Link
-            className="link blue-dark fw5 mr2 underline"
+            className="link blue-dark fw5 mr2 underline dib"
             to={`/organisations/${team.organisationSlug}`}
           >
             <p>
