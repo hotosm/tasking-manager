@@ -377,7 +377,7 @@ export const TasksMap = ({
           map.getCanvas().style.cursor = 'not-allowed';
         } else {
           map.getCanvas().style.cursor = 'pointer';
-          popup?.remove();
+          popup.isOpen() && popup.remove();
         }
         if (showTaskIds) {
           // when the user hover on a task they are validating, enable the task id dialog
@@ -402,11 +402,17 @@ export const TasksMap = ({
 
       map.on('click', 'tasks-fill', onSelectTaskClick);
       map.on('mouseleave', 'tasks-fill', function (e) {
-        popup?.remove();
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = '';
         // disable the task id dialog when the mouse go outside the task grid
         showTaskIds && setHoveredTaskId(null);
+        popup.isOpen() && popup.remove();
+
+        // Cursor style won't change to original state with trackPointer()
+        // https://github.com/mapbox/mapbox-gl-js/issues/12223
+        if (map._canvasContainer) {
+          map._canvasContainer.classList.remove('mapboxgl-track-pointer');
+        }
       });
       updateTMZoom();
     };
