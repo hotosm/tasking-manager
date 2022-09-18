@@ -65,11 +65,11 @@ class OrganisationsBySlugRestAPI(Resource):
             )
             return organisation_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "Organisation Not Found"}, 404
+            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Organisation GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class OrganisationsRestAPI(Resource):
@@ -131,7 +131,10 @@ class OrganisationsRestAPI(Resource):
         """
         request_user = User.get_by_id(token_auth.current_user())
         if request_user.role != 1:
-            return {"Error": "Only admin users can create organisations."}, 403
+            return {
+                "Error": "Only admin users can create organisations.",
+                "SubCode": "OnlyAdminAccess",
+            }, 403
 
         try:
             organisation_dto = NewOrganisationDTO(request.get_json())
@@ -140,17 +143,17 @@ class OrganisationsRestAPI(Resource):
             organisation_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             org_id = OrganisationService.create_organisation(organisation_dto)
             return {"organisationId": org_id}, 201
         except OrganisationServiceError as e:
-            return str(e), 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
             error_msg = f"Organisation PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def delete(self, organisation_id):
@@ -189,18 +192,24 @@ class OrganisationsRestAPI(Resource):
         if not OrganisationService.can_user_manage_organisation(
             organisation_id, token_auth.current_user()
         ):
-            return {"Error": "User is not an admin for the org"}, 403
+            return {
+                "Error": "User is not an admin for the org",
+                "SubCode": "UserNotOrgAdmin",
+            }, 403
         try:
             OrganisationService.delete_organisation(organisation_id)
             return {"Success": "Organisation deleted"}, 200
         except OrganisationServiceError:
-            return {"Error": "Organisation has some projects"}, 403
+            return {
+                "Error": "Organisation has some projects",
+                "SubCode": "OrgHasProjects",
+            }, 403
         except NotFound:
-            return {"Error": "Organisation Not Found"}, 404
+            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Organisation DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     def get(self, organisation_id):
         """
@@ -250,11 +259,11 @@ class OrganisationsRestAPI(Resource):
             )
             return organisation_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "Organisation Not Found"}, 404
+            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Organisation GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def patch(self, organisation_id):
@@ -319,7 +328,10 @@ class OrganisationsRestAPI(Resource):
         if not OrganisationService.can_user_manage_organisation(
             organisation_id, token_auth.current_user()
         ):
-            return {"Error": "User is not an admin for the org"}, 403
+            return {
+                "Error": "User is not an admin for the org",
+                "SubCode": "UserNotOrgAdmin",
+            }, 403
         try:
             organisation_dto = UpdateOrganisationDTO(request.get_json())
             organisation_dto.organisation_id = organisation_id
@@ -331,19 +343,19 @@ class OrganisationsRestAPI(Resource):
             organisation_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             OrganisationService.update_organisation(organisation_dto)
             return {"Status": "Updated"}, 200
         except NotFound as e:
-            return {"Error": str(e)}, 404
+            return {"Error": str(e), "SubCode": "NotFound"}, 404
         except OrganisationServiceError as e:
-            return str(e), 402
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 402
         except Exception as e:
             error_msg = f"Organisation PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class OrganisationsStatsAPI(Resource):
@@ -373,15 +385,15 @@ class OrganisationsStatsAPI(Resource):
         try:
             OrganisationService.get_organisation_by_id(organisation_id)
             organisation_dto = OrganisationService.get_organisation_stats(
-                organisation_id
+                organisation_id, None
             )
             return organisation_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "Organisation Not Found"}, 404
+            return {"Error": "Organisation Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Organisation GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class OrganisationsAllAPI(Resource):
@@ -410,6 +422,14 @@ class OrganisationsAllAPI(Resource):
               type: boolean
               description: Set it to true if you don't want the managers list on the response.
               default: False
+            - in: query
+              name: omitOrgStats
+              type: boolean
+              description: Set it to true if you don't want organisation stats on the response. \n
+                \n
+                Adds year to date organisation stats to response if set false.
+              default: True
+
         responses:
             200:
                 description: Organisations found
@@ -435,22 +455,27 @@ class OrganisationsAllAPI(Resource):
         if manager_user_id is not None and not authenticated_user_id:
             return (
                 {
-                    "Error": "Unauthorized - Filter by manager_user_id is not allowed to unauthenticated requests"
+                    "Error": "Unauthorized - Filter by manager_user_id is not allowed to unauthenticated requests",
+                    "SubCode": "LoginToFilterManager",
                 },
                 403,
             )
 
         # Validate abbreviated.
         omit_managers = strtobool(request.args.get("omitManagerList", "false"))
+        omit_stats = strtobool(request.args.get("omitOrgStats", "true"))
         # Obtain organisations
         try:
             results_dto = OrganisationService.get_organisations_as_dto(
-                manager_user_id, authenticated_user_id, omit_managers
+                manager_user_id,
+                authenticated_user_id,
+                omit_managers,
+                omit_stats,
             )
             return results_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "No organisations found"}, 404
+            return {"Error": "No organisations found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Organisations GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

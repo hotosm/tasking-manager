@@ -28,7 +28,7 @@ from backend.services.users.user_service import UserService
 
 
 class ValidatorServiceError(Exception):
-    """ Custom exception to notify callers that error has occurred """
+    """Custom exception to notify callers that error has occurred"""
 
     def __init__(self, message):
         if current_app:
@@ -56,14 +56,15 @@ class ValidatorService:
                 TaskStatus.BADIMAGERY,
             ]:
                 raise ValidatorServiceError(
-                    f"Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
+                    f"NotReadyForValidation- Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
                 )
             user_can_validate = ValidatorService._user_can_validate_task(
                 validation_dto.user_id, task.mapped_by
             )
             if not user_can_validate:
                 raise ValidatorServiceError(
-                    "Tasks cannot be validated by the same user who marked task as mapped or badimagery"
+                    "CannotValidateMappedTask-"
+                    + "Tasks cannot be validated by the same user who marked task as mapped or badimagery"
                 )
 
             tasks_to_lock.append(task)
@@ -75,8 +76,18 @@ class ValidatorService:
         if not user_can_validate:
             if error_reason == ValidatingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError("User must accept license to map this task")
+            elif error_reason == ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
+                raise ValidatorServiceError(
+                    "UserNotAllowed- Validation not allowed because: User not on allowed list"
+                )
+            elif error_reason == ValidatingNotAllowed.PROJECT_NOT_PUBLISHED:
+                raise ValidatorServiceError(
+                    "ProjectNotPublished- Validation not allowed because: Project not published"
+                )
             elif error_reason == ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
-                raise ValidatorServiceError("User already has a task locked")
+                raise ValidatorServiceError(
+                    "UserAlreadyHasTaskLocked- User already has a task locked"
+                )
             else:
                 raise ValidatorServiceError(
                     f"Validation not allowed because: {error_reason}"
@@ -179,7 +190,7 @@ class ValidatorService:
                 issues=task_mapping_issues,
             )
             dtos.append(task.as_dto_with_instructions(validated_dto.preferred_locale))
-
+        ProjectService.send_email_on_project_progress(validated_dto.project_id)
         task_dtos = TaskDTOs()
         task_dtos.tasks = dtos
 
@@ -241,12 +252,12 @@ class ValidatorService:
             current_state = TaskStatus(task.task_status)
             if current_state != TaskStatus.LOCKED_FOR_VALIDATION:
                 raise ValidatorServiceError(
-                    f"Task {unlock_task.task_id} is not LOCKED_FOR_VALIDATION"
+                    f"NotLockedForValidation- Task {unlock_task.task_id} is not LOCKED_FOR_VALIDATION"
                 )
 
             if task.locked_by != user_id:
                 raise ValidatorServiceError(
-                    "Attempting to unlock a task owned by another user"
+                    "TaskNotOwned- Attempting to unlock a task owned by another user"
                 )
 
             if hasattr(unlock_task, "status"):
@@ -268,7 +279,7 @@ class ValidatorService:
 
     @staticmethod
     def get_mapped_tasks_by_user(project_id: int) -> MappedTasks:
-        """ Get all mapped tasks on the project grouped by user"""
+        """Get all mapped tasks on the project grouped by user"""
         mapped_tasks = Task.get_mapped_tasks_by_user(project_id)
         return mapped_tasks
 
@@ -284,7 +295,7 @@ class ValidatorService:
         sort_by="updated_date",
         sort_direction="desc",
     ) -> InvalidatedTasks:
-        """ Get invalidated tasks either mapped or invalidated by the user """
+        """Get invalidated tasks either mapped or invalidated by the user"""
         user = UserService.get_user_by_username(username)
         query = (
             TaskInvalidationHistory.query.filter_by(invalidator_id=user.id)
@@ -324,7 +335,7 @@ class ValidatorService:
 
     @staticmethod
     def invalidate_all_tasks(project_id: int, user_id: int):
-        """ Invalidates all mapped tasks on a project"""
+        """Invalidates all mapped tasks on a project"""
         mapped_tasks = Task.query.filter(
             Task.project_id == project_id,
             ~Task.task_status.in_(
@@ -348,7 +359,7 @@ class ValidatorService:
 
     @staticmethod
     def validate_all_tasks(project_id: int, user_id: int):
-        """ Validates all mapped tasks on a project"""
+        """Validates all mapped tasks on a project"""
         tasks_to_validate = Task.query.filter(
             Task.project_id == project_id,
             Task.task_status != TaskStatus.BADIMAGERY.value,

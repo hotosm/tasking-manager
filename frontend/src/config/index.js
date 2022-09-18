@@ -41,7 +41,10 @@ export const ORG_INSTAGRAM = process.env.REACT_APP_ORG_INSTAGRAM || '';
 export const ORG_YOUTUBE = process.env.REACT_APP_ORG_YOUTUBE || '';
 export const ORG_GITHUB = process.env.REACT_APP_ORG_GITHUB || '';
 export const MATOMO_ID = process.env.REACT_APP_MATOMO_ID || '';
+export const SERVICE_DESK = process.env.REACT_APP_SERVICE_DESK || '';
 export const IMAGE_UPLOAD_SERVICE = process.env.REACT_APP_IMAGE_UPLOAD_API_URL || '';
+export const TM_DEFAULT_CHANGESET_COMMENT =
+  process.env.REACT_APP_TM_DEFAULT_CHANGESET_COMMENT || '';
 export const HOMEPAGE_VIDEO_URL = process.env.REACT_APP_HOMEPAGE_VIDEO_URL || '';
 // Sentry.io DSN
 export const SENTRY_FRONTEND_DSN = process.env.REACT_APP_SENTRY_FRONTEND_DSN;
@@ -54,6 +57,8 @@ export const ID_EDITOR_URL =
 export const POTLATCH2_EDITOR_URL =
   process.env.REACT_APP_POTLATCH2_EDITOR_URL ||
   'https://www.openstreetmap.org/edit?editor=potlatch2';
+export const RAPID_EDITOR_URL =
+  process.env.REACT_APP_RAPID_EDITOR_URL || 'https://mapwith.ai/rapid';
 
 export const TASK_COLOURS = {
   READY: '#fff',
@@ -71,6 +76,7 @@ export const CHART_COLOURS = {
   green: '#3e9c67',
   blue: '#3389D6',
   orange: '#f09733',
+  white: '#fff',
 };
 
 const fallbackRasterStyle = {

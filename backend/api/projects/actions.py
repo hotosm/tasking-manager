@@ -6,12 +6,16 @@ from schematics.exceptions import DataError
 from backend.models.dtos.message_dto import MessageDTO
 from backend.models.dtos.grid_dto import GridDTO
 from backend.services.project_service import ProjectService, NotFound
-from backend.services.project_admin_service import ProjectAdminService
+from backend.services.project_admin_service import (
+    ProjectAdminService,
+    ProjectAdminServiceError,
+)
 from backend.services.grid.grid_service import GridService
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.authentication_service import token_auth, tm
 from backend.services.interests_service import InterestService
 from backend.models.postgis.utils import InvalidGeoJson
+from shapely.errors import TopologicalError
 
 
 class ProjectsActionsTransferAPI(Resource):
@@ -62,12 +66,15 @@ class ProjectsActionsTransferAPI(Resource):
                 project_id, authenticated_user_id, username
             )
             return {"Success": "Project Transferred"}, 200
-        except ValueError as e:
-            return {"Error": str(e)}, 403
+        except (ValueError, ProjectAdminServiceError) as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"ProjectsActionsTransferAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to transfer project"}, 500
+            return {
+                "Error": "Unable to transfer project",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsActionsMessageContributorsAPI(Resource):
@@ -124,24 +131,34 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             message_dto.validate()
         except DataError as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": "Unable to send message to mappers"}, 400
+            return {
+                "Error": "Unable to send message to mappers",
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
+            ):
+                raise ValueError()
+
             threading.Thread(
                 target=MessageService.send_message_to_all_contributors,
                 args=(project_id, message_dto),
             ).start()
-
             return {"Success": "Messages started"}, 200
-        except ValueError as e:
-            return {"Error": str(e)}, 403
+        except ValueError:
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
         except Exception as e:
             error_msg = f"Send message all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to send messages to mappers"}, 500
+            return {
+                "Error": "Unable to send messages to mappers",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsActionsFeatureAPI(Resource):
@@ -181,25 +198,27 @@ class ProjectsActionsFeatureAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
-        except ValueError as e:
-            error_msg = f"FeaturedProjects POST: {str(e)}"
-            return {"Error": error_msg}, 403
+            ):
+                raise ValueError()
+        except ValueError:
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
 
         try:
             ProjectService.set_project_as_featured(project_id)
             return {"Success": True}, 200
         except NotFound:
-            return {"Error": "Project Not Found"}, 404
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
-            error_msg = f"FeaturedProjects POST: {str(e)}"
-            return {"Error": error_msg}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"FeaturedProjects POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectsActionsUnFeatureAPI(Resource):
@@ -238,25 +257,28 @@ class ProjectsActionsUnFeatureAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            )
-        except ValueError as e:
-            error_msg = f"FeaturedProjects POST: {str(e)}"
-            return {"Error": error_msg}, 403
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
+                raise ValueError()
+        except ValueError:
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
 
         try:
             ProjectService.unset_project_as_featured(project_id)
             return {"Success": True}, 200
         except NotFound:
-            return {"Error": "Project Not Found"}, 404
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
-            error_msg = f"FeaturedProjects DELETE: {str(e)}"
-            return {"Error": error_msg}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
         except Exception as e:
             error_msg = f"FeaturedProjects DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectsActionsSetInterestsAPI(Resource):
@@ -305,12 +327,16 @@ class ProjectsActionsSetInterestsAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
-                token_auth.current_user(), project_id
-            )
-        except ValueError as e:
-            error_msg = f"ProjectsActionsSetInterestsAPI POST: {str(e)}"
-            return {"Error": error_msg}, 403
+            authenticated_user_id = token_auth.current_user()
+            if not ProjectAdminService.is_user_action_permitted_on_project(
+                authenticated_user_id, project_id
+            ):
+                raise ValueError()
+        except ValueError:
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
 
         try:
             data = request.get_json()
@@ -319,13 +345,13 @@ class ProjectsActionsSetInterestsAPI(Resource):
             )
             return project_interests.to_primitive(), 200
         except NotFound:
-            return {"Error": "Project not Found"}, 404
+            return {"Error": "Project not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = (
                 f"ProjectsActionsSetInterestsAPI POST - unhandled error: {str(e)}"
             )
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class ProjectActionsIntersectingTilesAPI(Resource):
@@ -390,14 +416,19 @@ class ProjectActionsIntersectingTilesAPI(Resource):
             grid_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             grid = GridService.trim_grid_to_aoi(grid_dto)
             return grid, 200
         except InvalidGeoJson as e:
-            return {"error": f"{str(e)}"}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
+        except TopologicalError:
+            return {
+                "error": "Invalid geometry. Polygon is self intersecting",
+                "SubCode": "SelfIntersectingAOI",
+            }, 400
         except Exception as e:
             error_msg = f"IntersectingTiles GET API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"error": error_msg, "SubCode": "InternalServerError"}, 500

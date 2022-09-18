@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 
-export const NotFound = props => {
+export const NotFound = (props) => {
   return (
     <div className="cf w-100 pv5">
       <div className="tc">

@@ -15,6 +15,10 @@ export default defineMessages({
     id: 'header.nav.aboutLink',
     defaultMessage: 'About',
   },
+  support: {
+    id: 'header.nav.support',
+    defaultMessage: 'Support',
+  },
   myContributions: {
     id: 'header.nav.my_contributions',
     defaultMessage: 'My contributions',

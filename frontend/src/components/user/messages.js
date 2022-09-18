@@ -66,6 +66,10 @@ export default defineMessages({
     id: 'user.slack',
     defaultMessage: 'Username on {org} Slack',
   },
+  osmChaUsername: {
+    id: 'user.osmCha',
+    defaultMessage: 'Changesets on OSMCha',
+  },
   urlDetectedError: {
     id: 'user.personalInfo.error',
     defaultMessage: 'Type only your username, not the URL.',
@@ -158,14 +162,23 @@ export default defineMessages({
     id: 'user.notifications.task.description',
     defaultMessage: 'Receive an email when a task you have contributed to is validated.',
   },
-  comments: {
-    id: 'user.notifications.comments',
-    defaultMessage: 'Comments',
+  questionsAndComments: {
+    id: 'user.notifications.questionsAndComments',
+    defaultMessage: 'Questions and comments',
   },
-  commentsDescription: {
-    id: 'user.notifications.comments.description',
+  questionsAndCommentsDescription: {
+    id: 'user.notifications.questionsAndComments.description',
     defaultMessage:
-      'Receive a notification every time someone posts a comment on projects or tasks you have contributed to.',
+      "Receive a notification every time someone posts in the 'Questions and comments' section of the projects you have contributed to or created.",
+  },
+  taskComments: {
+    id: 'user.notifications.taskComments',
+    defaultMessage: 'Task comments',
+  },
+  taskCommentsDescription: {
+    id: 'user.notifications.taskComments.description',
+    defaultMessage:
+      'Receive a notification every time someone posts a comment on the tasks you have contributed to.',
   },
   learnHow: {
     id: 'user.settings.become_validator.button',

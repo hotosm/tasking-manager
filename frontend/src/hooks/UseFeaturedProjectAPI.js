@@ -51,7 +51,7 @@ const dataFetchReducer = (state, action) => {
   }
 };
 
-export const useFeaturedProjectAPI = initialData => {
+export const useFeaturedProjectAPI = (initialData) => {
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,
     isError: false,

@@ -86,22 +86,25 @@ class TeamsRestAPI(Resource):
             ) and not OrganisationService.can_user_manage_organisation(
                 org.id, authenticated_user_id
             ):
-                return {"Error": "User is not a admin or a manager for the team"}, 401
+                return {
+                    "Error": "User is not a admin or a manager for the team",
+                    "SubCode": "UserNotTeamManager",
+                }, 401
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             TeamService.update_team(team_dto)
             return {"Status": "Updated"}, 200
         except NotFound as e:
-            return {"Error": str(e)}, 404
+            return {"Error": str(e), "SubCode": "NotFound"}, 404
         except TeamServiceError as e:
             return str(e), 402
         except Exception as e:
             error_msg = f"Team POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def patch(self, team_id):
@@ -173,22 +176,25 @@ class TeamsRestAPI(Resource):
             ) and not OrganisationService.can_user_manage_organisation(
                 team.organisation_id, authenticated_user_id
             ):
-                return {"Error": "User is not a admin or a manager for the team"}, 401
+                return {
+                    "Error": "User is not a admin or a manager for the team",
+                    "SubCode": "UserNotTeamManager",
+                }, 401
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             TeamService.update_team(team_dto)
             return {"Status": "Updated"}, 200
         except NotFound as e:
-            return {"Error": str(e)}, 404
+            return {"Error": str(e), "SubCode": "NotFound"}, 404
         except TeamServiceError as e:
             return str(e), 402
         except Exception as e:
             error_msg = f"Team PATCH - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     def get(self, team_id):
         """
@@ -230,11 +236,11 @@ class TeamsRestAPI(Resource):
             team_dto = TeamService.get_team_as_dto(team_id, user_id, omit_members)
             return team_dto.to_primitive(), 200
         except NotFound:
-            return {"Error": "Team Not Found"}, 404
+            return {"Error": "Team Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Team GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     # TODO: Add delete API then do front end services and ui work
 
@@ -273,16 +279,19 @@ class TeamsRestAPI(Resource):
                 description: Internal Server Error
         """
         if not TeamService.is_user_team_manager(team_id, token_auth.current_user()):
-            return {"Error": "User is not a manager for the team"}, 401
+            return {
+                "Error": "User is not a manager for the team",
+                "SubCode": "UserNotTeamManager",
+            }, 401
         try:
             TeamService.delete_team(team_id)
             return {"Success": "Team deleted"}, 200
         except NotFound:
-            return {"Error": "Team Not Found"}, 404
+            return {"Error": "Team Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Team DELETE - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class TeamsAllAPI(Resource):
@@ -352,7 +361,7 @@ class TeamsAllAPI(Resource):
         except Exception as e:
             error_msg = f"Teams GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
         filters = {}
 
@@ -387,7 +396,7 @@ class TeamsAllAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
     @token_auth.login_required
     def post(self):
@@ -445,7 +454,7 @@ class TeamsAllAPI(Resource):
             team_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return str(e), 400
+            return {"Error": str(e), "SubCode": "InvalidData"}, 400
 
         try:
             organisation_id = team_dto.organisation_id
@@ -458,16 +467,14 @@ class TeamsAllAPI(Resource):
                 team_id = TeamService.create_team(team_dto)
                 return {"teamId": team_id}, 201
             else:
-                error_msg = (
-                    "Team POST - User not permitted to create team for the Organisation"
-                )
-                return {"Error": error_msg}, 403
+                error_msg = "User not permitted to create team for the Organisation"
+                return {"Error": error_msg, "SubCode": "CreateTeamNotPermitted"}, 403
         except TeamServiceError as e:
             return str(e), 400
         except NotFound:
             error_msg = "Team POST - Organisation does not exist"
-            return {"Error": error_msg}, 400
+            return {"Error": error_msg, "SubCode": "NotFound"}, 400
         except Exception as e:
             error_msg = f"Team POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": error_msg}, 500
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500

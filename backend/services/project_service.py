@@ -1,5 +1,7 @@
+import threading
 from cachetools import TTLCache, cached
 from flask import current_app
+
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.project_dto import (
     ProjectDTO,
@@ -10,8 +12,8 @@ from backend.models.dtos.project_dto import (
     ProjectContribDTO,
     ProjectSearchResultsDTO,
 )
-
 from backend.models.postgis.organisation import Organisation
+from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.project import Project, ProjectStatus, MappingLevel
 from backend.models.postgis.statuses import (
     MappingNotAllowed,
@@ -19,9 +21,11 @@ from backend.models.postgis.statuses import (
     MappingPermission,
     ValidationPermission,
     TeamRoles,
+    EncouragingEmailType,
 )
 from backend.models.postgis.task import Task, TaskHistory
 from backend.models.postgis.utils import NotFound
+from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.user_service import UserService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.project_admin_service import ProjectAdminService
@@ -33,7 +37,7 @@ summary_cache = TTLCache(maxsize=1024, ttl=600)
 
 
 class ProjectServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling projects """
+    """Custom Exception to notify callers an error occurred when handling projects"""
 
     def __init__(self, message):
         if current_app:
@@ -214,7 +218,7 @@ class ProjectService:
         if project.status == ProjectStatus.DRAFT.value:
             if not is_manager_permission:
                 is_allowed_user = False
-                raise ProjectServiceError("Unable to fetch project")
+                raise ProjectServiceError("ProjectNotFetched- Unable to fetch project")
 
         # Private Projects - allowed_users, admins, org admins &
         # assigned teams (mappers, validators, project managers), authors permitted
@@ -247,7 +251,7 @@ class ProjectService:
         if is_allowed_user or is_manager_permission or is_team_member:
             return project.as_dto_for_mapping(current_user_id, locale, abbrev)
         else:
-            raise ProjectServiceError("Unable to fetch project")
+            return None
 
     @staticmethod
     def get_project_tasks(
@@ -275,7 +279,7 @@ class ProjectService:
 
     @staticmethod
     def get_task_for_logged_in_user(user_id: int):
-        """ if the user is working on a task in the project return it """
+        """if the user is working on a task in the project return it"""
         tasks = Task.get_locked_tasks_for_user(user_id)
 
         tasks_dto = tasks
@@ -283,7 +287,7 @@ class ProjectService:
 
     @staticmethod
     def get_task_details_for_logged_in_user(user_id: int, preferred_locale: str):
-        """ if the user is working on a task in the project return it """
+        """if the user is working on a task in the project return it"""
         tasks = Task.get_locked_tasks_details_for_user(user_id)
 
         if len(tasks) == 0:
@@ -336,7 +340,7 @@ class ProjectService:
 
     @staticmethod
     def is_user_permitted_to_map(project_id: int, user_id: int):
-        """ Check if the user is allowed to map the on the project in scope """
+        """Check if the user is allowed to map the on the project in scope"""
         if UserService.is_user_blocked(user_id):
             return False, MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
@@ -389,7 +393,7 @@ class ProjectService:
 
     @staticmethod
     def _is_user_intermediate_or_advanced(user_id):
-        """ Helper method to determine if user level is not beginner """
+        """Helper method to determine if user level is not beginner"""
         user_mapping_level = UserService.get_mapping_level(user_id)
         if user_mapping_level not in [MappingLevel.INTERMEDIATE, MappingLevel.ADVANCED]:
             return False
@@ -421,7 +425,7 @@ class ProjectService:
 
     @staticmethod
     def is_user_permitted_to_validate(project_id, user_id):
-        """ Check if the user is allowed to validate on the project in scope """
+        """Check if the user is allowed to validate on the project in scope"""
         if UserService.is_user_blocked(user_id):
             return False, ValidatingNotAllowed.USER_NOT_ON_ALLOWED_LIST
 
@@ -477,25 +481,25 @@ class ProjectService:
     def get_project_summary(
         project_id: int, preferred_locale: str = "en"
     ) -> ProjectSummary:
-        """ Gets the project summary DTO """
+        """Gets the project summary DTO"""
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_summary(preferred_locale)
 
     @staticmethod
     def set_project_as_featured(project_id: int):
-        """ Sets project as featured """
+        """Sets project as featured"""
         project = ProjectService.get_project_by_id(project_id)
         project.set_as_featured()
 
     @staticmethod
     def unset_project_as_featured(project_id: int):
-        """ Sets project as featured """
+        """Sets project as featured"""
         project = ProjectService.get_project_by_id(project_id)
         project.unset_as_featured()
 
     @staticmethod
     def get_featured_projects(preferred_locale):
-        """ Sets project as featured """
+        """Sets project as featured"""
         query = ProjectSearchService.create_search_query()
         projects = query.filter(Project.featured == true()).group_by(Project.id).all()
 
@@ -529,20 +533,20 @@ class ProjectService:
 
     @staticmethod
     def get_project_title(project_id: int, preferred_locale: str = "en") -> str:
-        """ Gets the project title DTO """
+        """Gets the project title DTO"""
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_title(preferred_locale)
 
     @staticmethod
     @cached(TTLCache(maxsize=1024, ttl=600))
     def get_project_stats(project_id: int) -> ProjectStatsDTO:
-        """ Gets the project stats DTO """
+        """Gets the project stats DTO"""
         project = ProjectService.get_project_by_id(project_id)
         return project.get_project_stats()
 
     @staticmethod
     def get_project_user_stats(project_id: int, username: str) -> ProjectUserStatsDTO:
-        """ Gets the user stats for a specific project """
+        """Gets the user stats for a specific project"""
         project = ProjectService.get_project_by_id(project_id)
         user = UserService.get_user_by_username(username)
         return project.get_project_user_stats(user.id)
@@ -563,3 +567,39 @@ class ProjectService:
             raise NotFound()
 
         return project.organisation
+
+    @staticmethod
+    def send_email_on_project_progress(project_id):
+        """ Send email to all contributors on project progress """
+        if not current_app.config["SEND_PROJECT_EMAIL_UPDATES"]:
+            return
+        project = ProjectService.get_project_by_id(project_id)
+
+        project_completion = Project.calculate_tasks_percent(
+            "project_completion",
+            project.total_tasks,
+            project.tasks_mapped,
+            project.tasks_validated,
+            project.tasks_bad_imagery,
+        )
+        if project_completion == 50 and project.progress_email_sent:
+            return  # Don't send progress email if it's already sent
+        if project_completion in [50, 100]:
+            email_type = (
+                EncouragingEmailType.PROJECT_COMPLETE.value
+                if project_completion == 100
+                else EncouragingEmailType.PROJECT_PROGRESS.value
+            )
+            project_title = ProjectInfo.get_dto_for_locale(
+                project_id, project.default_locale
+            ).name
+            project.progress_email_sent = True
+            threading.Thread(
+                target=SMTPService.send_email_to_contributors_on_project_progress,
+                args=(
+                    email_type,
+                    project_id,
+                    project_title,
+                    project_completion,
+                ),
+            ).start()

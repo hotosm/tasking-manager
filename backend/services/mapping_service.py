@@ -20,7 +20,7 @@ from backend.services.stats_service import StatsService
 
 
 class MappingServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when handling mapping """
+    """Custom Exception to notify callers an error occurred when handling mapping"""
 
     def __init__(self, message):
         if current_app:
@@ -47,14 +47,14 @@ class MappingService:
         project_id: int,
         preferred_local: str = "en",
     ) -> TaskDTO:
-        """ Get task as DTO for transmission over API """
+        """Get task as DTO for transmission over API"""
         task = MappingService.get_task(task_id, project_id)
         task_dto = task.as_dto_with_instructions(preferred_local)
         return task_dto
 
     @staticmethod
     def _is_task_undoable(logged_in_user_id: int, task: Task) -> bool:
-        """ Determines if the current task status can be undone by the logged in user """
+        """Determines if the current task status can be undone by the logged in user"""
         # Test to see if user can undo status on this task
         if logged_in_user_id and TaskStatus(task.task_status) not in [
             TaskStatus.LOCKED_FOR_MAPPING,
@@ -85,7 +85,9 @@ class MappingService:
         task = MappingService.get_task(lock_task_dto.task_id, lock_task_dto.project_id)
 
         if not task.is_mappable():
-            raise MappingServiceError("Task in invalid state for mapping")
+            raise MappingServiceError(
+                "InvalidTaskState- Task in invalid state for mapping"
+            )
 
         user_can_map, error_reason = ProjectService.is_user_permitted_to_map(
             lock_task_dto.project_id, lock_task_dto.user_id
@@ -93,9 +95,19 @@ class MappingService:
         if not user_can_map:
             if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
                 raise UserLicenseError("User must accept license to map this task")
+            elif error_reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
+                raise MappingServiceError("UserNotAllowed- User not on allowed list")
+            elif error_reason == MappingNotAllowed.PROJECT_NOT_PUBLISHED:
+                raise MappingServiceError(
+                    "ProjectNotPublished- Project is not published"
+                )
+            elif error_reason == MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
+                raise MappingServiceError(
+                    "UserAlreadyHasTaskLocked- User already has task locked"
+                )
             else:
                 raise MappingServiceError(
-                    f"Mapping not allowed because: {error_reason}"
+                    f"{error_reason}- Mapping not allowed because: {error_reason}"
                 )
 
         task.lock_task_for_mapping(lock_task_dto.user_id)
@@ -103,7 +115,7 @@ class MappingService:
 
     @staticmethod
     def unlock_task_after_mapping(mapped_task: MappedTaskDTO) -> TaskDTO:
-        """ Unlocks the task and sets the task history appropriately """
+        """Unlocks the task and sets the task history appropriately"""
         task = MappingService.get_task_locked_by_user(
             mapped_task.project_id, mapped_task.task_id, mapped_task.user_id
         )
@@ -116,7 +128,7 @@ class MappingService:
             TaskStatus.READY,
         ]:
             raise MappingServiceError(
-                "Can only set status to MAPPED, BADIMAGERY, READY after mapping"
+                "InvalidUnlockState- Can only set status to MAPPED, BADIMAGERY, READY after mapping"
             )
 
         # Update stats around the change of state
@@ -137,12 +149,12 @@ class MappingService:
             )
 
         task.unlock_task(mapped_task.user_id, new_state, mapped_task.comment)
-
+        ProjectService.send_email_on_project_progress(mapped_task.project_id)
         return task.as_dto_with_instructions(mapped_task.preferred_locale)
 
     @staticmethod
     def stop_mapping_task(stop_task: StopMappingTaskDTO) -> TaskDTO:
-        """ Unlocks the task and revert the task status to the last one """
+        """Unlocks the task and revert the task status to the last one"""
         task = MappingService.get_task_locked_by_user(
             stop_task.project_id, stop_task.task_id, stop_task.user_id
         )
@@ -164,22 +176,24 @@ class MappingService:
         """
         task = MappingService.get_task(task_id, project_id)
         if task is None:
-            raise MappingServiceError(f"Task {task_id} not found")
+            raise NotFound(f"Task {task_id} not found")
         current_state = TaskStatus(task.task_status)
         if current_state != TaskStatus.LOCKED_FOR_MAPPING:
-            raise MappingServiceError("Status must be LOCKED_FOR_MAPPING to unlock")
+            raise MappingServiceError(
+                "LockBeforeUnlocking- Status must be LOCKED_FOR_MAPPING to unlock"
+            )
         if task.locked_by != user_id:
             raise MappingServiceError(
-                "Attempting to unlock a task owned by another user"
+                "TaskNotOwned- Attempting to unlock a task owned by another user"
             )
         return task
 
     @staticmethod
     def add_task_comment(task_comment: TaskCommentDTO) -> TaskDTO:
-        """ Adds the comment to the task history """
+        """Adds the comment to the task history"""
         task = Task.get(task_comment.task_id, task_comment.project_id)
         if task is None:
-            raise MappingServiceError(f"Task {task_comment.task_id} not found")
+            raise NotFound(f"Task {task_comment.task_id} not found")
 
         task.set_task_history(
             TaskAction.COMMENT, task_comment.user_id, task_comment.comment
@@ -311,11 +325,13 @@ class MappingService:
     def undo_mapping(
         project_id: int, task_id: int, user_id: int, preferred_locale: str = "en"
     ) -> TaskDTO:
-        """ Allows a user to Undo the task state they updated """
+        """Allows a user to Undo the task state they updated"""
         task = MappingService.get_task(task_id, project_id)
 
         if not MappingService._is_task_undoable(user_id, task):
-            raise MappingServiceError("Undo not allowed for this user")
+            raise MappingServiceError(
+                "UndoPermissionError- Undo not allowed for this user"
+            )
 
         current_state = TaskStatus(task.task_status)
         undo_state = TaskHistory.get_last_status(project_id, task_id, True)
@@ -338,7 +354,7 @@ class MappingService:
 
     @staticmethod
     def map_all_tasks(project_id: int, user_id: int):
-        """ Marks all tasks on a project as mapped """
+        """Marks all tasks on a project as mapped"""
         tasks_to_map = Task.query.filter(
             Task.project_id == project_id,
             Task.task_status.notin_(
@@ -367,9 +383,10 @@ class MappingService:
 
     @staticmethod
     def reset_all_badimagery(project_id: int, user_id: int):
-        """ Marks all bad imagery tasks ready for mapping """
+        """Marks all bad imagery tasks ready for mapping"""
         badimagery_tasks = Task.query.filter(
-            Task.task_status == TaskStatus.BADIMAGERY.value
+            Task.task_status == TaskStatus.BADIMAGERY.value,
+            Task.project_id == project_id,
         ).all()
 
         for task in badimagery_tasks:

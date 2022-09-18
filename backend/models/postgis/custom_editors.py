@@ -11,6 +11,15 @@ class CustomEditor(db.Model):
     description = db.Column(db.String)
     url = db.Column(db.String, nullable=False)
 
+    def create(self):
+        """Creates and saves the current model to the DB"""
+        db.session.add(self)
+        db.session.commit()
+
+    def save(self):
+        """Save changes to db"""
+        db.session.commit()
+
     @staticmethod
     def get_by_project_id(project_id: int):
         """ Get custom editor by it's project id """
@@ -29,6 +38,7 @@ class CustomEditor(db.Model):
         self.name = dto.name
         self.description = dto.description
         self.url = dto.url
+        self.save()
 
     def delete(self):
         """ Deletes the current model from the DB """
@@ -44,3 +54,11 @@ class CustomEditor(db.Model):
         dto.url = self.url
 
         return dto
+
+    def clone_to_project(self, project_id: int):
+        new_editor = CustomEditor()
+        new_editor.project_id = project_id
+        new_editor.name = self.name
+        new_editor.description = self.description
+        new_editor.url = self.url
+        return new_editor

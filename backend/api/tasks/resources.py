@@ -60,11 +60,14 @@ class TasksRestAPI(Resource):
             task = MappingService.get_task_as_dto(task_id, project_id, preferred_locale)
             return task.to_primitive(), 200
         except NotFound:
-            return {"Error": "Task Not Found"}, 404
+            return {"Error": "Task Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"TasksRestAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch task"}, 500
+            return {
+                "Error": "Unable to fetch task",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class TasksQueriesJsonAPI(Resource):
@@ -124,12 +127,15 @@ class TasksQueriesJsonAPI(Resource):
 
             return tasks_json, 200
         except NotFound:
-            return {"Error": "Project or Task Not Found"}, 404
+            return {"Error": "Project or Task Not Found", "SubCode": "NotFound"}, 404
         except ProjectServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
             current_app.logger.critical(e)
-            return {"Error": "Unable to fetch task JSON"}, 500
+            return {
+                "Error": "Unable to fetch task JSON",
+                "SubCode": "InternalServerError",
+            }, 500
 
     @token_auth.login_required
     def delete(self, project_id):
@@ -179,24 +185,36 @@ class TasksQueriesJsonAPI(Resource):
         user_id = token_auth.current_user()
         user = UserService.get_user_by_id(user_id)
         if user.role != UserRole.ADMIN.value:
-            return {"Error": "This endpoint action is restricted to ADMIN users."}, 403
+            return {
+                "Error": "This endpoint action is restricted to ADMIN users.",
+                "SubCode": "OnlyAdminAccess",
+            }, 403
 
         tasks_ids = request.get_json().get("tasks")
         if tasks_ids is None:
-            return {"Error": "Tasks ids not provided"}, 400
+            return {"Error": "Tasks ids not provided", "SubCode": "InvalidData"}, 400
         if type(tasks_ids) != list:
-            return {"Error": "Tasks were not provided as a list"}, 400
+            return {
+                "Error": "Tasks were not provided as a list",
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             ProjectService.delete_tasks(project_id, tasks_ids)
             return {"Success": "Task(s) deleted"}, 200
         except NotFound as e:
-            return {"Error": f"Project or Task Not Found: {e}"}, 404
+            return {
+                "Error": f"Project or Task Not Found: {e}",
+                "SubCode": "NotFound",
+            }, 404
         except ProjectServiceError as e:
             return {"Error": str(e)}, 403
         except Exception as e:
             current_app.logger.critical(e)
-            return {"Error": "Unable to delete tasks"}, 500
+            return {
+                "Error": "Unable to delete tasks",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class TasksQueriesXmlAPI(Resource):
@@ -256,13 +274,19 @@ class TasksQueriesXmlAPI(Resource):
             return Response(xml, mimetype="text/xml", status=200)
         except NotFound:
             return (
-                {"Error": "Not found; please check the project and task numbers."},
+                {
+                    "Error": "Not found; please check the project and task numbers.",
+                    "SubCode": "NotFound",
+                },
                 404,
             )
         except Exception as e:
             error_msg = f"TasksQueriesXmlAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch task XML"}, 500
+            return {
+                "Error": "Unable to fetch task XML",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class TasksQueriesGpxAPI(Resource):
@@ -323,13 +347,19 @@ class TasksQueriesGpxAPI(Resource):
             return Response(xml, mimetype="text/xml", status=200)
         except NotFound:
             return (
-                {"Error": "Not found; please check the project and task numbers."},
+                {
+                    "Error": "Not found; please check the project and task numbers.",
+                    "SubCode": "NotFound",
+                },
                 404,
             )
         except Exception as e:
             error_msg = f"TasksQueriesGpxAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch task GPX"}, 500
+            return {
+                "Error": "Unable to fetch task GPX",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class TasksQueriesAoiAPI(Resource):
@@ -394,17 +424,23 @@ class TasksQueriesAoiAPI(Resource):
             grid_dto.validate()
         except DataError as e:
             current_app.logger.error(f"error validating request: {str(e)}")
-            return {"Error": "Unable to fetch tiles interesecting AOI"}, 400
+            return {
+                "Error": "Unable to fetch tiles interesecting AOI",
+                "SubCode": "InvalidData",
+            }, 400
 
         try:
             grid = GridService.trim_grid_to_aoi(grid_dto)
             return grid, 200
         except InvalidGeoJson as e:
-            return {"Error": f"{str(e)}"}, 400
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
             error_msg = f"TasksQueriesAoiAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch tiles intersecting AOI"}, 500
+            return {
+                "Error": "Unable to fetch tiles intersecting AOI",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class TasksQueriesMappedAPI(Resource):
@@ -435,7 +471,10 @@ class TasksQueriesMappedAPI(Resource):
         except Exception as e:
             error_msg = f"Task Lock API - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch mapped tasks"}, 500
+            return {
+                "Error": "Unable to fetch mapped tasks",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class TasksQueriesOwnInvalidatedAPI(Resource):
@@ -536,8 +575,11 @@ class TasksQueriesOwnInvalidatedAPI(Resource):
             )
             return invalidated_tasks.to_primitive(), 200
         except NotFound:
-            return {"Error": "No invalidated tasks"}, 404
+            return {"Error": "No invalidated tasks", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"TasksQueriesMappedAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch invalidated tasks for user"}, 500
+            return {
+                "Error": "Unable to fetch invalidated tasks for user",
+                "SubCode": "InternalServerError",
+            }, 500

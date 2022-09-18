@@ -6,6 +6,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import { FormattedMessage } from 'react-intl';
 
+import WebglUnsupported from '../webglUnsupported';
 import messages from './messages';
 import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
@@ -50,17 +51,18 @@ export const TasksMap = ({
     /* May be able to refactor this to just take
      * advantage of useRef instead inside other useLayoutEffect() */
     /* I referenced this initially https://philipprost.com/how-to-use-mapbox-gl-with-react-functional-component/ */
-    setMapObj(
-      new mapboxgl.Map({
-        container: mapRef.current,
-        style: MAP_STYLE,
-        center: [0, 0],
-        zoom: 1,
-        attributionControl: false,
-      })
-        .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
-    );
+    mapboxgl.supported() &&
+      setMapObj(
+        new mapboxgl.Map({
+          container: mapRef.current,
+          style: MAP_STYLE,
+          center: [0, 0],
+          zoom: 1,
+          attributionControl: false,
+        })
+          .addControl(new mapboxgl.AttributionControl({ compact: false }))
+          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
+      );
 
     return () => {
       map && map.remove();
@@ -69,7 +71,8 @@ export const TasksMap = ({
   }, []);
 
   useLayoutEffect(() => {
-    if (zoomedTaskId) {
+    // should run only when triggered from tasks list
+    if (typeof zoomedTaskId === 'number') {
       const taskGeom = mapResults.features.filter(
         (task) => task.properties.taskId === zoomedTaskId,
       )[0].geometry;
@@ -97,7 +100,30 @@ export const TasksMap = ({
     ];
 
     const updateTMZoom = () => {
-      if (!taskBordersOnly) {
+      // fit bounds to last mapped/validated task(s), if exists
+      // otherwise fit bounds to all tasks
+      if (zoomedTaskId?.length > 0) {
+        const lastLockedTasks = mapResults.features.filter((task) =>
+          zoomedTaskId.includes(task.properties.taskId),
+        );
+
+        const lastLockedTasksGeom = lastLockedTasks.reduce(
+          (acc, curr) => {
+            const geom = curr.geometry;
+            return {
+              type: 'MultiPolygon',
+              coordinates: [...acc.coordinates, ...geom.coordinates],
+            };
+          },
+          { type: 'MultiPolygon', coordinates: [] },
+        );
+
+        const screenWidth = window.innerWidth;
+        map.fitBounds(bbox(lastLockedTasksGeom), {
+          padding: screenWidth / 8,
+          animate: false,
+        });
+      } else if (!taskBordersOnly) {
         map.fitBounds(bbox(mapResults), { padding: 40, animate: animateZoom });
       } else {
         map.fitBounds(bbox(mapResults), { padding: 220, maxZoom: 6.5, animate: animateZoom });
@@ -105,6 +131,9 @@ export const TasksMap = ({
     };
 
     const mapboxLayerDefn = () => {
+      map.once('load', () => {
+        map.resize();
+      });
       if (map.getSource('tasks') === undefined) {
         map.addImage('lock', lockIcon, { width: 17, height: 20, data: lockIcon });
         map.addImage('redlock', redlockIcon, { width: 30, height: 30, data: redlockIcon });
@@ -433,16 +462,21 @@ export const TasksMap = ({
     animateZoom,
     authDetails.id,
     showTaskIds,
+    zoomedTaskId,
   ]);
 
-  return (
-    <>
-      {showTaskIds && hoveredTaskId && (
-        <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 ">
-          <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
-        </div>
-      )}
-      <div id="map" className={className} ref={mapRef}></div>
-    </>
-  );
+  if (!mapboxgl.supported()) {
+    return <WebglUnsupported className={`vh-75-l vh-50 fr ${className || ''}`} />;
+  } else {
+    return (
+      <>
+        {showTaskIds && hoveredTaskId && (
+          <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 ">
+            <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
+          </div>
+        )}
+        <div id="map" className={className} ref={mapRef}></div>
+      </>
+    );
+  }
 };

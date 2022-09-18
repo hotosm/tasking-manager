@@ -22,9 +22,9 @@ export function DeleteModal({ id, name, type, className }: Object) {
       .then((success) => {
         setDeleteStatus('success');
         if (type === 'notifications') {
-          navigate(`/inbox`);
+          setTimeout(() => navigate(`/inbox`), 750);
         } else {
-          navigate(`/manage/${type}`);
+          setTimeout(() => navigate(`/manage/${type}`), 750);
         }
       })
       .catch((e) => {
@@ -76,13 +76,29 @@ export function DeleteModal({ id, name, type, className }: Object) {
                 </div>
               </>
             )}
-            {deleteStatus === 'failure' && (
-              <>
-                <h3 className="barlow-condensed f3">
+            {deleteStatus && (
+              <h3 className="barlow-condensed f3">
+                {deleteStatus === 'started' && (
+                  <>
+                    <FormattedMessage {...messages.processing} />
+                    &hellip;
+                  </>
+                )}
+                {deleteStatus === 'success' && (
+                  <FormattedMessage {...messages[`success_${type}`]} />
+                )}
+                {deleteStatus === 'failure' && (
                   <FormattedMessage {...messages[`failure_${type}`]} />
-                </h3>
-                <p>{error}</p>
-              </>
+                )}
+              </h3>
+            )}
+            {deleteStatus === 'failure' && (
+              <p>
+                {(error && messages[`${error}Error`] && (
+                  <FormattedMessage {...messages[`${error}Error`]} />
+                )) ||
+                  error}
+              </p>
             )}
           </div>
         </div>

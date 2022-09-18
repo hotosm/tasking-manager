@@ -58,7 +58,7 @@ export const ManagementSection = (props) => {
       userDetails.role === 'ADMIN' ||
       props.location.pathname.startsWith('/manage/teams/') ||
       props.location.pathname.startsWith('/manage/projects/') ? (
-        <div className="w-100 ph5-l ph2-m cf bg-tan blue-dark">
+        <div className="w-100 ph5-l pb5-l pb2-m ph2-m cf bg-tan blue-dark">
           {(isOrgManager || userDetails.role === 'ADMIN') && (
             <ManagementMenu isAdmin={userDetails && userDetails.role === 'ADMIN'} />
           )}

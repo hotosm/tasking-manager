@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { PriorityBox } from '../projectCard/priorityBox';
 import { translateCountry } from '../../utils/countries';
+import { ProjectVisibilityBox } from './visibilityBox';
 import { ProjectStatusBox } from './statusBox';
 import { EditButton } from '../button';
 import { useEditProjectAllowed } from '../../hooks/UsePermissions';
@@ -64,6 +65,7 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
           >
             {project.projectInfo && project.projectInfo.name}
           </h3>
+          {project.private && <ProjectVisibilityBox className={'pv2 ph3 ml3 mb3 v-mid dib'} />}
           {['DRAFT', 'ARCHIVED'].includes(project.status) && (
             <ProjectStatusBox status={project.status} className={'pv2 ph3 ml3 mb3 v-mid dib'} />
           )}

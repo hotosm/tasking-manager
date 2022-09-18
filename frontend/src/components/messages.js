@@ -34,6 +34,11 @@ export default defineMessages({
     id: 'footer.privacyPolicy',
     defaultMessage: 'Privacy Policy',
   },
+  license: {
+    id: 'footer.license',
+    defaultMessage:
+      'Images and screenshots of the Tasking Manager may be shared under a Creative Commons Attribution-Sharealike 4.0 International License',
+  },
   mappingLevelALL: {
     id: 'mapping.level.all',
     defaultMessage: 'All levels',
@@ -73,5 +78,14 @@ export default defineMessages({
   pointsOfInterest: {
     id: 'project.typesOfMapping.pointsOfInterest',
     defaultMessage: 'Points of interest',
+  },
+  webglUnsupportedTitle: {
+    id: 'browser.webgl.unsupported.title',
+    defaultMessage: 'WebGL Context Not Found',
+  },
+  webglUnsupportedDescription: {
+    id: 'browser.webgl.unsupported.description',
+    defaultMessage:
+      'Your browser does not support WebGL, which is required to render map components. Please try using a different browser or check that <a>WebGL is enabled</a>.',
   },
 });

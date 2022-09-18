@@ -145,6 +145,23 @@ export default defineMessages({
     id: 'management.projects.create.reset.button',
     defaultMessage: 'Reset',
   },
+  showProjectsAOILayer: {
+    id: 'management.projects.create.show_aois',
+    defaultMessage: 'Show existing projects AoIs',
+  },
+  disabledAOILayer: {
+    id: 'management.projects.create.show_aois.disabled',
+    defaultMessage:
+      "Zoom in to be able to activate the visualization of other projects' areas of interest.",
+  },
+  enableAOILayer: {
+    id: 'management.projects.create.show_aois.enable',
+    defaultMessage: "Enable the visualization of the existing projects' areas of interest.",
+  },
+  colorLegend: {
+    id: 'management.projects.create.show_aois.legend',
+    defaultMessage: 'Color legend:',
+  },
   taskNumberMessage: {
     id: 'management.projects.create.split.tasks.number',
     defaultMessage: 'A new project will be created with {n} tasks.',
@@ -176,6 +193,14 @@ export default defineMessages({
   trim: {
     id: 'management.projects.create.button.trim',
     defaultMessage: 'Trim',
+  },
+  trimError: {
+    id: 'management.projects.create.trimError',
+    defaultMessage: 'An error occured while trimming the geometry.',
+  },
+  SelfIntersectingAOIError: {
+    id: 'management.projects.create.SelfIntersectingAOIError',
+    defaultMessage: 'Invalid geometry - polygon is self intersecting.',
   },
   draw: {
     id: 'management.projects.create.button.draw',

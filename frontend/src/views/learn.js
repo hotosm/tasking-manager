@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from '@reach/router';
+import { Link, navigate, useParams } from '@reach/router';
 import Popup from 'reactjs-popup';
 import { FormattedMessage } from 'react-intl';
 
@@ -23,8 +23,15 @@ import TechnicalLogo from '../assets/img/icons/technical.jpg';
 import LearnOSMLogo from '../assets/img/learn-osm-logo.svg';
 import QuickstartLogo from '../assets/img/info-logo.svg';
 
-const LearnNav = ({ sections, section, setSection }) => {
+const LearnNav = ({ sections, section, setSection, urlParamToSection }) => {
   useSetTitleTag('Learn');
+
+  const handleClick = (s) => {
+    const typeInUrl = Object.keys(urlParamToSection).find((key) => urlParamToSection[key] === s);
+    setSection(s);
+    navigate(`/learn/${typeInUrl}`);
+  };
+
   return (
     <div className="w-50 w-100-m">
       <ul className="pa0 ma0 list bg-tan dib">
@@ -33,7 +40,9 @@ const LearnNav = ({ sections, section, setSection }) => {
             className={`f5 dib mh3 pt3 link pointer no-underline ${
               section === s ? 'bb b--blue-dark bw1 pb1' : 'pb3'
             }`}
-            onClick={() => setSection(s)}
+            onClick={() => {
+              handleClick(s);
+            }}
             key={s}
           >
             <FormattedMessage {...messages[s]} />
@@ -54,19 +63,25 @@ const Intro = ({ section, messagesObjs }) => (
       </div>
       <div className="w-70-ns w-100 fr lh-copy f4">
         <p className="b">{<FormattedMessage {...messages[messagesObjs.intro]} />}</p>
-        <p className="f5">{<FormattedMessage {...messages[messagesObjs.description]} />}</p>
+        <p className="f5">
+          {
+            <FormattedMessage
+              {...messages[messagesObjs.description]}
+              values={messagesObjs.values}
+            />
+          }
+        </p>
       </div>
     </div>
   </div>
 );
 
 const Steps = ({ items }) => (
-  <div className="w-100 cf relative">
+  <div className="w-100 cf flex flex-wrap">
     {items.map((item, i) => (
-      <div className="w-third-ns w-100 fl pa2 z-2 bg-white" key={i}>
-        <div className="shadow-1 pa3">
+      <div className="w-50-m w-third-ns pa2 z-2 bg-white" key={i}>
+        <div className="shadow-1 pa3 h-100">
           {item.img}
-
           <p className="blue-dark b f4 pt0">
             <span className="mr1">{i + 1}.</span>
             {item.titleLink ? (
@@ -83,7 +98,6 @@ const Steps = ({ items }) => (
         </div>
       </div>
     ))}
-    <div style={{ height: '60%' }} className="w-100 bg-tan relative bottom--2 right--2 z-1 "></div>
   </div>
 );
 
@@ -92,10 +106,10 @@ const Manuals = ({ contents }) => (
     <h3 className="f2 ttu barlow-condensed fw6">
       <FormattedMessage {...messages.learnManualsTitle} />
     </h3>
-    <div className="w-100 cf">
+    <div className="w-100 cf flex flex-wrap">
       {contents.map((content, i) => (
-        <div key={i} style={{ height: '20rem' }} className="w-25-l w-third-m w-100 fl ph2">
-          <div className="shadow-4">
+        <div key={i} className="w-50-ns w-50-m w-25-l w-100 fl pa2">
+          <div className="shadow-4 h-100">
             <a
               className="no-underline"
               rel="noopener noreferrer"
@@ -109,7 +123,7 @@ const Manuals = ({ contents }) => (
                   backgroundSize: '55%',
                 }}
               ></div>
-              <div className="pa3" style={{ height: '12rem' }}>
+              <div className="pa3">
                 <p className="fw7 f4 mt0 blue-dark">
                   <FormattedMessage {...messages[`${content.message}Title`]} />
                 </p>
@@ -141,11 +155,11 @@ const Videos = ({ contents }) => {
       <h3 className="f2 ttu barlow-condensed fw6">
         <FormattedMessage {...messages.learnVideosTitle} />
       </h3>
-      <div className="w-100 cf">
+      <div className="w-100 cf flex flex-wrap">
         {contents.map((content, i) => {
           return (
-            <div className="w-25-l w-third-m w-100 fl ph2" key={i}>
-              <div className="shadow-4 pointer" onClick={() => setActiveVideo(content)}>
+            <div className="w-50-ns w-50-m w-25-l w-100 pa2" key={i}>
+              <div className="shadow-4 pointer h-100" onClick={() => setActiveVideo(content)}>
                 <div
                   className="bg-tan w-100 tc h5-l h4"
                   style={{
@@ -155,7 +169,7 @@ const Videos = ({ contents }) => {
                 >
                   <PlayIcon className="white pv5-l pv0 mv3" height="6rem" />
                 </div>
-                <div className="pa3 db" style={{ height: '8rem' }}>
+                <div className="pa3 db">
                   <p className="fw7 f4 mt0 blue-dark">
                     <FormattedMessage {...messages[`${content.message}Title`]} />
                   </p>
@@ -210,6 +224,28 @@ const LearnToManage = ({ section }) => {
   const messagesObjs = {
     intro: 'learnManageIntro',
     description: 'learnManageDescription',
+    values: {
+      organizationsListLink: (
+        <a
+          className="link red fw5"
+          target="_blank"
+          rel="noreferrer"
+          href="https://wiki.openstreetmap.org/wiki/Humanitarian_OSM_Team/HOT_Tasking_Manager_Organizations"
+        >
+          <FormattedMessage {...messages.list} />
+        </a>
+      ),
+      createNewOrganizationFormLink: (
+        <a
+          className="link red fw5"
+          target="_blank"
+          rel="noreferrer"
+          href="https://docs.google.com/forms/d/e/1FAIpQLSdW4O4qVYI7vdway5qdqMxp_gLhSuYVKYAwpq_jUzrcqipNeg/viewform"
+        >
+          <FormattedMessage {...messages.form} />
+        </a>
+      ),
+    },
   };
 
   const items = [
@@ -335,7 +371,7 @@ const LearnToMap = ({ section }) => {
   const tutorials = [
     {
       message: 'learnQuickStartTutorial',
-      url: 'learn/quickstart',
+      url: 'quickstart',
       img: QuickstartLogo,
     },
     {
@@ -347,6 +383,11 @@ const LearnToMap = ({ section }) => {
       message: 'learnOSMStepByStepTutorial',
       url: 'https://learnosm.org/en/beginner/',
       img: LearnOSMLogo,
+    },
+    {
+      message: 'learnTMCheatsheet',
+      url: 'https://drive.google.com/file/d/19pckU4Cru-cSz_aclsLsBk-45SQ1Qyy_/view?usp=sharing',
+      img: QuickstartLogo,
     },
   ];
 
@@ -389,14 +430,22 @@ const getSection = (section, sections) => {
 };
 
 export const LearnPage = () => {
+  const { type } = useParams();
   const sections = ['learnMapTitle', 'learnValidateTitle', 'learnManageTitle'];
+  const urlParamToSection = { map: sections[0], validate: sections[1], manage: sections[2] };
 
-  const [section, setSection] = useState(sections[0]);
+  const [section, setSection] = useState(urlParamToSection[type]);
+
   return (
     <div className="pt180 pull-center blue-dark">
       <TopBar pageName={<FormattedMessage {...messages.learn} />} />
       <div className="ph6-l ph4-m ph2">
-        <LearnNav sections={sections} section={section} setSection={setSection} />
+        <LearnNav
+          sections={sections}
+          section={section}
+          setSection={setSection}
+          urlParamToSection={urlParamToSection}
+        />
         <div className="w-100 mt3">{getSection(section, sections)}</div>
       </div>
     </div>

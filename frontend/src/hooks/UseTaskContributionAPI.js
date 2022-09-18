@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { useEffect, useReducer } from 'react';
 import axios from 'axios';
 
-import { useQueryParams, StringParam } from 'use-query-params';
+import { useQueryParams, StringParam, NumberParam } from 'use-query-params';
 import { stringify as stringifyUQP } from 'query-string';
 import { CommaArrayParam } from '../utils/CommaArrayParam';
 import { useThrottle } from '../hooks/UseThrottle';
@@ -12,10 +12,11 @@ import { API_URL } from '../config';
 const contributionsQueryAllSpecification = {
   status: CommaArrayParam,
   minDate: StringParam,
-  text: StringParam,
   maxDate: StringParam,
   projectStatus: StringParam,
   page: StringParam,
+  orderBy: StringParam,
+  projectId: NumberParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -37,9 +38,10 @@ export const useTaskContributionQueryParams = () => {
 const backendToQueryConversion = {
   status: 'status',
   minDate: 'min_action_date',
-  text: 'project_id',
   maxDate: 'max_action_date',
   projectStatus: 'project_status',
+  orderBy: 'sort_by',
+  projectId: 'project_id',
 };
 
 const dataFetchReducer = (state, action) => {
@@ -132,7 +134,7 @@ export const useTaskContributionAPI = (
           backendToQueryConversion,
         );
         const result = await axios({
-          url: `${API_URL}users/${user_id}/tasks/?sort_by=-action_date`,
+          url: `${API_URL}users/${user_id}/tasks/`,
           method: 'get',
           params: remappedParams,
           headers: { Authorization: `Token ${token}` },

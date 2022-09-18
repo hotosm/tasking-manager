@@ -2,13 +2,15 @@ import React from 'react';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 import { Form, Field } from 'react-final-form';
+import ReactPlaceholder from 'react-placeholder';
 
+import { nCardPlaceholders } from './campaignsPlaceholder';
 import messages from './messages';
 import { Management } from './management';
 import { Button } from '../button';
 import { HashtagIcon } from '../svgIcons';
 
-export function CampaignsManagement({ campaigns, userDetails }: Object) {
+export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched }: Object) {
   return (
     <Management
       title={
@@ -20,13 +22,20 @@ export function CampaignsManagement({ campaigns, userDetails }: Object) {
       showAddButton={userDetails.role === 'ADMIN'}
       managementView
     >
-      {campaigns.length ? (
-        campaigns.map((campaign, n) => <CampaignCard campaign={campaign} key={n} />)
-      ) : (
-        <div>
-          <FormattedMessage {...messages.noCampaigns} />
-        </div>
-      )}
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        customPlaceholder={nCardPlaceholders(4)}
+        delay={10}
+        ready={isCampaignsFetched}
+      >
+        {campaigns?.length ? (
+          campaigns.map((campaign, n) => <CampaignCard campaign={campaign} key={n} />)
+        ) : (
+          <div>
+            <FormattedMessage {...messages.noCampaigns} />
+          </div>
+        )}
+      </ReactPlaceholder>
     </Management>
   );
 }

@@ -27,7 +27,7 @@ export const NotificationBodyModal = (props) => {
       className="fixed top-0 left-0 right-0 bottom-0"
     >
       <div
-        className={`relative shadow-3`}
+        className={`relative shadow-3 flex flex-column`}
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
@@ -42,6 +42,8 @@ export const NotificationBodyModal = (props) => {
           margin: '5em auto auto',
           border: '1px solid rgb(187, 187, 187)',
           padding: '5px',
+          overflowY: 'auto',
+          maxHeight: 'calc(100vh - 10em)',
         }}
       >
         <div className={`di fl tl pa3 mb3 w-100 fw5 bb b--tan`}>
@@ -50,12 +52,13 @@ export const NotificationBodyModal = (props) => {
             <CloseIcon className={`h1 w1 blue-dark`} />
           </Link>
         </div>
-        {!props.thisNotificationError ? (
+        {!props.thisNotificationError && (
           <NotificationBodyCard
             loading={props.thisNotificationLoading}
             card={props.thisNotification}
           />
-        ) : (
+        )}
+        {props.thisNotificationError && !props.thisNotificationLoading && (
           <div>
             <FormattedMessage
               {...messages.errorLoadingTheX}
@@ -73,7 +76,16 @@ export const NotificationBodyModal = (props) => {
 
 export function NotificationBodyCard({
   loading,
-  card: { messageId, name, messageType, fromUsername, subject, message, sentDate },
+  card: {
+    messageId,
+    name,
+    messageType,
+    fromUsername,
+    displayPictureUrl,
+    subject,
+    message,
+    sentDate,
+  },
 }: Object) {
   const token = useSelector((state) => state.auth.get('token'));
   const location = useLocation();
@@ -104,7 +116,12 @@ export function NotificationBodyCard({
       <article className={`db  base-font mb3 mh2 blue-dark mw8`}>
         <div className={`dib`}>
           <div className="fl pl2">
-            <MessageAvatar fromUsername={fromUsername} messageType={messageType} size={'medium'} />
+            <MessageAvatar
+              fromUsername={fromUsername}
+              displayPictureUrl={displayPictureUrl}
+              messageType={messageType}
+              size={'medium'}
+            />
           </div>
 
           {showASendingUser && <div className={`pl5 f6 blue-dark fw5`}>{showASendingUser}</div>}

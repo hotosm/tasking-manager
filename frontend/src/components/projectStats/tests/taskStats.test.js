@@ -5,6 +5,10 @@ import '@testing-library/jest-dom';
 import { ReduxIntlProviders } from '../../../utils/testWithIntl';
 import TasksByStatus from '../taskStatus';
 
+jest.mock('react-chartjs-2', () => ({
+  Doughnut: () => null,
+}));
+
 describe('', () => {
   const stats = {
     ready: 168,
@@ -16,14 +20,13 @@ describe('', () => {
     invalidated: 9,
     totalTasks: 213,
   };
-  const { container } = render(
+  render(
     <ReduxIntlProviders>
       <TasksByStatus stats={stats} />
     </ReduxIntlProviders>,
   );
   it('', () => {
     expect(screen.getByText('Tasks by status').className).toBe('barlow-condensed ttu f3');
-    expect(container.querySelector('canvas')).toBeInTheDocument();
     expect(screen.getByText('168')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
     expect(screen.getByText('4')).toBeInTheDocument();

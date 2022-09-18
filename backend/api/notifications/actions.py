@@ -49,4 +49,7 @@ class NotificationsActionsDeleteMultipleAPI(Resource):
         except Exception as e:
             error_msg = f"DeleteMultipleMessages - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to delete messages"}, 500
+            return {
+                "Error": "Unable to delete messages",
+                "SubCode": "InternalServerError",
+            }, 500

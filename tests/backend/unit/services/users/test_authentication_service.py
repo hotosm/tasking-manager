@@ -1,66 +1,37 @@
-from unittest.mock import patch
 from urllib.parse import urlparse, parse_qs
 
-from backend.services.users.authentication_service import (
-    AuthenticationService,
-    AuthServiceError,
-    UserService,
-    NotFound,
-    MessageService,
-)
+from backend.services.users.authentication_service import AuthenticationService
 from backend.services.messaging.smtp_service import SMTPService
 from tests.backend.base import BaseTestCase
-from tests.backend.helpers.test_helpers import get_canned_osm_user_details
 
 
 class TestAuthenticationService(BaseTestCase):
-    def test_unable_to_find_user_in_osm_response_raises_error(self):
-        # Arrange
-        osm_response = get_canned_osm_user_details()
-
-        # Act / Assert
-        with self.assertRaises(AuthServiceError):
-            AuthenticationService().login_user(osm_response, None, "wont-find")
-
-    @patch.object(UserService, "get_user_by_id")
-    def test_if_user_get_called_with_osm_id(self, mock_user_get):
-        # Arrange
-        osm_response = get_canned_osm_user_details()
-
+    def test_generate_session_token_for_user_returns_session_token(self):
         # Act
-        AuthenticationService.login_user(osm_response, None)
+        session_token = AuthenticationService.generate_session_token_for_user(12345678)
 
         # Assert
-        mock_user_get.assert_called_with(7777777)
+        self.assertIsNotNone(session_token)
 
-    @patch.object(MessageService, "send_welcome_message")
-    @patch.object(UserService, "register_user")
-    @patch.object(UserService, "get_user_by_id")
-    def test_if_user_create_called_if_user_not_found(
-        self, mock_user_get, mock_user_register, mock_message
-    ):
+    def test_is_valid_token_validates_user_token(self):
+
         # Arrange
-        osm_response = get_canned_osm_user_details()
-        mock_user_get.side_effect = NotFound()
+        session_token = AuthenticationService.generate_session_token_for_user(12345678)
+        invalid_session_token = session_token + "x"
 
         # Act
-        AuthenticationService.login_user(osm_response, None)
-
-        # Assert
-        mock_user_register.assert_called_with(
-            7777777, "Thinkwhere Test", 16, None, None
+        is_valid_token, user_id = AuthenticationService.is_valid_token(
+            session_token, 604800
+        )
+        is_invalid_token, _user_id = AuthenticationService.is_valid_token(
+            invalid_session_token, 604800
         )
 
-    @patch.object(UserService, "get_user_by_id")
-    def test_valid_auth_request_gets_token(self, mock_user_get):
-        # Arrange
-        osm_response = get_canned_osm_user_details()
-
-        # Act
-        params = AuthenticationService.login_user(osm_response, None)
-
-        self.assertEqual(params["username"], "Thinkwhere Test")
-        self.assertTrue(params["session_token"])
+        # Assert
+        self.assertEqual(user_id, 12345678)
+        self.assertTrue(is_valid_token)
+        self.assertFalse(is_invalid_token)
+        self.assertIsNone(_user_id)
 
     def test_get_authentication_failed_url_returns_expected_url(self):
         # Act
@@ -69,6 +40,14 @@ class TestAuthenticationService(BaseTestCase):
         # Assert
         parsed_url = urlparse(auth_failed_url)
         self.assertEqual(parsed_url.path, "/auth-failed")
+
+    def test_get_email_validated_url_returns_expected_url(self):
+        # Act
+        auth_failed_url = AuthenticationService._get_email_validated_url(True)
+
+        # Assert
+        parsed_url = urlparse(auth_failed_url)
+        self.assertEqual(parsed_url.path, "/validate-email")
 
     def test_can_parse_email_verification_token(self):
         # Arrange - Generate valid email verification url

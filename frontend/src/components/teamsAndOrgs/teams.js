@@ -11,6 +11,7 @@ import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
 import { SwitchToggle, RadioField, OrganisationSelectInput } from '../formInputs';
 import { Button, EditButton } from '../button';
+import { nCardPlaceholders } from './teamsPlaceholder';
 
 export function TeamsManagement({
   teams,
@@ -18,6 +19,7 @@ export function TeamsManagement({
   managementView,
   userTeamsOnly,
   setUserTeamsOnly,
+  isTeamsFetched,
 }: Object) {
   const isOrgManager = useSelector(
     (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
@@ -42,13 +44,22 @@ export function TeamsManagement({
       setUserOnly={setUserTeamsOnly}
       userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
     >
-      {teams.length ? (
-        teams.map((team, n) => <TeamCard team={team} key={n} managementView={managementView} />)
-      ) : (
-        <div className="pb3 pt2">
-          <FormattedMessage {...messages.noTeams} />
-        </div>
-      )}
+      <div className="cards-container">
+        <ReactPlaceholder
+          showLoadingAnimation={true}
+          customPlaceholder={nCardPlaceholders(4)}
+          delay={10}
+          ready={isTeamsFetched}
+        >
+          {teams?.length ? (
+            teams.map((team, n) => <TeamCard team={team} key={n} />)
+          ) : (
+            <div className="pb3 pt2">
+              <FormattedMessage {...messages.noTeams} />
+            </div>
+          )}
+        </ReactPlaceholder>
+      </div>
     </Management>
   );
 }
@@ -66,15 +77,8 @@ export function Teams({ teams, viewAllQuery, showAddButton = false, isReady, bor
           </Link>
         )}
         {viewAllQuery && <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />}
-        <div className="cf pt4">
-          <ReactPlaceholder
-            showLoadingAnimation={true}
-            type="rect"
-            color="#f0efef"
-            style={{ width: 250, height: 300 }}
-            delay={10}
-            ready={isReady}
-          >
+        <div className="cards-container pt4">
+          <ReactPlaceholder customPlaceholder={nCardPlaceholders(4)} delay={10} ready={isReady}>
             {teams && teams.slice(0, 6).map((team, n) => <TeamCard team={team} key={n} />)}
             {teams && teams.length === 0 && (
               <span className="blue-grey">
@@ -88,13 +92,11 @@ export function Teams({ teams, viewAllQuery, showAddButton = false, isReady, bor
   );
 }
 
-export function TeamCard({ team, managementView }: Object) {
+export function TeamCard({ team }: Object) {
   return (
-    <Link
-      to={managementView ? `/manage/teams/${team.teamId}/` : `/teams/${team.teamId}/membership/`}
-    >
-      <article className="fl w-30-l base-font w-50-m w-100 mb3 pr3 blue-dark mw5">
-        <div className="bg-white ph3 pb3 ba br1 b--grey-light shadow-hover">
+    <Link to={`/teams/${team.teamId}/membership/`} className="no-underline">
+      <article className="base-font blue-dark h-100 bg-white ph3 pb3 ba br1 shadow-hover h-100 flex flex-column justify-between b--card">
+        <div className="">
           <h3 className="f4 fw6 h3 lh-title mt3 mb2 overflow-y-hidden" title={team.name}>
             {team.name}
           </h3>
@@ -123,13 +125,11 @@ export function TeamCard({ team, managementView }: Object) {
               maxLength={8}
             />
           </div>
-          <div className="cf pt3">
-            <div className="db">
-              <VisibilityBox visibility={team.visibility} extraClasses="pv1 ph2 dib" />
-            </div>
-            <div className="db pt2 h2">
-              {team.inviteOnly && <InviteOnlyBox className="pv1 ph2 dib" />}
-            </div>
+        </div>
+        <div className="pt3">
+          <VisibilityBox visibility={team.visibility} extraClasses="pv1 ph2 dib" />
+          <div className="pt2 h2">
+            {team.inviteOnly && <InviteOnlyBox className="pv1 ph2 dib" />}
           </div>
         </div>
       </article>

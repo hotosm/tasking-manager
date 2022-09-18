@@ -4,6 +4,11 @@ describe('test getEditors', () => {
   it('without filterList and without customEditor', () => {
     expect(getEditors()).toStrictEqual([
       {
+        label: 'RapiD',
+        value: 'RAPID',
+        url: 'https://mapwith.ai/rapid',
+      },
+      {
         label: 'iD Editor',
         value: 'ID',
         url: 'https://www.openstreetmap.org/edit?editor=id&',

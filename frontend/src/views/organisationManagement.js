@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
-import { RectShape } from 'react-placeholder/lib/placeholders';
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 
@@ -22,6 +21,7 @@ import { FormSubmitButton, CustomButton } from '../components/button';
 import { ChartLineIcon } from '../components/svgIcons';
 import { DeleteModal } from '../components/deleteModal';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
+import { Alert } from '../components/alert';
 
 export function ListOrganisations() {
   useSetTitleTag('Manage organizations');
@@ -32,37 +32,31 @@ export function ListOrganisations() {
   );
   const [organisations, setOrganisations] = useState(null);
   const [userOrgsOnly, setUserOrgsOnly] = useState(userDetails.role === 'ADMIN' ? false : true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     if (token && userDetails && userDetails.id) {
+      setLoading(true);
       const queryParam = `${userOrgsOnly ? `?manager_user_id=${userDetails.id}` : ''}`;
-      fetchLocalJSONAPI(`organisations/${queryParam}`, token).then((orgs) =>
-        setOrganisations(orgs.organisations),
-      );
+      fetchLocalJSONAPI(`organisations/${queryParam}`, token)
+        .then((orgs) => {
+          setOrganisations(orgs.organisations);
+          setLoading(false);
+        })
+        .catch((err) => setError(err));
     }
   }, [userDetails, token, userOrgsOnly]);
 
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <RectShape className="bg-white dib mv2" style={{ width: 700, height: 250 }} />
-      <RectShape className="bg-white dib mv2" style={{ width: 700, height: 250 }} />
-    </div>
-  );
-
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={organisations !== null}
-    >
-      <OrgsManagement
-        organisations={organisations}
-        userOrgsOnly={userOrgsOnly}
-        setUserOrgsOnly={setUserOrgsOnly}
-        isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
-        isAdmin={userDetails.role === 'ADMIN'}
-      />
-    </ReactPlaceholder>
+    <OrgsManagement
+      organisations={organisations}
+      userOrgsOnly={userOrgsOnly}
+      setUserOrgsOnly={setUserOrgsOnly}
+      isOrgManager={userDetails.role === 'ADMIN' || isOrgManager}
+      isAdmin={userDetails.role === 'ADMIN'}
+      isOrganisationsFetched={!loading && !error}
+    />
   );
 }
 
@@ -72,6 +66,7 @@ export function CreateOrganisation() {
   const userDetails = useSelector((state) => state.auth.get('userDetails'));
   const token = useSelector((state) => state.auth.get('token'));
   const [managers, setManagers] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (userDetails && userDetails.username && managers.length === 0) {
@@ -90,9 +85,11 @@ export function CreateOrganisation() {
   };
   const createOrg = (payload) => {
     payload.managers = managers.map((user) => user.username);
-    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST').then((result) =>
-      navigate(`/manage/organisations/${result.organisationId}`),
-    );
+    pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST')
+      .then((result) => navigate(`/manage/organisations/${result.organisationId}`))
+      .catch((err) => {
+        setError(err.message);
+      });
   };
 
   return (
@@ -117,7 +114,18 @@ export function CreateOrganisation() {
               </div>
             </div>
             <div className="bottom-0 right-0 left-0 cf bg-white h3 fixed">
-              <div className="w-80-ns w-60-m w-50 h-100 fl tr">
+              <div className="w-80-ns w-60-m w-50 h-100 fl tr flex justify-between items-center">
+                <div className="cf pv2 ml2">
+                  {error && (
+                    <Alert type="error" compact>
+                      {messages[`orgCreation${error}Error`] ? (
+                        <FormattedMessage {...messages[`orgCreation${error}Error`]} />
+                      ) : (
+                        <FormattedMessage {...messages[`errorFallback`]} />
+                      )}
+                    </Alert>
+                  )}
+                </div>
                 <Link to={'../'}>
                   <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
                     <FormattedMessage {...messages.cancel} />
@@ -149,9 +157,10 @@ export function EditOrganisation(props) {
   const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);
   const [isUserAllowed] = useEditOrgAllowed(organisation);
   const [projectsError, projectsLoading, projects] = useFetch(
-    `projects/?organisationId=${props.id}&omitMapResults=true`,
+    `projects/?organisationId=${props.id}&omitMapResults=true&projectStatuses=PUBLISHED,DRAFT,ARCHIVED`,
     props.id,
   );
+  const [errorMessage, setErrorMessage] = useState(null);
   useSetTitleTag(`Edit ${organisation.name}`);
 
   useEffect(() => {
@@ -177,7 +186,9 @@ export function EditOrganisation(props) {
   };
 
   const updateOrg = (payload) => {
-    pushToLocalJSONAPI(`organisations/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
+    pushToLocalJSONAPI(`organisations/${props.id}/`, JSON.stringify(payload), token, 'PATCH')
+      .then(() => setErrorMessage(null))
+      .catch((err) => setErrorMessage(err.message));
   };
 
   return (
@@ -226,6 +237,7 @@ export function EditOrganisation(props) {
               }}
               updateOrg={updateOrg}
               disabledForm={error || loading}
+              errorMessage={errorMessage}
             />
             <Members
               addMembers={addManagers}

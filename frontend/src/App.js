@@ -57,7 +57,8 @@ import {
   NotificationPageIndex,
   NotificationDetail,
 } from './views/notifications';
-import { Banner } from './components/banner/index';
+import { Banner, ArchivalNotificationBanner } from './components/banner/index';
+import TopBanner from './components/banner/TopBanner';
 
 const ProjectEdit = React.lazy(() =>
   import('./views/projectEdit' /* webpackChunkName: "projectEdit" */),
@@ -74,6 +75,9 @@ let App = (props) => {
         <Preloader />
       ) : (
         <div className="w-100 base-font bg-white" lang={props.locale}>
+          <Router>
+            <TopBanner path="/" />
+          </Router>
           <Router>
             <Header path="/*" />
           </Router>
@@ -95,7 +99,7 @@ let App = (props) => {
                   <ProjectStats path="projects/:id/stats" />
                   <OrganisationStats path="organisations/:id/stats/" />
                   <OrganisationDetail path="organisations/:slug/" />
-                  <LearnPage path="learn" />
+                  <LearnPage path="learn/:type" />
                   <QuickstartPage path="learn/quickstart" />
                   <AboutPage path="about" />
                   <ContactPage path="contact/" />
@@ -147,6 +151,7 @@ let App = (props) => {
               </QueryParamProvider>
             </Suspense>
           </main>
+          <ArchivalNotificationBanner />
           {MATOMO_ID && <Banner />}
           <Router primary={false}>
             <Footer path="/*" />

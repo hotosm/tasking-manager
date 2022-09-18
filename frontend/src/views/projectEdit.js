@@ -30,7 +30,7 @@ export const styleClasses = {
   divClass: 'w-70-l w-100 pb4 mb3',
   labelClass: 'f4 fw6 db mb3',
   pClass: 'db mb3 f5',
-  inputClass: 'w-80 pa2 db mb2',
+  inputClass: 'w-80 pa2 db mb2 ba b--grey-light',
   numRows: '4',
   buttonClass: 'bg-blue-dark dib white',
   modalTitleClass: 'f3 pb3 mv0 bb',
@@ -50,6 +50,17 @@ export const handleCheckButton = (event, arrayElement) => {
 
   return arrayElement;
 };
+
+const doesMappingTeamNotExist = (teams, mappingPermission) =>
+  ['TEAMS', 'TEAMS_LEVEL'].includes(mappingPermission) &&
+  teams.filter((team) => team.role === 'MAPPER').length === 0 &&
+  teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
+  teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
+
+const doesValidationTeamNotExist = (teams, validationPermission) =>
+  ['TEAMS', 'TEAMS_LEVEL'].includes(validationPermission) &&
+  teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
+  teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
 
 export default function ProjectEdit({ id }) {
   useSetTitleTag(`Edit project #${id}`);
@@ -75,6 +86,7 @@ export default function ProjectEdit({ id }) {
         perTaskInstructions: '',
       },
     ],
+    rapidPowerUser: false,
   });
   const [userCanEditProject] = useEditProjectAllowed(projectInfo);
   const supportedLanguages =
@@ -96,37 +108,60 @@ export default function ProjectEdit({ id }) {
   }, [id, token]);
 
   const saveChanges = (resolve, reject) => {
-    // Remove locales with less than 3 fields.
-    const locales = projectInfo.projectInfoLocales;
+    const [defaultLocaleInfo] = projectInfo.projectInfoLocales.filter(
+      (l) => l.locale === projectInfo.defaultLocale,
+    );
     // Get data for default locale.
-    const filtered = locales
-      .filter((l) => l.locale === projectInfo.defaultLocale)
-      .map((l) => {
-        return {
-          locale: l.locale,
-          fields: mandatoryFields.filter(
-            (m) => Object.keys(l).includes(m) === false || l[m] === '',
-          ),
-        };
-      })
-      .filter((l) => l.fields.length > 0);
-
-    const nonLocaleMissingFields = { locale: null, fields: [] };
-
-    if (projectInfo.mappingTypes.length === 0) {
-      nonLocaleMissingFields.fields = [...nonLocaleMissingFields.fields, 'mappingTypes'];
+    let missingFields = [];
+    if (defaultLocaleInfo === undefined) {
+      missingFields.push({
+        locale: projectInfo.defaultLocale,
+        fields: mandatoryFields,
+      });
+    } else {
+      const mandatoryFieldsMissing = mandatoryFields.filter(
+        (m) => Object.keys(defaultLocaleInfo).includes(m) === false || defaultLocaleInfo[m] === '',
+      );
+      if (mandatoryFieldsMissing.length) {
+        missingFields.push({
+          locale: defaultLocaleInfo.locale,
+          fields: mandatoryFieldsMissing,
+        });
+      }
     }
 
-    if (!projectInfo.organisation) {
-      nonLocaleMissingFields.fields = [...nonLocaleMissingFields.fields, 'organisation'];
+    const nonLocaleMissingFields = [];
+    if (projectInfo.mappingTypes.length === 0) nonLocaleMissingFields.push('mappingTypes');
+    const { mappingEditors, validationEditors, customEditor } = projectInfo;
+    if (
+      (mappingEditors.filter((editor) => editor !== 'CUSTOM').length === 0 &&
+        mappingEditors.includes('CUSTOM') &&
+        customEditor === undefined) ||
+      mappingEditors.length === 0
+    )
+      nonLocaleMissingFields.push('noMappingEditor');
+    if (
+      (validationEditors.filter((editor) => editor !== 'CUSTOM').length === 0 &&
+        validationEditors.includes('CUSTOM') &&
+        customEditor === undefined) ||
+      validationEditors.length === 0
+    )
+      nonLocaleMissingFields.push('noValidationEditor');
+    if (!projectInfo.organisation) nonLocaleMissingFields.push('organisation');
+
+    if (nonLocaleMissingFields.length) {
+      missingFields.push({ locale: null, fields: nonLocaleMissingFields });
+    }
+    const { teams, mappingPermission, validationPermission } = projectInfo;
+    if (
+      doesMappingTeamNotExist(teams, mappingPermission) ||
+      doesValidationTeamNotExist(teams, validationPermission)
+    ) {
+      missingFields.push({ type: 'noTeamsAssigned' });
     }
 
-    if (nonLocaleMissingFields.fields.length > 0) {
-      filtered.push(nonLocaleMissingFields);
-    }
-
-    if (filtered.length > 0) {
-      setError(filtered);
+    if (missingFields.length > 0) {
+      setError(missingFields);
       return new Promise((resolve, reject) => reject());
     } else {
       return pushToLocalJSONAPI(`projects/${id}/`, JSON.stringify(projectInfo), token, 'PATCH')
@@ -213,6 +248,7 @@ export default function ProjectEdit({ id }) {
           <ActionsForm
             projectId={projectInfo.projectId}
             projectName={projectInfo.projectInfo.name}
+            orgId={projectInfo.organisation}
           />
         );
       case 'custom_editor':
@@ -232,7 +268,7 @@ export default function ProjectEdit({ id }) {
       <h2 className="pb2 f2 fw6 mt2 mb3 ttu barlow-condensed blue-dark">
         <FormattedMessage {...messages.editProject} />
       </h2>
-      <div className="fl w-30-l w-100 ph0-ns ph4-m ph2">
+      <div className="fl w-30-l w-100 ph0-ns ph4-m ph2 pb4 sticky-top-l">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={8}
@@ -248,12 +284,12 @@ export default function ProjectEdit({ id }) {
             <FormattedMessage {...messages.save} />
           </Button>
           <div style={{ minHeight: '3rem' }}>
-            {(error || success) && <SaveStatus error={error} success={success} />}
+            {(error || success) && (
+              <SaveStatus error={error} success={success} projectInfo={projectInfo} />
+            )}
           </div>
           <span className="db">
             <Dropdown
-              onAdd={() => {}}
-              onRemove={() => {}}
               value={null}
               options={[
                 {
@@ -302,7 +338,21 @@ export default function ProjectEdit({ id }) {
   );
 }
 
-const ErrorTitle = ({ locale, numberOfMissingFields }) => {
+const ErrorTitle = ({ locale, numberOfMissingFields, type, projectInfo }) => {
+  if (type === 'noTeamsAssigned') {
+    // message if mapping or validation permissions is set to team only but no team has been added
+    const { teams, mappingPermission, validationPermission } = projectInfo;
+
+    return (
+      <FormattedMessage
+        {...messages.noTeamsAssigned}
+        values={{
+          mapping: doesMappingTeamNotExist(teams, mappingPermission),
+          validation: doesValidationTeamNotExist(teams, validationPermission),
+        }}
+      />
+    );
+  }
   if (locale === null) {
     return (
       <FormattedMessage {...messages.missingFields} values={{ number: numberOfMissingFields }} />
@@ -312,7 +362,7 @@ const ErrorTitle = ({ locale, numberOfMissingFields }) => {
   return <FormattedMessage {...messages.missingFieldsForLocale} values={{ locale: locale }} />;
 };
 
-const ErrorMessage = ({ errors }) => {
+const ErrorMessage = ({ errors, projectInfo }) => {
   return (
     <>
       <span className="fw6">
@@ -322,10 +372,15 @@ const ErrorMessage = ({ errors }) => {
         return (
           <div className="cf w-100 pt2 ml3 pl2" key={i}>
             <span>
-              <ErrorTitle locale={error.locale} numberOfMissingFields={error.fields.length || 0} />
+              <ErrorTitle
+                locale={error.locale}
+                numberOfMissingFields={error.fields?.length || 0}
+                type={error.type}
+                projectInfo={projectInfo}
+              />
             </span>
             <ul className="mt2 mb0">
-              {error.fields.map((f, i) => {
+              {error.fields?.map((f, i) => {
                 return (
                   <li key={i}>
                     {<FormattedMessage {...projectEditMessages[f]} />}
@@ -341,13 +396,13 @@ const ErrorMessage = ({ errors }) => {
   );
 };
 
-const SaveStatus = ({ error, success }) => {
+const SaveStatus = ({ error, success, projectInfo }) => {
   let message = null;
   if (success === true) {
     message = <FormattedMessage {...messages.updateSuccess} />;
   }
   if (error !== null && error !== 'SERVER') {
-    message = <ErrorMessage errors={error} />;
+    message = <ErrorMessage errors={error} projectInfo={projectInfo} />;
   }
   if (error !== null && error === 'SERVER') {
     message = <FormattedMessage {...messages.serverError} />;

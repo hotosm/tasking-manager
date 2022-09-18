@@ -11,7 +11,7 @@ export function createPopup(title: string = 'Authentication', location: string) 
     ['left', window.innerWidth / 2 - width / 2],
     ['top', window.innerHeight / 2 - height / 2],
   ]
-    .map(x => x.join('='))
+    .map((x) => x.join('='))
     .join(',');
 
   const popup = window.open(location, '_blank', settings);
@@ -20,13 +20,13 @@ export function createPopup(title: string = 'Authentication', location: string) 
   return popup;
 }
 
-export const createLoginWindow = redirectTo => {
+export const createLoginWindow = (redirectTo) => {
   const popup = createPopup('OSM auth', '');
   let url = `system/authentication/login/?callback_url=${window.location.origin}/authorized/`;
-  fetchLocalJSONAPI(url).then(resp => {
+  fetchLocalJSONAPI(url).then((resp) => {
     popup.location = resp.auth_url;
     // Perform token exchange.
-    window.authComplete = verifier => {
+    window.authComplete = (verifier) => {
       const tokens = new URLSearchParams({
         oauth_token: resp.oauth_token,
         oauth_token_secret: resp.oauth_token_secret,
@@ -39,7 +39,7 @@ export const createLoginWindow = redirectTo => {
         safeStorage.removeItem('email_address');
       }
 
-      fetchLocalJSONAPI(callback_url).then(res => {
+      fetchLocalJSONAPI(callback_url).then((res) => {
         const params = new URLSearchParams({
           username: res.username,
           osm_oauth_token: res.session.oauth_token,
