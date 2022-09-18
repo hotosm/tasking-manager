@@ -10,22 +10,27 @@ class TestValidationService(BaseTestCase):
         self.test_project, self.test_user = create_canned_project()
 
     def test_validate_all_sets_counters_correctly(self):
-
+        # Arrange
+        total_mapped_tasks = self.test_project.tasks_mapped
+        total_validated_tasks = self.test_project.tasks_validated
         # Act
         ValidatorService.validate_all_tasks(self.test_project.id, self.test_user.id)
         # Assert
         self.assertEqual(
-            self.test_project.tasks_validated, self.test_project.total_tasks
+            self.test_project.tasks_validated,
+            total_mapped_tasks + total_validated_tasks,
         )
-        self.assertEqual(self.test_project.tasks_mapped, self.test_project.total_tasks)
+        self.assertEqual(self.test_project.tasks_mapped, 0)
 
     def test_invalidate_all_sets_counters_correctly(self):
+        # Arrange
+        mapped_tasks = self.test_project.tasks_mapped
 
         # Act
         ValidatorService.invalidate_all_tasks(self.test_project.id, self.test_user.id)
 
         # Assert
-        self.assertEqual(0, self.test_project.tasks_mapped)
+        self.assertEqual(mapped_tasks, self.test_project.tasks_mapped)
         self.assertEqual(0, self.test_project.tasks_validated)
 
     def test_mapped_by_and_validated_by_are_null_after_invalidating_all(self):

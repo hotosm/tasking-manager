@@ -169,9 +169,20 @@ def create_canned_project() -> Tuple[Project, User]:
     test_task3.mapped_by = test_user.id
     test_task3.is_square = True
 
+    test_task4 = Task.from_geojson_feature(4, task_feature)
+    test_task4.task_status = TaskStatus.VALIDATED.value
+    test_task4.mapped_by = test_user.id
+    test_task4.validated_by = test_user.id
+    test_task4.is_square = True
+
     test_project.tasks.append(test_task)
     test_project.tasks.append(test_task2)
     test_project.tasks.append(test_task3)
+    test_project.tasks.append(test_task4)
+    test_project.total_tasks = 4
+    test_project.tasks_mapped = 1
+    test_project.tasks_validated = 1
+    test_project.tasks_bad_imagery = 1
     test_project.create()
     test_project.set_default_changeset_comment()
 
