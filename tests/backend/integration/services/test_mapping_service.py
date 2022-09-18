@@ -103,7 +103,12 @@ class TestMappingService(BaseTestCase):
         MappingService.map_all_tasks(self.test_project.id, self.test_user.id)
 
         # Assert
-        self.assertEqual(self.test_project.tasks_mapped, self.test_project.total_tasks)
+        self.assertEqual(
+            self.test_project.tasks_mapped,
+            self.test_project.total_tasks
+            - self.test_project.tasks_validated
+            - self.test_project.tasks_bad_imagery,
+        )
 
     def test_mapped_by_is_set_after_mapping_all(self):
         if self.skip_tests:

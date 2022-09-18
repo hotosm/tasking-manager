@@ -598,6 +598,13 @@ class Task(db.Model):
         return Task.query.filter(Task.project_id == project_id).all()
 
     @staticmethod
+    def get_tasks_by_status(project_id: int, status: str):
+        "Returns all tasks filtered by status in a project"
+        return Task.query.filter(
+            Task.project_id == project_id, Task.task_status == TaskStatus[status].value
+        ).all()
+
+    @staticmethod
     def auto_unlock_delta():
         return parse_duration(current_app.config["TASK_AUTOUNLOCK_AFTER"])
 

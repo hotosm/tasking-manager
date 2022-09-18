@@ -119,7 +119,7 @@ class TestOrgansitaionService(BaseTestCase):
         self.assertEqual(org_stats.active_tasks.mapped, 1)
         self.assertEqual(org_stats.active_tasks.ready, 1)
         self.assertEqual(org_stats.active_tasks.badimagery, 1)
-        self.assertEqual(org_stats.active_tasks.validated, 0)
+        self.assertEqual(org_stats.active_tasks.validated, 1)
         self.assertEqual(org_stats.active_tasks.invalidated, 0)
 
         # Test returns yeat to date stats if year is not None
