@@ -12,11 +12,11 @@ import { ProjectListItem } from './list';
 export const ProjectSearchResults = (props) => {
   const listViewIsActive = useSelector((state) => state.preferences['projectListView']);
   const state = props.state;
-  const cardWidthClass = 'w-third-l';
+  const cardWidthClass = 'w-100';
 
   return (
     <div className={`${props.className}`}>
-      <p className={`blue-grey f7`}>
+      <p className="blue-light f6 ttl mv3">
         {state.isLoading ? (
           <span>&nbsp;</span>
         ) : (
@@ -47,7 +47,7 @@ export const ProjectSearchResults = (props) => {
           </div>
         </div>
       ) : null}
-      <div className="cf db">
+      <div className={`${!listViewIsActive ? 'cards-container' : ''}`}>
         {props.management && listViewIsActive ? (
           <ReactPlaceholder
             showLoadingAnimation={true}
@@ -55,9 +55,7 @@ export const ProjectSearchResults = (props) => {
             delay={50}
             ready={!state.isLoading}
           >
-            <div className="mh2">
-              <ExploreProjectList pageOfCards={state.projects} cardWidthClass={cardWidthClass} />
-            </div>
+            <ExploreProjectList pageOfCards={state.projects} cardWidthClass={cardWidthClass} />
           </ReactPlaceholder>
         ) : (
           <ReactPlaceholder

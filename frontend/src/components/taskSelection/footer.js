@@ -58,8 +58,12 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
 
   const lockTasks = async () => {
     // if user can not map or validate the project, lead him to the explore projects page
-    if (['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(taskAction)) {
+    if (
+      ['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(taskAction) ||
+      project.status === 'ARCHIVED'
+    ) {
       navigate(`/explore/`);
+      return;
     }
     // then pass to the JOSM check and validate/map checks
     if (editor === 'JOSM' && !window.safari) {
@@ -219,7 +223,7 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
           <Button className="white bg-red" onClick={() => lockTasks()} loading={isPending}>
             {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(
               taskAction,
-            ) ? (
+            ) || project.status === 'ARCHIVED' ? (
               <FormattedMessage {...messages.selectAnotherProject} />
             ) : (
               <FormattedMessage

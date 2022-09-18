@@ -147,7 +147,7 @@ export default defineMessages({
   },
   showProjectsAOILayer: {
     id: 'management.projects.create.show_aois',
-    defaultMessage: 'Show existing projects',
+    defaultMessage: 'Show existing projects AoIs',
   },
   disabledAOILayer: {
     id: 'management.projects.create.show_aois.disabled',

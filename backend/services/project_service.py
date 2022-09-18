@@ -1,5 +1,7 @@
+import threading
 from cachetools import TTLCache, cached
 from flask import current_app
+
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.project_dto import (
     ProjectDTO,
@@ -10,8 +12,8 @@ from backend.models.dtos.project_dto import (
     ProjectContribDTO,
     ProjectSearchResultsDTO,
 )
-
 from backend.models.postgis.organisation import Organisation
+from backend.models.postgis.project_info import ProjectInfo
 from backend.models.postgis.project import Project, ProjectStatus, MappingLevel
 from backend.models.postgis.statuses import (
     MappingNotAllowed,
@@ -19,9 +21,11 @@ from backend.models.postgis.statuses import (
     MappingPermission,
     ValidationPermission,
     TeamRoles,
+    EncouragingEmailType,
 )
 from backend.models.postgis.task import Task, TaskHistory
 from backend.models.postgis.utils import NotFound
+from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.user_service import UserService
 from backend.services.project_search_service import ProjectSearchService
 from backend.services.project_admin_service import ProjectAdminService
@@ -563,3 +567,39 @@ class ProjectService:
             raise NotFound()
 
         return project.organisation
+
+    @staticmethod
+    def send_email_on_project_progress(project_id):
+        """ Send email to all contributors on project progress """
+        if not current_app.config["SEND_PROJECT_EMAIL_UPDATES"]:
+            return
+        project = ProjectService.get_project_by_id(project_id)
+
+        project_completion = Project.calculate_tasks_percent(
+            "project_completion",
+            project.total_tasks,
+            project.tasks_mapped,
+            project.tasks_validated,
+            project.tasks_bad_imagery,
+        )
+        if project_completion == 50 and project.progress_email_sent:
+            return  # Don't send progress email if it's already sent
+        if project_completion in [50, 100]:
+            email_type = (
+                EncouragingEmailType.PROJECT_COMPLETE.value
+                if project_completion == 100
+                else EncouragingEmailType.PROJECT_PROGRESS.value
+            )
+            project_title = ProjectInfo.get_dto_for_locale(
+                project_id, project.default_locale
+            ).name
+            project.progress_email_sent = True
+            threading.Thread(
+                target=SMTPService.send_email_to_contributors_on_project_progress,
+                args=(
+                    email_type,
+                    project_id,
+                    project_title,
+                    project_completion,
+                ),
+            ).start()

@@ -20,7 +20,18 @@ class TestMessagingService(BaseTestCase):
 
         # Assert
         self.assertEqual(
-            link, '<a href="http://test.com/projects/1/tasks/?search=1">Task 1</a>'
+            link,
+            '<a style="" href="http://test.com/projects/1/tasks/?search=1">Task 1</a>',
+        )
+
+    def test_message_service_generates_highlighted_task_link(self):
+        # Act
+        link = MessageService.get_task_link(1, 1, "example.com", highlight=True)
+
+        # Assert
+        self.assertEqual(
+            link,
+            '<a style="color: #d73f3f" href="example.com/projects/1/tasks/?search=1">Task 1</a>',
         )
 
     def test_message_service_generates_correct_chat_link(self):
@@ -31,15 +42,16 @@ class TestMessagingService(BaseTestCase):
 
         self.assertEqual(
             link,
-            '<a href="http://test.com/projects/1#questionsAndComments">TEST_PROJECT</a>',
+            '<a style="" href="http://test.com/projects/1#questionsAndComments">TEST_PROJECT #1</a>',
         )
         link = MessageService.get_project_link(
             1,
             "TEST_PROJECT",
             "http://test.com",
+            highlight=True,
         )
 
         self.assertEqual(
             link,
-            '<a href="http://test.com/projects/1">TEST_PROJECT</a>',
+            '<a style="color: #d73f3f" href="http://test.com/projects/1">TEST_PROJECT #1</a>',
         )

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import WebFont from 'webfontloader';
 import * as Sentry from '@sentry/react';
-import { Integrations } from '@sentry/tracing';
+import { BrowserTracing } from '@sentry/tracing';
 
 import App from './App';
 import { store } from './store';
@@ -16,14 +16,14 @@ if (SENTRY_FRONTEND_DSN) {
   Sentry.init({
     dsn: SENTRY_FRONTEND_DSN,
     environment: ENVIRONMENT,
-    integrations: [new Integrations.BrowserTracing()],
+    integrations: [new BrowserTracing()],
     tracesSampleRate: 0.1,
   });
 }
 
 WebFont.load({
   google: {
-    families: ['Barlow Condensed:400,600,700', 'Archivo:400,500,600,700', 'sans-serif'],
+    families: ['Barlow Condensed:400,500,600,700', 'Archivo:400,500,600,700', 'sans-serif'],
   },
 });
 

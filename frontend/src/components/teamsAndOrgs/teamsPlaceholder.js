@@ -4,11 +4,18 @@ import { TextRow, TextBlock, RoundShape, RectShape } from 'react-placeholder/lib
 
 export const teamCardPlaceholderTemplate = () => (_n, i) =>
   (
-    <div className={`fl 'w-third-l' base-font w-50-m w-100 mb3 pr3 blue-dark mw5`} key={i}>
-      <div className="pv3 ph3 ba br1 b--grey-light shadow-hover bg-white">
-        <TextRow className="show-loading-animation mb3" color="#CCC" />
+    <article
+      className="base-font blue-dark h-100 bg-white ph3 pb3 ba br1 b--card shadow-hover h-100 flex flex-column justify-between"
+      key={i}
+    >
+      <div className='mt3'>
+        <TextRow
+          className="show-loading-animation mb3"
+          color="#CCC"
+          style={{ width: 200, height: 24 }}
+        />
         <RectShape
-          className="show-loading-animation"
+          className="show-loading-animation mb4"
           style={{ width: 80, height: 50 }}
           color="#DDD"
         />
@@ -25,9 +32,14 @@ export const teamCardPlaceholderTemplate = () => (_n, i) =>
             ))}
           </Fragment>
         ))}
-        <TextBlock rows={2} className="show-loading-animation mt2" color="#CCC" />
       </div>
-    </div>
+      <TextBlock
+        rows={2}
+        className="show-loading-animation mt2"
+        color="#CCC"
+        style={{ width: 80, height: 50 }}
+      />
+    </article>
   );
 
 export const nCardPlaceholders = (N) => {

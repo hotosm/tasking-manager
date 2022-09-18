@@ -254,3 +254,10 @@ export TM_DB=postgresql://hottm:hottm@localhost/tasking-manager
 It is possible to install and run the Tasking Manager using [Docker](https://docker.com) and [Docker Compose](https://docs.docker.com/compose/).
 
 Clone the Tasking Manager repository and use `docker-compose up` to get a working version of the API running.
+
+## Sysadmins guide
+
+* [System architecture](../sysadmins/architecture.md)
+* [Managing CI/CD with CircleCI](../sysadmins/ci-cd.md)
+* [Deployment Guide](../sysadmins/deployment.md)
+

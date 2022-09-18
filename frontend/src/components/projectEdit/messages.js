@@ -21,6 +21,11 @@ export default defineMessages({
     id: 'projects.formInputs.teams.title',
     defaultMessage: 'Teams',
   },
+  teamsPermissionNote: {
+    id: 'projects.teams.teamsPermissionNote',
+    defaultMessage:
+      'Note: Mappers have mapping permissions. Validators have mapping and validation permissions. Project managers have mapping and validation permissions as well as the access to the management sections.',
+  },
   organisation: {
     id: 'projects.formInputs.organisation.title',
     defaultMessage: 'Organization',
@@ -475,6 +480,10 @@ export default defineMessages({
     id: 'projects.formInputs.changesetComment.description',
     defaultMessage:
       'Default comments added to uploaded changeset comment field. Users should also be encouraged to add text describing what they mapped. Hashtags are sometimes used for analysis later, but should be human informative and not overused, #group #event for example.',
+  },
+  nonEditableComment: {
+    id: 'projects.formInputs.non_editable_comment',
+    defaultMessage: 'This default comment is not editable.',
   },
   projectPriorityURGENT: {
     id: 'project.formInputs.priority.options.urgent',

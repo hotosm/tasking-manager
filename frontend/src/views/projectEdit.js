@@ -51,6 +51,17 @@ export const handleCheckButton = (event, arrayElement) => {
   return arrayElement;
 };
 
+const doesMappingTeamNotExist = (teams, mappingPermission) =>
+  ['TEAMS', 'TEAMS_LEVEL'].includes(mappingPermission) &&
+  teams.filter((team) => team.role === 'MAPPER').length === 0 &&
+  teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
+  teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
+
+const doesValidationTeamNotExist = (teams, validationPermission) =>
+  ['TEAMS', 'TEAMS_LEVEL'].includes(validationPermission) &&
+  teams.filter((team) => team.role === 'VALIDATOR').length === 0 &&
+  teams.filter((team) => team.role === 'PROJECT_MANAGER').length === 0;
+
 export default function ProjectEdit({ id }) {
   useSetTitleTag(`Edit project #${id}`);
   const [errorLanguages, loadingLanguages, languages] = useFetch('system/languages/');
@@ -141,14 +152,11 @@ export default function ProjectEdit({ id }) {
     if (nonLocaleMissingFields.length) {
       missingFields.push({ locale: null, fields: nonLocaleMissingFields });
     }
-
-    const doesMappingTeamNotExist =
-      ['TEAMS', 'TEAMS_LEVEL'].includes(projectInfo.mappingPermission) &&
-      projectInfo.teams.filter((team) => team.role === 'MAPPER').length === 0;
-    const doesValidationTeamNotExist =
-      ['TEAMS', 'TEAMS_LEVEL'].includes(projectInfo.validationPermission) &&
-      projectInfo.teams.filter((team) => team.role === 'VALIDATOR').length === 0;
-    if (doesMappingTeamNotExist || doesValidationTeamNotExist) {
+    const { teams, mappingPermission, validationPermission } = projectInfo;
+    if (
+      doesMappingTeamNotExist(teams, mappingPermission) ||
+      doesValidationTeamNotExist(teams, validationPermission)
+    ) {
       missingFields.push({ type: 'noTeamsAssigned' });
     }
 
@@ -333,18 +341,15 @@ export default function ProjectEdit({ id }) {
 const ErrorTitle = ({ locale, numberOfMissingFields, type, projectInfo }) => {
   if (type === 'noTeamsAssigned') {
     // message if mapping or validation permissions is set to team only but no team has been added
-    const { mappingPermission, validationPermission, teams } = projectInfo;
-    const doesMappingTeamNotExist =
-      ['TEAMS', 'TEAMS_LEVEL'].includes(mappingPermission) &&
-      teams.filter((team) => team.role === 'MAPPER').length === 0;
-    const doesValidationTeamNotExist =
-      ['TEAMS', 'TEAMS_LEVEL'].includes(validationPermission) &&
-      teams.filter((team) => team.role === 'VALIDATOR').length === 0;
+    const { teams, mappingPermission, validationPermission } = projectInfo;
 
     return (
       <FormattedMessage
         {...messages.noTeamsAssigned}
-        values={{ mapping: doesMappingTeamNotExist, validation: doesValidationTeamNotExist }}
+        values={{
+          mapping: doesMappingTeamNotExist(teams, mappingPermission),
+          validation: doesValidationTeamNotExist(teams, validationPermission),
+        }}
       />
     );
   }

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
 import centroid from '@turf/centroid';
@@ -119,7 +118,6 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
 
 export const ProjectDetail = (props) => {
   useSetProjectPageTitleTag(props.project);
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
   /* eslint-disable-next-line */
   const [visualError, visualLoading, visualData] = useFetch(
     `projects/${props.project.projectId}/contributions/queries/day/`,
@@ -321,20 +319,14 @@ export const ProjectDetail = (props) => {
               className="bg-white blue-dark ba b--grey-light pa3"
             />
           </span>
-          {userDetails && userDetails.isExpert ? (
-            <>
-              <DownloadAOIButton
-                projectId={props.project.projectId}
-                className="bg-white blue-dark ba b--grey-light pa3"
-              />
-              <DownloadTaskGridButton
-                projectId={props.project.projectId}
-                className="bg-white blue-dark ba b--grey-light pa3"
-              />
-            </>
-          ) : (
-            ''
-          )}
+          <DownloadAOIButton
+            projectId={props.project.projectId}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
+          <DownloadTaskGridButton
+            projectId={props.project.projectId}
+            className="bg-white blue-dark ba b--grey-light pa3"
+          />
         </ReactPlaceholder>
       </div>
     </div>

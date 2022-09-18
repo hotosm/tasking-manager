@@ -83,7 +83,9 @@ class MessageService:
         status_text = (
             "marked invalid" if status == TaskStatus.INVALIDATED else "validated"
         )
-        task_link = MessageService.get_task_link(project_id, task_id)
+        task_link = MessageService.get_task_link(project_id, task_id, highlight=True)
+        project_link = MessageService.get_project_link(project_id, project_name)
+
         replace_list = [
             ["[USERNAME]", user.username],
             ["[TASK_LINK]", task_link],
@@ -102,7 +104,10 @@ class MessageService:
         validation_message.task_id = task_id
         validation_message.from_user_id = validated_by
         validation_message.to_user_id = mapped_by
-        validation_message.subject = f"{task_link} mapped by you in project {project_name} has been {status_text}"
+        validation_message.subject = (
+            f"{task_link} mapped by you in Project "
+            + f"{project_link} has been {status_text}"
+        )
         validation_message.message = text_template
         messages.append(
             dict(message=validation_message, user=user, project_name=project_name)
@@ -127,7 +132,9 @@ class MessageService:
                 project_id, project.default_locale
             ).name
             message_dto.message = "A message from {} managers:<br/><br/>{}".format(
-                MessageService.get_project_link(project_id, project_name),
+                MessageService.get_project_link(
+                    project_id, project_name, highlight=True
+                ),
                 markdown(message_dto.message, output_format="html"),
             )
 
@@ -227,6 +234,7 @@ class MessageService:
         project_name = ProjectInfo.get_dto_for_locale(project_id, default_locale).name
         if len(usernames) != 0:
             task_link = MessageService.get_task_link(project_id, task_id)
+            project_link = MessageService.get_project_link(project_id, project_name)
 
             messages = []
             for username in usernames:
@@ -241,7 +249,10 @@ class MessageService:
                 message.task_id = task_id
                 message.from_user_id = comment_from
                 message.to_user_id = user.id
-                message.subject = f"You were mentioned in a comment in {task_link} of project {project_name}"
+                message.subject = (
+                    f"You were mentioned in a comment in {task_link} "
+                    + f"of Project {project_link}"
+                )
                 message.message = comment
                 messages.append(
                     dict(message=message, user=user, project_name=project_name)
@@ -267,6 +278,8 @@ class MessageService:
             user_link = MessageService.get_user_link(user_from.username)
 
             task_link = MessageService.get_task_link(project_id, task_id)
+            project_link = MessageService.get_project_link(project_id, project_name)
+
             messages = []
             for user_id in contributed_users:
                 try:
@@ -284,7 +297,7 @@ class MessageService:
                 message.from_user_id = comment_from
                 message.task_id = task_id
                 message.to_user_id = user.id
-                message.subject = f"{user_link} left a comment in {task_link} of project {project_name}"
+                message.subject = f"{user_link} left a comment in {task_link} of Project {project_link}"
                 message.message = comment
                 messages.append(
                     dict(message=message, user=user, project_name=project_name)
@@ -308,12 +321,10 @@ class MessageService:
             project_name = project.get_project_title(project.default_locale)
 
             message = Message()
-            message.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
-            message.subject = (
-                f"Project {project_name} was transferred to {transferred_to}"
-            )
+            message.message_type = MessageType.SYSTEM.value
+            message.subject = f"Project {project_name} #{project_id} was transferred to {transferred_to}"
             message.message = (
-                f"Project {project_name} associated with your "
+                f"Project {project_name} #{project_id} associated with your"
                 + f"organisation {project.organisation.name} was transferred to {transferred_to} by {transferred_by}."
             )
             values = {
@@ -474,7 +485,7 @@ class MessageService:
                     message.project_id = project_id
                     message.from_user_id = chat_from
                     message.to_user_id = user.id
-                    message.subject = f"You were mentioned in project {link} chat"
+                    message.subject = f"You were mentioned in Project {link} chat"
                     message.message = chat
                     messages.append(
                         dict(message=message, user=user, project_name=project_name)
@@ -749,16 +760,24 @@ class MessageService:
         Message.delete_multiple_messages(message_ids, user_id)
 
     @staticmethod
-    def get_task_link(project_id: int, task_id: int, base_url=None) -> str:
+    def get_task_link(
+        project_id: int, task_id: int, base_url=None, highlight=False
+    ) -> str:
         """Helper method that generates a link to the task"""
         if not base_url:
             base_url = current_app.config["APP_BASE_URL"]
-
-        return f'<a href="{base_url}/projects/{project_id}/tasks/?search={task_id}">Task {task_id}</a>'
+        style = ""
+        if highlight:
+            style = "color: #d73f3f"
+        return f'<a style="{style}" href="{base_url}/projects/{project_id}/tasks/?search={task_id}">Task {task_id}</a>'
 
     @staticmethod
     def get_project_link(
-        project_id: int, project_name: str, base_url=None, include_chat_section=False
+        project_id: int,
+        project_name: str,
+        base_url=None,
+        include_chat_section=False,
+        highlight=False,
     ) -> str:
         """Helper method to generate a link to project chat"""
         if not base_url:
@@ -767,8 +786,11 @@ class MessageService:
             section = "#questionsAndComments"
         else:
             section = ""
+        style = ""
+        if highlight:
+            style = "color: #d73f3f"
 
-        return f'<a href="{base_url}/projects/{project_id}{section}">{project_name}</a>'
+        return f'<a style="{style}" href="{base_url}/projects/{project_id}{section}">{project_name} #{project_id}</a>'
 
     @staticmethod
     def get_user_profile_link(user_name: str, base_url=None) -> str:

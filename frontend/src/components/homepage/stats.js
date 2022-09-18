@@ -22,11 +22,11 @@ export const StatsNumber = (props) => {
 
 export const StatsColumn = ({ label, value }: Object) => {
   return (
-    <div className={`fl tc w-20-l w-third-m w-100 dib h4`}>
-      <div className="db f1 fw8 red barlow-condensed">
+    <div className={`tc`}>
+      <div className="fw5 red barlow-condensed stat-number">
         <StatsNumber value={value} />
       </div>
-      <div className="db blue-grey">
+      <div className="db blue-grey f6 fw7">
         <FormattedMessage {...label} />
       </div>
     </div>
@@ -56,7 +56,7 @@ export const StatsSection = () => {
   }, [url]);
 
   return (
-    <div className="cf pt5 pb2 ph5-l ph4 bg-white">
+    <div className="pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container">
       <StatsColumn label={messages.buildingsStats} value={stats.buildings} />
       <StatsColumn label={messages.roadsStats} value={stats.roads} />
       <StatsColumn label={messages.editsStats} value={stats.edits} />

@@ -1,38 +1,38 @@
 import React from 'react';
+import { TextBlock, RoundShape } from 'react-placeholder/lib/placeholders';
 
-import { TextBlock, MediaBlock, RectShape } from 'react-placeholder/lib/placeholders';
-
-export const projectCardPlaceholderTemplate =
-  (cardWidthClass = 'w-25-l') =>
-  (n, i) =>
-    (
-      <div className={`fl ${cardWidthClass} base-font w-50-m w-100 mb3 ph2 blue-dark mw5`} key={i}>
-        <div className="pv3 ph3 ba br1 b--grey-light shadow-hover bg-white">
-          <div className="w-50 red dib">
-            {' '}
-            <MediaBlock
-              rows={1}
-              className="show-loading-animation"
-              color="#DDD"
-              style={{ width: 60, height: 30 }}
-            />{' '}
-          </div>
-          <div className={`fr w-33 tc pr4 f7 ttu`}>
-            {' '}
-            <RectShape
-              className="show-loading-animation"
-              color="#DDD"
-              style={{ width: 60, height: 30 }}
-            />{' '}
-          </div>
-          <h3 className="pb2 f5 fw6 h3 lh-title overflow-y-hidden">
-            <TextBlock rows={3} className="show-loading-animation" color="#CCC" />
-          </h3>
-          <TextBlock rows={4} className="show-loading-animation" color="#CCC" />
+export const projectCardPlaceholderTemplate = () => (_, i) =>
+  (
+    <div
+      className={`ph3 ba br1 b--grey-light bg-white shadow-hover h-100 flex flex-column justify-between project-card`}
+      key={i}
+    >
+      <div className="">
+        <div className="flex justify-between items-center mb4">
+          <RoundShape
+            className="show-loading-animation"
+            color="#DDD"
+            style={{ width: 50, height: 50 }}
+          />
+          <TextBlock
+            rows={1}
+            className="show-loading-animation"
+            color="#CCC"
+            style={{ width: 60 }}
+          />
         </div>
+        <TextBlock rows={3} className="show-loading-animation mb4" color="#CCC" />
+        <TextBlock
+          rows={2}
+          className="show-loading-animation"
+          color="#CCC"
+          style={{ height: 35 }}
+        />
       </div>
-    );
+      <TextBlock rows={2} className="show-loading-animation mb4" color="#CCC" />
+    </div>
+  );
 
-export const nCardPlaceholders = (N, cardWidthClass = 'w-25-l') => {
-  return [...Array(N).keys()].map(projectCardPlaceholderTemplate(cardWidthClass));
+export const nCardPlaceholders = (N) => {
+  return [...Array(N).keys()].map(projectCardPlaceholderTemplate());
 };

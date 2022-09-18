@@ -5,8 +5,15 @@ import ReactTooltip from 'react-tooltip';
 
 import { ClockIcon } from '../svgIcons';
 import messages from './messages';
+import { TimerIcon } from '../svgIcons/timer';
 
-export function DueDateBox({ dueDate, intervalMili, align = 'right', tooltipMsg }: Object) {
+export function DueDateBox({
+  dueDate,
+  intervalMili,
+  tooltipMsg,
+  isTaskStatusPage = false,
+  isProjectDetailPage = false,
+}: Object) {
   const intl = useIntl();
   const [timer, setTimer] = useState(Date.now());
   useEffect(() => {
@@ -36,19 +43,20 @@ export function DueDateBox({ dueDate, intervalMili, align = 'right', tooltipMsg 
     return (
       <>
         <span
-          className={`dib relative lh-solid f7 tr br1 link ph1 pv2 truncate ${
-            align === 'right' ? 'fr' : 'fl'
-          } ${
+          className={`inline-flex items-center lh-solid f8 br1 ph2 link ${
             milliDifference < 60000 * 20 && intervalMili !== undefined
-              ? 'bg-red white fw6'
-              : 'bg-grey-light blue-grey'
+              ? 'bg-red white'
+              : 'bg-tan blue-grey'
           } ${intervalMili ? '' : 'mw4'}`}
           data-tip={tooltipMsg}
+          style={{ paddingTop: '0.375rem', paddingBottom: '0.375rem' }}
         >
-          <span>
-            <ClockIcon className="absolute pl1 top-0 pt1 left-0" />
-          </span>
-          <span className="pl3 ml1 v-mid">
+          {!isTaskStatusPage ? (
+            <ClockIcon height="12px" width="12px" />
+          ) : (
+            <TimerIcon height="12px" width="12px" />
+          )}
+          <span className="pl1">
             <FormattedMessage
               className="indent"
               {...messages['dueDateRelativeRemainingDays']}
@@ -62,6 +70,22 @@ export function DueDateBox({ dueDate, intervalMili, align = 'right', tooltipMsg 
       </>
     );
   } else {
-    return null;
+    return (
+      isProjectDetailPage && (
+        <span
+          className="inline-flex items-center lh-solid f8 br1 ph2 link bg-tan blue-grey"
+          style={{ paddingTop: '0.375rem', paddingBottom: '0.375rem' }}
+        >
+          <ClockIcon height="12px" width="12px" />
+          <span className="pl1">
+            {dueDate ? (
+              <FormattedMessage {...messages.dueDateExpired} />
+            ) : (
+              <FormattedMessage {...messages.noDueDate} />
+            )}
+          </span>
+        </span>
+      )
+    );
   }
 }
