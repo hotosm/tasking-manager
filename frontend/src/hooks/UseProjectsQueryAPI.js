@@ -34,6 +34,7 @@ const projectQueryAllSpecification = {
   mappedByMe: BooleanParam,
   status: StringParam,
   action: StringParam,
+  createdFrom: StringParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -63,6 +64,7 @@ const backendToQueryConversion = {
   mappedByMe: 'mappedByMe',
   status: 'projectStatuses',
   action: 'action',
+  createdFrom: 'createdFrom',
 };
 
 const dataFetchReducer = (state, action) => {

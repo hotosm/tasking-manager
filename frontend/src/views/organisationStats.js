@@ -15,6 +15,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { RemainingTasksStats } from '../components/teamsAndOrgs/remainingTasksStats';
 import { OrganisationUsageLevel, OrganisationTier } from '../components/teamsAndOrgs/orgUsageLevel';
 import { TasksStats } from '../components/teamsAndOrgs/tasksStats';
+import { OrganisationProjectStats } from '../components/teamsAndOrgs/organisationProjectStats';
 
 export const OrganisationStats = ({ id }) => {
   const token = useSelector((state) => state.auth.get('token'));
@@ -111,6 +112,17 @@ export const OrganisationStats = ({ id }) => {
                 />
               )}
             </ReactPlaceholder>
+          </div>
+          <div className="w-40-l w-100 fl cf">
+            <h4 className="f3 fw6 ttu barlow-condensed blue-dark mt0 pt4 mb2">
+              <FormattedMessage {...messages.orgProjectStats} />
+            </h4>
+            <div className="pa2">
+              <OrganisationProjectStats
+                projects={orgStats && orgStats.projects}
+                orgName={organisation.name}
+              />
+            </div>
           </div>
         </div>
       </ReactPlaceholder>

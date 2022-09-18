@@ -96,6 +96,22 @@ export default defineMessages({
     id: 'management.projects',
     defaultMessage: 'Projects',
   },
+  stale: {
+    id: 'management.projects.stale',
+    defaultMessage: 'Stale',
+  },
+  createdThisYear: {
+    id: 'management.projects.created_this_year',
+    defaultMessage: 'Created this year',
+  },
+  projectsCreated: {
+    id: 'management.projects.created.total',
+    defaultMessage: '{number, plural, one {# project created} other {# projects created}}',
+  },
+  numberOfProjects: {
+    id: 'management.projects.stats',
+    defaultMessage: '{number, plural, one {# project} other {# projects}}',
+  },
   campaigns: {
     id: 'management.campaigns',
     defaultMessage: 'Campaigns',
