@@ -4,7 +4,7 @@ import bbox from '@turf/bbox';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import WebglUnsupported from '../webglUnsupported';
 import messages from './messages';
@@ -40,6 +40,7 @@ export const TasksMap = ({
   showTaskIds = false,
   selected: selectedOnMap,
 }) => {
+  const intl = useIntl();
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
   const authDetails = useSelector((state) => state.auth.get('userDetails'));
@@ -82,8 +83,11 @@ export const TasksMap = ({
 
   useLayoutEffect(() => {
     const onSelectTaskClick = (e) => {
+      const { actionBy, taskStatus } = e.features[0].properties;
       const task = e.features && e.features[0].properties;
-      selectTask && selectTask(task.taskId, task.taskStatus);
+      if (!(actionBy === authDetails.username && taskStatus === 'MAPPED')) {
+        selectTask && selectTask(task.taskId, task.taskStatus);
+      }
     };
 
     const countryMapLayers = [
@@ -350,21 +354,40 @@ export const TasksMap = ({
           'point-tasks-centroid-inner',
         );
       }
+      const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        offset: {
+          top: [-10, 0],
+          bottom: [0, -10],
+          left: [0, -10],
+          right: [-10, 0],
+        },
+      })
+        .setHTML(`${intl.formatMessage(messages.cantValidateMappedTask)}`)
+        .trackPointer();
 
-      if (showTaskIds) {
-        map.on('mousemove', 'tasks-fill', function (e) {
+      map.on('mousemove', 'tasks-fill', function (e) {
+        // To now allow validators to select tasks that they mapped
+        if (
+          e.features[0].properties.actionBy === authDetails.username &&
+          e.features[0].properties.taskStatus === 'MAPPED'
+        ) {
+          popup.addTo(map);
+          map.getCanvas().style.cursor = 'not-allowed';
+        } else {
+          map.getCanvas().style.cursor = 'pointer';
+          popup.isOpen() && popup.remove();
+        }
+        if (showTaskIds) {
           // when the user hover on a task they are validating, enable the task id dialog
           if (e.features[0].properties.lockedBy === authDetails.id) {
             setHoveredTaskId(e.features[0].properties.taskId);
           } else {
             setHoveredTaskId(null);
           }
-        });
-        map.on('mouseleave', 'tasks-fill', function (e) {
-          // disable the task id dialog when the mouse go outside the task grid
-          setHoveredTaskId(null);
-        });
-      }
+        }
+      });
 
       if (taskBordersOnly && navigate) {
         map.on('mouseenter', 'point-tasks-centroid', function (e) {
@@ -377,16 +400,19 @@ export const TasksMap = ({
         map.on('click', 'point-tasks-centroid-inner', () => navigate('./tasks'));
       }
 
-      map.on('mouseenter', 'tasks-fill', function (e) {
-        if (selectTask) {
-          // Change the cursor style as a UI indicator.
-          map.getCanvas().style.cursor = 'pointer';
-        }
-      });
       map.on('click', 'tasks-fill', onSelectTaskClick);
       map.on('mouseleave', 'tasks-fill', function (e) {
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = '';
+        // disable the task id dialog when the mouse go outside the task grid
+        showTaskIds && setHoveredTaskId(null);
+        popup.isOpen() && popup.remove();
+
+        // Cursor style won't change to original state with trackPointer()
+        // https://github.com/mapbox/mapbox-gl-js/issues/12223
+        if (map._canvasContainer) {
+          map._canvasContainer.classList.remove('mapboxgl-track-pointer');
+        }
       });
       updateTMZoom();
     };
@@ -463,6 +489,8 @@ export const TasksMap = ({
     authDetails.id,
     showTaskIds,
     zoomedTaskId,
+    authDetails.username,
+    intl,
   ]);
 
   if (!mapboxgl.supported()) {
