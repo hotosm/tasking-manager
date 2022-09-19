@@ -177,8 +177,8 @@ const TIER_OPTIONS = levels.map((level) => ({
 }));
 
 export function OrgInformation({ hasSlug, formState }) {
-  const token = useSelector((state) => state.auth.get('token'));
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const [uploadError, uploading, uploadImg] = useUploadImage();
   const location = useLocation();
   const intl = useIntl();

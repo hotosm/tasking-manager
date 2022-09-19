@@ -45,8 +45,8 @@ export function MyTeams() {
 }
 
 export function ListTeams({ managementView = false }: Object) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [teams, setTeams] = useState(null);
   const [userTeamsOnly, setUserTeamsOnly] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -103,8 +103,8 @@ const leaveTeamRequest = (team_id, username, role, token) => {
 export function CreateTeam() {
   useSetTitleTag('Create new team');
   const navigate = useNavigate();
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [managers, setManagers] = useState([]);
   const [members, setMembers] = useState([]);
 
@@ -209,8 +209,8 @@ export function CreateTeam() {
 }
 
 export function EditTeam(props) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [forceUpdated, forceUpdate] = useForceUpdate();
   const [error, loading, team] = useFetch(`teams/${props.id}/`, forceUpdated);
   const [initManagers, setInitManagers] = useState(false);
@@ -365,8 +365,8 @@ export function EditTeam(props) {
 
 export function TeamDetail(props) {
   useSetTitleTag(`Team #${props.id}`);
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [error, loading, team] = useFetch(`teams/${props.id}/`);
   // eslint-disable-next-line
   const [projectsError, projectsLoading, projects] = useFetch(

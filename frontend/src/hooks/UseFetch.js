@@ -5,7 +5,7 @@ import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
 import { useInterval } from './UseInterval';
 
 export const useFetch = (url, trigger = true) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ export const useFetch = (url, trigger = true) => {
 };
 
 export function useFetchIntervaled(url, delay, trigger = true) {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
   const [data, setData] = useState();
   const [error, setError] = useState(null);

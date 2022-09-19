@@ -45,8 +45,8 @@ const getRandomTaskByAction = (activities, taskAction) => {
 
 export function TaskSelection({ project, type, loading }: Object) {
   const location = useLocation();
-  const user = useSelector((state) => state.auth.get('userDetails'));
-  const userOrgs = useSelector((state) => state.auth.get('organisations'));
+  const user = useSelector((state) => state.auth.userDetails);
+  const userOrgs = useSelector((state) => state.auth.organisations);
   const lockedTasks = useGetLockedTasks();
   const dispatch = useDispatch();
   const [tasks, setTasks] = useState();
@@ -254,9 +254,9 @@ export function TaskSelection({ project, type, loading }: Object) {
           setSelectedTasks(selected.concat([selection]));
         } else {
           setSelectedTasks([selection]);
-          if (lockedTasks.get('tasks').includes(selection)) {
+          if (lockedTasks.tasks.includes(selection)) {
             setTaskAction(
-              lockedTasks.get('status') === 'LOCKED_FOR_MAPPING'
+              lockedTasks.status === 'LOCKED_FOR_MAPPING'
                 ? 'resumeMapping'
                 : 'resumeValidation',
             );

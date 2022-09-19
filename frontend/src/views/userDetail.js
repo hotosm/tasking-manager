@@ -26,8 +26,8 @@ const EditsByNumbers = React.lazy(() =>
 
 export const UserDetail = ({ username, withHeader = true }) => {
   useSetTitleTag(username);
-  const token = useSelector((state) => state.auth.get('token'));
-  const currentUser = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.token);
+  const currentUser = useSelector((state) => state.auth.userDetails);
   const [osmStats, setOsmStats] = useState({});
   const [errorDetails, loadingDetails, userDetails] = useFetch(
     `users/queries/${username}/`,

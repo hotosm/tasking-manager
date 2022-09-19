@@ -80,7 +80,7 @@ export const NotificationPopout = (props) => {
 
 export const NotificationsPage = (props) => {
   useSetTitleTag('Notifications');
-  const userToken = useSelector((state) => state.auth.get('token'));
+  const userToken = useSelector((state) => state.auth.token);
   const [inboxQuery, setInboxQuery] = useInboxQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
   const [error, loading, notifications] = useFetch(

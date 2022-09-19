@@ -26,7 +26,7 @@ export const ContributionsPage = (props) => {
     pagination: { hasNext: false, hasPrev: false, page: 1 },
   };
 
-  const userToken = useSelector((state) => state.auth.get('token'));
+  const userToken = useSelector((state) => state.auth.token);
   //eslint-disable-next-line
   const [contributionsQuery, setContributionsQuery] = useTaskContributionQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
@@ -69,7 +69,7 @@ export const ContributionsPageIndex = (props) => {
 
 export const UserStats = (props) => {
   useSetTitleTag('My stats');
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   return (
     <ReactPlaceholder
       type="media"

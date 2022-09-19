@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import WebFont from 'webfontloader';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 
 import App from './App';
-import { store } from './store';
+import { store, persistor } from './store';
 import { getUserDetails } from './store/actions/auth';
 import { ConnectedIntl } from './utils/internationalization';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
@@ -29,9 +30,11 @@ WebFont.load({
 
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedIntl>
-      <App />
-    </ConnectedIntl>
+    <PersistGate loading={null} persistor={persistor}>
+      <ConnectedIntl>
+        <App />
+      </ConnectedIntl>
+    </PersistGate>
   </Provider>,
   document.getElementById('root'),
 );

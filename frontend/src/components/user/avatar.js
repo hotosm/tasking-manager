@@ -8,7 +8,7 @@ import { useAvatarStyle } from '../../hooks/UseAvatarStyle';
 import { useAvatarText } from '../../hooks/UseAvatarText';
 
 export const CurrentUserAvatar = (props) => {
-  const userPicture = useSelector((state) => state.auth.getIn(['userDetails', 'pictureUrl']));
+  const userPicture = useSelector((state) => state.auth.userDetails.pictureUrl);
   if (userPicture) {
     return (
       <div

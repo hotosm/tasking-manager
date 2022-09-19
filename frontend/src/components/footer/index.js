@@ -31,7 +31,7 @@ const socialNetworks = [
 ];
 
 export function Footer() {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
 
   const footerDisabledPaths = [
     'projects/:id/tasks',

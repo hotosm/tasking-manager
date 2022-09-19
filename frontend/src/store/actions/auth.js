@@ -147,9 +147,9 @@ export const setUserDetails =
   };
 
 export const getUserDetails = (state) => (dispatch) => {
-  if (state.auth.getIn(['userDetails', 'username'])) {
+  if (state.auth.userDetails.username) {
     dispatch(
-      setUserDetails(state.auth.getIn(['userDetails', 'username']), state.auth.get('token')),
+      setUserDetails(state.auth.userDetails.username, state.auth.token),
     );
   }
 };

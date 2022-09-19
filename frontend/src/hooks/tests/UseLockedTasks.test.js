@@ -10,9 +10,9 @@ describe('test if useGetLockedTasks', () => {
     const wrapper = ({ children }) => <Provider store={store}>{children}</Provider>;
     const { result } = renderHook(() => useGetLockedTasks(), { wrapper });
     const lockedTasks = result.current;
-    expect(lockedTasks.get('project')).toEqual(null);
-    expect(lockedTasks.get('tasks')).toStrictEqual([]);
-    expect(lockedTasks.get('status')).toEqual(null);
+    expect(lockedTasks.project).toEqual(null);
+    expect(lockedTasks.tasks).toStrictEqual([]);
+    expect(lockedTasks.status).toEqual(null);
   });
 
   it('after updating the redux state return the correct value', () => {
@@ -24,8 +24,8 @@ describe('test if useGetLockedTasks', () => {
     const wrapper = ({ children }) => <Provider store={store}>{children}</Provider>;
     const { result } = renderHook(() => useGetLockedTasks(), { wrapper });
     const lockedTasks = result.current;
-    expect(lockedTasks.get('project')).toEqual(1);
-    expect(lockedTasks.get('tasks')).toStrictEqual([21]);
-    expect(lockedTasks.get('status')).toEqual('LOCKED_FOR_MAPPING');
+    expect(lockedTasks.project).toEqual(1);
+    expect(lockedTasks.tasks).toStrictEqual([21]);
+    expect(lockedTasks.status).toEqual('LOCKED_FOR_MAPPING');
   });
 });

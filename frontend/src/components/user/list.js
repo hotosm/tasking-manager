@@ -144,9 +144,9 @@ export const SearchNav = ({ filters, setFilters, initialFilters }) => {
 };
 
 export const UsersTable = ({ filters, setFilters }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [response, setResponse] = useState(null);
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const [status, setStatus] = useState({ status: null, message: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

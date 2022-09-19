@@ -79,7 +79,7 @@ export const useTasksStatsQueryAPI = (
   extraQuery = '',
 ) => {
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: true,

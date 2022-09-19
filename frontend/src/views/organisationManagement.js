@@ -25,10 +25,10 @@ import { Alert } from '../components/alert';
 
 export function ListOrganisations() {
   useSetTitleTag('Manage organizations');
-  const token = useSelector((state) => state.auth.get('token'));
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const isOrgManager = useSelector(
-    (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
+    (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
   const [organisations, setOrganisations] = useState(null);
   const [userOrgsOnly, setUserOrgsOnly] = useState(userDetails.role === 'ADMIN' ? false : true);
@@ -63,8 +63,8 @@ export function ListOrganisations() {
 export function CreateOrganisation() {
   useSetTitleTag('Create new organization');
   const navigate = useNavigate();
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [managers, setManagers] = useState([]);
   const [error, setError] = useState(null);
 
@@ -150,8 +150,8 @@ export function CreateOrganisation() {
 }
 
 export function EditOrganisation(props) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [initManagers, setInitManagers] = useState(false);
   const [managers, setManagers] = useState([]);
   const [error, loading, organisation] = useFetch(`organisations/${props.id}/`, props.id);

@@ -39,8 +39,8 @@ const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
   const location = useLocation();
   useSetProjectPageTitleTag(project);
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [activeSection, setActiveSection] = useState('completion');
   const [activeEditor, setActiveEditor] = useState(editor);
   const [showSidebar, setShowSidebar] = useState(true);
