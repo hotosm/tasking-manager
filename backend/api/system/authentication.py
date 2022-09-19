@@ -9,7 +9,6 @@ from backend.services.users.authentication_service import (
 )
 
 
-
 class SystemAuthenticationLoginAPI(Resource):
     def get(self):
         """
