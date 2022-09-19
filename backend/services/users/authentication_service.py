@@ -15,6 +15,12 @@ token_auth = HTTPTokenAuth(scheme="Token")
 tm = TMAPIDecorators()
 
 
+@token_auth.error_handler
+def handle_unauthorized_token():
+    current_app.logger.debug("Token not valid")
+    return {"Error": "Token is expired or invalid", "SubCode": "InvalidToken"}, 401
+
+
 @token_auth.verify_token
 def verify_token(token):
     """ Verify the supplied token and check user role is correct for the requested resource"""
