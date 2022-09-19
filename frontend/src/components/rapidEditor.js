@@ -14,7 +14,7 @@ export default function RapidEditor({
   powerUser = false,
 }) {
   const dispatch = useDispatch();
-  const session = useSelector((state) => state.auth.get('session'));
+  const session = useSelector((state) => state.auth.session);
   const RapiDContext = useSelector((state) => state.editor.rapidContext);
   const locale = useSelector((state) => state.preferences.locale);
   const [customImageryIsSet, setCustomImageryIsSet] = useState(false);

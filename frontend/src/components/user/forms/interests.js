@@ -8,8 +8,8 @@ import { InterestsList } from '../../formInputs';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../../network/genericJSONRequest';
 
 export function UserInterestsForm() {
-  const token = useSelector((state) => state.auth.get('token'));
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const [interests, setInterests] = useState([]);
   const [enableSaveButton, setEnableSaveButton] = useState(false);
   const [success, setSuccess] = useState(null);

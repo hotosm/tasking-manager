@@ -74,7 +74,7 @@ const ActionStatus = ({ status, action }) => {
 };
 
 const ResetTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const resetTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/reset-all/`, token, 'POST');
@@ -110,7 +110,7 @@ const ResetTasksModal = ({ projectId, close }: Object) => {
 };
 
 const ResetBadImageryModal = ({ projectId, close }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const resetBadImagery = () => {
     return fetchLocalJSONAPI(
@@ -154,7 +154,7 @@ const ResetBadImageryModal = ({ projectId, close }: Object) => {
 };
 
 const ValidateAllTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const validateAllTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/validate-all/`, token, 'POST');
@@ -194,7 +194,7 @@ const ValidateAllTasksModal = ({ projectId, close }: Object) => {
 };
 
 const InvalidateAllTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const invalidateAllTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/invalidate-all/`, token, 'POST');
@@ -234,7 +234,7 @@ const InvalidateAllTasksModal = ({ projectId, close }: Object) => {
 };
 
 const MapAllTasksModal = ({ projectId, close }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const mapAllTasks = () => {
     return fetchLocalJSONAPI(`projects/${projectId}/tasks/actions/map-all/`, token, 'POST');
@@ -272,7 +272,7 @@ const MapAllTasksModal = ({ projectId, close }: Object) => {
 
 const MessageContributorsModal = ({ projectId, close }: Object) => {
   const [data, setData] = useState({ message: '', subject: '' });
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const appendImgToMessage = (url) =>
     setData({ ...data, message: `${data.message}\n![image](${url})\n` });
   const [uploadError, uploading, onDrop] = useOnDrop(appendImgToMessage);
@@ -362,7 +362,7 @@ const MessageContributorsModal = ({ projectId, close }: Object) => {
 };
 
 const TransferProject = ({ projectId, orgId }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const { projectInfo } = useContext(StateContext);
   const [username, setUsername] = useState('');
   const [managers, setManagers] = useState([]);
@@ -402,7 +402,7 @@ const TransferProject = ({ projectId, orgId }: Object) => {
     setUsername(value);
   };
   const { username: loggedInUsername, role: loggedInUserRole } = useSelector((state) =>
-    state.auth.get('userDetails'),
+    state.auth.userDetails,
   );
   const hasAccess =
     managers?.includes(loggedInUsername) ||

@@ -25,7 +25,7 @@ export function Members({
   managerJoinTeamError,
   setManagerJoinTeamError,
 }: Object) {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [editMode, setEditMode] = useState(false);
   const [membersBackup, setMembersBackup] = useState(null);
   const selectPlaceHolder = <FormattedMessage {...messages.searchUsers} />;
@@ -165,8 +165,8 @@ export function JoinRequests({
   updateTeam,
   isTeamInviteOnly,
 }: Object) {
-  const token = useSelector((state) => state.auth.get('token'));
-  const { username: loggedInUsername } = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.token);
+  const { username: loggedInUsername } = useSelector((state) => state.auth.userDetails);
 
   const showJoinRequestSwitch =
     isTeamInviteOnly &&

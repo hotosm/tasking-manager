@@ -8,7 +8,7 @@ import { Button } from '../button';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const DeleteNotificationsButton = ({ selected, setSelected, retryFn }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const deleteMessages = (selected) => {
     const payload = JSON.stringify({ messageIds: selected });

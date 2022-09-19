@@ -36,7 +36,7 @@ const CampaignError = ({ error }) => {
 
 export function ListCampaigns() {
   useSetTitleTag('Manage campaigns');
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   // TO DO: filter teams of current user
   const [error, loading, campaigns] = useFetch(`campaigns/`);
   const isCampaignsFetched = !loading && !error;
@@ -53,7 +53,7 @@ export function ListCampaigns() {
 export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [error, setError] = useState(false);
 
   const createCampaign = (payload) => {
@@ -114,8 +114,8 @@ export function CreateCampaign() {
 }
 
 export function EditCampaign(props) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`, props.id);
   useSetTitleTag(`Edit ${campaign.name}`);
   const [projectsError, projectsLoading, projects] = useFetch(

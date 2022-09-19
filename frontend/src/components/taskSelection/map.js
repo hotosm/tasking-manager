@@ -43,7 +43,7 @@ export const TasksMap = ({
   const intl = useIntl();
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
-  const authDetails = useSelector((state) => state.auth.get('userDetails'));
+  const authDetails = useSelector((state) => state.auth.userDetails);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
 
   const [map, setMapObj] = useState(null);

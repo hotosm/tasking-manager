@@ -6,7 +6,7 @@ import { useFetch } from '../../hooks/UseFetch';
 import messages from './messages';
 
 export default function MyProjectsDropdown({ className, setQuery, allQueryParams }) {
-  const username = useSelector((state) => state.auth.get('userDetails').username);
+  const username = useSelector((state) => state.auth.userDetails.username);
   const [, , projects] = useFetch(`projects/queries/${username}/touched/`);
 
   const onSortSelect = (projectId) => {

@@ -16,7 +16,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 export const CreateInterest = () => {
   useSetTitleTag('Create new category');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const createInterest = (payload) => {
     pushToLocalJSONAPI('interests/', JSON.stringify(payload), token, 'POST').then((result) =>
@@ -71,7 +71,7 @@ export const CreateInterest = () => {
 
 export const ListInterests = () => {
   useSetTitleTag('Manage categories');
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   // TO DO: filter teams of current user
   const [error, loading, interests] = useFetch(`interests/`);
   const isInterestsFetched = !loading && !error;
@@ -86,8 +86,8 @@ export const ListInterests = () => {
 };
 
 export const EditInterest = (props) => {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [error, loading, interest] = useFetch(`interests/${props.id}/`);
   useSetTitleTag(`Edit ${interest.name}`);
 

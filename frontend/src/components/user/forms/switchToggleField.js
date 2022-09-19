@@ -5,8 +5,8 @@ import { SwitchToggle } from '../../formInputs';
 import { pushUserDetails } from '../../../store/actions/auth';
 
 const mapStateToProps = (state) => ({
-  userDetails: state.auth.get('userDetails'),
-  token: state.auth.get('token'),
+  userDetails: state.auth.userDetails,
+  token: state.auth.token,
 });
 
 function _SwitchToggleField(props) {

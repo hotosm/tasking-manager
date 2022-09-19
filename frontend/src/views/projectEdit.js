@@ -66,7 +66,7 @@ export default function ProjectEdit({ id }) {
   useSetTitleTag(`Edit project #${id}`);
   const [errorLanguages, loadingLanguages, languages] = useFetch('system/languages/');
   const mandatoryFields = ['name', 'shortDescription', 'description', 'instructions'];
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [option, setOption] = useState('description');

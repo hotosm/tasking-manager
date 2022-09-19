@@ -66,7 +66,7 @@ export function NotificationCard({
   selected,
   setSelected,
 }: Object) {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const location = useLocation();
   const setMessageAsRead = (messageId) => {
     fetchLocalJSONAPI(`notifications/${messageId}/`, token).then(() => {

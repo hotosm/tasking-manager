@@ -69,8 +69,8 @@ function NewContributor({ username, userIsloggedIn }) {
 
 export function Welcome() {
   useSetTitleTag('Welcome');
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const userIsloggedIn = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const userIsloggedIn = useSelector((state) => state.auth.token);
   if (userIsloggedIn) {
     const completeness = calculateCompleteness(userDetails);
     return (

@@ -12,7 +12,7 @@ import bannerLR from '../../assets/img/banner_824.jpg';
 import { HOMEPAGE_VIDEO_URL, HOMEPAGE_IMG_HIGH, HOMEPAGE_IMG_LOW } from '../../config';
 
 function JumbotronButtons() {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   return (
     <div className="buttons">
       <Link to={'explore'}>

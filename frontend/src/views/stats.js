@@ -14,7 +14,7 @@ import { FeatureStats } from '../components/teamsAndOrgs/featureStats';
 
 export const Stats = () => {
   useSetTitleTag('Stats');
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [query, setQuery] = useTasksStatsQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
   useEffect(() => {

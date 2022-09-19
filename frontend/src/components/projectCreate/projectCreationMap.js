@@ -32,7 +32,7 @@ try {
 const ProjectCreationMap = ({ mapObj, setMapObj, metadata, updateMetadata, step, uploadFile }) => {
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [showProjectsAOILayer, setShowProjectsAOILayer] = useState(true);
   const [aoiCanBeActivated, setAOICanBeActivated] = useState(false);
   const [existingProjectsList, setExistingProjectsList] = useState([]);

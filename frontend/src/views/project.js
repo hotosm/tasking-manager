@@ -84,7 +84,7 @@ export const ProjectsPage = (props) => {
 
 export const UserProjectsPage = (props) => {
   useSetTitleTag(props.management ? 'Manage projects' : 'My projects');
-  const userToken = useSelector((state) => state.auth.get('token'));
+  const userToken = useSelector((state) => state.auth.token);
 
   const initialData = {
     mapResults: {

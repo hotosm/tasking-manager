@@ -18,11 +18,11 @@ import { TasksStats } from '../components/teamsAndOrgs/tasksStats';
 import { OrganisationProjectStats } from '../components/teamsAndOrgs/organisationProjectStats';
 
 export const OrganisationStats = ({ id }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const isOrgManager = useSelector(
     (state) =>
-      state.auth.get('userDetails').role === 'ADMIN' ||
-      (state.auth.get('organisations') && state.auth.get('organisations').includes(Number(id))),
+      state.auth.userDetails.role === 'ADMIN' ||
+      (state.auth.organisations && state.auth.organisations.includes(Number(id))),
   );
   const [query, setQuery] = useTasksStatsQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();

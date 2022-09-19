@@ -17,8 +17,8 @@ import { getFilterId } from '../../utils/osmchaLink';
 export const MetadataForm = () => {
   const { projectInfo, setProjectInfo } = useContext(StateContext);
   const [interests, setInterests] = useState([]);
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [organisations, setOrganisations] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
 

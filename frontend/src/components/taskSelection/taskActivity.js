@@ -23,7 +23,7 @@ import { Dropdown } from '../dropdown';
 import { CommentInputField } from '../comments/commentInput';
 
 const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [comment, setComment] = useState('');
 
   const pushComment = () => {
@@ -66,7 +66,7 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
 };
 
 export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [history, setHistory] = useState([]);
   const [taskComments, setTaskComments] = useState([]);
   const [taskChanges, setTaskChanges] = useState([]);
@@ -264,8 +264,8 @@ export const TaskActivity = ({
   updateActivities,
   userCanValidate,
 }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const token = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
   // use it to hide the reset task action button
   const [resetSuccess, setResetSuccess] = useState(false);
   const [commentPayload, setCommentPayload] = useState(null);

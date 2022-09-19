@@ -14,14 +14,14 @@ describe('ProjectsActionFilter', () => {
         <ProjectsActionFilter fullProjectsQuery={{ action: undefined }} setQuery={myMock} />
       </ReduxIntlProviders>,
     );
-    expect(screen.queryByText('Projects to map')).toBeInTheDocument();
+    expect(screen.queryByText('Any project')).toBeInTheDocument();
+    expect(screen.queryByText('Projects to map')).not.toBeInTheDocument();
     expect(screen.queryByText('Projects to validate')).not.toBeInTheDocument();
-    expect(screen.queryByText('Any project')).not.toBeInTheDocument();
     expect(screen.queryByText('Archived')).not.toBeInTheDocument();
     // open dropdown
-    fireEvent.click(screen.queryByText('Projects to map'));
+    fireEvent.click(screen.queryByText('Any project'));
+    expect(screen.queryByText('Projects to map')).toBeInTheDocument();
     expect(screen.queryByText('Projects to validate')).toBeInTheDocument();
-    expect(screen.queryByText('Any project')).toBeInTheDocument();
     expect(screen.queryByText('Archived')).toBeInTheDocument();
     // select Projects to validate
     fireEvent.click(screen.queryByText('Projects to validate'));
