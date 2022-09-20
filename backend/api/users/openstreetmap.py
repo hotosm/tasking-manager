@@ -1,9 +1,11 @@
 from flask_restful import Resource, current_app
 
+from backend.services.users.authentication_service import token_auth
 from backend.services.users.user_service import UserService, UserServiceError, NotFound
 
 
 class UsersOpenStreetMapAPI(Resource):
+    @token_auth.login_required
     def get(self, username):
         """
         Get details from OpenStreetMap for a specified username

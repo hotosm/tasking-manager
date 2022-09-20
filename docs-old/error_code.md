@@ -13,6 +13,7 @@ In addition to descriptive error text, error messages also contains SubCodes. Wh
 
 | Code | Subcode                  | Text                                                                               |
 | ---- | ------------------------ | ---------------------------------------------------------------------------------- |
+| 401  | InvalidToken             | Token is expired or invalid                                                        |
 | 403  | AlreadyFeatured          | Project is already featured                                                        |
 | 403  | CannotValidateMappedTask | Tasks cannot be validated by the same user who marked task as mapped or badimagery |
 | 500  | InternalServerError      | Internal Server Error                                                              |

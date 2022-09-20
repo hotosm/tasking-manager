@@ -8,7 +8,6 @@ import { BrowserTracing } from '@sentry/tracing';
 
 import App from './App';
 import { store, persistor } from './store';
-import { getUserDetails } from './store/actions/auth';
 import { ConnectedIntl } from './utils/internationalization';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { ENABLE_SERVICEWORKER, SENTRY_FRONTEND_DSN, ENVIRONMENT } from './config';
@@ -39,8 +38,6 @@ ReactDOM.render(
   document.getElementById('root'),
 );
 
-// fetch user details endpoint when the user is returning to a logged in session
-store.dispatch(getUserDetails(store.getState()));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA.
