@@ -141,7 +141,7 @@ export const setUserDetails =
         dispatch(setLoader(false));
       })
       .catch((error) => {
-        dispatch(logout());
+        if (error.message === 'InvalidToken') dispatch(logout());
         dispatch(setLoader(false));
       });
   };
