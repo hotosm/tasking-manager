@@ -56,8 +56,8 @@ export const SwitchToggle = ({
 );
 
 export const OrganisationSelect = ({ className, orgId, onChange }) => {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [organisations, setOrganisations] = useState([]);
 
   useEffect(() => {

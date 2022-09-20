@@ -12,7 +12,7 @@ import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useOnResize } from '../../hooks/UseOnResize';
 
 export const NotificationBell = (props) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const trigger = token !== null;
   const [forceUpdated, forceUpdate] = useForceUpdate();
   const [bellPosition, setBellPosition] = useState(0);

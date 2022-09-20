@@ -15,12 +15,12 @@ import { ShowMapToggle, ProjetListViewToggle } from './projectNav';
 import { CustomButton } from '../button';
 
 export const MyProjectNav = (props) => {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const isOrgManager = useSelector(
-    (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
+    (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
   const isPMTeamMember = useSelector(
-    (state) => state.auth.get('pmTeams') && state.auth.get('pmTeams').length > 0,
+    (state) => state.auth.pmTeams && state.auth.pmTeams.length > 0,
   );
   const [fullProjectsQuery, setQuery] = useExploreProjectsQueryParams();
   const notAnyFilter = !stringify(fullProjectsQuery);
@@ -215,7 +215,7 @@ function FilterButton({ currentQuery, newQueryParams, setQuery, isActive, childr
 }
 
 function ManagerFilters({ query, setQuery }: Object) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const [campaignsError, campaignsLoading, campaigns] = useFetch('campaigns/');
   const [orgsError, orgsLoading, organisations] = useFetch(
     `organisations/?omitManagerList=true${

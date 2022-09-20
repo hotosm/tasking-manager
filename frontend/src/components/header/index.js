@@ -309,9 +309,9 @@ class Header extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  userDetails: state.auth.get('userDetails'),
-  organisations: state.auth.get('organisations'),
-  token: state.auth.get('token'),
+  userDetails: state.auth.userDetails,
+  organisations: state.auth.organisations,
+  token: state.auth.token,
   showOrgBar: state.orgBarVisibility.isVisible,
 });
 

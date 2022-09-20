@@ -12,7 +12,7 @@ import { AlertIcon } from '../svgIcons';
 
 export function DeleteModal({ id, name, type, className }: Object) {
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [deleteStatus, setDeleteStatus] = useState(null);
   const [error, setErrorMessage] = useState(null);
 

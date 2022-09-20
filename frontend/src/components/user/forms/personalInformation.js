@@ -67,8 +67,8 @@ const genderOptions = [
 ];
 
 const mapStateToProps = (state) => ({
-  userDetails: state.auth.get('userDetails'),
-  token: state.auth.get('token'),
+  userDetails: state.auth.userDetails,
+  token: state.auth.token,
 });
 
 const RequiredIndicator = () => <span className="ml1 b red">*</span>;

@@ -16,7 +16,7 @@ import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSON
 import '@webscopeio/react-textarea-autocomplete/style.css';
 
 export const PostProjectComment = ({ projectId, updateComments }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [comment, setComment] = useState('');
   const [isShowPreview, setIsShowPreview] = useState(false);
 
@@ -81,7 +81,7 @@ export const PostProjectComment = ({ projectId, updateComments }) => {
 };
 
 export const QuestionsAndComments = ({ projectId }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [comments, setComments] = useState(null);
   const [page, setPage] = useState(1);
 

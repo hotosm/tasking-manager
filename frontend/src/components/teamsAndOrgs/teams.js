@@ -22,7 +22,7 @@ export function TeamsManagement({
   isTeamsFetched,
 }: Object) {
   const isOrgManager = useSelector(
-    (state) => state.auth.get('organisations') && state.auth.get('organisations').length > 0,
+    (state) => state.auth.organisations && state.auth.organisations.length > 0,
   );
 
   return (

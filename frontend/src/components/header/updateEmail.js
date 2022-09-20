@@ -83,8 +83,8 @@ class UpdateEmail extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  userDetails: state.auth.get('userDetails'),
-  token: state.auth.get('token'),
+  userDetails: state.auth.userDetails,
+  token: state.auth.token,
 });
 
 UpdateEmail.propTypes = {

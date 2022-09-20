@@ -42,7 +42,7 @@ export function APIKeyCard({ token }) {
 }
 
 export function OSMCard({ username }: Object) {
-  const osmUserInfo = useSelector((state) => state.auth.get('osm'));
+  const osmUserInfo = useSelector((state) => state.auth.osm);
   const { value, unit } = selectUnit(
     osmUserInfo ? new Date(osmUserInfo.accountCreated) : new Date(),
   );

@@ -78,7 +78,7 @@ export const UserFetchTextarea = ({
   autoFocus,
   isProjectDetailCommentSection,
 }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const fetchUsers = async (user) => {
     try {
       if (!user) return contributors.map((u) => ({ name: u }));

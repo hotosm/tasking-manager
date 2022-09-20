@@ -113,7 +113,7 @@ export const useProjectsQueryAPI = (
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
 
   /* Get the user bearer token from the Redux store */
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
   const action = useSelector((state) => state.preferences['action']);
 

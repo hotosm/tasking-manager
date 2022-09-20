@@ -10,7 +10,7 @@ const Error = ({ error }) => <span>Error:{error.message}</span>;
 
 export function SelectTask({ id }: Object) {
   const [error, loading, data] = useFetch(`projects/${id}/queries/summary/`, id);
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   if (error) {
     if (error.message === 'NOT FOUND') {
       return <NotFound projectId={id} />;

@@ -22,8 +22,8 @@ export function ValidateTask({ id }: Object) {
 }
 
 export function TaskAction({ project, action }: Object) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences.locale);
   // eslint-disable-next-line
   const [editor, setEditor] = useQueryParam('editor', StringParam);

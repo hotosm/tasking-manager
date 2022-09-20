@@ -124,7 +124,7 @@ const MyContributionsNav = ({ username, authUser }) => {
 };
 
 export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
-  const authDetails = useSelector((state) => state.auth.get('userDetails'));
+  const authDetails = useSelector((state) => state.auth.userDetails);
   const [user, setUser] = useState({});
 
   useEffect(() => {

@@ -13,8 +13,8 @@ import { DeleteModal } from '../components/deleteModal';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 
 export const EditLicense = (props) => {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [error, loading, license] = useFetch(`licenses/${props.id}/`);
   useSetTitleTag(`Edit ${license.name}`);
 
@@ -44,7 +44,7 @@ export const EditLicense = (props) => {
 
 export const ListLicenses = () => {
   useSetTitleTag('Manage licenses');
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   // TO DO: filter teams of current user
   const [error, loading, licenses] = useFetch(`licenses/`);
   const isLicensesFetched = !loading && !error;
@@ -61,7 +61,7 @@ export const ListLicenses = () => {
 export const CreateLicense = () => {
   useSetTitleTag('Create new license');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const createLicense = (payload) => {
     pushToLocalJSONAPI('licenses/', JSON.stringify(payload), token, 'POST').then((result) =>
