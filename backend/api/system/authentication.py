@@ -1,19 +1,12 @@
-from flask import session, current_app, redirect, request
+from flask import current_app, redirect, request
 from flask_restful import Resource
 
 from backend import osm
+from backend.config import EnvironmentConfig
 from backend.services.users.authentication_service import (
     AuthenticationService,
     AuthServiceError,
 )
-
-
-@osm.tokengetter
-def get_oauth_token():
-    """Required by Flask-OAuthlib.  Pulls oauth token from the session so we can make authenticated requests"""
-    if "osm_oauth" in session:
-        resp = session["osm_oauth"]
-        return resp["oauth_token"], resp["oauth_token_secret"]
 
 
 class SystemAuthenticationLoginAPI(Resource):
@@ -35,12 +28,17 @@ class SystemAuthenticationLoginAPI(Resource):
           200:
             description: oauth token params
         """
-        callback_url = request.args.get("callback_url", None)
-        if callback_url is None:
-            callback_url = current_app.config["APP_BASE_URL"]
-        params = AuthenticationService.generate_authorize_url(callback_url)
+        redirect_uri = request.args.get(
+            "redirect_uri", current_app.config["APP_BASE_URL"]
+        )
+        authorize_url = f"{EnvironmentConfig.OSM_SERVER_URL}/oauth2/authorize"
+        state = AuthenticationService.generate_random_state()
 
-        return params, 200
+        osm.redirect_uri = redirect_uri
+        osm.state = state
+
+        login_url, state = osm.authorization_url(authorize_url)
+        return {"auth_url": login_url, "state": state}, 200
 
 
 class SystemAuthenticationCallbackAPI(Resource):
@@ -61,34 +59,32 @@ class SystemAuthenticationCallbackAPI(Resource):
             description: A problem occurred negotiating with the OSM API
         """
 
-        # Create session from requests. TODO: Do not use flask session
-        token_secret = request.args.get("oauth_token_secret", None)
-        if token_secret is None:
-            return {"Error": "Missing oauth_token_secret parameter"}, 500
+        token_url = f"{EnvironmentConfig.OSM_SERVER_URL}/oauth2/token"
+        authorization_code = request.args.get("code", None)
+        if authorization_code is None:
+            return {"Error": "Missing code parameter"}, 500
 
         email = request.args.get("email_address", None)
-        session["osm_oauthtok"] = (
-            request.args.get("oauth_token"),
-            request.args.get("oauth_token_secret"),
+
+        osm_resp = osm.fetch_token(
+            token_url=token_url,
+            client_secret=EnvironmentConfig.OAUTH_CLIENT_SECRET,
+            code=authorization_code,
         )
 
-        osm_resp = osm.authorized_response()
         if osm_resp is None:
             current_app.logger.critical("No response from OSM")
             return redirect(AuthenticationService.get_authentication_failed_url())
-        else:
-            session[
-                "osm_oauth"
-            ] = osm_resp  # Set OAuth details in the session temporarily
-        osm_response = osm.request(
-            "user/details"
-        )  # Get details for the authenticating user
-        if osm_response.status != 200:
+
+        user_info_url = f"{EnvironmentConfig.OAUTH_API_URL}/user/details.json"
+        osm_response = osm.get(user_info_url)  # Get details for the authenticating user
+
+        if osm_response.status_code != 200:
             current_app.logger.critical("Error response from OSM")
             return redirect(AuthenticationService.get_authentication_failed_url())
 
         try:
-            user_params = AuthenticationService.login_user(osm_response.data, email)
+            user_params = AuthenticationService.login_user(osm_response.json(), email)
             user_params["session"] = osm_resp
             return user_params, 200
         except AuthServiceError:

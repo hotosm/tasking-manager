@@ -75,12 +75,12 @@ const Parameters = {
     Description: 'TM_LOG_DIR environment variable',
     Type: 'String'
   },
-  TaskingManagerConsumerKey: {
-    Description: 'TM_CONSUMER_KEY',
+  TaskingManagerOAuthClientID: {
+    Description: 'TM_CLIENT_ID',
     Type: 'String'
   },
-  TaskingManagerConsumerSecret: {
-      Description: 'TM_CONSUMER_SECRET',
+  TaskingManagerOAuthClientSecret: {
+      Description: 'TM_CLIENT_SECRET',
       Type: 'String'
   },
   TaskingManagerSecret: {
@@ -406,8 +406,10 @@ const Resources = {
         cf.sub('export POSTGRES_USER="${PostgresUser}"'),
         cf.sub('export TM_APP_BASE_URL="${TaskingManagerAppBaseUrl}"'),
         cf.sub('export TM_ENVIRONMENT="${AWS::StackName}"'),
-        cf.sub('export TM_CONSUMER_KEY="${TaskingManagerConsumerKey}"'),
-        cf.sub('export TM_CONSUMER_SECRET="${TaskingManagerConsumerSecret}"'),
+        cf.sub('export TM_CLIENT_ID="${TaskingManagerOAuthClientID}"'),
+        cf.sub('export TM_CLIENT_SECRET="${TaskingManagerOAuthClientSecret}"'),
+        cf.sub('export TM_REDIRECT_URI="${TaskingManagerAppBaseUrl}/authorized"'),
+        'export TM_SCOPE=read_prefs write_api',
         cf.sub('export TM_SECRET="${TaskingManagerSecret}"'),
         cf.sub('export TM_SMTP_HOST="${TaskingManagerSMTPHost}"'),
         cf.sub('export TM_SMTP_PASSWORD="${TaskingManagerSMTPPassword}"'),

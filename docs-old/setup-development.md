@@ -83,8 +83,10 @@ There are two ways to configure Tasking Manager. You can set some environment va
   - `POSTGRES_ENDPOINT`=database-endpoint-can-be-localhost
   - `POSTGRES_PORT`=database-port
   - `TM_SECRET`=define-freely-any-number-and-letter-combination
-  - `TM_CONSUMER_KEY`=oauth-consumer-key-from-openstreetmap
-  - `TM_CONSUMER_SECRET`=oauth-consumer-secret-key-from-openstreetmap
+  - `TM_CLIENT_ID`=oauth-client-id-from-openstreetmap
+  - `TM_CLIENT_SECRET`=oauth-client-secret-key-from-openstreetmap
+  - `TM_REDIRECT_URI`=oauth-client-redirect_uri
+  - `TM_SCOPE`=oauth-client-scopes
 
 #### Build
 

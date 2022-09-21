@@ -13,6 +13,24 @@ const persistConfig = {
   blacklist: ['editor'],
 };
 
+const persistedState = {
+  auth: Map({
+    userDetails: Map({
+      username: safeStorage.getItem('username'),
+    }),
+    token: safeStorage.getItem('token'),
+    session: {
+      osm_oauth_token: safeStorage.getItem('osm_oauth_token'),
+    },
+  }),
+  preferences: {
+    locale: safeStorage.getItem('locale'),
+    action: safeStorage.getItem('action'),
+    mapShown: 'true' === safeStorage.getItem('mapShown'),
+    projectListView: 'true' === safeStorage.getItem('projectListView'),
+  },
+};
+
 const persistedReducer = persistReducer(persistConfig, reducers);
 
 const enhancers = [];
