@@ -11,23 +11,18 @@ import { MessageAvatar, typesThatUseSystemAvatar, rawHtmlNotification } from './
 import { CloseIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { DeleteButton } from '../teamsAndOrgs/management';
+import './styles.scss';
 
 export const NotificationBodyModal = (props) => {
   const location = useLocation();
 
   return (
     <div
-      style={{
-        inset: '0px',
-        background: 'rgba(0, 0, 0, 0.5) none repeat scroll 0% 0%',
-        display: 'flex',
-        'z-index': '999',
-      }}
       onClick={() => navigate(`../../${location.search}`)}
-      className="fixed top-0 left-0 right-0 bottom-0"
+      className="fixed top-0 left-0 right-0 bottom-0 notification-ctr"
     >
       <div
-        className={`relative shadow-3 flex flex-column`}
+        className={`relative shadow-3 flex flex-column notification`}
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
@@ -36,17 +31,8 @@ export const NotificationBodyModal = (props) => {
             window.open(e.target.href);
           }
         }}
-        style={{
-          background: 'rgb(255, 255, 255) none repeat scroll 0% 0%',
-          width: '55%',
-          margin: '5em auto auto',
-          border: '1px solid rgb(187, 187, 187)',
-          padding: '5px',
-          overflowY: 'auto',
-          maxHeight: 'calc(100vh - 10em)',
-        }}
       >
-        <div className={`di fl tl pa3 mb3 w-100 fw5 bb b--tan`}>
+        <div className={`di fl f125 tl pa3 w-100 fw7 bb b--tan header`}>
           <FormattedMessage {...messages.message} />
           <Link className={`fr ml4 blue-dark`} to={`../../${location.search}`}>
             <CloseIcon className={`h1 w1 blue-dark`} />

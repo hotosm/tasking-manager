@@ -19,7 +19,7 @@ function Paginator({ inboxQuery, notifications, setInboxQuery }) {
       activePage={activePage}
       setPageFn={changeToPage}
       lastPage={maxPage}
-      className="flex items-center justify-center pa4"
+      className="inline-flex items-center justify-center"
     />
   );
 }

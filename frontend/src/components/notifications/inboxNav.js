@@ -9,13 +9,41 @@ import { useInboxQueryParams, stringify } from '../../hooks/UseInboxQueryAPI';
 import { ProjectSearchBox } from '../projects/projectSearchBox';
 import { NotificationOrderBySelector } from './notificationOrderBy';
 
+const filters = [
+  {
+    messageId: 'all',
+    isActiveConstraint: 'All',
+    to: '?orderBy=date&orderByType=desc&page=1&pageSize=10',
+  },
+  {
+    messageId: 'messages',
+    isActiveConstraint: ['3', '1', '6', '7'],
+    to: '?orderBy=date&orderByType=desc&page=1&pageSize=10&types=3,1,6,7',
+  },
+  {
+    messageId: 'projects',
+    isActiveConstraint: ['2', '9', '10'],
+    to: '?orderBy=date&orderByType=desc&page=1&pageSize=10&types=2,9,10',
+  },
+  {
+    messageId: 'tasks',
+    isActiveConstraint: ['8', '4', '5'],
+    to: '?orderBy=date&orderByType=desc&page=1&pageSize=10&types=8,4,5',
+  },
+  {
+    messageId: 'teams',
+    isActiveConstraint: ['6', '7', '11'],
+    to: '?orderBy=date&orderByType=desc&page=1&pageSize=10&types=6,7,11',
+  },
+];
+
 const isActiveButton = (buttonName, projectQuery) => {
   const allBoolean = projectQuery.types === undefined;
   if (
     JSON.stringify(projectQuery['types']) === JSON.stringify(buttonName) ||
     (buttonName === 'All' && allBoolean)
   ) {
-    return 'bg-blue-dark grey-light';
+    return 'bg-blue-light grey-light white';
   } else {
     return 'bg-white blue-grey';
   }
@@ -77,81 +105,52 @@ export const InboxNavMiniBottom = (props) => {
 export const InboxNav = (props) => {
   const [inboxQuery, setInboxQuery] = useInboxQueryParams();
 
-  const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
+  const linkCombo = 'link ph3 f6 pv2 shadow-3 fw5 br1';
   const notAnyFilter = !stringify(inboxQuery);
+
   return (
-    <header className=" w-100 ">
-      <div className="cf">
-        <div className="w-75-l w-60 fl">
-          <h3 className="mb2 f2 ttu barlow-condensed fw8">
-            <FormattedMessage {...messages.notifications} />
-          </h3>
-        </div>
+    <header className="w-100">
+      <h3 className="mb2 f2 ttu barlow-condensed fw5 ma0">
+        <FormattedMessage {...messages.notifications} />
+      </h3>
+      <div className="dib lh-copy w-100 mb3">
+        <FormattedMessage {...contributionsMessages.searchProject}>
+          {(msg) => {
+            return (
+              <ProjectSearchBox
+                className="dib fl mr2"
+                setQuery={setInboxQuery}
+                fullProjectsQuery={inboxQuery}
+                placeholder={msg}
+                searchField={'project'}
+              />
+            );
+          }}
+        </FormattedMessage>
+        <NotificationOrderBySelector
+          className={`mt1 mt2-ns`}
+          setQuery={setInboxQuery}
+          allQueryParams={inboxQuery}
+        />
+        {!notAnyFilter && (
+          <Link to="./" className="red link ph3 f6 v-mid pv2 mh1 mt1 mt2-ns dib">
+            <FormattedMessage {...messages.clearFilters} />
+          </Link>
+        )}
       </div>
-      <div className="mt2 mb1 dib lh-copy w-100 cf">
-        <div className="w-100 fl dib">
-          <div className="dib">
-            <div className="mv2 dib"></div>
-            <FormattedMessage {...contributionsMessages.searchProject}>
-              {(msg) => {
-                return (
-                  <ProjectSearchBox
-                    className="dib fl mh1"
-                    setQuery={setInboxQuery}
-                    fullProjectsQuery={inboxQuery}
-                    placeholder={msg}
-                    searchField={'project'}
-                  />
-                );
-              }}
-            </FormattedMessage>
-            <NotificationOrderBySelector
-              className={`mt1 mt2-ns`}
-              setQuery={setInboxQuery}
-              allQueryParams={inboxQuery}
-            />
-            {!notAnyFilter && (
-              <Link to="./" className="red link ph3 f6 v-mid pv2 mh1 mt1 mt2-ns dib">
-                <FormattedMessage {...messages.clearFilters} />
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
-      <div className="mv2">
-        <Link
-          to="?orderBy=date&orderByType=desc&page=1&pageSize=10"
-          className={`di di-m mh1 ${isActiveButton('All', inboxQuery)} ${linkCombo}`}
-        >
-          <FormattedMessage {...messages.all} />
-        </Link>
-        <Link
-          to="?orderBy=date&orderByType=desc&page=1&pageSize=10&types=3,1,6,7"
-          className={`di di-m mh1 ${isActiveButton(
-            ['3', '1', '6', '7'],
-            inboxQuery,
-          )}  ${linkCombo}`}
-        >
-          <FormattedMessage {...messages.messages} />
-        </Link>
-        <Link
-          to="?orderBy=date&orderByType=desc&page=1&pageSize=10&types=2,9,10"
-          className={`di di-m mh1 ${isActiveButton(['2', '9', '10'], inboxQuery)}  ${linkCombo} `}
-        >
-          <FormattedMessage {...messages.projects} />
-        </Link>
-        <Link
-          to={'?orderBy=date&orderByType=desc&page=1&pageSize=10&types=8,4,5'}
-          className={`di di-m mh1 ${isActiveButton(['8', '4', '5'], inboxQuery)}  ${linkCombo} `}
-        >
-          <FormattedMessage {...messages.tasks} />
-        </Link>
-        <Link
-          to={'?orderBy=date&orderByType=desc&page=1&pageSize=10&types=6,7,11'}
-          className={`di di-m mh1 ${isActiveButton(['6', '7', '11'], inboxQuery)}  ${linkCombo} `}
-        >
-          <FormattedMessage {...messages.teams} />
-        </Link>
+      <div className="flex flex-wrap">
+        {filters.map((filter) => (
+          <Link
+            key={filter.messageId}
+            to={filter.to}
+            className={`di di-m mr2 mv2 ${isActiveButton(
+              filter.isActiveConstraint,
+              inboxQuery,
+            )} ${linkCombo}`}
+          >
+            <FormattedMessage {...messages[filter.messageId]} />
+          </Link>
+        ))}
       </div>
       {props.children}
     </header>
