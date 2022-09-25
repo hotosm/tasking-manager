@@ -164,7 +164,10 @@ export function NotificationCard({
         <DeleteButton
           className={`bg-transparent bw0 w2 h2 lh-copy overflow-hidden blue-light p0 mb1 hover-red`}
           showText={false}
-          onClick={() => deleteNotification(messageId)}
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteNotification(messageId);
+          }}
         />
       </div>
     </article>
