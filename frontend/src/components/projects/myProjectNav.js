@@ -234,7 +234,7 @@ function ManagerFilters({ query, setQuery }: Object) {
         options={{
           isError: campaignsError,
           isLoading: campaignsLoading,
-          tags: campaigns ? campaigns.campaigns : [],
+          tags: Object.keys(campaigns).length > 0 ? campaigns.campaigns : [],
         }}
         setQueryForChild={setQuery}
         allQueryParamsForChild={query}
@@ -248,7 +248,7 @@ function ManagerFilters({ query, setQuery }: Object) {
         options={{
           isError: orgsError,
           isLoading: orgsLoading,
-          tags: organisations ? organisations.organisations : [],
+          tags: Object.keys(organisations).length > 0 ? organisations.organisations : [],
         }}
         setQueryForChild={setQuery}
         allQueryParamsForChild={query}

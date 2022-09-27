@@ -23,7 +23,7 @@ const projectQueryAllSpecification = {
   location: StringParam,
   types: CommaArrayParam,
   exactTypes: BooleanParam,
-  interests: CommaArrayParam,
+  interests: NumberParam,
   page: NumberParam,
   text: StringParam,
   orderBy: StringParam,
