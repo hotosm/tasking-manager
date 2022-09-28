@@ -34,6 +34,8 @@ jobs:
         ID_EDITOR_URL: ${{ secrets.STAGING_ID_EDITOR_URL }}
         POTLATCH2_EDITOR_URL: ${{ secrets.STAGING_POTLATCH2_EDITOR_URL }}
         TM_MAX_AOI_AREA: ${{ secrets.MAP_MAX_AREA }}
+        TM_MAX_AOI_AREA: ${{ secrets.STAGING_TM_MAX_AOI_AREA }}
+        TM_IMPORT_MAX_FILESIZE: ${{ secrets.STAGING_TM_IMPORT_MAX_FILESIZE }}
       run: |
         cd frontend && yarn build
     - name: Unit Tests
