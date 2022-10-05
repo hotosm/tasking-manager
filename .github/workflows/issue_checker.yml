@@ -1,0 +1,22 @@
+name: Close inactive issues
+on:
+  schedule:
+    - cron: "0 0 * * *" # Runs every Every day at 0 UTC
+
+jobs:
+  close-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v5
+        with:
+          days-before-issue-stale: 30  # give warning to issues which are inactive more than month
+          days-before-issue-close: 15 # Close the issue if remains inactive further more 15 days after the notice
+          stale-issue-label: "stale"
+          stale-issue-message: "Warning : This issue is stale because it has been open for 30 days with no activity. It will be closed if no activity found within 15 days."
+          close-issue-message: "This issue was closed because it has been inactive for 15 days since being marked as stale. Issue can be reopen if valid"
+          days-before-pr-stale: -1 # can be configurable for PR too -1 will disable the feature
+          days-before-pr-close: -1
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
