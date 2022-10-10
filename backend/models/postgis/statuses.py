@@ -118,6 +118,14 @@ class TeamVisibility(Enum):
     PRIVATE = 1
 
 
+class TeamJoinMethod(Enum):
+    """ Describes the visibility associated with an Team """
+
+    ANY = 0
+    BY_REQUEST = 1
+    BY_INVITE = 2
+
+
 class TeamRoles(Enum):
     """ Describes the role a Team has within a Project """
 
