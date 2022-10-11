@@ -3,13 +3,17 @@ from schematics.exceptions import DataError
 import threading
 
 from backend.models.dtos.message_dto import MessageDTO
-from backend.services.team_service import TeamService, NotFound, TeamJoinNotAllowed
+from backend.services.team_service import (
+    TeamService,
+    NotFound,
+    TeamJoinNotAllowed,
+    TeamServiceError,
+)
 from backend.services.users.authentication_service import token_auth, tm
 from backend.models.postgis.user import User
 
 
 class TeamsActionsJoinAPI(Resource):
-    @tm.pm_only(False)
     @token_auth.login_required
     def post(self, team_id):
         """
@@ -32,18 +36,6 @@ class TeamsActionsJoinAPI(Resource):
               required: true
               type: integer
               default: 1
-            - in: body
-              name: body
-              required: true
-              description: JSON object to join team
-              schema:
-                properties:
-                    username:
-                        type: string
-                        required: true
-                    role:
-                        type: string
-                        required: false
         responses:
             200:
                 description: Member added
@@ -54,30 +46,16 @@ class TeamsActionsJoinAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        authenticated_user_id = token_auth.current_user()
         try:
-            post_data = request.get_json(force=True)
-            username = post_data["username"]
-            role = post_data.get("role", None)
-        except (DataError, KeyError) as e:
-            current_app.logger.error(f"error validating request: {str(e)}")
-            return {
-                "Error": str(e),
-                "SubCode": "InvalidData",
-            }, 400
-
-        try:
-            authenticated_user_id = token_auth.current_user()
-            TeamService.join_team(team_id, authenticated_user_id, username, role)
-            if TeamService.is_user_team_manager(team_id, authenticated_user_id):
-                return {"Success": "User added to the team"}, 200
-            else:
-                return {"Success": "Request to join the team sent successfully."}, 200
-        except TeamJoinNotAllowed as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+            TeamService.request_to_join_team(team_id, authenticated_user_id)
+            return {"Success": "Join request successful"}, 200
+        except TeamServiceError as e:
+            return {"Error": str(e), "SubCode": "InvalidRequest"}, 400
+        except NotFound:
+            return {"Error": "Team not found", "SubCode": "NotFound"}, 404
         except Exception as e:
-            error_msg = f"User POST - unhandled error: {str(e)}"
-            current_app.logger.critical(error_msg)
-            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
+            return {"Error": str(e), "SubCode": "InternalServerError"}, 500
 
     @tm.pm_only(False)
     @token_auth.login_required
@@ -167,6 +145,8 @@ class TeamsActionsJoinAPI(Resource):
                     team_id, authenticated_user_id, username, role, action
                 )
                 return {"Success": "True"}, 200
+        except NotFound as e:
+            return {"Error": str(e), "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Team Join PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -174,6 +154,74 @@ class TeamsActionsJoinAPI(Resource):
                 "Error": error_msg,
                 "SubCode": "InternalServerError",
             }, 500
+
+
+class TeamsActionsAddAPI(Resource):
+    @token_auth.login_required
+    def post(self, team_id):
+        """
+        Add members to the team
+        ---
+        tags:
+          - teams
+        produces:
+          - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - name: team_id
+              in: path
+              description: Unique team ID
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object to join team
+              schema:
+                properties:
+                    username:
+                        type: string
+                        required: true
+                    role:
+                        type: string
+                        required: false
+        responses:
+            200:
+                description: Member added
+            403:
+                description: Forbidden
+            404:
+                description: Not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            post_data = request.get_json(force=True)
+            username = post_data["username"]
+            role = post_data.get("role", None)
+        except (DataError, KeyError) as e:
+            current_app.logger.error(f"error validating request: {str(e)}")
+            return {
+                "Error": str(e),
+                "SubCode": "InvalidData",
+            }, 400
+
+        try:
+            authenticated_user_id = token_auth.current_user()
+            TeamService.add_user_to_team(team_id, authenticated_user_id, username, role)
+            return {"Success": "User added to the team"}, 200
+        except TeamJoinNotAllowed as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except Exception as e:
+            error_msg = f"User POST - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {"Error": error_msg, "SubCode": "InternalServerError"}, 500
 
 
 class TeamsActionsLeaveAPI(Resource):
