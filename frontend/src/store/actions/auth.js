@@ -89,9 +89,7 @@ export function updateSession(session) {
   };
 }
 
-export const setAuthDetails = (username, token, osm_oauth_token ) => (
-  dispatch,
-) => {
+export const setAuthDetails = (username, token, osm_oauth_token) => (dispatch) => {
   const encoded_token = btoa(token);
   safeStorage.setItem('token', encoded_token);
   safeStorage.setItem('username', username);
@@ -146,9 +144,7 @@ export const setUserDetails =
 
 export const getUserDetails = (state) => (dispatch) => {
   if (state.auth.userDetails.username) {
-    dispatch(
-      setUserDetails(state.auth.userDetails.username, state.auth.token),
-    );
+    dispatch(setUserDetails(state.auth.userDetails.username, state.auth.token));
   }
 };
 
