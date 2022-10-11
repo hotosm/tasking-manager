@@ -373,15 +373,11 @@ class MessageService:
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
-        message.subject = "{} requested to join {}".format(
-            MessageService.get_user_link(from_username),
-            MessageService.get_team_link(team_name, team_id, True),
-        )
-        message.message = "{} has requested to join the {} team.\
-            Access the team management page to accept or reject that request.".format(
-            MessageService.get_user_link(from_username),
-            MessageService.get_team_link(team_name, team_id, True),
-        )
+        user_link = MessageService.get_user_link(from_username)
+        team_link = MessageService.get_team_link(team_name, team_id, True)
+        message.subject = f"{user_link} requested to join {team_link}"
+        message.message = f"{user_link} has requested to join the {team_link} team.\
+            Access the team management page to accept or reject that request."
         MessageService._push_messages(
             [dict(message=message, user=User.query.get(to_user))]
         )
@@ -399,13 +395,11 @@ class MessageService:
         message.message_type = MessageType.REQUEST_TEAM_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
-        message.subject = "Request to join {} was {}ed".format(
-            MessageService.get_team_link(team_name, team_id, False), response
-        )
-        message.message = "{} has {}ed your request to join the {} team.".format(
-            MessageService.get_user_link(from_username),
-            response,
-            MessageService.get_team_link(team_name, team_id, False),
+        team_link = MessageService.get_team_link(team_name, team_id, False)
+        user_link = MessageService.get_user_link(from_username)
+        message.subject = f"Your request to join team {team_link} has been {response}ed"
+        message.message = (
+            f"{user_link} has {response}ed your request to join the {team_link} team."
         )
         message.add_message()
         message.save()
@@ -439,22 +433,24 @@ class MessageService:
         message.save()
 
     @staticmethod
-    def send_invite_to_join_team(
-        from_user: int, from_username: str, to_user: int, team_name: str, team_id: int
+    def send_team_join_notification(
+        from_user: int,
+        from_username: str,
+        to_user: int,
+        team_name: str,
+        team_id: int,
+        role: str,
     ):
         message = Message()
         message.message_type = MessageType.INVITATION_NOTIFICATION.value
         message.from_user_id = from_user
         message.to_user_id = to_user
-        message.subject = "Invitation to join {}".format(
-            MessageService.get_team_link(team_name, team_id, False)
-        )
-        message.message = "{} has invited you to join the {} team.\
-            Access the {}'s page to accept or reject that invitation.".format(
-            MessageService.get_user_link(from_username),
-            MessageService.get_team_link(team_name, team_id, False),
-            MessageService.get_team_link(team_name, team_id, False),
-        )
+        team_link = MessageService.get_team_link(team_name, team_id, False)
+        user_link = MessageService.get_user_link(from_username)
+        message.subject = f"You have been added to team {team_link}"
+        message.message = f"You have been added  to the team {team_link} as {role} by {user_link}.\
+            Access the {team_link}'s page to view more info about this team."
+
         message.add_message()
         message.save()
 
