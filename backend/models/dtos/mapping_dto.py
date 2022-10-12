@@ -107,3 +107,11 @@ class TaskCommentDTO(Model):
     task_id = IntType(required=True)
     project_id = IntType(required=True)
     preferred_locale = StringType(default="en")
+
+
+class ExtendLockTimeDTO(Model):
+    """ DTO used to extend expiry time of tasks """
+
+    project_id = IntType(required=True)
+    task_ids = ListType(IntType, required=True, serialized_name="taskIds")
+    user_id = IntType(required=True)

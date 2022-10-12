@@ -21,6 +21,7 @@ from backend.models.dtos.mapping_dto import (
     LockTaskDTO,
     StopMappingTaskDTO,
     MappedTaskDTO,
+    ExtendLockTimeDTO,
 )
 from backend.services.mapping_service import MappingService, MappingServiceError
 
@@ -961,5 +962,88 @@ class TasksActionsSplitAPI(Resource):
             current_app.logger.critical(error_msg)
             return {
                 "Error": "Unable to split task",
+                "SubCode": "InternalServerError",
+            }, 500
+
+
+class TasksActionsExtendAPI(Resource):
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Extends duration of locked tasks
+        ---
+        tags:
+            - tasks
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token sessionTokenHere==
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - name: project_id
+              in: path
+              description: Project ID the tasks are associated with
+              required: true
+              type: integer
+              default: 1
+            - in: body
+              name: body
+              required: true
+              description: JSON object for locking task(s)
+              schema:
+                  properties:
+                      taskIds:
+                          type: array
+                          items:
+                              type: integer
+                          description: Array of taskIds to extend time for
+                          default: [1,2]
+        responses:
+            200:
+                description: Task(s) locked for validation
+            400:
+                description: Client Error
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
+            404:
+                description: Task not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            extend_dto = ExtendLockTimeDTO(request.get_json())
+            extend_dto.project_id = project_id
+            extend_dto.user_id = token_auth.current_user()
+            extend_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f"Error validating request: {str(e)}")
+            return {
+                "Error": "Unable to extend lock time",
+                "SubCode": "InvalidData",
+            }, 400
+
+        try:
+            MappingService.extend_task_lock_time(extend_dto)
+            return {"Success": "Successfully extended task expiry"}, 200
+        except MappingServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except NotFound:
+            return {"Error": "Task not found", "SubCode": "NotFound"}, 404
+        except Exception as e:
+            error_msg = f"Validator Lock API - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {
+                "Error": "Unable to lock task",
                 "SubCode": "InternalServerError",
             }, 500
