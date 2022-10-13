@@ -12,7 +12,7 @@ terraform {
     }
   }
 
-  required_version = ">= 4.16"
+  required_version = ">= 1.1.7"
 }
 
 provider "aws" {
@@ -127,7 +127,7 @@ resource "aws_iam_role_policy" "aws_iam_role_policy" {
             "ec2:Describe*",
             ]
             Effect   = "Allow"
-            Resource = "*" #service?
+            # Resource = "*" #service?
         },
         ]
     })
