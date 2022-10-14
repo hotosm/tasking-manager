@@ -36,10 +36,7 @@ const projectQueryAllSpecification = {
   status: StringParam,
   action: StringParam,
   stale: BooleanParam,
-  // lastUpdatedTo: StringParam,
   createdFrom: StringParam,
-  stale: BooleanParam,
-  // lastUpdatedTo: StringParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -71,7 +68,6 @@ const backendToQueryConversion = {
   action: 'action',
   stale: 'lastUpdatedTo',
   createdFrom: 'createdFrom',
-  stale: 'lastUpdatedTo',
 };
 
 const dataFetchReducer = (state, action) => {
