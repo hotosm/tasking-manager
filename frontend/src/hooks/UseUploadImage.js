@@ -50,7 +50,7 @@ export const useUploadImage = () => {
 };
 
 export const useOnDrop = (appendImgToComment) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [uploadError, uploading, uploadImg] = useUploadImage();
 
   const onDrop = useCallback(

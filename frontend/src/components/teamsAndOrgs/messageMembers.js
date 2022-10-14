@@ -9,7 +9,7 @@ import { MessageStatus } from '../comments/status';
 import { pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export function MessageMembers({ teamId }: Object) {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [message, setMessage] = useState('');
   const [subject, setSubject] = useState('');
   const [status, setStatus] = useState(null);

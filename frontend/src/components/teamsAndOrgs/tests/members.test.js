@@ -19,7 +19,7 @@ describe('test JoinRequest list', () => {
   ];
   const element = createComponentWithIntl(
     <Provider store={store}>
-      <JoinRequests requests={requests} />
+      <JoinRequests requests={requests} managers={[]} />
     </Provider>,
   );
   const testInstance = element.root;
@@ -53,7 +53,7 @@ describe('test JoinRequest list', () => {
 describe('test JoinRequest list without requests', () => {
   const element = createComponentWithIntl(
     <Provider store={store}>
-      <JoinRequests requests={[]} />
+      <JoinRequests requests={[]} managers={[]} />
     </Provider>,
   );
   const testInstance = element.root;
@@ -92,7 +92,7 @@ describe('test JoinRequest list without requests', () => {
     );
   });
   it('no requests message is present', () => {
-    expect(testInstance.findByProps({ className: 'tc' }).children[0].props.id).toBe(
+    expect(testInstance.findByProps({ className: 'tc mt3' }).children[0].props.id).toBe(
       'management.teams.join_requests.empty',
     );
   });

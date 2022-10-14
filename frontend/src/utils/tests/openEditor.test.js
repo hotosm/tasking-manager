@@ -9,6 +9,7 @@ import {
   formatJosmUrl,
   formatCustomUrl,
   getImageryInfo,
+  formatExtraParams,
 } from '../openEditor';
 
 describe('test if getIdUrl', () => {
@@ -59,16 +60,17 @@ describe('test if getIdUrl', () => {
     );
   });
 
-  it('Integrated iD only returns the #map params', () => {
+  it('Integrated iD returns only the #map params and the extraParams', () => {
     const testProject = {
       changesetComment: '#hotosm-project-5522 #osm_in #2018IndiaFloods #mmteamarm',
       projectId: 1234,
       idPresets: ['building', 'highway', 'natural/water'],
+      extraIdParams: '&validationDisable=crossing_ways/highway*&photo_user=user1,user2',
       imagery:
         'tms[1,22]:https://api.mapbox.com/styles/v1/tm4/code123/tiles/256/{zoom}/{x}/{y}?access_token=pk.123',
     };
     expect(getIdUrl(testProject, [120.25684, -9.663953], 18, [1], '?editor=ID')).toBe(
-      '?editor=ID#map=18/-9.663953/120.25684',
+      '?editor=ID#map=18/-9.663953/120.25684&validationDisable=crossing_ways%2Fhighway*&photo_user=user1%2Cuser2',
     );
   });
 
@@ -210,5 +212,13 @@ describe('formatImageryUrl', () => {
     expect(formatImageryUrl('Bing')).toBe('Bing');
     expect(formatImageryUrl('EsriWorldImageryClarity')).toBe('EsriWorldImageryClarity');
     expect(formatImageryUrl('Maxar-Premium')).toBe('Maxar-Premium');
+  });
+});
+
+describe('formatExtraParams', () => {
+  it('returns the parameter values formated as URI component', () => {
+    expect(
+      formatExtraParams('&validationDisable=crossing_ways/highway*&photo_user=user1,user2'),
+    ).toBe('&validationDisable=crossing_ways%2Fhighway*&photo_user=user1%2Cuser2');
   });
 });

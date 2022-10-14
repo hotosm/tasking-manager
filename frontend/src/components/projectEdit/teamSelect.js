@@ -10,7 +10,7 @@ import { PencilIcon, WasteIcon, ExternalLinkIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 
 export const TeamSelect = () => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const nullState = {
     team: { name: null, teamId: null },
     role: { value: null, label: null },

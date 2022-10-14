@@ -26,7 +26,9 @@ class TeamMembers(db.Model):
     )
     function = db.Column(db.Integer, nullable=False)  # either 'editor' or 'manager'
     active = db.Column(db.Boolean, default=False)
-
+    join_request_notifications = db.Column(
+        db.Boolean, nullable=False, default=False
+    )  # Managers can turn notifications on/off for team join requests
     member = db.relationship(
         User, backref=db.backref("teams", cascade="all, delete-orphan")
     )
@@ -43,6 +45,15 @@ class TeamMembers(db.Model):
         """ Deletes the current model from the DB """
         db.session.delete(self)
         db.session.commit()
+
+    def update(self):
+        """ Updates the current model in the DB """
+        db.session.commit()
+
+    @staticmethod
+    def get(team_id: int, user_id: int):
+        """ Returns a team member by team_id and user_id """
+        return TeamMembers.query.filter_by(team_id=team_id, user_id=user_id).first()
 
 
 class Team(db.Model):
@@ -122,18 +133,25 @@ class Team(db.Model):
 
         if team_dto.members != self._get_team_members() and team_dto.members:
             for member in self.members:
-                db.session.delete(member)
-
+                member_name = User.get_by_id(member.user_id).username
+                if member_name not in [i["username"] for i in team_dto.members]:
+                    member.delete()
             for member in team_dto.members:
-                user = User.get_by_username(member["userName"])
-
+                user = User.get_by_username(member["username"])
                 if user is None:
                     raise NotFound("User not found")
-
-                new_team_member = TeamMembers()
-                new_team_member.team = self
-                new_team_member.member = user
-                new_team_member.function = TeamMemberFunctions[member["function"]].value
+                team_member = TeamMembers.get(self.id, user.id)
+                if team_member:
+                    team_member.join_request_notifications = member[
+                        "join_request_notifications"
+                    ]
+                else:
+                    new_team_member = TeamMembers()
+                    new_team_member.team = self
+                    new_team_member.member = user
+                    new_team_member.function = TeamMemberFunctions[
+                        member["function"]
+                    ].value
 
         db.session.commit()
 
@@ -196,6 +214,7 @@ class Team(db.Model):
         member_dto.function = member_function
         member_dto.picture_url = user.picture_url
         member_dto.active = member.active
+        member_dto.join_request_notifications = member.join_request_notifications
         return member_dto
 
     def as_dto_team_project(self, project) -> TeamProjectDTO:

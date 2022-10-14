@@ -11,7 +11,7 @@ import logo from '../assets/img/main-logo.svg';
 
 export function Login({ redirectTo }: Object) {
   useSetTitleTag('Login');
-  const userIsloggedIn = useSelector((state) => state.auth.get('token'));
+  const userIsloggedIn = useSelector((state) => state.auth.token);
   if (!userIsloggedIn) {
     return (
       <div className="cf w-100 bg-white blue-dark pv5">

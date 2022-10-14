@@ -11,3 +11,9 @@ export function compareLastUpdate(a, b) {
 export function compareHistoryLastUpdate(a, b) {
   return new Date(b.actionDate) - new Date(a.actionDate);
 }
+
+export function compareByPropertyDescending(a, b, property) {
+  if (a[property] > b[property]) return -1;
+  if (b[property] > a[property]) return 1;
+  return 0;
+}

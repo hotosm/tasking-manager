@@ -29,10 +29,7 @@ describe('createTaskFeature function', () => {
 
 describe('createTaskGrid function', () => {
   let areaOfInterestExtent = [
-    2039794.9535485709,
-    1484921.8447037777,
-    2040126.9768901384,
-    1485231.175802575,
+    2039794.9535485709, 1484921.8447037777, 2040126.9768901384, 1485231.175802575,
   ];
 
   it('creates a task grid from the bbox at zoom level 11', () => {

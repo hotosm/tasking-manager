@@ -60,7 +60,7 @@ class UsersTasksAPI(Resource):
             - in: query
               name: sort_by
               description:
-                    criteria to sort by. The supported options are action_date, -action_date.
+                    criteria to sort by. The supported options are action_date, -action_date, project_id, -project_id.
                     The default value is -action_date.
               required: false
               type: string
@@ -112,8 +112,8 @@ class UsersTasksAPI(Resource):
         except ValueError:
             return {"tasks": [], "pagination": {"total": 0}}, 200
         except NotFound:
-            return {"Error": "User or tasks not found"}, 404
+            return {"Error": "User or tasks not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"error": error_msg}, 500
+            return {"error": error_msg, "SubCode": "InternalServerError"}, 500

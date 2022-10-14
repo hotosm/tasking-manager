@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import { useLocation } from '@reach/router';
 import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
 import Popup from 'reactjs-popup';
 import ReactPlaceholder from 'react-placeholder';
-import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
 import { useFetch } from '../../hooks/UseFetch';
 import { useInterval } from '../../hooks/UseInterval';
 import { useGetLockedTasks } from '../../hooks/UseLockedTasks';
@@ -16,6 +15,7 @@ import { getRandomArrayItem } from '../../utils/random';
 import { updateTasksStatus } from '../../utils/updateTasksStatus';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { TasksMap } from './map.js';
+import { TabSelector } from './tabSelector.js';
 import { TaskList } from './taskList';
 import { TasksMapLegend } from './legend';
 import { ProjectInstructions } from './instructions';
@@ -44,8 +44,9 @@ const getRandomTaskByAction = (activities, taskAction) => {
 };
 
 export function TaskSelection({ project, type, loading }: Object) {
-  const user = useSelector((state) => state.auth.get('userDetails'));
-  const userOrgs = useSelector((state) => state.auth.get('organisations'));
+  const location = useLocation();
+  const user = useSelector((state) => state.auth.userDetails);
+  const userOrgs = useSelector((state) => state.auth.organisations);
   const lockedTasks = useGetLockedTasks();
   const dispatch = useDispatch();
   const [tasks, setTasks] = useState();
@@ -91,6 +92,14 @@ export function TaskSelection({ project, type, loading }: Object) {
         .catch((e) => console.log(e));
     }
   }, []);
+
+  useEffect(() => {
+    const { lastLockedTasksIds, lastLockedProjectId } = location.state || {};
+    if (lastLockedTasksIds && lastLockedProjectId === project.projectId) {
+      setZoomedTaskId(lastLockedTasksIds);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project]);
 
   // fetch activities and contributions when the component is started
   useEffect(() => {
@@ -245,11 +254,9 @@ export function TaskSelection({ project, type, loading }: Object) {
           setSelectedTasks(selected.concat([selection]));
         } else {
           setSelectedTasks([selection]);
-          if (lockedTasks.get('tasks').includes(selection)) {
+          if (lockedTasks.tasks.includes(selection)) {
             setTaskAction(
-              lockedTasks.get('status') === 'LOCKED_FOR_MAPPING'
-                ? 'resumeMapping'
-                : 'resumeValidation',
+              lockedTasks.status === 'LOCKED_FOR_MAPPING' ? 'resumeMapping' : 'resumeValidation',
             );
           } else {
             setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));
@@ -294,33 +301,7 @@ export function TaskSelection({ project, type, loading }: Object) {
             >
               <ProjectHeader project={project} />
               <div className="cf">
-                <div className="cf ttu barlow-condensed f4 pv2 blue-dark">
-                  <span
-                    className={`mr4 pb2 pointer ${activeSection === 'tasks' && 'bb b--blue-dark'}`}
-                    onClick={() => setActiveSection('tasks')}
-                  >
-                    <FormattedMessage {...messages.tasks} />
-                  </span>
-                  <span
-                    className={`mr4 pb2 pointer ${
-                      activeSection === 'instructions' && 'bb b--blue-dark'
-                    }`}
-                    onClick={() => setActiveSection('instructions')}
-                  >
-                    <FormattedMessage {...messages.instructions} />
-                  </span>
-                  <span
-                    className={`mr4 pb2 pointer ${
-                      activeSection === 'contributions' && 'bb b--blue-dark'
-                    }`}
-                    onClick={() => {
-                      getContributions(project.projectId);
-                      setActiveSection('contributions');
-                    }}
-                  >
-                    <FormattedMessage {...messages.contributions} />
-                  </span>
-                </div>
+                <TabSelector activeSection={activeSection} setActiveSection={setActiveSection} />
                 <div className="pt3">
                   <div className={`${activeSection !== 'tasks' ? 'dn' : ''}`}>
                     <TaskList
@@ -340,6 +321,7 @@ export function TaskSelection({ project, type, loading }: Object) {
                     <>
                       <ProjectInstructions
                         instructions={project.projectInfo && project.projectInfo.instructions}
+                        isProjectArchived={project.status === 'ARCHIVED'}
                       />
                       <ChangesetCommentTags tags={project.changesetComment} />
                     </>
@@ -389,7 +371,7 @@ export function TaskSelection({ project, type, loading }: Object) {
           </ReactPlaceholder>
         </div>
       </div>
-      <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-5">
+      <div className="cf w-100 bt b--grey-light fixed bottom-0 left-0 z-4">
         <ReactPlaceholder
           showLoadingAnimation={true}
           rows={3}

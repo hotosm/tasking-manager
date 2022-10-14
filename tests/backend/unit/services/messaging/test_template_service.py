@@ -11,12 +11,13 @@ from tests.backend.base import BaseTestCase
 class TestTemplateService(BaseTestCase):
     def test_variable_replacing(self):
         # Act
-        content = get_template("email_verification_en.html")
+        values = {"USERNAME": "USERNAME", "VERIFICATION_LINK": "VERIFICATION_LINK"}
+        content = get_template("email_verification_en.html", values)
         replace_list = [
-            ["[USERNAME]", "test_user"],
-            ["[VERIFICATION_LINK]", "http://localhost:30/verify.html#1234"],
-            ["[ORG_CODE]", "HOT"],
-            ["[ORG_NAME]", "Organization Test"],
+            ["USERNAME", "test_user"],
+            ["VERIFICATION_LINK", "http://localhost:30/verify.html#1234"],
+            [current_app.config["ORG_CODE"], "HOT"],
+            [current_app.config["ORG_NAME"], "Organization Test"],
         ]
         processed_content = template_var_replacing(content, replace_list)
         # Assert
@@ -42,7 +43,10 @@ class TestTemplateService(BaseTestCase):
         base_url = current_app.config["APP_BASE_URL"]
         self.assertEqual(
             format_username_link("try @[yo] @[us2]! [t](http://a.c)"),
-            f'try <a href="{base_url}/users/yo/">@yo</a> <a href="{base_url}/users/us2/">@us2</a>! [t](http://a.c)',
+            (
+                f'try <a style="color: #d73f3f" href="{base_url}/users/yo/">@yo</a>'
+                f' <a style="color: #d73f3f" href="{base_url}/users/us2/">@us2</a>! [t](http://a.c)'
+            ),
         )
         self.assertEqual(
             format_username_link(

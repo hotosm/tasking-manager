@@ -22,7 +22,7 @@ export const BasemapMenu = ({ map }) => {
   };
 
   return (
-    <div className="bg-white blue-dark flex mt2 ml2 f7 br1 shadow-1">
+    <div className="bg-white blue-dark flex mt2 ml2 f7 fr br1 shadow-1">
       {styles.map((style, k) => {
         return (
           <div

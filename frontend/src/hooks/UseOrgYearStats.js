@@ -27,7 +27,7 @@ export function useIsOrgYearQuery(query) {
 export function useCurrentYearStats(organisationId, query, stats) {
   const isOrgYearQuery = useIsOrgYearQuery(query);
   const [yearStats, setYearStats] = useState([]);
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
     if (!isOrgYearQuery) {

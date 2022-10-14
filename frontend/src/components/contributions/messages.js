@@ -36,6 +36,10 @@ export default defineMessages({
     id: 'mytasks.placeholder.search_project',
     defaultMessage: 'Search by project id',
   },
+  noMatchingProjectId: {
+    id: 'mytasks.placeholder.noMatchingProjectId',
+    defaultMessage: 'No matching project ID',
+  },
   projects: {
     id: 'mytasks.filter.projects',
     defaultMessage: 'Projects',
@@ -43,6 +47,18 @@ export default defineMessages({
   tasks: {
     id: 'mytasks.filter.tasks',
     defaultMessage: 'Tasks',
+  },
+  recentlyEdited: {
+    id: 'mytasks.filter.recentlyEdited',
+    defaultMessage: 'Recently edited',
+  },
+  projectId: {
+    id: 'mytasks.filter.projectId',
+    defaultMessage: 'Project ID',
+  },
+  sortBy: {
+    id: 'mytasks.filter.sortBy',
+    defaultMessage: 'Sort by',
   },
   clearFilters: {
     id: 'mytasks.filter.clear',

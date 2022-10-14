@@ -13,8 +13,8 @@ import { pushUserDetails } from '../../../store/actions/auth';
 import { getEditors } from '../../../utils/editorsList';
 
 const mapStateToProps = (state) => ({
-  userDetails: state.auth.get('userDetails'),
-  token: state.auth.get('token'),
+  userDetails: state.auth.userDetails,
+  token: state.auth.token,
 });
 
 function _EditorDropdown(props) {
@@ -40,8 +40,6 @@ function _EditorDropdown(props) {
 
   return (
     <Dropdown
-      onAdd={() => {}}
-      onRemove={() => {}}
       onChange={onEditorSelect}
       value={value}
       options={getEditors()}
@@ -71,7 +69,7 @@ function _UserSettingsForm(props) {
         </CustomField>
         {props.userDetails.role === 'MAPPER' && (
           <CustomField labelId="becomeValidator" descriptionId="becomeValidatorDescription">
-            <Link to="/learn">
+            <Link to="/learn/validate">
               <Button className="bg-blue-dark white mh1 mv2 dib">
                 <FormattedMessage {...messages.learnHow} />
               </Button>

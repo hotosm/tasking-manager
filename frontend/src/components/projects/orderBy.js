@@ -62,13 +62,11 @@ export function OrderBySelector(props) {
   };
   return (
     <Dropdown
-      onAdd={() => {}}
-      onRemove={() => {}}
       onChange={onSortSelect}
       value={`${props.allQueryParams.orderBy}.${props.allQueryParams.orderByType}` || []}
       options={options}
       display={<FormattedMessage {...messages.sortBy} />}
-      className={`ba b--grey-light bg-white mr1 v-mid pv2 ${props.className || ''}`}
+      className={`ba b--tan bg-white mr3 v-mid pv2 br1 pl3 fw5 blue-dark ${props.className || ''}`}
     />
   );
 }

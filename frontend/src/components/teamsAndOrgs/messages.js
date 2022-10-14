@@ -32,6 +32,18 @@ export default defineMessages({
     id: 'management.members.edit',
     defaultMessage: 'Edit',
   },
+  alreadyInTeam: {
+    id: 'management.members.alreadyInTeam',
+    defaultMessage: 'Already in team',
+  },
+  noOptions: {
+    id: 'management.members.search.noOptions',
+    defaultMessage: 'No options',
+  },
+  UserAlreadyInListError: {
+    id: 'management.members.UserAlreadyInListError',
+    defaultMessage: 'User is already a member of this team or has already requested to join.',
+  },
   members: {
     id: 'management.members',
     defaultMessage: 'Members',
@@ -83,6 +95,22 @@ export default defineMessages({
   projects: {
     id: 'management.projects',
     defaultMessage: 'Projects',
+  },
+  stale: {
+    id: 'management.projects.stale',
+    defaultMessage: 'Stale',
+  },
+  createdThisYear: {
+    id: 'management.projects.created_this_year',
+    defaultMessage: 'Created this year',
+  },
+  projectsCreated: {
+    id: 'management.projects.created.total',
+    defaultMessage: '{number, plural, one {# project created} other {# projects created}}',
+  },
+  numberOfProjects: {
+    id: 'management.projects.stats',
+    defaultMessage: '{number, plural, one {# project} other {# projects}}',
   },
   campaigns: {
     id: 'management.campaigns',
@@ -179,6 +207,10 @@ export default defineMessages({
   selectType: {
     id: 'management.organisations.type.select',
     defaultMessage: 'Select type',
+  },
+  requiredField: {
+    id: 'management.organisations.field.required',
+    defaultMessage: 'Required field',
   },
   free: {
     id: 'management.organisations.type.free',
@@ -401,6 +433,11 @@ export default defineMessages({
     id: 'management.teams.invite_only.description',
     defaultMessage: "Managers need to approve a member's request to join.",
   },
+  newJoinRequestNotification: {
+    id: 'management.teams.newJoinRequestNotification',
+    defaultMessage:
+      'Enable for team managers to receive (email) notifications each time a new join request is made',
+  },
   waitingApproval: {
     id: 'teamsAndOrgs.management.teams.messages.waiting_approval',
     defaultMessage: 'Your request to join this team is waiting for approval.',
@@ -434,5 +471,9 @@ export default defineMessages({
   statistics: {
     id: 'management.stats.title',
     defaultMessage: 'Statistics',
+  },
+  overview: {
+    id: 'management.stats.overview',
+    defaultMessage: 'Overview',
   },
 });

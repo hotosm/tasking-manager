@@ -11,23 +11,18 @@ import { MessageAvatar, typesThatUseSystemAvatar, rawHtmlNotification } from './
 import { CloseIcon } from '../svgIcons';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { DeleteButton } from '../teamsAndOrgs/management';
+import './styles.scss';
 
 export const NotificationBodyModal = (props) => {
   const location = useLocation();
 
   return (
     <div
-      style={{
-        inset: '0px',
-        background: 'rgba(0, 0, 0, 0.5) none repeat scroll 0% 0%',
-        display: 'flex',
-        'z-index': '999',
-      }}
       onClick={() => navigate(`../../${location.search}`)}
-      className="fixed top-0 left-0 right-0 bottom-0"
+      className="fixed top-0 left-0 right-0 bottom-0 notification-ctr"
     >
       <div
-        className={`relative shadow-3`}
+        className={`relative shadow-3 flex flex-column notification`}
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
@@ -36,26 +31,20 @@ export const NotificationBodyModal = (props) => {
             window.open(e.target.href);
           }
         }}
-        style={{
-          background: 'rgb(255, 255, 255) none repeat scroll 0% 0%',
-          width: '55%',
-          margin: '5em auto auto',
-          border: '1px solid rgb(187, 187, 187)',
-          padding: '5px',
-        }}
       >
-        <div className={`di fl tl pa3 mb3 w-100 fw5 bb b--tan`}>
+        <div className={`di fl f125 tl pa3 w-100 fw7 bb b--tan header`}>
           <FormattedMessage {...messages.message} />
           <Link className={`fr ml4 blue-dark`} to={`../../${location.search}`}>
             <CloseIcon className={`h1 w1 blue-dark`} />
           </Link>
         </div>
-        {!props.thisNotificationError ? (
+        {!props.thisNotificationError && (
           <NotificationBodyCard
             loading={props.thisNotificationLoading}
             card={props.thisNotification}
           />
-        ) : (
+        )}
+        {props.thisNotificationError && !props.thisNotificationLoading && (
           <div>
             <FormattedMessage
               {...messages.errorLoadingTheX}
@@ -73,9 +62,18 @@ export const NotificationBodyModal = (props) => {
 
 export function NotificationBodyCard({
   loading,
-  card: { messageId, name, messageType, fromUsername, subject, message, sentDate },
+  card: {
+    messageId,
+    name,
+    messageType,
+    fromUsername,
+    displayPictureUrl,
+    subject,
+    message,
+    sentDate,
+  },
 }: Object) {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const location = useLocation();
   const { value, unit } = selectUnit(new Date((sentDate && new Date(sentDate)) || new Date()));
   const showASendingUser =
@@ -104,7 +102,12 @@ export function NotificationBodyCard({
       <article className={`db  base-font mb3 mh2 blue-dark mw8`}>
         <div className={`dib`}>
           <div className="fl pl2">
-            <MessageAvatar fromUsername={fromUsername} messageType={messageType} size={'medium'} />
+            <MessageAvatar
+              fromUsername={fromUsername}
+              displayPictureUrl={displayPictureUrl}
+              messageType={messageType}
+              size={'medium'}
+            />
           </div>
 
           {showASendingUser && <div className={`pl5 f6 blue-dark fw5`}>{showASendingUser}</div>}

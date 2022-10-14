@@ -12,6 +12,10 @@ export default defineMessages({
     id: 'deleteModal.status.success',
     defaultMessage: '{type} deleted successfully.',
   },
+  success_projects: {
+    id: 'deleteModal.status.success.projects',
+    defaultMessage: 'Project deleted successfully.',
+  },
   failure_projects: {
     id: 'deleteModal.status.failure.projects',
     defaultMessage: 'An error occurred when trying to delete this project.',
@@ -44,6 +48,15 @@ export default defineMessages({
     id: 'deleteModal.button.delete',
     defaultMessage: 'Delete',
   },
+  InternalServerErrorError: {
+    id: 'deleteModal.status.failure.InternalServerErrorError',
+    defaultMessage:
+      'Something has gone wrong on the server, but the server could not be more specific on what the exact problem is.',
+  },
+  HasMappedTasksError: {
+    id: 'deleteModal.status.failure.HasMappedTasksError',
+    defaultMessage: 'Project has mapped tasks, cannot be deleted.',
+  },
   cancel: {
     id: 'deleteModal.button.cancel',
     defaultMessage: 'Cancel',
@@ -75,5 +88,9 @@ export default defineMessages({
   confirmDeleteTitle_teams: {
     id: 'deleteModal.title.teams',
     defaultMessage: 'Are you sure you want to delete this team?',
+  },
+  OrgHasProjectsError: {
+    id: 'deleteModal.error.OrgHasProjectsError',
+    defaultMessage: 'Organisation has some projects. Please delete them first.',
   },
 });

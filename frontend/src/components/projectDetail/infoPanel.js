@@ -64,11 +64,12 @@ export function ProjectInfoPanel({ project, tasks, contributors, type }: Object)
         percentValidated={percentValidated}
         percentBadImagery={percentBadImagery}
       />
-      <div className="cf pb1 bg-white">
+      <div className="pb1 bg-white flex justify-between items-center">
         <MappingLevelMessage level={project.mapperLevel} className="fl f5 mt1 ttc fw5 blue-dark" />
         <DueDateBox
           dueDate={project.dueDate}
           tooltipMsg={intl.formatMessage(messages.dueDateTooltip)}
+          isProjectDetailPage
         />
       </div>
     </ReactPlaceholder>

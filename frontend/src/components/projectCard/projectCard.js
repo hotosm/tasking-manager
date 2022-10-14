@@ -9,6 +9,8 @@ import { MappingLevelMessage } from '../mappingLevel';
 import { ProjectStatusBox } from '../projectDetail/statusBox';
 import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
 import { PriorityBox } from './priorityBox';
+import { DueDateBox } from './dueDateBox';
+import './styles.scss';
 
 export function ProjectTeaser({
   lastUpdated,
@@ -32,7 +34,7 @@ export function ProjectTeaser({
   } else {
     return (
       <div title={lastUpdated} className={`${outerDivStyles} ${className || ''}`}>
-        <span className={`${littleFont} blue-light`}>
+        <span className={`${littleFont}`}>
           <FormattedMessage
             {...messages['projectTotalContributors']}
             values={{
@@ -60,7 +62,6 @@ export function ProjectCard({
   percentMapped,
   percentValidated,
   totalContributors,
-  cardWidthClass = 'w-25-l',
   showBottomButtons = false,
 }: Object) {
   const [isHovered, setHovered] = useState(false);
@@ -68,9 +69,10 @@ export function ProjectCard({
 
   const showBottomButtonsHovered = showBottomButtons === true ? isHovered : false;
   const bottomButtonSpacer = showBottomButtons ? 'pt3 pb4' : 'pv3';
-  const bottomButtonMargin = showBottomButtons ? 'pb0' : 'pb3';
+  const bottomButtonMargin = showBottomButtons ? 'project-card-with-btn' : 'project-card';
+
   const bottomButtons = (
-    <div className="absolute bottom-0 w-100 pr3">
+    <div className="absolute bottom-0 w-100">
       <Link
         to={`/manage/projects/${projectId}`}
         className={`fl bg-grey-light blue-grey bn ${linkCombo}`}
@@ -87,51 +89,58 @@ export function ProjectCard({
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative fl ${cardWidthClass} base-font w-50-m w-100 mb3 ${bottomButtonMargin} pr3 blue-dark mw5 `}
+      className={`relative blue-dark`}
     >
       <Link className="no-underline color-inherit" to={`/projects/${projectId}`}>
-        <div className={`${bottomButtonSpacer} ph3 ba br1 b--grey-light bg-white shadow-hover`}>
-          <div className="cf w-100">
-            <div className="w-40 tr fr">
-              {['DRAFT', 'ARCHIVED'].includes(status) ? (
-                <ProjectStatusBox status={status} className={'pv1 ph1 dib'} />
-              ) : (
-                <PriorityBox
-                  priority={priority}
-                  extraClasses={'pv1 ph2 dib'}
-                  hideMediumAndLow={!showBottomButtons}
-                  showIcon={priority !== 'URGENT'} // inside the cards, don't show the icon for urgent, due to the space required
+        <div
+          className={`${bottomButtonSpacer} ba br1 bg-white shadow-hover h-100 flex flex-column justify-between b--card ${bottomButtonMargin}`}
+        >
+          <div>
+            <div className="flex justify-between items-center">
+              <div className="red">
+                <img
+                  className="h2"
+                  src={organisationLogo}
+                  alt={organisationLogo ? organisationName : ''}
                 />
-              )}
+              </div>
+              <div className="">
+                {['DRAFT', 'ARCHIVED'].includes(status) ? (
+                  <ProjectStatusBox status={status} className={'pv1 ph1 dib'} />
+                ) : (
+                  <PriorityBox
+                    priority={priority}
+                    extraClasses={'pv1 ph2 dib'}
+                    hideMediumAndLow={!showBottomButtons}
+                    showIcon={priority !== 'URGENT'} // inside the cards, don't show the icon for urgent, due to the space required
+                  />
+                )}
+              </div>
             </div>
-            <div className="w-60 cf pr1 red dib">
-              <img
-                className="h2 pa1"
-                src={organisationLogo}
-                alt={organisationLogo ? organisationName : ''}
-              />
+            <div className="mt4 w-100">
+              <div className="f7 blue-grey">#{projectId}</div>
+              <h3
+                title={name}
+                className="mt3 f125 fw7 lh-title overflow-y-hidden pr4 project-title"
+              >
+                {name}
+              </h3>
+              <div className="tc f6">
+                <div className="w-100 tl pr2 f7 blue-grey dib mb2 project-desc">
+                  {shortDescription} {campaignTag ? ' · ' + campaignTag : ''}
+                </div>
+              </div>
             </div>
           </div>
-          <div className="ma1 w-100">
-            <div className="f5 blue-grey mt1 lh-title">#{projectId}</div>
-            <h3 title={name} className="pb2 mt1 f5 fw6 h3 lh-title overflow-y-hidden">
-              {name}
-            </h3>
-            <div className="tc f6">
-              <div className="w-100 tl pr2 f7 blue-light dib lh-title mb2 h2 overflow-y-hidden">
-                {shortDescription} {campaignTag ? ' · ' + campaignTag : ''}
-              </div>
-              <ProjectTeaser totalContributors={totalContributors} lastUpdated={lastUpdated} />
-              <ProjectProgressBar
-                percentMapped={percentMapped}
-                percentValidated={percentValidated}
+          <div>
+            <ProjectTeaser totalContributors={totalContributors} lastUpdated={lastUpdated} />
+            <ProjectProgressBar percentMapped={percentMapped} percentValidated={percentValidated} />
+            <div className="pt2 truncate flex justify-between items-center">
+              <MappingLevelMessage
+                level={mapperLevel}
+                className="fl f7 pv2 ttc fw5 blue-grey truncate"
               />
-              <div className="cf pt2 truncate">
-                <MappingLevelMessage
-                  level={mapperLevel}
-                  className="fl f7 pv2 ttc fw5 blue-grey truncate"
-                />
-              </div>
+              <DueDateBox dueDate={dueDate} />
             </div>
           </div>
         </div>

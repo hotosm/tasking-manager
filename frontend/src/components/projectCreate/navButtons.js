@@ -67,6 +67,8 @@ const NavButtons = (props) => {
               ? props.metadata.geom.features.length
               : props.metadata.taskGrid.features.length,
           });
+          // clear the otherProjects source before passing to step 2
+          props.mapObj.map.getSource('otherProjects').setData(featureCollection([]));
         }
 
         break;

@@ -9,6 +9,7 @@ import { ProjectDetail } from '../components/projectDetail/index';
 import { ProjectCardPaginator } from '../components/projects/projectCardPaginator';
 import { ProjectSearchResults } from '../components/projects/projectSearchResults';
 import { ProjectsMap } from '../components/projects/projectsMap';
+import PrivateProjectError from '../components/projectDetail/privateProjectError';
 import {
   useProjectsQueryAPI,
   useExploreProjectsQueryParams,
@@ -46,7 +47,7 @@ export const ProjectsPage = (props) => {
   const [state] = useProjectsQueryAPI(initialData, fullProjectsQuery, forceUpdated);
 
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
-  const searchResultWidth = isMapShown ? 'w-60-l w-100' : 'w-100';
+  const searchResultWidth = isMapShown ? 'two-column' : 'one-column';
 
   return (
     <div className="pull-center">
@@ -58,29 +59,32 @@ export const ProjectsPage = (props) => {
         */
         }
       </ProjectNav>
-      <section className="cf">
-        <ProjectSearchResults
-          state={state}
-          retryFn={forceUpdate}
-          className={`${searchResultWidth} pl3 fl`}
-        />
-        {isMapShown && (
-          <ProjectsMap
+      <section className={`${searchResultWidth} explore-projects-container`}>
+        <div>
+          <ProjectSearchResults
             state={state}
-            fullProjectsQuery={fullProjectsQuery}
-            setQuery={setProjectQuery}
-            className={`dib w-40-l w-100 fl`}
+            retryFn={forceUpdate}
+            className={`${isMapShown ? 'pl3' : 'ph3'}`}
           />
+          <ProjectCardPaginator projectAPIstate={state} setQueryParam={setProjectQuery} />
+        </div>
+        {isMapShown && (
+          <div className="explore-projects-map">
+            <ProjectsMap
+              state={state}
+              fullProjectsQuery={fullProjectsQuery}
+              setQuery={setProjectQuery}
+            />
+          </div>
         )}
       </section>
-      <ProjectCardPaginator projectAPIstate={state} setQueryParam={setProjectQuery} />
     </div>
   );
 };
 
 export const UserProjectsPage = (props) => {
   useSetTitleTag(props.management ? 'Manage projects' : 'My projects');
-  const userToken = useSelector((state) => state.auth.get('token'));
+  const userToken = useSelector((state) => state.auth.token);
 
   const initialData = {
     mapResults: {
@@ -97,7 +101,7 @@ export const UserProjectsPage = (props) => {
   const [orgAPIState] = useTagAPI([], 'organisations');
 
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
-  const searchResultWidth = isMapShown ? 'w-60-l w-100' : 'w-100';
+  const searchResultWidth = isMapShown ? 'two-column' : 'one-column';
 
   if (!userToken) {
     /* use replace to so the back button does not get interrupted */
@@ -128,24 +132,26 @@ export const UserProjectsPage = (props) => {
         */
         }
       </MyProjectNav>
-      <section className="cf">
-        <ProjectSearchResults
-          state={state}
-          retryFn={forceUpdate}
-          className={`${searchResultWidth} fl`}
-          showBottomButtons={props.location && props.location.pathname.startsWith('/manage/')}
-          management={props.management}
-        />
-        {isMapShown && (
-          <ProjectsMap
+      <section className={`${searchResultWidth} explore-projects-container`}>
+        <div className="">
+          <ProjectSearchResults
             state={state}
-            fullProjectsQuery={fullProjectsQuery}
-            setQuery={setProjectQuery}
-            className={`dib w-40-l w-100 fl`}
+            retryFn={forceUpdate}
+            showBottomButtons={props.location && props.location.pathname.startsWith('/manage/')}
+            management={props.management}
           />
+          <ProjectCardPaginator projectAPIstate={state} setQueryParam={setProjectQuery} />
+        </div>
+        {isMapShown && (
+          <div className="explore-projects-map">
+            <ProjectsMap
+              state={state}
+              fullProjectsQuery={fullProjectsQuery}
+              setQuery={setProjectQuery}
+            />
+          </div>
         )}
       </section>
-      <ProjectCardPaginator projectAPIstate={state} setQueryParam={setProjectQuery} />
     </div>
   );
 };
@@ -179,7 +185,7 @@ export const ProjectDetailPage = (props) => {
 
   return (
     <ReactPlaceholder showLoadingAnimation={true} rows={30} delay={1000} ready={loading === false}>
-      {!error ? (
+      {!error && (
         <ProjectDetail
           project={data}
           projectLoading={loading}
@@ -188,8 +194,15 @@ export const ProjectDetailPage = (props) => {
           navigate={props.navigate}
           type="detail"
         />
-      ) : (
-        <NotFound projectId={props.id} />
+      )}
+      {error && (
+        <>
+          {error.message === 'PrivateProject' ? (
+            <PrivateProjectError />
+          ) : (
+            <NotFound projectId={props.id} />
+          )}
+        </>
       )}
     </ReactPlaceholder>
   );

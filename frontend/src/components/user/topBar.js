@@ -43,8 +43,8 @@ export function NextMappingLevel({ changesetsCount }: Object) {
 }
 
 export function UserTopBar() {
-  const user = useSelector((state) => state.auth.get('userDetails'));
-  const osmUserInfo = useSelector((state) => state.auth.get('osm'));
+  const user = useSelector((state) => state.auth.userDetails);
+  const osmUserInfo = useSelector((state) => state.auth.osm);
 
   const placeholder = (
     <div className="pl2 dib">

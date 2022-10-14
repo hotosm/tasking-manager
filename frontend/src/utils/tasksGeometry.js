@@ -9,7 +9,7 @@ export function getCentroidAndZoomFromSelectedTasks(tasks, selectedTaskIds, wind
 export function getSelectedTasksBBox(tasks, selectedTaskIds) {
   const selectedTasksGeom = selectedTaskIds
     ? featureCollection(
-        tasks.features.filter(task => selectedTaskIds.includes(task.properties.taskId)),
+        tasks.features.filter((task) => selectedTaskIds.includes(task.properties.taskId)),
       )
     : tasks;
   return bbox(selectedTasksGeom);

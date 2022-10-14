@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from '@reach/router';
+import { Link, navigate, useLocation } from '@reach/router';
 import { fetchLocalJSONAPI, pushToLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useSelector } from 'react-redux';
-import { navigate } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -10,6 +9,8 @@ import { Button } from '../button';
 import { useGetLockedTasks } from '../../hooks/UseLockedTasks';
 
 export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Object) {
+  const location = useLocation();
+
   return (
     <>
       <h3 className="barlow-condensed f3 fw6 mv0">
@@ -33,7 +34,7 @@ export function AnotherProjectLock({ projectId, lockedTasksLength, action }: Obj
           }}
         />
       </div>
-      <Link to={`/projects/${projectId}/${action}/`}>
+      <Link to={`/projects/${projectId}/${action}/`} state={{ directedFrom: location.pathname }}>
         <Button className="bg-red white">
           <FormattedMessage {...messages.goToProject} values={{ project: projectId }} />
         </Button>
@@ -51,21 +52,19 @@ export function SameProjectLock({ lockedTasks, action }: Object) {
       <div className="mv4 lh-title">
         <FormattedMessage
           {...messages[
-            lockedTasks.get('tasks').length > 1
+            lockedTasks.tasks.length > 1
               ? 'currentProjectLockTextPlural'
               : 'currentProjectLockTextSingular'
           ]}
-          values={{ taskId: <span className="fw6">{lockedTasks.get('tasks')}</span> }}
+          values={{ taskId: <span className="fw6">{lockedTasks.tasks}</span> }}
         />
       </div>
       <Button
         className="bg-red white"
-        onClick={() => navigate(`/projects/${lockedTasks.get('project')}/${action}/`)}
+        onClick={() => navigate(`/projects/${lockedTasks.project}/${action}/`)}
       >
         <FormattedMessage
-          {...messages[
-            lockedTasks.get('tasks').length > 1 ? 'workOnTasksPlural' : 'workOnTasksSingular'
-          ]}
+          {...messages[lockedTasks.tasks.length > 1 ? 'workOnTasksPlural' : 'workOnTasksSingular']}
           values={{ mapOrValidate: <FormattedMessage {...messages[action]} /> }}
         />
       </Button>
@@ -74,7 +73,7 @@ export function SameProjectLock({ lockedTasks, action }: Object) {
 }
 
 export const LicenseError = ({ id, close, lockTasks }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [license, setLicense] = useState(null);
   useEffect(() => {
     const fetchLicense = async (id) => {
@@ -117,45 +116,22 @@ export const LicenseError = ({ id, close, lockTasks }) => {
   );
 };
 
-export function LockError() {
+export function LockError({ error, close }) {
   return (
     <>
       <h3 className="barlow-condensed f3 fw6 mv0">
-        <FormattedMessage {...messages.lockError} />
+        {messages[`${error}Error`] ? (
+          <FormattedMessage {...messages[`${error}Error`]} />
+        ) : (
+          <FormattedMessage {...messages.lockError} />
+        )}
       </h3>
       <div className="mv4 lh-title">
-        <FormattedMessage {...messages.lockErrorDescription} />
-      </div>
-    </>
-  );
-}
-
-export function JosmError({ close }: Object) {
-  return (
-    <>
-      <h3 className="barlow-condensed f3 fw6 mv0">
-        <FormattedMessage {...messages.josmError} />
-      </h3>
-      <div className="mv4 lh-title">
-        <FormattedMessage {...messages.josmErrorDescription} />
-      </div>
-      <div className="w-100 pt3">
-        <Button onClick={() => close()} className="bg-red white mr2">
-          <FormattedMessage {...messages.closeModal} />
-        </Button>
-      </div>
-    </>
-  );
-}
-
-export function NoMappedTasksError({ close }: Object) {
-  return (
-    <>
-      <h3 className="barlow-condensed f3 fw6 mv0">
-        <FormattedMessage {...messages.noMappedTasksSelected} />
-      </h3>
-      <div className="mv4 lh-title">
-        <FormattedMessage {...messages.noMappedTasksSelectedDescription} />
+        {messages[`${error}ErrorDescription`] ? (
+          <FormattedMessage {...messages[`${error}ErrorDescription`]} />
+        ) : (
+          <FormattedMessage {...messages.lockErrorDescription} />
+        )}
       </div>
       <div className="w-100 pt3">
         <Button onClick={() => close()} className="bg-red white mr2">
@@ -168,32 +144,24 @@ export function NoMappedTasksError({ close }: Object) {
 
 export function LockedTaskModalContent({ project, error, close, lockTasks }: Object) {
   const lockedTasks = useGetLockedTasks();
-  const action = lockedTasks.get('status') === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
-  const licenseError =
-    ['Conflict', 'CONFLICT', 'conflict'].includes(error) && !lockedTasks.get('project');
-  const josmError = error === 'JOSM' && !lockedTasks.get('project');
-  const noMappedTasksSelectedError = error === 'No mapped tasks selected';
+  const action = lockedTasks.status === 'LOCKED_FOR_VALIDATION' ? 'validate' : 'map';
+  const licenseError = error === 'UserLicenseError' && !lockedTasks.project;
+
   return (
     <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
-      {noMappedTasksSelectedError && <NoMappedTasksError close={close} />}
       {licenseError && <LicenseError id={project.licenseId} close={close} lockTasks={lockTasks} />}
-      {josmError && <JosmError close={close} />}
-
-      {/* User has not tasks locked, but other error happened */}
-      {!lockedTasks.get('project') &&
-        !licenseError &&
-        !josmError &&
-        !noMappedTasksSelectedError && <LockError />}
+      {/* Other error happened */}
+      {!lockedTasks.project && !licenseError && <LockError error={error} close={close} />}
       {/* User has tasks locked on another project */}
-      {lockedTasks.get('project') && lockedTasks.get('project') !== project.projectId && (
+      {lockedTasks.project && lockedTasks.project !== project.projectId && (
         <AnotherProjectLock
-          projectId={lockedTasks.get('project')}
+          projectId={lockedTasks.project}
           action={action}
-          lockedTasksLength={lockedTasks.get('tasks').length}
+          lockedTasksLength={lockedTasks.tasks.length}
         />
       )}
       {/* User has tasks locked on the current project */}
-      {lockedTasks.get('project') === project.projectId && (
+      {lockedTasks.project === project.projectId && (
         <SameProjectLock action={action} lockedTasks={lockedTasks} />
       )}
     </div>

@@ -24,7 +24,7 @@ const projectQueryAllSpecification = {
   location: StringParam,
   types: CommaArrayParam,
   exactTypes: BooleanParam,
-  interests: CommaArrayParam,
+  interests: NumberParam,
   page: NumberParam,
   text: StringParam,
   orderBy: StringParam,
@@ -37,6 +37,7 @@ const projectQueryAllSpecification = {
   action: StringParam,
   stale: BooleanParam,
   // lastUpdatedTo: StringParam,
+  createdFrom: StringParam,
 };
 
 /* This can be passed into project API or used independently */
@@ -67,6 +68,7 @@ const backendToQueryConversion = {
   status: 'projectStatuses',
   action: 'action',
   stale: 'lastUpdatedTo',
+  createdFrom: 'createdFrom',
 };
 
 const dataFetchReducer = (state, action) => {
@@ -115,7 +117,7 @@ export const useProjectsQueryAPI = (
   const throttledExternalQueryParamsState = useThrottle(ExternalQueryParamsState, 1500);
 
   /* Get the user bearer token from the Redux store */
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const locale = useSelector((state) => state.preferences['locale']);
   const action = useSelector((state) => state.preferences['action']);
 

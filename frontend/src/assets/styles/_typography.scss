@@ -3,8 +3,35 @@
    ========================================================================== */
 
 .barlow-condensed {
-  font-family: 'Barlow Condensed', sans-serif;;
+  font-family: 'Barlow Condensed', sans-serif;
 }
+
 .base-font {
-  font-family: "Archivo", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Archivo', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.f125 {
+  font-size: 1.125rem;
+}
+
+.f8 {
+  font-size: 0.625rem;
+}
+
+@media screen and (min-width: 30em) {
+  .f125-ns {
+    font-size: 1.125rem;
+  }
+}
+
+@media screen and (min-width: 60em) and (max-width: 90em) {
+  .f125-m {
+    font-size: 1.125rem;
+  }
+}
+
+@media screen and (min-width: 60em) {
+  .f125-l {
+    font-size: 1.125rem;
+  }
 }

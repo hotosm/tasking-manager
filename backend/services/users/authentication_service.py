@@ -1,23 +1,32 @@
 import base64
 import urllib.parse
 
-from flask import current_app, request, session
+from flask import current_app, request
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
-from backend import osm
 from backend.api.utils import TMAPIDecorators
 from backend.services.messaging.message_service import MessageService
 from backend.services.users.user_service import UserService, NotFound
-from werkzeug import url_quote
+from random import SystemRandom
 
 token_auth = HTTPTokenAuth(scheme="Token")
 tm = TMAPIDecorators()
 
+UNICODE_ASCII_CHARACTER_SET = (
+    "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789" "-_"
+)
+
+
+@token_auth.error_handler
+def handle_unauthorized_token():
+    current_app.logger.debug("Token not valid")
+    return {"Error": "Token is expired or invalid", "SubCode": "InvalidToken"}, 401
+
 
 @token_auth.verify_token
 def verify_token(token):
-    """ Verify the supplied token and check user role is correct for the requested resource"""
+    """Verify the supplied token and check user role is correct for the requested resource"""
     tm.authenticated_user_id = None
     if not token:
         return False
@@ -40,7 +49,7 @@ def verify_token(token):
 
 
 class AuthServiceError(Exception):
-    """ Custom Exception to notify callers an error occurred when authenticating """
+    """Custom Exception to notify callers an error occurred when authenticating"""
 
     def __init__(self, message):
         if current_app:
@@ -59,16 +68,16 @@ class AuthenticationService:
         :returns A dictionary containing the keys "username", "session_token"
         and "picture."
         """
-        osm_user = osm_user_details.find(user_element)
+        osm_user = osm_user_details.get(user_element)
 
         if osm_user is None:
             raise AuthServiceError("User element not found in OSM response")
 
-        osm_id = int(osm_user.attrib["id"])
-        username = osm_user.attrib["display_name"]
+        osm_id = int(osm_user.get("id"))
+        username = osm_user.get("display_name")
         try:
             # get gravatar profile picture file name
-            user_picture = osm_user.find("img").attrib["href"]
+            user_picture = osm_user.get("img").get("href")
         except (AttributeError, IndexError):
             user_picture = None
 
@@ -77,8 +86,8 @@ class AuthenticationService:
             UserService.update_user(osm_id, username, user_picture)
         except NotFound:
             # User not found, so must be new user
-            changesets = osm_user.find("changesets")
-            changeset_count = int(changesets.attrib["count"])
+            changesets = osm_user.get("changesets")
+            changeset_count = int(changesets.get("count"))
             new_user = UserService.register_user(
                 osm_id, username, changeset_count, user_picture, email
             )
@@ -93,7 +102,7 @@ class AuthenticationService:
 
     @staticmethod
     def authenticate_email_token(username: str, token: str):
-        """ Validate that the email token is valid """
+        """Validate that the email token is valid"""
         try:
             user = UserService.get_user_by_username(username)
         except NotFound:
@@ -113,7 +122,7 @@ class AuthenticationService:
 
     @staticmethod
     def _get_email_validated_url(is_valid: bool) -> str:
-        """ Helper function to generate redirect url for email verification """
+        """Helper function to generate redirect url for email verification"""
         base_url = current_app.config["APP_BASE_URL"]
 
         verification_params = {"is_valid": is_valid}
@@ -124,7 +133,7 @@ class AuthenticationService:
 
     @staticmethod
     def get_authentication_failed_url():
-        """ Generates the auth-failed URL for the running app """
+        """Generates the auth-failed URL for the running app"""
         base_url = current_app.config["APP_BASE_URL"]
         auth_failed_url = f"{base_url}/auth-failed"
         return auth_failed_url
@@ -141,15 +150,17 @@ class AuthenticationService:
         serializer = URLSafeTimedSerializer(entropy)
         return serializer.dumps(osm_id)
 
+    # code taken from https://github.com/oauthlib/oauthlib/blob/master/oauthlib/common.py
     @staticmethod
-    def generate_authorize_url(callback):
-        token, secret = osm.generate_request_token(callback)
-        url = f"{osm.expand_url(osm.authorize_url)}?oauth_token={url_quote(token)}"
-
-        # Remove tokens from session. The library creates it.
-        session.pop("osm_oauthtok")
-
-        return {"auth_url": url, "oauth_token": token, "oauth_token_secret": secret}
+    def generate_random_state(length=48, chars=UNICODE_ASCII_CHARACTER_SET):
+        """Generates a non-guessable OAuth token
+        OAuth (1 and 2) does not specify the format of tokens except that they
+        should be strings of random characters. Tokens should not be guessable
+        and entropy when generating the random characters is important. Which is
+        why SystemRandom is used instead of the default random.choice method.
+        """
+        rand = SystemRandom()
+        return "".join(rand.choice(chars) for x in range(length))
 
     @staticmethod
     def is_valid_token(token, token_expiry):

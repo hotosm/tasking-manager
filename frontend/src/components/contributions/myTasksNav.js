@@ -3,15 +3,26 @@ import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import { ProjectSearchBox } from '../projects/projectSearchBox';
 import { useTaskContributionQueryParams, stringify } from '../../hooks/UseTaskContributionAPI';
+import MyTasksOrderDropdown from './myTasksOrderDropdown';
+import MyProjectsDropdown from './myProjectsDropdown';
 
 const isActiveButton = (buttonName, contributionQuery) => {
-  const allBoolean = !contributionQuery.projectStatus && !contributionQuery.status;
-  if (
-    JSON.stringify(contributionQuery).indexOf(buttonName) !== -1 ||
-    (buttonName === 'All' && allBoolean)
-  ) {
+  let isActive = false;
+  try {
+    if (contributionQuery.status.includes(buttonName)) {
+      isActive = true;
+    }
+  } catch {
+    if (contributionQuery.projectStatus === buttonName) {
+      isActive = true;
+    }
+    if (buttonName === 'All' && !contributionQuery.projectStatus && !contributionQuery.status) {
+      isActive = true;
+    }
+  }
+
+  if (isActive) {
     return 'bg-blue-grey white fw5';
   } else {
     return 'bg-white blue-grey';
@@ -21,7 +32,7 @@ const isActiveButton = (buttonName, contributionQuery) => {
 export const MyTasksNav = (props) => {
   const [contributionsQuery, setContributionsQuery] = useTaskContributionQueryParams();
 
-  const linkCombo = 'link ph3 f6 pv2 ba b--grey-light';
+  const linkCombo = 'dib mh1 mb2 link ph3 f6 pv2 ba b--grey-light';
   const notAnyFilter = !stringify(contributionsQuery);
   return (
     /* mb1 mb2-ns (removed for map, but now small gap for more-filters) */
@@ -36,19 +47,16 @@ export const MyTasksNav = (props) => {
       <div className="mt2 mb1 dib lh-copy w-100 cf">
         <div className="w-100 fl dib">
           <div className="dib">
-            <div className="mv2 dib"></div>
-            <FormattedMessage {...messages.searchProject}>
-              {(msg) => {
-                return (
-                  <ProjectSearchBox
-                    className="dib fl mh1"
-                    setQuery={setContributionsQuery}
-                    fullProjectsQuery={contributionsQuery}
-                    placeholder={msg}
-                  />
-                );
-              }}
-            </FormattedMessage>
+            <MyProjectsDropdown
+              className={`fl f5 mt1 mt2-ns`}
+              setQuery={setContributionsQuery}
+              allQueryParams={contributionsQuery}
+            />
+            <MyTasksOrderDropdown
+              className={`fl f5 mt1 mt2-ns`}
+              setQuery={setContributionsQuery}
+              allQueryParams={contributionsQuery}
+            />
             {!notAnyFilter && (
               <Link to="./" className="red link ph3 f6 v-mid dib pv2 mh1 mt1 mt2-ns fr">
                 <FormattedMessage {...messages.clearFilters} />
@@ -58,33 +66,30 @@ export const MyTasksNav = (props) => {
         </div>
       </div>
       <div className="mv2">
-        <Link to="" className={`di mh1 ${isActiveButton('All', contributionsQuery)} ${linkCombo}`}>
+        <Link to="" className={`${isActiveButton('All', contributionsQuery)} ${linkCombo}`}>
           <FormattedMessage {...messages.all} />
         </Link>
         <Link
           to="?status=MAPPED"
-          className={`di mh1 ${isActiveButton('MAPPED', contributionsQuery)}  ${linkCombo}`}
+          className={`${isActiveButton('MAPPED', contributionsQuery)}  ${linkCombo}`}
         >
           <FormattedMessage {...messages.mapped} />
         </Link>
         <Link
           to="?status=VALIDATED"
-          className={`di mh1 ${isActiveButton(
-            'status=VALIDATED',
-            contributionsQuery,
-          )}  ${linkCombo}`}
+          className={`${isActiveButton('VALIDATED', contributionsQuery)}  ${linkCombo}`}
         >
           <FormattedMessage {...messages.validated} />
         </Link>
         <Link
           to="?status=INVALIDATED"
-          className={`di mh1 ${isActiveButton('INVALIDATED', contributionsQuery)}  ${linkCombo}`}
+          className={`${isActiveButton('INVALIDATED', contributionsQuery)}  ${linkCombo}`}
         >
           <FormattedMessage {...messages.invalidated} />
         </Link>
         <Link
           to="?projectStatus=ARCHIVED"
-          className={`di mh1 ${isActiveButton('projectStatus', contributionsQuery)}  ${linkCombo}`}
+          className={`${isActiveButton('ARCHIVED', contributionsQuery)}  ${linkCombo}`}
         >
           <FormattedMessage {...messages.archived} />
         </Link>

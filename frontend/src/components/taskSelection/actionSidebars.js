@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { navigate } from '@reach/router';
 import Popup from 'reactjs-popup';
+import ReactTooltip from 'react-tooltip';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import { CheckBoxInput } from '../formInputs';
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { CheckCircle } from '../checkCircle';
@@ -22,6 +24,7 @@ import {
 } from '../svgIcons';
 import { getEditors } from '../../utils/editorsList';
 import { htmlFromMarkdown } from '../../utils/htmlFromMarkdown';
+import { getTaskContributors } from '../../utils/getTaskContributors';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { CommentInputField } from '../comments/commentInput';
 import { useFetchLockedTasks, useClearLockedTasks } from '../../hooks/UseLockedTasks';
@@ -35,18 +38,21 @@ export function CompletionTabForMapping({
   historyTabSwitch,
   taskInstructions,
   disabled,
+  contributors,
   taskComment,
   setTaskComment,
   selectedStatus,
   setSelectedStatus,
 }: Object) {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [showHelp, setShowHelp] = useState(false);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
   const [splitTaskError, setSplitTaskError] = useState(false);
+  const [redirectToPreviousProject, setRedirectToPreviousProject] = useState(true);
   const radioInput = 'radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light';
   const fetchLockedTasks = useFetchLockedTasks();
   const clearLockedTasks = useClearLockedTasks();
+  const directedFrom = localStorage.getItem('lastProjectPathname');
 
   const splitTask = () => {
     if (!disabled) {
@@ -55,9 +61,14 @@ export function CompletionTabForMapping({
         token,
         'POST',
       )
-        .then((r) => {
+        .then((res) => {
           clearLockedTasks();
-          navigate(`../tasks/`);
+          navigate((redirectToPreviousProject && directedFrom) || `../tasks/`, {
+            state: {
+              lastLockedTasksIds: res.tasks.map((task) => task.taskId),
+              lastLockedProjectId: project.projectId,
+            },
+          });
         })
         .catch((e) => {
           setSplitTaskError(true);
@@ -80,7 +91,15 @@ export function CompletionTabForMapping({
         token,
       ).then((r) => {
         clearLockedTasks();
-        navigate(`/projects/${project.projectId}/tasks/`);
+        navigate(
+          (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+          {
+            state: {
+              lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
+            },
+          },
+        );
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -108,7 +127,15 @@ export function CompletionTabForMapping({
       }
       return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
-        navigate(`/projects/${project.projectId}/tasks/`);
+        navigate(
+          (redirectToPreviousProject && directedFrom) || `/projects/${project.projectId}/tasks/`,
+          {
+            state: {
+              lastLockedTasksIds: tasksIds,
+              lastLockedProjectId: project.projectId,
+            },
+          },
+        );
       });
     }
   };
@@ -174,7 +201,7 @@ export function CompletionTabForMapping({
             value="MAPPED"
             className={radioInput}
             checked={selectedStatus === 'MAPPED'}
-            onClick={() => setSelectedStatus('MAPPED')}
+            onChange={() => setSelectedStatus('MAPPED')}
           />
           <label htmlFor="MAPPED">
             <FormattedMessage {...messages.complete} />
@@ -187,7 +214,7 @@ export function CompletionTabForMapping({
             value="READY"
             className={radioInput}
             checked={selectedStatus === 'READY'}
-            onClick={() => setSelectedStatus('READY')}
+            onChange={() => setSelectedStatus('READY')}
           />
           <label htmlFor="READY">
             <FormattedMessage {...messages.incomplete} />
@@ -201,7 +228,7 @@ export function CompletionTabForMapping({
               value="BADIMAGERY"
               className={radioInput}
               checked={selectedStatus === 'BADIMAGERY'}
-              onClick={() => setSelectedStatus('BADIMAGERY')}
+              onChange={() => setSelectedStatus('BADIMAGERY')}
             />
             <label htmlFor="BADIMAGERY">
               <FormattedMessage {...messages.badImagery} />
@@ -217,11 +244,28 @@ export function CompletionTabForMapping({
           <CommentInputField
             comment={taskComment}
             setComment={setTaskComment}
+            contributors={contributors}
             enableHashtagPaste={true}
           />
         </p>
       </div>
-      <div className="cf mv2">
+      {directedFrom && (
+        <div className="flex items-center">
+          <CheckBoxInput
+            changeState={() => setRedirectToPreviousProject(!redirectToPreviousProject)}
+            isActive={redirectToPreviousProject}
+          />
+          <label>
+            <FormattedMessage
+              {...messages.redirectToPreviousProject}
+              values={{
+                projectId: directedFrom.split('/')[2],
+              }}
+            />
+          </label>
+        </div>
+      )}
+      <div className="cf mv2" data-tip>
         <Button
           className="bg-red white w-100 fl"
           onClick={() => submitTaskAsync.execute()}
@@ -235,6 +279,11 @@ export function CompletionTabForMapping({
           <FormattedMessage {...messages.submitTask} />
         </Button>
       </div>
+      {disabled && (
+        <ReactTooltip place="top">
+          <FormattedMessage {...messages.unsavedChangesTooltip} />
+        </ReactTooltip>
+      )}
       <div className="cf pb1">
         <Button
           className="bg-blue-dark white w-50 fl"
@@ -263,15 +312,18 @@ export function CompletionTabForValidation({
   tasksIds,
   taskInstructions,
   disabled,
+  contributors,
   validationStatus,
   setValidationStatus,
   validationComments,
   setValidationComments,
 }: Object) {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
+  const [redirectToPreviousProject, setRedirectToPreviousProject] = useState(true);
   const fetchLockedTasks = useFetchLockedTasks();
   const clearLockedTasks = useClearLockedTasks();
+  const directedFrom = localStorage.getItem('lastProjectPathname');
 
   const updateStatus = (id, newStatus) =>
     setValidationStatus({ ...validationStatus, [id]: newStatus });
@@ -302,7 +354,12 @@ export function CompletionTabForValidation({
         token,
       ).then((r) => {
         clearLockedTasks();
-        navigate(`../tasks/`);
+        navigate((redirectToPreviousProject && directedFrom) || `../tasks/`, {
+          state: {
+            lastLockedTasksIds: tasksIds,
+            lastLockedProjectId: project.projectId,
+          },
+        });
       });
     } else {
       return new Promise((resolve, reject) => {
@@ -325,7 +382,17 @@ export function CompletionTabForValidation({
       };
       return pushToLocalJSONAPI(url, JSON.stringify(payload), token).then((r) => {
         fetchLockedTasks();
-        navigate(`../tasks/?filter=readyToValidate`);
+        navigate((redirectToPreviousProject && directedFrom) || `../tasks/?filter=MAPPED`, {
+          state: {
+            lastLockedTasksIds: tasksIds,
+            lastLockedProjectId: project.projectId,
+          },
+        });
+      });
+    } else if (disabled) {
+      return new Promise((resolve, reject) => {
+        setShowMapChangesModal('unlock');
+        resolve();
       });
     }
   };
@@ -354,10 +421,49 @@ export function CompletionTabForValidation({
         <p className="b mb2">
           <FormattedMessage {...messages.validatedQuestion} values={{ number: tasksIds.length }} />
         </p>
+        {tasksIds.length > 3 && (
+          <div className="cf w-100 db pt1 pv2 blue-dark mb2 bb b--light-gray">
+            <div className="cf w-100">
+              <div className="fw8 f5 w-10 dib">
+                <FormattedMessage {...messages.filterAll} />
+              </div>
+              <div className="w-auto dib">
+                {['VALIDATED', 'INVALIDATED'].map((value, index) => (
+                  <div className="dib" key={index}>
+                    <input
+                      type="radio"
+                      id={value}
+                      value={value}
+                      className="radio-input input-reset pointer v-mid dib h2 w2 mr2 ml3 br-100 ba b--blue-light"
+                      checked={
+                        Object.values(validationStatus).every((status) => status === value) &&
+                        Object.values(validationStatus).length === tasksIds.length
+                      }
+                      onChange={() => {
+                        let tempObj = {};
+                        tasksIds.forEach((id) => (tempObj = { ...tempObj, [id]: value }));
+                        setValidationStatus(tempObj);
+                      }}
+                    />
+                    <label htmlFor={value}>
+                      {index ? (
+                        <FormattedMessage {...messages.incomplete} />
+                      ) : (
+                        <FormattedMessage {...messages.complete} />
+                      )}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
         {tasksIds.map((id) => (
           <TaskValidationSelector
             key={id}
             id={id}
+            projectId={project.projectId}
+            contributors={contributors}
             currentStatus={validationStatus[id]}
             updateStatus={updateStatus}
             comment={validationComments[id]}
@@ -367,7 +473,23 @@ export function CompletionTabForValidation({
           />
         ))}
       </div>
-      <div className="cf mv3">
+      {directedFrom && (
+        <div className="flex items-center">
+          <CheckBoxInput
+            changeState={() => setRedirectToPreviousProject(!redirectToPreviousProject)}
+            isActive={redirectToPreviousProject}
+          />
+          <label>
+            <FormattedMessage
+              {...messages.redirectToPreviousProject}
+              values={{
+                projectId: directedFrom.split('/')[2],
+              }}
+            />
+          </label>
+        </div>
+      )}
+      <div className="cf mv3" data-tip>
         <Button
           className="bg-red white w-100 fl"
           onClick={() => submitTaskAsync.execute()}
@@ -377,6 +499,11 @@ export function CompletionTabForValidation({
           <FormattedMessage {...messages[tasksIds.length > 1 ? 'submitTasks' : 'submitTask']} />
         </Button>
       </div>
+      {disabled && (
+        <ReactTooltip place="top">
+          <FormattedMessage {...messages.unsavedChangesTooltip} />
+        </ReactTooltip>
+      )}
       <div className="cf">
         <Button
           className="blue-dark bg-white w-100 fl"
@@ -394,16 +521,37 @@ export function CompletionTabForValidation({
 
 const TaskValidationSelector = ({
   id,
+  projectId,
   currentStatus,
   comment,
   updateComment,
+  contributors,
   updateStatus,
   copyCommentToTasks,
   isValidatingMultipleTasks,
 }) => {
+  const userDetails = useSelector((state) => state.auth.userDetails);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [enableCopy, setEnableCopy] = useState(false);
   const setComment = (newComment) => updateComment(id, newComment);
+  const [contributorsList, setContributorsList] = useState([]);
+
+  // the contributors is filled only on the case of single task validation,
+  // so we need to fetch the task history in the case of multiple task validation
+  useEffect(() => {
+    if (showCommentInput && isValidatingMultipleTasks && !contributors.length) {
+      fetchLocalJSONAPI(`projects/${projectId}/tasks/${id}/`).then((response) =>
+        setContributorsList(getTaskContributors(response.taskHistory, userDetails.username)),
+      );
+    }
+  }, [
+    isValidatingMultipleTasks,
+    showCommentInput,
+    contributors,
+    id,
+    projectId,
+    userDetails.username,
+  ]);
 
   return (
     <div className="cf w-100 db pt1 pv2 blue-dark">
@@ -430,21 +578,21 @@ const TaskValidationSelector = ({
           <label htmlFor="INVALIDATED">
             <FormattedMessage {...messages.incomplete} />
           </label>
-          {currentStatus && (
-            <CustomButton
-              className={`${
-                showCommentInput ? 'b--red red' : 'b--grey-light blue-dark'
-              } bg-white ba br1 ml3 pv2 ph3`}
-              onClick={() => setShowCommentInput(!showCommentInput)}
-            >
-              {comment ? (
-                <CommentIcon className="h1 w1 v-mid mr1" />
+          <CustomButton
+            className={`${
+              showCommentInput ? 'b--red red' : 'b--grey-light blue-dark'
+            } bg-white ba br1 ml3 pv2 ph3`}
+            onClick={() => setShowCommentInput(!showCommentInput)}
+            icon={
+              comment ? (
+                <CommentIcon className="h1 w1 v-mid" />
               ) : (
-                <PlusIcon className="h1 w1 mr1 v-mid" />
-              )}
-              <FormattedMessage {...messages.comment} />
-            </CustomButton>
-          )}
+                <PlusIcon className="h1 w1 v-mid" />
+              )
+            }
+          >
+            <FormattedMessage {...messages.comment} />
+          </CustomButton>
         </div>
       </div>
       {showCommentInput && (
@@ -453,7 +601,9 @@ const TaskValidationSelector = ({
             <CommentInputField
               comment={comment}
               setComment={setComment}
+              contributors={contributors.length ? contributors : contributorsList}
               enableHashtagPaste={false}
+              autoFocus={true}
             />
           </div>
           {isValidatingMultipleTasks && comment && (
@@ -553,8 +703,6 @@ export function ReopenEditor({ project, action, editor, callEditor }: Object) {
         display={<FormattedMessage {...messages.reloadEditor} />}
         className="bg-white b--grey-light ba pa2 di"
         onChange={callEditor}
-        onAdd={() => {}}
-        onRemove={() => {}}
         toTop={true}
       />
     </div>
@@ -581,7 +729,7 @@ export function SidebarToggle({ setShowSidebar }: Object) {
   );
 }
 
-function UnsavedMapChangesModalContent({ close, action }: Object) {
+export function UnsavedMapChangesModalContent({ close, action }: Object) {
   return (
     <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns tc">
       <div className="cf tc red pb3">
@@ -593,6 +741,9 @@ function UnsavedMapChangesModalContent({ close, action }: Object) {
       <div className="mv4 lh-title">
         {action === 'split' && <FormattedMessage {...messages.unsavedChangesToSplit} />}
         {action === 'unlock' && <FormattedMessage {...messages.unsavedChangesToUnlock} />}
+        {action === 'reload editor' && (
+          <FormattedMessage {...messages.unsavedChangesToReloadEditor} />
+        )}
       </div>
       <Button className="bg-red white" onClick={() => close()}>
         <FormattedMessage {...messages.closeModal} />

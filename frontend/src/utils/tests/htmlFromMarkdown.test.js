@@ -9,6 +9,27 @@ test('htmlFromMarkdown returns correct content', () => {
   );
 });
 
+test('htmlFromMarkdown with youtube tag', () => {
+  const html = htmlFromMarkdown('::youtube[UzT0i5XhsOQ]').__html;
+  expect(html).toContain('<iframe');
+  expect(html).toContain('width="480"');
+  expect(html).toContain('height="270"');
+  expect(html).toContain('style="border: 0;"');
+  expect(html).toContain('title="YouTube Video"');
+  expect(html).toContain('frameborder="0"');
+  expect(html).toContain(
+    'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"',
+  );
+  expect(html).toContain('allowfullscreen=""');
+  expect(html).toContain('src="https://www.youtube.com/embed/UzT0i5XhsOQ"');
+});
+
+test('htmlFromMarkdown should not render other iframes', () => {
+  const html = htmlFromMarkdown('<iframe src="https://osm.org"></iframe>').__html;
+  expect(html).not.toContain('<iframe');
+  expect(html).not.toContain('src="https://osm.org"');
+});
+
 test('formatUserNamesToLink returns correct content', () => {
   expect(
     formatUserNamesToLink(

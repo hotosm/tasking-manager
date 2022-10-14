@@ -90,6 +90,7 @@ class Message(db.Model):
 
         if self.from_user_id:
             dto.from_username = self.from_user.username
+            dto.display_picture_url = self.from_user.picture_url
 
         return dto
 

@@ -4,8 +4,9 @@ import bbox from '@turf/bbox';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
+import WebglUnsupported from '../webglUnsupported';
 import messages from './messages';
 import { MAPBOX_TOKEN, TASK_COLOURS, MAP_STYLE, MAPBOX_RTL_PLUGIN_URL } from '../../config';
 import lock from '../../assets/img/lock.png';
@@ -39,9 +40,10 @@ export const TasksMap = ({
   showTaskIds = false,
   selected: selectedOnMap,
 }) => {
+  const intl = useIntl();
   const mapRef = React.createRef();
   const locale = useSelector((state) => state.preferences['locale']);
-  const authDetails = useSelector((state) => state.auth.get('userDetails'));
+  const authDetails = useSelector((state) => state.auth.userDetails);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
 
   const [map, setMapObj] = useState(null);
@@ -50,17 +52,18 @@ export const TasksMap = ({
     /* May be able to refactor this to just take
      * advantage of useRef instead inside other useLayoutEffect() */
     /* I referenced this initially https://philipprost.com/how-to-use-mapbox-gl-with-react-functional-component/ */
-    setMapObj(
-      new mapboxgl.Map({
-        container: mapRef.current,
-        style: MAP_STYLE,
-        center: [0, 0],
-        zoom: 1,
-        attributionControl: false,
-      })
-        .addControl(new mapboxgl.AttributionControl({ compact: false }))
-        .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
-    );
+    mapboxgl.supported() &&
+      setMapObj(
+        new mapboxgl.Map({
+          container: mapRef.current,
+          style: MAP_STYLE,
+          center: [0, 0],
+          zoom: 1,
+          attributionControl: false,
+        })
+          .addControl(new mapboxgl.AttributionControl({ compact: false }))
+          .addControl(new MapboxLanguage({ defaultLanguage: locale.substr(0, 2) || 'en' })),
+      );
 
     return () => {
       map && map.remove();
@@ -69,7 +72,8 @@ export const TasksMap = ({
   }, []);
 
   useLayoutEffect(() => {
-    if (zoomedTaskId) {
+    // should run only when triggered from tasks list
+    if (typeof zoomedTaskId === 'number') {
       const taskGeom = mapResults.features.filter(
         (task) => task.properties.taskId === zoomedTaskId,
       )[0].geometry;
@@ -79,8 +83,11 @@ export const TasksMap = ({
 
   useLayoutEffect(() => {
     const onSelectTaskClick = (e) => {
+      const { mappedBy, taskStatus } = e.features[0].properties;
       const task = e.features && e.features[0].properties;
-      selectTask && selectTask(task.taskId, task.taskStatus);
+      if (!(mappedBy === authDetails.id && taskStatus === 'MAPPED')) {
+        selectTask && selectTask(task.taskId, task.taskStatus);
+      }
     };
 
     const countryMapLayers = [
@@ -97,7 +104,30 @@ export const TasksMap = ({
     ];
 
     const updateTMZoom = () => {
-      if (!taskBordersOnly) {
+      // fit bounds to last mapped/validated task(s), if exists
+      // otherwise fit bounds to all tasks
+      if (zoomedTaskId?.length > 0) {
+        const lastLockedTasks = mapResults.features.filter((task) =>
+          zoomedTaskId.includes(task.properties.taskId),
+        );
+
+        const lastLockedTasksGeom = lastLockedTasks.reduce(
+          (acc, curr) => {
+            const geom = curr.geometry;
+            return {
+              type: 'MultiPolygon',
+              coordinates: [...acc.coordinates, ...geom.coordinates],
+            };
+          },
+          { type: 'MultiPolygon', coordinates: [] },
+        );
+
+        const screenWidth = window.innerWidth;
+        map.fitBounds(bbox(lastLockedTasksGeom), {
+          padding: screenWidth / 8,
+          animate: false,
+        });
+      } else if (!taskBordersOnly) {
         map.fitBounds(bbox(mapResults), { padding: 40, animate: animateZoom });
       } else {
         map.fitBounds(bbox(mapResults), { padding: 220, maxZoom: 6.5, animate: animateZoom });
@@ -105,6 +135,9 @@ export const TasksMap = ({
     };
 
     const mapboxLayerDefn = () => {
+      map.once('load', () => {
+        map.resize();
+      });
       if (map.getSource('tasks') === undefined) {
         map.addImage('lock', lockIcon, { width: 17, height: 20, data: lockIcon });
         map.addImage('redlock', redlockIcon, { width: 30, height: 30, data: redlockIcon });
@@ -321,21 +354,40 @@ export const TasksMap = ({
           'point-tasks-centroid-inner',
         );
       }
+      const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        offset: {
+          top: [-10, 0],
+          bottom: [0, -10],
+          left: [0, -10],
+          right: [-10, 0],
+        },
+      })
+        .setHTML(`${intl.formatMessage(messages.cantValidateMappedTask)}`)
+        .trackPointer();
 
-      if (showTaskIds) {
-        map.on('mousemove', 'tasks-fill', function (e) {
+      map.on('mousemove', 'tasks-fill', function (e) {
+        // To now allow validators to select tasks that they mapped
+        if (
+          e.features[0].properties.mappedBy === authDetails.id &&
+          e.features[0].properties.taskStatus === 'MAPPED'
+        ) {
+          popup.addTo(map);
+          map.getCanvas().style.cursor = 'not-allowed';
+        } else {
+          map.getCanvas().style.cursor = 'pointer';
+          popup.isOpen() && popup.remove();
+        }
+        if (showTaskIds) {
           // when the user hover on a task they are validating, enable the task id dialog
           if (e.features[0].properties.lockedBy === authDetails.id) {
             setHoveredTaskId(e.features[0].properties.taskId);
           } else {
             setHoveredTaskId(null);
           }
-        });
-        map.on('mouseleave', 'tasks-fill', function (e) {
-          // disable the task id dialog when the mouse go outside the task grid
-          setHoveredTaskId(null);
-        });
-      }
+        }
+      });
 
       if (taskBordersOnly && navigate) {
         map.on('mouseenter', 'point-tasks-centroid', function (e) {
@@ -348,16 +400,19 @@ export const TasksMap = ({
         map.on('click', 'point-tasks-centroid-inner', () => navigate('./tasks'));
       }
 
-      map.on('mouseenter', 'tasks-fill', function (e) {
-        if (selectTask) {
-          // Change the cursor style as a UI indicator.
-          map.getCanvas().style.cursor = 'pointer';
-        }
-      });
       map.on('click', 'tasks-fill', onSelectTaskClick);
       map.on('mouseleave', 'tasks-fill', function (e) {
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = '';
+        // disable the task id dialog when the mouse go outside the task grid
+        showTaskIds && setHoveredTaskId(null);
+        popup.isOpen() && popup.remove();
+
+        // Cursor style won't change to original state with trackPointer()
+        // https://github.com/mapbox/mapbox-gl-js/issues/12223
+        if (map._canvasContainer) {
+          map._canvasContainer.classList.remove('mapboxgl-track-pointer');
+        }
       });
       updateTMZoom();
     };
@@ -433,16 +488,23 @@ export const TasksMap = ({
     animateZoom,
     authDetails.id,
     showTaskIds,
+    zoomedTaskId,
+    authDetails.username,
+    intl,
   ]);
 
-  return (
-    <>
-      {showTaskIds && hoveredTaskId && (
-        <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 ">
-          <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
-        </div>
-      )}
-      <div id="map" className={className} ref={mapRef}></div>
-    </>
-  );
+  if (!mapboxgl.supported()) {
+    return <WebglUnsupported className={`vh-75-l vh-50 fr ${className || ''}`} />;
+  } else {
+    return (
+      <>
+        {showTaskIds && hoveredTaskId && (
+          <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 ">
+            <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
+          </div>
+        )}
+        <div id="map" className={className} ref={mapRef}></div>
+      </>
+    );
+  }
 };

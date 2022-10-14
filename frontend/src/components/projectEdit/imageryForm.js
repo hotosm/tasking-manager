@@ -4,6 +4,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import { StateContext, styleClasses } from '../../views/projectEdit';
+import { Code } from '../code';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import { useImageryOption, IMAGERY_OPTIONS } from '../../hooks/UseImageryOption';
 
@@ -80,6 +81,8 @@ const ImageryField = ({ imagery, setProjectInfo }) => {
     }
   };
 
+  const exampleUrl = 'tms[22]:https://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png';
+
   return (
     <>
       <Select
@@ -104,8 +107,11 @@ const ImageryField = ({ imagery, setProjectInfo }) => {
             <FormattedMessage
               {...messages.imageryURLNote}
               values={{
-                exampleUrl:
-                  'tms[22]:https://hiu-maps.net/hot/1.0.0/kathmandu_flipped/{zoom}/{x}/{y}.png',
+                exampleUrl: (
+                  <span className="db">
+                    <Code>{exampleUrl}</Code>
+                  </span>
+                ),
               }}
             />
           </p>

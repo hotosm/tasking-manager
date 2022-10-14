@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from '@reach/router';
-import ReactPlaceholder from 'react-placeholder';
-import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
+
 import { FormattedMessage } from 'react-intl';
 import { Form } from 'react-final-form';
 
@@ -37,36 +36,24 @@ const CampaignError = ({ error }) => {
 
 export function ListCampaigns() {
   useSetTitleTag('Manage campaigns');
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   // TO DO: filter teams of current user
   const [error, loading, campaigns] = useFetch(`campaigns/`);
-
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <div className="w-50-ns w-100 cf ph6-l ph4">
-        <TextBlock rows={1} className="bg-grey-light h3" />
-      </div>
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-    </div>
-  );
+  const isCampaignsFetched = !loading && !error;
 
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={!error && !loading}
-    >
-      <CampaignsManagement campaigns={campaigns.campaigns} userDetails={userDetails} />
-    </ReactPlaceholder>
+    <CampaignsManagement
+      campaigns={campaigns.campaigns}
+      userDetails={userDetails}
+      isCampaignsFetched={isCampaignsFetched}
+    />
   );
 }
 
 export function CreateCampaign() {
   useSetTitleTag('Create new campaign');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [error, setError] = useState(false);
 
   const createCampaign = (payload) => {
@@ -127,8 +114,8 @@ export function CreateCampaign() {
 }
 
 export function EditCampaign(props) {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [error, loading, campaign] = useFetch(`campaigns/${props.id}/`, props.id);
   useSetTitleTag(`Edit ${campaign.name}`);
   const [projectsError, projectsLoading, projects] = useFetch(

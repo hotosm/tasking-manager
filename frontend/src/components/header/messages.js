@@ -15,6 +15,10 @@ export default defineMessages({
     id: 'header.nav.aboutLink',
     defaultMessage: 'About',
   },
+  support: {
+    id: 'header.nav.support',
+    defaultMessage: 'Support',
+  },
   myContributions: {
     id: 'header.nav.my_contributions',
     defaultMessage: 'My contributions',
@@ -154,5 +158,17 @@ export default defineMessages({
     id: 'emailUpdate.modal.privacy_policy',
     defaultMessage:
       "Read our Privacy Policy for more information on how we protect users' personal data.",
+  },
+  newVersionAvailable: {
+    id: 'serviceWorker.dialog.newVersion',
+    defaultMessage: 'There is a new Tasking Manager version available!',
+  },
+  update: {
+    id: 'serviceWorker.dialog.update',
+    defaultMessage: 'Update now',
+  },
+  remindMeLater: {
+    id: 'serviceWorker.dialog.remindMeLater',
+    defaultMessage: 'Remind me later',
   },
 });

@@ -16,7 +16,7 @@ export function UserNotificationsForm(props) {
           <SwitchToggleField fieldName="mentionsNotifications" />
         </CustomField>
         <CustomField labelId="teamUpdates" descriptionId="teamUpdatesDescription">
-          <SwitchToggleField fieldName="teamsNotifications" />
+          <SwitchToggleField fieldName="teamsAnnouncementNotifications" />
         </CustomField>
         <CustomField labelId="taskUpdates" descriptionId="taskUpdatesDescription">
           <SwitchToggleField fieldName="tasksNotifications" />
@@ -24,8 +24,11 @@ export function UserNotificationsForm(props) {
         <CustomField labelId="projectUpdates" descriptionId="projectUpdatesDescription">
           <SwitchToggleField fieldName="projectsNotifications" />
         </CustomField>
-        <CustomField labelId="comments" descriptionId="commentsDescription">
-          <SwitchToggleField fieldName="commentsNotifications" />
+        <CustomField labelId="questionsAndComments" descriptionId="questionsAndCommentsDescription">
+          <SwitchToggleField fieldName="questionsAndCommentsNotifications" />
+        </CustomField>
+        <CustomField labelId="taskComments" descriptionId="taskCommentsDescription">
+          <SwitchToggleField fieldName="taskCommentsNotifications" />
         </CustomField>
       </div>
     </div>

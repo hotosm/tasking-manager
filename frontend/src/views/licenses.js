@@ -2,8 +2,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
-import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders';
-import ReactPlaceholder from 'react-placeholder';
 import { Link, useNavigate } from '@reach/router';
 import { Form } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
@@ -15,8 +13,8 @@ import { DeleteModal } from '../components/deleteModal';
 import { pushToLocalJSONAPI } from '../network/genericJSONRequest';
 
 export const EditLicense = (props) => {
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
-  const token = useSelector((state) => state.auth.get('token'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
+  const token = useSelector((state) => state.auth.token);
   const [error, loading, license] = useFetch(`licenses/${props.id}/`);
   useSetTitleTag(`Edit ${license.name}`);
 
@@ -46,36 +44,24 @@ export const EditLicense = (props) => {
 
 export const ListLicenses = () => {
   useSetTitleTag('Manage licenses');
-  const userDetails = useSelector((state) => state.auth.get('userDetails'));
+  const userDetails = useSelector((state) => state.auth.userDetails);
   // TO DO: filter teams of current user
   const [error, loading, licenses] = useFetch(`licenses/`);
-
-  const placeHolder = (
-    <div className="pb4 bg-tan">
-      <div className="w-50-ns w-100 cf ph6-l ph4">
-        <TextBlock rows={1} className="bg-grey-light h3" />
-      </div>
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-      <RectShape className="bg-white dib mv2 mh6" style={{ width: 250, height: 300 }} />
-    </div>
-  );
+  const isLicensesFetched = !loading && !error;
 
   return (
-    <ReactPlaceholder
-      showLoadingAnimation={true}
-      customPlaceholder={placeHolder}
-      delay={10}
-      ready={!error && !loading}
-    >
-      <LicensesManagement licenses={licenses.licenses} userDetails={userDetails} />
-    </ReactPlaceholder>
+    <LicensesManagement
+      licenses={licenses.licenses}
+      userDetails={userDetails}
+      isLicensesFetched={isLicensesFetched}
+    />
   );
 };
 
 export const CreateLicense = () => {
   useSetTitleTag('Create new license');
   const navigate = useNavigate();
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
 
   const createLicense = (payload) => {
     pushToLocalJSONAPI('licenses/', JSON.stringify(payload), token, 'POST').then((result) =>

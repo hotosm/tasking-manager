@@ -11,6 +11,7 @@ import useGetContributors from '../../hooks/UseGetContributors';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { formatOSMChaLink } from '../../utils/osmchaLink';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
+import { getTaskContributors } from '../../utils/getTaskContributors';
 import { getIdUrl, sendJosmCommands } from '../../utils/openEditor';
 import { formatOverpassLink } from '../../utils/overpassLink';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
@@ -20,10 +21,9 @@ import { ID_EDITOR_URL } from '../../config';
 import { Button, CustomButton } from '../button';
 import { Dropdown } from '../dropdown';
 import { CommentInputField } from '../comments/commentInput';
-import { CheckBoxInput } from '../formInputs';
 
-const PostComment = ({ projectId, taskId, setCommentPayload }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => {
+  const token = useSelector((state) => state.auth.token);
   const [comment, setComment] = useState('');
 
   const pushComment = () => {
@@ -49,7 +49,12 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
         <CurrentUserAvatar className="h2 w2 fr mr2 br-100" />
       </div>
       <div className="fl w-70 f6">
-        <CommentInputField comment={comment} setComment={setComment} enableHashtagPaste={true} />
+        <CommentInputField
+          comment={comment}
+          setComment={setComment}
+          enableHashtagPaste={true}
+          contributors={contributors}
+        />
       </div>
       <div className="w-20 fr pt3 tr">
         <Button onClick={() => saveComment()} className="bg-red white f6">
@@ -61,16 +66,15 @@ const PostComment = ({ projectId, taskId, setCommentPayload }) => {
 };
 
 export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
   const [history, setHistory] = useState([]);
-  const [showTaskComments, setShowTaskComments] = useState(true);
   const [taskComments, setTaskComments] = useState([]);
-  const [showTaskChanges, setShowTaskChanges] = useState(false);
   const [taskChanges, setTaskChanges] = useState([]);
+  const [historyOption, setHistoryOption] = useState('Comments');
   const [shownHistory, setShownHistory] = useState([]);
 
   useEffect(() => {
-    if (commentPayload) {
+    if (commentPayload && commentPayload.taskHistory) {
       setHistory(commentPayload.taskHistory);
       setTaskComments(commentPayload.taskHistory.filter((t) => t.action === 'COMMENT'));
       setTaskChanges(commentPayload.taskHistory.filter((t) => t.action !== 'COMMENT'));
@@ -94,16 +98,14 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
   }, [projectId, taskId, token, commentPayload, getTaskInfo]);
 
   useEffect(() => {
-    if (showTaskComments && showTaskChanges) {
-      setShownHistory(history);
-    } else if (showTaskComments) {
+    if (historyOption === 'Comments') {
       setShownHistory(taskComments);
-    } else if (showTaskChanges) {
+    } else if (historyOption === 'Activities') {
       setShownHistory(taskChanges);
     } else {
       setShownHistory(history);
     }
-  }, [showTaskComments, showTaskChanges, taskComments, taskChanges, history]);
+  }, [historyOption, taskComments, taskChanges, history]);
 
   const getTaskActionMessage = (action, actionText) => {
     let message = '';
@@ -156,33 +158,33 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
     }
   };
 
+  const taskHistoryOptions = [
+    { value: 'Comments', label: 'Comments' },
+    { value: 'Activities', label: 'Activities' },
+    { value: 'All', label: 'All' },
+  ];
+
   if (!history) {
     return null;
   } else {
     return (
       <>
         <div
-          className="ml3 pl1 pb3 blue-dark flex flex-wrap"
+          className="ml3 pl1 pv2 blue-dark flex flex-wrap"
           aria-label="view task history options"
         >
-          <div className="pt1 fl w-15" aria-labelledby="comments">
-            <CheckBoxInput
-              isActive={showTaskComments}
-              changeState={() => setShowTaskComments(!showTaskComments)}
-            />
-          </div>
-          <span className="fl pt2 mr1 ph2" id="comments">
-            <FormattedMessage {...messages.taskComments} />
-          </span>
-          <div className="pt1 fl w-15" aria-labelledby="changes">
-            <CheckBoxInput
-              isActive={showTaskChanges}
-              changeState={() => setShowTaskChanges(!showTaskChanges)}
-            />
-          </div>
-          <span className="fl pt2 mr1 ph2" id="changes">
-            <FormattedMessage {...messages.taskStateChanges} />
-          </span>
+          {taskHistoryOptions.map((option) => (
+            <label className="pt1 pr3 fl w-15" key={option.value}>
+              <input
+                value={option.value}
+                checked={historyOption === option.value}
+                onChange={() => setHistoryOption(option.value)}
+                type="radio"
+                className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
+              />
+              <FormattedMessage {...messages[`taskHistory${option.label}`]} />
+            </label>
+          ))}
         </div>
         {shownHistory.map((t, n) => (
           <div className="w-90 mh3 pv3 bt b--grey-light f6 cf blue-dark" key={n}>
@@ -232,9 +234,6 @@ export const TaskDataDropdown = ({ history, changesetComment, bbox }: Object) =>
   if (history && history.taskHistory && history.taskHistory.length > 0) {
     return (
       <Dropdown
-        onAdd={() => {}}
-        onRemove={() => {}}
-        onChange={() => {}}
         value={null}
         options={[
           { label: <FormattedMessage {...messages.taskOnOSMCha} />, href: osmchaLink },
@@ -265,7 +264,8 @@ export const TaskActivity = ({
   updateActivities,
   userCanValidate,
 }: Object) => {
-  const token = useSelector((state) => state.auth.get('token'));
+  const token = useSelector((state) => state.auth.token);
+  const userDetails = useSelector((state) => state.auth.userDetails);
   // use it to hide the reset task action button
   const [resetSuccess, setResetSuccess] = useState(false);
   const [commentPayload, setCommentPayload] = useState(null);
@@ -351,6 +351,11 @@ export const TaskActivity = ({
         projectId={project.projectId}
         taskId={taskId}
         setCommentPayload={setCommentPayload}
+        contributors={
+          commentPayload && commentPayload.taskHistory
+            ? getTaskContributors(commentPayload.taskHistory, userDetails.username)
+            : []
+        }
       />
     </div>
   );
@@ -384,8 +389,6 @@ function EditorDropdown({ project, taskId, bbox }: Object) {
       display={<FormattedMessage {...messages.openEditor} />}
       className="bg-white b--grey-light ba pa2 dib v-mid"
       onChange={loadTaskOnEditor}
-      onAdd={() => {}}
-      onRemove={() => {}}
     />
   );
 }

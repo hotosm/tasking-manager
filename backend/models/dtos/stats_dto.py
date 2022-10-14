@@ -82,6 +82,8 @@ class OrganizationProjectsStatsDTO(Model):
     draft = IntType()
     published = IntType()
     archived = IntType()
+    recent = IntType()  # projects created in the current year
+    stale = IntType()  # project without any activity in the last 6 months
 
 
 class OrganizationTasksStatsDTO(Model):

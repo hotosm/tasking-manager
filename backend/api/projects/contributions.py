@@ -32,7 +32,7 @@ class ProjectsContributionsAPI(Resource):
             ProjectService.exists(project_id)
         except NotFound as e:
             current_app.logger.error(f"Error validating project: {str(e)}")
-            return {"Error": "Project not found"}, 404
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
 
         try:
             contributions = StatsService.get_user_contributions(project_id)
@@ -40,7 +40,10 @@ class ProjectsContributionsAPI(Resource):
         except Exception as e:
             error_msg = f"User GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch user contributions"}, 500
+            return {
+                "Error": "Unable to fetch user contributions",
+                "SubCode": "InternalServerError",
+            }, 500
 
 
 class ProjectsContributionsQueriesDayAPI(Resource):
@@ -71,8 +74,11 @@ class ProjectsContributionsQueriesDayAPI(Resource):
             contribs = ProjectService.get_contribs_by_day(project_id)
             return contribs.to_primitive(), 200
         except NotFound:
-            return {"Error": "Project not found"}, 404
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Project contributions GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
-            return {"Error": "Unable to fetch per day user contribution"}, 500
+            return {
+                "Error": "Unable to fetch per day user contribution",
+                "SubCode": "InternalServerError",
+            }, 500

@@ -11,9 +11,10 @@ import { SectionMenu } from '../menu';
 import OsmLogo from '../../assets/img/osm_logo.png';
 import MissingMapsLogo from '../../assets/img/organizations/missingmaps.png';
 import SlackLogo from '../../assets/img/icons/slack.png';
+import OsmChaLogo from '../../assets/img/icons/osm-cha.png';
 import { OSM_SERVER_URL, ORG_CODE } from '../../config';
 
-const SocialMedia = ({ data }) => {
+export const SocialMedia = ({ data }) => {
   const intl = useIntl();
   const socialMediaItems = ['twitterId', 'facebookId', 'linkedinId'];
 
@@ -42,6 +43,7 @@ const SocialMedia = ({ data }) => {
       linkedinId: `https://www.linkedin.com/in/${value}`,
       osm: `${OSM_SERVER_URL}/user/${value}`,
       missingmaps: `https://www.missingmaps.org/users/#/${value}`,
+      osmcha: `https://osmcha.mapbox.com/?filters={"users":[{"label":"${value}","value":"${value}"}]}`,
     };
 
     return (
@@ -70,6 +72,12 @@ const SocialMedia = ({ data }) => {
           {createLink('missingmaps', data.username)}
         </div>
       </li>
+      <li className="dib mr4-ns mr2 cf f7" title={intl.formatMessage(messages.osmChaUsername)}>
+        <div className="mr2 h2">
+          <img className="h1 v-mid" src={OsmChaLogo} alt="OSM Cha Logo" />{' '}
+          {createLink('osmcha', data.username)}
+        </div>
+      </li>
       {data.slackId && (
         <li
           className="dib mr4-ns mr2 cf f7"
@@ -81,7 +89,7 @@ const SocialMedia = ({ data }) => {
         </li>
       )}
       {socialMediaItems.map((i) => {
-        if (data[i] === null) {
+        if (!data[i]) {
           return null;
         }
 
@@ -101,7 +109,7 @@ const MyContributionsNav = ({ username, authUser }) => {
   const items = [
     { url: `/contributions`, label: <FormattedMessage {...messages.myStats} /> },
     {
-      url: '/contributions/projects/?mappedByMe=1&action=any',
+      url: '/contributions/projects?mappedByMe=1&action=any',
       label: <FormattedMessage {...messages.myProjects} />,
     },
     { url: '/contributions/tasks', label: <FormattedMessage {...messages.myTasks} /> },
@@ -116,7 +124,7 @@ const MyContributionsNav = ({ username, authUser }) => {
 };
 
 export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
-  const authDetails = useSelector((state) => state.auth.get('userDetails'));
+  const authDetails = useSelector((state) => state.auth.userDetails);
   const [user, setUser] = useState({});
 
   useEffect(() => {

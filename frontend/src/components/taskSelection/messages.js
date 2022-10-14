@@ -16,24 +16,85 @@ export default defineMessages({
     id: 'project.tasks.unsaved_map_changes.unlock',
     defaultMessage: 'Save or undo it to be able to select another task',
   },
+  unsavedChangesToReloadEditor: {
+    id: 'project.tasks.unsaved_map_changes.reload_editor',
+    defaultMessage: 'Save or undo it to be able to switch editors',
+  },
+  unsavedChangesTooltip: {
+    id: 'project.tasks.unsaved_map_changes.tooltip',
+    defaultMessage: 'You have unsaved edits. Save or undo them to submit this task.',
+  },
   closeModal: {
     id: 'project.tasks.unsaved_map_changes.actions.close_modal',
     defaultMessage: 'Close',
   },
-  noMappedTasksSelected: {
+  cantValidateMappedTask: {
+    id: 'project.tasks.select.cantValidateMappedTask',
+    defaultMessage: 'You cannot validate tasks that you mapped',
+  },
+  noMappedTasksSelectedError: {
     id: 'project.tasks.no_mapped_tasks_selected',
     defaultMessage: 'No mapped tasks selected',
   },
-  noMappedTasksSelectedDescription: {
+  noMappedTasksSelectedErrorDescription: {
     id: 'project.tasks.no_mapped_tasks_selected.description',
     defaultMessage:
       'It was not possible to lock the selected tasks, as none of them are on the mapped status.',
   },
-  josmError: {
+  InvalidTaskStateError: {
+    id: 'project.tasks.invalid_task_state_errortitle',
+    defaultMessage: 'Invalid Task State',
+  },
+  InvalidTaskStateErrorDescription: {
+    id: 'project.tasks.invalid_task_state_error.description',
+    defaultMessage: 'Task in invalid state for mapping',
+  },
+  UserNotAllowedError: {
+    id: 'project.tasks.user_not_allowed_error.title',
+    defaultMessage: 'User Not Allowed Error',
+  },
+  UserNotAllowedErrorDescription: {
+    id: 'project.tasks.user_not_allowed_error.description',
+    defaultMessage: 'Mapping not allowed because user not on allowed list',
+  },
+  ProjectNotPublishedError: {
+    id: 'project.tasks.project_not_published_error.title',
+    defaultMessage: 'Project Not Published',
+  },
+  ProjectNotPublishedErrorDescription: {
+    id: 'project.tasks.project_not_published_error.description',
+    defaultMessage: 'Mapping not allowed because project not published',
+  },
+  TaskNotOwnedError: {
+    id: 'project.tasks.task_not_owned_error.title',
+    defaultMessage: 'Task Not Owned',
+  },
+  TaskNotOwnedErrorDescription: {
+    id: 'project.tasks.task_not_owned_error.description',
+    defaultMessage: 'Attempting to unlock a task owned by another user',
+  },
+  NotReadyForValidationError: {
+    id: 'project.tasks.not_ready_for_validation_error.title',
+    defaultMessage: 'Not Ready for Validation',
+  },
+  NotReadyForValidationErrorDescription: {
+    id: 'project.tasks.not_ready_for_validation_error.description',
+    defaultMessage: 'Task is not MAPPED, BADIMAGERY or INVALIDATED',
+  },
+  CannotValidateMappedTaskError: {
+    id: 'project.tasks.cannot_validate_mapped_task_error.title',
+    defaultMessage: 'Cannot Validate Mapped Task',
+  },
+  CannotValidateMappedTaskErrorDescription: {
+    id: 'project.tasks.cannot_validate_mapped_task_error.description',
+    defaultMessage:
+      'Tasks cannot be validated by the same user who marked task as mapped or badimagery',
+  },
+  JOSMError: {
     id: 'project.tasks.josm_error',
     defaultMessage: 'Connection with JOSM failed',
   },
-  josmErrorDescription: {
+  JOSMErrorDescription: {
     id: 'project.tasks.josm_error.description',
     defaultMessage:
       'Please verify if JOSM is running on your computer and the remote control is enabled.',
@@ -154,6 +215,11 @@ export default defineMessages({
   instructions: {
     id: 'project.instructions',
     defaultMessage: 'Instructions',
+  },
+  projectIsArchived: {
+    id: 'project.isArchived',
+    defaultMessage:
+      'This project is archived and read-only. You can view the project, but you cannot update tasks.',
   },
   changesetComment: {
     id: 'project.changesetComment',
@@ -298,7 +364,7 @@ export default defineMessages({
   },
   sortByMostRecentlyUpdate: {
     id: 'project.tasks.sorting.date',
-    defaultMessage: 'Mostly recently updated',
+    defaultMessage: 'Most recently updated',
   },
   sortByLeastRecentlyUpdate: {
     id: 'project.tasks.sorting.date.reverse',
@@ -332,13 +398,17 @@ export default defineMessages({
     id: 'project.tasks.action.history',
     defaultMessage: 'History',
   },
-  taskComments: {
+  taskHistoryComments: {
     id: 'project.tasks.history.comments',
     defaultMessage: 'Comments',
   },
-  taskStateChanges: {
-    id: 'project.tasks.history.stateChanges',
+  taskHistoryActivities: {
+    id: 'project.tasks.history.activities',
     defaultMessage: 'Activities',
+  },
+  taskHistoryAll: {
+    id: 'project.tasks.history.all',
+    defaultMessage: 'All',
   },
   copyComment: {
     id: 'project.tasks.action.comments.copy',
@@ -383,6 +453,10 @@ export default defineMessages({
   comment: {
     id: 'project.tasks.action.comment.title',
     defaultMessage: 'Comment',
+  },
+  redirectToPreviousProject: {
+    id: 'project.tasks.action.redirectToPreviousProject',
+    defaultMessage: 'Redirect to previous project #{projectId}',
   },
   commentPlaceholder: {
     id: 'project.tasks.action.comment.input.placeholder',

@@ -1,4 +1,9 @@
-import { compareTaskId, compareLastUpdate, compareHistoryLastUpdate } from '../sorting';
+import {
+  compareTaskId,
+  compareLastUpdate,
+  compareHistoryLastUpdate,
+  compareByPropertyDescending,
+} from '../sorting';
 
 it('test sorting with compareTaskId', () => {
   let arr = [
@@ -45,4 +50,27 @@ it('test sorting with compareLastUpdate', () => {
     { properties: { actionDate: '2019-08-27T12:36:21.281426' } },
     { properties: { actionDate: '2019-08-27T12:35:21.281426' } },
   ]);
+});
+
+describe('compareByPropertyDescending', () => {
+  it('with value property', () => {
+    const data = [{ value: 1 }, { value: 51 }, { value: 100 }, { value: 21 }, { value: 12 }];
+    expect(data.sort((a, b) => compareByPropertyDescending(a, b, 'value'))).toEqual([
+      { value: 100 },
+      { value: 51 },
+      { value: 21 },
+      { value: 12 },
+      { value: 1 },
+    ]);
+  });
+  it('with count property', () => {
+    const data = [{ count: 1 }, { count: 1 }, { count: 102 }, { count: 21 }, { count: 12 }];
+    expect(data.sort((a, b) => compareByPropertyDescending(a, b, 'count'))).toEqual([
+      { count: 102 },
+      { count: 21 },
+      { count: 12 },
+      { count: 1 },
+      { count: 1 },
+    ]);
+  });
 });
