@@ -192,6 +192,15 @@ export default defineMessages({
     id: 'project.sidebar.show',
     defaultMessage: 'Show sidebar',
   },
+  lockTimeAboutToExpireTitle: {
+    id: 'project.sidebar.lockTimeAboutToExpire.title',
+    defaultMessage: 'Extend lock time for this task',
+  },
+  lockTimeAboutToExpireDescription: {
+    id: 'project.sidebar.lockTimeAboutToExpire.description',
+    defaultMessage:
+      'Your session of two hours is about to end. Please extend your time so that you can continue working on this task.',
+  },
   hideSidebar: {
     id: 'project.sidebar.hide',
     defaultMessage: 'Hide sidebar',
