@@ -357,7 +357,7 @@ export function EditTeam(props) {
           isTeamInviteOnly={team.inviteOnly}
         />
         <div className="h1"></div>
-        <MessageMembers teamId={team.teamId} />
+        <MessageMembers teamId={team.teamId} members={team.members} />
       </div>
     </div>
   );
