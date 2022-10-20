@@ -45,10 +45,15 @@ export function VisibilityBox({ visibility, extraClasses }: Object) {
   return <div className={`tc br1 f7 ttu ba ${borderColor} ${color} ${extraClasses}`}>{text}</div>;
 }
 
-export function InviteOnlyBox({ className }: Object) {
+export function JoinMethodBox(props) {
+  const teamJoinMethods = {
+    ANY: 'anyoneCanJoin',
+    BY_REQUEST: 'byRequest',
+    BY_INVITE: 'byInvite',
+  };
   return (
-    <div className={`tc br1 f7 ttu ba red b--red ${className}`}>
-      <FormattedMessage {...messages.inviteOnly} />
+    <div className={`tc br1 f7 ttu ba red b--red ${props.className}`}>
+      <FormattedMessage {...messages[teamJoinMethods[props.joinMethod]]} />
     </div>
   );
 }

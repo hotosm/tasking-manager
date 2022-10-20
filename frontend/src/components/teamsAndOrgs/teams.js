@@ -1,15 +1,17 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import ReactPlaceholder from 'react-placeholder';
-import { Form, Field } from 'react-final-form';
+import { Form, Field, useFormState } from 'react-final-form';
+import ReactTooltip from 'react-tooltip';
 
 import messages from './messages';
+import { InfoIcon } from '../svgIcons';
 import { useEditTeamAllowed } from '../../hooks/UsePermissions';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
-import { AddButton, ViewAllLink, Management, VisibilityBox, InviteOnlyBox } from './management';
-import { SwitchToggle, RadioField, OrganisationSelectInput } from '../formInputs';
+import { AddButton, ViewAllLink, Management, VisibilityBox, JoinMethodBox } from './management';
+import { RadioField, OrganisationSelectInput } from '../formInputs';
 import { Button, EditButton } from '../button';
 import { nCardPlaceholders } from './teamsPlaceholder';
 
@@ -129,7 +131,7 @@ export function TeamCard({ team }: Object) {
         <div className="pt3">
           <VisibilityBox visibility={team.visibility} extraClasses="pv1 ph2 dib" />
           <div className="pt2 h2">
-            {team.inviteOnly && <InviteOnlyBox className="pv1 ph2 dib" />}
+            <JoinMethodBox className="pv1 ph2 dib" joinMethod={team.joinMethod} />
           </div>
         </div>
       </article>
@@ -138,8 +140,15 @@ export function TeamCard({ team }: Object) {
 }
 
 export function TeamInformation(props) {
+  const intl = useIntl();
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
+  const formState = useFormState();
+  const joinMethods = [
+    { value: 'ANY', descriptionId: 'anyoneCanJoin' },
+    { value: 'BY_REQUEST', descriptionId: 'byRequest' },
+    { value: 'BY_INVITE', descriptionId: 'byInvite' },
+  ];
 
   return (
     <>
@@ -163,38 +172,43 @@ export function TeamInformation(props) {
       </div>
       <div className="cf pt1">
         <label className={labelClasses}>
-          <FormattedMessage {...messages.inviteOnly} />
+          <FormattedMessage {...messages.joinMethod} />
         </label>
-        <Field name="inviteOnly" className={fieldClasses}>
-          {(props) => (
-            <div className="fl">
-              <SwitchToggle
-                isChecked={props.input.value}
-                onChange={props.input.onChange}
-                label={<FormattedMessage {...messages.inviteOnlyDescription} />}
-                labelPosition="right"
-              />
-            </div>
-          )}
-        </Field>
+        {joinMethods.map((method) => (
+          <div className="pv2">
+            <RadioField name="joinMethod" value={method.value} />
+            <span className="f5">
+              <FormattedMessage {...messages[method.descriptionId]} />
+            </span>
+            <InfoIcon
+              width={12}
+              height={12}
+              className="blue-grey v-mid pb1 ml2"
+              data-tip={intl.formatMessage(messages[`${method.descriptionId}Description`])}
+            />
+            <ReactTooltip place="bottom" className="mw6" effect="solid" />
+          </div>
+        ))}
       </div>
-      <div className="cf pt1">
-        <label className={labelClasses}>
-          <FormattedMessage {...messages.visibility} />
-        </label>
-        <div className="pv2">
-          <RadioField name="visibility" value="PUBLIC" />
-          <span className="fw8 f5">
-            <FormattedMessage {...messages.public} />
-          </span>
+      {formState.values.joinMethod === 'BY_INVITE' ? (
+        <div className="cf pt1">
+          <label className={labelClasses}>
+            <FormattedMessage {...messages.visibility} />
+          </label>
+          <div className="pv2">
+            <RadioField name="visibility" value="PUBLIC" />
+            <span className=" f5">
+              <FormattedMessage {...messages.public} />
+            </span>
+          </div>
+          <div className="pv2">
+            <RadioField name="visibility" value="PRIVATE" />
+            <span className="f5">
+              <FormattedMessage {...messages.private} />
+            </span>
+          </div>
         </div>
-        <div className="pv2">
-          <RadioField name="visibility" value="PRIVATE" />
-          <span className="fw8 f5">
-            <FormattedMessage {...messages.private} />
-          </span>
-        </div>
-      </div>
+      ) : null}
     </>
   );
 }
@@ -204,6 +218,9 @@ export function TeamForm(props) {
     <Form
       onSubmit={(values) => props.updateTeam(values)}
       initialValues={props.team}
+      mutators={{
+        setValue: [],
+      }}
       render={({
         handleSubmit,
         dirty,
@@ -222,7 +239,7 @@ export function TeamForm(props) {
               </h3>
               <form id="team-form" onSubmit={handleSubmit}>
                 <fieldset className="bn pa0" disabled={submitting}>
-                  <TeamInformation />
+                  <TeamInformation joinMethod={props.team.joinMethod} />
                 </fieldset>
               </form>
             </div>
@@ -277,7 +294,7 @@ export function TeamSideBar({ team, members, managers, requestedToJoin }: Object
               <FormattedMessage {...messages.editTeam} />
             </EditButton>
           )}
-          {team.inviteOnly && <InviteOnlyBox className="pv2 ph3 dib mh1 mv1" />}
+          <JoinMethodBox className="pv2 ph3 mh1 mv1 dib" joinMethod={team.joinMethod} />
           <VisibilityBox visibility={team.visibility} extraClasses="pv2 ph3 mh1 mv1 dib" />
         </div>
       </div>

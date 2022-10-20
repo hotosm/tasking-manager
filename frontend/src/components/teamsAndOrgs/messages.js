@@ -369,6 +369,10 @@ export default defineMessages({
     id: 'management.fields.invite_only',
     defaultMessage: 'Invite only',
   },
+  joinMethod: {
+    id: 'management.fields.join_method',
+    defaultMessage: 'Join method',
+  },
   visibility: {
     id: 'management.fields.visibility',
     defaultMessage: 'Visibility',
@@ -420,6 +424,31 @@ export default defineMessages({
   noLicenses: {
     id: 'management.no_licenses',
     defaultMessage: 'There are no licenses yet.',
+  },
+  anyoneCanJoin: {
+    id: 'management.teams.join_method.any',
+    defaultMessage: 'Anyone can join',
+  },
+  anyoneCanJoinDescription: {
+    id: 'management.teams.join_method.any.description',
+    defaultMessage: 'This team is open to everyone.',
+  },
+  byRequest: {
+    id: 'management.teams.join_method.byRequest',
+    defaultMessage: 'By request',
+  },
+  byRequestDescription: {
+    id: 'management.teams.join_method.by_request.description',
+    defaultMessage:
+      'To join this team, users must send a join request, which must be approved by team managers.',
+  },
+  byInvite: {
+    id: 'management.teams.join_method.byInvite',
+    defaultMessage: 'By invite',
+  },
+  byInviteDescription: {
+    id: 'management.teams.join_method.by_invite.description',
+    defaultMessage: 'Users can only join this team if managers invite them.',
   },
   public: {
     id: 'management.teams.visibility.public',

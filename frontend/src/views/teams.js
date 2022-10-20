@@ -84,7 +84,7 @@ export function ListTeams({ managementView = false }: Object) {
 
 const joinTeamRequest = (team_id, username, role, token) => {
   return pushToLocalJSONAPI(
-    `teams/${team_id}/actions/join/`,
+    `teams/${team_id}/actions/add/`,
     JSON.stringify({ username: username, role: role }),
     token,
     'POST',
@@ -138,6 +138,9 @@ export function CreateTeam() {
 
   const createTeam = (payload) => {
     delete payload['organisation'];
+    if (payload.joinMethod !== 'BY_INVITE') {
+      payload.visibility = 'PUBLIC';
+    }
     pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST').then((result) => {
       managers
         .filter((user) => user.username !== userDetails.username)
@@ -287,6 +290,9 @@ export function EditTeam(props) {
   };
 
   const updateTeam = (payload) => {
+    if (payload.joinMethod !== 'BY_INVITE') {
+      payload.visibility = 'PUBLIC';
+    }
     pushToLocalJSONAPI(`teams/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
     forceUpdate();
   };
@@ -317,7 +323,7 @@ export function EditTeam(props) {
           team={{
             name: team.name,
             description: team.description,
-            inviteOnly: team.inviteOnly,
+            joinMethod: team.joinMethod,
             visibility: team.visibility,
             organisation_id: team.organisation_id,
           }}
@@ -354,7 +360,7 @@ export function EditTeam(props) {
           updateRequests={setRequests}
           managers={managers}
           updateTeam={updateTeam}
-          isTeamInviteOnly={team.inviteOnly}
+          joinMethod={team.joinMethod}
         />
         <div className="h1"></div>
         <MessageMembers teamId={team.teamId} members={team.members} />
@@ -438,7 +444,11 @@ export function TeamDetail(props) {
           </div>
         </div>
         <div className="fixed bottom-0 cf bg-white h3 w-100">
-          <div className="w-80-ns w-60-m w-50 h-100 fl tr">
+          <div
+            className={`${
+              team.joinMethod === 'BY_INVITE' ? 'w-100-ns' : 'w-80-ns'
+            } w-60-m w-50 h-100 fl tr`}
+          >
             <Link to={'/contributions/teams'}>
               <CustomButton className="bg-white mr5 pr2 h-100 bn bg-white blue-dark">
                 <FormattedMessage {...messages.myTeams} />
@@ -456,7 +466,7 @@ export function TeamDetail(props) {
                   {...messages[isMember === 'requested' ? 'cancelRequest' : 'leaveTeam']}
                 />
               </CustomButton>
-            ) : (
+            ) : team.joinMethod !== 'BY_INVITE' ? (
               <CustomButton
                 className="w-100 h-100 bg-red white"
                 disabledClassName="bg-red o-50 white w-100 h-100"
@@ -464,7 +474,7 @@ export function TeamDetail(props) {
               >
                 <FormattedMessage {...messages.joinTeam} />
               </CustomButton>
-            )}
+            ) : null}
           </div>
         </div>
       </>
