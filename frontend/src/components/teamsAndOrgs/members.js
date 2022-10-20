@@ -163,13 +163,12 @@ export function JoinRequests({
   updateRequests,
   managers,
   updateTeam,
-  isTeamInviteOnly,
+  joinMethod,
 }: Object) {
   const token = useSelector((state) => state.auth.token);
   const { username: loggedInUsername } = useSelector((state) => state.auth.userDetails);
-
   const showJoinRequestSwitch =
-    isTeamInviteOnly &&
+    joinMethod === 'BY_REQUEST' &&
     managers?.filter(
       (manager) => manager.username === loggedInUsername && manager.function === 'MANAGER',
     ).length > 0;
