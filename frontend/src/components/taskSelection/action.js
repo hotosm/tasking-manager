@@ -33,10 +33,21 @@ import { MultipleTaskHistoriesAccordion } from './multipleTaskHistories';
 import { ResourcesTab } from './resourcesTab';
 import { ActionTabsNav } from './actionTabsNav';
 import { LockedTaskModalContent } from './lockedTasks';
+import { SessionAboutToExpire, SessionExpired } from './extendSession';
 const Editor = React.lazy(() => import('../editor'));
 const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 
-export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
+const MINUTES_BEFORE_DIALOG = 5;
+
+export function TaskMapAction({
+  project,
+  projectIsReady,
+  tasks,
+  activeTasks,
+  getTasks,
+  action,
+  editor,
+}) {
   const location = useLocation();
   useSetProjectPageTitleTag(project);
   const userDetails = useSelector((state) => state.auth.userDetails);
@@ -65,7 +76,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [historyTabChecked, setHistoryTabChecked] = useState(false);
   const [multipleTasksInfo, setMultipleTasksInfo] = useState({});
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
-  const [showLockTimeExpiryDialog, setShowLockTimeExpiryDialog] = useState(false);
+  const [showSessionExpiringDialog, setShowSessionExpiringDialog] = useState(false);
+  const [showSessionExpiredDialog, setSessionTimeExpiredDialog] = useState(false);
   const intl = useIntl();
 
   const activeTask = activeTasks && activeTasks[0];
@@ -104,11 +116,16 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   };
 
   useEffect(() => {
-    // set state to show dialog 5 minutes before the time expires
     const tempTimer = new Date(activeTask.lastUpdated);
     tempTimer.setSeconds(tempTimer.getSeconds() + activeTask.autoUnlockSeconds);
-    const milliDifference = new Date(tempTimer) - Date.now() - 5 * 60 * 1000;
-    setTimeout(() => setShowLockTimeExpiryDialog(true), milliDifference);
+    const milliDifferenceForSessionExpire = new Date(tempTimer) - Date.now();
+    const milliDifferenceForAboutToSessionExpire =
+      milliDifferenceForSessionExpire - MINUTES_BEFORE_DIALOG * 60 * 1000;
+    setTimeout(() => setShowSessionExpiringDialog(true), milliDifferenceForAboutToSessionExpire);
+    setTimeout(() => {
+      setShowSessionExpiringDialog(false);
+      setSessionTimeExpiredDialog(true);
+    }, milliDifferenceForSessionExpire);
   }, [activeTask.autoUnlockSeconds, activeTask.lastUpdated]);
 
   useEffect(() => {
@@ -119,7 +136,9 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
           ? [userDetails.defaultEditor]
           : project.mappingEditors;
       } else {
-        editorToUse = project.validationEditors.includes(userDetails.defaultEditor)
+        editorToUse = project.validationLockTimeExpiredDialogEditors.includes(
+          userDetails.defaultEditor,
+        )
           ? [userDetails.defaultEditor]
           : project.validationEditors;
       }
@@ -452,46 +471,23 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
           {(close) => <LockedTaskModalContent project={project} error="JOSM" close={close} />}
         </Popup>
       )}
-      {showLockTimeExpiryDialog && (
-        <LockTimeExpiryDialog
-          setShowLockTimeExpiryDialog={setShowLockTimeExpiryDialog}
-          projectId={project.projectId}
-          token={token}
-        />
-      )}
+      <SessionAboutToExpire
+        showSessionExpiringDialog={showSessionExpiringDialog}
+        setShowSessionExpiryDialog={setShowSessionExpiringDialog}
+        projectId={project.projectId}
+        tasksIds={tasksIds}
+        token={token}
+        getTasks={getTasks}
+      />
+      <SessionExpired
+        showSessionExpiredDialog={showSessionExpiredDialog}
+        setShowSessionExpiredDialog={setSessionTimeExpiredDialog}
+        projectId={project.projectId}
+        tasksIds={tasksIds}
+        token={token}
+        action={action}
+        getTasks={getTasks}
+      />
     </>
-  );
-}
-
-export function LockTimeExpiryDialog({ setShowLockTimeExpiryDialog, projectId, token }) {
-  const handleTimeExtend = () => {
-    // TODO - Implement API endpoint to extend lock time
-  };
-
-  return (
-    <Popup
-      modal
-      open
-      closeOnEscape={true}
-      closeOnDocumentClick={true}
-      onClose={() => setShowLockTimeExpiryDialog(false)}
-    >
-      {(close) => (
-        <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
-          <h3 className="barlow-condensed f3 fw6 mv0">
-            <FormattedMessage {...messages.lockTimeAboutToExpireTitle} />
-          </h3>
-          <div className="mv4 lh-title">
-            <FormattedMessage {...messages.lockTimeAboutToExpireDescription} />
-          </div>
-          <div className="flex justify-end">
-            <Button onClick={() => setShowLockTimeExpiryDialog(false)}>Close</Button>
-            <Button className="bg-red white ml3" onClick={handleTimeExtend}>
-              Extend time
-            </Button>
-          </div>
-        </div>
-      )}
-    </Popup>
   );
 }
