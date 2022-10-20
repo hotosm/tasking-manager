@@ -1,10 +1,14 @@
 from unittest.mock import patch
 
-from backend.models.postgis.statuses import TeamMemberFunctions, TeamRoles
+from backend.models.postgis.statuses import (
+    TeamJoinMethod,
+    TeamMemberFunctions,
+    TeamRoles,
+)
 from backend.services.team_service import (
     TeamService,
-    TeamJoinNotAllowed,
     MessageService,
+    TeamServiceError,
 )
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
@@ -18,16 +22,19 @@ from tests.backend.helpers.test_helpers import (
 
 
 class TestTeamService(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_team = create_canned_team()
+
     def test_check_team_membership_returns_true_if_user_member_of_team_with_allowed_role(
         self,
     ):
         # Arrange
         test_project, test_user = create_canned_project()
-        test_team = create_canned_team()
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
-        assign_team_to_project(test_project, test_team, allowed_roles[0])
+        assign_team_to_project(test_project, self.test_team, allowed_roles[0])
         add_user_to_team(
-            test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=True
+            self.test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=True
         )
         # Act
         is_team_member = TeamService.check_team_membership(
@@ -41,9 +48,8 @@ class TestTeamService(BaseTestCase):
     ):
         # Arrange
         test_project, test_user = create_canned_project()
-        test_team = create_canned_team()
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
-        assign_team_to_project(test_project, test_team, TeamRoles.MAPPER.value)
+        assign_team_to_project(test_project, self.test_team, TeamRoles.MAPPER.value)
         # Act
         is_team_member = TeamService.check_team_membership(
             test_project.id, allowed_roles, test_user.id
@@ -56,10 +62,9 @@ class TestTeamService(BaseTestCase):
     ):
         # Arrange
         test_project, test_user = create_canned_project()
-        test_team = create_canned_team()
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
         add_user_to_team(
-            test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=True
+            self.test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=True
         )
         # Act
         is_team_member = TeamService.check_team_membership(
@@ -71,12 +76,11 @@ class TestTeamService(BaseTestCase):
     def test_check_team_membership_returns_false_if_user_not_active_team_member(self):
         # Arrange
         test_project, test_user = create_canned_project()
-        test_team = create_canned_team()
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
         add_user_to_team(
-            test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=False
+            self.test_team, test_user, TeamMemberFunctions.MEMBER.value, is_active=False
         )
-        assign_team_to_project(test_project, test_team, TeamRoles.MAPPER.value)
+        assign_team_to_project(test_project, self.test_team, TeamRoles.MAPPER.value)
         # Act
         is_team_member = TeamService.check_team_membership(
             test_project.id, allowed_roles, test_user.id
@@ -87,8 +91,7 @@ class TestTeamService(BaseTestCase):
     def test_get_project_teams_as_dto(self):
         # Arrange
         test_project, _test_user = create_canned_project()
-        test_team = create_canned_team()
-        assign_team_to_project(test_project, test_team, TeamRoles.MAPPER.value)
+        assign_team_to_project(test_project, self.test_team, TeamRoles.MAPPER.value)
         # Act
         teams_dto = TeamService.get_project_teams_as_dto(test_project.id)
         # Assert
@@ -96,53 +99,50 @@ class TestTeamService(BaseTestCase):
         self.assertNotEqual(len(teams_dto["teams"]), 0)
 
     @patch.object(TeamService, "is_user_team_member")
-    def test_join_team_raises_error_if_user_already_team_member(
+    def test_request_to_join_team_raises_error_if_user_already_team_member(
         self, mock_is_team_member
     ):
         # Arrange
-        test_team = create_canned_team()
         test_user = create_canned_user()
-        add_user_to_team(test_team, test_user, TeamMemberFunctions.MEMBER.value, True)
+        add_user_to_team(
+            self.test_team, test_user, TeamMemberFunctions.MEMBER.value, True
+        )
         mock_is_team_member.return_value = True
         # Act/Assert
-        with self.assertRaises(TeamJoinNotAllowed):
-            TeamService.join_team(
-                test_team.id, test_user.id, test_user.username, "MEMBER"
-            )
+        with self.assertRaises(TeamServiceError):
+            TeamService.request_to_join_team(self.test_team.id, test_user.id)
 
     @patch.object(TeamService, "is_user_team_member")
     @patch.object(MessageService, "_push_messages")
-    def test_join_team_sends_notification_if_team_is_invite_only_and_manager_has_allowed_notification(
+    def test_request_to_join_team_sends_notification_if_team_is_by_request_and_manager_has_allowed_notification(
         self, mock_send_notification, mock_is_team_member
     ):
         # Arrange
-        test_team = create_canned_team()
-        test_team.invite_only = True
+        self.test_team.join_method = TeamJoinMethod.BY_REQUEST.value
         test_user = create_canned_user()
         mock_is_team_member.return_value = False
         test_manager = return_canned_user("test manager", 1234)
-        test_manager = add_user_to_team(test_team, test_manager, 1, True)
+        test_manager = add_user_to_team(self.test_team, test_manager, 1, True)
         test_manager.join_request_notifications = True
 
         # Act
-        TeamService.join_team(test_team.id, test_user.id, test_user.username, "MEMBER")
+        TeamService.request_to_join_team(self.test_team.id, test_user.id)
         # Assert
         mock_send_notification.assert_called()
 
     @patch.object(TeamService, "is_user_team_member")
     @patch.object(MessageService, "_push_messages")
-    def test_join_team_doesnt_send_notification_if_manager_has_disallowed_notification(
+    def test_request_to_join_team_doesnt_send_notification_if_manager_has_disallowed_notification(
         self, mock_send_notification, mock_is_team_member
     ):
         # Arrange
-        test_team = create_canned_team()
-        test_team.invite_only = True
+        self.test_team.join_method = TeamJoinMethod.BY_REQUEST.value
         test_user = create_canned_user()
         mock_is_team_member.return_value = False
         test_manager = return_canned_user("test manager", 1234)
-        test_manager = add_user_to_team(test_team, test_manager, 1, True)
+        test_manager = add_user_to_team(self.test_team, test_manager, 1, True)
         test_manager.join_request_notifications = False
         # Act
-        TeamService.join_team(test_team.id, test_user.id, test_user.username, "MEMBER")
+        TeamService.request_to_join_team(self.test_team.id, test_user.id)
         # Assert
         mock_send_notification.assert_not_called()
