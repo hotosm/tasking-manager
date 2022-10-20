@@ -628,6 +628,14 @@ export default defineMessages({
     id: 'project.tasks.history.autounlockedvalidation',
     defaultMessage: 'automatically unlocked for validation',
   },
+  taskHistoryExtendedForMapping: {
+    id: 'project.tasks.history.extendedForMapping',
+    defaultMessage: 'extended the lock session for mapping',
+  },
+  taskHistoryExtendedForValidation: {
+    id: 'project.tasks.history.extendedForValidation',
+    defaultMessage: 'extended the lock session for validation',
+  },
   taskHistoryBadImagery: {
     id: 'project.tasks.history.badimagery',
     defaultMessage: 'marked as unavailable',
