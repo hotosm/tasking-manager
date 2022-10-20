@@ -478,7 +478,7 @@ def add_api_endpoints(app):
     )
     api.add_resource(
         TasksQueriesOwnInvalidatedAPI,
-        format_url("projects/<int:project_id>/tasks/queries/own/invalidated/"),
+        format_url("projects/<string:username>/tasks/queries/own/invalidated/"),
     )
 
     # Tasks actions endoints
