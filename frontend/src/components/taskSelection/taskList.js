@@ -5,13 +5,13 @@ import { useQueryParam, NumberParam, StringParam } from 'use-query-params';
 import ReactPlaceholder from 'react-placeholder';
 import bbox from '@turf/bbox';
 import { useCopyClipboard } from '@lokibai/react-use-copy-clipboard';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, FormattedRelativeTime } from 'react-intl';
 
 import messages from './messages';
-import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import { TaskActivity } from './taskActivity';
 import { compareTaskId, compareLastUpdate } from '../../utils/sorting';
 import { getItem, setItem } from '../../utils/safe_storage';
+import { selectUnit } from '../../utils/selectUnit';
 import { TASK_COLOURS } from '../../config';
 import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon, InternalLinkIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
@@ -59,6 +59,7 @@ function TaskItem({
 }: Object) {
   const [isCopied, setCopied] = useCopyClipboard();
   const location = useLocation();
+  const { value, unit } = selectUnit(new Date(data.actionDate));
 
   return (
     <div
@@ -74,18 +75,24 @@ function TaskItem({
           <span className="pl3 b">
             <FormattedMessage {...messages.taskId} values={{ id: data.taskId }} />
           </span>
-          {data.actionDate && (
-            <div title={data.actionDate} className="dn di-l">
-              <span className="ph2 blue-grey">&#183;</span>
-              <span className="blue-grey">
-                <FormattedMessage
-                  {...messages.taskLastUpdate}
-                  values={{ user: <span className="b blue-grey">{data.actionBy}</span> }}
-                />{' '}
-                <RelativeTimeWithUnit date={data.actionDate} />
-              </span>
-            </div>
-          )}
+          <FormattedRelativeTime value={value} unit={unit}>
+            {(formattedTime) => (
+              <>
+                {data.actionDate && (
+                  <div title={`${data.actionBy}, ${formattedTime}`} className="dn di-l">
+                    <span className="ph2 blue-grey">&#183;</span>
+                    <span className="blue-grey">
+                      <FormattedMessage
+                        {...messages.taskLastUpdate}
+                        values={{ user: <span className="b blue-grey">{data.actionBy}</span> }}
+                      />{' '}
+                      {formattedTime}
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
+          </FormattedRelativeTime>
         </div>
         <div className="w-30-l w-60 fl blue-grey dib truncate">
           <TaskStatus status={data.taskStatus} />

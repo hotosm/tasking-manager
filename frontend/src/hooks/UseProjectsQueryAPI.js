@@ -9,6 +9,7 @@ import {
 } from 'use-query-params';
 import { stringify as stringifyUQP } from 'query-string';
 import axios from 'axios';
+import { subMonths, format } from 'date-fns';
 
 import { CommaArrayParam } from '../utils/CommaArrayParam';
 import { useThrottle } from '../hooks/UseThrottle';
@@ -23,7 +24,7 @@ const projectQueryAllSpecification = {
   location: StringParam,
   types: CommaArrayParam,
   exactTypes: BooleanParam,
-  interests: CommaArrayParam,
+  interests: NumberParam,
   page: NumberParam,
   text: StringParam,
   orderBy: StringParam,
@@ -34,6 +35,7 @@ const projectQueryAllSpecification = {
   mappedByMe: BooleanParam,
   status: StringParam,
   action: StringParam,
+  stale: BooleanParam,
   createdFrom: StringParam,
 };
 
@@ -64,6 +66,7 @@ const backendToQueryConversion = {
   mappedByMe: 'mappedByMe',
   status: 'projectStatuses',
   action: 'action',
+  stale: 'lastUpdatedTo',
   createdFrom: 'createdFrom',
 };
 
@@ -150,6 +153,10 @@ export const useProjectsQueryAPI = (
       // it's needed in order to query by action when the user goes to /explore page
       if (paramsRemapped.action === undefined && action) {
         paramsRemapped.action = action;
+      }
+
+      if (paramsRemapped.lastUpdatedTo) {
+        paramsRemapped.lastUpdatedTo = format(subMonths(Date.now(), 6), 'yyyy-MM-dd');
       }
 
       try {

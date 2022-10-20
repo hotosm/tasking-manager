@@ -255,7 +255,7 @@ export const ProjectDetail = (props) => {
       <h3 className={`${h2Classes} mv0 pv4 bg-tan`}>
         <FormattedMessage {...messages.questionsAndComments} />
       </h3>
-      <QuestionsAndComments projectId={props.project.projectId} />
+      <QuestionsAndComments projectId={props.project.projectId} contributors={contributors} />
 
       <a href="#contributions" name="contributions" style={{ visibility: 'hidden' }}>
         <FormattedMessage {...messages.contributors} />

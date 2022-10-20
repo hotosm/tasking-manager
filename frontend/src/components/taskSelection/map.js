@@ -83,9 +83,9 @@ export const TasksMap = ({
 
   useLayoutEffect(() => {
     const onSelectTaskClick = (e) => {
-      const { actionBy, taskStatus } = e.features[0].properties;
+      const { mappedBy, taskStatus } = e.features[0].properties;
       const task = e.features && e.features[0].properties;
-      if (!(actionBy === authDetails.username && taskStatus === 'MAPPED')) {
+      if (!(mappedBy === authDetails.id && taskStatus === 'MAPPED')) {
         selectTask && selectTask(task.taskId, task.taskStatus);
       }
     };
@@ -370,7 +370,7 @@ export const TasksMap = ({
       map.on('mousemove', 'tasks-fill', function (e) {
         // To now allow validators to select tasks that they mapped
         if (
-          e.features[0].properties.actionBy === authDetails.username &&
+          e.features[0].properties.mappedBy === authDetails.id &&
           e.features[0].properties.taskStatus === 'MAPPED'
         ) {
           popup.addTo(map);

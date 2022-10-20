@@ -78,9 +78,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   );
 
   const contributors =
-    taskHistory && taskHistory.taskHistory
-      ? getTaskContributors(taskHistory.taskHistory, userDetails.username)
-      : [];
+    taskHistory?.taskHistory && getTaskContributors(taskHistory.taskHistory, userDetails.username);
 
   const readTaskComments = useReadTaskComments(taskHistory);
   const disableBadImagery = useDisableBadImagery(taskHistory);

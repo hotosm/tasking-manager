@@ -399,17 +399,12 @@ a[href="https://www.mapbox.com/map-feedback/"]
   }
 }
 
-.comment-textarea {
-  box-sizing: border-box;
-
-  &:focus-within {
-    outline: -webkit-focus-ring-color auto 1px;
-
-    .textareaDetail {
-      border-bottom-color: transparent;
-    }
-  }
+.textareaDetail {
+  border-radius: 0px 0px 3px 3px;
+  border-width: 0;
+  box-shadow: 0 1px 0 1px #d0d7de, 0 0 0 #d0d7de, 0 1px 1px #d0d7de;
 }
+
 
 .sticky-top {
   position: sticky !important;
@@ -468,4 +463,13 @@ a[href="https://www.mapbox.com/map-feedback/"]
 
 .shadow-3 {
   box-shadow: 0px 7px 64px rgba(0, 0, 0, 0.07);
+}
+
+.w-md-editor {
+  border-radius: 3px 3px 0px 0px !important;
+}
+
+.w-md-editor-toolbar li > button:hover,
+.w-md-editor-toolbar li > button:focus {
+  color: $red !important;
 }

@@ -256,9 +256,7 @@ export function TaskSelection({ project, type, loading }: Object) {
           setSelectedTasks([selection]);
           if (lockedTasks.tasks.includes(selection)) {
             setTaskAction(
-              lockedTasks.status === 'LOCKED_FOR_MAPPING'
-                ? 'resumeMapping'
-                : 'resumeValidation',
+              lockedTasks.status === 'LOCKED_FOR_MAPPING' ? 'resumeMapping' : 'resumeValidation',
             );
           } else {
             setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));

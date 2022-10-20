@@ -124,6 +124,14 @@ export default defineMessages({
     id: 'project.navFilters.locations',
     defaultMessage: 'Locations',
   },
+  interest: {
+    id: 'project.navFilters.interest',
+    defaultMessage: 'Interest',
+  },
+  interests: {
+    id: 'project.navFilters.interests',
+    defaultMessage: 'Interests',
+  },
   errorLoadingTheXForY: {
     id: 'project.navFilters.error',
     defaultMessage: 'Error loading the {xWord} for {yWord}',
@@ -159,6 +167,10 @@ export default defineMessages({
   active: {
     id: 'project.nav.active',
     defaultMessage: 'Active',
+  },
+  stale: {
+    id: 'project.nav.stale',
+    defaultMessage: 'Stale',
   },
   managed: {
     id: 'project.nav.managed',

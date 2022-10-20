@@ -401,8 +401,8 @@ const TransferProject = ({ projectId, orgId }: Object) => {
   const handleSelect = (value) => {
     setUsername(value);
   };
-  const { username: loggedInUsername, role: loggedInUserRole } = useSelector((state) =>
-    state.auth.userDetails,
+  const { username: loggedInUsername, role: loggedInUserRole } = useSelector(
+    (state) => state.auth.userDetails,
   );
   const hasAccess =
     managers?.includes(loggedInUsername) ||
