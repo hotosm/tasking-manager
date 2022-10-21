@@ -92,7 +92,7 @@ const joinTeamRequest = (team_id, username, role, token) => {
 };
 
 const leaveTeamRequest = (team_id, username, role, token) => {
-  pushToLocalJSONAPI(
+  return pushToLocalJSONAPI(
     `teams/${team_id}/actions/leave/`,
     JSON.stringify({ username: username, role: role }),
     token,
@@ -120,18 +120,22 @@ export function CreateTeam() {
     );
     setManagers(managers.concat(newValues));
   };
+
   const removeManagers = (username) => {
     setManagers(managers.filter((i) => i.username !== username));
   };
+
   const addMembers = (values) => {
     const newValues = values.filter(
       (newUser) => !members.map((i) => i.username).includes(newUser.username),
     );
     setMembers(members.concat(newValues));
   };
+
   const removeMembers = (username) => {
     setMembers(members.filter((i) => i.username !== username));
   };
+
   const createTeam = (payload) => {
     delete payload['organisation'];
     pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST').then((result) => {
@@ -243,47 +247,43 @@ export function EditTeam(props) {
     const newValues = values
       .filter((newUser) => !managers.map((i) => i.username).includes(newUser.username))
       .map((user) => formatMemberObject(user, true));
-    setManagers(managers.concat(newValues));
+    setManagers((prevManagers) => prevManagers.concat(newValues));
   };
+
   const removeManagers = (username) => {
-    setManagers(managers.filter((i) => i.username !== username));
+    setManagers((prevManagers) => prevManagers.filter((i) => i.username !== username));
   };
+
   const addMembers = (values) => {
     const newValues = values
       .filter((newUser) => !members.map((i) => i.username).includes(newUser.username))
       .map((user) => formatMemberObject(user));
-    setMembers(members.concat(newValues));
+    setMembers((prevMembers) => prevMembers.concat(newValues));
   };
+
   const removeMembers = (username) => {
-    setMembers(members.filter((i) => i.username !== username));
+    setMembers((prevMembers) => prevMembers.filter((i) => i.username !== username));
   };
+
   const updateManagers = () => {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, managers, true);
-    usersAdded.forEach((user) =>
-      joinTeamRequest(team.teamId, user, 'MANAGER', token).catch((err) => {
-        setManagerJoinTeamError(err.message);
-        removeManagers(user);
-      }),
-    );
-    usersRemoved.forEach((user) => leaveTeamRequest(team.teamId, user, 'MANAGER', token));
-    team.members = team.members
-      .filter((user) => user.function === 'MEMBER' || user.active === false)
-      .concat(managers);
-    forceUpdate();
+    Promise.all([
+      [...usersAdded.map((user) => joinTeamRequest(team.teamId, user, 'MANAGER', token))],
+      [...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, 'MANAGER', token))],
+    ]).then(forceUpdate);
   };
+
   const updateMembers = () => {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, members);
-    usersAdded.forEach((user) =>
-      joinTeamRequest(team.teamId, user, 'MEMBER', token).catch((err) => {
-        setMemberJoinTeamError(err.message);
-        removeMembers(user);
-      }),
-    );
-    usersRemoved.forEach((user) => leaveTeamRequest(team.teamId, user, 'MEMBER', token));
-    team.members = team.members
-      .filter((user) => user.function === 'MANAGER' || user.active === false)
-      .concat(members);
-    forceUpdate();
+    Promise.all([
+      ...usersAdded.map((user) =>
+        joinTeamRequest(team.teamId, user, 'MEMBER', token).catch((err) => {
+          setMemberJoinTeamError(err.message);
+          removeMembers(user);
+        }),
+      ),
+      ...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, 'MEMBER', token)),
+    ]).then(forceUpdate);
   };
 
   const updateTeam = (payload) => {
