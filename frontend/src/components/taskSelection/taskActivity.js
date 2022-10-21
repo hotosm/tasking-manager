@@ -270,6 +270,11 @@ export const TaskActivity = ({
   const [resetSuccess, setResetSuccess] = useState(false);
   const [commentPayload, setCommentPayload] = useState(null);
 
+  const uniqueContributors =
+    commentPayload &&
+    commentPayload.taskHistory &&
+    getTaskContributors(commentPayload.taskHistory, userDetails.username);
+
   const getHistory = useCallback(
     () =>
       fetchLocalJSONAPI(`projects/${project.projectId}/tasks/${taskId}/`, token)
@@ -351,11 +356,7 @@ export const TaskActivity = ({
         projectId={project.projectId}
         taskId={taskId}
         setCommentPayload={setCommentPayload}
-        contributors={
-          commentPayload && commentPayload.taskHistory
-            ? getTaskContributors(commentPayload.taskHistory, userDetails.username)
-            : []
-        }
+        contributors={uniqueContributors}
       />
     </div>
   );

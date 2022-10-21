@@ -41,16 +41,42 @@ export const MoreFiltersForm = (props) => {
     campaign: campaignInQuery,
     organisation: orgInQuery,
     location: countryInQuery,
+    interests: interestInQuery,
   } = formQuery;
   const [campaignAPIState] = useTagAPI([], 'campaigns');
   const [orgAPIState] = useTagAPI([], 'organisations');
   const [countriesAPIState] = useTagAPI([], 'countries', formatFilterCountriesData);
+  const [interestAPIState] = useTagAPI([], 'interests');
 
   const [mappingTypesInQuery, setMappingTypes] = useQueryParam('types', CommaArrayParam);
   const [exactTypes, setExactTypes] = useQueryParam('exactTypes', BooleanParam);
 
   const fieldsetStyle = 'w-100 bn';
   const titleStyle = 'w-100 db ttu fw5 blue-grey';
+
+  const extraFilters = [
+    {
+      fieldsetName: 'campaign',
+      selectedTag: campaignInQuery,
+      options: campaignAPIState,
+    },
+    {
+      fieldsetName: 'organisation',
+      selectedTag: orgInQuery,
+      options: orgAPIState,
+    },
+    {
+      fieldsetName: 'location',
+      selectedTag: countryInQuery,
+      options: countriesAPIState,
+    },
+    {
+      fieldsetName: 'interests',
+      selectedTag: interestInQuery,
+      options: interestAPIState,
+      payloadKey: 'id',
+    },
+  ];
 
   return (
     <form className="pt4" onChange={handleInputChange}>
@@ -76,36 +102,18 @@ export const MoreFiltersForm = (props) => {
           <></>
         )}
       </fieldset>
-
-      <ProjectFilterSelect
-        fieldsetName="campaign"
-        fieldsetStyle={fieldsetStyle}
-        titleStyle={titleStyle}
-        selectedTag={campaignInQuery}
-        options={campaignAPIState}
-        setQueryForChild={setFormQuery}
-        allQueryParamsForChild={formQuery}
-      />
-
-      <ProjectFilterSelect
-        fieldsetName="organisation"
-        fieldsetStyle={`${fieldsetStyle} mt3`}
-        titleStyle={titleStyle}
-        selectedTag={orgInQuery}
-        options={orgAPIState}
-        setQueryForChild={setFormQuery}
-        allQueryParamsForChild={formQuery}
-      />
-
-      <ProjectFilterSelect
-        fieldsetName="location"
-        fieldsetStyle={`${fieldsetStyle} mt3`}
-        titleStyle={titleStyle}
-        selectedTag={countryInQuery}
-        options={countriesAPIState}
-        setQueryForChild={setFormQuery}
-        allQueryParamsForChild={formQuery}
-      />
+      {extraFilters.map((filter) => (
+        <ProjectFilterSelect
+          fieldsetName={filter.fieldsetName}
+          selectedTag={filter.selectedTag}
+          options={filter.options}
+          payloadKey={filter.payloadKey}
+          fieldsetStyle={fieldsetStyle}
+          titleStyle={titleStyle}
+          setQueryForChild={setFormQuery}
+          allQueryParamsForChild={formQuery}
+        />
+      ))}
       <div className="tr w-100 mt3">
         <Link to="/explore">
           <Button className="bg-white blue-dark mr1 f6 pv2">

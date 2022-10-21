@@ -84,8 +84,8 @@ class TestAuthenticationService(BaseTestCase):
     ):
         # Arrange
         osm_response = get_canned_osm_user_details()
-        osm_response.find("user").attrib["id"] = 12345678
-        osm_response.find("user").attrib["display_name"] = "Thinkwhere Test2"
+        osm_response["user"]["id"] = 12345678
+        osm_response["user"]["display_name"] = "Thinkwhere Test2"
 
         # Act
         AuthenticationService.login_user(osm_response, None)

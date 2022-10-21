@@ -24,8 +24,16 @@ describe('TasksStats', () => {
     );
     expect(screen.getByText('From')).toBeInTheDocument();
     expect(screen.getByText('To')).toBeInTheDocument();
-    expect(screen.getByText('Campaign')).toBeInTheDocument();
-    expect(screen.getByText('Location')).toBeInTheDocument();
+    expect(
+      screen.getByRole('group', {
+        name: 'Campaign',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('group', {
+        name: 'Location',
+      }),
+    ).toBeInTheDocument();
     expect(screen.getByText('165')).toBeInTheDocument();
     expect(screen.getByText('Tasks mapped')).toBeInTheDocument();
     expect(screen.getByText('46')).toBeInTheDocument();

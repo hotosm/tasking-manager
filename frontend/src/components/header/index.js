@@ -277,7 +277,16 @@ class Header extends React.Component {
         <div className="mt3 pb1 pb2-ns ph2 dib w-100">
           <div className="cf fl pt1 dib">
             <Link to={'/'} className="link mv-1">
-              <img src={ORG_LOGO || logo} alt={`${ORG_NAME} logo`} className="h2 ml2 v-mid pb2" />
+              <img
+                src={ORG_LOGO || logo}
+                alt={`${ORG_NAME} logo`}
+                className="h2 ml2 v-mid pb2"
+                onError={({ currentTarget }) => {
+                  // fallback to HOT logo if ORG_LOGO is broken
+                  currentTarget.onerror = null;
+                  currentTarget.src = logo;
+                }}
+              />
               <span className="barlow-condensed f3 fw6 ml2 blue-dark">Tasking Manager</span>
             </Link>
           </div>

@@ -115,10 +115,7 @@ export function WelcomeCard() {
       <h3 className="f2 mt0 fw6">
         <FormattedMessage {...messages.welcomeTitle} />
       </h3>
-      <p>
-        <FormattedMessage {...messages.interestsLead} />
-        <UserInterestsForm />
-      </p>
+      <UserInterestsForm />
     </div>
   );
 }

@@ -363,7 +363,7 @@ export function EditTeam(props) {
           joinMethod={team.joinMethod}
         />
         <div className="h1"></div>
-        <MessageMembers teamId={team.teamId} />
+        <MessageMembers teamId={team.teamId} members={team.members} />
       </div>
     </div>
   );

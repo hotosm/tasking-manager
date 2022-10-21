@@ -77,7 +77,7 @@ and ask the person to check on the error.
 ## Some step by step instructions
 
 Assumptions:
-1. You have set all [environment variables](./setup-development.md#configuration) related to database, consumer key, and so forth.
+1. You have set all [environment variables](./setup-development.md#configuration) related to database, client authentication details, and so forth.
 2. You are in the `tasking-manager` base directory.
 3. You have activated your Python Virtual Environment ([instructions](./setup-development.md#build)).
 

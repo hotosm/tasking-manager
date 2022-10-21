@@ -93,12 +93,12 @@ export const NotificationsPage = (props) => {
   }
 
   return (
-    <div className="pt4-l pb5 ph5-l ph2 pt180 pull-center bg-tan">
+    <div className="pb5 ph6-l ph2 pt180 pull-center bg-washed-blue notifications-container">
       {
         props.children
         /* This is where the full notification body component is rendered using the router, as a child route. */
       }
-      <section className="cf">
+      <section>
         <InboxNav />
         <NotificationResults
           retryFn={forceUpdate}
@@ -106,11 +106,13 @@ export const NotificationsPage = (props) => {
           loading={loading}
           notifications={notifications}
         />
-        <Paginator
-          inboxQuery={inboxQuery}
-          notifications={notifications}
-          setInboxQuery={setInboxQuery}
-        />
+        <div className="flex justify-end mw8">
+          <Paginator
+            inboxQuery={inboxQuery}
+            notifications={notifications}
+            setInboxQuery={setInboxQuery}
+          />
+        </div>
       </section>
     </div>
   );

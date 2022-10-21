@@ -532,6 +532,8 @@
   "project.navFilters.organisations": "All Organizations",
   "project.navFilters.location": "Location",
   "project.navFilters.locations": "Locations",
+  "project.navFilters.interest": "Interest",
+  "project.navFilters.interests": "Interests",
   "project.navFilters.error": "Error loading the {xWord} for {yWord}",
   "project.nav.filters": "Filters",
   "project.nav.projects": "Projects",

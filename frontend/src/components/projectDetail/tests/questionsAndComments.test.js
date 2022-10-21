@@ -23,12 +23,12 @@ describe('test if QuestionsAndComments component', () => {
       </ReduxIntlProviders>,
     );
     const previewBtn = screen.getByRole('button', { name: /preview/i });
-    expect(screen.getAllByRole('button').length).toBe(3);
+    expect(screen.getAllByRole('button').length).toBe(10);
     expect(screen.getByRole('button', { name: /write/i })).toBeInTheDocument();
     expect(previewBtn).toBeInTheDocument();
     expect(screen.getByRole('textbox')).toBeInTheDocument();
     fireEvent.click(previewBtn);
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { hidden: true })).toBeInTheDocument();
     expect(screen.getByText(/nothing to preview/i)).toBeInTheDocument();
   });
 

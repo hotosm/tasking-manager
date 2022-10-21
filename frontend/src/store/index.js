@@ -10,7 +10,7 @@ import reducers from './reducers';
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['editor'],
+  blacklist: ['editor', 'orgBarVisibility'],
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers);

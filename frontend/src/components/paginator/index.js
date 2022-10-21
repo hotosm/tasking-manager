@@ -1,4 +1,5 @@
 import React from 'react';
+import './styles.scss';
 
 export function listPageOptions(page, lastPage) {
   let pageOptions = [1];
@@ -47,9 +48,10 @@ export function howManyPages(numberOfItems, pageSize) {
 }
 
 export const PageButton = (props) => {
-  const pagerStyle = `f5 br2 base-font button-reset justify-center pv1 ph2 ba ma1 border-box pointer`;
+  const pagerStyle = `f6 br1 base-font button-reset justify-center bn border-box shadow-3 pointer paginator-btn`;
   const currentStyle =
     props.label === props.activePage ? 'bg-blue-dark white' : 'bg-white blue-grey';
+
   if (props.label === '...') {
     return <span className="f5 blue-grey">...</span>;
   } else {
@@ -59,7 +61,7 @@ export const PageButton = (props) => {
         onClick={() => props.setPageFn && props.setPageFn(props.label)}
         className={`${currentStyle} ${pagerStyle}`}
       >
-        <span>{props.label}</span>
+        <span className="lh-copy">{props.label}</span>
       </button>
     );
   }
@@ -68,7 +70,7 @@ export const PageButton = (props) => {
 export function PaginatorLine({ activePage, lastPage, setPageFn, className }: Object) {
   const pageOptions = listPageOptions(activePage, lastPage);
   return (
-    <div className={className}>
+    <div className={`${className} paginator-btn-ctr`}>
       {pageOptions.map((item, n) => (
         <PageButton key={n} activePage={activePage} label={item} setPageFn={setPageFn} />
       ))}

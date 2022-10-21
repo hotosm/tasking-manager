@@ -16,17 +16,17 @@ function AuthorizedView(props) {
   const params = new URLSearchParams(props.location.search);
 
   useComponentWillMount(() => {
-    let verifier = params.get('oauth_verifier');
-    if (verifier !== null) {
-      window.opener.authComplete(verifier);
+    let authCode = params.get('code');
+    let state = params.get('state');
+    if (authCode !== null) {
+      window.opener.authComplete(authCode, state);
       window.close();
       return;
     }
     const username = params.get('username');
     const sessionToken = params.get('session_token');
     const osm_oauth_token = params.get('osm_oauth_token');
-    const osm_oauth_token_secret = params.get('osm_oauth_token_secret');
-    props.authenticateUser(username, sessionToken, osm_oauth_token, osm_oauth_token_secret);
+    props.authenticateUser(username, sessionToken, osm_oauth_token);
     setIsReadyToRedirect(true);
   });
 
@@ -44,8 +44,8 @@ let mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    authenticateUser: (username, token, osm_oauth_token, osm_oauth_token_secret) =>
-      dispatch(setAuthDetails(username, token, osm_oauth_token, osm_oauth_token_secret)),
+    authenticateUser: (username, token, osm_oauth_token) =>
+      dispatch(setAuthDetails(username, token, osm_oauth_token)),
   };
 };
 

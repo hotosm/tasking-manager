@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 
 class EnvironmentConfig:
-    """ Base class for configuration. """
+    """Base class for configuration."""
 
     """ Most settings can be defined through environment variables. """
 
@@ -119,14 +119,10 @@ class EnvironmentConfig:
     }
 
     # Connection to OSM authentification system
-    OSM_OAUTH_SETTINGS = {
-        "base_url": "{}/api/0.6/".format(OSM_SERVER_URL),
-        "consumer_key": os.getenv("TM_CONSUMER_KEY", None),
-        "consumer_secret": os.getenv("TM_CONSUMER_SECRET", None),
-        "request_token_url": "{}/oauth/request_token".format(OSM_SERVER_URL),
-        "access_token_url": "{}/oauth/access_token".format(OSM_SERVER_URL),
-        "authorize_url": "{}/oauth/authorize".format(OSM_SERVER_URL),
-    }
+    OAUTH_API_URL = "{}/api/0.6/".format(OSM_SERVER_URL)
+    OAUTH_CLIENT_ID = os.getenv("TM_CLIENT_ID", None)
+    OAUTH_CLIENT_SECRET = os.getenv("TM_CLIENT_SECRET", None)
+    OAUTH_SCOPE = os.getenv("TM_SCOPE", None)
 
     # Some more definitions (not overridable)
     SQLALCHEMY_ENGINE_OPTIONS = {

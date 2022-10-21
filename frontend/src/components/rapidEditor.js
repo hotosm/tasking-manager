@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as RapiD from 'RapiD/dist/iD.legacy';
 import 'RapiD/dist/RapiD.css';
 
-import { OSM_CONSUMER_KEY, OSM_CONSUMER_SECRET, OSM_SERVER_URL } from '../config';
+import { OSM_CLIENT_ID, OSM_CLIENT_SECRET, OSM_REDIRECT_URI, OSM_SERVER_URL } from '../config';
 
 export default function RapidEditor({
   setDisable,
@@ -95,11 +95,11 @@ export default function RapidEditor({
 
       let osm = RapiDContext.connection();
       const auth = {
-        urlroot: OSM_SERVER_URL,
-        oauth_consumer_key: OSM_CONSUMER_KEY,
-        oauth_secret: OSM_CONSUMER_SECRET,
-        oauth_token: session.osm_oauth_token,
-        oauth_token_secret: session.osm_oauth_token_secret,
+        url: OSM_SERVER_URL,
+        client_id: OSM_CLIENT_ID,
+        client_secret: OSM_CLIENT_SECRET,
+        redirect_uri: OSM_REDIRECT_URI,
+        access_token: session.osm_oauth_token,
       };
       osm.switch(auth);
 
