@@ -10,7 +10,7 @@ The most popular tool for teams to coordinate mapping on OpenStreetMap. With thi
 
 This is Free and Open Source Software. You are welcome to use the code and set up your own instance. The Tasking Manager has been initially designed and built by and for the [Humanitarian OpenStreetMap Team](https://www.hotosm.org/), and is nowadays used by many communities and organizations.
 
-## Get involved!
+## Get involved! 
 
 * Start by reading our [Code of conduct](./docs-old/code_of_conduct.md)
 * Get familiar with our [contributor guidelines](./docs/developers/contributing-guidelines.md) explaining the different ways in which you can support this project! We need your help!
