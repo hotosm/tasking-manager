@@ -144,11 +144,11 @@ export function TeamInformation(props) {
   const labelClasses = 'db pt3 pb2';
   const fieldClasses = 'blue-grey w-100 pv3 ph2 input-reset ba b--grey-light bg-transparent';
   const formState = useFormState();
-  const joinMethods = [
-    { value: 'ANY', descriptionId: 'anyoneCanJoin' },
-    { value: 'BY_REQUEST', descriptionId: 'byRequest' },
-    { value: 'BY_INVITE', descriptionId: 'byInvite' },
-  ];
+  const joinMethods = {
+    ANY: 'anyoneCanJoin',
+    BY_REQUEST: 'byRequest',
+    BY_INVITE: 'byInvite',
+  };
 
   return (
     <>
@@ -174,23 +174,23 @@ export function TeamInformation(props) {
         <label className={labelClasses}>
           <FormattedMessage {...messages.joinMethod} />
         </label>
-        {joinMethods.map((method) => (
+        {Object.keys(joinMethods).map((method) => (
           <div className="pv2">
-            <RadioField name="joinMethod" value={method.value} />
+            <RadioField name="joinMethod" value={method} />
             <span className="f5">
-              <FormattedMessage {...messages[method.descriptionId]} />
+              <FormattedMessage {...messages[joinMethods[method]]} />
             </span>
             <InfoIcon
               width={12}
               height={12}
               className="blue-grey v-mid pb1 ml2"
-              data-tip={intl.formatMessage(messages[`${method.descriptionId}Description`])}
+              data-tip={intl.formatMessage(messages[`${joinMethods[method]}Description`])}
             />
             <ReactTooltip place="bottom" className="mw6" effect="solid" />
           </div>
         ))}
       </div>
-      {formState.values.joinMethod === 'BY_INVITE' ? (
+      {formState.values.joinMethod === 'BY_INVITE' && (
         <div className="cf pt1">
           <label className={labelClasses}>
             <FormattedMessage {...messages.visibility} />
@@ -200,15 +200,28 @@ export function TeamInformation(props) {
             <span className=" f5">
               <FormattedMessage {...messages.public} />
             </span>
+            <InfoIcon
+              width={12}
+              height={12}
+              className="blue-grey v-mid pb1 ml2"
+              data-tip={intl.formatMessage(messages['publicDescription'])}
+            />
           </div>
           <div className="pv2">
             <RadioField name="visibility" value="PRIVATE" />
             <span className="f5">
               <FormattedMessage {...messages.private} />
             </span>
+            <InfoIcon
+              width={12}
+              height={12}
+              className="blue-grey v-mid pb1 ml2"
+              data-tip={intl.formatMessage(messages['privateDescription'])}
+            />
+            <ReactTooltip place="bottom" className="mw6" effect="solid" />
           </div>
         </div>
-      ) : null}
+      )}
     </>
   );
 }

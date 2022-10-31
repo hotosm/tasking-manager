@@ -446,7 +446,7 @@ export function TeamDetail(props) {
         <div className="fixed bottom-0 cf bg-white h3 w-100">
           <div
             className={`${
-              team.joinMethod === 'BY_INVITE' ? 'w-100-ns' : 'w-80-ns'
+              team.joinMethod === 'BY_INVITE' && !isMember ? 'w-100-ns' : 'w-80-ns'
             } w-60-m w-50 h-100 fl tr`}
           >
             <Link to={'/contributions/teams'}>
@@ -466,15 +466,17 @@ export function TeamDetail(props) {
                   {...messages[isMember === 'requested' ? 'cancelRequest' : 'leaveTeam']}
                 />
               </CustomButton>
-            ) : team.joinMethod !== 'BY_INVITE' ? (
-              <CustomButton
-                className="w-100 h-100 bg-red white"
-                disabledClassName="bg-red o-50 white w-100 h-100"
-                onClick={() => joinTeam()}
-              >
-                <FormattedMessage {...messages.joinTeam} />
-              </CustomButton>
-            ) : null}
+            ) : (
+              team.joinMethod !== 'BY_INVITE' && (
+                <CustomButton
+                  className="w-100 h-100 bg-red white"
+                  disabledClassName="bg-red o-50 white w-100 h-100"
+                  onClick={() => joinTeam()}
+                >
+                  <FormattedMessage {...messages.joinTeam} />
+                </CustomButton>
+              )
+            )}
           </div>
         </div>
       </>

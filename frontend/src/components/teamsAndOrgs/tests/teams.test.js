@@ -161,7 +161,7 @@ describe('TeamsManagement component', () => {
         teamId: 3,
         name: 'My Best Team',
         role: 'PROJECT_MANAGER',
-        joinMethod: "ANY",
+        joinMethod: 'ANY',
         members: [
           {
             username: 'ram',
