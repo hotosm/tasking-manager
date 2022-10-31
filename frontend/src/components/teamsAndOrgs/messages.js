@@ -365,10 +365,6 @@ export default defineMessages({
     id: 'management.fields.description',
     defaultMessage: 'Description',
   },
-  inviteOnly: {
-    id: 'management.fields.invite_only',
-    defaultMessage: 'Invite only',
-  },
   joinMethod: {
     id: 'management.fields.join_method',
     defaultMessage: 'Join method',
@@ -454,13 +450,17 @@ export default defineMessages({
     id: 'management.teams.visibility.public',
     defaultMessage: 'Public',
   },
+  publicDescription: {
+    id: 'management.teams.visibility.public.description',
+    defaultMessage: 'This team will be displayed on the team members profiles.',
+  },
   private: {
     id: 'management.teams.visibility.private',
     defaultMessage: 'Private',
   },
-  inviteOnlyDescription: {
-    id: 'management.teams.invite_only.description',
-    defaultMessage: "Managers need to approve a member's request to join.",
+  privateDescription: {
+    id: 'management.teams.visibility.private.description',
+    defaultMessage: 'This team will not be displayed on the team members profiles.',
   },
   newJoinRequestNotification: {
     id: 'management.teams.newJoinRequestNotification',
