@@ -288,7 +288,7 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
                           tasksIds={tasksIds}
                           showReadCommentsAlert={readTaskComments && !historyTabChecked}
                           disableBadImagery={
-                            userDetails.mappingLevel !== 'ADVANCED' && disableBadImagery
+                            userDetails.mappingLevel !== 'ADVANCED' || disableBadImagery
                           }
                           contributors={contributors}
                           historyTabSwitch={historyTabSwitch}
