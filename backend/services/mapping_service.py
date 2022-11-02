@@ -85,31 +85,34 @@ class MappingService:
         """
         task = MappingService.get_task(lock_task_dto.task_id, lock_task_dto.project_id)
 
-        if not task.is_mappable():
-            raise MappingServiceError(
-                "InvalidTaskState- Task in invalid state for mapping"
-            )
+        if task.locked_by != lock_task_dto.user_id:
+            if not task.is_mappable():
+                raise MappingServiceError(
+                    "InvalidTaskState- Task in invalid state for mapping"
+                )
 
-        user_can_map, error_reason = ProjectService.is_user_permitted_to_map(
-            lock_task_dto.project_id, lock_task_dto.user_id
-        )
-        if not user_can_map:
-            if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
-                raise UserLicenseError("User must accept license to map this task")
-            elif error_reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
-                raise MappingServiceError("UserNotAllowed- User not on allowed list")
-            elif error_reason == MappingNotAllowed.PROJECT_NOT_PUBLISHED:
-                raise MappingServiceError(
-                    "ProjectNotPublished- Project is not published"
-                )
-            elif error_reason == MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
-                raise MappingServiceError(
-                    "UserAlreadyHasTaskLocked- User already has task locked"
-                )
-            else:
-                raise MappingServiceError(
-                    f"{error_reason}- Mapping not allowed because: {error_reason}"
-                )
+            user_can_map, error_reason = ProjectService.is_user_permitted_to_map(
+                lock_task_dto.project_id, lock_task_dto.user_id
+            )
+            if not user_can_map:
+                if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
+                    raise UserLicenseError("User must accept license to map this task")
+                elif error_reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
+                    raise MappingServiceError(
+                        "UserNotAllowed- User not on allowed list"
+                    )
+                elif error_reason == MappingNotAllowed.PROJECT_NOT_PUBLISHED:
+                    raise MappingServiceError(
+                        "ProjectNotPublished- Project is not published"
+                    )
+                elif error_reason == MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
+                    raise MappingServiceError(
+                        "UserAlreadyHasTaskLocked- User already has task locked"
+                    )
+                else:
+                    raise MappingServiceError(
+                        f"{error_reason}- Mapping not allowed because: {error_reason}"
+                    )
 
         task.lock_task_for_mapping(lock_task_dto.user_id)
         return task.as_dto_with_instructions(lock_task_dto.preferred_locale)
