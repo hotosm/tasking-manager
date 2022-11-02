@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { navigate, useLocation } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
@@ -49,6 +49,8 @@ export function TaskMapAction({
   editor,
 }) {
   const location = useLocation();
+  const aboutToExpireTimeoutRef = useRef();
+  const expiredTimeoutRef = useRef();
   useSetProjectPageTitleTag(project);
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
@@ -121,11 +123,21 @@ export function TaskMapAction({
     const milliDifferenceForSessionExpire = new Date(tempTimer) - Date.now();
     const milliDifferenceForAboutToSessionExpire =
       milliDifferenceForSessionExpire - MINUTES_BEFORE_DIALOG * 60 * 1000;
-    setTimeout(() => setShowSessionExpiringDialog(true), milliDifferenceForAboutToSessionExpire);
-    setTimeout(() => {
+
+    aboutToExpireTimeoutRef.current = setTimeout(() => {
+      setSessionTimeExpiredDialog(false);
+      setShowSessionExpiringDialog(true);
+    }, milliDifferenceForAboutToSessionExpire);
+
+    expiredTimeoutRef.current = setTimeout(() => {
       setShowSessionExpiringDialog(false);
       setSessionTimeExpiredDialog(true);
     }, milliDifferenceForSessionExpire);
+
+    return () => {
+      clearTimeout(aboutToExpireTimeoutRef.current);
+      clearTimeout(expiredTimeoutRef.current);
+    };
   }, [activeTask.autoUnlockSeconds, activeTask.lastUpdated]);
 
   useEffect(() => {
@@ -478,6 +490,7 @@ export function TaskMapAction({
         tasksIds={tasksIds}
         token={token}
         getTasks={getTasks}
+        expiredTimeoutRef={expiredTimeoutRef}
       />
       <SessionExpired
         showSessionExpiredDialog={showSessionExpiredDialog}

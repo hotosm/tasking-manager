@@ -14,6 +14,7 @@ export function SessionAboutToExpire({
   token,
   tasksIds,
   getTasks,
+  expiredTimeoutRef,
 }) {
   const [isSessionExtended, setIsSessionExtended] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -27,9 +28,17 @@ export function SessionAboutToExpire({
     )
       .then(() => {
         setIsSessionExtended(true);
+        clearTimeout(expiredTimeoutRef.current);
+        setTimeout(handleClose, 6969);
         getTasks();
       })
       .catch(() => setIsError(true));
+  };
+
+  const handleClose = () => {
+    setShowSessionExpiryDialog(false);
+    setIsSessionExtended(false);
+    setIsError(false);
   };
 
   return (
@@ -38,7 +47,7 @@ export function SessionAboutToExpire({
       open={showSessionExpiringDialog}
       closeOnEscape={true}
       closeOnDocumentClick={true}
-      onClose={() => setShowSessionExpiryDialog(false)}
+      onClose={handleClose}
     >
       {(close) => (
         <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
@@ -94,9 +103,16 @@ export function SessionExpired({
     pushToLocalJSONAPI(url, JSON.stringify({ taskIds: tasksIds }), token)
       .then(() => {
         setIsTaskRelocked(true);
+        setTimeout(handleClose, 6969);
         getTasks();
       })
       .catch(() => setIsError(true));
+  };
+
+  const handleClose = () => {
+    setShowSessionExpiredDialog(false);
+    setIsTaskRelocked(false);
+    setIsError(false);
   };
 
   return (
@@ -105,7 +121,7 @@ export function SessionExpired({
       open={showSessionExpiredDialog}
       closeOnEscape={true}
       closeOnDocumentClick={true}
-      onClose={() => setShowSessionExpiredDialog(false)}
+      onClose={handleClose}
     >
       {(close) => (
         <div className="blue-dark bg-white pv2 pv4-ns ph2 ph4-ns">
