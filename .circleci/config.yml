@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /home/circleci/app
     docker:
-    - image: cimg/python:3.7-node
+    - image: cimg/python:3.7.14-node
       environment:
         SQLALCHEMY_DATABASE_URI: postgresql://taskingmanager@localhost/test_tm
     - image: cimg/postgres:14.2-postgis
