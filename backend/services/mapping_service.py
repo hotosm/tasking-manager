@@ -5,6 +5,7 @@ from flask import current_app
 from geoalchemy2 import shape
 
 from backend.models.dtos.mapping_dto import (
+    ExtendLockTimeDTO,
     TaskDTO,
     MappedTaskDTO,
     LockTaskDTO,
@@ -84,31 +85,34 @@ class MappingService:
         """
         task = MappingService.get_task(lock_task_dto.task_id, lock_task_dto.project_id)
 
-        if not task.is_mappable():
-            raise MappingServiceError(
-                "InvalidTaskState- Task in invalid state for mapping"
-            )
+        if task.locked_by != lock_task_dto.user_id:
+            if not task.is_mappable():
+                raise MappingServiceError(
+                    "InvalidTaskState- Task in invalid state for mapping"
+                )
 
-        user_can_map, error_reason = ProjectService.is_user_permitted_to_map(
-            lock_task_dto.project_id, lock_task_dto.user_id
-        )
-        if not user_can_map:
-            if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
-                raise UserLicenseError("User must accept license to map this task")
-            elif error_reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
-                raise MappingServiceError("UserNotAllowed- User not on allowed list")
-            elif error_reason == MappingNotAllowed.PROJECT_NOT_PUBLISHED:
-                raise MappingServiceError(
-                    "ProjectNotPublished- Project is not published"
-                )
-            elif error_reason == MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
-                raise MappingServiceError(
-                    "UserAlreadyHasTaskLocked- User already has task locked"
-                )
-            else:
-                raise MappingServiceError(
-                    f"{error_reason}- Mapping not allowed because: {error_reason}"
-                )
+            user_can_map, error_reason = ProjectService.is_user_permitted_to_map(
+                lock_task_dto.project_id, lock_task_dto.user_id
+            )
+            if not user_can_map:
+                if error_reason == MappingNotAllowed.USER_NOT_ACCEPTED_LICENSE:
+                    raise UserLicenseError("User must accept license to map this task")
+                elif error_reason == MappingNotAllowed.USER_NOT_ON_ALLOWED_LIST:
+                    raise MappingServiceError(
+                        "UserNotAllowed- User not on allowed list"
+                    )
+                elif error_reason == MappingNotAllowed.PROJECT_NOT_PUBLISHED:
+                    raise MappingServiceError(
+                        "ProjectNotPublished- Project is not published"
+                    )
+                elif error_reason == MappingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
+                    raise MappingServiceError(
+                        "UserAlreadyHasTaskLocked- User already has task locked"
+                    )
+                else:
+                    raise MappingServiceError(
+                        f"{error_reason}- Mapping not allowed because: {error_reason}"
+                    )
 
         task.lock_task_for_mapping(lock_task_dto.user_id)
         return task.as_dto_with_instructions(lock_task_dto.preferred_locale)
@@ -399,3 +403,51 @@ class MappingService:
         project = ProjectService.get_project_by_id(project_id)
         project.tasks_bad_imagery = 0
         project.save()
+
+    @staticmethod
+    def lock_time_can_be_extended(project_id, task_id, user_id):
+        task = Task.get(task_id, project_id)
+        if task is None:
+            raise NotFound(f"Task {task_id} not found")
+
+        if TaskStatus(task.task_status) not in [
+            TaskStatus.LOCKED_FOR_MAPPING,
+            TaskStatus.LOCKED_FOR_VALIDATION,
+        ]:
+            raise MappingServiceError(
+                f"TaskStatusNotLocked- Task {task_id} status is not LOCKED_FOR_MAPPING or LOCKED_FOR_VALIDATION."
+            )
+        if task.locked_by != user_id:
+            raise MappingServiceError(
+                "LockedByAnotherUser- Task is locked by another user."
+            )
+
+    @staticmethod
+    def extend_task_lock_time(extend_dto: ExtendLockTimeDTO):
+        """
+        Extends expiry time of locked tasks
+        :raises ValidatorServiceError
+        """
+        # Loop supplied tasks to check they can all be locked for validation
+        tasks_to_extend = []
+        for task_id in extend_dto.task_ids:
+            MappingService.lock_time_can_be_extended(
+                extend_dto.project_id, task_id, extend_dto.user_id
+            )
+            tasks_to_extend.append(task_id)
+
+        # # Lock all tasks for validation
+        for task_id in tasks_to_extend:
+            task = Task.get(task_id, extend_dto.project_id)
+            action = TaskAction.EXTENDED_FOR_MAPPING
+            if task.task_status == TaskStatus.LOCKED_FOR_VALIDATION:
+                action = TaskAction.EXTENDED_FOR_VALIDATION
+
+            TaskHistory.update_task_locked_with_duration(
+                task_id,
+                extend_dto.project_id,
+                TaskStatus(task.task_status),
+                extend_dto.user_id,
+            )
+            task.set_task_history(action, extend_dto.user_id)
+            task.update()

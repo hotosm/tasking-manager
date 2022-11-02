@@ -192,6 +192,49 @@ export default defineMessages({
     id: 'project.sidebar.show',
     defaultMessage: 'Show sidebar',
   },
+  sessionAboutToExpireTitle: {
+    id: 'project.sidebar.lockTimeAboutToExpire.title',
+    defaultMessage: 'Extend session for this task',
+  },
+  sessionAboutToExpireDescription: {
+    id: 'project.sidebar.lockTimeAboutToExpire.description',
+    defaultMessage:
+      'Your session of two hours is about to expire. Do you want to extend your time for this session to continue working on this task?',
+  },
+  extendTime: {
+    id: 'project.sidebar.extendTime',
+    defaultMessage: 'Extend session',
+  },
+  sessionExtended: {
+    id: 'project.sidebar.extendTime',
+    defaultMessage: 'Your session has been extended',
+  },
+  sessionExtensionError: {
+    id: 'project.sidebar.sessionExtensionError',
+    defaultMessage: 'An error occurred while extending your session.',
+  },
+  sessionExpiredTitle: {
+    id: 'project.sidebar.sessionExpired.title',
+    defaultMessage: 'Your session has expired',
+  },
+  sessionExpiredDescription: {
+    id: 'project.sidebar.sessionExpired.description',
+    defaultMessage:
+      'Do you want to relock the tasks to extend the session so that you can update the status of the {count, plural, =1 {task} other{tasks}}?',
+  },
+  relockTask: {
+    id: 'project.sidebar.relockTask',
+    defaultMessage: 'Relock {count, plural, =1 {task} other{tasks}}',
+  },
+  taskRelocked: {
+    id: 'project.sidebar.relockTask',
+    defaultMessage: 'Your {count, plural, =1 {task has} other{tasks have}} been relocked.',
+  },
+  taskRelockError: {
+    id: 'project.sidebar.relockTask',
+    defaultMessage:
+      'An error occurred while relocking your {count, plural, =1 {task} other{tasks}}.',
+  },
   hideSidebar: {
     id: 'project.sidebar.hide',
     defaultMessage: 'Hide sidebar',
@@ -618,6 +661,14 @@ export default defineMessages({
   taskHistoryAutoUnlockedValidation: {
     id: 'project.tasks.history.autounlockedvalidation',
     defaultMessage: 'automatically unlocked for validation',
+  },
+  taskHistoryExtendedForMapping: {
+    id: 'project.tasks.history.extendedForMapping',
+    defaultMessage: 'extended the lock session for mapping',
+  },
+  taskHistoryExtendedForValidation: {
+    id: 'project.tasks.history.extendedForValidation',
+    defaultMessage: 'extended the lock session for validation',
   },
   taskHistoryBadImagery: {
     id: 'project.tasks.history.badimagery',

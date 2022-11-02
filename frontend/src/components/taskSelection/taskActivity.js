@@ -125,6 +125,12 @@ export const TaskHistory = ({ projectId, taskId, commentPayload }) => {
       case 'AUTO_UNLOCKED_FOR_VALIDATION':
         message = messages.taskHistoryAutoUnlockedValidation;
         break;
+      case 'EXTENDED_FOR_MAPPING':
+        message = messages.taskHistoryExtendedForMapping;
+        break;
+      case 'EXTENDED_FOR_VALIDATION':
+        message = messages.taskHistoryExtendedForValidation;
+        break;
       case 'STATE_CHANGE':
         switch (actionText) {
           case 'BADIMAGERY':

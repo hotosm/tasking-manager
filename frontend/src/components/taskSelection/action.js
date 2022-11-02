@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { navigate, useLocation } from '@reach/router';
 import ReactPlaceholder from 'react-placeholder';
@@ -33,11 +33,24 @@ import { MultipleTaskHistoriesAccordion } from './multipleTaskHistories';
 import { ResourcesTab } from './resourcesTab';
 import { ActionTabsNav } from './actionTabsNav';
 import { LockedTaskModalContent } from './lockedTasks';
+import { SessionAboutToExpire, SessionExpired } from './extendSession';
 const Editor = React.lazy(() => import('../editor'));
 const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 
-export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, action, editor }) {
+const MINUTES_BEFORE_DIALOG = 5;
+
+export function TaskMapAction({
+  project,
+  projectIsReady,
+  tasks,
+  activeTasks,
+  getTasks,
+  action,
+  editor,
+}) {
   const location = useLocation();
+  const aboutToExpireTimeoutRef = useRef();
+  const expiredTimeoutRef = useRef();
   useSetProjectPageTitleTag(project);
   const userDetails = useSelector((state) => state.auth.userDetails);
   const token = useSelector((state) => state.auth.token);
@@ -65,6 +78,8 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   const [historyTabChecked, setHistoryTabChecked] = useState(false);
   const [multipleTasksInfo, setMultipleTasksInfo] = useState({});
   const [showMapChangesModal, setShowMapChangesModal] = useState(false);
+  const [showSessionExpiringDialog, setShowSessionExpiringDialog] = useState(false);
+  const [showSessionExpiredDialog, setSessionTimeExpiredDialog] = useState(false);
   const intl = useIntl();
 
   const activeTask = activeTasks && activeTasks[0];
@@ -103,6 +118,29 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
   };
 
   useEffect(() => {
+    const tempTimer = new Date(activeTask.lastUpdated);
+    tempTimer.setSeconds(tempTimer.getSeconds() + activeTask.autoUnlockSeconds);
+    const milliDifferenceForSessionExpire = new Date(tempTimer) - Date.now();
+    const milliDifferenceForAboutToSessionExpire =
+      milliDifferenceForSessionExpire - MINUTES_BEFORE_DIALOG * 60 * 1000;
+
+    aboutToExpireTimeoutRef.current = setTimeout(() => {
+      setSessionTimeExpiredDialog(false);
+      setShowSessionExpiringDialog(true);
+    }, milliDifferenceForAboutToSessionExpire);
+
+    expiredTimeoutRef.current = setTimeout(() => {
+      setShowSessionExpiringDialog(false);
+      setSessionTimeExpiredDialog(true);
+    }, milliDifferenceForSessionExpire);
+
+    return () => {
+      clearTimeout(aboutToExpireTimeoutRef.current);
+      clearTimeout(expiredTimeoutRef.current);
+    };
+  }, [activeTask.autoUnlockSeconds, activeTask.lastUpdated]);
+
+  useEffect(() => {
     if (!editor && projectIsReady && userDetails.defaultEditor && tasks && tasksIds) {
       let editorToUse;
       if (action === 'MAPPING') {
@@ -110,7 +148,9 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
           ? [userDetails.defaultEditor]
           : project.mappingEditors;
       } else {
-        editorToUse = project.validationEditors.includes(userDetails.defaultEditor)
+        editorToUse = project.validationLockTimeExpiredDialogEditors.includes(
+          userDetails.defaultEditor,
+        )
           ? [userDetails.defaultEditor]
           : project.validationEditors;
       }
@@ -443,6 +483,24 @@ export function TaskMapAction({ project, projectIsReady, tasks, activeTasks, act
           {(close) => <LockedTaskModalContent project={project} error="JOSM" close={close} />}
         </Popup>
       )}
+      <SessionAboutToExpire
+        showSessionExpiringDialog={showSessionExpiringDialog}
+        setShowSessionExpiryDialog={setShowSessionExpiringDialog}
+        projectId={project.projectId}
+        tasksIds={tasksIds}
+        token={token}
+        getTasks={getTasks}
+        expiredTimeoutRef={expiredTimeoutRef}
+      />
+      <SessionExpired
+        showSessionExpiredDialog={showSessionExpiredDialog}
+        setShowSessionExpiredDialog={setSessionTimeExpiredDialog}
+        projectId={project.projectId}
+        tasksIds={tasksIds}
+        token={token}
+        action={action}
+        getTasks={getTasks}
+      />
     </>
   );
 }

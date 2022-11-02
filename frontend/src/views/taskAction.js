@@ -29,16 +29,23 @@ export function TaskAction({ project, action }: Object) {
   const [editor, setEditor] = useQueryParam('editor', StringParam);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const getTasks = () => {
+    fetchLocalJSONAPI(`users/queries/tasks/locked/details/`, token, 'GET', locale)
+      .then((res) => {
+        setTasks(res.tasks);
+        setLoading(false);
+      })
+      .catch((e) => navigate(`/projects/${project}/tasks/`));
+  };
+
   useEffect(() => {
     if (userDetails.id && token && action && project) {
-      fetchLocalJSONAPI(`users/queries/tasks/locked/details/`, token, 'GET', locale)
-        .then((res) => {
-          setTasks(res.tasks);
-          setLoading(false);
-        })
-        .catch((e) => navigate(`/projects/${project}/tasks/`));
+      getTasks();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, userDetails.id, token, project, locale]);
+
   if (token) {
     if (loading) {
       return (
@@ -83,7 +90,15 @@ export function TaskAction({ project, action }: Object) {
       );
     }
     if (tasks.length > 0 && tasks[0].projectId === Number(project)) {
-      return <TaskActionPossible project={project} tasks={tasks} action={action} editor={editor} />;
+      return (
+        <TaskActionPossible
+          project={project}
+          tasks={tasks}
+          action={action}
+          editor={editor}
+          getTasks={getTasks}
+        />
+      );
     }
   } else {
     return (
@@ -92,7 +107,7 @@ export function TaskAction({ project, action }: Object) {
   }
 }
 
-export function TaskActionPossible({ project, tasks, action, editor }) {
+export function TaskActionPossible({ project, tasks, action, editor, getTasks }) {
   const [tasksGeojson, setTasksGeojson] = useState();
   const [projectDataError, projectDataLoading, projectData] = useFetch(
     `projects/${project}/queries/summary/`,
@@ -117,6 +132,7 @@ export function TaskActionPossible({ project, tasks, action, editor }) {
           projectIsReady={!projectDataError && !projectDataLoading}
           tasks={tasksGeojson}
           activeTasks={tasks}
+          getTasks={getTasks}
           action={action}
           editor={editor}
         />

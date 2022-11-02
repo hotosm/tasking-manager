@@ -190,6 +190,7 @@ def add_api_endpoints(app):
         TasksActionsResetBadImageryAllAPI,
         TasksActionsResetAllAPI,
         TasksActionsSplitAPI,
+        TasksActionsExtendAPI,
     )
     from backend.api.tasks.statistics import (
         TasksStatisticsAPI,
@@ -505,6 +506,10 @@ def add_api_endpoints(app):
         format_url(
             "projects/<int:project_id>/tasks/actions/undo-last-action/<int:task_id>/"
         ),
+    )
+    api.add_resource(
+        TasksActionsExtendAPI,
+        format_url("projects/<int:project_id>/tasks/actions/extend/"),
     )
     api.add_resource(
         TasksActionsValidationLockAPI,
