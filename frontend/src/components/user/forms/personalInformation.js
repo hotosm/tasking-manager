@@ -152,7 +152,7 @@ function _PersonalInformationForm({ userDetails, token, pushUserDetails }) {
                         {...input}
                         type="email"
                         className={fieldClasses}
-                        pattern="^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$"
+                        pattern="^([a-zA-Z0-9+_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$"
                         required
                       />
                       {meta.error && meta.touched && <div className="mt1 red">{meta.error}</div>}
