@@ -267,7 +267,7 @@ class SystemReleaseAPI(Resource):
             release.published_at = published_date
             release.save()
             return {
-                "release_versiion": release.tag_name,
+                "release_version": release.tag_name,
                 "published_at": str(release.published_at),
             }, 201
         except KeyError:
