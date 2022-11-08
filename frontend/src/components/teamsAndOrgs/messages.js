@@ -152,6 +152,26 @@ export default defineMessages({
     id: 'management.filter.buttons.myOrganisations',
     defaultMessage: 'My Organizations',
   },
+  searchOrganisations: {
+    id: 'management.filter.textarea.searchOrganisations',
+    defaultMessage: 'Search organisations...',
+  },
+  searchTeams: {
+    id: 'management.filter.textarea.searchTeams',
+    defaultMessage: 'Search teams...',
+  },
+  searchCampaigns: {
+    id: 'management.filter.textarea.searchCampaigns',
+    defaultMessage: 'Search campaigns...',
+  },
+  searchCategories: {
+    id: 'management.filter.textarea.searchCategories',
+    defaultMessage: 'Search categories...',
+  },
+  searchLicenses: {
+    id: 'management.filter.textarea.searchLicenses',
+    defaultMessage: 'Search licenses...',
+  },
   all: {
     id: 'management.filter.buttons.all',
     defaultMessage: 'All',
@@ -407,7 +427,7 @@ export default defineMessages({
   },
   noTeams: {
     id: 'management.teams.no_teams',
-    defaultMessage: 'You are not a member of a team yet.',
+    defaultMessage: 'No team found.',
   },
   noCampaigns: {
     id: 'management.teams.no_campaigns',
