@@ -49,23 +49,26 @@ class ValidatorService:
 
             if task is None:
                 raise NotFound(f"Task {task_id} not found")
-
-            if TaskStatus(task.task_status) not in [
-                TaskStatus.MAPPED,
-                TaskStatus.INVALIDATED,
-                TaskStatus.BADIMAGERY,
-            ]:
-                raise ValidatorServiceError(
-                    f"NotReadyForValidation- Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
+            if not (
+                task.locked_by == validation_dto.user_id
+                and TaskStatus(task.task_status) == TaskStatus.LOCKED_FOR_VALIDATION
+            ):
+                if TaskStatus(task.task_status) not in [
+                    TaskStatus.MAPPED,
+                    TaskStatus.INVALIDATED,
+                    TaskStatus.BADIMAGERY,
+                ]:
+                    raise ValidatorServiceError(
+                        f"NotReadyForValidation- Task {task_id} is not MAPPED, BADIMAGERY or INVALIDATED"
+                    )
+                user_can_validate = ValidatorService._user_can_validate_task(
+                    validation_dto.user_id, task.mapped_by
                 )
-            user_can_validate = ValidatorService._user_can_validate_task(
-                validation_dto.user_id, task.mapped_by
-            )
-            if not user_can_validate:
-                raise ValidatorServiceError(
-                    "CannotValidateMappedTask-"
-                    + "Tasks cannot be validated by the same user who marked task as mapped or badimagery"
-                )
+                if not user_can_validate:
+                    raise ValidatorServiceError(
+                        "CannotValidateMappedTask-"
+                        + "Tasks cannot be validated by the same user who marked task as mapped or badimagery"
+                    )
 
             tasks_to_lock.append(task)
 
@@ -85,9 +88,11 @@ class ValidatorService:
                     "ProjectNotPublished- Validation not allowed because: Project not published"
                 )
             elif error_reason == ValidatingNotAllowed.USER_ALREADY_HAS_TASK_LOCKED:
-                raise ValidatorServiceError(
-                    "UserAlreadyHasTaskLocked- User already has a task locked"
-                )
+                user_tasks = Task.get_locked_tasks_for_user(validation_dto.user_id)
+                if set(user_tasks.locked_tasks) != set(validation_dto.task_ids):
+                    raise ValidatorServiceError(
+                        "UserAlreadyHasTaskLocked- User already has a task locked"
+                    )
             else:
                 raise ValidatorServiceError(
                     f"Validation not allowed because: {error_reason}"

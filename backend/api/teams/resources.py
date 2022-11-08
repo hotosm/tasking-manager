@@ -430,10 +430,15 @@ class TeamsAllAPI(Resource):
                         type: string
                     visibility:
                         type: string
-                        default: PUBLIC
-                    inviteOnly:
-                        type: boolean
-                        default: false
+                        enum:
+                        - "PUBLIC"
+                        - "PRIVATE"
+                    joinMethod:
+                        type: string
+                        enum:
+                        - "ANY"
+                        - "BY_REQUEST"
+                        - "BY_INVITE"
         responses:
             201:
                 description: Team created successfully

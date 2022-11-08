@@ -8,7 +8,11 @@ from schematics.types import (
     ListType,
     ModelType,
 )
-from backend.models.postgis.statuses import TeamMemberFunctions, TeamVisibility
+from backend.models.postgis.statuses import (
+    TeamMemberFunctions,
+    TeamVisibility,
+    TeamJoinMethod,
+)
 
 
 def validate_team_visibility(value):
@@ -20,6 +24,19 @@ def validate_team_visibility(value):
             f"Unknown teamVisibility: {value} Valid values are "
             f"{TeamVisibility.PUBLIC.name}, "
             f"{TeamVisibility.PRIVATE.name}"
+        )
+
+
+def validate_team_join_method(value):
+    """ Validates join method value and its visibility """
+    try:
+        TeamJoinMethod[value.upper()]
+    except KeyError:
+        raise ValidationError(
+            f"Unknown teamJoinMethod: {value} Valid values are "
+            f"{TeamJoinMethod.ANY.name}, "
+            f"{TeamJoinMethod.BY_INVITE.name}, "
+            f"{TeamJoinMethod.BY_REQUEST.name}"
         )
 
 
@@ -78,8 +95,10 @@ class TeamDetailsDTO(Model):
     name = StringType(required=True)
     logo = StringType()
     description = StringType()
-    invite_only = BooleanType(
-        default=False, serialized_name="inviteOnly", required=True
+    join_method = StringType(
+        required=True,
+        validators=[validate_team_join_method],
+        serialized_name="joinMethod",
     )
     visibility = StringType(
         required=True, validators=[validate_team_visibility], serialize_when_none=False
@@ -99,8 +118,10 @@ class TeamDTO(Model):
     name = StringType(required=True)
     logo = StringType()
     description = StringType()
-    invite_only = BooleanType(
-        default=False, serialized_name="inviteOnly", required=True
+    join_method = StringType(
+        required=True,
+        validators=[validate_team_join_method],
+        serialized_name="joinMethod",
     )
     visibility = StringType(
         required=True, validators=[validate_team_visibility], serialize_when_none=False
@@ -125,8 +146,10 @@ class NewTeamDTO(Model):
     organisation_id = IntType(required=True)
     name = StringType(required=True)
     description = StringType()
-    invite_only = BooleanType(
-        default=False, serialized_name="inviteOnly", required=True
+    join_method = StringType(
+        required=True,
+        validators=[validate_team_join_method],
+        serialized_name="joinMethod",
     )
     visibility = StringType(
         required=True, validators=[validate_team_visibility], serialize_when_none=False
@@ -137,12 +160,15 @@ class UpdateTeamDTO(Model):
     """ Describes a JSON model to update a team """
 
     creator = LongType()
+    team_id = IntType()
     organisation = StringType()
     organisation_id = IntType()
     name = StringType()
     logo = StringType()
     description = StringType()
-    invite_only = BooleanType(serialized_name="inviteOnly")
+    join_method = StringType(
+        validators=[validate_team_join_method], serialized_name="joinMethod"
+    )
     visibility = StringType(
         validators=[validate_team_visibility], serialize_when_none=False
     )
