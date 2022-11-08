@@ -263,12 +263,23 @@ class SystemReleaseAPI(Resource):
             release = ReleaseVersion.get()
             if release is None:
                 release = ReleaseVersion()
-            release.tag_name = tag_name
-            release.published_at = published_date
-            release.save()
+            if tag_name != release.tag_name:
+                release.tag_name = tag_name
+                release.published_at = published_date
+                release.save()
             return {
                 "release_version": release.tag_name,
                 "published_at": str(release.published_at),
             }, 201
         except KeyError:
-            return {"Error": "Couldn't fetch latest release from github"}, 502
+            return {
+                "Error": "Couldn't fetch latest release from github",
+                "SubCode": "GithubFetchError",
+            }, 502
+        except Exception as e:
+            error_msg = f"System Release API - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {
+                "Error": "Unable to upload image",
+                "SubCode": "InternalServerError",
+            }, 500
