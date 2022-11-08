@@ -123,4 +123,28 @@ describe('LicenseForm', () => {
     expect(inputs[2].name).toBe('plainText');
     expect(inputs[2].value).toBe('');
   });
+
+  it('filters interests list by the search query', async () => {
+    render(
+      <IntlProviders>
+        <LicensesManagement licenses={licenses} isLicensesFetched={true} />
+      </IntlProviders>,
+    );
+    const textField = screen.getByRole('textbox');
+
+    expect(textField).toBeInTheDocument();
+    fireEvent.change(textField, {
+      target: {
+        value: 'HOT',
+      },
+    });
+    expect(screen.getByText(/HOT Licence/i)).toBeInTheDocument();
+    expect(screen.queryByText(/NextView 1/i)).not.toBeInTheDocument();
+    fireEvent.change(textField, {
+      target: {
+        value: 'not HOT',
+      },
+    });
+    expect(screen.queryByText('There are no licenses yet.')).toBeInTheDocument();
+  });
 });
