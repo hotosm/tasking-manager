@@ -116,6 +116,8 @@ export const CommentInputField = ({
           <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
           <span>, </span>
           <HashtagPaste text={comment} setFn={setComment} hashtag="#author" />
+          <span>, </span>
+          <HashtagPaste text={comment} setFn={setComment} hashtag="#contributors" />
         </span>
       )}
       <DropzoneUploadStatus uploading={uploading} uploadError={uploadError} />

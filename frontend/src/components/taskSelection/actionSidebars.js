@@ -602,7 +602,7 @@ const TaskValidationSelector = ({
               comment={comment}
               setComment={setComment}
               contributors={contributors.length ? contributors : contributorsList}
-              enableHashtagPaste={false}
+              enableHashtagPaste={true}
               autoFocus={true}
             />
           </div>
