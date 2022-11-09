@@ -41,7 +41,9 @@ class TestValidatorService(BaseTestCase):
 
     @patch.object(UserService, "is_user_blocked")
     @patch.object(Task, "get")
-    def test_lock_tasks_for_validation_raises_error_if_task_not_mapped(self, mock_task, mock_blocked):
+    def test_lock_tasks_for_validation_raises_error_if_task_not_mapped(
+        self, mock_task, mock_blocked
+    ):
         # Arrange
         task_stub = Task()
         task_stub.task_status = TaskStatus.READY.value
