@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Field } from 'react-final-form';
 import Select from 'react-select';
@@ -7,7 +7,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { formatCountryList } from '../utils/countries';
 import { fetchLocalJSONAPI } from '../network/genericJSONRequest';
-import { CheckIcon } from './svgIcons';
+import { CheckIcon, SearchIcon, CloseIcon } from './svgIcons';
 
 export const RadioField = ({ name, value, className }: Object) => (
   <Field
@@ -212,3 +212,51 @@ export const InterestsList = ({ interests, field, changeSelect }) => (
     ))}
   </ul>
 );
+
+// Used as a generic search box for input fields in the management section
+export const TextField = ({ value, placeholderMsg, onChange, onCloseIconClick }) => {
+  const inputRef = useRef(null);
+
+  return (
+    <div className="db w-20-l w-25-m w-100">
+      <FormattedMessage {...placeholderMsg}>
+        {(msg) => {
+          return (
+            <form
+              className="relative"
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
+            >
+              <div>
+                <SearchIcon
+                  onClick={() => inputRef.current.focus()}
+                  className={`absolute ${!value ? 'grey-light' : 'red'} pl2 pt2`}
+                />
+              </div>
+              <input
+                id="name"
+                ref={inputRef}
+                autoComplete="off"
+                value={value}
+                onChange={onChange}
+                placeholder={msg}
+                className={'input-reset ba b--grey-light pa1 lh-copy db w-100'}
+                style={{ textIndent: '30px' }}
+                type="text"
+                aria-describedby="name-desc"
+              />
+
+              <CloseIcon
+                onClick={onCloseIconClick}
+                className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${
+                  !value ? 'pr2 right-0 dn ' : 'pr2 right-0'
+                }`}
+              />
+            </form>
+          );
+        }}
+      </FormattedMessage>
+    </div>
+  );
+};
