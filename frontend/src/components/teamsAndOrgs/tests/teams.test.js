@@ -11,6 +11,7 @@ const dummyTeams = [
     teamId: 3,
     name: 'My Best Team',
     role: 'PROJECT_MANAGER',
+    joinMethod: 'BY_INVITE',
     members: [
       {
         username: 'ram',
