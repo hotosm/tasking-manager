@@ -212,13 +212,13 @@ export default defineMessages({
     id: 'project.sortby.priority',
     defaultMessage: 'Urgent projects',
   },
-  sortByBeginner: {
-    id: 'project.sortby.difficulty.beginner',
-    defaultMessage: 'Beginner projects',
+  sortByEasy: {
+    id: 'project.sortby.difficulty.easy',
+    defaultMessage: 'Easy projects',
   },
-  sortByAdvanced: {
-    id: 'project.sortby.difficulty.advanced',
-    defaultMessage: 'Advanced projects',
+  sortByChallenging: {
+    id: 'project.sortby.difficulty.challenging',
+    defaultMessage: 'Challenging projects',
   },
   sortByMoreActive: {
     id: 'project.sortby.more_active',

@@ -48,7 +48,7 @@ export const useExploreProjectsQueryParams = () => {
    this fn takes an object with queryparam keys and outputs JSON keys
    while maintaining the same values */
 const backendToQueryConversion = {
-  difficulty: 'mapperLevel',
+  difficulty: 'difficulty',
   campaign: 'campaign',
   team: 'teamId',
   organisation: 'organisationName',

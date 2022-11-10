@@ -101,7 +101,7 @@ class SMTPService:
                                 "id": recommended_project.project_id,
                                 "description": recommended_project.short_description,
                                 "total_contributors": recommended_project.total_contributors,
-                                "difficulty": recommended_project.mapper_level,
+                                "difficulty": recommended_project.difficulty,
                                 "progress": recommended_project.percent_mapped,
                                 "due_date": recommended_project.due_date,
                             }

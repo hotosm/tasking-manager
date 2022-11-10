@@ -46,6 +46,12 @@ class MappingLevel(Enum):
     ADVANCED = 3
 
 
+class ProjectDifficulty(Enum):
+    EASY = 1
+    MODERATE = 2
+    CHALLENGING = 3
+
+
 class MappingTypes(Enum):
     """ Enum describing types of mapping a project may specify"""
 

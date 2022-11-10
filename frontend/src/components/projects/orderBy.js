@@ -33,18 +33,19 @@ export function OrderBySelector(props) {
       type: 'ASC',
     },
     {
-      label: <FormattedMessage {...messages.sortByBeginner} />,
-      value: 'mapper_level.ASC',
-      sort: 'mapper_level',
+      label: <FormattedMessage {...messages.sortByEasy} />,
+      value: 'difficulty.ASC',
+      sort: 'difficulty',
       type: 'ASC',
     },
     {
-      label: <FormattedMessage {...messages.sortByAdvanced} />,
-      value: 'mapper_level.DESC',
-      sort: 'mapper_level',
+      label: <FormattedMessage {...messages.sortByChallenging} />,
+      value: 'difficulty.DESC',
+      sort: 'difficulty',
       type: 'DESC',
     },
   ];
+  
   const onSortSelect = (arr) => {
     if (arr.length === 1) {
       props.setQuery(
@@ -60,6 +61,7 @@ export function OrderBySelector(props) {
       throw new Error('filter select array is bigger.');
     }
   };
+  
   return (
     <Dropdown
       onChange={onSortSelect}

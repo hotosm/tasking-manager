@@ -87,7 +87,7 @@ class TestProject(BaseTestCase):
         test_dto.project_priority = ProjectPriority.MEDIUM.name
         test_dto.default_locale = "it"
         test_dto.project_info_locales = locales
-        test_dto.mapper_level = "BEGINNER"
+        test_dto.difficulty = "EASY"
         test_dto.mapping_types = ["ROADS", "BUILDINGS"]
         test_dto.mapping_editors = ["JOSM", "ID", "RAPID"]
         test_dto.validation_editors = ["JOSM", "ID"]

@@ -14,7 +14,7 @@ from backend.models.dtos.project_dto import (
 )
 from backend.models.postgis.organisation import Organisation
 from backend.models.postgis.project_info import ProjectInfo
-from backend.models.postgis.project import Project, ProjectStatus, MappingLevel
+from backend.models.postgis.project import Project, ProjectStatus
 from backend.models.postgis.statuses import (
     MappingNotAllowed,
     ValidatingNotAllowed,
@@ -22,6 +22,7 @@ from backend.models.postgis.statuses import (
     ValidationPermission,
     TeamRoles,
     EncouragingEmailType,
+    MappingLevel,
 )
 from backend.models.postgis.task import Task, TaskHistory
 from backend.models.postgis.utils import NotFound

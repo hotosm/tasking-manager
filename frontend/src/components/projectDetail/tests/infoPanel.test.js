@@ -100,14 +100,14 @@ describe('if projectInfoPanel', () => {
     expect(screen.queryByText('1')).toBeInTheDocument();
     expect(screen.queryByText('contributor')).toBeInTheDocument();
     expect(screen.queryByText('Last contribution 1 hour ago')).toBeInTheDocument();
-    expect(screen.queryByText('Beginner mapper')).toBeInTheDocument();
+    expect(screen.queryByText('Easy')).toBeInTheDocument();
   });
 
   it('renders new immediate mapper project with no contributors yet and using Custom imagery', () => {
     render(
       <IntlProviders>
         <ProjectInfoPanel
-          project={{ ...project, mapperLevel: 'INTERMEDIATE', imagery: 'Mapbox' }}
+          project={{ ...project, difficulty: 'MODERATE', imagery: 'Mapbox' }}
           tasks={tasks}
           contributors={[]}
           type={'detail'}
@@ -119,6 +119,6 @@ describe('if projectInfoPanel', () => {
     expect(screen.queryByText('Mapbox Satellite')).toBeInTheDocument();
     expect(screen.queryByText(/No contributors yet/)).toBeInTheDocument();
     expect(screen.queryByText('Last contribution 1 hour ago')).toBeInTheDocument();
-    expect(screen.queryByText('Intermediate mapper')).toBeInTheDocument();
+    expect(screen.queryByText('Moderate')).toBeInTheDocument();
   });
 });

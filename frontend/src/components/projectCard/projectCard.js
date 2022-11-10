@@ -5,7 +5,7 @@ import { Link } from '@reach/router';
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 import ProjectProgressBar from './projectProgressBar';
-import { MappingLevelMessage } from '../mappingLevel';
+import { DifficultyMessage } from '../mappingLevel';
 import { ProjectStatusBox } from '../projectDetail/statusBox';
 import { PROJECTCARD_CONTRIBUTION_SHOWN_THRESHOLD } from '../../config/index';
 import { PriorityBox } from './priorityBox';
@@ -57,7 +57,7 @@ export function ProjectCard({
   dueDate,
   priority,
   status,
-  mapperLevel,
+  difficulty,
   campaignTag,
   percentMapped,
   percentValidated,
@@ -136,8 +136,8 @@ export function ProjectCard({
             <ProjectTeaser totalContributors={totalContributors} lastUpdated={lastUpdated} />
             <ProjectProgressBar percentMapped={percentMapped} percentValidated={percentValidated} />
             <div className="pt2 truncate flex justify-between items-center">
-              <MappingLevelMessage
-                level={mapperLevel}
+              <DifficultyMessage
+                level={difficulty}
                 className="fl f7 pv2 ttc fw5 blue-grey truncate"
               />
               <DueDateBox dueDate={dueDate} />
