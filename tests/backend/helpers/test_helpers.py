@@ -282,7 +282,7 @@ def update_project_with_info(test_project: Project) -> Project:
     test_dto.project_priority = ProjectPriority.MEDIUM.name
     test_dto.default_locale = "en"
     test_dto.project_info_locales = locales
-    test_dto.mapper_level = "BEGINNER"
+    test_dto.difficulty = "EASY"
     test_dto.mapping_types = ["ROADS"]
     test_dto.mapping_editors = ["JOSM", "ID"]
     test_dto.validation_editors = ["JOSM"]

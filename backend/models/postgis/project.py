@@ -46,6 +46,7 @@ from backend.models.postgis.statuses import (
     TeamRoles,
     MappingPermission,
     ValidationPermission,
+    ProjectDifficulty,
 )
 from backend.models.postgis.task import Task, TaskHistory
 from backend.models.postgis.team import Team
@@ -127,7 +128,7 @@ class Project(db.Model):
     author_id = db.Column(
         db.BigInteger, db.ForeignKey("users.id", name="fk_users"), nullable=False
     )
-    mapper_level = db.Column(
+    difficulty = db.Column(
         db.Integer, default=2, nullable=False, index=True
     )  # Mapper level project is suitable for
     mapping_permission = db.Column(db.Integer, default=MappingPermission.ANY.value)
@@ -376,7 +377,7 @@ class Project(db.Model):
         self.default_locale = project_dto.default_locale
         self.enforce_random_task_selection = project_dto.enforce_random_task_selection
         self.private = project_dto.private
-        self.mapper_level = MappingLevel[project_dto.mapper_level.upper()].value
+        self.difficulty = ProjectDifficulty[project_dto.difficulty.upper()].value
         self.changeset_comment = project_dto.changeset_comment
         self.due_date = project_dto.due_date
         self.imagery = project_dto.imagery
@@ -840,7 +841,7 @@ class Project(db.Model):
         summary.created = self.created
         summary.last_updated = self.last_updated
         summary.osmcha_filter_id = self.osmcha_filter_id
-        summary.mapper_level = MappingLevel(self.mapper_level).name
+        summary.difficulty = MappingLevel(self.difficulty).name
         summary.mapping_permission = MappingPermission(self.mapping_permission).name
         summary.validation_permission = ValidationPermission(
             self.validation_permission
@@ -1008,7 +1009,7 @@ class Project(db.Model):
         ).name
         base_dto.enforce_random_task_selection = self.enforce_random_task_selection
         base_dto.private = self.private
-        base_dto.mapper_level = MappingLevel(self.mapper_level).name
+        base_dto.difficulty = MappingLevel(self.difficulty).name
         base_dto.changeset_comment = self.changeset_comment
         base_dto.osmcha_filter_id = self.osmcha_filter_id
         base_dto.due_date = self.due_date
