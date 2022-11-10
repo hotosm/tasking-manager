@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { IntlProviders } from '../../../utils/testWithIntl';
 import { InterestsManagement } from '../index';
@@ -58,6 +58,27 @@ describe('InterestsManagement component', () => {
       expect(getByText(/Interest 1/i));
     });
     expect(getByText(/Interest 2/i)).toBeInTheDocument();
-    expect(container.querySelectorAll('svg').length).toBe(3);
+    expect(container.querySelectorAll('svg').length).toBe(5);
+  });
+
+  it('filters interests list by the search query', async () => {
+    const { container } = render(
+      <IntlProviders>
+        <InterestsManagement interests={dummyInterests} isInterestsFetched={true} />
+      </IntlProviders>,
+    );
+    const textField = screen.getByRole('textbox');
+    expect(textField).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Interest 1/i));
+    });
+    expect(container.querySelectorAll('svg').length).toBe(5);
+    fireEvent.change(textField, {
+      target: {
+        value: 2,
+      },
+    });
+    expect(screen.getByText(/Interest 2/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Interest 1/i)).not.toBeInTheDocument();
   });
 });

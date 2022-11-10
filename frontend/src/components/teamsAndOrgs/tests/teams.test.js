@@ -1,10 +1,27 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { FormattedMessage } from 'react-intl';
 import { createComponentWithIntl, ReduxIntlProviders } from '../../../utils/testWithIntl';
 import { TeamBox, TeamsBoxList, TeamsManagement } from '../teams';
+
+const dummyTeams = [
+  {
+    teamId: 3,
+    name: 'My Best Team',
+    role: 'PROJECT_MANAGER',
+    joinMethod: 'BY_INVITE',
+    members: [
+      {
+        username: 'ram',
+        function: 'MEMBER',
+        active: true,
+        pictureUrl: null,
+      },
+    ],
+  },
+];
 
 describe('test TeamBox', () => {
   const element = TestRenderer.create(
@@ -156,22 +173,6 @@ describe('TeamsManagement component', () => {
   });
 
   it('renders teams list card after API is fetched', async () => {
-    const dummyTeams = [
-      {
-        teamId: 3,
-        name: 'My Best Team',
-        role: 'PROJECT_MANAGER',
-        joinMethod: 'ANY',
-        members: [
-          {
-            username: 'ram',
-            function: 'MEMBER',
-            active: true,
-            pictureUrl: null,
-          },
-        ],
-      },
-    ];
     const { container, getByText } = render(
       <ReduxIntlProviders>
         <TeamsManagement
@@ -201,6 +202,33 @@ describe('TeamsManagement component', () => {
         />
       </ReduxIntlProviders>,
     );
-    expect(screen.getByText(/you are not a member of a team yet\./i)).toBeInTheDocument();
+    expect(screen.getByText(/No team found\./i)).toBeInTheDocument();
+  });
+
+  it('filters teams list by the search query', async () => {
+    render(
+      <ReduxIntlProviders>
+        <TeamsManagement
+          teams={dummyTeams}
+          userDetails={{ role: 'ADMIN' }}
+          managementView={true}
+          isTeamsFetched={true}
+        />
+      </ReduxIntlProviders>,
+    );
+    const textField = screen.getByRole('textbox');
+    fireEvent.change(textField, {
+      target: {
+        value: 'my best',
+      },
+    });
+    expect(screen.getByRole('heading', { name: 'My Best Team' })).toHaveTextContent('My Best Team');
+    fireEvent.change(textField, {
+      target: {
+        value: 'not my best',
+      },
+    });
+    expect(screen.queryByRole('heading', { name: 'My Best Team' })).not.toBeInTheDocument();
+    expect(screen.queryByText('No team found.')).toBeInTheDocument();
   });
 });

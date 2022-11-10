@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from '@reach/router';
 import { Form, Field } from 'react-final-form';
@@ -18,6 +18,7 @@ import { Button } from '../button';
 import { UserAvatarList } from '../user/avatar';
 import { nCardPlaceholders } from './organisationsPlaceholder';
 import { Alert } from '../alert';
+import { TextField } from '../formInputs';
 
 export function OrgsManagement({
   organisations,
@@ -27,6 +28,14 @@ export function OrgsManagement({
   setUserOrgsOnly,
   isOrganisationsFetched,
 }: Object) {
+  const [query, setQuery] = useState('');
+
+  const onSearchInputChange = (e) => setQuery(e.target.value);
+
+  const filteredOrganisations = organisations?.filter((organisation) =>
+    organisation.name.toLowerCase().includes(query.toLowerCase()),
+  );
+
   return (
     <Management
       title={
@@ -48,9 +57,15 @@ export function OrgsManagement({
         delay={10}
         ready={isOrganisationsFetched}
       >
+        <TextField
+          value={query}
+          placeholderMsg={messages.searchOrganisations}
+          onChange={onSearchInputChange}
+          onCloseIconClick={() => setQuery('')}
+        />
         {isOrgManager ? (
-          organisations?.length ? (
-            organisations.map((org, n) => <OrganisationCard details={org} key={n} />)
+          filteredOrganisations?.length ? (
+            filteredOrganisations.map((org, n) => <OrganisationCard details={org} key={n} />)
           ) : (
             <div className="pb5">
               <FormattedMessage {...messages.noOrganisationsFound} />

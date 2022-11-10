@@ -206,7 +206,7 @@ export default defineMessages({
     defaultMessage: 'Extend session',
   },
   sessionExtended: {
-    id: 'project.sidebar.extendTime',
+    id: 'project.sidebar.sessionExtended',
     defaultMessage: 'Your session has been extended',
   },
   sessionExtensionError: {
@@ -227,11 +227,11 @@ export default defineMessages({
     defaultMessage: 'Relock {count, plural, =1 {task} other{tasks}}',
   },
   taskRelocked: {
-    id: 'project.sidebar.relockTask',
+    id: 'project.sidebar.taskRelocked',
     defaultMessage: 'Your {count, plural, =1 {task has} other{tasks have}} been relocked.',
   },
   taskRelockError: {
-    id: 'project.sidebar.relockTask',
+    id: 'project.sidebar.taskRelockError',
     defaultMessage:
       'An error occurred while relocking your {count, plural, =1 {task} other{tasks}}.',
   },
