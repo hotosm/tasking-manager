@@ -130,7 +130,7 @@ def is_known_project_difficulty(value):
     except KeyError:
         raise ValidationError(
             f"Unknown projectDifficulty: {value} Valid values are {ProjectDifficulty.EASY.name}, "
-            f"{ProjectDifficulty.MODERATE.name}, {ProjectDifficulty.CHALLENGING.name}"
+            f"{ProjectDifficulty.MODERATE.name}, {ProjectDifficulty.CHALLENGING.name} and ALL."
         )
 
 

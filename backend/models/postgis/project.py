@@ -38,7 +38,6 @@ from backend.models.postgis.project_chat import ProjectChat
 from backend.models.postgis.statuses import (
     ProjectStatus,
     ProjectPriority,
-    MappingLevel,
     TaskStatus,
     MappingTypes,
     TaskCreationMode,
@@ -841,7 +840,7 @@ class Project(db.Model):
         summary.created = self.created
         summary.last_updated = self.last_updated
         summary.osmcha_filter_id = self.osmcha_filter_id
-        summary.difficulty = MappingLevel(self.difficulty).name
+        summary.difficulty = ProjectDifficulty(self.difficulty).name
         summary.mapping_permission = MappingPermission(self.mapping_permission).name
         summary.validation_permission = ValidationPermission(
             self.validation_permission
@@ -1009,7 +1008,7 @@ class Project(db.Model):
         ).name
         base_dto.enforce_random_task_selection = self.enforce_random_task_selection
         base_dto.private = self.private
-        base_dto.difficulty = MappingLevel(self.difficulty).name
+        base_dto.difficulty = ProjectDifficulty(self.difficulty).name
         base_dto.changeset_comment = self.changeset_comment
         base_dto.osmcha_filter_id = self.osmcha_filter_id
         base_dto.due_date = self.due_date
