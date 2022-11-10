@@ -15,6 +15,7 @@
   "comment.input.sending.error": "An error occurred while sending message.",
   "comment.hashtags.help.managers": "Add \"{hashtag}\" to notify the project managers about your comment.",
   "comment.hashtags.help.author": "Add \"{hashtag}\" to notify the project author about your comment.",
+  "comment.hashtags.help.contributors": "Add \"{hashtag}\" to notify the task contributors about your comment.",
   "comment.preview.nothingToPreview": "Nothing to preview",
   "comment.write.attachImage": "Attach image by dragging and dropping",
   "comment.write.markdownSupported": "Markdown supported",
