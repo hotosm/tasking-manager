@@ -446,13 +446,13 @@ export default defineMessages({
     id: 'projects.formInputs.user_role',
     defaultMessage: 'User role',
   },
-  mapperLevel: {
-    id: 'projects.formInputs.mapper_level',
-    defaultMessage: 'Mapper level',
+  difficulty: {
+    id: 'projects.formInputs.difficulty',
+    defaultMessage: 'Difficulty',
   },
-  mapperLevelDescription: {
-    id: 'projects.formInputs.mapper_level.description',
-    defaultMessage: 'Setting the level will help mappers to find suitable projects to work on.',
+  difficultyDescription: {
+    id: 'projects.formInputs.difficulty.description',
+    defaultMessage: 'Setting the difficulty will help mappers to find suitable projects to work on.',
   },
   perTaskInstructions: {
     id: 'projects.formInputs.per_task_instructions',
@@ -529,21 +529,21 @@ export default defineMessages({
     id: 'project.formInputs.placeholders.message',
     defaultMessage: 'Message *',
   },
-  mapperLevelALL: {
+  difficultyALL: {
     id: 'project.formInputs.mapper_level.options.all',
     defaultMessage: 'All levels',
   },
-  mapperLevelADVANCED: {
-    id: 'project.formInputs.mapper_level.options.advanced',
-    defaultMessage: 'Advanced',
+  difficultyCHALLENGING: {
+    id: 'project.formInputs.mapper_level.options.challenging',
+    defaultMessage: 'Challenging',
   },
-  mapperLevelINTERMEDIATE: {
-    id: 'project.formInputs.mapper_level.options.intermediate',
-    defaultMessage: 'Intermediate',
+  difficultyMODERATE: {
+    id: 'project.formInputs.mapper_level.options.moderate',
+    defaultMessage: 'Moderate',
   },
-  mapperLevelBEGINNER: {
-    id: 'project.formInputs.mapper_level.options.beginner',
-    defaultMessage: 'Beginner',
+  difficultyEASY: {
+    id: 'project.formInputs.mapper_level.options.easy',
+    defaultMessage: 'Easy',
   },
   filterByOrg: {
     id: 'project.formInputs.teams.actions.filter.organisations',

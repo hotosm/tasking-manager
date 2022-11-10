@@ -32,7 +32,7 @@ export const getProjectSummary = (id) => ({
     type: 'Point',
     coordinates: [-41.669134813, -14.20341561],
   },
-  mapperLevel: 'BEGINNER',
+  difficulty: 'EASY',
   mappingPermission: 'LEVEL',
   validationPermission: 'LEVEL',
   allowedUsernames: [],

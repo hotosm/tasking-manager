@@ -55,6 +55,22 @@ export default defineMessages({
     id: 'mapping.level.beginner',
     defaultMessage: 'Beginner mapper',
   },
+  difficultyALL: {
+    id: 'mapping.difficulty.all',
+    defaultMessage: 'All',
+  },
+  difficultyEASY: {
+    id: 'mapping.difficulty.advanced',
+    defaultMessage: 'Easy',
+  },
+  difficultyMODERATE: {
+    id: 'mapping.difficulty.moderate',
+    defaultMessage: 'Moderate',
+  },
+  difficultyCHALLENGING: {
+    id: 'mapping.difficulty.beginner',
+    defaultMessage: 'Challenging',
+  },
   roads: {
     id: 'project.typesOfMapping.roads',
     defaultMessage: 'Roads',

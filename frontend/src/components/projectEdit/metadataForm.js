@@ -43,8 +43,6 @@ export const MetadataForm = () => {
     { item: 'OTHER', messageId: 'other' },
   ];
 
-  const mapperLevels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
-
   const handleMappingTypes = (types) => {
     setProjectInfo({ ...projectInfo, mappingTypes: types });
   };
@@ -78,26 +76,26 @@ export const MetadataForm = () => {
     <div className="w-100">
       <div className={styleClasses.divClass}>
         <label className={styleClasses.labelClass}>
-          <FormattedMessage {...messages.mapperLevel} />
+          <FormattedMessage {...messages.difficulty} />
         </label>
         <p className={styleClasses.pClass}>
-          <FormattedMessage {...messages.mapperLevelDescription} />
+          <FormattedMessage {...messages.difficultyDescription} />
         </p>
-        {mapperLevels.map((level) => (
+        {['EASY', 'MODERATE', 'CHALLENGING'].map((level) => (
           <label className="dib pr5" key={level}>
             <input
               value={level}
-              checked={projectInfo.mapperLevel === level}
+              checked={projectInfo.difficulty === level}
               onChange={() =>
                 setProjectInfo({
                   ...projectInfo,
-                  mapperLevel: level,
+                  difficulty: level,
                 })
               }
               type="radio"
               className={`radio-input input-reset pointer v-mid dib h2 w2 mr2 br-100 ba b--blue-light`}
             />
-            <FormattedMessage {...messages[`mapperLevel${level}`]} />
+            <FormattedMessage {...messages[`difficulty${level}`]} />
           </label>
         ))}
       </div>
