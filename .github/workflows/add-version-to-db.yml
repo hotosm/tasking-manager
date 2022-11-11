@@ -1,0 +1,11 @@
+name: release
+on:
+  release:
+    types: [published]
+jobs:
+  add_release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Add release version to db
+      run: |
+        curl -X POST "https://tasking-manager-tm4-production-api.hotosm.org/api/v2/system/release/"

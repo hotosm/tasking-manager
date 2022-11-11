@@ -283,6 +283,7 @@ def add_api_endpoints(app):
         SystemHeartbeatAPI,
         SystemLanguagesAPI,
         SystemContactAdminRestAPI,
+        SystemReleaseAPI,
     )
     from backend.api.system.banner import SystemBannerAPI
     from backend.api.system.statistics import SystemStatisticsAPI
@@ -841,3 +842,4 @@ def add_api_endpoints(app):
     api.add_resource(
         SystemContactAdminRestAPI, format_url("system/contact-admin/"), methods=["POST"]
     )
+    api.add_resource(SystemReleaseAPI, format_url("system/release/"), methods=["POST"])
