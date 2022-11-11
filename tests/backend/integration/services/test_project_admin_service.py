@@ -3,7 +3,7 @@ import json
 from flask import current_app
 
 from backend.models.postgis.project import Project, User, NotFound, ProjectPriority
-from backend.models.postgis.statuses import UserRole, MappingLevel
+from backend.models.postgis.statuses import UserRole, ProjectDifficulty
 from backend.services.messaging.message_service import MessageService
 from backend.services.team_service import TeamService
 from tests.backend.base import BaseTestCase
@@ -375,7 +375,7 @@ class TestProjectAdminService(BaseTestCase):
         dto.default_locale = "en"
         dto.project_status = ProjectStatus.DRAFT.name
         dto.project_priority = ProjectPriority.LOW.name
-        dto.mapper_level = MappingLevel.BEGINNER.name
+        dto.difficulty = ProjectDifficulty.EASY.name
         dto.mapping_types = ["ROADS"]
         dto.mapping_editors = ["ID"]
         dto.validation_editors = ["ID"]
@@ -407,7 +407,7 @@ class TestProjectAdminService(BaseTestCase):
         dto.default_locale = "en"
         dto.project_status = ProjectStatus.PUBLISHED.name
         dto.project_priority = ProjectPriority.LOW.name
-        dto.mapper_level = MappingLevel.BEGINNER.name
+        dto.difficulty = ProjectDifficulty.EASY.name
         dto.mapping_types = ["ROADS"]
         dto.mapping_editors = ["ID"]
         dto.validation_editors = ["ID"]
@@ -416,7 +416,7 @@ class TestProjectAdminService(BaseTestCase):
         updated_project = ProjectAdminService.update_project(dto, test_user.id)
         # Assert
         self.assertEqual(
-            updated_project.mapper_level, MappingLevel[dto.mapper_level.upper()].value
+            updated_project.difficulty, ProjectDifficulty[dto.difficulty.upper()].value
         )
         self.assertEqual(
             updated_project.status, ProjectStatus[dto.project_status].value

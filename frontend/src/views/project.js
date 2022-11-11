@@ -20,6 +20,7 @@ import useForceUpdate from '../hooks/UseForceUpdate';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { NotFound } from './notFound';
+import { ProjectDetailPlaceholder } from '../components/projectDetail/projectDetailPlaceholder';
 
 const ProjectCreate = React.lazy(() => import('../components/projectCreate/index'));
 
@@ -184,7 +185,12 @@ export const ProjectDetailPage = (props) => {
   const [error, loading, data] = useFetch(`projects/${props.id}/`, props.id);
 
   return (
-    <ReactPlaceholder showLoadingAnimation={true} rows={30} delay={1000} ready={loading === false}>
+    <ReactPlaceholder
+      showLoadingAnimation={true}
+      customPlaceholder={<ProjectDetailPlaceholder />}
+      delay={1000}
+      ready={loading === false}
+    >
       {!error && (
         <ProjectDetail
           project={data}

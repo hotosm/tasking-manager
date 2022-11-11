@@ -27,7 +27,7 @@ const ProjectTimeline = React.lazy(() => import('./timeline' /* webpackChunkName
 const ProjectDetailMap = (props) => {
   const [taskBordersOnly, setTaskBordersOnly] = useState(true);
 
-  var taskBordersGeoJSON = props.project.areaOfInterest && {
+  const taskBordersGeoJSON = props.project.areaOfInterest && {
     type: 'FeatureCollection',
     features: [
       {
@@ -37,10 +37,12 @@ const ProjectDetailMap = (props) => {
       },
     ],
   };
-  var centroidGeoJSON = props.project.areaOfInterest && {
+  
+  const centroidGeoJSON = props.project.areaOfInterest && {
     type: 'FeatureCollection',
     features: [centroid(props.project.areaOfInterest)],
   };
+  
   return (
     <div className="relative">
       {

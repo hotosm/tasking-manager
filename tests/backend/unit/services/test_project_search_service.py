@@ -1,5 +1,8 @@
 from backend.models.dtos.project_dto import ProjectSearchDTO
-from backend.models.postgis.statuses import MappingLevel, ProjectStatus
+from backend.models.postgis.statuses import (
+    ProjectStatus,
+    ProjectDifficulty,
+)
 from backend.services.project_search_service import ProjectSearchService
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import create_canned_project
@@ -9,12 +12,12 @@ class TestProjectService(BaseTestCase):
     def test_project_search(self):
         # Arrange
         test_project, test_user = create_canned_project()
-        test_project.mapper_level = MappingLevel.BEGINNER.value
+        test_project.difficulty = ProjectDifficulty.EASY.value
         test_project.status = ProjectStatus.PUBLISHED.value
 
         search_dto = ProjectSearchDTO()
         search_dto.preferred_locale = None
-        search_dto.mapper_level = "BEGINNER"
+        search_dto.difficulty = "EASY"
         search_dto.mapping_types = None
         search_dto.project_statuses = ["PUBLISHED"]
         search_dto.organisation_name = None

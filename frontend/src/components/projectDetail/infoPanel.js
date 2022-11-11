@@ -7,7 +7,7 @@ import { MappingTypes } from '../mappingTypes';
 import { Imagery } from '../taskSelection/imagery';
 import ProjectProgressBar from '../projectCard/projectProgressBar';
 import { DueDateBox } from '../projectCard/dueDateBox';
-import { MappingLevelMessage } from '../mappingLevel';
+import { DifficultyMessage } from '../mappingLevel';
 import { BigProjectTeaser } from './bigProjectTeaser';
 import { useComputeCompleteness } from '../../hooks/UseProjectCompletenessCalc';
 
@@ -65,7 +65,7 @@ export function ProjectInfoPanel({ project, tasks, contributors, type }: Object)
         percentBadImagery={percentBadImagery}
       />
       <div className="pb1 bg-white flex justify-between items-center">
-        <MappingLevelMessage level={project.mapperLevel} className="fl f5 mt1 ttc fw5 blue-dark" />
+        <DifficultyMessage level={project.difficulty} className="fl f5 mt1 ttc fw5 blue-dark" />
         <DueDateBox
           dueDate={project.dueDate}
           tooltipMsg={intl.formatMessage(messages.dueDateTooltip)}

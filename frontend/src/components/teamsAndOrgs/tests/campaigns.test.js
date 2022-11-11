@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { IntlProviders } from '../../../utils/testWithIntl';
 import { CampaignsManagement } from '../campaigns';
@@ -62,6 +62,34 @@ describe('CampaignsManagement component', () => {
       expect(getByText(/Campaign 1/i));
     });
     expect(getByText(/Campaign 2/i)).toBeInTheDocument();
-    expect(container.querySelectorAll('svg').length).toBe(3);
+    expect(container.querySelectorAll('svg').length).toBe(5);
+  });
+
+  it('filters campaigns list by the search query', () => {
+    render(
+      <IntlProviders>
+        <CampaignsManagement
+          campaigns={dummyCampaigns}
+          userDetails={{ role: 'ADMIN' }}
+          isCampaignsFetched={true}
+        />
+      </IntlProviders>,
+    );
+    const textField = screen.getByRole('textbox');
+    fireEvent.change(textField, {
+      target: {
+        value: '2',
+      },
+    });
+    expect(screen.getByRole('heading', { name: 'Campaign 2' })).toHaveTextContent(
+      'Campaign 2',
+    );
+    fireEvent.change(textField, {
+      target: {
+        value: 'not 2',
+      },
+    });
+    expect(screen.queryByRole('heading', { name: 'Campaign 2' })).not.toBeInTheDocument();
+    expect(screen.queryByText('There are no campaigns yet.')).toBeInTheDocument();
   });
 });

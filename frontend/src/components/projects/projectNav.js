@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import messages from './messages';
 import { useExploreProjectsQueryParams, stringify } from '../../hooks/UseProjectsQueryAPI';
-import { MappingLevelMessage } from '../mappingLevel';
+import { DifficultyMessage } from '../mappingLevel';
 import { Dropdown } from '../dropdown';
 import { ProjectSearchBox } from './projectSearchBox';
 import ClearFilters from './clearFilters';
@@ -65,10 +65,10 @@ const DifficultyDropdown = (props) => {
       }}
       value={props.fullProjectsQuery.difficulty || []}
       options={[
-        { label: <MappingLevelMessage level="ALL" className="" />, value: 'ALL' },
-        { label: <MappingLevelMessage level="BEGINNER" className="" />, value: 'BEGINNER' },
-        { label: <MappingLevelMessage level="INTERMEDIATE" className="" />, value: 'INTERMEDIATE' },
-        { label: <MappingLevelMessage level="ADVANCED" className="" />, value: 'ADVANCED' },
+        { label: <DifficultyMessage level="ALL" className="" />, value: 'ALL' },
+        { label: <DifficultyMessage level="EASY" className="" />, value: 'EASY' },
+        { label: <DifficultyMessage level="MODERATE" className="" />, value: 'MODERATE' },
+        { label: <DifficultyMessage level="CHALLENGING" className="" />, value: 'CHALLENGING' },
       ]}
       display={<FormattedMessage {...messages.mappingDifficulty} />}
       className={'ba b--tan bg-white mr3 f6 v-mid dn dib-ns pv2 br1 pl3 fw5 blue-dark'}
