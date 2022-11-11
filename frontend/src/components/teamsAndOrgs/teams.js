@@ -55,12 +55,14 @@ export function TeamsManagement({
       userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
     >
       {isTeamsFetched && (
-        <TextField
-          value={query}
-          placeholderMsg={messages.searchTeams}
-          onChange={onSearchInputChange}
-          onCloseIconClick={() => setQuery('')}
-        />
+        <div className="w-20-l w-25-m">
+          <TextField
+            value={query}
+            placeholderMsg={messages.searchTeams}
+            onChange={onSearchInputChange}
+            onCloseIconClick={() => setQuery('')}
+          />
+        </div>
       )}
       <div className="cards-container mt2">
         <ReactPlaceholder

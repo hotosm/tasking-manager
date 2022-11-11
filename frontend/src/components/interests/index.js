@@ -54,12 +54,14 @@ export const InterestsManagement = ({ interests, _userDetails, isInterestsFetche
         delay={10}
         ready={isInterestsFetched}
       >
-        <TextField
-          value={query}
-          placeholderMsg={messages.searchCategories}
-          onChange={onSearchInputChange}
-          onCloseIconClick={() => setQuery('')}
-        />
+        <div className="w-20-l w-25-m">
+          <TextField
+            value={query}
+            placeholderMsg={messages.searchCategories}
+            onChange={onSearchInputChange}
+            onCloseIconClick={() => setQuery('')}
+          />
+        </div>
         {filteredInterests?.length ? (
           filteredInterests.map((i, n) => <InterestCard key={n} interest={i} />)
         ) : (
