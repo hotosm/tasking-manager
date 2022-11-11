@@ -54,12 +54,13 @@ export const LicensesManagement = ({ licenses, userDetails, isLicensesFetched })
         delay={10}
         ready={isLicensesFetched}
       >
+      <div className="w-20-l w-25-m">
         <TextField
           value={query}
           placeholderMsg={messages.searchLicenses}
           onChange={onSearchInputChange}
           onCloseIconClick={() => setQuery('')}
-        />
+        /></div>
         {filteredLicenses?.length ? (
           filteredLicenses.map((i, n) => <LicenseCard key={n} license={i} />)
         ) : (

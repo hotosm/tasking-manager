@@ -57,12 +57,14 @@ export function OrgsManagement({
         delay={10}
         ready={isOrganisationsFetched}
       >
-        <TextField
-          value={query}
-          placeholderMsg={messages.searchOrganisations}
-          onChange={onSearchInputChange}
-          onCloseIconClick={() => setQuery('')}
-        />
+        <div className="w-20-l w-25-m">
+          <TextField
+            value={query}
+            placeholderMsg={messages.searchOrganisations}
+            onChange={onSearchInputChange}
+            onCloseIconClick={() => setQuery('')}
+          />
+        </div>
         {isOrgManager ? (
           filteredOrganisations?.length ? (
             filteredOrganisations.map((org, n) => <OrganisationCard details={org} key={n} />)

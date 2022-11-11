@@ -218,7 +218,7 @@ export const TextField = ({ value, placeholderMsg, onChange, onCloseIconClick })
   const inputRef = useRef(null);
 
   return (
-    <div className="db w-20-l w-25-m w-100">
+    <div className="db w-100">
       <FormattedMessage {...placeholderMsg}>
         {(msg) => {
           return (
@@ -231,7 +231,8 @@ export const TextField = ({ value, placeholderMsg, onChange, onCloseIconClick })
               <div>
                 <SearchIcon
                   onClick={() => inputRef.current.focus()}
-                  className={`absolute ${!value ? 'grey-light' : 'red'} pl2 pt2`}
+                  className={`absolute ${!value ? 'blue-grey' : 'red'}`}
+                  style={{ top: 11, left: 16 }}
                 />
               </div>
               <input
@@ -241,12 +242,11 @@ export const TextField = ({ value, placeholderMsg, onChange, onCloseIconClick })
                 value={value}
                 onChange={onChange}
                 placeholder={msg}
-                className={'input-reset ba b--grey-light pa1 lh-copy db w-100'}
-                style={{ textIndent: '30px' }}
+                className={'input-reset ba b--card pa1 lh-title db w-100 f6 br1'}
+                style={{ textIndent: '36px', height: '36px' }}
                 type="text"
                 aria-describedby="name-desc"
               />
-
               <CloseIcon
                 onClick={onCloseIconClick}
                 className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${

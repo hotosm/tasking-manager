@@ -35,7 +35,7 @@ export const ProjectSearchBox = ({
   );
 
   const isFocusMobile = isMobile && isFocus;
-  const iconStyleForInputtedText = !fullProjectsQuery[searchField] ? 'grey-light' : 'red';
+  const iconStyleForInputtedText = !fullProjectsQuery[searchField] ? 'blue-grey' : 'red';
   const clearIconStyleForInputtedText = !fullProjectsQuery[searchField] ? 'dn' : 'red dib-ns';
 
   return (
@@ -46,12 +46,11 @@ export const ProjectSearchBox = ({
           e.preventDefault();
         }}
       >
-        <div>
-          <SearchIcon
-            onClick={() => inputRef.current.focus()}
-            className={`absolute ${iconStyleForInputtedText} pl2 pt2`}
-          />
-        </div>
+        <SearchIcon
+          onClick={() => inputRef.current.focus()}
+          className={`absolute blue-grey ${iconStyleForInputtedText}`}
+          style={{ top: 10, left: 12 }}
+        />
         <input
           id="name"
           ref={inputRef}
@@ -63,8 +62,8 @@ export const ProjectSearchBox = ({
             setQuerySearch(value);
           }}
           placeholder={placeholder || 'Search Projects'}
-          className={'input-reset ba b--grey-light pa1 lh-copy db w-100'}
-          style={{ textIndent: '30px' }}
+          className={'input-reset ba b--grey-light pa2 lh-title db w-100 f6 br1'}
+          style={{ textIndent: '32px' }}
           type="text"
           aria-describedby="name-desc"
         />

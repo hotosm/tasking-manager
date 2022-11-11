@@ -37,12 +37,14 @@ export function CampaignsManagement({ campaigns, userDetails, isCampaignsFetched
         delay={10}
         ready={isCampaignsFetched}
       >
+      <div className="w-20-l w-25-m">
         <TextField
           value={query}
           placeholderMsg={messages.searchCampaigns}
           onChange={onSearchInputChange}
           onCloseIconClick={() => setQuery('')}
         />
+        </div>
         {filteredCampaigns?.length ? (
           filteredCampaigns.map((campaign, n) => <CampaignCard campaign={campaign} key={n} />)
         ) : (
