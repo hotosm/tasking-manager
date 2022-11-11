@@ -16,6 +16,7 @@ import { TASK_COLOURS } from '../../config';
 import { LockIcon, ListIcon, ZoomPlusIcon, CloseIcon, InternalLinkIcon } from '../svgIcons';
 import { PaginatorLine, howManyPages } from '../paginator';
 import { Dropdown } from '../dropdown';
+import { TextField } from '../formInputs';
 
 export function TaskStatus({ status, lockHolder }: Object) {
   const isReadyOrLockedForMapping = ['READY', 'LOCKED_FOR_MAPPING'].includes(status);
@@ -268,21 +269,15 @@ export function TaskList({
 
   return (
     <div className="cf">
-      <div className="flex items-center flex-wrap" style={{ gap: '0.5rem' }}>
-        <div className="w-40-l w-50-m w-100 relative">
-          <FormattedMessage {...messages.filterPlaceholder}>
-            {(msg) => {
-              return (
-                <input
-                  type="text"
-                  placeholder={msg}
-                  className="pa2 w-100"
-                  value={textSearch || ''}
-                  onChange={(e) => setTextSearch(e.target.value)}
-                />
-              );
-            }}
-          </FormattedMessage>
+      <div className="flex items-center flex-wrap mb3" style={{ gap: '1rem' }}>
+        <div style={{ flexGrow: 1 }}>
+          <TextField
+            placeholderMsg={messages.filterPlaceholder}
+            className="pa2 w-100 b--card"
+            value={textSearch || ''}
+            onChange={(e) => setTextSearch(e.target.value)}
+            onCloseIconClick={() => setTextSearch('')}
+          />
           <CloseIcon
             onClick={() => {
               setTextSearch('');
