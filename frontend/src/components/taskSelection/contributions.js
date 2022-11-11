@@ -49,8 +49,8 @@ function Contributor({ user, activeUser, activeStatus, displayTasks }: Object) {
 
   return (
     <div
-      className={`w-100 cf pv3 ph3-ns ph1 ba bw1 mb2 ${
-        activeUser === user.username ? 'b--blue-dark' : 'b--tan'
+      className={`w-100 cf pv3 ph3-ns ph1 bw1 mb2 ${
+        activeUser === user.username ? 'ba b--blue-dark' : 'shadow-2'
       }`}
     >
       <div className="w-40 fl dib truncate">
