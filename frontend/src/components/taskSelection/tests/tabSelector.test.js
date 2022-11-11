@@ -14,9 +14,9 @@ describe('TabSelector component', () => {
       </ReduxIntlProviders>,
     );
     expect(container.querySelector('div').className).toBe(
-      'cf ttu barlow-condensed f4 pv2 blue-dark',
+      'ttu barlow-condensed f4 blue-dark bb b--grey-light',
     );
-    expect(screen.getByText('Tasks').className).toBe('mr4 pb1 pointer bb bw1 b--blue-dark');
+    expect(screen.getByText('Tasks').className).toBe('mr4 pb2 fw5 pointer dib bb bw1');
     expect(screen.getByText('Instructions').className).not.toContain('bb bw1 b--blue-dark');
     expect(screen.getByText('contributions').className).not.toContain('bb bw1 b--blue-dark');
     fireEvent.click(screen.getByText('Instructions'));
@@ -29,7 +29,7 @@ describe('TabSelector component', () => {
       </ReduxIntlProviders>,
     );
     expect(screen.getByText('Tasks').className).not.toContain('bb bw1 b--blue-dark');
-    expect(screen.getByText('Instructions').className).toContain('bb bw1 b--blue-dark');
+    expect(screen.getByText('Instructions').className).toContain('mr4 pb2 fw5 pointer dib bb bw1');
     expect(screen.getByText('contributions').className).not.toContain('bb bw1 b--blue-dark');
     fireEvent.click(screen.getByText('contributions'));
     expect(setActiveSection).toHaveBeenLastCalledWith('contributions');
@@ -42,7 +42,7 @@ describe('TabSelector component', () => {
     );
     expect(screen.getByText('Tasks').className).not.toContain('bb bw1 b--blue-dark');
     expect(screen.getByText('Instructions').className).not.toContain('bb bw1 b--blue-dark');
-    expect(screen.getByText('contributions').className).toContain('bb bw1 b--blue-dark');
+    expect(screen.getByText('contributions').className).toContain('mr4 pb2 fw5 pointer dib bb bw1');
     fireEvent.click(screen.getByText('Tasks'));
     expect(setActiveSection).toHaveBeenLastCalledWith('tasks');
   });
