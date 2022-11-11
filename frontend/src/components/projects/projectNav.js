@@ -111,13 +111,13 @@ export const ProjectNav = (props) => {
             <ProjectsActionFilter setQuery={setQuery} fullProjectsQuery={fullProjectsQuery} />
             <Link
               to={filterRouteToggled}
-              className={`dn mr3 di-l ${linkCombo} ${moreFiltersCurrentActiveStyle} blue-dark`}
+              className={`dn mr3 dib-l lh-title f6 ${linkCombo} ${moreFiltersCurrentActiveStyle} blue-dark`}
             >
               <FormattedMessage {...messages.moreFilters} />
             </Link>
             <Link
               to={filterRouteToggled}
-              className={`di di-m dn-l mr3 ${linkCombo} ${moreFiltersCurrentActiveStyle}`}
+              className={`di dib-m dn-l mr3 lh-title f6 ${linkCombo} ${moreFiltersCurrentActiveStyle}`}
             >
               <FormattedMessage {...messages.filters} />
             </Link>

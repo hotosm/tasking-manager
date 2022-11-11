@@ -31,7 +31,7 @@ export function Imagery({ value = '' }: Object) {
   const customMessageId = getCustomMessageId(value);
 
   return (
-    <p className={`f5 fw6 pt1 pr3 ma0 truncate ${value ? 'blue-dark' : 'blue-light'}`}>
+    <p className={`f5 fw7 pt1 pr3 ma0 truncate blue-dark`}>
       {customMessageId && ( // show wms, wmts, tms, or other custom layers
         <span title={value}>
           <FormattedMessage {...messages[customMessageId]} />

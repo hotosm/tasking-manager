@@ -292,15 +292,15 @@ export function TaskSelection({ project, type, loading }: Object) {
             )}
           </Popup>
         )}
-        <div className="w-100 w-50-ns fl pt3 overflow-y-scroll-ns vh-minus-200-ns h-100">
-          <div className="pl4-l pl2 pr2">
+        <div className="w-100 w-50-ns fl pt3 overflow-y-auto-ns vh-minus-200-ns h-100">
+          <div className="pl4-l pl2 pr4">
             <ReactPlaceholder
               showLoadingAnimation={true}
               rows={3}
               ready={typeof project.projectId === 'number' && project.projectId > 0}
             >
               <ProjectHeader project={project} />
-              <div className="cf">
+              <div className="mt3">
                 <TabSelector activeSection={activeSection} setActiveSection={setActiveSection} />
                 <div className="pt3">
                   <div className={`${activeSection !== 'tasks' ? 'dn' : ''}`}>

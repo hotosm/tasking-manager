@@ -170,7 +170,8 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
   ]);
 
   const updateEditor = (arr) => setEditor(arr[0].value);
-  const titleClasses = 'db ttu f6 blue-light mb2';
+  const titleClasses = 'db ttu f7 blue-grey mb2 fw5';
+
   return (
     <div className="cf bg-white pb2 ph4-l ph2">
       {lockError !== null && (
@@ -213,14 +214,14 @@ const TaskSelectionFooter = ({ defaultUserEditor, project, tasks, taskAction, se
           options={editorOptions}
           value={editor}
           display={<FormattedMessage {...messages.selectEditor} />}
-          className="bg-white bn"
+          className="bg-white bn pl0"
           toTop={true}
           onChange={updateEditor}
         />
       </div>
       <div className="w-30-ns w-60 fl tr">
         <div className="mt3">
-          <Button className="white bg-red" onClick={() => lockTasks()} loading={isPending}>
+          <Button className="white bg-red fw5" onClick={() => lockTasks()} loading={isPending}>
             {['selectAnotherProject', 'mappingIsComplete', 'projectIsComplete'].includes(
               taskAction,
             ) || project.status === 'ARCHIVED' ? (

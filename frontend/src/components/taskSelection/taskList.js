@@ -64,8 +64,8 @@ function TaskItem({
 
   return (
     <div
-      className={`cf db ba br1 mt2 ${
-        selected.includes(data.taskId) ? 'b--blue-dark bw1' : 'b--tan bw1'
+      className={`cf db br1 mt2 task-list ${
+        selected.includes(data.taskId) ? 'ba b--blue-dark bw1' : 'shadow-2 bw1'
       }`}
     >
       <div
@@ -73,7 +73,7 @@ function TaskItem({
         onClick={() => selectTask(data.taskId, data.taskStatus)}
       >
         <div className="w-70-l w-40 fl dib truncate">
-          <span className="pl3 b">
+          <span className="pl3 blue-dark fw7">
             <FormattedMessage {...messages.taskId} values={{ id: data.taskId }} />
           </span>
           <FormattedRelativeTime value={value} unit={unit}>
@@ -85,7 +85,7 @@ function TaskItem({
                     <span className="blue-grey">
                       <FormattedMessage
                         {...messages.taskLastUpdate}
-                        values={{ user: <span className="b blue-grey">{data.actionBy}</span> }}
+                        values={{ user: <span className="b blue-dark fw5">{data.actionBy}</span> }}
                       />{' '}
                       {formattedTime}
                     </span>
@@ -95,7 +95,7 @@ function TaskItem({
             )}
           </FormattedRelativeTime>
         </div>
-        <div className="w-30-l w-60 fl blue-grey dib truncate">
+        <div className="w-30-l w-60 fl blue-dark dib truncate">
           <TaskStatus status={data.taskStatus} />
         </div>
       </div>
@@ -173,7 +173,7 @@ export function TaskFilter({ userCanValidate, statusFilter, setStatusFn }: Objec
       value={statusFilter || 'ALL'}
       options={options}
       display={statusFilter || <FormattedMessage {...messages.filterAll} />}
-      className="blue-dark bg-white pv2 ph2 ba b--grey-light"
+      className="blue-dark bg-white pv2 ph3 ba b--card"
     />
   );
 }
@@ -296,7 +296,7 @@ export function TaskList({
           value={sortBy || 'date'}
           options={sortingOptions}
           display={sortBy || <FormattedMessage {...messages.sortById} />}
-          className="blue-dark bg-white pv2 ph2 ba b--grey-light"
+          className="blue-dark bg-white pv2 ph3 ba b--card"
         />
       </div>
       <ReactPlaceholder

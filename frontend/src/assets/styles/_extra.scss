@@ -198,6 +198,8 @@ https://codepen.io/nielsenramon/pen/mLMeLY
 }
 
 .markdown-content {
+  line-height: 1.44;
+
   h1 {
     font-size: 1.25rem;
   }
@@ -405,7 +407,6 @@ a[href="https://www.mapbox.com/map-feedback/"]
   box-shadow: 0 1px 0 1px #d0d7de, 0 0 0 #d0d7de, 0 1px 1px #d0d7de;
 }
 
-
 .sticky-top {
   position: sticky !important;
   top: 0;
@@ -472,4 +473,8 @@ a[href="https://www.mapbox.com/map-feedback/"]
 .w-md-editor-toolbar li > button:hover,
 .w-md-editor-toolbar li > button:focus {
   color: $red !important;
+}
+
+.task-list:hover {
+  box-shadow: 0px 7px 20px rgba(0, 0, 0, 0.08);
 }
