@@ -45,9 +45,10 @@ export const NotificationPopout = (props) => {
           minWidth: '390px',
           width: '390px',
           zIndex: '100',
+          filter: 'drop-shadow(0px 2px 24px rgba(0, 0, 0, 0.5))',
           ...popoutPosition,
         }}
-        className={`fr ${props.isPopoutFocus ? '' : 'dn '}br2 absolute shadow-2 bg-white`}
+        className={`fr ${props.isPopoutFocus ? '' : 'dn '}br2 absolute bg-white`}
       >
         <InboxNavMini
           newMsgCount={
