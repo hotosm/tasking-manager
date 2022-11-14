@@ -34,6 +34,7 @@ import { ResourcesTab } from './resourcesTab';
 import { ActionTabsNav } from './actionTabsNav';
 import { LockedTaskModalContent } from './lockedTasks';
 import { SessionAboutToExpire, SessionExpired } from './extendSession';
+import { MappingTypes } from '../mappingTypes';
 const Editor = React.lazy(() => import('../editor'));
 const RapiDEditor = React.lazy(() => import('../rapidEditor'));
 
@@ -307,7 +308,8 @@ export function TaskMapAction({
                     <DueDateBox dueDate={timer} isTaskStatusPage intervalMili={60000} />
                   </div>
                 </div>
-                <div className="cf">
+                <MappingTypes types={project.mappingTypes} />
+                <div className="cf mt3">
                   <ActionTabsNav
                     activeSection={activeSection}
                     setActiveSection={setActiveSection}
