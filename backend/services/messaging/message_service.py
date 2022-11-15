@@ -228,9 +228,12 @@ class MessageService:
         comment_from: int, comment: str, task_id: int, project_id: int
     ):
         """Will send a canned message to anyone @'d in a comment"""
+        comment_from_user = UserService.get_user_by_id(comment_from)
         usernames = MessageService._parse_message_for_username(
             comment, project_id, task_id
         )
+        if comment_from_user.username in usernames:
+            usernames.remove(comment_from_user.username)
         project = Project.get(project_id)
         default_locale = project.default_locale if project else "en"
         project_name = ProjectInfo.get_dto_for_locale(project_id, default_locale).name
@@ -654,7 +657,7 @@ class MessageService:
                 message, project_id, task_id
             )
         )
-
+        usernames = list(set(usernames))
         return usernames
 
     @staticmethod
