@@ -543,6 +543,8 @@ class ProjectSearchBase(Resource):
 
             if request.args.get("managedByMe") == "true":
                 search_dto.managed_by = authenticated_user_id
+            if request.args.get("basedOnMyInterests") == "true":
+                search_dto.based_on_user_interests = authenticated_user_id
 
         except Exception:
             pass
@@ -685,6 +687,11 @@ class ProjectsAllAPI(ProjectSearchBase):
                 Limit to projects that can be managed by the authenticated user,
                 excluding the ones created by them
               type: boolean
+              default: false
+            - in: query
+              name: basedOnMyInterests
+              type: boolean
+              description: Filter projects based on user interests
               default: false
             - in: query
               name: teamId
