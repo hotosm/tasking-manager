@@ -228,7 +228,12 @@ class MessageService:
         comment_from: int, comment: str, task_id: int, project_id: int
     ):
         """Will send a canned message to anyone @'d in a comment"""
-        usernames = MessageService._parse_message_for_username(comment, project_id)
+        comment_from_user = UserService.get_user_by_id(comment_from)
+        usernames = MessageService._parse_message_for_username(
+            comment, project_id, task_id
+        )
+        if comment_from_user.username in usernames:
+            usernames.remove(comment_from_user.username)
         project = Project.get(project_id)
         default_locale = project.default_locale if project else "en"
         project_name = ProjectInfo.get_dto_for_locale(project_id, default_locale).name
@@ -600,35 +605,42 @@ class MessageService:
         SMTPService.send_verification_email(user.email_address, user.username)
 
     @staticmethod
-    def _get_managers(message: str, project_id: int) -> List[str]:
+    def _parse_message_for_bulk_mentions(
+        message: str, project_id: int, task_id: int = None
+    ) -> List[str]:
         parser = re.compile(r"((?<=#)\w+|\[.+?\])")
         parsed = parser.findall(message)
 
-        project = None
-        if "author" in parsed or "managers" in parsed:
-            project = Project.query.get(project_id)
+        usernames = []
+        project = Project.query.get(project_id)
 
         if project is None:
-            return []
+            return usernames
+        if "author" in parsed or "managers" in parsed:
+            usernames.append(project.author.username)
+            if "managers" in parsed:
+                teams = [
+                    t
+                    for t in project.teams
+                    if t.role == TeamRoles.PROJECT_MANAGER.value
+                ]
+                team_members = [
+                    [u.member.username for u in t.team.members if u.active is True]
+                    for t in teams
+                ]
 
-        project_managers = [project.author.username]
+                team_members = [item for sublist in team_members for item in sublist]
+                usernames.extend(team_members)
 
-        if "managers" not in parsed:
-            return project_managers
-
-        teams = [t for t in project.teams if t.role == TeamRoles.PROJECT_MANAGER.value]
-        team_members = [
-            [u.member.username for u in t.team.members if u.active is True]
-            for t in teams
-        ]
-
-        team_members = [item for sublist in team_members for item in sublist]
-        project_managers.extend(team_members)
-
-        return project_managers
+        if task_id and "contributors" in parsed:
+            contributors = Message.get_all_tasks_contributors(project_id, task_id)
+            usernames.extend(contributors)
+        return usernames
 
     @staticmethod
-    def _parse_message_for_username(message: str, project_id: int) -> List[str]:
+    def _parse_message_for_username(
+        message: str, project_id: int, task_id: int = None
+    ) -> List[str]:
         """Extracts all usernames from a comment looks for format @[user name]"""
 
         parser = re.compile(r"((?<=@)\w+|\[.+?\])")
@@ -640,8 +652,11 @@ class MessageService:
             username = username.replace("]", "", index)
             usernames.append(username)
 
-        usernames.extend(MessageService._get_managers(message, project_id))
-
+        usernames.extend(
+            MessageService._parse_message_for_bulk_mentions(
+                message, project_id, task_id
+            )
+        )
         usernames = list(set(usernames))
         return usernames
 
