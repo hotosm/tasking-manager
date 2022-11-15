@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -11,7 +11,7 @@ import { InfoIcon } from '../svgIcons';
 import { useEditTeamAllowed } from '../../hooks/UsePermissions';
 import { UserAvatar, UserAvatarList } from '../user/avatar';
 import { AddButton, ViewAllLink, Management, VisibilityBox, JoinMethodBox } from './management';
-import { RadioField, OrganisationSelectInput } from '../formInputs';
+import { RadioField, OrganisationSelectInput, TextField } from '../formInputs';
 import { Button, EditButton } from '../button';
 import { nCardPlaceholders } from './teamsPlaceholder';
 
@@ -23,8 +23,16 @@ export function TeamsManagement({
   setUserTeamsOnly,
   isTeamsFetched,
 }: Object) {
+  const [query, setQuery] = useState('');
+
   const isOrgManager = useSelector(
     (state) => state.auth.organisations && state.auth.organisations.length > 0,
+  );
+
+  const onSearchInputChange = (e) => setQuery(e.target.value);
+
+  const filteredTeams = teams?.filter((team) =>
+    team.name.toLowerCase().includes(query.toLowerCase()),
   );
 
   return (
@@ -46,15 +54,23 @@ export function TeamsManagement({
       setUserOnly={setUserTeamsOnly}
       userOnlyLabel={<FormattedMessage {...messages.myTeams} />}
     >
-      <div className="cards-container">
+      {isTeamsFetched && (
+        <TextField
+          value={query}
+          placeholderMsg={messages.searchTeams}
+          onChange={onSearchInputChange}
+          onCloseIconClick={() => setQuery('')}
+        />
+      )}
+      <div className="cards-container mt2">
         <ReactPlaceholder
           showLoadingAnimation={true}
           customPlaceholder={nCardPlaceholders(4)}
           delay={10}
           ready={isTeamsFetched}
         >
-          {teams?.length ? (
-            teams.map((team, n) => <TeamCard team={team} key={n} />)
+          {filteredTeams?.length ? (
+            filteredTeams.map((team, n) => <TeamCard team={team} key={n} />)
           ) : (
             <div className="pb3 pt2">
               <FormattedMessage {...messages.noTeams} />

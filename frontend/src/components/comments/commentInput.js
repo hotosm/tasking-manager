@@ -25,6 +25,7 @@ export const CommentInputField = ({
   autoFocus,
   isShowPreview = false,
   isProjectDetailCommentSection = false,
+  enableContributorsHashtag = false,
 }: Object) => {
   const token = useSelector((state) => state.auth.token);
   const textareaRef = useRef();
@@ -116,8 +117,12 @@ export const CommentInputField = ({
           <HashtagPaste text={comment} setFn={setComment} hashtag="#managers" />
           <span>, </span>
           <HashtagPaste text={comment} setFn={setComment} hashtag="#author" />
-          <span>, </span>
-          <HashtagPaste text={comment} setFn={setComment} hashtag="#contributors" />
+          {enableContributorsHashtag && (
+            <>
+              <span>, </span>
+              <HashtagPaste text={comment} setFn={setComment} hashtag="#contributors" />
+            </>
+          )}
         </span>
       )}
       <DropzoneUploadStatus uploading={uploading} uploadError={uploadError} />

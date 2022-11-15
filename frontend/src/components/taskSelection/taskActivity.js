@@ -52,8 +52,9 @@ const PostComment = ({ projectId, taskId, contributors, setCommentPayload }) => 
         <CommentInputField
           comment={comment}
           setComment={setComment}
-          enableHashtagPaste={true}
+          enableHashtagPaste
           contributors={contributors}
+          enableContributorsHashtag
         />
       </div>
       <div className="w-20 fr pt3 tr">

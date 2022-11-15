@@ -34,7 +34,7 @@ export default defineMessages({
   },
   contributorsHashtagTip: {
     id: 'comment.hashtags.help.contributors',
-    defaultMessage: 'Add "{hashtag}" to notify all contributors about your comment.',
+    defaultMessage: 'Add "{hashtag}" to notify the task contributors about your comment.',
   },
   nothingToPreview: {
     id: 'comment.preview.nothingToPreview',

@@ -246,6 +246,7 @@ export function CompletionTabForMapping({
             setComment={setTaskComment}
             contributors={contributors}
             enableHashtagPaste={true}
+            enableContributorsHashtag
           />
         </p>
       </div>
@@ -602,8 +603,9 @@ const TaskValidationSelector = ({
               comment={comment}
               setComment={setComment}
               contributors={contributors.length ? contributors : contributorsList}
-              enableHashtagPaste={true}
-              autoFocus={true}
+              enableHashtagPaste
+              autoFocus
+              enableContributorsHashtag
             />
           </div>
           {isValidatingMultipleTasks && comment && (
