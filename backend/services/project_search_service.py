@@ -240,6 +240,15 @@ class ProjectSearchService:
             query = query.join(
                 project_interests, project_interests.c.project_id == Project.id
             ).filter(project_interests.c.interest_id.in_(search_dto.interests))
+        if search_dto.based_on_user_interests:
+            user = UserService.get_user_by_id(search_dto.based_on_user_interests)
+            query = query.join(
+                project_interests, project_interests.c.project_id == Project.id
+            ).filter(
+                project_interests.c.interest_id.in_(
+                    [interest.id for interest in user.interests]
+                )
+            )
         if search_dto.created_by:
             query = query.filter(Project.author_id == search_dto.created_by)
         if search_dto.mapped_by:

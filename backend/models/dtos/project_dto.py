@@ -324,6 +324,7 @@ class ProjectSearchDTO(Model):
     mapped_by = IntType(required=False)
     favorited_by = IntType(required=False)
     managed_by = IntType(required=False)
+    based_on_user_interests = IntType(required=False)
     omit_map_results = BooleanType(required=False)
     last_updated_lte = StringType(required=False)
     last_updated_gte = StringType(required=False)
