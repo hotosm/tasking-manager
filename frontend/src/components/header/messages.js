@@ -161,7 +161,11 @@ export default defineMessages({
   },
   newVersionAvailable: {
     id: 'serviceWorker.dialog.newVersion',
-    defaultMessage: 'Tasking Manager has been updated. Click the button to refresh and ensure the page is displayed correctly.',
+    defaultMessage: 'Tasking Manager has been updated.',
+  },
+  newVersionAvailableLineTwo: {
+    id: 'serviceWorker.dialog.newVersionAvailableLineTwo',
+    defaultMessage: 'Click the button to refresh and ensure the page is displayed correctly.',
   },
   update: {
     id: 'serviceWorker.dialog.update',
