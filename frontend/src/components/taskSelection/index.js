@@ -245,7 +245,10 @@ export function TaskSelection({ project, type, loading }: Object) {
           setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
         } else {
           // if there are multiple tasks selected, remove the clicked one
-          setSelectedTasks(selected.filter((i) => i !== selection));
+          const selectedTasksTemp = selected.filter((i) => i !== selection);
+          setSelectedTasks(selectedTasksTemp);
+          selectedTasksTemp.length === 0 &&
+            setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
         }
       } else {
         // if there is some task selected to validation and the user selects
@@ -259,7 +262,11 @@ export function TaskSelection({ project, type, loading }: Object) {
               lockedTasks.status === 'LOCKED_FOR_MAPPING' ? 'resumeMapping' : 'resumeValidation',
             );
           } else {
-            setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));
+            if (project.enforceRandomTaskSelection && status === 'READY') {
+              setTaskAction(getTaskAction(user, project, null, userTeams.teams, userOrgs));
+            } else {
+              setTaskAction(getTaskAction(user, project, status, userTeams.teams, userOrgs));
+            }
           }
         }
       }
@@ -277,6 +284,13 @@ export function TaskSelection({ project, type, loading }: Object) {
       setActiveStatus(status);
     }
   }
+
+  const curatedSelectedTasks =
+    project.enforceRandomTaskSelection && taskAction !== 'validateSelectedTask'
+      ? randomTask
+      : selected.length && !taskAction.endsWith('AnotherTask')
+      ? selected
+      : randomTask;
 
   return (
     <div>
@@ -384,9 +398,7 @@ export function TaskSelection({ project, type, loading }: Object) {
               project={project}
               tasks={tasks}
               taskAction={taskAction}
-              selectedTasks={
-                selected.length && !taskAction.endsWith('AnotherTask') ? selected : randomTask
-              }
+              selectedTasks={curatedSelectedTasks}
             />
           </Suspense>
         </ReactPlaceholder>
