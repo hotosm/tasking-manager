@@ -105,6 +105,27 @@ export const iconConfig = {
       });
     },
   },
+  upload: {
+    name: 'upload',
+    keyCommand: 'upload',
+    buttonProps: { 'aria-label': 'Upload user', title: 'Upload image' },
+    icon: (
+      <svg width={ICON_SIZE} height={ICON_SIZE} x="0" y="0" viewBox="0 0 24 24" class="">
+        <g>
+          <path
+            id="image-upload"
+            d="m21.75 11v6a3.383 3.383 0 0 1 -3.75 3.75h-12a3.383 3.383 0 0 1 -3.75-3.75v-10a3.383 3.383 0 0 1 3.75-3.75h8a.75.75 0 0 1 0 1.5h-8c-1.577 0-2.25.673-2.25 2.25v9.25l2.54-2.54a1.008 1.008 0 0 1 1.42 0l.94.94a.5.5 0 0 0 .7 0l4.94-4.94a1.008 1.008 0 0 1 1.42 0l4.54 4.54v-3.25a.75.75 0 0 1 1.5 0zm-13.757-3.25a1.253 1.253 0 1 0 .007 0zm10.537-2.72.22-.219v2.189a.75.75 0 0 0 1.5 0v-2.189l.22.219a.75.75 0 0 0 1.06-1.06l-1.5-1.5a.751.751 0 0 0 -1.06 0l-1.5 1.5a.75.75 0 0 0 1.06 1.06z"
+            fill="#000000"
+            data-original="#000000"
+            class=""
+          ></path>
+        </g>
+      </svg>
+    ),
+    execute: () => {
+      document.getElementById('image_picker').click();
+    },
+  },
   // The backend converts markdown into HTML, so youtube embed iframe works on the preview mode,
   // uncomment this when backend has support for converting our custom youtube markdown into iframes
   // youtube: {
