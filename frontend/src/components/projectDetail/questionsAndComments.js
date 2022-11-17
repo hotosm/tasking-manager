@@ -35,7 +35,7 @@ export const PostProjectComment = ({ projectId, updateComments, contributors }) 
     <div className="w-90-ns w-100 cf pv4 bg-white center ph3">
       <div className="cf w-100 flex mb3">
         <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
-        <div className="cf pt3-ns ph3 ph3-m bg-grey-light dib">
+        <div className="cf pt3-ns ph3 ph3-m ml3 bg-grey-light dib">
           <span
             role="button"
             className={`pointer db dib-ns ${!isShowPreview && 'bb b--blue-dark bw1 pb1'}`}
