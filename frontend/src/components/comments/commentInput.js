@@ -7,7 +7,7 @@ import { useDropzone } from 'react-dropzone';
 
 import 'tributejs/tribute.css';
 
-import { useOnDrop } from '../../hooks/UseUploadImage';
+import { useOnDrop, useUploadImage } from '../../hooks/UseUploadImage';
 import { fetchLocalJSONAPI } from '../../network/genericJSONRequest';
 import HashtagPaste from './hashtagPaste';
 import FileRejections from './fileRejections';
@@ -37,6 +37,7 @@ export const CommentInputField = ({
     onDrop,
     ...DROPZONE_SETTINGS,
   });
+  const [fileuploadError, fileuploading, uploadImg] = useUploadImage();
 
   const tribute = new Tribute({
     trigger: '@',
@@ -72,6 +73,9 @@ export const CommentInputField = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textareaRef.current, contributors]);
 
+  const handleImagePick = async (event) =>
+    await uploadImg(event.target.files[0], appendImgToComment, token);
+
   return (
     <div {...getRootProps()}>
       <div className={`${isShowPreview ? 'dn' : ''}`}>
@@ -84,6 +88,13 @@ export const CommentInputField = ({
           value={comment}
           onChange={setComment}
           textareaProps={getInputProps}
+        />
+        <input
+          type="file"
+          id="image_picker"
+          className="dn"
+          accept="image/*"
+          onChange={handleImagePick}
         />
         {isProjectDetailCommentSection && (
           <div className="flex justify-between ba bt-0 w-100 ph2 pv1 relative b--blue-grey textareaDetail">
@@ -125,7 +136,10 @@ export const CommentInputField = ({
           )}
         </span>
       )}
-      <DropzoneUploadStatus uploading={uploading} uploadError={uploadError} />
+      <DropzoneUploadStatus
+        uploading={uploading || fileuploading}
+        uploadError={uploadError || fileuploadError}
+      />
       <FileRejections files={fileRejections} />
     </div>
   );
