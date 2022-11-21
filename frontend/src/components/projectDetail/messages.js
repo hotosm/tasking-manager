@@ -133,13 +133,13 @@ export default defineMessages({
     id: 'project.detail.questionsAndComments.login',
     defaultMessage: 'Log in to be able to post comments.',
   },
-  write: {
-    id: 'project.detail.questionsAndComments.write',
-    defaultMessage: 'Write',
-  },
   preview: {
     id: 'project.detail.questionsAndComments.preview',
     defaultMessage: 'Preview',
+  },
+  previewComment: {
+    id: 'project.detail.questionsAndComments.previewComment',
+    defaultMessage: 'Preview comment',
   },
   post: {
     id: 'project.detail.questionsAndComments.button',

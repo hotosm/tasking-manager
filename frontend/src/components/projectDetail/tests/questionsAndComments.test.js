@@ -22,12 +22,12 @@ describe('test if QuestionsAndComments component', () => {
         <PostProjectComment projectId={1} />
       </ReduxIntlProviders>,
     );
-    const previewBtn = screen.getByRole('button', { name: /preview/i });
-    expect(screen.getAllByRole('button').length).toBe(11);
-    expect(screen.getByRole('button', { name: /write/i })).toBeInTheDocument();
-    expect(previewBtn).toBeInTheDocument();
+    expect(screen.getAllByRole('button').length).toBe(9);
+    expect(screen.getByRole('checkbox').checked).toBe(false);
     expect(screen.getByRole('textbox')).toBeInTheDocument();
-    fireEvent.click(previewBtn);
+    expect(screen.getByText('Preview comment')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('checkbox'));
+    expect(screen.getByRole('checkbox').checked).toBe(true);
     expect(screen.queryByRole('textbox', { hidden: true })).toBeInTheDocument();
     expect(screen.getByText(/nothing to preview/i)).toBeInTheDocument();
   });
