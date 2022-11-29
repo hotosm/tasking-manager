@@ -43,7 +43,7 @@ export function TaskAction({ project, action }: Object) {
     if (userDetails.id && token && action && project) {
       getTasks();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, userDetails.id, token, project, locale]);
 
   if (token) {

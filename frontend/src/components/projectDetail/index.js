@@ -37,12 +37,12 @@ const ProjectDetailMap = (props) => {
       },
     ],
   };
-  
+
   const centroidGeoJSON = props.project.areaOfInterest && {
     type: 'FeatureCollection',
     features: [centroid(props.project.areaOfInterest)],
   };
-  
+
   return (
     <div className="relative">
       {

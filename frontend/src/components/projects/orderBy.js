@@ -45,7 +45,7 @@ export function OrderBySelector(props) {
       type: 'DESC',
     },
   ];
-  
+
   const onSortSelect = (arr) => {
     if (arr.length === 1) {
       props.setQuery(
@@ -61,7 +61,7 @@ export function OrderBySelector(props) {
       throw new Error('filter select array is bigger.');
     }
   };
-  
+
   return (
     <Dropdown
       onChange={onSortSelect}

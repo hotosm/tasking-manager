@@ -123,6 +123,7 @@ class EnvironmentConfig:
     OAUTH_CLIENT_ID = os.getenv("TM_CLIENT_ID", None)
     OAUTH_CLIENT_SECRET = os.getenv("TM_CLIENT_SECRET", None)
     OAUTH_SCOPE = os.getenv("TM_SCOPE", None)
+    OAUTH_REDIRECT_URI = os.getenv("TM_REDIRECT_URI", None)
 
     # Some more definitions (not overridable)
     SQLALCHEMY_ENGINE_OPTIONS = {

@@ -452,7 +452,8 @@ export default defineMessages({
   },
   difficultyDescription: {
     id: 'projects.formInputs.difficulty.description',
-    defaultMessage: 'Setting the difficulty will help mappers to find suitable projects to work on.',
+    defaultMessage:
+      'Setting the difficulty will help mappers to find suitable projects to work on.',
   },
   perTaskInstructions: {
     id: 'projects.formInputs.per_task_instructions',

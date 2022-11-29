@@ -38,7 +38,9 @@ mail = Mail()
 
 
 osm = OAuth2Session(
-    client_id=EnvironmentConfig.OAUTH_CLIENT_ID, scope=EnvironmentConfig.OAUTH_SCOPE
+    client_id=EnvironmentConfig.OAUTH_CLIENT_ID,
+    scope=EnvironmentConfig.OAUTH_SCOPE,
+    redirect_uri=EnvironmentConfig.OAUTH_REDIRECT_URI,
 )
 
 # Import all models so that they are registered with SQLAlchemy

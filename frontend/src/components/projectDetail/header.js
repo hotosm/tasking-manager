@@ -21,7 +21,7 @@ export function HeaderLine({ author, projectId, priority, showEditLink, organisa
     <div className="cf">
       <div className="w-70-ns w-100 dib fl pv2">
         <span className="blue-dark">{projectIdLink}</span>
-        {organisation ? <span className='blue-dark'> | {organisation}</span> : null}
+        {organisation ? <span className="blue-dark"> | {organisation}</span> : null}
       </div>
       <div className="w-30-ns w-100 dib fl tr">
         {showEditLink && (
