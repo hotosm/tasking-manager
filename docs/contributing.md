@@ -36,7 +36,7 @@ Test a bug fix or new feature. Once an issue has been addressed and Pull Request
 Create pull requests (PRs) for changes that you think are needed. We would really appreciate your help! We ask that you follow our [coding contribution guidelines](https://github.com/hotosm/tasking-manager/blob/develop/docs/developers/contributing-guidelines.md).
 
 ## Translating
-Review or submit [language translations]( https://github.com/hotosm/tasking-manager/blob/develop/docs/contributing-translation.md)
+Review or submit [language translations](https://github.com/hotosm/tasking-manager/blob/develop/docs/developers/contributing-guidelines.md#translators)
 
 ## Thank you!
 Thank you very much in advance for your contributions!! Please ensure you refer to our [Code of Conduct](https://github.com/hotosm/tasking-manager/blob/develop/docs/code_of_conduct.md) when you contribute!
