@@ -16,6 +16,26 @@ export default defineMessages({
     id: 'deleteModal.status.success.projects',
     defaultMessage: 'Project deleted successfully.',
   },
+  success_teams: {
+    id: 'deleteModal.status.success.teams',
+    defaultMessage: 'Team deleted successfully.',
+  },
+  success_organisations: {
+    id: 'deleteModal.status.success.organisations',
+    defaultMessage: 'Organisation deleted successfully.',
+  },
+  success_interests: {
+    id: 'deleteModal.status.success.interests',
+    defaultMessage: 'Interest deleted successfully.',
+  },
+  success_licenses: {
+    id: 'deleteModal.status.success.licenses',
+    defaultMessage: 'License deleted successfully.',
+  },
+  success_campaigns: {
+    id: 'deleteModal.status.success.campaigns',
+    defaultMessage: 'Campaign deleted successfully.',
+  },
   failure_projects: {
     id: 'deleteModal.status.failure.projects',
     defaultMessage: 'An error occurred when trying to delete this project.',
