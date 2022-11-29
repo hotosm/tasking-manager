@@ -334,11 +334,7 @@ export function TaskMapAction({
                           }
                           contributors={contributors}
                           historyTabSwitch={historyTabSwitch}
-                          taskInstructions={
-                            activeTasks && activeTasks.length === 1
-                              ? activeTasks[0].perTaskInstructions
-                              : null
-                          }
+                          taskInstructions={activeTasks && activeTasks[0].perTaskInstructions}
                           disabled={disabled}
                           taskComment={taskComment}
                           setTaskComment={setTaskComment}
@@ -350,11 +346,7 @@ export function TaskMapAction({
                         <CompletionTabForValidation
                           project={project}
                           tasksIds={tasksIds}
-                          taskInstructions={
-                            activeTasks && activeTasks.length === 1
-                              ? activeTasks[0].perTaskInstructions
-                              : null
-                          }
+                          taskInstructions={activeTasks && activeTasks[0].perTaskInstructions}
                           disabled={disabled}
                           contributors={contributors}
                           validationComments={validationComments}
