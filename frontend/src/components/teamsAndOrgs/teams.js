@@ -194,7 +194,7 @@ export function TeamInformation(props) {
         </label>
         {Object.keys(joinMethods).map((method) => (
           <div className="pv2">
-            <RadioField name="joinMethod" value={method} />
+            <RadioField name="joinMethod" value={method} required />
             <span className="f5">
               <FormattedMessage {...messages[joinMethods[method]]} />
             </span>

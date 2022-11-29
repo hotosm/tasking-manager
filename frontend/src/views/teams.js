@@ -138,9 +138,6 @@ export function CreateTeam() {
 
   const createTeam = (payload) => {
     delete payload['organisation'];
-    if (payload.joinMethod !== 'BY_INVITE') {
-      payload.visibility = 'PUBLIC';
-    }
     pushToLocalJSONAPI('teams/', JSON.stringify(payload), token, 'POST').then((result) => {
       managers
         .filter((user) => user.username !== userDetails.username)
@@ -153,7 +150,8 @@ export function CreateTeam() {
   return (
     <Form
       onSubmit={(values) => createTeam(values)}
-      render={({ handleSubmit, pristine, form, submitting, values }) => {
+      initialValues={{ visibility: 'PUBLIC' }}
+      render={({ handleSubmit, pristine, submitting, values }) => {
         return (
           <form onSubmit={handleSubmit} className="blue-grey">
             <div className="cf pb5">
@@ -200,7 +198,7 @@ export function CreateTeam() {
               </div>
               <div className="w-20-l w-40-m w-50 h-100 fr">
                 <FormSubmitButton
-                  disabled={submitting || pristine || !values.organisation_id || !values.visibility}
+                  disabled={submitting || pristine || !values.organisation_id}
                   className="w-100 h-100 bg-red white"
                   disabledClassName="bg-red o-50 white w-100 h-100"
                 >
@@ -211,7 +209,7 @@ export function CreateTeam() {
           </form>
         );
       }}
-    ></Form>
+    />
   );
 }
 
