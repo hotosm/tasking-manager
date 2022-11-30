@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useQueryParam, StringParam } from 'use-query-params';
 import Popup from 'reactjs-popup';
 import ReactPlaceholder from 'react-placeholder';
+import { FormattedMessage } from 'react-intl';
 
 import { useFetch } from '../../hooks/UseFetch';
 import { useInterval } from '../../hooks/UseInterval';
@@ -23,6 +24,8 @@ import { ChangesetCommentTags } from './changesetComment';
 import { ProjectHeader } from '../projectDetail/header';
 import Contributions from './contributions';
 import { UserPermissionErrorContent } from './permissionErrorModal';
+import { Alert } from '../alert';
+import messages from './messages';
 
 const TaskSelectionFooter = React.lazy(() => import('./footer'));
 
@@ -333,6 +336,11 @@ export function TaskSelection({ project, type, loading }: Object) {
                   </div>
                   {activeSection === 'instructions' ? (
                     <>
+                      {project.enforceRandomTaskSelection && (
+                        <Alert type="info">
+                          <FormattedMessage {...messages.enforcedRandomTaskSelection} />
+                        </Alert>
+                      )}
                       <ProjectInstructions
                         instructions={project.projectInfo && project.projectInfo.instructions}
                         isProjectArchived={project.status === 'ARCHIVED'}
