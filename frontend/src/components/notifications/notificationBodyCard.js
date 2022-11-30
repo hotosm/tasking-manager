@@ -18,7 +18,7 @@ export const NotificationBodyModal = (props) => {
 
   return (
     <div
-      onClick={() => navigate(`../../${location.search}`)}
+      onClick={() => navigate(`../${location.search}`)}
       className="fixed top-0 left-0 right-0 bottom-0 notification-ctr"
     >
       <div
