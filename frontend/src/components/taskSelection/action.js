@@ -92,8 +92,9 @@ export function TaskMapAction({
     project.projectId && tasksIds && tasksIds.length === 1,
   );
 
-  const contributors =
-    taskHistory?.taskHistory && getTaskContributors(taskHistory.taskHistory, userDetails.username);
+  const contributors = taskHistory?.taskHistory
+    ? getTaskContributors(taskHistory.taskHistory, userDetails.username)
+    : [];
 
   const readTaskComments = useReadTaskComments(taskHistory);
   const disableBadImagery = useDisableBadImagery(taskHistory);
