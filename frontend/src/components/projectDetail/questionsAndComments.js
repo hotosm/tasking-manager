@@ -13,6 +13,7 @@ import { MessageStatus } from '../comments/status';
 import { CurrentUserAvatar, UserAvatar } from '../user/avatar';
 import { htmlFromMarkdown, formatUserNamesToLink } from '../../utils/htmlFromMarkdown';
 import { pushToLocalJSONAPI, fetchLocalJSONAPI } from '../../network/genericJSONRequest';
+import { SwitchToggle } from '../formInputs';
 
 export const PostProjectComment = ({ projectId, updateComments, contributors }) => {
   const token = useSelector((state) => state.auth.token);
@@ -35,22 +36,6 @@ export const PostProjectComment = ({ projectId, updateComments, contributors }) 
     <div className="w-90-ns w-100 cf pv4 bg-white center ph3">
       <div className="cf w-100 flex mb3">
         <CurrentUserAvatar className="w3 h3 fr ph2 br-100" />
-        <div className="cf pt3-ns ph3 ph3-m ml3 bg-grey-light dib">
-          <span
-            role="button"
-            className={`pointer db dib-ns ${!isShowPreview && 'bb b--blue-dark bw1 pb1'}`}
-            onClick={() => setIsShowPreview(false)}
-          >
-            <FormattedMessage {...messages.write} />
-          </span>
-          <span
-            role="button"
-            className={`pointer ml3 db dib-ns ${isShowPreview && 'bb b--blue-dark bw1 pb1'}`}
-            onClick={() => setIsShowPreview(true)}
-          >
-            <FormattedMessage {...messages.preview} />
-          </span>
-        </div>
       </div>
       <div className={`w-100 h-100`} style={{ position: 'relative', display: 'block' }}>
         <CommentInputField
@@ -64,6 +49,14 @@ export const PostProjectComment = ({ projectId, updateComments, contributors }) 
       </div>
 
       <div className="fl w-100 tr pt1 pr0-ns pr1 ml-auto">
+        <div className="fl pv2 dib-ns dn blue-dark">
+          <SwitchToggle
+            onChange={() => setIsShowPreview(!isShowPreview)}
+            isChecked={isShowPreview}
+            label={<FormattedMessage {...messages.previewComment} />}
+            labelPosition='right'
+          />
+        </div>
         <Button
           onClick={() => saveCommentAsync.execute()}
           className="bg-red white f5"
