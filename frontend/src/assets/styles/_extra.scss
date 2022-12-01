@@ -454,6 +454,8 @@ a[href="https://www.mapbox.com/map-feedback/"]
   align-self: flex-start;
 }
 
+// Box Shadow Overrides Starts
+
 .shadow-1 {
   box-shadow: 0px 4px 10px rgb(0 0 0 / 10%);
 }
@@ -464,6 +466,10 @@ a[href="https://www.mapbox.com/map-feedback/"]
 
 .shadow-3 {
   box-shadow: 0px 7px 64px rgba(0, 0, 0, 0.07);
+}
+
+.shadow-6 {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .w-md-editor {

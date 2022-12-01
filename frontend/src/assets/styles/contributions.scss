@@ -1,0 +1,34 @@
+.stats-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.875rem;
+
+  @media screen and (max-width: 30em) {
+    gap: 0.5rem
+  }
+}
+
+.contributions-titles {
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  margin-top: 4rem;
+}
+
+.user-projects-ctr {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  // grid-auto-flow: column;
+  column-gap: 1.875rem;
+  row-gap: 2rem;
+}
+
+.task-stats-ctr {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.875rem;
+
+  @media screen and (max-width: 55em) {
+    grid-template-columns: 1fr;
+  }
+}

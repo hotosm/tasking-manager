@@ -141,7 +141,7 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
 
   return (
     <>
-      <div className="w-100 h-100 cf pv3 pl5-l ph2 bg-white blue-dark">
+      <div className="w-100 h-100 cf pv4 pl5-l ph2 bg-white blue-dark flex flex-column flex-row-ns items-center">
         <div className="fl dib pr3">
           {user.pictureUrl ? (
             <img
@@ -153,10 +153,12 @@ export const HeaderProfile = ({ userDetails, changesets, selfProfile }) => {
             <ProfilePictureIcon className="red" />
           )}
         </div>
-        <div className="w-70-ns w-100 fl dib">
+        <div className="w-70-ns w-100 fl dib tc tl-ns">
           <div className="pl2 dib w-50-l fl w-100">
-            <p className="barlow-condensed f2 ttu b ma0 mb2">{user.name || user.username}</p>
-            <p className="f4 ma0 mb2">
+            <p className="barlow-condensed f2 ttu fw5 ma0 mb3" style={{ letterSpacing: '1.25px' }}>
+              {user.name || user.username}
+            </p>
+            <p className="f125 ma0 mb2 fw5">
               <MappingLevelMessage level={user.mappingLevel} />
             </p>
             <NextMappingLevel changesetsCount={changesets} />

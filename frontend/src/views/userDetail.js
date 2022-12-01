@@ -54,8 +54,8 @@ export const UserDetail = ({ username, withHeader = true }) => {
     return <Redirect to={'/login'} noThrow />;
   }
 
-  const blockClass = 'w-third-l w-50-m w-100 fl pa2';
-  const titleClass = 'f3 fw6 ttu barlow-condensed blue-dark mt0 pt3 mb3';
+  const titleClass = 'contributions-titles fw5 ttu barlow-condensed blue-dark mt0';
+
   return errorDetails ? (
     <NotFound />
   ) : (
@@ -73,10 +73,10 @@ export const UserDetail = ({ username, withHeader = true }) => {
         </div>
       )}
       <div className={withHeader ? 'w-100 ph4-l ph2 cf pb3' : ''}>
-        <div className="mv4">
+        <div className="mt4">
           <ElementsMapped userStats={userStats} osmStats={osmStats} />
         </div>
-        <div className="mv4">
+        <div>
           <h3 className={titleClass}>
             <FormattedMessage {...messages.contributionTimelineTitle} />
           </h3>
@@ -93,8 +93,8 @@ export const UserDetail = ({ username, withHeader = true }) => {
           <h3 className={titleClass}>
             <FormattedMessage {...messages.projectsTitle} />
           </h3>
-          <div className="w-100 cf">
-            <div className="w-third-l w-100 fl pa2">
+          <div className="user-projects-ctr">
+            <div>
               <ReactPlaceholder
                 type="rect"
                 showLoadingAnimation={true}
@@ -104,7 +104,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
                 <TopProjects projects={userProjects} />
               </ReactPlaceholder>
             </div>
-            <div className={blockClass}>
+            <div>
               <ReactPlaceholder
                 type="rect"
                 showLoadingAnimation={true}
@@ -116,7 +116,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
                 </Suspense>
               </ReactPlaceholder>
             </div>
-            <div className={blockClass}>
+            <div>
               <Suspense fallback={<div />}>
                 <EditsByNumbers osmStats={osmStats} />
               </Suspense>

@@ -42,26 +42,28 @@ const EditsByNumbers = ({ osmStats }) => {
   const data = formatChartData(reference, osmStats);
 
   return (
-    <div className="pb3 ph3 pt2 bg-white blue-dark shadow-4">
-      <h3 className="f4 mv3 fw6">
-        <FormattedMessage {...messages.editsTitle} />
-      </h3>
-      {Object.keys(osmStats).length ? (
-        <Doughnut
-          data={data}
-          options={{
-            aspectRatio: 2,
-            plugins: {
-              legend: { position: 'right', labels: { boxWidth: 12 } },
-              tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
-            },
-          }}
-        />
-      ) : (
-        <div className="h-100 tc pv5 blue-grey">
-          <FormattedMessage {...messages.noEditsData} />
-        </div>
-      )}
+    <div className="pb4 ph3 pt2 bg-white blue-dark shadow-6 h-100">
+      <div className="ml2 mt1">
+        <h3 className="f125 mv3 fw6">
+          <FormattedMessage {...messages.editsTitle} />
+        </h3>
+        {Object.keys(osmStats).length && data.datasets[0].data.some((x) => !isNaN(x)) ? (
+          <Doughnut
+            data={data}
+            options={{
+              aspectRatio: 2,
+              plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12 } },
+                tooltip: { callbacks: { label: (context) => formatTooltip(context) } },
+              },
+            }}
+          />
+        ) : (
+          <div className="h-100 tc pv5 blue-grey">
+            <FormattedMessage {...messages.noEditsData} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
