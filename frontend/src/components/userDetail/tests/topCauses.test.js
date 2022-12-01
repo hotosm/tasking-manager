@@ -24,7 +24,7 @@ describe('TopCauses card', () => {
       </ReduxIntlProviders>,
     );
 
-    expect(screen.getByText('Top causes contributed to').className).toBe('f4 mv3 fw6');
+    expect(screen.getByText('Top causes contributed to').className).toBe('f125 mv3 fw6');
     expect(
       screen.getByText('Information is not available because no projects were mapped until now.'),
     ).toBeInTheDocument();
@@ -46,7 +46,7 @@ describe('TopCauses card', () => {
       </ReduxIntlProviders>,
     );
 
-    expect(screen.getByText('Top causes contributed to').className).toBe('f4 mv3 fw6');
+    expect(screen.getByText('Top causes contributed to').className).toBe('f125 mv3 fw6');
     expect(
       screen.queryByText('Information is not available because no projects were mapped until now.'),
     ).not.toBeInTheDocument();

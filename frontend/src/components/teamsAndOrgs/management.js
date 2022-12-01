@@ -61,7 +61,7 @@ export function JoinMethodBox(props) {
 export function Management(props) {
   // admin users can switch between all teams/orgs and only their teams/orgs
   return (
-    <div className="pull-center cf bg-tan">
+    <div className="pull-center cf">
       <div className="cf pv4">
         <h3 className="barlow-condensed f2 ma0 dib v-mid ttu">{props.title}</h3>
         {props.showAddButton && (

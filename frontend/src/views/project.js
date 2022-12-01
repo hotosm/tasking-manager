@@ -120,7 +120,7 @@ export const UserProjectsPage = (props) => {
   }
 
   return (
-    <div className="pull-center bg-tan">
+    <div className="pull-center">
       <MyProjectNav
         location={props.location}
         orgAPIState={orgAPIState}
