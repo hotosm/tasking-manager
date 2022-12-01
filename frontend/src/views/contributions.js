@@ -39,7 +39,7 @@ export const ContributionsPage = (props) => {
 
   return (
     <>
-      <div className="pb5 pt180 pull-center bg-tan">
+      <div className="pb5 pt180 pull-center">
         {
           props.children
           /* This is where the full task body component is rendered
@@ -58,7 +58,7 @@ export const ContributionsPage = (props) => {
 
 export const ContributionsPageIndex = (props) => {
   return (
-    <div className="bg-tan w-100 cf">
+    <div className="bg-blue-light 0-10 w-100 cf" style={{ background: 'rgba(146, 157, 179,0.1)' }}>
       <div className="w-100 cf">
         <HeaderProfile selfProfile={true} />
       </div>

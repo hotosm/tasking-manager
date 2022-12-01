@@ -38,7 +38,7 @@ export function ManageTeams() {
 export function MyTeams() {
   useSetTitleTag('My teams');
   return (
-    <div className="w-100 cf bg-tan blue-dark">
+    <div className="w-100 cf blue-dark">
       <ListTeams />
     </div>
   );

@@ -59,7 +59,7 @@ export const UserDetail = ({ username, withHeader = true }) => {
   return errorDetails ? (
     <NotFound />
   ) : (
-    <div className="bg-tan w-100">
+    <div className="w-100">
       {withHeader && (
         <div className="w-100 cf pb3">
           <ReactPlaceholder
