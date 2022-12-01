@@ -17,7 +17,7 @@ describe('EditsByNumbers card', () => {
       </ReduxIntlProviders>,
     );
 
-    expect(screen.getByText('Edits by numbers').className).toBe('f4 mv3 fw6');
+    expect(screen.getByText('Edits by numbers').className).toBe('f125 mv3 fw6');
     expect(
       screen.getByText(
         'No data to show yet. OpenStreetMap edits stats are updated with a delay of one hour.',
@@ -43,7 +43,7 @@ describe('EditsByNumbers card', () => {
       </ReduxIntlProviders>,
     );
 
-    expect(screen.getByText('Edits by numbers').className).toBe('f4 mv3 fw6');
+    expect(screen.getByText('Edits by numbers').className).toBe('f125 mv3 fw6');
     expect(
       screen.queryByText(
         'No data to show yet. OpenStreetMap edits stats are updated with a delay of one hour.',
