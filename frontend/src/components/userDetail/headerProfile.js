@@ -43,7 +43,7 @@ export const SocialMedia = ({ data }) => {
       linkedinId: `https://www.linkedin.com/in/${value}`,
       osm: `${OSM_SERVER_URL}/user/${value}`,
       missingmaps: `https://www.missingmaps.org/users/#/${value}`,
-      osmcha: `https://osmcha.mapbox.com/?filters={"users":[{"label":"${value}","value":"${value}"}]}`,
+      osmcha: `https://osmcha.org/?filters={"users":[{"label":"${value}","value":"${value}"}]}`,
     };
 
     return (
