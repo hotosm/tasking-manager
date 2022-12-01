@@ -65,8 +65,11 @@ export const TaskStats = ({ userStats, username }) => {
 
   return (
     <div className="relative base-font blue-grey task-stats-ctr">
-      {taskStats.map((stat) => (
-        <article className="shadow-6 pv3 ph2 bg-white flex flex-column flex-row-ns items-center">
+      {taskStats.map((stat, index) => (
+        <article
+          key={index}
+          className="shadow-6 pv3 ph2 bg-white flex flex-column flex-row-ns items-center"
+        >
           <div className="w-75 w-25-ns h-100 pa2 pa0-m red tc">{stat.icon}</div>
           <div className="w-75 mt3 tc f6 b">
             <div className=" w-100">
@@ -79,8 +82,8 @@ export const TaskStats = ({ userStats, username }) => {
               <hr className="w-50" />
             </div>
             <div className="w-100 pt4 flex">
-              {stat.items.map((item) => (
-                <div className=" w-33 tc">
+              {stat.items.map((item, index) => (
+                <div key={index} className=" w-33 tc">
                   <p className="ma0 mb0 barlow-condensed f2 fw5 red">{item.value}</p>
                   <p className="mb3 ttl fw6">
                     <FormattedMessage {...item.label} />
