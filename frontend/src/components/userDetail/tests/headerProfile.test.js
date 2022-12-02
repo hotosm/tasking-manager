@@ -46,7 +46,7 @@ describe('SocialMedia component', () => {
     );
     expect(screen.queryAllByRole('link', { name: 'johndoe' })[2]).toHaveAttribute(
       'href',
-      'https://osmcha.mapbox.com/?filters={"users":[{"label":"johndoe","value":"johndoe"}]}',
+      'https://osmcha.org/?filters={"users":[{"label":"johndoe","value":"johndoe"}]}',
     );
     expect(screen.getByRole('link', { name: 'johndoeTwitter' })).toHaveAttribute(
       'href',

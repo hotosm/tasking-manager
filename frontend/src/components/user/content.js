@@ -97,7 +97,7 @@ export function OSMCard({ username }: Object) {
         <div className="w-100 w-50-ns fl">
           <a
             className="link red pb2"
-            href={`https://osmcha.mapbox.com/?filters={"users":[{"label":"${username}","value":"${username}"}]}`}
+            href={`https://osmcha.org/?filters={"users":[{"label":"${username}","value":"${username}"}]}`}
             target="_blank"
             rel="noopener noreferrer"
           >
