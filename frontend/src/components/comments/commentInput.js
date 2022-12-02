@@ -87,7 +87,7 @@ export const CommentInputField = ({
           height={200}
           value={comment}
           onChange={setComment}
-          textareaProps={getInputProps}
+          textareaProps={{ ...getInputProps(), spellCheck: 'true' }}
         />
         <input
           type="file"
