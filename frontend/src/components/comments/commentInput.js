@@ -78,7 +78,7 @@ export const CommentInputField = ({
 
   return (
     <div {...getRootProps()}>
-      <div className={`${isShowPreview ? 'dn' : ''}`}>
+      <div className={`${isShowPreview ? 'dn' : ''}`} data-color-mode="light">
         <MDEditor
           ref={textareaRef}
           preview="edit"
