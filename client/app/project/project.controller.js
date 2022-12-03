@@ -1678,10 +1678,11 @@
                 hasImagery = true;
             }
             if (hasImagery) {
+                const fixedUrl = imageryUrl.substr(imageryUrl.indexOf(":")+1);
                 var imageryParams = {
                     title: encodeURIComponent('Tasking Manager Imagery - #' + vm.projectData.projectId),
                     type: imageryUrl.toLowerCase().substring(0, 3),
-                    url: encodeURIComponent(imageryUrl)
+                    url: encodeURIComponent(fixedUrl)
                 };
                 editorService.sendJOSMCmd('http://127.0.0.1:8111/imagery', imageryParams)
                     .catch(function() {
