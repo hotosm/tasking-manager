@@ -62,6 +62,8 @@ export const NotificationBodyModal = (props) => {
 
 export function NotificationBodyCard({
   loading,
+  retryFn,
+  closeModal,
   card: {
     messageId,
     name,
@@ -91,7 +93,10 @@ export function NotificationBodyCard({
   }
   const deleteNotification = (id) => {
     fetchLocalJSONAPI(`notifications/${id}/`, token, 'DELETE')
-      .then((success) => navigate(`../../${location.search}`))
+      .then(() => {
+        retryFn();
+        closeModal();
+      })
       .catch((e) => {
         console.log(e.message);
       });
