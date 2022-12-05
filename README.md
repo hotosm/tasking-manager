@@ -12,9 +12,10 @@ This is Free and Open Source Software. You are welcome to use the code and set u
 
 ## Get involved!
 
-* Start by reading our [Code of conduct](./docs-old/code_of_conduct.md)
+* Start by reading our [Code of conduct](https://github.com/hotosm/tasking-manager/blob/develop/docs/code_of_conduct.md)
 * Get familiar with our [contributor guidelines](https://github.com/hotosm/tasking-manager/blob/develop/docs/contributing.md) explaining the different ways in which you can support this project! We need your help!
 * Join the Tasking Manager Collective Meet up- an opportunity to meet other Tasking Manager contributors. The meet ups take place on the first Wednesday of the month 9:00 or 15:00UTC! Register to receive a calendar invite: https://bit.ly/3s6ntmV or join directly via this link: https://meet.jit.si/TaskingManagerCollectiveMeetUp
+* Read the monthly update blogs on [OSM Discourse](https://community.openstreetmap.org/c/general/38/all).
 
 
 ## Developers
