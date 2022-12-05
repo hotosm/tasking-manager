@@ -278,13 +278,6 @@ export function TaskList({
             onChange={(e) => setTextSearch(e.target.value)}
             onCloseIconClick={() => setTextSearch('')}
           />
-          <CloseIcon
-            onClick={() => {
-              setTextSearch('');
-            }}
-            className={`absolute top-0 right-0 w1 h1 red pointer pr2 ${textSearch ? 'dib' : 'dn'}`}
-            style={{ top: '12px' }}
-          />
         </div>
         <TaskFilter
           userCanValidate={userCanValidate}
