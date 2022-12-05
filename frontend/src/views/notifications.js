@@ -7,8 +7,6 @@ import {
   NotificationResults,
   NotificationResultsMini,
 } from '../components/notifications/notificationResults';
-import { NotificationBodyModal } from '../components/notifications/notificationBodyCard';
-import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Login } from './login';
 import { remapParamsToAPI } from '../utils/remapParamsToAPI';
@@ -121,18 +119,4 @@ export const NotificationsPage = (props) => {
 
 export const NotificationPageIndex = () => {
   return null;
-};
-
-export const NotificationDetail = ({ id }) => {
-  const [thisNotificationError, thisNotificationLoading, thisNotification] = useFetch(
-    `notifications/${id}/`,
-  );
-
-  return (
-    <NotificationBodyModal
-      thisNotificationError={thisNotificationError}
-      thisNotificationLoading={thisNotificationLoading}
-      thisNotification={thisNotification}
-    />
-  );
 };

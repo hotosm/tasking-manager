@@ -54,11 +54,7 @@ import { ProjectStats } from './views/projectStats';
 import { ContactPage } from './views/contact';
 import { SwaggerView } from './views/swagger';
 import { ContributionsPage, ContributionsPageIndex, UserStats } from './views/contributions';
-import {
-  NotificationsPage,
-  NotificationPageIndex,
-  NotificationDetail,
-} from './views/notifications';
+import { NotificationsPage, NotificationPageIndex } from './views/notifications';
 import { Banner, ArchivalNotificationBanner } from './components/banner/index';
 import TopBanner from './components/banner/TopBanner';
 
@@ -119,7 +115,6 @@ let App = (props) => {
                   <UserDetail path="users/:username" />
                   <NotificationsPage path="inbox">
                     <NotificationPageIndex path="/" />
-                    <NotificationDetail path="message/:id" />
                   </NotificationsPage>
                   <Authorized path="authorized" />
                   <Login path="login" />
