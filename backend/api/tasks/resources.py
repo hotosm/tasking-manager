@@ -122,7 +122,7 @@ class TasksQueriesJsonAPI(Resource):
                     io.BytesIO(tasks_json),
                     mimetype="application/json",
                     as_attachment=True,
-                    attachment_filename=f"{str(project_id)}-tasks.geojson",
+                    download_name=f"{str(project_id)}-tasks.geojson",
                 )
 
             return tasks_json, 200
@@ -268,7 +268,7 @@ class TasksQueriesXmlAPI(Resource):
                     io.BytesIO(xml),
                     mimetype="text.xml",
                     as_attachment=True,
-                    attachment_filename=f"HOT-project-{project_id}.osm",
+                    download_name=f"HOT-project-{project_id}.osm",
                 )
 
             return Response(xml, mimetype="text/xml", status=200)
@@ -341,7 +341,7 @@ class TasksQueriesGpxAPI(Resource):
                     io.BytesIO(xml),
                     mimetype="text.xml",
                     as_attachment=True,
-                    attachment_filename=f"HOT-project-{project_id}.gpx",
+                    download_name=f"HOT-project-{project_id}.gpx",
                 )
 
             return Response(xml, mimetype="text/xml", status=200)

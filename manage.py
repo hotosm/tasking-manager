@@ -3,21 +3,20 @@ import warnings
 import base64
 import csv
 import datetime
-
-from flask_migrate import MigrateCommand
-from flask_script import Manager
+from flask.cli import FlaskGroup, click
+from flask_migrate import Migrate
 from dotenv import load_dotenv
-from backend import create_app, initialise_counters
+from sqlalchemy import func
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
+
+from backend import create_app, initialise_counters, db
 from backend.services.users.authentication_service import AuthenticationService
 from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
 from backend.services.interests_service import InterestService
 from backend.models.postgis.utils import NotFound
 from backend.models.postgis.task import Task, TaskHistory
-
-from sqlalchemy import func
-import atexit
-from apscheduler.schedulers.background import BackgroundScheduler
 
 
 # Load configuration from file into environment
@@ -38,25 +37,27 @@ for key in [
         warnings.warn("%s environmental variable not set." % (key,))
 
 # Initialise the flask app object
-application = create_app()
+app = create_app()
 
+cli = FlaskGroup(create_app=create_app)
 # Initialize homepage counters
 try:
-    initialise_counters(application)
+    initialise_counters(app)
 except Exception:
     warnings.warn("Homepage counters not initialized.")
 
-# Add management commands
-manager = Manager(application)
+migrate = Migrate(app, db)
 
-# Enable db migrations to be run via the command line
-manager.add_command("db", MigrateCommand)
+
+@app.shell_context_processor
+def make_shell_context():
+    return dict(app=app, db=db)
 
 
 # Job runs once every 2 hours
-@manager.command
+@cli.command("auto-unlock")
 def auto_unlock_tasks():
-    with application.app_context():
+    with app.app_context():
         # Identify distinct project IDs that were touched in the last 2 hours
         query = (
             TaskHistory.query.with_entities(TaskHistory.project_id)
@@ -76,15 +77,16 @@ def auto_unlock_tasks():
 # Setup a background cron job
 cron = BackgroundScheduler(daemon=True)
 # Initiate the background thread
-cron.add_job(auto_unlock_tasks, "interval", hours=2)
+cron.add_job(auto_unlock_tasks, trigger="interval", hours=2)
 cron.start()
-application.logger.debug("Initiated background thread to auto unlock tasks")
+app.logger.debug("Initiated background thread to auto unlock tasks")
 
-# Shutdown your cron thread when the application is stopped
+# Shutdown your cron thread when the app is stopped
 atexit.register(lambda: cron.shutdown(wait=False))
 
 
-@manager.option("-u", "--user_id", help="Test User ID")
+@cli.command("gen_token")
+@click.option("-u", "--user_id", help="user_id to generate token for")
 def gen_token(user_id):
     """Helper method for generating valid base64 encoded session tokens"""
     token = AuthenticationService.generate_session_token_for_user(user_id)
@@ -93,21 +95,22 @@ def gen_token(user_id):
     print(f"Your base64 encoded session token: {b64_token}")
 
 
-@manager.command
+@cli.command("refresh_levels")
 def refresh_levels():
     print("Started updating mapper levels...")
     users_updated = UserService.refresh_mapper_level()
     print(f"Updated {users_updated} user mapper levels")
 
 
-@manager.command
+@cli.command("refresh_project_stats")
 def refresh_project_stats():
     print("Started updating project stats...")
     StatsService.update_all_project_stats()
     print("Project stats updated")
 
 
-@manager.command
+@cli.command("update_project_categories")
+@click.option("-f", "--filename")
 def update_project_categories(filename):
     with open(filename, "r", encoding="ISO-8859-1", newline="") as csvfile:
         reader = csv.DictReader(csvfile)
@@ -132,4 +135,4 @@ def update_project_categories(filename):
 
 
 if __name__ == "__main__":
-    manager.run()
+    cli()

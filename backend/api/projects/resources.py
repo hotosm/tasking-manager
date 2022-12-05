@@ -107,7 +107,7 @@ class ProjectsRestAPI(Resource):
                         io.BytesIO(geojson.dumps(project_dto).encode("utf-8")),
                         mimetype="application/json",
                         as_attachment=True,
-                        attachment_filename=f"project_{str(project_id)}.json",
+                        download_name=f"project_{str(project_id)}.json",
                     )
 
                 return project_dto, 200
@@ -1030,7 +1030,7 @@ class ProjectsQueriesNoGeometriesAPI(Resource):
                     io.BytesIO(geojson.dumps(project_dto).encode("utf-8")),
                     mimetype="application/json",
                     as_attachment=True,
-                    attachment_filename=f"project_{str(project_id)}.json",
+                    download_name=f"project_{str(project_id)}.json",
                 )
 
             return project_dto, 200
@@ -1154,7 +1154,7 @@ class ProjectsQueriesAoiAPI(Resource):
                     io.BytesIO(geojson.dumps(project_aoi).encode("utf-8")),
                     mimetype="application/json",
                     as_attachment=True,
-                    attachment_filename=f"{str(project_id)}.geojson",
+                    download_name=f"{str(project_id)}.geojson",
                 )
 
             return project_aoi, 200
