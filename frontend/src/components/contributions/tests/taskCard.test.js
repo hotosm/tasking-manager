@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
@@ -92,7 +92,7 @@ describe('TaskCard', () => {
     expect(screen.getByText('Locked for validation by user_1')).toBeInTheDocument();
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
     // hovering on the card should show the resume task button
-    userEvent.hover(screen.getByText('Locked for validation by user_1'));
+    fireEvent.mouseOver(screen.getByText('Locked for validation by user_1'));
     expect(screen.getByText('Resume task')).toBeInTheDocument();
     expect(container.querySelectorAll('a')[1].href).toContain('/projects/4321/tasks?search=987');
   });
@@ -112,7 +112,7 @@ describe('TaskCard', () => {
     expect(screen.getByText('More mapping needed')).toBeInTheDocument();
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
     // hovering on the card should show the resume task button
-    userEvent.hover(screen.getByText('More mapping needed'));
+    fireEvent.mouseOver(screen.getByText('More mapping needed'));
     expect(screen.getByText('Resume task')).toBeInTheDocument();
   });
 
@@ -134,14 +134,14 @@ describe('TaskCard', () => {
     expect(screen.getByText('Available for mapping')).toBeInTheDocument();
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
     // hover on the card
-    userEvent.hover(screen.getByText('Available for mapping'));
+    fireEvent.mouseOver(screen.getByText('Available for mapping'));
     expect(screen.getByText('Resume task')).toBeInTheDocument();
     expect(screen.getByText('Resume task').className).toBe(
       'dn dib-l link pv2 ph3 mh3 mv1 bg-red white f7 fr',
     );
     expect(container.querySelectorAll('a')[1].href).toContain('/projects/9983/tasks?search=543');
     // unhover
-    userEvent.unhover(screen.getByText('Available for mapping'));
+    fireEvent.mouseOut(screen.getByText('Available for mapping'));
     expect(screen.queryByText('Resume task')).not.toBeInTheDocument();
   });
 });
