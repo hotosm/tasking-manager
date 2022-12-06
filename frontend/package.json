@@ -41,7 +41,7 @@
     "mapbox-gl": "^1.13.1",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "marked": "^4.0.18",
-    "osmtogeojson": "^3.0.0-beta.3",
+    "osmtogeojson": "^3.0.0-beta.5",
     "query-string": "^7.0.1",
     "react": "^17.0.2",
     "react-accessible-accordion": "^3.3.4",
