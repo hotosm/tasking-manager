@@ -359,6 +359,7 @@ export function EditTeam(props) {
           managers={managers}
           updateTeam={updateTeam}
           joinMethod={team.joinMethod}
+          members={team.members}
         />
         <div className="h1"></div>
         <MessageMembers teamId={team.teamId} members={team.members} />
