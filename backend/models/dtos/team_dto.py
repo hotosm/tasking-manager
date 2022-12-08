@@ -57,7 +57,7 @@ class TeamMembersDTO(Model):
 
     username = StringType(required=True)
     function = StringType(required=True, validators=[validate_team_member_function])
-    active = StringType()
+    active = BooleanType()
     join_request_notifications = BooleanType(
         default=False, serialized_name="joinRequestNotifications"
     )

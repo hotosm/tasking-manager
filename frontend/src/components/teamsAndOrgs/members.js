@@ -166,6 +166,7 @@ export function JoinRequests({
   managers,
   updateTeam,
   joinMethod,
+  members,
 }: Object) {
   const token = useSelector((state) => state.auth.token);
   const { username: loggedInUsername } = useSelector((state) => state.auth.userDetails);
@@ -205,12 +206,13 @@ export function JoinRequests({
     const { checked } = e.target;
     setIsChecked(checked);
     let member = managers.find((member) => member.username === loggedInUsername);
-
     Object.assign(member, {
       joinRequestNotifications: checked,
-      active: checked.toString(),
+      active: checked,
     });
-    updateTeam({ members: [member] });
+    updateTeam({
+      members: [member, ...members.filter((member) => member.username !== loggedInUsername)],
+    });
   };
 
   return (
