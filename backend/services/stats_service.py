@@ -1,6 +1,6 @@
 from cachetools import TTLCache, cached
 from datetime import date, timedelta
-from sqlalchemy import func, desc, cast, extract, or_, tuple_
+from sqlalchemy import func, desc, cast, extract, or_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.types import Time
 

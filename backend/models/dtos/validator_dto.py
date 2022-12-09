@@ -7,7 +7,7 @@ from backend.models.dtos.stats_dto import Pagination
 
 
 def is_valid_validated_status(value):
-    """ Validates that Task Status is in correct range for after validation """
+    """Validates that Task Status is in correct range for after validation"""
     valid_values = f"{TaskStatus.MAPPED.name}, {TaskStatus.INVALIDATED.name}, {TaskStatus.VALIDATED.name}"
 
     try:
@@ -24,7 +24,7 @@ def is_valid_validated_status(value):
 
 
 class LockForValidationDTO(Model):
-    """ DTO used to lock multiple tasks for validation """
+    """DTO used to lock multiple tasks for validation"""
 
     project_id = IntType(required=True)
     task_ids = ListType(IntType, required=True, serialized_name="taskIds")
@@ -33,7 +33,7 @@ class LockForValidationDTO(Model):
 
 
 class ValidationMappingIssue(Model):
-    """ Describes one or more occurrences of an identified mapping problem during validation """
+    """Describes one or more occurrences of an identified mapping problem during validation"""
 
     mapping_issue_category_id = IntType(
         required=True, serialized_name="mappingIssueCategoryId"
@@ -43,7 +43,7 @@ class ValidationMappingIssue(Model):
 
 
 class ValidatedTask(Model):
-    """ Describes the model used to update the status of one task after validation """
+    """Describes the model used to update the status of one task after validation"""
 
     task_id = IntType(required=True, serialized_name="taskId")
     status = StringType(required=True, validators=[is_valid_validated_status])
@@ -54,7 +54,7 @@ class ValidatedTask(Model):
 
 
 class ResetValidatingTask(Model):
-    """ Describes the model used to stop validating and reset the status of one task """
+    """Describes the model used to stop validating and reset the status of one task"""
 
     task_id = IntType(required=True, serialized_name="taskId")
     comment = StringType()
@@ -64,7 +64,7 @@ class ResetValidatingTask(Model):
 
 
 class UnlockAfterValidationDTO(Model):
-    """ DTO used to transmit the status of multiple tasks after validation """
+    """DTO used to transmit the status of multiple tasks after validation"""
 
     project_id = IntType(required=True)
     validated_tasks = ListType(
@@ -75,7 +75,7 @@ class UnlockAfterValidationDTO(Model):
 
 
 class StopValidationDTO(Model):
-    """ DTO used to transmit the the request to stop validating multiple tasks """
+    """DTO used to transmit the the request to stop validating multiple tasks"""
 
     project_id = IntType(required=True)
     reset_tasks = ListType(
@@ -86,7 +86,7 @@ class StopValidationDTO(Model):
 
 
 class MappedTasksByUser(Model):
-    """ Describes number of tasks user has mapped on a project"""
+    """Describes number of tasks user has mapped on a project"""
 
     username = StringType(required=True)
     mapped_task_count = IntType(required=True, serialized_name="mappedTaskCount")
@@ -98,7 +98,7 @@ class MappedTasksByUser(Model):
 
 
 class InvalidatedTask(Model):
-    """ Describes invalidated tasks with which user is involved """
+    """Describes invalidated tasks with which user is involved"""
 
     task_id = IntType(required=True, serialized_name="taskId")
     project_id = IntType(required=True, serialized_name="projectId")
@@ -110,7 +110,7 @@ class InvalidatedTask(Model):
 
 class InvalidatedTasks(Model):
     def __init__(self):
-        """ DTO constructor initialise all arrays to empty"""
+        """DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.invalidated_tasks = []
 
@@ -121,10 +121,10 @@ class InvalidatedTasks(Model):
 
 
 class MappedTasks(Model):
-    """ Describes all tasks currently mapped on a project """
+    """Describes all tasks currently mapped on a project"""
 
     def __init__(self):
-        """ DTO constructor initialise all arrays to empty"""
+        """DTO constructor initialise all arrays to empty"""
         super().__init__()
         self.mapped_tasks = []
 

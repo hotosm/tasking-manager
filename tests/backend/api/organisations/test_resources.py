@@ -20,7 +20,7 @@ class TestOrganisationAllAPI(BaseTestCase):
         db.session.commit()
 
     def test_get_all_organisations_returns_required_fields(self):
-        """ Test endpoint returns all required fields"""
+        """Test endpoint returns all required fields"""
 
         response = self.client.get(self.endpoint_url)
         response_body = response.json["organisations"]
@@ -39,7 +39,7 @@ class TestOrganisationAllAPI(BaseTestCase):
     def test_get_all_organisations_doesnt_returns_manager_if_omit_manager_set_true(
         self,
     ):
-        """ Test managers are not returned is omitManagers is set to True """
+        """Test managers are not returned is omitManagers is set to True"""
 
         response = self.client.get(f"{self.endpoint_url}?omitManagers=True")
         response_body = response.json["organisations"]
@@ -47,7 +47,7 @@ class TestOrganisationAllAPI(BaseTestCase):
             response_body[0]["managers"]
 
     def test_get_all_org_includes_managers_if_user_is_authenticated(self):
-        """ Test managers are included if user is authenticated """
+        """Test managers are included if user is authenticated"""
 
         session_token = AuthenticationService.generate_session_token_for_user(
             self.test_author.id
@@ -72,7 +72,7 @@ class TestOrganisationAllAPI(BaseTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_get_all_org_includes_stats_if_omit_stats_set_false(self):
-        """ Test stats are not returned is omitOrgStats is set to False """
+        """Test stats are not returned is omitOrgStats is set to False"""
 
         response = self.client.get(
             f"{self.endpoint_url}?omitOrgStats=False",

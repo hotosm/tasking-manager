@@ -114,7 +114,7 @@ def initialise_logger(app):
 
 
 def initialise_counters(app):
-    """ Initialise homepage counters so that users don't see 0 users on first load of application"""
+    """Initialise homepage counters so that users don't see 0 users on first load of application"""
     from backend.services.stats_service import StatsService
 
     with app.app_context():
