@@ -10041,12 +10041,15 @@ jsonparse@0.0.5:
     array-includes "^3.1.2"
     object.assign "^4.1.2"
 
-jszip@^2.4.0:
-  version "2.6.1"
-  resolved "https://registry.npmjs.org/jszip/-/jszip-2.6.1.tgz"
-  integrity sha1-uI86ey5noqBIFSmCx6N1bZxIKPA=
+jszip@^3.5.0:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/jszip/-/jszip-3.10.1.tgz#34aee70eb18ea1faec2f589208a157d1feb091c2"
+  integrity sha512-xXDvecyTpGLrqFrvkrUSoxxfJI5AH7U8zxxtVclpsUtMCq4JQ290LY8AW5c7Ggnr/Y/oK+bQMbqK2qmtk3pN4g==
   dependencies:
+    lie "~3.3.0"
     pako "~1.0.2"
+    readable-stream "~2.3.6"
+    setimmediate "^1.0.5"
 
 kdbush@^3.0.0:
   version "3.0.0"
@@ -10151,7 +10154,7 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lie@^3.0.1:
+lie@^3.0.1, lie@~3.3.0:
   version "3.3.0"
   resolved "https://registry.npmjs.org/lie/-/lie-3.3.0.tgz"
   integrity sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==
@@ -14496,7 +14499,7 @@ set-value@^2.0.0, set-value@^2.0.1:
     is-plain-object "^2.0.3"
     split-string "^3.0.1"
 
-setimmediate@^1.0.4:
+setimmediate@^1.0.4, setimmediate@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz"
   integrity sha1-KQy7Iy4waULX1+qbg3Mqt4VvgoU=
@@ -14558,12 +14561,12 @@ short-number@^1.0.7:
   resolved "https://registry.npmjs.org/short-number/-/short-number-1.0.7.tgz"
   integrity sha512-e3cb811QXHiAH2H5rgZwXHsmg2+aG6XK0QyKF/+pyDIZFBSz/G8bkr8avdBrL5PVIfhIq8rlohjFvSB3azzpEQ==
 
-shpjs@^3.6.3:
-  version "3.6.3"
-  resolved "https://registry.npmjs.org/shpjs/-/shpjs-3.6.3.tgz"
-  integrity sha512-wcR2S3WL/7RnEIm+YO+H/mZR9z9FCV46op+SZt+W5PtPs26Omb9U93f+EPI1DOpNKBuAIrWjHWh0SxlnBahJkg==
+shpjs@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/shpjs/-/shpjs-4.0.4.tgz#8849032ba1a738e7a983cd9c508ba3097ad2717c"
+  integrity sha512-+IcS2DoiTGqAONUEN46ZociKGJ2ecs1EVwJuSqnAOkMafxWC8noO3X/zI959RCbqHGvBr1RM1bdk4jc7fYONVg==
   dependencies:
-    jszip "^2.4.0"
+    jszip "^3.5.0"
     lie "^3.0.1"
     lru-cache "^2.7.0"
     parsedbf "^1.1.0"
