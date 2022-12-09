@@ -563,9 +563,9 @@ class Task(db.Model):
         if type(task_geometry) is not geojson.MultiPolygon:
             raise InvalidGeoJson("MustBeMultiPloygon- Geometry must be a MultiPolygon")
 
-        is_valid_geojson = geojson.is_valid(task_geometry)
-        if is_valid_geojson["valid"] == "no":
-            raise InvalidGeoJson(f"InvalidMultiPolygon- {is_valid_geojson['message']}")
+        is_valid_geojson = task_geometry.is_valid
+        if not is_valid_geojson:
+            raise InvalidGeoJson("InvalidMultiPolygon")
 
         task = cls()
         try:

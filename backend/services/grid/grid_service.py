@@ -119,10 +119,10 @@ class GridService:
                 "MustBeMultiPloygon- Area Of Interest: geometry must be a MultiPolygon"
             )
 
-        is_valid_geojson = geojson.is_valid(aoi_multi_polygon_geojson)
-        if is_valid_geojson["valid"] == "no":
+        is_valid_geojson = aoi_multi_polygon_geojson.is_valid
+        if not is_valid_geojson:
             raise InvalidGeoJson(
-                f"InvalidMultipolygon- Area of Interest: Invalid MultiPolygon - {is_valid_geojson['message']}"
+                "InvalidMultipolygon- Area of Interest: Invalid MultiPolygon"
             )
 
         return aoi_multi_polygon_geojson

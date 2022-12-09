@@ -224,11 +224,8 @@ class ProjectAdminService:
                 "MustBeFeatureCollection- Invalid: GeoJson must be FeatureCollection"
             )
 
-        is_valid_geojson = geojson.is_valid(tasks)
-        if is_valid_geojson["valid"] == "no":
-            raise InvalidGeoJson(
-                f"InvalidFeatureCollection- {is_valid_geojson['message']}"
-            )
+        if not tasks.is_valid:
+            raise InvalidGeoJson("InvalidFeatureCollection")
 
         task_count = 1
         for feature in tasks["features"]:
