@@ -493,8 +493,22 @@ a[href="https://www.mapbox.com/map-feedback/"]
   @media screen and (max-width: 60em) {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   @media screen and (max-width: 30em) {
     grid-template-columns: repeat(1, 1fr);
   }
+}
+
+// Styles for reactjs-popup
+.popup-overlay {
+  background: rgba(44, 48, 56, 0.7);
+}
+
+.popup-content {
+  font-family: 'Archivo', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  max-height: calc(100vh - 10em);
+  overflow-y: auto;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.105469), 0px 15px 14px rgba(0, 0, 0, 0.270041),
+    0px 34px 24px rgba(0, 0, 0, 0.37534);
+  padding: 0 !important;
 }
