@@ -34,7 +34,7 @@ describe('test if HeaderLine component', () => {
     expect(screen.getByText('#1').closest('a').href).toContain('projects/1');
     expect(screen.getByText('| HOT')).toBeInTheDocument();
     expect(screen.queryByText('Edit project')).not.toBeInTheDocument();
-    expect(screen.queryByText('Low')).not.toBeInTheDocument();
+    expect(screen.queryByText('Low')).toBeInTheDocument();
   });
 });
 
@@ -109,7 +109,7 @@ describe('test if ProjectHeader component', () => {
     expect(screen.getByText('#1').closest('a').href).toContain('projects/1');
     expect(screen.getByText('| HOT')).toBeInTheDocument();
     expect(screen.queryByText('Edit project')).not.toBeInTheDocument();
-    expect(screen.queryByText('Low')).not.toBeInTheDocument(); //LOW priority tag should not be displayed
+    expect(screen.queryByText('Low')).toBeInTheDocument();
     expect(screen.queryByText('Draft')).toBeInTheDocument();
     expect(screen.getByText('La Paz Buildings')).toBeInTheDocument();
     expect(screen.getByText('La Paz Buildings').closest('h3').lang).toBe('en');

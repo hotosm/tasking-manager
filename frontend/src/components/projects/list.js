@@ -69,8 +69,7 @@ export function ProjectListItem({ project }: Object) {
               <PriorityBox
                 priority={project.priority}
                 extraClasses={'pv1 ph2 dib'}
-                hideMediumAndLow={false}
-                showIcon={project.priority !== 'URGENT'} // inside the cards, don't show the icon for urgent, due to the space required
+                showIcon={!['URGENT', 'MEDIUM'].includes(project.priority)} // inside the cards, don't show the icon for urgent or medium, due to the space required
               />
             )}
           </div>
