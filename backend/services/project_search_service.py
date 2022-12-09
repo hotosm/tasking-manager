@@ -377,7 +377,9 @@ class ProjectSearchService:
             query_result.add_column(Project.priority)
             all_results = query_result.all()
 
-        paginated_results = query.paginate(search_dto.page, 14, True)
+        paginated_results = query.paginate(
+            page=search_dto.page, per_page=14, error_out=True
+        )
 
         return all_results, paginated_results
 

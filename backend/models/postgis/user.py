@@ -159,7 +159,7 @@ class User(db.Model):
             base = base.filter(User.role.in_(role_array))
         if query.pagination:
             results = base.order_by(User.username).paginate(
-                query.page, query.per_page, True
+                page=query.page, per_page=query.per_page, error_out=True
             )
         else:
             per_page = base.count()
@@ -199,7 +199,7 @@ class User(db.Model):
             .order_by(desc("participant").nullslast(), User.username)
         )
 
-        results = query.paginate(page, 20, True)
+        results = query.paginate(page=page, per_page=20, error_out=True)
 
         if results.total == 0:
             raise NotFound()

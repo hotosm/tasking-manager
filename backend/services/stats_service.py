@@ -47,7 +47,7 @@ class StatsService:
         new_state: TaskStatus,
         action="change",
     ):
-        """ Update stats when a task has had a state change """
+        """Update stats when a task has had a state change"""
 
         if new_state in [
             TaskStatus.LOCKED_FOR_VALIDATION,
@@ -117,7 +117,7 @@ class StatsService:
 
     @staticmethod
     def get_latest_activity(project_id: int, page: int) -> ProjectActivityDTO:
-        """ Gets all the activity on a project """
+        """Gets all the activity on a project"""
 
         if not ProjectService.exists(project_id):
             raise NotFound
@@ -137,7 +137,7 @@ class StatsService:
                 TaskHistory.action != TaskAction.COMMENT.name,
             )
             .order_by(TaskHistory.action_date.desc())
-            .paginate(page, 10, True)
+            .paginate(page=page, per_page=10, error_out=True)
         )
 
         activity_dto = ProjectActivityDTO()
@@ -156,7 +156,7 @@ class StatsService:
 
     @staticmethod
     def get_popular_projects() -> ProjectSearchResultsDTO:
-        """ Get all projects ordered by task_history """
+        """Get all projects ordered by task_history"""
 
         rate_func = func.count(TaskHistory.user_id) / extract(
             "epoch", func.sum(cast(TaskHistory.action_date, Time))
@@ -196,7 +196,7 @@ class StatsService:
 
     @staticmethod
     def get_last_activity(project_id: int) -> ProjectLastActivityDTO:
-        """ Gets the last activity for a project's tasks """
+        """Gets the last activity for a project's tasks"""
         sq = (
             TaskHistory.query.with_entities(
                 TaskHistory.task_id,
@@ -245,7 +245,7 @@ class StatsService:
 
     @staticmethod
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
-        """ Get all user contributions on a project"""
+        """Get all user contributions on a project"""
 
         mapped_stmt = (
             Task.query.with_entities(
@@ -328,7 +328,7 @@ class StatsService:
     @staticmethod
     @cached(homepage_stats_cache)
     def get_homepage_stats(abbrev=True) -> HomePageStatsDTO:
-        """ Get overall TM stats to give community a feel for progress that's being made """
+        """Get overall TM stats to give community a feel for progress that's being made"""
         dto = HomePageStatsDTO()
         dto.total_projects = Project.query.with_entities(
             func.count(Project.id)
@@ -538,7 +538,7 @@ class StatsService:
     def get_task_stats(
         start_date, end_date, org_id, org_name, campaign, project_id, country
     ):
-        """ Creates tasks stats for a period using the TaskStatsDTO """
+        """Creates tasks stats for a period using the TaskStatsDTO"""
 
         query = (
             db.session.query(
@@ -548,9 +548,7 @@ class StatsService:
                 func.DATE(TaskHistory.action_date).label("day"),
             )
             .distinct(
-                tuple_(
-                    TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text
-                )
+                TaskHistory.project_id, TaskHistory.task_id, TaskHistory.action_text
             )
             .filter(
                 TaskHistory.action == "STATE_CHANGE",

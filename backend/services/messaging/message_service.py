@@ -716,7 +716,7 @@ class MessageService:
         results = (
             query.filter(Message.to_user_id == user_id)
             .order_by(sort_column)
-            .paginate(page, page_size, True)
+            .paginate(page=page, per_page=page_size, error_out=True)
         )
         # if results.total == 0:
         #     raise NotFound()
