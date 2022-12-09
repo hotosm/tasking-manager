@@ -23,10 +23,12 @@ export const NotificationResults = ({
   retryFn,
   useMiniCard,
   liveUnreadCount,
+  setPopoutFocus,
 }) => {
   const stateNotifications = !useMiniCard
     ? notifications.userMessages
     : state.unreadNotificationsMini;
+
   const showRefreshButton =
     useMiniCard &&
     !state.isError &&
@@ -72,7 +74,7 @@ export const NotificationResults = ({
           </div>
         </div>
       ) : null}
-      <div className={`cf ${!useMiniCard ? 'db' : 'dib'}`}>
+      <div className={`cf`}>
         <ReactPlaceholder
           ready={!loading && stateNotifications}
           customPlaceholder={<NotificationPlaceholder />}
@@ -83,6 +85,7 @@ export const NotificationResults = ({
             pageOfCards={stateNotifications}
             useMiniCard={useMiniCard}
             retryFn={retryFn}
+            setPopoutFocus={setPopoutFocus}
           />
         </ReactPlaceholder>
       </div>
@@ -97,7 +100,7 @@ export const NotificationResults = ({
   );
 };
 
-const NotificationCards = ({ pageOfCards, useMiniCard, retryFn }) => {
+const NotificationCards = ({ pageOfCards, useMiniCard, retryFn, setPopoutFocus }) => {
   const [selected, setSelected] = useState([]);
 
   if (pageOfCards.length === 0) {
@@ -137,7 +140,16 @@ const NotificationCards = ({ pageOfCards, useMiniCard, retryFn }) => {
         </>
       )}
       {useMiniCard &&
-        pageOfCards.slice(0, 5).map((card, n) => <NotificationCardMini {...card} key={n} />)}
+        pageOfCards
+          .slice(0, 5)
+          .map((card, n) => (
+            <NotificationCardMini
+              {...card}
+              key={n}
+              setPopoutFocus={setPopoutFocus}
+              retryFn={retryFn}
+            />
+          ))}
     </>
   );
 };
