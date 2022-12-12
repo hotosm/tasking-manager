@@ -150,9 +150,7 @@ export function TaskMapAction({
           ? [userDetails.defaultEditor]
           : project.mappingEditors;
       } else {
-        editorToUse = project.validationLockTimeExpiredDialogEditors.includes(
-          userDetails.defaultEditor,
-        )
+        editorToUse = project.validationEditors.includes(userDetails.defaultEditor)
           ? [userDetails.defaultEditor]
           : project.validationEditors;
       }
