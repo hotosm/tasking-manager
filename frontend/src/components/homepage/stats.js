@@ -5,7 +5,7 @@ import shortNumber from 'short-number';
 
 import messages from './messages';
 import { HOMEPAGE_STATS_API_URL } from '../../config';
-import { useFetch } from '../../hooks/UseFetch';
+import { useFetchWithAbort } from '../../hooks/UseFetch';
 
 export const StatsNumber = (props) => {
   const value = shortNumber(props.value);
@@ -35,7 +35,7 @@ export const StatsColumn = ({ label, value }: Object) => {
 
 export const StatsSection = () => {
   /* eslint-disable-next-line */
-  const [tmStatsError, tmStatsLoading, tmStats] = useFetch('system/statistics/');
+  const [_tmStatsError, _tmStatsLoading, tmStats] = useFetchWithAbort('system/statistics/');
   const [stats, setStats] = useState({ edits: 0, buildings: 0, roads: 0 });
 
   useEffect(() => {
