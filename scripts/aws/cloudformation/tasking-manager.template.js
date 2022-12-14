@@ -409,7 +409,7 @@ const Resources = {
         ImageId: cf.ref("BackendAMI"),
         InstanceType: cf.ref("BackendInstanceType"),
         KeyName: "mbtiles",
-        SecurityGroups: [ cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region])) ],
+        SecurityGroupIds: [ cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region])) ],
         TagSpecifications: [
           {
             ResourceType: "instance",
@@ -795,21 +795,6 @@ const Resources = {
       }
     }
   },
-  SignedOriginAccessControl: {
-    Type: "AWS::CloudFront::OriginAccessControl",
-    Metadata: {
-      Note: "This is reusable"
-    },
-    Properties: {
-      OriginAccessControlConfig: {
-        Description: "Access control for S3 Origin",
-        Name: "signed-s3-OAC",
-        OriginAccessControlOriginType: "s3",
-        SigningBehavior: "always",
-        SigningProtocol: "sigv4"
-      }
-    }
-  },
   TaskingManagerCachePolicy: {
     Type: "AWS::CloudFront::CachePolicy",
     Properties: {
@@ -855,7 +840,6 @@ const Resources = {
             CustomOriginConfig: {
               OriginProtocolPolicy: 'https-only',
             },
-            OriginAccessControlId: cf.ref("SignedOriginAccessControl"),
           }
         ],
         CustomErrorResponses: [
