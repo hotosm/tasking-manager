@@ -1,5 +1,8 @@
 // Running:
 // cfn-config update tm4-production tasking-manager.template.js -c hot-cfn-config -t hot-cfn-config -r us-east-1 -n tasking-manager
+// TODO: Explore Mappings
+// TODO: Mixed instance types for AutoScalingGroup
+// TODO: ARM Architecture instances
 const cf = require('@mapbox/cloudfriend');
 
 const Parameters = {
@@ -10,12 +13,12 @@ const Parameters = {
   },
   BackendInstanceType: {
     Type: "String",
-    Default: "c5d.large",
-    Description: "Instance Type for the Backend"
+    Default: "t3.small",
+    Description: "Instance Type for the Backend. ARM instance type later?"
   },
   BackendAvailabilityZones: {
     Type: "CommaDelimitedList",
-    Default: "us-east-1a, us-east-1b, us-east-1c, us-east-1d, us-east-1f",
+    Default: "us-east-1a, us-east-1b, us-east-1c, us-east-1d, us-east-1e, us-east-1f",
     Description: "AZ in which to place the backend instances"
   },
   LoadBalancerTLSPolicy: {
@@ -77,30 +80,34 @@ const Parameters = {
   DatabaseEngineVersion: {
     Description: 'AWS PostgreSQL Engine version',
     Type: 'String',
-    Default: '11.12'
+    Default: '13.7'
+  },
+  DatabaseParameterGroupFamily: {
+    Type: "String",
+    Default: "postgres13",
+    Description: "Parameter Group Family"
   },
   DatabaseInstanceType: {
     Description: 'Database instance type',
     Type: 'String',
-    Default: 'db.t3.xlarge'
+    Default: 'db.t4g.xlarge'
   },
   DatabaseDiskSize: {
     Description: 'Database size in GB',
     Type: 'String',
     Default: '100'
   },
-  DatabaseParameterGroupName: {
-    Description: 'Name of the customized parameter group for the database',
-    Type: 'String',
-    Default: 'tm3-logging-postgres11'
-  },
   DatabaseSnapshotRetentionPeriod: {
     Description: 'Retention period for automatic (scheduled) snapshots in days',
     Type: 'Number',
     Default: 10
   },
-  ELBSubnets: {
-    Description: 'ELB subnets',
+  PublicSubnets: {
+    Description: 'List of public subnets for load balancer',
+    Type: 'CommaDelimitedList' // Type: List<AWS::EC2::Subnet::Id>
+  },
+  PrivateSubnets: {
+    Description: 'List of public subnets for load balancer',
     Type: 'CommaDelimitedList' // Type: List<AWS::EC2::Subnet::Id>
   },
   SSLCertificateIdentifier: {
@@ -196,25 +203,31 @@ const Resources = {
   TaskingManagerASG: {
     DependsOn: 'BackendLaunchTemplate',
     Type: 'AWS::AutoScaling::AutoScalingGroup',
+    Metadata: {
+      TODO: "Add Mixed Instance type with spot instances in the mix"
+    },
     Properties: {
-      AutoScalingGroupName: cf.stackName,
+      AutoScalingGroupName: "TM-Backend-Scaling",
       Cooldown: 300,
       MinSize: cf.if('IsProduction', 3, 1),
       DesiredCapacity: cf.if('IsProduction', 3, 1),
       MaxSize: cf.if('IsProduction', 9, cf.if('IsDemo', 3, 1)),
       HealthCheckGracePeriod: 600,
       LaunchTemplate: {
-        LaunchTemplateName: cf.ref("BackendLaunchTemplate"),
+        LaunchTemplateId: cf.ref("BackendLaunchTemplate"),
         Version: cf.getAtt("BackendLaunchTemplate", "LatestVersionNumber")
       },
       TargetGroupARNs: [ cf.ref('TaskingManagerTargetGroup') ],
       HealthCheckType: 'EC2',
       AvailabilityZones: cf.ref("BackendAvailabilityZones"),
-      Tags: [{
-        Key: 'Name',
-        PropagateAtLaunch: true,
-        Value: cf.stackName
-      }]
+      // VPCZoneIdentifier: cf.ref("PublicSubnets"),
+      Tags: [
+  {
+          Key: 'Name',
+          PropagateAtLaunch: true,
+          Value: cf.stackName
+        }
+      ]
     },
     UpdatePolicy: {
       AutoScalingRollingUpdate: {
@@ -245,6 +258,8 @@ const Resources = {
   BackendLaunchTemplate: {
     Type: "AWS::EC2::LaunchTemplate",
     Metadata: {
+      TODO: "Use instance type criteria rather than hard-coding it",
+      TODO2: "Add agents for JumpCloud, CloudWatch, NewRelic, Systems Manager",
       "AWS::CloudFormation::Init": {
         configSets: {
           default: [
@@ -369,7 +384,7 @@ const Resources = {
                 ])
             }
           },
-          Services: {
+          services: {
             systemd: {
               "cfn-hup": {
                 enabled: true,
@@ -377,11 +392,11 @@ const Resources = {
                 files: [
                   "/etc/cfn/cfn-hup.conf",
                 ]
-            },
+              }
+            }
           }
         }
       }
-    }
     },
     Properties: {
       LaunchTemplateName: "TM-Backend-Instances",
@@ -472,7 +487,7 @@ const Resources = {
           cf.sub('NEW_RELIC_CONFIG_FILE=./scripts/aws/cloudformation/newrelic.ini newrelic-admin run-program gunicorn -b 0.0.0.0:8000 --worker-class gevent --workers 5 --timeout 179 --access-logfile ${TaskingManagerLogDirectory}/gunicorn-access.log --access-logformat \'%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s %(T)s \"%(f)s\" \"%(a)s\"\' manage:application &'),
           cf.sub('sudo /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource BackendLaunchTemplate --region ${AWS::Region} --configsets default'),
           cf.sub('/opt/aws/bin/cfn-signal --exit-code $? --region ${AWS::Region} --resource TaskingManagerASG --stack ${AWS::StackName}')
-	    ]),
+      ]),
       },
       TagSpecifications: [ 
         {
@@ -617,7 +632,7 @@ const Resources = {
     Properties: {
       Name: cf.stackName,
       SecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'elbs-security-group', cf.region]))],
-      Subnets: cf.ref('ELBSubnets'),
+      Subnets: cf.ref('PublicSubnets'),
       Type: 'application'
     }
   },
@@ -687,14 +702,24 @@ const Resources = {
       Protocol: 'HTTP'
     }
   },
+  DatabaseParameterGroup: {
+    Type: "AWS::RDS::DBParameterGroup",
+    Properties: {
+      DBParameterGroupName: cf.join("-", ["tm", cf.ref("DeploymentEnvironment"), cf.ref("DatabaseParameterGroupFamily")]),
+      Family: cf.ref("DatabaseParameterGroupFamily"),
+      Description: "Database Parameter Group for Tasking Manager Database"
+    }
+  },
   TaskingManagerRDS: {
     Type: 'AWS::RDS::DBInstance',
     Metadata: {
-      Todo: 'Spin out database components into its own cloudformation template'
+      TODO: "Spin out database components into its own cloudformation template",
+      TODO2: "gp3 volume type. But only for disks larger than 400GB"
     },
     Properties: {
         Engine: 'postgres',
         EngineVersion: cf.ref('DatabaseEngineVersion'),
+  DBInstanceIdentifier: cf.join("-", ["tasking-manager", cf.ref("DeploymentEnvironment")]),
         DBName: cf.if('UseASnapshot', cf.noValue, cf.join(
           ':',
           [
@@ -719,12 +744,13 @@ const Resources = {
             "SecretString:password}}"
           ]
         )),
-        AllocatedStorage: cf.ref('DatabaseDiskSize'),
-        BackupRetentionPeriod: cf.ref('DatabaseSnapshotRetentionPeriod'),
+        AllocatedStorage: cf.if('IsProduction', cf.ref('DatabaseDiskSize'), 30),
+        BackupRetentionPeriod: cf.if('IsProduction', cf.ref("DatabaseSnapshotRetentionPeriod"), 1),
         StorageType: 'gp2',
-        DBParameterGroupName: cf.ref('DatabaseParameterGroupName'),
+  // StorageThroughput: 125,
+        DBParameterGroupName: cf.ref('DatabaseParameterGroup'),
         EnableCloudwatchLogsExports: ['postgresql'],
-        DBInstanceClass: cf.ref('DatabaseInstanceType'),
+        DBInstanceClass: cf.if('IsProduction', cf.ref('DatabaseInstanceType'), "db.t4g.small"),
         DBSnapshotIdentifier: cf.if('UseASnapshot', cf.ref('DBSnapshot'), cf.noValue),
         VPCSecurityGroups: [cf.importValue(cf.join('-', ['hotosm-network-production', cf.ref('NetworkEnvironment'), 'ec2s-security-group', cf.region]))],
     }
@@ -733,100 +759,161 @@ const Resources = {
     Type: 'AWS::S3::Bucket',
     Properties: {
       BucketName: cf.join('-', [cf.stackName, 'react-app']),
-      AccessControl: "PublicRead",
-      PublicAccessBlockConfiguration: {
-        BlockPublicAcls: false,
-        BlockPublicPolicy: false,
-        IgnorePublicAcls: false,
-        RestrictPublicBuckets: false
-      },
+      AccessControl: "Private",
       WebsiteConfiguration: {
         ErrorDocument: 'index.html',
         IndexDocument: 'index.html'
       }
     }
   },
-  TaskingManagerReactBucketPolicy: {
-    Type: 'AWS::S3::BucketPolicy',
+  FrontendBucketReadOnlyPolicy: {
+    Type: "AWS::S3::BucketPolicy",
+    Metadata: {
+      TODO: "Condition: { StringEquals: { AWS:SourceArn: arn:aws:cloudfront::6000000:distribution/EH2ANTHENTH } }"
+    },
     Properties: {
-      Bucket : cf.ref('TaskingManagerReactBucket'),
+      Bucket: cf.ref("TaskingManagerReactBucket"),
       PolicyDocument: {
         Version: "2012-10-17",
-        Statement:[{
-          Action: [ 's3:GetObject'],
-          Effect: 'Allow',
-          Principal: '*',
-          Resource: [ cf.join('',
-            [
-              cf.getAtt('TaskingManagerReactBucket', 'Arn'), 
-              '/*'
-            ]
-          )],
-          Sid: 'AddPerm'
-        }]
+        Statement: [
+          {
+            Action: [ "s3:GetObject" ],
+            Effect: "Allow",
+            Principal: {
+        "Service": [ "cloudfront.amazonaws.com" ]
+      },
+            Resource: [
+              cf.join("/", 
+                [
+                  cf.getAtt("TaskingManagerReactBucket", "Arn"),
+                  "*"
+                ])
+            ],
+            Sid: "AllowCloudFrontServicePrincipalReadOnly"
+          }
+        ]
+      }
+    }
+  },
+  SignedOriginAccessControl: {
+    Type: "AWS::CloudFront::OriginAccessControl",
+    Metadata: {
+      Note: "This is reusable"
+    },
+    Properties: {
+      OriginAccessControlConfig: {
+        Description: "Access control for S3 Origin",
+        Name: "signed-s3-OAC",
+        OriginAccessControlOriginType: "s3",
+        SigningBehavior: "always",
+        SigningProtocol: "sigv4"
+      }
+    }
+  },
+  TaskingManagerCachePolicy: {
+    Type: "AWS::CloudFront::CachePolicy",
+    Properties: {
+      CachePolicyConfig: {
+        Name: "TaskingManagerFrontendCaching",
+        DefaultTTL: "86400",
+        MinTTL: "300",
+        MaxTTL: "31536000",
+        Comment: "Tasking Manager Frontend CDN Cache Policy",
+        ParametersInCacheKeyAndForwardedToOrigin: {
+          CookiesConfig: {
+            CookieBehavior: "all"
+          },
+          EnableAcceptEncodingBrotli: true,
+          EnableAcceptEncodingGzip: true,
+          HeadersConfig: {
+            HeaderBehavior: "whitelist",
+            Headers: ["Accept", "Authorization", "Referer", "x-api-key"]
+          },
+          QueryStringsConfig: {
+            QueryStringBehavior: "all"
+          }
+        }
       }
     }
   },
   TaskingManagerReactCloudfront: {
     Type: "AWS::CloudFront::Distribution",
+    Metadata: {
+      TODO: "Fix Internal error"
+    },
     Properties: {
       DistributionConfig: {
-        DefaultRootObject: 'index.html',
-        Aliases: [
-          cf.ref('TaskingManagerURL')
-        ],
         Enabled: true,
-        Origins: [{
-          Id: cf.join('-', [cf.stackName, 'react-app']),
-          DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only'
+        DefaultRootObject: 'index.html',
+        Aliases: [ cf.ref('TaskingManagerURL') ],
+        HttpVersion: "http2",
+        IPV6Enabled: true,
+        Origins: [
+          {
+            Id: cf.join('-', [cf.stackName, 'react-app']),
+            DomainName: cf.getAtt('TaskingManagerReactBucket', 'DomainName'),
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
+            OriginAccessControlId: cf.ref("SignedOriginAccessControl"),
           }
-        }],
-        CustomErrorResponses: [{
-          ErrorCachingMinTTL : 0,
-          ErrorCode: 403,
-          ResponseCode: 200,
-          ResponsePagePath: '/index.html'
-        },{
-          ErrorCachingMinTTL : 0,
-          ErrorCode: 404,
-          ResponseCode: 200,
-          ResponsePagePath: '/index.html'
-        }],
+        ],
+        CustomErrorResponses: [
+          {
+            ErrorCachingMinTTL : 0,
+            ErrorCode: 403,
+            ResponseCode: 200,
+            ResponsePagePath: '/index.html'
+          },
+          {
+            ErrorCachingMinTTL : 0,
+            ErrorCode: 404,
+            ResponseCode: 200,
+            ResponsePagePath: '/index.html'
+          }
+        ],
         DefaultCacheBehavior: {
           AllowedMethods: ['GET', 'HEAD', 'OPTIONS'],
           CachedMethods: ['GET', 'HEAD', 'OPTIONS'],
-          ForwardedValues: {
-            QueryString: true,
-            Cookies: {
-              Forward: 'all'
-            },
-            Headers: ['Accept', 'Referer']
-          },
           Compress: true,
           TargetOriginId: cf.join('-', [cf.stackName, 'react-app']),
-          ViewerProtocolPolicy: "redirect-to-https"
+          ViewerProtocolPolicy: "redirect-to-https",
+          CachePolicyId: cf.ref("TaskingManagerCachePolicy"),
+          OriginRequestPolicyId: "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf", // Managed-CORS-S3Origin
+          ResponseHeadersPolicyId: "67f7725c-6f97-4210-82d7-5512b31e9d03" // Managed-SecurityHeadersPolicy
         },
         ViewerCertificate: {
           AcmCertificateArn: cf.arn('acm', cf.ref('SSLCertificateIdentifier')),
-          MinimumProtocolVersion: 'TLSv1.2_2018',
+          MinimumProtocolVersion: 'TLSv1.2_2021',
           SslSupportMethod: 'sni-only'
         }
       }
     }
   },
-  TaskingManagerRoute53: {
-    Type: 'AWS::Route53::RecordSet',
-    Condition: 'IsHOTOSMUrl',
+  TaskingManagerDNSEntries: {
+    Type: "AWS::Route53::RecordSetGroup",
+    Condition: "IsHOTOSMUrl",
     Properties: {
-      Name: cf.ref('TaskingManagerURL'),
-      Type: 'A',
-      AliasTarget: {
-        DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
-        HostedZoneId: 'Z2FDTNDATAQYW2' // TODO: This is defined in the AWS Documentation
-      },
+      Comment: "DNS records pointing to CDN Frontend",
       HostedZoneId: cf.ref("DNSZoneID"),
+      RecordSets: [
+        {
+          Name: cf.ref('TaskingManagerURL'),
+          Type: 'A',
+          AliasTarget: {
+            DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
+            HostedZoneId: 'Z2FDTNDATAQYW2' // TODO: This is defined in the AWS Documentation
+          }
+        },
+        {
+          Name: cf.ref('TaskingManagerURL'),
+          Type: 'AAAA',
+          AliasTarget: {
+            DNSName: cf.getAtt('TaskingManagerReactCloudfront', 'DomainName'),
+            HostedZoneId: 'Z2FDTNDATAQYW2' // TODO: This is defined in the AWS Documentation
+          },
+        }
+      ]
     }
   }
 };
