@@ -37,23 +37,27 @@ export const StatsSection = () => {
   /* eslint-disable-next-line */
   const [tmStatsError, tmStatsLoading, tmStats] = useFetch('system/statistics/');
   const [stats, setStats] = useState({ edits: 0, buildings: 0, roads: 0 });
-  const url = HOMEPAGE_STATS_API_URL;
-  const getStats = async (url) => {
-    try {
-      const response = await axios.get(url);
-      setStats({
-        edits: response.data.edits,
-        buildings: response.data.building_count_add,
-        roads: response.data.road_km_add,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   useEffect(() => {
-    getStats(url);
-  }, [url]);
+    // Using axios over the useFetch hook for external API endpoint
+    const abortController = new AbortController();
+    axios
+      .get(HOMEPAGE_STATS_API_URL, {
+        signal: abortController.signal,
+      })
+      .then((res) => {
+        const { edits, building_count_add: buildings, road_km_add: roads } = res.data;
+        setStats({
+          edits,
+          buildings,
+          roads,
+        });
+      })
+      .catch((err) => console.error(err));
+    return () => {
+      abortController.abort();
+    };
+  }, []);
 
   return (
     <div className="pt5 pb2 ph6-l ph4 flex justify-around flex-wrap flex-nowrap-ns stats-container">
