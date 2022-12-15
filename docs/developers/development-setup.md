@@ -141,7 +141,7 @@ To be able to create projects and have full permissions as an admin user inside 
 If you plan to only work on the API you only have to build the backend architecture. Install the backend dependencies, and run the server:
 
 `
-python3 manage.py runserver -d -r
+python3 manage.py --debug run
 `
 
 You can access the API documentation on [http://localhost:5000/api-docs](http://localhost:5000/api-docs), it also allows you to execute requests on your local TM instance. The API docs is also available on our [production](https://tasks.hotosm.org/api-docs) and [staging](https://tasks-stage.hotosm.org/api-docs/) instances.
