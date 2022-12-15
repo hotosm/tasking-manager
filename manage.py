@@ -75,7 +75,7 @@ def auto_unlock_tasks():
 
 
 # Setup a background cron job
-cron = BackgroundScheduler(daemon=True)
+cron = BackgroundScheduler(daemon=True, timezone=app.config["TIMEZONE"])
 # Initiate the background thread
 cron.add_job(auto_unlock_tasks, trigger="interval", hours=2)
 cron.start()

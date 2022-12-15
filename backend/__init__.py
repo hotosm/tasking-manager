@@ -1,3 +1,9 @@
+# gevent.monkey.patch_ssl is required to avoid Maximun Recursion depth exceeded error on container setup
+# See https://github.com/gevent/gevent/issues/1531
+import gevent
+
+gevent.monkey.patch_ssl()
+
 import logging
 import os
 from logging.handlers import RotatingFileHandler

@@ -37,7 +37,6 @@ def get_canned_osm_user_details():
     location = os.path.join(
         os.path.dirname(__file__), "test_files", "osm_user_details.json"
     )
-    print(location)
     try:
         with open(location, "r") as x:
             return json.load(x)

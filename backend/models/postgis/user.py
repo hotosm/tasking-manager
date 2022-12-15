@@ -69,7 +69,9 @@ class User(db.Model):
     last_validation_date = db.Column(db.DateTime, default=timestamp)
 
     # Relationships
-    accepted_licenses = db.relationship("License", secondary=user_licenses_table)
+    accepted_licenses = db.relationship(
+        "License", secondary=user_licenses_table, overlaps="users"
+    )
     interests = db.relationship(Interest, secondary=user_interests, backref="users")
 
     def create(self):

@@ -260,7 +260,7 @@ class MappingService:
 
         for task in tasks:
             task_geom = shape.to_shape(task.geometry)
-            for poly in task_geom:
+            for poly in task_geom.geoms:
                 trkseg = ET.SubElement(trk, "trkseg")
                 for point in poly.exterior.coords:
                     ET.SubElement(
@@ -306,7 +306,7 @@ class MappingService:
                 "way",
                 attrib=dict(id=str((task.id * -1)), action="modify", visible="true"),
             )
-            for poly in task_geom:
+            for poly in task_geom.geoms:
                 for point in poly.exterior.coords:
                     ET.SubElement(
                         root,
