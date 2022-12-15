@@ -717,4 +717,8 @@ export default defineMessages({
     id: 'pages.create_campaign.error',
     defaultMessage: 'There was an error saving this campaign.',
   },
+  tutorial: {
+    id: 'pages.learn.tutorial',
+    defaultMessage: 'Tutorial',
+  }
 });
