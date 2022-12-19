@@ -16,7 +16,7 @@ describe('TaskHistory', () => {
         taskId: 15,
         action: 'STATE_CHANGE',
         actionText: 'INVALIDATED',
-        actionDate: Date.now() - 1e3 * 60,
+        actionDate: Date.now() - 1e3 * 51, // subtracting a random number less than 60 seconds for '1 minute ago' text
         actionBy: 'User01',
       },
       {
