@@ -2,10 +2,12 @@ import urllib.parse
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from flask_mail import Message
+import datetime
 
 from backend import mail, create_app
 from backend.models.postgis.message import Message as PostgisMessage
 from backend.models.postgis.statuses import EncouragingEmailType
+from backend.models.postgis.task import TaskHistory, TaskAction
 from backend.services.messaging.template_service import (
     get_template,
     format_username_link,
@@ -117,6 +119,43 @@ class SMTPService:
                     SMTPService._send_message(
                         contributor.email_address, subject, html_template
                     )
+
+    @staticmethod
+    def send_weekly_project_updates(
+        start_date: datetime.date, end_date=datetime.date.today()
+    ):
+        from backend.services.project_service import ProjectService
+
+        task_history = TaskHistory.query.filter(
+            TaskHistory.action == TaskAction.STATE_CHANGE.name,
+            TaskHistory.action_date.between(start_date, end_date),
+        )
+
+        active_projects = task_history.with_entities(
+            TaskHistory.project_id.distinct()
+        ).all()
+        messages_sent = 0
+        for project_id in active_projects:
+            stats = ProjectService.get_contrib_between_time_period(
+                start_date, end_date, project_id[0]
+            )
+            project = ProjectService.get_project_by_id(project_id[0])
+            stats["START_DATE"] = start_date.strftime("%b %d %Y")
+            stats["END_DATE"] = end_date.strftime("%b %d %Y")
+            stats["USERNAME"] = project.author.username
+            stats["PROJECT_NAME"] = ProjectService.get_project_title(project.id)
+            html_template = get_template("weekly_project_update_en.html", values=stats)
+            subject = f"Weekly project summary for {stats['PROJECT_NAME']}"
+            if (
+                project.author.email_address
+                and project.author.is_email_verified
+                and project.author.projects_notifications
+            ):
+                SMTPService._send_message(
+                    project.author.email_address, subject, html_template
+                )
+                messages_sent += 1
+        return messages_sent
 
     @staticmethod
     def send_email_alert(

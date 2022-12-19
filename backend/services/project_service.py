@@ -1,6 +1,8 @@
+from datetime import datetime
 import threading
 from cachetools import TTLCache, cached
 from flask import current_app
+import requests
 
 from backend.models.dtos.mapping_dto import TaskDTOs
 from backend.models.dtos.project_dto import (
@@ -24,7 +26,7 @@ from backend.models.postgis.statuses import (
     EncouragingEmailType,
     MappingLevel,
 )
-from backend.models.postgis.task import Task, TaskHistory
+from backend.models.postgis.task import Task, TaskHistory, TaskAction, TaskStatus
 from backend.models.postgis.utils import NotFound
 from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.user_service import UserService
@@ -604,3 +606,70 @@ class ProjectService:
                     project_completion,
                 ),
             ).start()
+
+    @staticmethod
+    def get_contrib_between_time_period(
+        start_date: datetime.date, end_date: datetime.date, project_id: int
+    ):
+        """
+        Get the number of contributions between two dates
+        """
+        values = {}
+        project = ProjectService.get_project_by_id(project_id)
+        values["PROJECT_ID"] = project_id
+
+        #  Calculate project stats for provided time period
+        project_task_history = TaskHistory.query.filter(
+            TaskHistory.action == TaskAction.STATE_CHANGE.name,
+            TaskHistory.action_date.between(start_date, end_date),
+            TaskHistory.project_id == project_id,
+        )
+        values["MAPPED_THIS_PERIOD"] = (
+            project_task_history.filter(
+                TaskHistory.action_text == TaskStatus.MAPPED.name
+            )
+            .distinct()
+            .count()
+        )
+        values["VALIDATED_THIS_PERIOD"] = project_task_history.filter(
+            TaskHistory.action_text == TaskStatus.VALIDATED.name
+        ).count()
+        values["INVALIDATED_THIS_PERIOD"] = (
+            project_task_history.filter(
+                TaskHistory.action_text == TaskStatus.INVALIDATED.name
+            )
+            .distinct()
+            .count()
+        )
+        values["BADIMAGERY_THIS_PERIOD"] = project_task_history.filter(
+            TaskHistory.action_text == TaskStatus.BADIMAGERY.name
+        ).count()
+
+        values["CONTRIBUTORS"] = project_task_history.distinct(
+            TaskHistory.user_id
+        ).count()
+
+        # Get total buildings and roads mapped stats using project changeset comment
+        project_osm_stats_url = current_app.config[
+            "PROJECT_STATS_API_URL"
+        ] + project.changeset_comment.split(" ")[0].replace("#", "")
+        project_osm_stats = requests.get(project_osm_stats_url).json()
+        values["TOTAL_BUILDINGS_MAPPED"] = project_osm_stats["buildings"]
+        values["TOTAL_ROAD_MAPPED"] = project_osm_stats["roads"]
+
+        # Calculate total stats for project
+        values["TOTAL_PERCENTAGE_MAPPED"] = Project.calculate_tasks_percent(
+            "mapped",
+            project.total_tasks,
+            project.tasks_mapped,
+            project.tasks_validated,
+            project.tasks_bad_imagery,
+        )
+        values["TOTAL_PERCENTAGE_VALIDATED"] = Project.calculate_tasks_percent(
+            "validated",
+            project.total_tasks,
+            project.tasks_mapped,
+            project.tasks_validated,
+            project.tasks_bad_imagery,
+        )
+        return values

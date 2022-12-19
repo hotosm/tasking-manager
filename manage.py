@@ -3,11 +3,13 @@ import warnings
 import base64
 import csv
 import datetime
+from dateutil.relativedelta import relativedelta
 
 from flask_migrate import MigrateCommand
 from flask_script import Manager
 from dotenv import load_dotenv
 from backend import create_app, initialise_counters
+from backend.services.messaging.smtp_service import SMTPService
 from backend.services.users.authentication_service import AuthenticationService
 from backend.services.users.user_service import UserService
 from backend.services.stats_service import StatsService
@@ -73,10 +75,28 @@ def auto_unlock_tasks():
             Task.auto_unlock_tasks(project_id)
 
 
+@manager.command
+def send_weekly_project_updates():
+    with application.app_context():
+        print("Sending weekly project updates to project managers")
+        start_date = datetime.date.today() - relativedelta(weeks=2)
+        end_date = datetime.date.today()
+        messages_sent = SMTPService.send_weekly_project_updates(start_date, end_date)
+        print(f"Sent {messages_sent} messages")
+
+
 # Setup a background cron job
 cron = BackgroundScheduler(daemon=True)
 # Initiate the background thread
 cron.add_job(auto_unlock_tasks, "interval", hours=2)
+
+# Add cronjob to send weekly project update if "SEND_PROJECT_EMAIL_UPDATES" enabled
+if application.config["SEND_PROJECT_EMAIL_UPDATES"]:
+    cron.add_job(send_weekly_project_updates, "cron", day_of_week="mon")
+    application.logger.debug(
+        "Initiated background thread to send weekly project updates"
+    )
+
 cron.start()
 application.logger.debug("Initiated background thread to auto unlock tasks")
 
