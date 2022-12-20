@@ -34,7 +34,6 @@ jobs:
           keys:
             - node-v1-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
             - node-v1-{{ .Branch }}-
-            - node-v1-
       - run:
           name: Install requirements
           command: |
