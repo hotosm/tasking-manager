@@ -34,7 +34,6 @@ export function HeaderLine({ author, projectId, priority, showEditLink, organisa
             <PriorityBox
               priority={priority}
               extraClasses={'pv2 ph3 mh1 mv1'}
-              hideMediumAndLow
               showIcon
             />
           </div>
