@@ -352,7 +352,7 @@ export const TaskActivity = ({
           </div>
         </div>
       </div>
-      <div className="blue-dark overflow-scroll vh-50">
+      <div className="blue-dark overflow-y-auto vh-50">
         <TaskHistory
           projectId={project.projectId}
           taskId={taskId}
