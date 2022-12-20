@@ -90,6 +90,7 @@ jobs:
         description: "The 40 char hash of the git commit"
         type: string
     working_directory: /home/circleci/tasking-manager
+    resource_class: medium
     docker:
       - image: cimg/python:3.7.14-node
     steps:
@@ -186,6 +187,7 @@ jobs:
             fi
   frontend_deploy:
     working_directory: /home/circleci/tasking-manager
+    resource_class: large
     docker:
       - image: cimg/python:3.7.14-node
     parameters:
