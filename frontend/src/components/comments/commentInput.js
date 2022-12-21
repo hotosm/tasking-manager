@@ -88,6 +88,7 @@ export const CommentInputField = ({
           value={comment}
           onChange={setComment}
           textareaProps={{ ...getInputProps(), spellCheck: 'true' }}
+          defaultTabEnable
         />
         <input
           type="file"
