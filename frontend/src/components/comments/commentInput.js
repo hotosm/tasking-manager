@@ -56,6 +56,7 @@ export const CommentInputField = ({
     itemClass: 'w-100 pv2 ph3 bg-tan hover-bg-blue-grey blue-grey hover-white pointer base-font',
     requireLeadingSpace: true,
     noMatchTemplate: null,
+    allowSpaces: true,
     searchOpts: {
       skip: true,
     },
