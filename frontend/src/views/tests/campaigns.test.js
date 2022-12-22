@@ -6,14 +6,26 @@ import { IntlProviders, ReduxIntlProviders, renderWithRouter } from '../../utils
 import { ListCampaigns, CampaignError, CreateCampaign, EditCampaign } from '../campaigns';
 
 describe('ListCampaigns', () => {
+  it('should show loading placeholder when licenses are being fetched', () => {
+    const { container } = renderWithRouter(
+      <ReduxIntlProviders>
+        <ListCampaigns />
+      </ReduxIntlProviders>,
+    );
+    expect(container.getElementsByClassName('show-loading-animation').length).toBe(4);
+  });
+
   it('should fetch and list campaigns', async () => {
-    render(
+    const { container } = render(
       <ReduxIntlProviders>
         <ListCampaigns />
       </ReduxIntlProviders>,
     );
     // wait for the fetch API to be complete
-    await waitFor(() => expect(screen.getByText('Campaign Name 1')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
+    );
+    expect(screen.getByText('Campaign Name 1')).toBeInTheDocument();
     expect(screen.getByText('Campaign Name Two')).toBeInTheDocument();
     expect(screen.getByText('Campaign Name Tres')).toBeInTheDocument();
   });
@@ -72,22 +84,12 @@ describe('CreateCampaign', () => {
     await waitFor(() => expect(history.location.pathname).toBe('/manage/campaigns/123'));
   });
 
-  it('should navigate to the newly created campaign detail page on creation success', async () => {
-    const { history, createButton } = setup();
-    const inputText = screen.getByRole('textbox');
-    fireEvent.change(inputText, { target: { value: 'New Campaign Name' } });
-    expect(inputText.value).toBe('New Campaign Name');
-    expect(createButton).toBeEnabled();
-    fireEvent.click(createButton);
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/campaigns/123'));
-  });
-
   // TODO: When cancel button is clicked, the app should navigate to a previous relative path
 });
 
 describe('EditCampaign', () => {
   const setup = () => {
-    const { history } = renderWithRouter(
+    const { container, history } = renderWithRouter(
       <ReduxIntlProviders>
         <EditCampaign id={123} />
       </ReduxIntlProviders>,
@@ -95,6 +97,7 @@ describe('EditCampaign', () => {
     const inputText = screen.getByRole('textbox');
 
     return {
+      container,
       inputText,
       history,
     };
@@ -151,6 +154,41 @@ describe('EditCampaign', () => {
       }),
     ).toBeInTheDocument();
   });
+
+  it('should hide the save button after campaign edit is successful', async () => {
+    const { inputText } = setup();
+    await waitFor(() => expect(inputText.value).toBe('Campaign Name 123'));
+    fireEvent.change(inputText, { target: { value: 'Changed Campaign Name' } });
+    const saveButton = screen.getByRole('button', { name: /save/i });
+    const cancelButton = screen.getByRole('button', {
+      name: /cancel/i,
+    });
+    fireEvent.click(saveButton);
+    const savingLoder = within(saveButton).getByRole('img', {
+      hidden: true,
+    });
+    await waitFor(() => {
+      expect(savingLoder).not.toBeInTheDocument();
+    });
+    expect(saveButton).not.toBeInTheDocument();
+    expect(cancelButton).not.toBeInTheDocument();
+  });
+});
+
+describe('Delete Campaign', () => {
+  const setup = () => {
+    const { history } = renderWithRouter(
+      <ReduxIntlProviders>
+        <EditCampaign id={123} />
+      </ReduxIntlProviders>,
+    );
+    const inputText = screen.getByRole('textbox');
+
+    return {
+      inputText,
+      history,
+    };
+  };
 
   it('should ask for confirmation when user tries to delete a campaign', async () => {
     setup();
