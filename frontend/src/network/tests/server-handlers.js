@@ -7,10 +7,14 @@ import { projectContributions, projectContributionsByDay } from './mockData/cont
 import { usersList } from './mockData/userList';
 import {
   license,
-  campaign,
+  licenseCreationSuccess,
+  licenseDeletionSuccess,
+  campaigns,
   campaignCreationSuccess,
-  campaignDetail,
+  campaign,
+  campaignUpdationSuccess,
   campaignDeletionSuccess,
+  licenses,
 } from './mockData/management';
 import { countries } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
@@ -49,17 +53,32 @@ const handlers = [
   rest.get(API_URL + 'users', async (req, res, ctx) => {
     return res(ctx.json(usersList));
   }),
+  rest.get(API_URL + 'licenses', (req, res, ctx) => {
+    return res(ctx.json(licenses));
+  }),
   rest.get(API_URL + 'licenses/:id/', (req, res, ctx) => {
     return res(ctx.json(license));
   }),
+  rest.patch(API_URL + 'licenses/:id', (req, res, ctx) => {
+    return res(ctx.json(req.body));
+  }),
+  rest.delete(API_URL + 'licenses/:id', (req, res, ctx) => {
+    return res(ctx.json(licenseDeletionSuccess));
+  }),
+  rest.post(API_URL + 'licenses', (req, res, ctx) => {
+    return res(ctx.json(licenseCreationSuccess));
+  }),
   rest.get(API_URL + 'campaigns', (req, res, ctx) => {
-    return res(ctx.json(campaign));
+    return res(ctx.json(campaigns));
   }),
   rest.post(API_URL + 'campaigns', (req, res, ctx) => {
     return res(ctx.json(campaignCreationSuccess));
   }),
   rest.get(API_URL + 'campaigns/:id', (req, res, ctx) => {
-    return res(ctx.json(campaignDetail));
+    return res(ctx.json(campaign));
+  }),
+  rest.patch(API_URL + 'campaigns/:id', (req, res, ctx) => {
+    return res(ctx.json(campaignUpdationSuccess));
   }),
   rest.delete(API_URL + 'campaigns/:id', (req, res, ctx) => {
     return res(ctx.json(campaignDeletionSuccess));
