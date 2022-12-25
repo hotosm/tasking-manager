@@ -14,6 +14,11 @@ import {
   campaign,
   campaignUpdationSuccess,
   campaignDeletionSuccess,
+  interests,
+  interest,
+  interestCreationSuccess,
+  interestUpdationSuccess,
+  interestDeletionSuccess,
   licenses,
 } from './mockData/management';
 import { countries } from './mockData/miscellaneous';
@@ -82,6 +87,21 @@ const handlers = [
   }),
   rest.delete(API_URL + 'campaigns/:id', (req, res, ctx) => {
     return res(ctx.json(campaignDeletionSuccess));
+  }),
+  rest.get(API_URL + 'interests', (req, res, ctx) => {
+    return res(ctx.json(interests));
+  }),
+  rest.get(API_URL + 'interests/:id/', (req, res, ctx) => {
+    return res(ctx.json(interest));
+  }),
+  rest.patch(API_URL + 'interests/:id', (req, res, ctx) => {
+    return res(interestUpdationSuccess(req.body.name));
+  }),
+  rest.delete(API_URL + 'interests/:id', (req, res, ctx) => {
+    return res(ctx.json(interestDeletionSuccess));
+  }),
+  rest.post(API_URL + 'interests', (req, res, ctx) => {
+    return res(ctx.json(interestCreationSuccess(req.body.name)));
   }),
   rest.get(API_URL + 'countries', (req, res, ctx) => {
     return res(ctx.json(countries));

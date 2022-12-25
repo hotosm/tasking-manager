@@ -67,3 +67,39 @@ export const campaignUpdationSuccess = {
 export const campaignDeletionSuccess = {
   Success: 'Campaign deleted',
 };
+
+export const interests = {
+  interests: [
+    {
+      id: 1,
+      name: 'Interest Name 1',
+    },
+    {
+      id: 2,
+      name: 'Interest Name Two',
+    },
+    {
+      id: 3,
+      name: 'Interest Name Tres',
+    },
+  ],
+};
+
+export const interest = {
+  id: 123,
+  name: 'Interest Name 123',
+};
+
+export const interestCreationSuccess = (name) => ({
+  id: 123,
+  name,
+});
+
+export const interestUpdationSuccess = (name) => ({
+  id: 123,
+  name,
+});
+
+export const interestDeletionSuccess = {
+  Success: 'Interest deleted',
+};
