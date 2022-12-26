@@ -1080,11 +1080,11 @@ class TasksActionsReverUserTaskstAPI(Resource):
               type: integer
               default: 1
             - in: query
-              name: user_id
-              description: User ID to revert tasks for
+              name: username
+              description: Username to revert tasks for
               required: true
-              type: integer
-              default: 1
+              type: string
+              default: test
         responses:
             200:
                 description: Tasks reverted
@@ -1102,7 +1102,8 @@ class TasksActionsReverUserTaskstAPI(Resource):
         try:
             revert_dto = RevertUserValidatedTasksDTO()
             revert_dto.project_id = project_id
-            revert_dto.user_id = request.args.get("user_id")
+            user = UserService.get_user_by_username(request.args.get("username"))
+            revert_dto.user_id = user.id
             revert_dto.action_by = token_auth.current_user()
             revert_dto.validate()
         except DataError as e:
