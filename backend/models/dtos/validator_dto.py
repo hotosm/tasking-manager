@@ -129,3 +129,12 @@ class MappedTasks(Model):
         self.mapped_tasks = []
 
     mapped_tasks = ListType(ModelType(MappedTasksByUser), serialized_name="mappedTasks")
+
+
+class RevertUserValidatedTasksDTO(Model):
+    """ DTO used to revert all tasks to a given status """
+
+    preferred_locale = StringType(default="en")
+    project_id = IntType(required=True)
+    user_id = IntType(required=True)
+    action_by = IntType(required=True)
