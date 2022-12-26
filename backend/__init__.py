@@ -193,6 +193,7 @@ def add_api_endpoints(app):
         TasksActionsResetAllAPI,
         TasksActionsSplitAPI,
         TasksActionsExtendAPI,
+        TasksActionsReverUserTaskstAPI,
     )
     from backend.api.tasks.statistics import (
         TasksStatisticsAPI,
@@ -546,6 +547,10 @@ def add_api_endpoints(app):
     api.add_resource(
         TasksActionsResetAllAPI,
         format_url("projects/<int:project_id>/tasks/actions/reset-all/"),
+    )
+    api.add_resource(
+        TasksActionsReverUserTaskstAPI,
+        format_url("projects/<int:project_id>/tasks/actions/reset-validated-by-user/"),
     )
     api.add_resource(
         TasksActionsSplitAPI,
