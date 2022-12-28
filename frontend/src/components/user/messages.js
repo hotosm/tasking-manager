@@ -288,7 +288,7 @@ export default defineMessages({
   apiKeyDescription: {
     id: 'user.settings.apiKey.description',
     defaultMessage:
-      'With this API Key, you can authenticate and use all the resources of the Tasking Manager API. For more details, checkout the {link}.',
+      'With this API Key, you can authenticate and use all the resources of the Tasking Manager API. For more details, check out the {link}.',
   },
   emailConfirmationMsg: {
     id: 'user.settings.email.confirmation',
