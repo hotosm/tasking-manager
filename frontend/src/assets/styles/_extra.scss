@@ -161,20 +161,20 @@ a:active {
   background-color: $red; // @extend .bg-green;
 
   .checkbox-toggle {
-    left: 2rem; // @extend .left-2;
-    background-color: $white; // @extend .bg-moon-gray;
-    border-color: $red;
-  }
-
-  .checkbox-toggle-sm {
-    left: 1rem; // @extend .left-1;
-    background-color: $white; // @extend .bg-moon-gray;
-    border-color: $red;
+    left: calc(1.5rem + 0.125rem); // @extend .left-2;
   }
 }
 
-.checkbox-toggle:hover {
-  border: dashed red !important;
+.switch-ctr {
+  width: 3rem;
+  height: 1.5rem;
+
+  .switch-thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+    left: 0.125rem;
+    top: 0.125rem;
+  }
 }
 
 .radio-input {

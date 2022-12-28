@@ -38,18 +38,8 @@ export const SwitchToggle = ({
         checked={isChecked}
         onChange={onChange}
       />
-      <div
-        className={`relative z-1 dib ${
-          small ? 'w2 h1' : 'w3 h2'
-        } bg-blue-grey overflow-hidden br4 v-mid bg-animate checkbox-wrapper`}
-      >
-        <div
-          className={`absolute right-auto left-0 ${
-            small ? 'w1 h1' : 'w2 h2'
-          } br4 bg-white ba b-grey-light shadow-4 t-cb bg-animate ${
-            small ? 'checkbox-toggle-sm' : 'checkbox-toggle'
-          }`}
-        ></div>
+      <div className="relative z-1 dib bg-blue-light overflow-hidden br4 v-mid bg-animate checkbox-wrapper switch-ctr">
+        <div className="absolute switch-thumb br4 bg-white t-cb bg-animate checkbox-toggle" />
       </div>
     </div>
     {label && labelPosition === 'right' && <span className="di ml2 f6">{label}</span>}
