@@ -512,3 +512,37 @@ a[href="https://www.mapbox.com/map-feedback/"]
     0px 34px 24px rgba(0, 0, 0, 0.37534);
   padding: 0 !important;
 }
+
+.interest-cards-ctr {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  row-gap: 1.25rem;
+  column-gap: 1rem;
+
+  @media screen and (max-width: 60em) {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 1rem;
+  }
+
+  @media screen and (max-width: 30em) {
+    grid-template-columns: repeat(1, 1fr);
+    row-gap: 0.5rem;
+  }
+}
+
+.interest-card {
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  place-items: center;
+
+  @media screen and (max-width: 30em) {
+    padding: 0.875rem 1rem;
+  }
+}
+
+.text-break {
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
