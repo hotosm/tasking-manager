@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
@@ -152,67 +152,5 @@ describe('Edit Interest', () => {
     fireEvent.click(saveButton);
     expect(saveButton).not.toBeInTheDocument();
     expect(cancelButton).not.toBeInTheDocument();
-  });
-});
-
-describe('Delete Interest', () => {
-  const setup = () => {
-    const { history } = renderWithRouter(
-      <ReduxIntlProviders>
-        <EditInterest id={1} />
-      </ReduxIntlProviders>,
-    );
-    const nameInput = screen.getByRole('textbox');
-
-    return {
-      nameInput,
-      history,
-    };
-  };
-
-  it('should ask for confirmation when user tries to delete an interest', async () => {
-    setup();
-    expect(await screen.findByText('NRCS_Duduwa Mapping')).toBeInTheDocument();
-    const deleteButton = screen.getByRole('button', {
-      name: /delete/i,
-    });
-    fireEvent.click(deleteButton);
-    expect(screen.getByText('Are you sure you want to delete this category?')).toBeInTheDocument();
-  });
-
-  it('should close the confirmation popup when cancel is clicked', async () => {
-    setup();
-    expect(await screen.findByText('NRCS_Duduwa Mapping')).toBeInTheDocument();
-    const deleteButton = screen.getByRole('button', {
-      name: /delete/i,
-    });
-    fireEvent.click(deleteButton);
-    const cancelButton = screen.getByRole('button', {
-      name: /cancel/i,
-    });
-    fireEvent.click(cancelButton);
-    expect(
-      screen.queryByRole('heading', {
-        name: 'Are you sure you want to delete this category?',
-      }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('should direct to interests list page on successful deletion of an interest', async () => {
-    const { history } = setup();
-    expect(await screen.findByText('NRCS_Duduwa Mapping')).toBeInTheDocument();
-    const deleteButton = screen.getByRole('button', {
-      name: /delete/i,
-    });
-    fireEvent.click(deleteButton);
-    const dialog = screen.getByRole('dialog');
-    const deleteConfirmationButton = within(dialog).getByRole('button', {
-      name: /delete/i,
-    });
-    fireEvent.click(deleteConfirmationButton);
-    expect(
-      await screen.findByRole('heading', { name: /interest deleted successfully./i }),
-    ).toBeInTheDocument();
-    await waitFor(() => expect(history.location.pathname).toBe('/manage/interests'));
   });
 });
