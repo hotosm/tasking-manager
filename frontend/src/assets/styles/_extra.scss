@@ -314,7 +314,7 @@ a[href="https://www.mapbox.com/map-feedback/"]
 .react-select {
   &__control {
     border-color: $grey-light !important;
-    min-height: 1.5rem !important;
+    min-height: 2.625rem !important;
     border-radius: 0.125rem !important;
 
     &--is-focused {
@@ -328,6 +328,11 @@ a[href="https://www.mapbox.com/map-feedback/"]
 
   &__placeholder {
     color: $blue-dark !important;
+    line-height: 1.71;
+  }
+
+  &__indicator-separator {
+    display: none;
   }
 
   &__option {
