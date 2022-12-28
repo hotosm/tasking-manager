@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from '@reach/router';
 import { FormattedMessage } from 'react-intl';
+import Select from 'react-select';
 
 import messages from '../messages';
 import { Button } from '../../button';
-import { Dropdown } from '../../dropdown';
 import { CustomField } from './customField';
 import { SwitchToggleField } from './switchToggleField';
 import { LocaleSelector } from '../../localeSelect';
@@ -39,13 +39,15 @@ function _EditorDropdown(props) {
   };
 
   return (
-    <Dropdown
-      onChange={onEditorSelect}
-      value={value}
-      options={getEditors()}
-      display={<FormattedMessage {...messages.selectDefaultEditor} />}
-      className="blue-dark bg-white ba b--grey-light v-mid pv2 pl4"
-    />
+    <div className="settings-width ml-auto">
+      <Select
+        classNamePrefix="react-select"
+        onChange={(e) => onEditorSelect([e])}
+        options={getEditors()}
+        placeholder={<FormattedMessage {...messages.selectDefaultEditor} />}
+        value={getEditors().find((editor) => editor.value === value)}
+      />
+    </div>
   );
 }
 
