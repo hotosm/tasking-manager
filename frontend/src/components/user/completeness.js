@@ -7,15 +7,15 @@ import { PROFILE_RELEVANT_FIELDS } from './forms/personalInformation';
 function CompletenessProgressBar({ completeness }: Object) {
   return (
     <>
-      <div className="cf db">
-        <div className="w-90 pr2 pt2 fl relative">
+      <div className="cf db pt1 flex items-center">
+        <div className="w-90 pr3 fl relative">
           <div
             className={'absolute bg-red br-pill hhalf hide-child'}
             style={{ width: `${completeness.toPrecision(3) * 100}%` }}
           ></div>
-          <div className={'bg-grey-light br-pill hhalf hide-child overflow-y-hidden'}></div>
+          <div className={'bg-tan br-pill hhalf hide-child overflow-y-hidden'}></div>
         </div>
-        <div className="w-10 fl pl1 fw6">
+        <div className="w-10 fl pl1 fw7">
           <FormattedNumber
             value={completeness}
             maximumFractionDigits={0}
@@ -36,11 +36,11 @@ export function calculateCompleteness(userDetails) {
 export function ProfileCompleteness({ userDetails }: Object) {
   const completeness = calculateCompleteness(userDetails);
   return (
-    <div className="shadow-4 bg-white ph3 pv3">
-      <h3 className="blue-dark f4 mt0 fw6">
+    <div className="bg-white ph3 pv3 mr4">
+      <h3 className="blue-dark f4 ma0 fw7">
         <FormattedMessage {...messages.completenessTitle} />
       </h3>
-      <p className="blue-grey">
+      <p className="blue-grey mt2">
         {completeness === 0 && <FormattedMessage {...messages.completenessLead0} />}
         {completeness > 0 && completeness < 1 && (
           <FormattedMessage {...messages.completenessLead1} />

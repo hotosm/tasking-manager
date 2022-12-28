@@ -55,8 +55,8 @@ export function UserTopBar() {
   );
 
   return (
-    <div className="cf ph4 pt3 pb1 mb2">
-      <div className="w-100 w-75-l fl pb2">
+    <div className="cf ph4 pv4 mb2">
+      <div className="w-100 w-75-l fl flex flex-column flex-row-ns items-center tc tl-ns">
         <div className="fl dib mr3">
           <CurrentUserAvatar className="h4 w4 br-100 pa1 ba b--grey-light bw3 red" />
         </div>
@@ -66,16 +66,18 @@ export function UserTopBar() {
           delay={500}
           ready={user !== undefined && osmUserInfo !== undefined}
         >
-          <div className="pl2 dib">
-            <h3 className="ttu f2 fw-6 mv0 barlow-condensed">{user.name || user.username}</h3>
-            <p className="f4 blue-dark mt3 mb2">
+          <div className="pl2 dib lh-solid mt3 mt0-ns">
+            <h3 className="ttu fw5 mv0 barlow-condensed username-heading">
+              {user.name || user.username}
+            </h3>
+            <p className="f4 blue-dark mv3 fw5">
               <MappingLevelMessage level={user.mappingLevel} />
             </p>
             <NextMappingLevel changesetsCount={osmUserInfo ? osmUserInfo.changesetCount : 0} />
           </div>
         </ReactPlaceholder>
       </div>
-      <div className="w-100 w-25-l fl pb2">
+      <div className="w-100 w-25-l fl dn db-ns">
         <ProfileCompleteness userDetails={user} />
       </div>
     </div>

@@ -55,24 +55,28 @@ const EditorDropdown = connect(mapStateToProps, { pushUserDetails })(_EditorDrop
 
 function _UserSettingsForm(props) {
   return (
-    <div className="bg-white shadow-4 pa4 mb3">
-      <h3 className="f3 blue-dark mt0 fw6">
+    <div className="bg-white b--card ba br1 pa4 mb4">
+      <h3 className="f3 blue-dark mt0 fw7">
         <FormattedMessage {...messages.settings} />
       </h3>
       <div className="blue-grey">
         <CustomField labelId="expertMode" descriptionId="expertModeDescription">
-          <SwitchToggleField fieldName="isExpert" />
+          <SwitchToggleField fieldName="isExpert" removeVerticalPadding />
         </CustomField>
-        <CustomField labelId="defaultEditor" descriptionId="defaultEditorDescription">
+        <CustomField labelId="defaultEditor" descriptionId="defaultEditorDescription" isDropdown>
           <EditorDropdown />
         </CustomField>
-        <CustomField labelId="language" descriptionId="languageDescription">
-          <LocaleSelector className="ba b--grey-light br1" />
+        <CustomField labelId="language" descriptionId="languageDescription" isDropdown>
+          <LocaleSelector fullWidth removeBorder={false} />
         </CustomField>
         {props.userDetails.role === 'MAPPER' && (
-          <CustomField labelId="becomeValidator" descriptionId="becomeValidatorDescription">
+          <CustomField
+            labelId="becomeValidator"
+            descriptionId="becomeValidatorDescription"
+            isDropdown
+          >
             <Link to="/learn/validate">
-              <Button className="bg-blue-dark white mh1 mv2 dib">
+              <Button className="bg-blue-dark white dib settings-width">
                 <FormattedMessage {...messages.learnHow} />
               </Button>
             </Link>
