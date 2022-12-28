@@ -19,7 +19,7 @@ export function Settings() {
     return (
       <div className="pull-center">
         <UserTopBar />
-        <div className="cf pa4 bg-tan">
+        <div className="cf pa4 pb5 bg-blue-light-paper">
           <div className="fl w-100 w-60-l pb3 pr3-l">
             <UserInterestsForm />
             <UserSettingsForm />
