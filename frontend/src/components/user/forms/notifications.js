@@ -6,30 +6,54 @@ import { CustomField } from './customField';
 import { SwitchToggleField } from './switchToggleField';
 
 export function UserNotificationsForm(props) {
+  const fields = [
+    {
+      labelId: 'mentions',
+      descriptionId: 'mentionsDescription',
+      fieldName: 'mentionsNotifications',
+    },
+    {
+      labelId: 'teamUpdates',
+      descriptionId: 'teamUpdatesDescription',
+      fieldName: 'teamsAnnouncementNotifications',
+    },
+    {
+      labelId: 'taskUpdates',
+      descriptionId: 'taskUpdatesDescription',
+      fieldName: 'tasksNotifications',
+    },
+    {
+      labelId: 'projectUpdates',
+      descriptionId: 'projectUpdatesDescription',
+      fieldName: 'projectsNotifications',
+    },
+    {
+      labelId: 'questionsAndComments',
+      descriptionId: 'questionsAndCommentsDescription',
+      fieldName: 'questionsAndCommentsNotifications',
+    },
+    {
+      labelId: 'taskComments',
+      descriptionId: 'taskCommentsDescription',
+      fieldName: 'taskCommentsNotifications',
+    },
+  ];
+
   return (
-    <div id="notifications" className="bg-white shadow-4 pa4 mb3">
-      <h3 className="f3 blue-dark mt0 fw6">
+    <div id="notifications" className="bg-white b--card ba br1 pa4 mb4">
+      <h3 className="f3 blue-dark mt0 fw7">
         <FormattedMessage {...messages.notifications} />
       </h3>
       <div className="blue-grey">
-        <CustomField labelId="mentions" descriptionId="mentionsDescription">
-          <SwitchToggleField fieldName="mentionsNotifications" />
-        </CustomField>
-        <CustomField labelId="teamUpdates" descriptionId="teamUpdatesDescription">
-          <SwitchToggleField fieldName="teamsAnnouncementNotifications" />
-        </CustomField>
-        <CustomField labelId="taskUpdates" descriptionId="taskUpdatesDescription">
-          <SwitchToggleField fieldName="tasksNotifications" />
-        </CustomField>
-        <CustomField labelId="projectUpdates" descriptionId="projectUpdatesDescription">
-          <SwitchToggleField fieldName="projectsNotifications" />
-        </CustomField>
-        <CustomField labelId="questionsAndComments" descriptionId="questionsAndCommentsDescription">
-          <SwitchToggleField fieldName="questionsAndCommentsNotifications" />
-        </CustomField>
-        <CustomField labelId="taskComments" descriptionId="taskCommentsDescription">
-          <SwitchToggleField fieldName="taskCommentsNotifications" />
-        </CustomField>
+        {fields.map((field) => (
+          <CustomField
+            key={field.labelId}
+            labelId={field.labelId}
+            descriptionId={field.descriptionId}
+          >
+            <SwitchToggleField fieldName={field.fieldName} removeVerticalPadding />
+          </CustomField>
+        ))}
       </div>
     </div>
   );
