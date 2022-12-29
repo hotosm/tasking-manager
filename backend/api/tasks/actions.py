@@ -1120,7 +1120,7 @@ class TasksActionsReverUserTaskstAPI(Resource):
         except NotFound:
             return {"Error": "Task not found", "SubCode": "NotFound"}, 404
         except Exception as e:
-            error_msg = f"Validator Lock API - unhandled error: {str(e)}"
+            error_msg = f"RevertUserTasksAPI - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
             return {
                 "Error": "Unable to revert tasks",
