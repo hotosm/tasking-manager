@@ -353,7 +353,12 @@ class MappingService:
             f"Undo state from {current_state.name} to {undo_state.name}",
             True,
         )
-
+        # Reset the user who mapped/validated the task
+        if current_state.name == "MAPPED":
+            task.mapped_by = None
+        elif current_state.name == "VALIDATED":
+            task.validated_by = None
+        task.update()
         return task.as_dto_with_instructions(preferred_locale)
 
     @staticmethod
