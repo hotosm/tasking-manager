@@ -3308,15 +3308,10 @@
   resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-14.4.3.tgz#af975e367743fa91989cd666666aec31a8f50591"
   integrity sha512-kCUc5MEwaEMakkO5x7aoD+DLi02ehmEM2QCGWvNqAS1dV/fAvORWEjnjsEIvml59M7Y5kCkWN6fCCyPOe8OL6Q==
 
-"@tmcw/togeojson@^4.4.1":
-  version "4.4.1"
-  resolved "https://registry.npmjs.org/@tmcw/togeojson/-/togeojson-4.4.1.tgz"
-  integrity sha512-R4f8fYzXPGKjW+que03/UOtHEsMe3Tb4wOBOQi8KaZwJEX7RGOIoxUis//k2CrLL7f+6QX1Z4nb1dDozO2/LYA==
-
-"@tmcw/togeojson@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.npmjs.org/@tmcw/togeojson/-/togeojson-4.5.0.tgz"
-  integrity sha512-lNuuhW7nvN1T7xII9eRTi9zuPwYfFl43/1u/Xgi88tedX4ePfwJB5dqc31N7z6sWeR+7EES274ESNrK1gsW53A==
+"@tmcw/togeojson@^4.5.0", "@tmcw/togeojson@^4.7.0":
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-4.7.0.tgz#071d6d6d01f0aa86299cc98e3cdb102f1119241d"
+  integrity sha512-edAPymgIEIY/jrEmATYe56a46XHvPVm7SXhf29h7jSAUrRhLOIFIlbHPCsic/gGDSvWODTSioRFpXgou47ZLYg==
 
 "@tmcw/togeojson@^5.1.2":
   version "5.2.2"
