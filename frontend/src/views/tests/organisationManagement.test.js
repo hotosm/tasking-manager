@@ -38,7 +38,7 @@ describe('List Interests', () => {
       expect(container.getElementsByClassName('show-loading-animation').length).toBe(0),
     );
     expect(screen.getByRole('heading', { name: 'American Red Cross' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Kathmandu Living Labs' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Organisation Name 123' })).toBeInTheDocument();
   });
 
   it('should only display relevant organizations when they are searched', async () => {
@@ -51,7 +51,7 @@ describe('List Interests', () => {
     await user.type(searchBox, 'red');
     expect(screen.getByRole('heading', { name: 'American Red Cross' })).toBeInTheDocument();
     expect(
-      screen.queryByRole('heading', { name: 'Kathmandu Living Labs' }),
+      screen.queryByRole('heading', { name: 'Organisation Name 123' }),
     ).not.toBeInTheDocument();
   });
 });
@@ -208,7 +208,9 @@ describe('Delete Campaign', () => {
       name: /delete/i,
     });
     fireEvent.click(deleteButton);
-    expect(screen.getByText('Are you sure you want to delete this organization?')).toBeInTheDocument();
+    expect(
+      screen.getByText('Are you sure you want to delete this organization?'),
+    ).toBeInTheDocument();
   });
 
   it('should close the confirmation popup when cancel is clicked', async () => {
@@ -239,7 +241,9 @@ describe('Delete Campaign', () => {
       name: /delete/i,
     });
     fireEvent.click(deleteConfirmationButton);
-    await waitFor(() => expect(screen.getByText('Organisation deleted successfully.')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText('Organisation deleted successfully.')).toBeInTheDocument(),
+    );
     await waitFor(() => expect(history.location.pathname).toBe('/manage/organisations'));
   });
 });

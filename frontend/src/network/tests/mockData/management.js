@@ -127,16 +127,16 @@ export const organisations = {
       subscriptionTier: 2,
     },
     {
-      organisationId: 2,
+      organisationId: 123,
       managers: [
         {
-          username: 'Manoj Thapa',
+          username: 'User Manager',
           pictureUrl:
             'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBMkkwQ0E9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--6db7ae9875c642a40cc49b6c17f7653c80f72abb/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lKYW5CbFp3WTZCa1ZVT2hSeVpYTnBlbVZmZEc5ZmJHbHRhWFJiQjJscGFXaz0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--49342fc3b37f3c5c2ea7f489eb6f0b78e8c2bd4c/manoj.png',
         },
       ],
-      name: 'Kathmandu Living Labs',
-      slug: 'kathmandu-living-labs',
+      name: 'Organisation Name 123',
+      slug: 'organisation-name-123',
       logo: 'https://cdn.hotosm.org/tasking-manager/uploads/1652896455106_main-logo.png',
       description: null,
       url: null,
@@ -166,43 +166,7 @@ export const organisations = {
   ],
 };
 
-export const organisation = {
-  organisationId: 123,
-  managers: [
-    {
-      username: 'User Manager',
-      pictureUrl:
-        'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBMkkwQ0E9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--6db7ae9875c642a40cc49b6c17f7653c80f72abb/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lKYW5CbFp3WTZCa1ZVT2hSeVpYTnBlbVZmZEc5ZmJHbHRhWFJiQjJscGFXaz0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--49342fc3b37f3c5c2ea7f489eb6f0b78e8c2bd4c/manoj.png',
-    },
-  ],
-  name: 'Organisation Name 123',
-  slug: 'organisation-name-123',
-  logo: 'https://cdn.hotosm.org/tasking-manager/uploads/1652896455106_main-logo.png',
-  description: null,
-  url: null,
-  isManager: false,
-  teams: [
-    {
-      teamId: 9,
-      name: 'Notification Test',
-      description: 'hello',
-      joinMethod: 'BY_REQUEST',
-      visibility: 'PUBLIC',
-      members: [
-        {
-          username: 'Aadesh Baral',
-          pictureUrl:
-            'https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBNXFHQ1E9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--aed68fa4deb4e4eeba02e233b68881c4c9d84ab8/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJYW5CbkJqb0dSVlE2RkhKbGMybDZaVjkwYjE5c2FXMXBkRnNIYVdscGFRPT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--1d22b8d446683a272d1a9ff04340453ca7c374b4/89986176_1424302844399685_1705928282320404480_n.jpg',
-          function: 'MANAGER',
-          active: true,
-        },
-      ],
-    },
-  ],
-  campaigns: null,
-  type: 'FREE',
-  subscriptionTier: null,
-};
+export const organisation = organisations.organisations[1];
 
 export const organisationCreationSuccess = {
   organisationId: 123,
