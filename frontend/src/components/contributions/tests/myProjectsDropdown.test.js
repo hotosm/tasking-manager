@@ -26,7 +26,7 @@ it('displays placeholder and typed text on type', () => {
   );
 
   expect(screen.getByText(/Search by project id/i)).toBeInTheDocument();
-  const textfield = screen.getByRole('textbox');
+  const textfield = screen.getByRole('combobox');
 
   // add test cases for textfield
   fireEvent.change(textfield, { target: { value: '1234' } });
