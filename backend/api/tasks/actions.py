@@ -11,6 +11,7 @@ from backend.models.dtos.validator_dto import (
     LockForValidationDTO,
     UnlockAfterValidationDTO,
     StopValidationDTO,
+    RevertUserValidatedTasksDTO,
 )
 from backend.services.validator_service import (
     ValidatorService,
@@ -1045,5 +1046,83 @@ class TasksActionsExtendAPI(Resource):
             current_app.logger.critical(error_msg)
             return {
                 "Error": "Unable to lock task",
+                "SubCode": "InternalServerError",
+            }, 500
+
+
+class TasksActionsReverUserTaskstAPI(Resource):
+    @token_auth.login_required
+    def post(self, project_id):
+        """
+        Revert tasks by a specific user in a project
+        ---
+        tags:
+            - tasks
+        produces:
+            - application/json
+        parameters:
+            - in: header
+              name: Authorization
+              description: Base64 encoded session token
+              required: true
+              type: string
+              default: Token session
+            - in: header
+              name: Accept-Language
+              description: Language user is requesting
+              type: string
+              required: true
+              default: en
+            - in: path
+              name: project_id
+              description: Project ID the tasks are associated with
+              required: true
+              type: integer
+              default: 1
+            - in: query
+              name: username
+              description: Username to revert tasks for
+              required: true
+              type: string
+              default: test
+        responses:
+            200:
+                description: Tasks reverted
+            400:
+                description: Client Error
+            401:
+                description: Unauthorized - Invalid credentials
+            403:
+                description: Forbidden
+            404:
+                description: Task not found
+            500:
+                description: Internal Server Error
+        """
+        try:
+            revert_dto = RevertUserValidatedTasksDTO()
+            revert_dto.project_id = project_id
+            user = UserService.get_user_by_username(request.args.get("username"))
+            revert_dto.user_id = user.id
+            revert_dto.action_by = token_auth.current_user()
+            revert_dto.validate()
+        except DataError as e:
+            current_app.logger.error(f"Error validating request: {str(e)}")
+            return {
+                "Error": "Unable to revert tasks",
+                "SubCode": "InvalidData",
+            }, 400
+        try:
+            ValidatorService.revert_user_validated_tasks(revert_dto)
+            return {"Success": "Successfully reverted tasks"}, 200
+        except MappingServiceError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except NotFound:
+            return {"Error": "Task not found", "SubCode": "NotFound"}, 404
+        except Exception as e:
+            error_msg = f"RevertUserTasksAPI - unhandled error: {str(e)}"
+            current_app.logger.critical(error_msg)
+            return {
+                "Error": "Unable to revert tasks",
                 "SubCode": "InternalServerError",
             }, 500

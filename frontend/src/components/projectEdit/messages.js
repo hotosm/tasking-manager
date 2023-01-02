@@ -246,6 +246,26 @@ export default defineMessages({
     defaultMessage:
       'This will copy all descriptions, instructions, metadata etc to a new project. The Area of Interest, tasks and the priority areas will not be copied. You will have to redraw/import these. Your newly cloned project will be in draft status.',
   },
+  revertValidatedTasks: {
+    id: 'projects.actions.revert_validated_tasks.button',
+    defaultMessage: 'Revert validated tasks',
+  },
+  revertValidatedTasksTitle: {
+    id: 'projects.actions.revert_validated_tasks.title',
+    defaultMessage: 'Revert validated tasks',
+  },
+  revertValidatedTasksDescription: {
+    id: 'projects.actions.revert_validated_tasks.description',
+    defaultMessage: 'Revert all validated tasks by a specified user and mark it as mapped',
+  },
+  revertValidatedTasksSuccess: {
+    id: 'projects.actions.revert_validated_tasks.success',
+    defaultMessage: 'The tasks were reverted successfully.',
+  },
+  revertValidatedTasksError: {
+    id: 'projects.actions.revert_validated_tasks.error',
+    defaultMessage: 'The tasks reversion failed.',
+  },
   transferProject: {
     id: 'projects.actions.transfer_project.button',
     defaultMessage: 'Transfer project',

@@ -60,11 +60,11 @@ export function UserInterestsForm() {
   };
 
   return (
-    <div className="cf bg-white shadow-4 pa4 mb3">
-      <h3 className="f3 blue-dark mt0 fw6">
+    <div className="cf bg-white b--card ba br1 pa4 mb4">
+      <h3 className="f3 blue-dark mt0 fw7 mb0 lh-solid">
         <FormattedMessage {...messages.interestsH3} />
       </h3>
-      <p>
+      <p className="blue-grey ma0 mt2 mb3">
         <FormattedMessage {...messages.interestsLead} />
       </p>
       <InterestsList interests={interests} field={'userSelected'} changeSelect={changeSelect} />
@@ -80,7 +80,7 @@ export function UserInterestsForm() {
       )}
       <Button
         onClick={updateInterests}
-        className={`${enableSaveButton ? 'bg-blue-dark' : 'bg-grey-light'} white mh1 mv2 dib`}
+        className={`${enableSaveButton ? 'bg-blue-dark' : 'bg-grey-light'} white mv3 dib settings-width`}
         disabled={!enableSaveButton}
       >
         <FormattedMessage {...messages.save} />

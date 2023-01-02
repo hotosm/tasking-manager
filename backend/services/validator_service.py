@@ -10,6 +10,7 @@ from backend.models.dtos.validator_dto import (
     StopValidationDTO,
     InvalidatedTask,
     InvalidatedTasks,
+    RevertUserValidatedTasksDTO,
 )
 from backend.models.postgis.statuses import ValidatingNotAllowed
 from backend.models.postgis.task import (
@@ -22,9 +23,10 @@ from backend.models.postgis.task import (
 from backend.models.postgis.utils import NotFound, UserLicenseError, timestamp
 from backend.models.postgis.project_info import ProjectInfo
 from backend.services.messaging.message_service import MessageService
-from backend.services.project_service import ProjectService
+from backend.services.project_service import ProjectService, ProjectAdminService
 from backend.services.stats_service import StatsService
 from backend.services.users.user_service import UserService
+from backend.services.mapping_service import MappingService
 
 
 class ValidatorServiceError(Exception):
@@ -396,3 +398,29 @@ class ValidatorService:
                 filter(lambda issue_dto: issue_dto.count > 0, task_to_unlock["issues"]),
             )
         )
+
+    @staticmethod
+    def revert_user_validated_tasks(revert_dto: RevertUserValidatedTasksDTO):
+        """
+        Reverts all tasks mapped by a user
+        :raises ValidatorServiceError
+        """
+        if ProjectAdminService.is_user_action_permitted_on_project(
+            revert_dto.action_by, revert_dto.project_id
+        ):
+            tasks_to_revert = Task.query.filter(
+                Task.project_id == revert_dto.project_id,
+                Task.task_status == TaskStatus.VALIDATED.value,
+                Task.validated_by == revert_dto.user_id,
+            ).all()
+            for task in tasks_to_revert:
+                task = MappingService.undo_mapping(
+                    revert_dto.project_id,
+                    task.id,
+                    revert_dto.user_id,
+                    revert_dto.preferred_locale,
+                )
+        else:
+            raise ValidatorServiceError(
+                "UserActionNotPermitted- User not permitted to revert tasks"
+            )
