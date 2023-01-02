@@ -32,7 +32,7 @@ export function ListOrganisations() {
   );
   const [organisations, setOrganisations] = useState(null);
   const [userOrgsOnly, setUserOrgsOnly] = useState(userDetails.role === 'ADMIN' ? false : true);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -86,7 +86,9 @@ export function CreateOrganisation() {
   const createOrg = (payload) => {
     payload.managers = managers.map((user) => user.username);
     pushToLocalJSONAPI('organisations/', JSON.stringify(payload), token, 'POST')
-      .then((result) => navigate(`/manage/organisations/${result.organisationId}`))
+      .then((result) => {
+        navigate(`/manage/organisations/${result.organisationId}`);
+      })
       .catch((err) => {
         setError(err.message);
       });
