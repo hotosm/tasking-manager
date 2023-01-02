@@ -9,6 +9,11 @@ import {
   license,
   licenseCreationSuccess,
   licenseDeletionSuccess,
+  organisations,
+  organisation,
+  organisationUpdationSuccess,
+  organisationCreationSuccess,
+  organisationDeletionSuccess,
   campaigns,
   campaignCreationSuccess,
   campaign,
@@ -57,6 +62,21 @@ const handlers = [
   }),
   rest.get(API_URL + 'users', async (req, res, ctx) => {
     return res(ctx.json(usersList));
+  }),
+  rest.get(API_URL + 'organisations', (req, res, ctx) => {
+    return res(ctx.json(organisations));
+  }),
+  rest.get(API_URL + 'organisations/:id/', (req, res, ctx) => {
+    return res(ctx.json(organisation));
+  }),
+  rest.post(API_URL + 'organisations', (req, res, ctx) => {
+    return res(ctx.json(organisationCreationSuccess));
+  }),
+  rest.patch(API_URL + 'organisations/:id/', (req, res, ctx) => {
+    return res(ctx.json(organisationUpdationSuccess));
+  }),
+  rest.delete(API_URL + 'organisations/:id', (req, res, ctx) => {
+    return res(ctx.json(organisationDeletionSuccess));
   }),
   rest.get(API_URL + 'licenses', (req, res, ctx) => {
     return res(ctx.json(licenses));
