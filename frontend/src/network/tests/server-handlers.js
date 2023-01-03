@@ -4,7 +4,7 @@ import { getProjectSummary, getProjectStats, projects } from './mockData/project
 import { featuredProjects } from './mockData/featuredProjects';
 import { newUsersStats } from './mockData/userStats';
 import { projectContributions, projectContributionsByDay } from './mockData/contributions';
-import { usersList } from './mockData/userList';
+import { usersList, levelUpdationSuccess, roleUpdationSuccess } from './mockData/userList';
 import {
   license,
   licenseCreationSuccess,
@@ -62,6 +62,12 @@ const handlers = [
   }),
   rest.get(API_URL + 'users', async (req, res, ctx) => {
     return res(ctx.json(usersList));
+  }),
+  rest.patch(API_URL + 'users/:username/actions/set-level/:level', (req, res, ctx) => {
+    return res(ctx.json(levelUpdationSuccess));
+  }),
+  rest.patch(API_URL + 'users/:username/actions/set-role/:role', (req, res, ctx) => {
+    return res(ctx.json(roleUpdationSuccess));
   }),
   rest.get(API_URL + 'organisations', (req, res, ctx) => {
     return res(ctx.json(organisations));

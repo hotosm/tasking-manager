@@ -27,3 +27,7 @@ export const usersList = {
     total: 220111,
   },
 };
+
+export const levelUpdationSuccess = { Success: 'Level set' };
+
+export const roleUpdationSuccess = { Success: 'Role added' };
