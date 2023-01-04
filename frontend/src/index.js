@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import WebFont from 'webfontloader';
@@ -27,7 +27,10 @@ WebFont.load({
   },
 });
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <ConnectedIntl>
@@ -35,7 +38,6 @@ ReactDOM.render(
       </ConnectedIntl>
     </PersistGate>
   </Provider>,
-  document.getElementById('root'),
 );
 
 // If you want your app to work offline and load faster, you can change
