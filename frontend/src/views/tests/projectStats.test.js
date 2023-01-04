@@ -41,7 +41,7 @@ describe('ProjectStats dashboard', () => {
     expect(screen.getByText('Urgent')).toBeInTheDocument();
     await waitFor(() => container.querySelector('[aria-valuenow="28"]'));
 
-    expect(screen.getByText('Edits')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Edits')).toBeInTheDocument());
     expect(screen.getByText('987,654,321')).toBeInTheDocument();
     expect(screen.getByText('123,456,789')).toBeInTheDocument();
     expect(screen.getByText('Changesets')).toBeInTheDocument();
