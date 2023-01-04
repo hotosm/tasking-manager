@@ -92,7 +92,7 @@ describe('test if QuestionsAndComments component', () => {
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(2);
     });
-    expect(screen.getByRole('link').href).toContain('/users/TestUser');
+    await waitFor(() => expect(screen.getByRole('link').href).toContain('/users/TestUser'));
     expect(screen.getByRole('link').textContent).toBe('TestUser');
     expect(screen.getByText('Test comment')).toBeInTheDocument(); //posted comment
     expect(screen.getByText('1 second ago')).toBeInTheDocument(); //time posted
