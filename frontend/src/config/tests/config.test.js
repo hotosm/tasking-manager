@@ -108,7 +108,9 @@ it('exports MAPBOX_RTL_PLUGIN_URL', () => {
 });
 it('exports DROPZONE_SETTINGS', () => {
   expect(typeof config.DROPZONE_SETTINGS).toBe('object');
-  expect(config.DROPZONE_SETTINGS.accept).toBe('image/*');
+  expect(config.DROPZONE_SETTINGS.accept).toEqual({
+    'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
+  });
   expect(config.DROPZONE_SETTINGS.maxSize).toBe(256000);
   expect(config.DROPZONE_SETTINGS.multiple).toBeFalsy();
 });
