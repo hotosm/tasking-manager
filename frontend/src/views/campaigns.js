@@ -20,7 +20,7 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { Alert } from '../components/alert';
 import { useAsync } from '../hooks/UseAsync';
 
-const CampaignError = ({ error }) => {
+export const CampaignError = ({ error }) => {
   return (
     <>
       {error && (
