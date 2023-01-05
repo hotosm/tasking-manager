@@ -94,7 +94,7 @@ describe('Create Organization', () => {
     const nameInput = screen.getAllByRole('textbox')[0];
     const user = userEvent.setup();
     await user.type(nameInput, 'New Organization Name');
-    const subscriptionType = screen.getAllByRole('textbox')[3];
+    const subscriptionType = screen.getByRole('combobox');
     fireEvent.mouseDown(subscriptionType);
     user.click(screen.getByText('Free'));
     user.click(createButton);
