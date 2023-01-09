@@ -193,7 +193,7 @@ export function TeamInformation(props) {
           <FormattedMessage {...messages.joinMethod} />
         </label>
         {Object.keys(joinMethods).map((method) => (
-          <div className="pv2">
+          <div className="pv2" key={method}>
             <RadioField name="joinMethod" value={method} required />
             <span className="f5">
               <FormattedMessage {...messages[joinMethods[method]]} />

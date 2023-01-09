@@ -107,9 +107,9 @@ export function Members({
           )}
         </div>
         <div className="cf db mt3">
-          {members.map((user, n) => (
+          {members.map((user) => (
             <UserAvatar
-              key={n}
+              key={user.username}
               username={user.username}
               picture={user.pictureUrl}
               size="large"
@@ -178,9 +178,9 @@ export function JoinRequests({
   const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
-    const isJoinRequestEnabled = managers.filter(
+    const isJoinRequestEnabled = managers.find(
       (manager) => manager.username === loggedInUsername,
-    )[0]?.joinRequestNotifications;
+    )?.joinRequestNotifications;
     setIsChecked(isJoinRequestEnabled);
   }, [loggedInUsername, managers]);
 
@@ -235,8 +235,8 @@ export function JoinRequests({
         </div>
       )}
       <div className="cf db mt3">
-        {requests.map((user, n) => (
-          <div className="cf db pt2" key={n}>
+        {requests.map((user) => (
+          <div className="cf db pt2" key={user.username}>
             <div className="fl pt1">
               <UserAvatar
                 username={user.username}
