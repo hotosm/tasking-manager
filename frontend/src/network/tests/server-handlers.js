@@ -26,6 +26,13 @@ import {
   interestDeletionSuccess,
   licenses,
 } from './mockData/management';
+import {
+  teams,
+  team,
+  teamCreationSuccess,
+  teamUpdationSuccess,
+  teamDeletionSuccess,
+} from './mockData/teams';
 import { countries } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL } from '../../config';
@@ -83,6 +90,22 @@ const handlers = [
   }),
   rest.delete(API_URL + 'organisations/:id', (req, res, ctx) => {
     return res(ctx.json(organisationDeletionSuccess));
+  }),
+  // TEAMS
+  rest.get(API_URL + 'teams', (req, res, ctx) => {
+    return res(ctx.json(teams));
+  }),
+  rest.get(API_URL + 'teams/:id/', (req, res, ctx) => {
+    return res(ctx.json(team));
+  }),
+  rest.post(API_URL + 'teams', (req, res, ctx) => {
+    return res(ctx.json(teamCreationSuccess));
+  }),
+  rest.patch(API_URL + 'teams/:id/', (req, res, ctx) => {
+    return res(ctx.json(teamUpdationSuccess));
+  }),
+  rest.delete(API_URL + 'teams/:id', (req, res, ctx) => {
+    return res(ctx.json(teamDeletionSuccess));
   }),
   rest.get(API_URL + 'licenses', (req, res, ctx) => {
     return res(ctx.json(licenses));
