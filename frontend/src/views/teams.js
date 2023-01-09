@@ -269,8 +269,8 @@ export function EditTeam(props) {
   const updateManagers = () => {
     const { usersAdded, usersRemoved } = getMembersDiff(team.members, managers, true);
     Promise.all([
-      [...usersAdded.map((user) => joinTeamRequest(team.teamId, user, 'MANAGER', token))],
-      [...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, 'MANAGER', token))],
+      ...usersAdded.map((user) => joinTeamRequest(team.teamId, user, 'MANAGER', token)),
+      ...usersRemoved.map((user) => leaveTeamRequest(team.teamId, user, 'MANAGER', token)),
     ]).then(forceUpdate);
   };
 
@@ -291,8 +291,9 @@ export function EditTeam(props) {
     if (payload.joinMethod !== 'BY_INVITE') {
       payload.visibility = 'PUBLIC';
     }
-    pushToLocalJSONAPI(`teams/${props.id}/`, JSON.stringify(payload), token, 'PATCH');
-    forceUpdate();
+    pushToLocalJSONAPI(`teams/${props.id}/`, JSON.stringify(payload), token, 'PATCH').then(
+      forceUpdate,
+    );
   };
 
   if (team && team.teamId && !canUserEditTeam) {
