@@ -107,7 +107,7 @@ export const CommentInputField = ({
           onChange={handleImagePick}
         />
         {isProjectDetailCommentSection && (
-          <div className="flex justify-between ba bt-0 w-100 ph2 pv1 relative b--blue-grey textareaDetail">
+          <div className="dn flex-ns justify-between ba bt-0 w-100 ph2 pv1 relative b--blue-grey textareaDetail">
             <span className="f7 lh-copy gray">
               <FormattedMessage {...messages.attachImage} />
             </span>
