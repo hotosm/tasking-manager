@@ -72,11 +72,11 @@ export function CustomButton({
   );
 }
 
-export function EditButton({ url, children }: Object) {
+export function EditButton({ url, children, className = 'mh1 mv1' }: Object) {
   return (
     <Link
       to={url}
-      className="pointer no-underline br1 fw6 f7 dib pv2 ph3 ba b--red white bg-red mh1 mv1"
+      className={`pointer no-underline br1 fw6 f7 dib pv2 ph3 ba b--red white bg-red ${className}`}
     >
       {children}
     </Link>

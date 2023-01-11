@@ -18,24 +18,20 @@ export function HeaderLine({ author, projectId, priority, showEditLink, organisa
     </Link>
   );
   return (
-    <div className="cf">
-      <div className="w-70-ns w-100 dib fl pv2">
-        <span className="blue-dark">{projectIdLink}</span>
+    <div className="flex flex-column flex-row-ns justify-start justify-between-ns items-start items-center-ns flex-wrap">
+      <div className="pv2">
+        <span className="blue-light">{projectIdLink}</span>
         {organisation ? <span className="blue-dark"> | {organisation}</span> : null}
       </div>
-      <div className="w-30-ns w-100 dib fl tr">
+      <div className="tr">
         {showEditLink && (
-          <EditButton url={`/manage/projects/${projectId}`}>
+          <EditButton url={`/manage/projects/${projectId}`} className="mh0 mv0">
             <FormattedMessage {...messages.editProject} />
           </EditButton>
         )}
         {priority && (
           <div className="mw4 dib">
-            <PriorityBox
-              priority={priority}
-              extraClasses={'pv2 ph3 mh1 mv1'}
-              showIcon
-            />
+            <PriorityBox priority={priority} extraClasses={'pv2 ph3 ml2'} showIcon />
           </div>
         )}
       </div>
@@ -56,28 +52,22 @@ export const ProjectHeader = ({ project, showEditLink }: Object) => {
         organisation={project.organisationName}
         showEditLink={showEditLink && userCanEditProject}
       />
-      <div className="cf">
-        <div>
-          <h3
-            className="f2 fw5 mt2 mb3 ttu barlow-condensed blue-dark dib"
-            lang={project.projectInfo.locale}
-          >
-            {project.projectInfo && project.projectInfo.name}
-          </h3>
-          {project.private && <ProjectVisibilityBox className={'pv2 ph3 ml3 mb3 v-mid dib'} />}
-          {['DRAFT', 'ARCHIVED'].includes(project.status) && (
-            <ProjectStatusBox status={project.status} className={'pv2 ph3 ml3 mb3 v-mid dib'} />
-          )}
-        </div>
-        <TagLine
-          campaigns={project.campaigns}
-          countries={
-            locale.includes('en')
-              ? project.countryTag
-              : translateCountry(project.countryTag, locale)
-          }
-        />
-      </div>
+      <h3
+        className="f2 fw5 mt3 mt2-ns mb3 ttu barlow-condensed blue-dark dib"
+        lang={project.projectInfo.locale}
+      >
+        {project.projectInfo && project.projectInfo.name}
+      </h3>
+      {project.private && <ProjectVisibilityBox className={'pv2 ph3 ml3 mb3 v-mid dib'} />}
+      {['DRAFT', 'ARCHIVED'].includes(project.status) && (
+        <ProjectStatusBox status={project.status} className={'pv2 ph3 ml3 mb3 v-mid dib'} />
+      )}
+      <TagLine
+        campaigns={project.campaigns}
+        countries={
+          locale.includes('en') ? project.countryTag : translateCountry(project.countryTag, locale)
+        }
+      />
     </>
   );
 };

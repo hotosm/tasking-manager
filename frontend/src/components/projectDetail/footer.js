@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { Link } from '@reach/router';
 import { useSelector } from 'react-redux';
-import { Button } from '../button';
-
-import { ShareButton } from './shareButton';
 import { FormattedMessage } from 'react-intl';
+
 import useForceUpdate from '../../hooks/UseForceUpdate';
 import { useWindowSize } from '../../hooks/UseWindowSize';
+import { Button } from '../button';
 import messages from './messages';
+import { ShareButton } from './shareButton';
 import { AddToFavorites } from './favorites';
 import { ChevronRightIcon } from '../svgIcons';
 
@@ -44,6 +44,7 @@ const menuItems = [
   // },
 ];
 
+export const ProjectDetailFooter = ({ className, projectId }) => {
   const userIsloggedIn = useSelector((state) => state.auth.token);
   const [scrollLeft, setScrollLeft] = useState(0);
   const menuItemsContainerRef = useRef(null);
@@ -84,8 +85,9 @@ const menuItems = [
   return (
     <div
       className={`${
-        props.className || ''
-      } cf bt b--grey-light pl4 w-100 z-4 bg-white fixed bottom-0 left-0`}
+        className || ''
+      } pl4 w-100 z-4 bg-white fixed bottom-0 left-0 flex items-center justify-between`}
+      style={{ boxShadow: '0px -1px 0px #F0EFEF, 0px 1px 0px #F0EFEF' }}
     >
       {/* TODO ADD ANCHORS */}
       <div className="relative overflow-hidden w-60-ns pr1 mr4 dn db-l">
@@ -119,6 +121,14 @@ const menuItems = [
           ))}
         </div>
       </div>
+      <div className="flex items-center ml-auto">
+        <ShareButton projectId={projectId} />
+        {userIsloggedIn && <AddToFavorites projectId={projectId} />}
+        <Link to={`./tasks`} className="">
+          <Button className="white bg-red h3 w5">
+            <FormattedMessage {...messages.contribute} />
+          </Button>
+        </Link>
       </div>
     </div>
   );

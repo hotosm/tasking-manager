@@ -4,38 +4,27 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import { RelativeTimeWithUnit } from '../../utils/formattedRelativeTime';
 
-export function BigProjectTeaser({
-  lastUpdated,
-  totalContributors,
-  className,
-  littleFont = 'f7',
-  bigFont = 'f6',
-}: Object) {
-  /* outerDivStyles must have f6 even if sub-divs have f7 to fix grid issues*/
-  const outerDivStyles = 'f6 tl blue-grey truncate mb2';
+export function BigProjectTeaser({ lastUpdated, totalContributors }: Object) {
   return (
-    <div className="cf bg-white blue-dark">
-      <div className={`fl ${outerDivStyles} ${className}`}>
-        <span className={littleFont}>
-          {totalContributors ? (
-            <FormattedMessage
-              {...messages.projectTotalContributors}
-              values={{
-                number: totalContributors,
-                b: (chunks) => <span className="blue-dark b">{chunks}</span>,
-              }}
-            />
-          ) : (
-            <FormattedMessage {...messages.noProjectContributors} />
-          )}
-        </span>
-      </div>
-      <div title={lastUpdated} className={`fr ${outerDivStyles} ${className || ''}`}>
-        <span className={littleFont} title={lastUpdated}>
-          <FormattedMessage {...messages['projectLastContribution']} />{' '}
-          <RelativeTimeWithUnit date={lastUpdated} />
-        </span>
-      </div>
+    <div className="flex justify-between mt4 mb3 blue-grey">
+      <span>
+        {totalContributors ? (
+          <FormattedMessage
+            {...messages.projectTotalContributors}
+            values={{
+              number: totalContributors,
+              b: (chunks) => <span className="blue-dark b f125">{chunks}</span>,
+            }}
+          />
+        ) : (
+          <FormattedMessage {...messages.noProjectContributors} />
+        )}
+      </span>
+      <span title={lastUpdated}>
+        <FormattedMessage {...messages['projectLastContribution']} />
+        &nbsp;
+        <RelativeTimeWithUnit date={lastUpdated} />
+      </span>
     </div>
   );
 }

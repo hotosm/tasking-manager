@@ -494,12 +494,12 @@ export const TasksMap = ({
   ]);
 
   if (!mapboxgl.supported()) {
-    return <WebglUnsupported className={`vh-75-l vh-50 fr ${className || ''}`} />;
+    return <WebglUnsupported className={`w-100 h-100 fr ${className || ''}`} />;
   } else {
     return (
       <>
         {showTaskIds && hoveredTaskId && (
-          <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 ">
+          <div className="absolute top-1 left-1 bg-red white base-font fw8 f5 ph3 pv2 z-5 mr2 w-100 h-100">
             <FormattedMessage {...messages.taskId} values={{ id: hoveredTaskId }} />
           </div>
         )}
