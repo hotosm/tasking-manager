@@ -59,7 +59,7 @@ export function ProjectInfoPanel({ project, tasks, contributors, type }: Object)
         />
       </ReactPlaceholder>
       <ProjectProgressBar
-        className="pb2 bg-white"
+        small={false}
         percentMapped={percentMapped}
         percentValidated={percentValidated}
         percentBadImagery={percentBadImagery}
