@@ -134,6 +134,14 @@ html {
   width: 0.5rem;
 }
 
+.h-pill {
+  height: 0.625rem;
+}
+
+.h-pill-s {
+  height: 0.5rem;
+}
+
 /*
    Add shadow on hover, building on what is already in Tachyons
    adjust for the lighter shadow from design
@@ -477,6 +485,10 @@ a[href="https://www.mapbox.com/map-feedback/"]
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+.shadow-7 {
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.138162);
+}
+
 .w-md-editor {
   border-radius: 3px 3px 0px 0px !important;
 }
@@ -576,4 +588,26 @@ a[href="https://www.mapbox.com/map-feedback/"]
     font-size: 1.5rem;
     letter-spacing: normal;
   }
+}
+
+.user-picture-medium {
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
+.bg-tan-dim {
+  background-color: rgba($tan, 0.6);
+}
+
+.text-dim {
+  color: rgba($blue-dark, 0.9);
+}
+
+.gap-1 {
+  gap: 1rem;
+}
+
+// Imported from HOTOSM site to use for long texts
+.blue-dark-abbey {
+  color: #4c4f56;
 }

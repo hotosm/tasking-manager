@@ -18,7 +18,7 @@ describe('UserAvatar', () => {
       'url("http://image.xyz/photo.jpg")',
     );
     expect(elementInstance.findByProps({ title: 'Mary' }).props.className).toBe(
-      'dib mh1 br-100 tc v-mid cover red h2 w2 f5',
+      'dib mh1 br-100 tc v-mid cover red user-picture-medium f5',
     );
   });
 
@@ -69,7 +69,7 @@ describe('UserAvatar', () => {
     });
     const elementInstance = element.root;
     expect(elementInstance.findByType('div').props.className).toBe(
-      'dib mh1 br-100 tc v-mid cover white bg-red h2 w2 f5',
+      'dib mh1 br-100 tc v-mid cover white bg-red user-picture-medium f5',
     );
     expect(elementInstance.findByType('span').props.children).toContain('MP');
     expect(elementInstance.findByType('span').props.style).toStrictEqual({
