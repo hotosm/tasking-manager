@@ -33,16 +33,19 @@ export const ProgressBar = ({
           aria-valuemin="0"
           aria-valuemax="100"
         />
-        <div className={`bg-grey-light br-pill h${height} overflow-y-hidden`}></div>
+        <div className={`bg-tan br-pill ${small ? heightClassname : 'h-pill'} overflow-y-hidden`} />
         {isHovered && (
           <span
-            className={`db absolute z-1 dib bg-blue-dark ba br2 b--blue-dark pa2 shadow-5 top-${
-              height === 'half' ? '1' : height
+            className={`db absolute z-1 dib bg-blue-dark ba br2 b--blue-dark pa2 shadow-5 bottom-${
+              height === 'half' ? '2' : height
             }`}
             style={{ left: position.x }}
           >
             {children}
-            <span className="absolute top-0 left-2 nt2 w1 h1 bg-blue-dark bl bt b--blue-dark rotate-45"></span>
+            <span
+              className="absolute left-2 nt2 w1 h1 bg-blue-dark bl bt b--blue-dark rotate-45"
+              style={{ bottom: '-0.5rem', left: 'calc(50% - 10px)' }}
+            />
           </span>
         )}
       </div>
