@@ -40,6 +40,10 @@ export default defineMessages({
     id: 'comment.preview.nothingToPreview',
     defaultMessage: 'Nothing to preview',
   },
+  leaveAComment: {
+    id: 'comment.preview.leaveAComment',
+    defaultMessage: 'Leave a comment...',
+  },
   attachImage: {
     id: 'comment.write.attachImage',
     defaultMessage: 'Attach image by dragging and dropping',
