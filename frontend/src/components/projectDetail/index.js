@@ -128,8 +128,8 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
 
 export const ProjectDetail = (props) => {
   useSetProjectPageTitleTag(props.project);
-  /* eslint-disable-next-line */
   const size = useWindowSize();
+  /* eslint-disable-next-line */
   const [visualError, visualLoading, visualData] = useFetch(
     `projects/${props.project.projectId}/contributions/queries/day/`,
     props.project && props.project.projectId,
