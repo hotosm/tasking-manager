@@ -9,7 +9,7 @@ export const useAvatarStyle = (size, editMode, picture) => {
   useEffect(() => {
     if (size === 'large') setSizeClasses('h3 w3 f2');
     if (size === 'small') setSizeClasses('f6');
-    if (size === 'medium' || !size) setSizeClasses('h2 w2 f5');
+    if (size === 'medium' || !size) setSizeClasses('user-picture-medium f5');
   }, [size]);
   useEffect(() => {
     if (size === 'large')
