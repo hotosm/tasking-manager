@@ -12,6 +12,7 @@ import OsmLogo from '../../assets/img/osm_logo.png';
 import MissingMapsLogo from '../../assets/img/organizations/missingmaps.png';
 import SlackLogo from '../../assets/img/icons/slack.png';
 import OsmChaLogo from '../../assets/img/icons/osm-cha.png';
+import HdycNeisOneLogo from '../../assets/img/icons/hdyc-neis-one.png';
 import { OSM_SERVER_URL, ORG_CODE } from '../../config';
 
 export const SocialMedia = ({ data }) => {
@@ -44,6 +45,7 @@ export const SocialMedia = ({ data }) => {
       osm: `${OSM_SERVER_URL}/user/${value}`,
       missingmaps: `https://www.missingmaps.org/users/#/${value}`,
       osmcha: `https://osmcha.org/?filters={"users":[{"label":"${value}","value":"${value}"}]}`,
+      hdycNeisOne: `https://hdyc.neis-one.org/?${value}`,
     };
 
     return (
@@ -76,6 +78,12 @@ export const SocialMedia = ({ data }) => {
         <div className="mr2 h2">
           <img className="h1 v-mid" src={OsmChaLogo} alt="OSM Cha Logo" />{' '}
           {createLink('osmcha', data.username)}
+        </div>
+      </li>
+      <li className="dib mr4-ns mr2 cf f7">
+        <div className="mr2 h2">
+          <img className="h1 v-mid" src={HdycNeisOneLogo} alt="HDYC Neis One Favicon" />{' '}
+          {createLink('hdycNeisOne', data.username)}
         </div>
       </li>
       {data.slackId && (
