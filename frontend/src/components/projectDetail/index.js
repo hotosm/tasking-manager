@@ -90,38 +90,34 @@ export const ProjectDetailLeft = ({ project, contributors, className, type }: Ob
     project.projectInfo && htmlFromMarkdown(project.projectInfo.shortDescription);
 
   return (
-    <div className={`${className} flex flex-column justify-between`}>
-      <div className="h-100 flex flex-column">
-        <ReactPlaceholder
-          showLoadingAnimation={true}
-          rows={10}
-          delay={500}
-          ready={typeof project.projectId === 'number'}
-        >
-          <ProjectHeader project={project} showEditLink={true} />
-          <section className="lh-title h5 overflow-y-auto mt3" style={{ flexGrow: 1 }}>
-            <div
-              className="pr2 blue-dark-abbey markdown-content"
-              dangerouslySetInnerHTML={htmlShortDescription}
-            />
-            <div>
-              <a href="#description" className="link base-font bg-white f6 bn pn red pointer">
-                <span className="pr2 ttu f6 fw6">
-                  <FormattedMessage {...messages.readMore} />
-                </span>
-              </a>
-            </div>
-          </section>
-        </ReactPlaceholder>
-      </div>
-      <div className="w-100 mt3">
-        <ProjectInfoPanel
-          project={project}
-          tasks={project.tasks}
-          contributors={contributors}
-          type={type}
-        />
-      </div>
+    <div className={`${className} flex flex-column`}>
+      <ReactPlaceholder
+        showLoadingAnimation={true}
+        rows={10}
+        delay={500}
+        ready={typeof project.projectId === 'number'}
+      >
+        <ProjectHeader project={project} showEditLink={true} />
+        <section className="lh-title h5 overflow-y-auto mt3 mb3" style={{ flexGrow: 1 }}>
+          <div
+            className="pr2 blue-dark-abbey markdown-content"
+            dangerouslySetInnerHTML={htmlShortDescription}
+          />
+          <div>
+            <a href="#description" className="link base-font bg-white f6 bn pn red pointer">
+              <span className="pr2 ttu f6 fw6">
+                <FormattedMessage {...messages.readMore} />
+              </span>
+            </a>
+          </div>
+        </section>
+      </ReactPlaceholder>
+      <ProjectInfoPanel
+        project={project}
+        tasks={project.tasks}
+        contributors={contributors}
+        type={type}
+      />
     </div>
   );
 };
