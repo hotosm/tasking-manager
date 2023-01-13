@@ -33,6 +33,7 @@ import {
   teamUpdationSuccess,
   teamDeletionSuccess,
 } from './mockData/teams';
+import { homepageStats } from './mockData/homepageStats';
 import { countries } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
 import { API_URL } from '../../config';
@@ -65,6 +66,9 @@ const handlers = [
     return res(ctx.json({ Success: 'Message deleted' }));
   }),
   rest.get(API_URL + 'users/statistics/', async (req, res, ctx) => {
+    return res(ctx.json(newUsersStats));
+  }),
+  rest.get(API_URL + 'tasks/statistics/', async (req, res, ctx) => {
     return res(ctx.json(newUsersStats));
   }),
   rest.get(API_URL + 'users', async (req, res, ctx) => {
@@ -154,6 +158,10 @@ const handlers = [
   }),
   rest.get(API_URL + 'countries', (req, res, ctx) => {
     return res(ctx.json(countries));
+  }),
+  // EXTERNAL API
+  rest.get('https://osmstats-api.hotosm.org/wildcard', (req, res, ctx) => {
+    return res(ctx.json(homepageStats));
   }),
 ];
 
