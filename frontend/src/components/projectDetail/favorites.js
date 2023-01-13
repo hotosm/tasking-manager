@@ -19,7 +19,7 @@ export const AddToFavorites = (props) => {
         onClick={() => (userToken ? dispatchToggle() : navigate('/login'))}
         className={`${
           !props.projectId ? 'dn' : ''
-        } input-reset base-font bg-white blue-dark bn pointer flex nowrap items-center ml4 mr4`}
+        } input-reset base-font bg-white blue-dark bn pointer flex nowrap items-center ml3`}
       >
         <FlagIcon
           className={`pr2 v-btm ${isLoading ? 'o-50' : ''} ${isFav ? 'red' : 'blue-grey'}`}

@@ -121,7 +121,7 @@ export const ProjectDetailFooter = ({ className, projectId }) => {
           ))}
         </div>
       </div>
-      <div className="flex items-center ml-auto">
+      <div className="flex items-center ml-auto gap-1">
         <ShareButton projectId={projectId} />
         {userIsloggedIn && <AddToFavorites projectId={projectId} />}
         <Link to={`./tasks`} className="">
