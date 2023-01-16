@@ -11,6 +11,7 @@ from tests.backend.helpers.test_helpers import (
     generate_encoded_token,
     return_canned_user,
     return_canned_draft_project_json,
+    get_canned_json,
 )
 from backend.models.postgis.utils import NotFound
 from backend.models.postgis.statuses import (
@@ -458,3 +459,158 @@ class TestGetProjectsRestAPI(BaseTestCase):
             f"attachment; filename=project_{self.test_project.id}.json",
         )
         TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
+
+
+class TestPatchProjectRestAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.url = f"/api/v2/projects/{self.test_project.id}/"
+        self.test_user = return_canned_user(username="Test User", id=11111)
+        self.test_user.create()
+        test_organistion = create_canned_organisation()
+        self.test_project.organisation = test_organistion
+        self.test_project.save()
+        self.author_session_token = generate_encoded_token(self.test_author.id)
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.project_update_body = get_canned_json("canned_project_detail.json")
+        self.project_update_body["projectId"] = self.test_project.id
+
+    def test_patch_project_requires_authentication(self):
+        "Test patch project requires authentication."
+        # Act
+        response = self.client.patch(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_patch_project_returns_404_if_project_does_not_exist(self):
+        "Test patch project returns 404 if project does not exist."
+        # Act
+        response = self.client.patch(
+            "/api/v2/projects/1000/", headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+
+    def test_patch_project_returns_403_if_user_is_not_project_manager(self):
+        "Test patch project returns 403 if user is not project manager."
+        # Act
+        response = self.client.patch(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "UserPermissionError")
+
+    def test_patch_project_returns_400_if_invalid_body(self):
+        "Test patch project returns 400 if invalid body."
+        # Act
+        response = self.client.patch(
+            self.url,
+            json={"message": "invalid body"},
+            content_type="application/json",
+            headers={"Authorization": self.author_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["SubCode"], "InvalidData")
+
+    def test_project_author_can_update_project(self):
+        "Test project author can update project."
+        # Act
+        response = self.client.patch(
+            self.url,
+            json=self.project_update_body,
+            content_type="application/json",
+            headers={"Authorization": self.author_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        updated_project = ProjectService.get_project_by_id(self.test_project.id)
+        TestGetProjectsRestAPI.assert_project_response(
+            self.project_update_body, updated_project
+        )
+
+    def test_member_of_team_with_PM_permission_can_update_project(self):
+        "Test member of team with PM permission can update project."
+        # Arrange
+        team = create_canned_team()
+        add_user_to_team(team, self.test_user, TeamMemberFunctions.MEMBER.value, True)
+        project_team = assign_team_to_project(
+            self.test_project, team, TeamRoles.PROJECT_MANAGER.value
+        )
+        # Act
+        response = self.client.patch(
+            self.url,
+            json=self.project_update_body,
+            content_type="application/json",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        updated_project = ProjectService.get_project_by_id(self.test_project.id)
+        TestGetProjectsRestAPI.assert_project_response(
+            self.project_update_body, updated_project
+        )
+        # Cleanup
+        project_team.delete()
+
+    def test_member_of_team_with_non_PM_role_cannot_update_project(self):
+        """Test member of team with non PM permission can't update project."""
+        # Arrange
+        team = create_canned_team()
+        add_user_to_team(team, self.test_user, TeamMemberFunctions.MEMBER.value, True)
+        project_team = assign_team_to_project(
+            self.test_project, team, TeamRoles.VALIDATOR.value
+        )
+        # Act
+        response = self.client.patch(
+            self.url,
+            json=self.project_update_body,
+            content_type="application/json",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        # Cleanup
+        project_team.delete()
+
+    def test_user_with_admin_role_can_update_project(self):
+        "Test project can be updated by admins."
+        # Arrange
+        self.test_user.role = UserRole.ADMIN.value
+        self.test_user.save()
+        # Act
+        response = self.client.patch(
+            self.url,
+            json=self.project_update_body,
+            content_type="application/json",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        updated_project = ProjectService.get_project_by_id(self.test_project.id)
+        TestGetProjectsRestAPI.assert_project_response(
+            self.project_update_body, updated_project
+        )
+        # Cleanup
+        self.test_user.role = UserRole.MAPPER.value
+        self.test_user.save()
+
+    def test_org_manager_can_update_project(self):
+        "Test org manager can update project."
+        # Arrange
+        add_manager_to_organisation(self.test_project.organisation, self.test_user)
+        # Act
+        response = self.client.patch(
+            self.url,
+            json=self.project_update_body,
+            content_type="application/json",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        updated_project = ProjectService.get_project_by_id(self.test_project.id)
+        TestGetProjectsRestAPI.assert_project_response(
+            self.project_update_body, updated_project
+        )
