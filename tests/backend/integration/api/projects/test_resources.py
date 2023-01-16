@@ -20,6 +20,7 @@ from tests.backend.helpers.test_helpers import (
 )
 from backend.models.postgis.utils import NotFound
 from backend.models.postgis.project import Project, ProjectDTO
+from backend.models.postgis.task import Task
 from backend.services.campaign_service import CampaignService
 from backend.models.dtos.campaign_dto import CampaignProjectDTO
 from backend.models.postgis.statuses import (
@@ -32,6 +33,7 @@ from backend.models.postgis.statuses import (
     ProjectDifficulty,
     ProjectPriority,
     MappingTypes,
+    TaskStatus,
 )
 from backend.services.project_service import ProjectService, ProjectAdminService
 from backend.services.validator_service import ValidatorService
@@ -1926,3 +1928,43 @@ class TestProjectsQueriesSummaryAPI(BaseTestCase):
         TestGetProjectsRestAPI.assert_project_response(
             response.json, self.test_project, assert_type="summary"
         )
+
+
+class TestProjectsQueriesTouchedAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_project.private = False
+        self.test_project.save()
+        self.test_project_1, _ = create_canned_project()
+        self.test_project_1.status = ProjectStatus.PUBLISHED.value
+        self.test_project_1.save()
+        task = Task.get(1, self.test_project.id)
+        task.lock_task_for_validating(self.test_author.id)
+        task.unlock_task(self.test_author.id, TaskStatus.VALIDATED)
+        self.test_author.projects_mapped = [self.test_project.id]
+        self.test_author.save()
+        self.url = f"/api/v2/projects/queries/{self.test_author.username}/touched/"
+
+    def test_authentication_is_not_required(self):
+        """
+        Test authentication is not required
+        """
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json["mappedProjects"]), 1)
+        self.assertEqual(
+            response.json["mappedProjects"][0]["projectId"],
+            self.test_project.id,
+        )
+
+    def test_returns_404_if_user_doesnt_exist(self):
+        """
+        Test 404 is returned if project doesn't exist
+        """
+        # Act
+        response = self.client.get("/api/v2/projects/test_user_123/queries/touched/")
+        self.assertEqual(response.status_code, 404)
