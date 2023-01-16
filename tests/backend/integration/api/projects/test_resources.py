@@ -1968,3 +1968,76 @@ class TestProjectsQueriesTouchedAPI(BaseTestCase):
         # Act
         response = self.client.get("/api/v2/projects/test_user_123/queries/touched/")
         self.assertEqual(response.status_code, 404)
+
+
+class TestProjectsQueriesPriorityAreasAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_project.private = False
+        self.test_project.save()
+        self.url = f"/api/v2/projects/{self.test_project.id}/queries/priority-areas/"
+
+    # Code modified from https://github.com/larsbutler/oq-engine/blob/master/tests/utils/helpers.py
+    def assertDeepAlmostEqual(self, expected, actual, *args, **kwargs):
+        """
+        Assert that two complex structures have almost equal contents.
+
+        Compares lists, dicts and tuples recursively. Checks numeric values
+        using test_case's :py:meth:`unittest.TestCase.assertAlmostEqual` and
+        checks all other values with :py:meth:`unittest.TestCase.assertEqual`.
+        Accepts additional positional and keyword arguments and pass those
+        intact to assertAlmostEqual() (that's how you specify comparison
+        precision).
+
+        :type test_case: :py:class:`unittest.TestCase` object
+        """
+        is_root = not "__trace" in kwargs
+        trace = kwargs.pop("__trace", "ROOT")
+        try:
+            if isinstance(expected, (int, float, complex)):
+                self.assertAlmostEqual(expected, actual, *args, **kwargs)
+            elif isinstance(expected, (list, tuple)):
+                self.assertEqual(len(expected), len(actual))
+                for index in range(len(expected)):
+                    v1, v2 = expected[index], actual[index]
+                    self.assertDeepAlmostEqual(
+                        v1, v2, __trace=repr(index), *args, **kwargs
+                    )
+            elif isinstance(expected, dict):
+                self.assertEqual(set(expected), set(actual))
+                for key in expected:
+                    self.assertDeepAlmostEqual(
+                        expected[key], actual[key], __trace=repr(key), *args, **kwargs
+                    )
+            else:
+                self.assertEqual(expected, actual)
+        except AssertionError as exc:
+            if is_root:
+                exc = AssertionError(f"{exc}")
+            raise exc
+
+    def returns_404_if_project_doesnt_exist(self):
+        """
+        Test 404 is returned if project doesn't exist
+        """
+        # Act
+        response = self.client.get("/api/v2/projects/999/queries/priority-areas/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_authentication_is_not_required(self):
+        """
+        Test authentication is not required
+        """
+        # Arrange
+        json_data = get_canned_json("canned_project_detail.json")
+        project_update_dto = ProjectDTO(json_data)
+        create_canned_organisation()
+        self.test_project.update(project_update_dto)
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json), 1)
+        self.assertDeepAlmostEqual(response.json[0], json_data["priorityAreas"][0], places=8)
