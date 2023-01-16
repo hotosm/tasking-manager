@@ -1,6 +1,11 @@
+import geojson
+
 from tests.backend.base import BaseTestCase
 from tests.backend.helpers.test_helpers import (
     add_manager_to_organisation,
+    create_canned_team,
+    add_user_to_team,
+    assign_team_to_project,
     create_canned_organisation,
     create_canned_project,
     generate_encoded_token,
@@ -11,8 +16,20 @@ from backend.models.postgis.utils import NotFound
 from backend.models.postgis.statuses import (
     UserRole,
     ProjectStatus,
+    TeamMemberFunctions,
+    TeamRoles,
 )
 from backend.services.project_service import ProjectService, ProjectAdminService
+from backend.models.dtos.project_dto import (
+    is_known_project_status,
+    is_known_project_priority,
+    is_known_project_difficulty,
+    is_known_editor,
+    is_known_mapping_type,
+    is_known_task_creation_mode,
+    is_known_validation_permission,
+    is_known_mapping_permission,
+)
 
 
 class TestDeleteProjectsRestAPI(BaseTestCase):
@@ -192,3 +209,252 @@ class TestCreateProjectsRestAPI(BaseTestCase):
         TestCreateProjectsRestAPI.assert_draft_project_response(
             draft_project, self.canned_project_json
         )
+
+
+class TestGetProjectsRestAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.url = f"/api/v2/projects/{self.test_project.id}/"
+        self.test_user = return_canned_user(username="Test User", id=11111)
+        self.test_user.create()
+        test_organistion = create_canned_organisation()
+        self.test_project.organisation = test_organistion
+        self.test_project.save()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+
+    @staticmethod
+    def assert_project_response(project_response, expected_project, assert_type="full"):
+        "Test project response"
+        assert expected_project.id == project_response["projectId"]
+        assert (
+            expected_project.get_project_title(expected_project.default_locale)
+            == project_response["projectInfo"]["name"]
+        )
+        # Since some of the fields are not returned in summary mode we need to skip them
+        if assert_type != "summary":
+            assert geojson.is_valid(project_response["areaOfInterest"])
+            assert ["type", "coordinates"] == list(
+                project_response["areaOfInterest"].keys()
+            )
+
+            assert geojson.is_valid(project_response["tasks"])
+            assert (
+                is_known_task_creation_mode(project_response["taskCreationMode"])
+                is None
+            )
+            assert "activeMappers" in project_response
+            assert "interests" in project_response
+            assert "priorityAreas" in project_response
+            assert "projectInfoLocales" in project_response
+
+        else:  # assert fields that are returned in summary mode are present
+            assert "aoiCentroid" in project_response
+            assert "shortDescription" in project_response
+            assert "allowedUsernames" in project_response
+
+        assert [
+            "locale",
+            "name",
+            "shortDescription",
+            "description",
+            "instructions",
+            "perTaskInstructions",
+        ] == list(project_response["projectInfo"].keys())
+
+        # As these returns validation functions returns None for valid values assert that they are None
+        assert is_known_project_status(project_response["status"]) is None
+        assert is_known_project_priority(project_response["projectPriority"]) is None
+        assert is_known_project_difficulty(project_response["difficulty"]) is None
+
+        for mapping_type in project_response["mappingTypes"]:
+            assert is_known_mapping_type(mapping_type) is None
+
+        for editor in set(
+            project_response["mappingEditors"] + project_response["validationEditors"]
+        ):
+            assert is_known_editor(editor) is None
+        assert (
+            is_known_mapping_permission(project_response["mappingPermission"]) is None
+        )
+        assert (
+            is_known_validation_permission(project_response["validationPermission"])
+            is None
+        )
+
+        assert expected_project.private == project_response["private"]
+        assert (
+            expected_project.changeset_comment == project_response["changesetComment"]
+        )
+        assert expected_project.default_locale == project_response["defaultLocale"]
+        assert expected_project.organisation_id == project_response["organisation"]
+        assert expected_project.author.username == project_response["author"]
+
+        assert "enforceRandomTaskSelection" in project_response
+        assert "osmchaFilterId" in project_response
+        assert "dueDate" in project_response
+        assert "imagery" in project_response
+        assert "idPresets" in project_response
+        assert "extraIdParams" in project_response
+        assert "rapidPowerUser" in project_response
+        assert "mappingTypes" in project_response
+        assert "campaigns" in project_response
+        assert "organisationName" in project_response
+        assert "organisationSlug" in project_response
+        assert "organisationLogo" in project_response
+        assert "countryTag" in project_response
+        assert "licenseId" in project_response
+        assert "allowedUsernames" in project_response
+        assert "created" in project_response
+        assert "lastUpdated" in project_response
+        assert "percentMapped" in project_response
+        assert "percentValidated" in project_response
+        assert "percentBadImagery" in project_response
+        assert "teams" in project_response
+
+    def test_published_public_project_can_be_accessed_without_token(self):
+        "Test returns 200 on request by unauthenticated user."
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["projectId"], self.test_project.id)
+        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
+
+    def test_draft_project_can_only_be_accessed_by_user_with_OM_permissions(self):
+        "Test draft project can only be accessed by user with PM permissions."
+        # Arrange
+        self.test_project.status = ProjectStatus.DRAFT.value
+        self.test_project.save()
+
+        # Authenticated user with that is not a manager or admin
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "ProjectNotFetched")
+
+        # Authenticated user with that is a admin
+        self.test_user.role = UserRole.ADMIN.value
+        self.test_user.save()
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        self.assertEqual(response.status_code, 200)
+        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
+
+        # Authenticated user with that is a manager
+        self.test_user.role = UserRole.MAPPER.value
+        self.test_user.save()
+        add_manager_to_organisation(self.test_project.organisation, self.test_user)
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["projectId"], self.test_project.id)
+        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
+
+    def test_private_project_requires_atleast_PM_permissions(self):
+        "Test provate project can only be accessed by user with PM permissions."
+        # Arrange
+        self.test_project.private = True
+        self.test_project.save()
+
+        # Authenticated user with that is not a manager or admin
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json["SubCode"], "PrivateProject")
+
+        # Authenticated user with that is a admin
+        # Arrange
+        self.test_user.role = UserRole.ADMIN.value
+        self.test_user.save()
+        # Act
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
+
+        # Authenticated user with that is a member of team associated with project
+        # Arrange
+        self.test_user.role = UserRole.MAPPER.value  # Reset user role to Mapper
+        self.test_user.save()
+        # Create a team and add user to it
+        test_team = create_canned_team()
+        add_user_to_team(
+            test_team, self.test_user, TeamMemberFunctions.MEMBER.value, True
+        )
+        # Assign team to project
+        assign_team_to_project(self.test_project, test_team, TeamRoles.MAPPER.value)
+        # Act
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
+
+        # Authenticated user with that is a organisation manager
+        # Arrange
+        add_manager_to_organisation(self.test_project.organisation, self.test_user)
+        # Act
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
+
+    def test_get_project_returns_tasks_with_geometry_while_abbreviated_is_set_false(
+        self,
+    ):
+        "Test get project returns tasks with geometry while abbreviated is set false."
+        # Act
+        response = self.client.get(
+            f"{self.url}?abbreviated=false",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
+        for task in response.json["tasks"]["features"]:
+            self.assertIsNotNone(task["geometry"])
+
+    def test_get_project_returns_tasks_with_no_geometry_while_abbreviated_is_set_true(
+        self,
+    ):
+        "Test get project returns tasks with no geom while abbreviated is set true."
+        # Act
+        response = self.client.get(
+            f"{self.url}?abbreviated=true",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
+        for task in response.json["tasks"]["features"]:
+            self.assertIsNone(task["geometry"])
+
+    def test_get_project_returns_file_if_as_file_is_set_true(self):
+        "Test get project returns file if as_file is set true."
+        # Act
+        response = self.client.get(
+            f"{self.url}?as_file=true",
+            headers={"Authorization": self.user_session_token},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-Type"], "application/json")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            f"attachment; filename=project_{self.test_project.id}.json",
+        )
+        TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
