@@ -15,12 +15,14 @@ from backend.models.dtos.project_dto import (
     ProjectPriority,
 )
 from backend.models.postgis.project import Project, ProjectTeams
+from backend.models.postgis.campaign import Campaign
 from backend.models.postgis.statuses import MappingLevel, TaskStatus
 from backend.models.postgis.task import Task
 from backend.models.postgis.team import Team, TeamMembers
 from backend.models.postgis.user import User
 from backend.models.postgis.organisation import Organisation
 from backend.services.users.authentication_service import AuthenticationService
+from backend.services.interests_service import InterestService, Interest
 
 TEST_USER_ID = 777777
 TEST_USERNAME = "Thinkwhere Test"
@@ -29,6 +31,8 @@ TEST_ORGANISATION_SLUG = "KLL"
 TEST_ORGANISATION_ID = 23
 TEST_PROJECT_NAME = "Test"
 TEST_TEAM_NAME = "Test Team"
+TEST_CAMPAIGN_NAME = "Test Campaign"
+TEST_CAMPAIGN_ID = 1
 
 
 def get_canned_osm_user_details():
@@ -130,7 +134,7 @@ def get_canned_user(username: str) -> User:
     return test_user
 
 
-def create_canned_project() -> Tuple[Project, User]:
+def create_canned_project(name=TEST_PROJECT_NAME) -> Tuple[Project, User]:
     """ Generates a canned project in the DB to help with integration tests """
     test_aoi_geojson = geojson.loads(json.dumps(get_canned_json("test_aoi.json")))
 
@@ -146,7 +150,7 @@ def create_canned_project() -> Tuple[Project, User]:
         test_user = create_canned_user()
 
     test_project_dto = DraftProjectDTO()
-    test_project_dto.project_name = TEST_PROJECT_NAME
+    test_project_dto.project_name = name
     test_project_dto.user_id = test_user.id
     test_project_dto.area_of_interest = test_aoi_geojson
     test_project = Project()
@@ -202,12 +206,16 @@ def return_canned_draft_project_json():
         raise FileNotFoundError("canned_draft_project.json not found")
 
 
-def return_canned_organisation():
+def return_canned_organisation(
+    org_id=TEST_ORGANISATION_ID,
+    org_name=TEST_ORGANISATION_NAME,
+    org_slug=TEST_ORGANISATION_SLUG,
+) -> Organisation:
     "Returns test organisation without writing to db"
     test_org = Organisation()
-    test_org.id = TEST_ORGANISATION_ID
-    test_org.name = TEST_ORGANISATION_NAME
-    test_org.slug = TEST_ORGANISATION_SLUG
+    test_org.id = org_id
+    test_org.name = org_name
+    test_org.slug = org_slug
 
     return test_org
 
@@ -225,11 +233,11 @@ def get_canned_organisation(org_name: str) -> Organisation:
     return organisation
 
 
-def return_canned_team() -> Team:
+def return_canned_team(name=TEST_TEAM_NAME, org_name=TEST_ORGANISATION_NAME) -> Team:
     """Returns test team without writing to db"""
     test_team = Team()
-    test_team.name = TEST_TEAM_NAME
-    test_org = get_canned_organisation(TEST_ORGANISATION_NAME)
+    test_team.name = name
+    test_org = get_canned_organisation(org_name)
     if test_org is None:
         test_org = create_canned_organisation()
     test_team.organisation = test_org
@@ -290,3 +298,41 @@ def update_project_with_info(test_project: Project) -> Project:
     test_project.update(test_dto)
 
     return test_project
+
+
+def return_canned_campaign(
+    id=TEST_CAMPAIGN_ID,
+    name=TEST_CAMPAIGN_NAME,
+    description=None,
+    logo=None,
+) -> Campaign:
+    """Returns test campaign without writing to db"""
+    test_campaign = Campaign()
+    test_campaign.id = id
+    test_campaign.name = name
+    test_campaign.description = description
+    test_campaign.logo = logo
+
+    return test_campaign
+
+
+def create_canned_campaign(
+    campaign_name=TEST_CAMPAIGN_NAME,
+    campaign_description=None,
+    test_logo=None,
+) -> Campaign:
+    """Returns test campaign without writing to db"""
+    test_campaign = return_canned_campaign(
+        campaign_name=campaign_name,
+        campaign_description=campaign_description,
+        test_logo=test_logo,
+    )
+    test_campaign.create()
+
+    return test_campaign
+
+
+def create_canned_interest(name="test_interest") -> Interest:
+    """Returns test interest without writing to db"""
+    test_interest = InterestService.create(name=name)
+    return test_interest

@@ -377,7 +377,7 @@ class ProjectSearchDTO(Model):
 class ProjectSearchBBoxDTO(Model):
     bbox = ListType(FloatType, required=True, min_size=4, max_size=4)
     input_srid = IntType(required=True, choices=[4326])
-    preferred_locale = StringType(required=True, default="en")
+    preferred_locale = StringType(required=False, default="en")
     project_author = IntType(required=False, serialized_name="projectAuthor")
 
 

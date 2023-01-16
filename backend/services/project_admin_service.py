@@ -332,6 +332,8 @@ class ProjectAdminService:
     ) -> bool:
         """Is user action permitted on project"""
         project = Project.get(project_id)
+        if project is None:
+            raise NotFound()
         author_id = project.author_id
         allowed_roles = [TeamRoles.PROJECT_MANAGER.value]
 
