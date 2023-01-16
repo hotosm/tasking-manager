@@ -20,7 +20,6 @@ from tests.backend.helpers.test_helpers import (
 )
 from backend.models.postgis.utils import NotFound
 from backend.models.postgis.project import Project, ProjectDTO
-from backend.models.postgis.task import Task
 from backend.services.campaign_service import CampaignService
 from backend.models.dtos.campaign_dto import CampaignProjectDTO
 from backend.models.postgis.statuses import (
@@ -33,7 +32,6 @@ from backend.models.postgis.statuses import (
     ProjectDifficulty,
     ProjectPriority,
     MappingTypes,
-    TaskStatus,
 )
 from backend.services.project_service import ProjectService, ProjectAdminService
 from backend.services.validator_service import ValidatorService
@@ -1885,3 +1883,46 @@ class TestSearchProjectByBBOX(BaseTestCase):
             self.test_project_1.id,
         )
 
+
+class TestProjectsQueriesSummaryAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_project.private = True
+        self.test_project.save()
+        self.url = f"/api/v2/projects/{self.test_project.id}/queries/summary/"
+
+    def test_authentication_is_not_required(self):
+        """
+        Test authentication is not required
+        """
+        # Act
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_returns_404_if_project_doesnt_exist(self):
+        """
+        Test 404 is returned if project doesn't exist
+        """
+        # Act
+        response = self.client.get("/api/v2/projects/999/queries/summary/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_project_summary_response(self):
+        """
+        Test project summary response
+        """
+        # Arrange
+        json_data = get_canned_json("canned_project_detail.json")
+        project_update_dto = ProjectDTO(json_data)
+        create_canned_organisation()
+        self.test_project.update(project_update_dto)
+
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestGetProjectsRestAPI.assert_project_response(
+            response.json, self.test_project, assert_type="summary"
+        )
