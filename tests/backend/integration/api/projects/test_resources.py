@@ -19,7 +19,7 @@ from tests.backend.helpers.test_helpers import (
     create_canned_interest,
 )
 from backend.models.postgis.utils import NotFound
-from backend.models.postgis.project import Project
+from backend.models.postgis.project import Project, ProjectDTO
 from backend.models.postgis.task import Task
 from backend.services.campaign_service import CampaignService
 from backend.models.dtos.campaign_dto import CampaignProjectDTO
@@ -33,12 +33,14 @@ from backend.models.postgis.statuses import (
     ProjectDifficulty,
     ProjectPriority,
     MappingTypes,
+    TaskStatus,
 )
 from backend.services.project_service import ProjectService, ProjectAdminService
 from backend.services.validator_service import ValidatorService
 from backend.services.mapping_service import MappingService
 from backend.services.interests_service import InterestService
 from backend.models.dtos.project_dto import (
+    DraftProjectDTO,
     is_known_project_status,
     is_known_project_priority,
     is_known_project_difficulty,
@@ -1763,3 +1765,123 @@ class TestProjectsAllAPI(BaseTestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["mapResults"]["type"], "FeatureCollection")
+
+
+class TestSearchProjectByBBOX(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.url = "/api/v2/projects/queries/bbox/"
+        self.test_user = return_canned_user("test_user", 11111)
+        self.test_user.create()
+        self.test_project_1, self.test_author = create_canned_project()
+        self.test_project_1.status = ProjectStatus.PUBLISHED.value
+        self.test_project_1.save()
+        self.test_project_2, _ = create_canned_project()
+        self.test_project_2.status = ProjectStatus.PUBLISHED.value
+        self.test_project_2.save()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+
+    def test_returns_401_if_user_not_logged_in(self):
+        """
+        Test 403 is returned if user is not logged in
+        """
+        # Act
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_403_if_user_doesnt_have_PM_role(self):
+        """
+        Test 403 is returned if user is not logged in
+        """
+        # Act
+        response = self.client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_returns_400_if_bbox_is_not_valid(self):
+        """
+        Test 400 is returned if bbox is not valid
+        """
+        # Arrange
+        # This endpoint is only accessible to org managers and admins, so we need to add the user to an organisation.
+        test_organisation = create_canned_organisation()
+        add_manager_to_organisation(test_organisation, self.test_user)
+        # Act
+        response = self.client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            query_string={"bbox": "1,2,3,100,200,3", "srid": 4326},
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["SubCode"], "InvalidData")
+
+    def test_returns_400_if_bbox_too_large(self):
+        """
+        Test 400 is returned if bbox is too large
+        """
+        # Arrange
+        # This endpoint is only accessible to org managers and admins, so we need to add the user to an organisation.
+        test_organisation = create_canned_organisation()
+        add_manager_to_organisation(test_organisation, self.test_user)
+        # Act
+        response = self.client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+            query_string={"bbox": "-17,-30,102,70", "srid": 4326},
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["SubCode"], "BBoxTooBigError")
+
+    def test_returns_projects_within_bbox(self):
+        """
+        Test projects within bbox are returned
+        """
+        # Arrange
+        # Create a project outside bbox
+        draft_project_dto = DraftProjectDTO()
+        draft_project_dto.area_of_interest = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "coordinates": [
+                            [
+                                [83.771175, 28.095768],
+                                [83.773586, 28.095757],
+                                [83.773428, 28.094146],
+                                [83.770834, 28.094479],
+                                [83.771175, 28.095768],
+                            ]
+                        ],
+                        "type": "Polygon",
+                    },
+                }
+            ],
+        }
+        self.test_project_2.save()
+        self.test_project_2.set_project_aoi(draft_project_dto)
+        test_organisation = create_canned_organisation()
+        add_manager_to_organisation(test_organisation, self.test_user)
+        # Act
+        response = self.client.get(
+            self.url,
+            headers={
+                "Authorization": self.user_session_token,
+                " Accept-Language": "en",
+            },
+            query_string={
+                "bbox": "-3.993530,56.095790,-3.890533,56.129480",
+                "srid": 4326,
+            },
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json["features"]), 1)
+        self.assertEqual(
+            response.json["features"][0]["properties"]["projectId"],
+            self.test_project_1.id,
+        )
+
