@@ -1,7 +1,7 @@
 {
     "projectId": 8653,
     "status": "PUBLISHED",
-    "projectPriority": "MEDIUM",
+    "projectPriority": "URGENT",
     "areaOfInterest": {
         "type": "MultiPolygon",
         "coordinates": [
@@ -102,7 +102,7 @@
             "perTaskInstructions": "Tests"
         }
     ],
-    "mapperLevel": "BEGINNER",
+    "difficulty": "EASY",
     "mappingPermission": "ANY",
     "validationPermission": "LEVEL",
     "enforceRandomTaskSelection": false,
@@ -127,10 +127,38 @@
     ],
     "licenseId": null,
     "allowedUsernames": [],
-    "priorityAreas": null,
+    "priorityAreas": [
+        {
+          "coordinates": [
+            [
+              [
+                83.77175831878799,
+                28.095285381948983
+              ],
+              [
+                83.77256705935366,
+                28.095301973647963
+              ],
+              [
+                83.77252317420658,
+                28.094837405100535
+              ],
+              [
+                83.77168935641481,
+                28.094876119222604
+              ],
+              [
+                83.77175831878799,
+                28.095285381948983
+              ]
+            ]
+          ],
+          "type": "Polygon"
+        }
+      ],
     "created": "2022-05-19T04:59:47.310401Z",
     "lastUpdated": "2022-05-19T04:59:47.305580Z",
-    "author": "Aadesh Baral",
+    "author": "Thinkwhere Test",
     "activeMappers": 0,
     "percentMapped": 0,
     "percentValidated": 0,
@@ -147,5 +175,6 @@
         "JOSM",
         "CUSTOM"
     ],
-    "interests": []
+    "interests": [],
+    "extraIdParams": ""
 }

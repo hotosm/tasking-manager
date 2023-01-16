@@ -80,7 +80,7 @@ class TestMessageService(BaseTestCase):
         message_dto.from_username = canned_author.username
         message_dto.project_id = canned_project.id
         message_dto.project_title = "Test project"
-        message_dto.message_type = MessageType.PROJECT_ACTIVITY_NOTIFICATION.value
+        message_dto.message_type = MessageType.BROADCAST.value
         message_dto.sent_date = "2020-01-01"
         # Act
         MessageService.send_message_to_all_contributors(canned_project.id, message_dto)

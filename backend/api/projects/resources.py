@@ -82,17 +82,16 @@ class ProjectsRestAPI(Resource):
         """
         try:
             authenticated_user_id = token_auth.current_user()
-            as_file = (
+            as_file = bool(
                 strtobool(request.args.get("as_file"))
                 if request.args.get("as_file")
                 else False
             )
-            abbreviated = (
+            abbreviated = bool(
                 strtobool(request.args.get("abbreviated"))
                 if request.args.get("abbreviated")
                 else False
             )
-
             project_dto = ProjectService.get_project_dto_for_mapper(
                 project_id,
                 authenticated_user_id,
@@ -407,15 +406,15 @@ class ProjectsRestAPI(Resource):
         """
         authenticated_user_id = token_auth.current_user()
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
-            )
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
-
+            ):
+                return {
+                    "Error": "User is not a manager of the project",
+                    "SubCode": "UserPermissionError",
+                }, 403
+        except NotFound:
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         try:
             project_dto = ProjectDTO(request.get_json())
             project_dto.project_id = project_id
@@ -802,16 +801,16 @@ class ProjectsQueriesBboxAPI(Resource):
         except Exception as e:
             current_app.logger.error(f"Error validating request: {str(e)}")
             return {
-                "Error": "Unable to fetch projects",
-                "SubCode": "InternalServerError",
+                "Error": f"Error validating request: {str(e)}",
+                "SubCode": "InvalidData",
             }, 400
         try:
             geojson = ProjectSearchService.get_projects_geojson(search_dto)
             return geojson, 200
         except BBoxTooBigError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except ProjectSearchServiceError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
             error_msg = f"ProjectsQueriesBboxAPI GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

@@ -544,7 +544,8 @@ class ProjectSearchService:
                 geom_4326 = db.engine.execute(ST_Transform(geometry, 4326)).scalar()
                 polygon = shape.to_shape(geom_4326)
         except Exception as e:
-            raise ProjectSearchServiceError(f"error making polygon: {e}")
+            current_app.logger.error(f"InvalidData- error making polygon: {e}")
+            raise ProjectSearchServiceError(f"InvalidData- error making polygon: {e}")
         return polygon
 
     @staticmethod
