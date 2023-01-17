@@ -2092,3 +2092,52 @@ class TestProjectsQueriesAoiAPI(BaseTestCase):
             response.headers["Content-Disposition"],
             f"attachment; filename={self.test_project.id}.geojson",
         )
+
+
+class TestProjectsQueriesOwnerAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_organisation = create_canned_organisation()
+        # Add organisation to project
+        self.test_project.organisation = self.test_organisation
+        self.test_project.save()
+        self.test_user = return_canned_user("TEST_USER", 111111)
+        self.test_user.create()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.author_session_token = generate_encoded_token(self.test_author.id)
+        self.url = f"/api/v2/projects/queries/myself/owner/"
+
+    def test_returns_401_if_user_not_logged_in(self):
+        """
+        Test 403 is returned if user is not logged in
+        """
+        # Act
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_403_if_user_doesnt_have_PM_role(self):
+        """
+        Test 403 is returned if user doesn't have PM role
+        """
+        # Act
+        response = self.client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_returns_200_if_user_org_manager(self):
+        """
+        Test 200 is returned if user has a project owned
+        """
+        # Add user to organisation so that it has PM role
+        add_manager_to_organisation(self.test_organisation, self.test_author)
+        # Act
+        response = self.client.get(
+            self.url, headers={"Authorization": self.author_session_token}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json["activeProjects"]), 1)
+
