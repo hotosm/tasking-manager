@@ -86,7 +86,7 @@ export function ProjectCard({
   );
 
   return (
-    <div
+    <article
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={`relative blue-dark`}
@@ -145,6 +145,6 @@ export function ProjectCard({
         </div>
       </Link>
       {showBottomButtonsHovered && bottomButtons}
-    </div>
+    </article>
   );
 }

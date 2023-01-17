@@ -27,7 +27,7 @@ export function Testimonials() {
         // </div>
       }
       {testimonials.map((person, n) => (
-        <div className="testimony relative">
+        <div className="testimony relative" key={person.name}>
           {/* <div key={n} className={`blue-dark testimonial-${person.cssCode} relative`} /> */}
           <div className="testimonial-image-parent">
             <img
@@ -39,7 +39,7 @@ export function Testimonials() {
           <div className="citation-ctr">
             <p className="bg-red white pv2 pl3 pr1 citation ma0 relative">
               <FormattedMessage {...person.citation} />
-              <p className="quotes-icon red ma0">&ldquo;</p>
+              <span className="quotes-icon red ma0">&ldquo;</span>
             </p>
             <div className="w-70-l w-50-m mh3 mh0-ns">
               <h4 className="f5 fw7 mb1 tl-m witness">{person.name},</h4>

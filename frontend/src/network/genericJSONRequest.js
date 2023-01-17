@@ -33,6 +33,32 @@ export function fetchLocalJSONAPI(endpoint, token, method = 'GET', language = 'e
     });
 }
 
+export function fetchLocalJSONAPIWithAbort(
+  endpoint,
+  token,
+  signal,
+  method = 'GET',
+  language = 'en',
+) {
+  const url = new URL(endpoint, API_URL);
+  let headers = {
+    'Content-Type': 'application/json',
+    'Accept-Language': language.replace('-', '_'),
+  };
+  if (token) {
+    headers['Authorization'] = `Token ${token}`;
+  }
+  return fetch(url, {
+    method: method,
+    headers: headers,
+    signal: signal,
+  })
+    .then(handleErrors)
+    .then((res) => {
+      return res.json();
+    });
+}
+
 export function pushToLocalJSONAPI(
   endpoint,
   payload,

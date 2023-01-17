@@ -80,17 +80,25 @@ export const CommentInputField = ({
   return (
     <div {...getRootProps()}>
       <div className={`${isShowPreview ? 'dn' : ''}`} data-color-mode="light">
-        <MDEditor
-          ref={textareaRef}
-          preview="edit"
-          commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
-          extraCommands={[]}
-          height={200}
-          value={comment}
-          onChange={setComment}
-          textareaProps={{ ...getInputProps(), spellCheck: 'true' }}
-          defaultTabEnable
-        />
+        <FormattedMessage {...messages.leaveAComment}>
+          {(val) => (
+            <MDEditor
+              ref={textareaRef}
+              preview="edit"
+              commands={Object.keys(iconConfig).map((key) => iconConfig[key])}
+              extraCommands={[]}
+              height={200}
+              value={comment}
+              onChange={setComment}
+              textareaProps={{
+                ...getInputProps(),
+                spellCheck: 'true',
+                placeholder: val,
+              }}
+              defaultTabEnable
+            />
+          )}
+        </FormattedMessage>
         <input
           type="file"
           id="image_picker"
@@ -99,7 +107,7 @@ export const CommentInputField = ({
           onChange={handleImagePick}
         />
         {isProjectDetailCommentSection && (
-          <div className="flex justify-between ba bt-0 w-100 ph2 pv1 relative b--blue-grey textareaDetail">
+          <div className="dn flex-ns justify-between ba bt-0 w-100 ph2 pv1 relative b--blue-grey textareaDetail">
             <span className="f7 lh-copy gray">
               <FormattedMessage {...messages.attachImage} />
             </span>

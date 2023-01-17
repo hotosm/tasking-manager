@@ -78,6 +78,7 @@ const Avatar = ({ username, size, colorClasses, removeFn, picture, text, editMod
     >
       {removeFn && editMode && (
         <div
+          role="button"
           className="relative top-0 z-1 fr br-100 f7 tc h1 w1 bg-red white pointer"
           style={closeIconStyle}
           onClick={() => removeFn(username)}
