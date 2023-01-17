@@ -225,7 +225,13 @@ export const MyProjectNav = (props) => {
   );
 };
 
-function FilterButton({ currentQuery, newQueryParams, setQuery, isActive, children }: Object) {
+export function FilterButton({
+  currentQuery,
+  newQueryParams,
+  setQuery,
+  isActive,
+  children,
+}: Object) {
   const linkCombo = 'di mh1 link ph3 f6 pv2 mv1 ba b--grey-light';
   return (
     <CustomButton
