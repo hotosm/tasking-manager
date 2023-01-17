@@ -19,8 +19,8 @@ describe('SocialMedia component', () => {
         <SocialMedia data={mockData} />
       </IntlProviders>,
     );
-    // img tag for OSM, Missng Maps and Slack
-    expect(screen.getAllByRole('img')).toHaveLength(4);
+    // img tag for OSM, Missng Maps, Slack and HDYC Neis One
+    expect(screen.getAllByRole('img')).toHaveLength(5);
     // SVGs for Facebook, Linkedin, Twitter
     expect(container.querySelectorAll('svg').length).toBe(3);
   });
@@ -35,7 +35,7 @@ describe('SocialMedia component', () => {
       screen.getAllByRole('link', {
         name: 'johndoe',
       }),
-    ).toHaveLength(3);
+    ).toHaveLength(4);
     expect(screen.queryAllByRole('link', { name: 'johndoe' })[0]).toHaveAttribute(
       'href',
       'https://www.openstreetmap.org/user/johndoe',
@@ -47,6 +47,10 @@ describe('SocialMedia component', () => {
     expect(screen.queryAllByRole('link', { name: 'johndoe' })[2]).toHaveAttribute(
       'href',
       'https://osmcha.org/?filters={"users":[{"label":"johndoe","value":"johndoe"}]}',
+    );
+    expect(screen.getAllByRole('link', { name: 'johndoe' })[3]).toHaveAttribute(
+      'href',
+      'https://hdyc.neis-one.org/?johndoe',
     );
     expect(screen.getByRole('link', { name: 'johndoeTwitter' })).toHaveAttribute(
       'href',
