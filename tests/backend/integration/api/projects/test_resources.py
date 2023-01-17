@@ -248,18 +248,16 @@ class TestGetProjectsRestAPI(BaseTestCase):
     def assert_project_response(project_response, expected_project, assert_type="full"):
         "Test project response"
         assert expected_project.id == project_response["projectId"]
-        assert (
-            expected_project.get_project_title(expected_project.default_locale)
-            == project_response["projectInfo"]["name"]
-        )
         # Since some of the fields are not returned in summary mode we need to skip them
         if assert_type != "summary":
             assert geojson.is_valid(project_response["areaOfInterest"])
             assert ["type", "coordinates"] == list(
                 project_response["areaOfInterest"].keys()
             )
-
-            assert geojson.is_valid(project_response["tasks"])
+            if assert_type == "notasks":
+                assert "tasks" not in project_response
+            else:
+                assert geojson.is_valid(project_response["tasks"])
             assert (
                 is_known_task_creation_mode(project_response["taskCreationMode"])
                 is None
@@ -273,15 +271,20 @@ class TestGetProjectsRestAPI(BaseTestCase):
             assert "aoiCentroid" in project_response
             assert "shortDescription" in project_response
             assert "allowedUsernames" in project_response
-
-        assert [
-            "locale",
-            "name",
-            "shortDescription",
-            "description",
-            "instructions",
-            "perTaskInstructions",
-        ] == list(project_response["projectInfo"].keys())
+        # Since projectInfo is not present in notasks mode we need to skip it
+        if not assert_type == "notasks":
+            assert (
+                expected_project.get_project_title(expected_project.default_locale)
+                == project_response["projectInfo"]["name"]
+            )
+            assert [
+                "locale",
+                "name",
+                "shortDescription",
+                "description",
+                "instructions",
+                "perTaskInstructions",
+            ] == list(project_response["projectInfo"].keys())
 
         # As these returns validation functions returns None for valid values assert that they are None
         assert is_known_project_status(project_response["status"]) is None
@@ -342,7 +345,7 @@ class TestGetProjectsRestAPI(BaseTestCase):
         self.assertEqual(response.json["projectId"], self.test_project.id)
         TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
 
-    def test_draft_project_can_only_be_accessed_by_user_with_OM_permissions(self):
+    def test_draft_project_can_only_be_accessed_by_user_with_PM_permissions(self):
         "Test draft project can only be accessed by user with PM permissions."
         # Arrange
         self.test_project.status = ProjectStatus.DRAFT.value
@@ -403,17 +406,11 @@ class TestGetProjectsRestAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
 
-        # Authenticated user with that is a member of team associated with project
+        # Authenticated user with that is a organisation manager
         # Arrange
         self.test_user.role = UserRole.MAPPER.value  # Reset user role to Mapper
         self.test_user.save()
-        # Create a team and add user to it
-        test_team = create_canned_team()
-        add_user_to_team(
-            test_team, self.test_user, TeamMemberFunctions.MEMBER.value, True
-        )
-        # Assign team to project
-        assign_team_to_project(self.test_project, test_team, TeamRoles.MAPPER.value)
+        add_manager_to_organisation(self.test_project.organisation, self.test_user)
         # Act
         response = self.client.get(
             self.url, headers={"Authorization": self.user_session_token}
@@ -422,12 +419,21 @@ class TestGetProjectsRestAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         TestGetProjectsRestAPI.assert_project_response(response.json, self.test_project)
 
-        # Authenticated user with that is a organisation manager
+        # Authenticated user with that is a member of team associated with project
         # Arrange
-        add_manager_to_organisation(self.test_project.organisation, self.test_user)
+        # Remove organisation from project
+        self.test_project.organisation = None
+        # Create a team and add user to it
+        test_team = create_canned_team()
+        test_user_1 = return_canned_user("TEST_USER_1", 222222)
+        test_user_1.create()
+        test_user_1_session_token = generate_encoded_token(test_user_1.id)
+        add_user_to_team(test_team, test_user_1, TeamMemberFunctions.MEMBER.value, True)
+        # Assign team to project
+        assign_team_to_project(self.test_project, test_team, TeamRoles.MAPPER.value)
         # Act
         response = self.client.get(
-            self.url, headers={"Authorization": self.user_session_token}
+            self.url, headers={"Authorization": test_user_1_session_token}
         )
         # Assert
         self.assertEqual(response.status_code, 200)
@@ -2040,4 +2046,49 @@ class TestProjectsQueriesPriorityAreasAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json), 1)
-        self.assertDeepAlmostEqual(response.json[0], json_data["priorityAreas"][0], places=8)
+        self.assertDeepAlmostEqual(
+            response.json[0], json_data["priorityAreas"][0], places=8
+        )
+
+
+class TestProjectsQueriesAoiAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_project.private = False
+        self.test_project.save()
+        self.url = f"/api/v2/projects/{self.test_project.id}/queries/aoi/"
+
+    def test_returns_404_if_project_doesnt_exist(self):
+        """
+        Test 404 is returned if project doesn't exist
+        """
+        # Act
+        response = self.client.get("/api/v2/projects/999/queries/aoi/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_authentication_is_not_required(self):
+        """
+        Test authentication is not required
+        """
+        # Act
+        response = self.client.get(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, self.test_project.get_aoi_geometry_as_geojson())
+
+    def test_returns_file_if_as_file_is_true(self):
+        """
+        Test authentication is not required
+        """
+        # Act
+        response = self.client.get(self.url + "?as_file=true")
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, self.test_project.get_aoi_geometry_as_geojson())
+        self.assertEqual(response.headers["Content-Type"], "application/json")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            f"attachment; filename={self.test_project.id}.geojson",
+        )
