@@ -2141,3 +2141,108 @@ class TestProjectsQueriesOwnerAPI(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json["activeProjects"]), 1)
 
+
+class TestProjectsQueriesNoTasksAPI(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.test_project, self.test_author = create_canned_project()
+        self.test_organisation = create_canned_organisation()
+        self.test_project.status = ProjectStatus.PUBLISHED.value
+        self.test_project.organisation = self.test_organisation
+        self.test_project.save()
+        self.test_user = return_canned_user("TEST_USER", 111111)
+        self.test_user.create()
+        self.user_session_token = generate_encoded_token(self.test_user.id)
+        self.author_session_token = generate_encoded_token(self.test_author.id)
+        self.url = f"/api/v2/projects/{self.test_project.id}/queries/notasks/"
+
+    def test_returns_401_if_user_not_logged_in(self):
+        """
+        Test 403 is returned if user is not logged in
+        """
+        # Act
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_403_if_user_doesnt_have_PM_role(self):
+        """
+        Test 403 is returned if user doesn't have PM role
+        """
+        # Act
+        response = self.client.get(
+            self.url,
+            headers={"Authorization": self.user_session_token},
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_returns_404_if_project_doesnt_exist(self):
+        """
+        Test 404 is returned if project doesn't exist
+        """
+        # Act
+        response = self.client.get(
+            "/api/v2/projects/999/queries/notasks/",
+            headers={"Authorization": self.user_session_token},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_200_for_admin(self):
+        """
+        Test 200 is returned if user is admin
+        """
+        # Authenticated user with that is a admin
+        # Arrange
+        self.test_user.role = UserRole.ADMIN.value
+        self.test_user.save()
+        # Act
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        print(response.json)
+        TestGetProjectsRestAPI.assert_project_response(
+            response.json, self.test_project, assert_type="notasks"
+        )
+
+    def test_returns_200_if_user_org_manager(self):
+        """
+        Test 200 is returned if user is org manager
+        """
+        # Arrange
+        self.test_user.role = UserRole.MAPPER.value  # Make sure user role is Mapper
+        self.test_user.save()
+        add_manager_to_organisation(self.test_project.organisation, self.test_user)
+        # Act
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestGetProjectsRestAPI.assert_project_response(
+            response.json, self.test_project, assert_type="notasks"
+        )
+
+    def test_returns_200_if_user_team_member(self):
+        """
+        Test 200 is returned if user is member of team associated with project
+        """
+        # Arrange
+        # Create a team and add user to it
+        test_team = create_canned_team()
+        add_user_to_team(
+            test_team, self.test_user, TeamMemberFunctions.MEMBER.value, True
+        )
+        # Assign team to project
+        assign_team_to_project(
+            self.test_project, test_team, TeamRoles.PROJECT_MANAGER.value
+        )
+        # Act
+        response = self.client.get(
+            self.url, headers={"Authorization": self.user_session_token}
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        TestGetProjectsRestAPI.assert_project_response(
+            response.json, self.test_project, assert_type="notasks"
+        )

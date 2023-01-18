@@ -873,8 +873,6 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
                 search_dto,
             )
             return admin_projects.to_primitive(), 200
-        except NotFound:
-            return {"Error": "No comments found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -1088,20 +1086,17 @@ class ProjectsQueriesNoTasksAPI(Resource):
                 description: Internal Server Error
         """
         try:
-            ProjectAdminService.is_user_action_permitted_on_project(
+            if not ProjectAdminService.is_user_action_permitted_on_project(
                 token_auth.current_user(), project_id
-            )
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
-
+            ):
+                raise ValueError("UserPermissionError- User not a project manager")
+        except ValueError as e:
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except NotFound:
+            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         try:
             project_dto = ProjectAdminService.get_project_dto_for_admin(project_id)
             return project_dto.to_primitive(), 200
-        except NotFound:
-            return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -1159,8 +1154,6 @@ class ProjectsQueriesAoiAPI(Resource):
             return project_aoi, 200
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except ProjectServiceError:
-            return {"Error": "Unable to fetch project"}, 403
         except Exception as e:
             error_msg = f"Project GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

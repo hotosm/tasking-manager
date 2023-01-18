@@ -1018,7 +1018,7 @@ class Project(db.Model):
         base_dto.extra_id_params = self.extra_id_params
         base_dto.rapid_power_user = self.rapid_power_user
         base_dto.country_tag = self.country
-        base_dto.organisation_id = self.organisation_id
+        base_dto.organisation = self.organisation_id
         base_dto.license_id = self.license_id
         base_dto.created = self.created
         base_dto.last_updated = self.last_updated
