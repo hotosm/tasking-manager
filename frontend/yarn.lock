@@ -3352,36 +3352,36 @@
   dependencies:
     "@turf/helpers" "^6.5.0"
 
-"@turf/bbox@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/bbox/-/bbox-6.4.0.tgz"
-  integrity sha512-eASq6Op3sGAA293Qo3gTwuQAvdoQCKah4rgA5FZkQ2xvkYquQnkUhV2U18bFgw58aSP1g2Y+rpmSEPHDFX6/6g==
+"@turf/bbox@^6.4.0", "@turf/bbox@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-6.5.0.tgz#bec30a744019eae420dac9ea46fb75caa44d8dc5"
+  integrity sha512-RBbLaao5hXTYyyg577iuMtDB8ehxMlUqHEJiMs8jT1GHkFhr6sYre3lmLsPeYEi/ZKj5TP5tt7fkzNdJ4GIVyw==
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/meta" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/meta" "^6.5.0"
 
-"@turf/center@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/center/-/center-6.4.0.tgz"
-  integrity sha512-qCeAsdAY9hfh/3hFcYOkaWjNN/qJn6PosiLm4jnx1NDzXmUymFFRwEix5SfNzjvKGBoKrojPOs22im/BlFRNKQ==
+"@turf/center@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/center/-/center-6.5.0.tgz#3bcb6bffcb8ba147430cfea84aabaed5dbdd4f07"
+  integrity sha512-T8KtMTfSATWcAX088rEDKjyvQCBkUsLnK/Txb6/8WUXIeOZyHu42G7MkdkHRoHtwieLdduDdmPLFyTdG5/e7ZQ==
   dependencies:
-    "@turf/bbox" "^6.4.0"
-    "@turf/helpers" "^6.4.0"
+    "@turf/bbox" "^6.5.0"
+    "@turf/helpers" "^6.5.0"
 
-"@turf/centroid@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/centroid/-/centroid-6.4.0.tgz"
-  integrity sha512-p78MVeJ3InVZzkBP4rpoWTUspsRqsW6a/fGuigfjizHz+YqTRXyG7HDkqoR8IwLwpQC83Nlw5kyacgMlgEbN+Q==
+"@turf/centroid@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/centroid/-/centroid-6.5.0.tgz#ecaa365412e5a4d595bb448e7dcdacfb49eb0009"
+  integrity sha512-MwE1oq5E3isewPprEClbfU5pXljIK/GUOMbn22UM3IFPDJX0KeoyLNwghszkdmFp/qMGL/M13MMWvU+GNLXP/A==
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/meta" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/meta" "^6.5.0"
 
-"@turf/clone@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/clone/-/clone-6.4.0.tgz"
-  integrity sha512-m0MzpW601CQJ7al3XireJNPrKz6KHMnbWysS6p4qkG7E70c+S8ST0y6gj1CfdkdS7ee3GevEg7V6sxdj2lCs4w==
+"@turf/clone@^6.4.0", "@turf/clone@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/clone/-/clone-6.5.0.tgz#895860573881ae10a02dfff95f274388b1cda51a"
+  integrity sha512-mzVtTFj/QycXOn6ig+annKrM6ZlimreKYz6f/GSERytOpgzodbQyOgkfwru100O1KQhhjSudKK4DsQ0oyi9cTw==
   dependencies:
-    "@turf/helpers" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
 
 "@turf/helpers@6.x", "@turf/helpers@^6.4.0", "@turf/helpers@^6.5.0":
   version "6.5.0"
@@ -3414,52 +3414,52 @@
     "@turf/helpers" "^6.4.0"
     "@turf/invariant" "^6.4.0"
 
-"@turf/meta@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/meta/-/meta-6.4.0.tgz"
-  integrity sha512-fMra6vMskwz1knn0/tb22ppOeE8CCmpvOvTIxLdV1WYWAoC4bJ4WdXKvZRsJKpHOX5iFehx4DT8aaGdROA4Y3Q==
+"@turf/meta@^6.4.0", "@turf/meta@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/meta/-/meta-6.5.0.tgz#b725c3653c9f432133eaa04d3421f7e51e0418ca"
+  integrity sha512-RrArvtsV0vdsCBegoBtOalgdSOfkBrTJ07VkpiCnq/491W67hnMWmDu7e6Ztw0C3WldRYTXkg3SumfdzZxLBHA==
   dependencies:
-    "@turf/helpers" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
 
-"@turf/rhumb-bearing@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/rhumb-bearing/-/rhumb-bearing-6.4.0.tgz"
-  integrity sha512-6KeNTzKsTjmvladtKKtaF3/QLPey9Ui954PuNvb6YGW6FSvS4qlMgznyYz18YYhBAkN1OqSjcqTeVvFjXfzoRw==
+"@turf/rhumb-bearing@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/rhumb-bearing/-/rhumb-bearing-6.5.0.tgz#8c41ad62b44fb4e57c14fe790488056684eee7b9"
+  integrity sha512-jMyqiMRK4hzREjQmnLXmkJ+VTNTx1ii8vuqRwJPcTlKbNWfjDz/5JqJlb5NaFDcdMpftWovkW5GevfnuzHnOYA==
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
 
-"@turf/rhumb-destination@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/rhumb-destination/-/rhumb-destination-6.4.0.tgz"
-  integrity sha512-eG1Ptlp5hr+L71bRBuoVsGG/ioKymYnCfqOA0FCdG7Wk4dOpPdWesrqIYcIQcFDLMZEiRs4GzVVnpNgWtUSbSA==
+"@turf/rhumb-destination@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/rhumb-destination/-/rhumb-destination-6.5.0.tgz#12da8c85e674b182e8b0ec8ea9c5fe2186716dae"
+  integrity sha512-RHNP1Oy+7xTTdRrTt375jOZeHceFbjwohPHlr9Hf68VdHHPMAWgAKqiX2YgSWDcvECVmiGaBKWus1Df+N7eE4Q==
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
 
-"@turf/rhumb-distance@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/rhumb-distance/-/rhumb-distance-6.4.0.tgz"
-  integrity sha512-r4dsy8sPyp8k5rR6FwXek8c1RG+nLNH1B43yjmIpaLDKcRYoXJSGt1K8SWOkFOGHl36nukq46Meh2IcH43K6aw==
+"@turf/rhumb-distance@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/rhumb-distance/-/rhumb-distance-6.5.0.tgz#ed068004b1469512b857070fbf5cb7b7eabbe592"
+  integrity sha512-oKp8KFE8E4huC2Z1a1KNcFwjVOqa99isxNOwfo4g3SUABQ6NezjKDDrnvC4yI5YZ3/huDjULLBvhed45xdCrzg==
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
 
-"@turf/transform-scale@^6.4.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/transform-scale/-/transform-scale-6.4.0.tgz"
-  integrity sha512-ICY33itdNjKQF0pGXlkoEWIQW5mPxSEo1N+L0vo8/GLARHZS1a19jgb84okFNJndOI9VPXun0giPfpvlJIAbPA==
+"@turf/transform-scale@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/transform-scale/-/transform-scale-6.5.0.tgz#dcccd8b0f139de32e32225a29c107a1279137120"
+  integrity sha512-VsATGXC9rYM8qTjbQJ/P7BswKWXHdnSJ35JlV4OsZyHBMxJQHftvmZJsFbOqVtQnIQIzf2OAly6rfzVV9QLr7g==
   dependencies:
-    "@turf/bbox" "^6.4.0"
-    "@turf/center" "^6.4.0"
-    "@turf/centroid" "^6.4.0"
-    "@turf/clone" "^6.4.0"
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
-    "@turf/meta" "^6.4.0"
-    "@turf/rhumb-bearing" "^6.4.0"
-    "@turf/rhumb-destination" "^6.4.0"
-    "@turf/rhumb-distance" "^6.4.0"
+    "@turf/bbox" "^6.5.0"
+    "@turf/center" "^6.5.0"
+    "@turf/centroid" "^6.5.0"
+    "@turf/clone" "^6.5.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
+    "@turf/meta" "^6.5.0"
+    "@turf/rhumb-bearing" "^6.5.0"
+    "@turf/rhumb-destination" "^6.5.0"
+    "@turf/rhumb-distance" "^6.5.0"
 
 "@turf/truncate@^6.4.0":
   version "6.4.0"

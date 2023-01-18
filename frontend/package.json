@@ -25,7 +25,7 @@
     "@turf/helpers": "^6.4.0",
     "@turf/intersect": "^6.5.0",
     "@turf/line-to-polygon": "^6.4.0",
-    "@turf/transform-scale": "^6.4.0",
+    "@turf/transform-scale": "^6.5.0",
     "@turf/truncate": "^6.4.0",
     "@uiw/react-md-editor": "^3.20.2",
     "RapiD": "facebookincubator/rapid#rapid-v1.1.9-tm.1",
