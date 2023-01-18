@@ -1,10 +1,16 @@
-import React from 'react';
-import TestRenderer from 'react-test-renderer';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import TestRenderer from 'react-test-renderer';
+import userEvent from '@testing-library/user-event';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { FormattedMessage } from 'react-intl';
-import { createComponentWithIntl, ReduxIntlProviders } from '../../../utils/testWithIntl';
-import { TeamBox, TeamsBoxList, TeamsManagement } from '../teams';
+
+import {
+  createComponentWithIntl,
+  ReduxIntlProviders,
+  IntlProviders,
+  renderWithRouter,
+} from '../../../utils/testWithIntl';
+import { TeamBox, TeamsBoxList, TeamsManagement, Teams } from '../teams';
 
 const dummyTeams = [
   {
@@ -230,5 +236,63 @@ describe('TeamsManagement component', () => {
     });
     expect(screen.queryByRole('heading', { name: 'My Best Team' })).not.toBeInTheDocument();
     expect(screen.queryByText('No team found.')).toBeInTheDocument();
+  });
+});
+
+describe('Teams component', () => {
+  it('should display loading placeholder when API is being fetched', () => {
+    const { container } = render(
+      <IntlProviders>
+        <Teams teams={[]} isReady={false} viewAllQuery="/view/all" />
+      </IntlProviders>,
+    );
+    expect(container.getElementsByClassName('show-loading-animation')).toHaveLength(36);
+  });
+
+  it('should display component details and teams passed', () => {
+    render(
+      <IntlProviders>
+        <Teams isReady teams={dummyTeams} viewAllQuery="/view/all" showAddButton />
+      </IntlProviders>,
+    );
+    expect(screen.getByRole('heading', { name: /teams/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('article').length).toBe(1);
+    expect(screen.getByRole('heading', { name: dummyTeams[0].name }));
+    expect(screen.getByRole('button', { name: /new/i })).toBeInTheDocument();
+  });
+
+  it('should navigate to project creation page on new button click', async () => {
+    const { history } = renderWithRouter(
+      <IntlProviders>
+        <Teams isReady teams={dummyTeams} viewAllQuery="/view/all" showAddButton />
+      </IntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /new/i }));
+    await waitFor(() => expect(history.location.pathname).toBe('/manage/teams/new/'));
+  });
+
+  it('should display no teams found message', () => {
+    render(
+      <IntlProviders>
+        <Teams isReady teams={[]} viewAllQuery="/view/all" />
+      </IntlProviders>,
+    );
+    expect(screen.getByText(/No teams found./i)).toBeInTheDocument();
+  });
+
+  it('should navigate to manage projects page when view all is clicked ', async () => {
+    const { history } = renderWithRouter(
+      <IntlProviders>
+        <Teams isReady teams={[]} viewAllQuery="view/all" />
+      </IntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole('link', {
+        name: /view all/i,
+      }),
+    );
+    await waitFor(() => expect(history.location.pathname).toBe('/manage/teams/view/all'));
   });
 });

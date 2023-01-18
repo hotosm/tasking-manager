@@ -1,18 +1,66 @@
-import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { IntlProviders } from '../../../utils/testWithIntl';
-import { Projects } from '../projects';
+import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor } from '@testing-library/react';
 
-it('renders loading placeholder when API is being fetched', () => {
-  const { container } = render(
-    <IntlProviders>
-      <Projects userDetails={{ role: 'ADMIN' }} projects={[]} viewAllEndpoint="/view/all" />
-    </IntlProviders>,
-  );
-  expect(
-    screen.getByRole('heading', {
-      name: /projects/i,
-    }),
-  ).toBeInTheDocument();
-  expect(container.getElementsByClassName('show-loading-animation')).toHaveLength(20);
+import { Projects } from '../projects';
+import { projects } from '../../../network/tests/mockData/projects';
+import { IntlProviders, renderWithRouter } from '../../../utils/testWithIntl';
+
+describe('Projects component', () => {
+  it('should display loading placeholder when API is being fetched', () => {
+    const { container } = render(
+      <IntlProviders>
+        <Projects projects={[]} viewAllEndpoint="/view/all" />
+      </IntlProviders>,
+    );
+    expect(container.getElementsByClassName('show-loading-animation')).toHaveLength(20);
+  });
+
+  it('should display component details and projects passed', () => {
+    render(
+      <IntlProviders>
+        <Projects projects={projects} viewAllEndpoint="/view/all" showAddButton />
+      </IntlProviders>,
+    );
+    expect(screen.getByRole('heading', { name: /projects/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('article').length).toBe(2);
+    expect(screen.getByRole('heading', { name: projects.results[0].name }));
+    expect(screen.getByRole('heading', { name: projects.results[1].name }));
+    expect(screen.getByRole('button', { name: /new/i })).toBeInTheDocument();
+  });
+
+  it('should navigate to project creation page on new button click', async () => {
+    const { history } = renderWithRouter(
+      <IntlProviders>
+        <Projects projects={projects} viewAllEndpoint="/view/all" showAddButton />
+      </IntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /new/i }));
+    await waitFor(() => expect(history.location.pathname).toBe('/manage/projects/new/'));
+  });
+
+  it('should display no projects found message', () => {
+    render(
+      <IntlProviders>
+        <Projects ownerEntity="user" projects={{ results: [] }} viewAllEndpoint="/view/all" />
+      </IntlProviders>,
+    );
+    expect(screen.getByText(/doesn't have projects yet/i)).toBeInTheDocument();
+  });
+
+  it('should navigate to manage projects page when view all is clicked ', async () => {
+    const { history } = renderWithRouter(
+      <IntlProviders>
+        <Projects projects={projects} viewAllEndpoint="/path/to/view/all" />
+      </IntlProviders>,
+    );
+    const user = userEvent.setup();
+    await user.click(
+      screen.getByRole('link', {
+        name: /view all/i,
+      }),
+    );
+    await waitFor(() => expect(history.location.pathname).toBe('/path/to/view/all'));
+  });
 });

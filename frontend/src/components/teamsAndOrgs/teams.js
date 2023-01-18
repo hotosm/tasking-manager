@@ -99,8 +99,10 @@ export function Teams({ teams, viewAllQuery, showAddButton = false, isReady, bor
         {viewAllQuery && <ViewAllLink link={`/manage/teams/${viewAllQuery ? viewAllQuery : ''}`} />}
         <div className="cards-container pt4">
           <ReactPlaceholder customPlaceholder={nCardPlaceholders(4)} delay={10} ready={isReady}>
-            {teams && teams.slice(0, 6).map((team, n) => <TeamCard team={team} key={n} />)}
-            {teams && teams.length === 0 && (
+            {teams?.slice(0, 6).map((team, n) => (
+              <TeamCard key={team.teamId} team={team} />
+            ))}
+            {teams?.length === 0 && (
               <span className="blue-grey">
                 <FormattedMessage {...messages.noTeamsFound} />
               </span>
