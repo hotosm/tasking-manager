@@ -1,6 +1,6 @@
 import { featureCollection } from '@turf/helpers';
 import bbox from '@turf/bbox';
-import { viewport } from '@mapbox/geo-viewport';
+import { viewport } from '@placemarkio/geo-viewport';
 
 export function getCentroidAndZoomFromSelectedTasks(tasks, selectedTaskIds, windowSize) {
   return viewport(getSelectedTasksBBox(tasks, selectedTaskIds), windowSize);

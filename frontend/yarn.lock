@@ -2798,13 +2798,6 @@
     is-plain-obj "^1.1.0"
     xtend "^4.0.1"
 
-"@mapbox/geo-viewport@^0.4.0":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@mapbox/geo-viewport/-/geo-viewport-0.4.1.tgz#a184c0b161975858a2e855a1e333e66af342964b"
-  integrity sha512-5g6eM3EOSl7+0p0VY+vHWEYjUlNzof936VKHTi/NuJVABjbYe8D2NAVJ0qt5C9Np4glUlhKFepgAgQ0OEybrjQ==
-  dependencies:
-    "@mapbox/sphericalmercator" "~1.1.0"
-
 "@mapbox/geojson-area@^0.2.2":
   version "0.2.2"
   resolved "https://registry.npmjs.org/@mapbox/geojson-area/-/geojson-area-0.2.2.tgz"
@@ -2927,11 +2920,6 @@
   resolved "https://registry.npmjs.org/@mapbox/sexagesimal/-/sexagesimal-1.2.0.tgz"
   integrity sha512-+C3+Azc4ObH2qmDYvg9MC+vvlGVfwB1BZNX8jt4XehJjfDGXwlElqJ6PS9BtgLHSjdinEoZTNanTG/WTc+dpRA==
 
-"@mapbox/sphericalmercator@~1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/sphericalmercator/-/sphericalmercator-1.1.0.tgz#f3b1af042620716a1289fc41e1e97f610823aefe"
-  integrity sha512-pEsfZyG4OMThlfFQbCte4gegvHUjxXCjz0KZ4Xk8NdOYTQBLflj6U8PL05RPAiuRAMAQNUUKJuL6qYZ5Y4kAWA==
-
 "@mapbox/tiny-sdf@^1.1.1":
   version "1.1.1"
   resolved "https://registry.npmjs.org/@mapbox/tiny-sdf/-/tiny-sdf-1.1.1.tgz"
@@ -3009,6 +2997,11 @@
   version "1.0.3"
   resolved "https://registry.npmjs.org/@open-draft/until/-/until-1.0.3.tgz"
   integrity sha512-Aq58f5HiWdyDlFffbbSjAlv596h/cOnt2DO1w3DOC7OJ5EHs0hd/nycJfiu9RJbT6Yk6F1knnRRXNSpxoIVZ9Q==
+
+"@placemarkio/geo-viewport@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@placemarkio/geo-viewport/-/geo-viewport-1.0.0.tgz#171a94c1af5823be459b09d59c17e17ca6a61405"
+  integrity sha512-BckG6GbeK40wAn0R/uU3fn+jFEzuC3ym+/CXA47oIsavPOvHB4zw6+fbwyPokodb6rqbg7z+xXKUnDx6b24VYQ==
 
 "@pmmmwh/react-refresh-webpack-plugin@0.4.3":
   version "0.4.3"
