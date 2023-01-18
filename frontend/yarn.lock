@@ -7853,10 +7853,10 @@ filter-obj@^1.1.0:
   resolved "https://registry.npmjs.org/filter-obj/-/filter-obj-1.1.0.tgz"
   integrity sha1-mzERErxsYSehbgFsbF1/GeCAXFs=
 
-final-form@^4.20.2:
-  version "4.20.2"
-  resolved "https://registry.npmjs.org/final-form/-/final-form-4.20.2.tgz"
-  integrity sha512-5i0IxqwjjPG1nUNCjWhqPCvQJJ2R+QwTwaAnjPmFnLbyjIHWuBPU8u+Ps4G3TcX2Sjno+O5xCZJzYcMJEzzfCQ==
+final-form@^4.20.8:
+  version "4.20.8"
+  resolved "https://registry.yarnpkg.com/final-form/-/final-form-4.20.8.tgz#13b04b7fc84c5520148307d44fe3a4207daedfde"
+  integrity sha512-knyoRbK42XvZOwfElVSZEfE9licdOmgLLUfPSuxJOl0UhjYT1HiBaHZlfYnwqmvo1H9ucNGyXDHoUP0vI0474g==
   dependencies:
     "@babel/runtime" "^7.10.0"
 
