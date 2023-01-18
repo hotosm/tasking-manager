@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { viewport } from '@mapbox/geo-viewport';
+import { viewport } from '@placemarkio/geo-viewport';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
