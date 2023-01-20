@@ -61,6 +61,9 @@ class ProjectsActionsTransferAPI(Resource):
         """
         try:
             username = request.get_json()["username"]
+        except Exception:
+            return {"Error": "Username not provided", "SubCode": "InvalidData"}, 400
+        try:
             authenticated_user_id = token_auth.current_user()
             ProjectAdminService.transfer_project_to(
                 project_id, authenticated_user_id, username
@@ -68,6 +71,8 @@ class ProjectsActionsTransferAPI(Resource):
             return {"Success": "Project Transferred"}, 200
         except (ValueError, ProjectAdminServiceError) as e:
             return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+        except NotFound:
+            return {"Error": "Project or user not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"ProjectsActionsTransferAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)

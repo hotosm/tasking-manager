@@ -265,3 +265,168 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         # Assert
         self.assertEqual(response.status_code, 200)
         self.assertEqual(mock_thread.call_count, 1)
+
+
+class TestProjectsActionsTransferAPI(BaseTestCase):
+    """ Tests for the transfer project endpoint """
+
+    def setUp(self):
+        super().setUp()
+        self.test_user = return_canned_user("test_user_1", 111111)
+        self.test_user.create()
+        self.test_user_access_token = generate_encoded_token(self.test_user.id)
+        self.test_project, self.test_author = create_canned_project()
+        self.test_author_access_token = generate_encoded_token(self.test_author.id)
+        self.url = (
+            f"/api/v2/projects/{self.test_project.id}/actions/transfer-ownership/"
+        )
+        self.test_organisation = create_canned_organisation()
+        self.test_project.organisation = self.test_organisation
+        self.test_project.save()
+
+    def test_returns_401_if_unauthorized(self):
+        """ Test that the endpoint returns 401 if the user is not logged in """
+        # Act
+        response = self.client.post(self.url)
+        # Assert
+        self.assertEqual(response.status_code, 401)
+
+    def test_returns_404_if_project_does_not_exist(self):
+        """ Test that the endpoint returns 404 if the project does not exist """
+        # Act
+        response = self.client.post(
+            "/api/v2/projects/999/transfer",
+            headers={"Authorization": self.test_user_access_token},
+            json={"username": "test_user"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+
+    def test_returns_403_if_user_is_not_project_admin_org_manager_project_author(self):
+        """ Test that the endpoint returns 403 if the user is not the project owner """
+        # Arrange
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.test_user_access_token},
+            json={"username": "test_user_1"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+
+    def test_returns_403_if_new_owner_is_not_admin_or_manager_of_org_project_is_in_(
+        self,
+    ):
+        """ Test returns 403 if the new owner is not admin or a manager of the organisation the project is in """
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.test_user_access_token},
+            json={"username": "test_user_1"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 403)
+
+    def test_returns_404_if_new_owner_does_not_exist(self):
+        """ Test that the endpoint returns 404 if the new owner does not exist """
+        # Arrange
+        self.test_user.role = UserRole.ADMIN.value
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.test_user_access_token},
+            json={"username": "test_user_2"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 404)
+
+    # Patch the thread start method to avoid application context issues
+    @patch("threading.Thread.start")
+    def test_returns_200_if_new_owner_is_admin_or_manager_of_org_project_is_in(
+        self, mock_thread
+    ):
+        """ Test that the endpoint returns 200 if the new owner is an admin of the organisation the project is in """
+        # Test new owner is admin
+        # Arrange
+        self.test_user.role = UserRole.ADMIN.value
+        test_user_2 = return_canned_user("test_user_2", 222222)
+        test_user_2.role = UserRole.ADMIN.value
+        test_user_2.create()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.test_user_access_token},
+            json={"username": "test_user_2"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.test_project.author_id, test_user_2.id)
+
+        # Test new owner is manager of org project is in
+        # Arrange
+        test_user_2.role = UserRole.MAPPER.value
+        test_user_2.save()
+        add_manager_to_organisation(self.test_organisation, test_user_2)
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.test_user_access_token},
+            json={"username": "test_user_2"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.test_project.author_id, test_user_2.id)
+
+    @patch("threading.Thread.start")
+    def test_returns_200_if_requesting_user_is_project_author(self, mock_thread):
+        """ Test that the endpoint returns 200 if the requesting user is the project author """
+        # Arrange
+        self.test_user.role = UserRole.ADMIN.value
+        self.test_user.save()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.test_author_access_token},
+            json={"username": "test_user_1"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.test_project.author_id, self.test_user.id)
+
+    @patch("threading.Thread.start")
+    def test_returns_200_if_requesting_user_is_org_manager(self, mock_thread):
+        """ Test that the endpoint returns 200 if the requesting user is an org manager """
+        # Test org manager
+        # Arrange
+        test_user_2 = return_canned_user("test_user_2", 222222)
+        test_user_2.role = UserRole.ADMIN.value
+        test_user_2.create()
+        add_manager_to_organisation(self.test_organisation, self.test_user)
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.test_user_access_token},
+            json={"username": "test_user_2"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.test_project.author_id, test_user_2.id)
+
+    @patch("threading.Thread.start")
+    def test_returns_200_if_requesting_user_is_admin(self, mock_thread):
+        """ Test that the endpoint returns 200 if the requesting user is an admin """
+        # Arrange
+        self.test_user.role = UserRole.ADMIN.value
+        self.test_user.save()
+        test_user_2 = return_canned_user("test_user_2", 222222)
+        test_user_2.role = UserRole.ADMIN.value
+        test_user_2.create()
+        # Act
+        response = self.client.post(
+            self.url,
+            headers={"Authorization": self.test_user_access_token},
+            json={"username": "test_user_2"},
+        )
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.test_project.author_id, test_user_2.id)
