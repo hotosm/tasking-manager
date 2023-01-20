@@ -140,18 +140,17 @@ class ProjectsActionsMessageContributorsAPI(Resource):
             if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             ):
-                raise ValueError()
-
+                return {
+                    "Error": "User is not a manager of the project",
+                    "SubCode": "UserPermissionError",
+                }, 403
             threading.Thread(
                 target=MessageService.send_message_to_all_contributors,
                 args=(project_id, message_dto),
             ).start()
             return {"Success": "Messages started"}, 200
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+        except NotFound:
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Send message all - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
