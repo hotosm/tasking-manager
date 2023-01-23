@@ -1,5 +1,4 @@
 from flask_restful import Resource, current_app
-from schematics.exceptions import DataError
 
 from backend.models.postgis.utils import NotFound
 from backend.models.dtos.project_dto import ProjectFavoriteDTO
@@ -84,21 +83,14 @@ class ProjectsFavoritesAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            favorite_dto = ProjectFavoriteDTO()
-            favorite_dto.project_id = project_id
-            favorite_dto.user_id = authenticated_user_id
-            favorite_dto.validate()
-        except DataError as e:
-            current_app.logger.error(f"Error validating request: {str(e)}")
-            return {"Error": str(e), "SubCode": "InvalidData"}, 400
+        authenticated_user_id = token_auth.current_user()
+        favorite_dto = ProjectFavoriteDTO()
+        favorite_dto.project_id = project_id
+        favorite_dto.user_id = authenticated_user_id
         try:
             ProjectService.favorite(project_id, authenticated_user_id)
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
-        except ValueError as e:
-            return {"Error": str(e)}, 400
         except Exception as e:
             error_msg = f"Favorite PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -142,7 +134,7 @@ class ProjectsFavoritesAPI(Resource):
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         except ValueError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 400
         except Exception as e:
             error_msg = f"Favorite PUT - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
