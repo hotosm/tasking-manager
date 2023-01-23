@@ -247,24 +247,29 @@ class StatsService:
     def get_user_contributions(project_id: int) -> ProjectContributionsDTO:
         """ Get all user contributions on a project"""
 
-        mapped_stmt = (
-            Task.query.with_entities(
-                Task.mapped_by,
-                func.count(Task.mapped_by).label("count"),
-                func.array_agg(Task.id).label("task_ids"),
+        actions = [
+            TaskStatus.MAPPED.name,
+            TaskStatus.BADIMAGERY.name,
+            TaskStatus.SPLIT.name,
+            TaskStatus.VALIDATED.name,
+            TaskStatus.INVALIDATED.name,
+        ]
+
+        # Filter for rows with the actions in a task's possible state_changes.
+        sq = (
+            TaskHistory.query.with_entities(
+                TaskHistory.user_id,
+                TaskHistory.task_id,
+                TaskHistory.action_text,
             )
-            .filter(Task.project_id == project_id)
-            .group_by(Task.mapped_by)
-            .subquery()
-        )
-        validated_stmt = (
-            Task.query.with_entities(
-                Task.validated_by,
-                func.count(Task.validated_by).label("count"),
-                func.array_agg(Task.id).label("task_ids"),
+            .distinct(
+                TaskHistory.task_id,
+                TaskHistory.action_text,
             )
-            .filter(Task.project_id == project_id)
-            .group_by(Task.validated_by)
+            .filter(
+                TaskHistory.action_text.in_(actions),
+                TaskHistory.project_id == project_id,
+            )
             .subquery()
         )
 
@@ -276,27 +281,46 @@ class StatsService:
                 User.mapping_level,
                 User.picture_url,
                 User.date_registered,
-                coalesce(mapped_stmt.c.count, 0).label("mapped"),
-                coalesce(validated_stmt.c.count, 0).label("validated"),
+                func.count(sq.c.action_text)
+                .filter(sq.c.action_text == TaskStatus.MAPPED.name)
+                .label("mapped"),
+                func.count(sq.c.action_text)
+                .filter(
+                    sq.c.action_text == TaskStatus.BADIMAGERY.name,
+                )
+                .label("bad_imagery"),
+                func.count(sq.c.action_text)
+                .filter(sq.c.action_text == TaskStatus.SPLIT.name)
+                .label("split"),
+                func.count(sq.c.action_text)
+                .filter(sq.c.action_text == TaskStatus.VALIDATED.name)
+                .label("validated"),
+                func.count(sq.c.action_text)
+                .filter(sq.c.action_text == TaskStatus.INVALIDATED.name)
+                .label("invalidated"),
+                func.array_agg(sq.c.task_id)
+                .filter(sq.c.action_text == TaskStatus.MAPPED.name)
+                .label("mapped_tasks"),
+                func.array_agg(sq.c.task_id)
+                .filter(sq.c.action_text == TaskStatus.VALIDATED.name)
+                .label("validated_tasks"),
                 (
-                    coalesce(mapped_stmt.c.count, 0)
-                    + coalesce(validated_stmt.c.count, 0)
+                    coalesce(
+                        func.count(sq.c.action_text).filter(
+                            sq.c.action_text == TaskStatus.MAPPED.name
+                        ),
+                        0,
+                    )
+                    + coalesce(
+                        func.count(sq.c.action_text).filter(
+                            sq.c.action_text == TaskStatus.VALIDATED.name
+                        ),
+                        0,
+                    )
                 ).label("total"),
-                mapped_stmt.c.task_ids.label("mapped_tasks"),
-                validated_stmt.c.task_ids.label("validated_tasks"),
             )
-            .outerjoin(
-                validated_stmt,
-                mapped_stmt.c.mapped_by == validated_stmt.c.validated_by,
-                full=True,
-            )
-            .join(
-                User,
-                or_(
-                    User.id == mapped_stmt.c.mapped_by,
-                    User.id == validated_stmt.c.validated_by,
-                ),
-            )
+            .join(User, sq.c.user_id == User.id)
+            .group_by(User.id)
             .order_by(desc("total"))
             .all()
         )
@@ -311,7 +335,14 @@ class StatsService:
                     picture_url=r.picture_url,
                     mapped=r.mapped,
                     validated=r.validated,
-                    total=r.total,
+                    split=r.split,
+                    marked_bad_imagery=r.bad_imagery,
+                    invalidated=r.invalidated,
+                    total=r.mapped
+                    + r.validated
+                    + r.bad_imagery
+                    + r.invalidated
+                    + r.split,
                     mapped_tasks=r.mapped_tasks if r.mapped_tasks is not None else [],
                     validated_tasks=r.validated_tasks
                     if r.validated_tasks is not None
