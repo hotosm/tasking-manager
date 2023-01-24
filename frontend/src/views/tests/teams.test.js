@@ -1,10 +1,9 @@
 import '@testing-library/jest-dom';
-import React from 'react';
 import { render, screen, fireEvent, waitFor, within, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { ReduxIntlProviders, renderWithRouter } from '../../utils/testWithIntl';
-import { ManageTeams, EditTeam, CreateTeam } from '../teams';
+import { ManageTeams, EditTeam, CreateTeam, MyTeams } from '../teams';
 import { store } from '../../store';
 
 describe('List Teams', () => {
@@ -203,4 +202,17 @@ describe('Delete Team', () => {
     expect(await screen.findByText('Team deleted successfully.')).toBeInTheDocument();
     await waitFor(() => expect(history.location.pathname).toBe('/manage/teams'));
   });
+});
+
+test('MyTeams Component renders its child component', () => {
+  render(
+    <ReduxIntlProviders>
+      <MyTeams />
+    </ReduxIntlProviders>,
+  );
+  expect(
+    screen.getByRole('heading', {
+      name: /my teams/i,
+    }),
+  ).toBeInTheDocument();
 });
