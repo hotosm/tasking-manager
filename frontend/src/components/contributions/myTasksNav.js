@@ -94,7 +94,6 @@ export const MyTasksNav = (props) => {
           <FormattedMessage {...messages.archived} />
         </Link>
       </div>
-      {props.children}
     </header>
   );
 };

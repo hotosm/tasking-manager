@@ -28,19 +28,18 @@ export const UserOrganisations = ({ userId }) => {
     `organisations/?manager_user_id=${userId}&omitManagerList=true`,
     userId !== undefined,
   );
+
   return (
     <>
-      {orgs &&
-        orgs.organisations &&
-        orgs.organisations.map((org, n) => (
-          <div title={org.name} key={n} className="cf ph2 pv1 tc dib">
-            {org.logo ? (
-              <img alt={org.name} src={org.logo} className="object-fit-contain h2 v-mid" />
-            ) : (
-              <span className="bg-red-light red truncate">{org.name}</span>
-            )}
-          </div>
-        ))}
+      {orgs?.organisations?.map((org) => (
+        <div title={org.name} key={org.organisationId} className="cf ph2 pv1 tc dib">
+          {org.logo ? (
+            <img alt={org.name} src={org.logo} className="object-fit-contain h2 v-mid" />
+          ) : (
+            <span className="bg-red-light red truncate">{org.name}</span>
+          )}
+        </div>
+      ))}
     </>
   );
 };

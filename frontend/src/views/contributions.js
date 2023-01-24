@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import ReactPlaceholder from 'react-placeholder';
 
 import useForceUpdate from '../hooks/UseForceUpdate';
-// import { useInboxQueryAPI, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
 import {
   useTaskContributionAPI,
   useTaskContributionQueryParams,
@@ -38,21 +37,11 @@ export const ContributionsPage = (props) => {
   }
 
   return (
-    <>
-      <div className="pb5 pt180 pull-center">
-        {
-          props.children
-          /* This is where the full task body component is rendered
-        using the router, as a child route.
-        */
-        }
-        <section className="cf">
-          <MyTasksNav />
-          <TaskResults retryFn={forceUpdate} state={state} />
-          <ProjectCardPaginator projectAPIstate={state} setQueryParam={setContributionsQuery} />
-        </section>
-      </div>
-    </>
+    <section className="pb5 pt180 pull-center">
+      <MyTasksNav />
+      <TaskResults retryFn={forceUpdate} state={state} />
+      <ProjectCardPaginator projectAPIstate={state} setQueryParam={setContributionsQuery} />
+    </section>
   );
 };
 
@@ -67,17 +56,9 @@ export const ContributionsPageIndex = (props) => {
   );
 };
 
-export const UserStats = (props) => {
+export const UserStats = () => {
   useSetTitleTag('My stats');
   const userDetails = useSelector((state) => state.auth.userDetails);
-  return (
-    <ReactPlaceholder
-      type="media"
-      showLoadingAnimation={true}
-      rows={5}
-      ready={userDetails !== undefined}
-    >
-      <UserDetail username={userDetails.username} withHeader={false} />
-    </ReactPlaceholder>
-  );
+
+  return <UserDetail username={userDetails.username} withHeader={false} />;
 };

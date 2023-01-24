@@ -11,20 +11,16 @@ export const TaskResults = (props) => {
 
   return (
     <div className={props.className}>
-      {state.isLoading ? (
-        <span>&nbsp;</span>
-      ) : (
-        !state.isError && (
-          <p className="blue-grey ml3 pt2 f7">
-            <FormattedMessage
-              {...messages.paginationCount}
-              values={{
-                number: state.tasks && state.tasks.length,
-                total: <FormattedNumber value={state.pagination && state.pagination.total} />,
-              }}
-            />
-          </p>
-        )
+      {!state.isLoading && !state.isError && (
+        <p className="blue-grey ml3 pt2 f7">
+          <FormattedMessage
+            {...messages.paginationCount}
+            values={{
+              number: state.tasks && state.tasks.length,
+              total: <FormattedNumber value={state.pagination && state.pagination.total} />,
+            }}
+          />
+        </p>
       )}
       {state.isError && (
         <div className="bg-tan pa4 mt3">
@@ -45,14 +41,8 @@ export const TaskResults = (props) => {
   );
 };
 
-const TaskCards = (props) => {
-  if (!props || !props.pageOfCards || props.pageOfCards.length === 0) {
-    return null;
-  }
-  const filterFn = (n) => n;
-  const filteredCards = props.pageOfCards.filter(filterFn);
-
-  if (filteredCards < 1) {
+export const TaskCards = ({ pageOfCards }) => {
+  if (pageOfCards?.length === 0) {
     return (
       <div className="mb3 blue-grey">
         <FormattedMessage {...messages.noContributed} />
@@ -60,5 +50,5 @@ const TaskCards = (props) => {
     );
   }
 
-  return filteredCards.map((card, n) => <TaskCard {...card} key={n} />);
+  return pageOfCards?.map((card) => <TaskCard {...card} key={`${card.projectId}${card.taskId}`} />);
 };
