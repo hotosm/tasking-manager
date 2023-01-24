@@ -81,7 +81,7 @@ class TestProjectsContributionsQueriesDayAPI(BaseTestCase):
         # Since we only have history of today, we expect only one element in the stats array
         self.assertEqual(len(response.json["stats"]), 1)
         self.assertEqual(
-            set(response.json["stats"].keys()),
+            set(response.json["stats"][0].keys()),
             set(
                 [
                     "date",
@@ -94,7 +94,7 @@ class TestProjectsContributionsQueriesDayAPI(BaseTestCase):
             ),
         )
         self.assertEqual(
-            response.json["stats"]["date"], datetime.today().strftime("%Y-%m-%d")
+            response.json["stats"][0]["date"], datetime.today().strftime("%Y-%m-%d")
         )
         self.assertEqual(response.json["stats"][0]["mapped"], 1)
         self.assertEqual(response.json["stats"][0]["validated"], 1)

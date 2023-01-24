@@ -122,6 +122,8 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         self.url = (
             f"/api/v2/projects/{self.test_project.id}/actions/message-contributors/"
         )
+        self.test_message = "Test message"
+        self.test_subject = "Test subject"
         self.test_user = return_canned_user("Test User", 1111111)
         self.test_user.create()
         self.test_user_access_token = generate_encoded_token(self.test_user.id)
@@ -139,7 +141,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         # Act
         response = self.client.post(
             "/api/v2/projects/999/actions/message-contributors/",
-            json={"message": "test message", "subject": "test subject"},
+            json={"message": self.test_message, "subject": self.test_subject},
             headers={"Authorization": self.test_user_access_token},
         )
         # Assert
@@ -150,7 +152,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         # Act
         response = self.client.post(
             self.url,
-            json={"subject": "test subject", "message": "test message"},
+            json={"message": self.test_message, "subject": self.test_subject},
             headers={"Authorization": self.test_user_access_token},
         )
         # Assert
@@ -161,7 +163,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         # Act
         response = self.client.post(
             self.url,
-            json={"subject": "test subject"},
+            json={"subject": self.test_subject},
             headers={"Authorization": self.test_user_access_token},
         )
         # Assert
@@ -182,7 +184,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         # Act
         response = self.client.post(
             self.url,
-            json={"subject": "test subject", "message": "test message"},
+            json={"message": self.test_message, "subject": self.test_subject},
             headers={"Authorization": self.test_author_access_token},
         )
         # Assert
@@ -207,7 +209,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         # Act
         response = self.client.post(
             self.url,
-            json={"subject": "test subject", "message": "test message"},
+            json={"message": self.test_message, "subject": self.test_subject},
             headers={"Authorization": self.test_user_access_token},
         )
         # Assert
@@ -228,7 +230,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         # Act
         response = self.client.post(
             self.url,
-            json={"subject": "test subject", "message": "test message"},
+            json={"message": self.test_message, "subject": self.test_subject},
             headers={"Authorization": self.test_user_access_token},
         )
         # Assert
@@ -259,7 +261,7 @@ class TestProjectsActionsMessageContributorsAPI(BaseTestCase):
         # Act
         response = self.client.post(
             self.url,
-            json={"subject": "test subject", "message": "test message"},
+            json={"message": self.test_message, "subject": self.test_subject},
             headers={"Authorization": self.test_user_access_token},
         )
         # Assert

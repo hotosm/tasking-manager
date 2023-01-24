@@ -51,13 +51,18 @@ from backend.models.dtos.project_dto import (
     is_known_mapping_permission,
 )
 
+TEST_USER_USERNAME = "Test User"
+TEST_USER_ID = 11111
+
 
 class TestDeleteProjectsRestAPI(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.test_project, self.test_author = create_canned_project()
         self.url = f"/api/v2/projects/{self.test_project.id}/"
-        self.test_user = return_canned_user(username="Test User", id=11111)
+        self.test_user = return_canned_user(
+            username=TEST_USER_USERNAME, id=TEST_USER_ID
+        )
         self.test_user.create()
         test_organistion = create_canned_organisation()
         self.test_project.organisation = test_organistion
@@ -138,7 +143,9 @@ class TestDeleteProjectsRestAPI(BaseTestCase):
 class TestCreateProjectsRestAPI(BaseTestCase):
     def setUp(self):
         super().setUp()
-        self.test_user = return_canned_user(username="Test User", id=11111)
+        self.test_user = return_canned_user(
+            username=TEST_USER_USERNAME, id=TEST_USER_ID
+        )
         self.test_user.create()
         self.test_organisation = create_canned_organisation()
         self.url = "/api/v2/projects/"
@@ -237,7 +244,9 @@ class TestGetProjectsRestAPI(BaseTestCase):
         self.test_project, self.test_author = create_canned_project()
         self.test_project.status = ProjectStatus.PUBLISHED.value
         self.url = f"/api/v2/projects/{self.test_project.id}/"
-        self.test_user = return_canned_user(username="Test User", id=11111)
+        self.test_user = return_canned_user(
+            username=TEST_USER_USERNAME, id=TEST_USER_ID
+        )
         self.test_user.create()
         test_organistion = create_canned_organisation()
         self.test_project.organisation = test_organistion
@@ -272,7 +281,7 @@ class TestGetProjectsRestAPI(BaseTestCase):
             assert "shortDescription" in project_response
             assert "allowedUsernames" in project_response
         # Since projectInfo is not present in notasks mode we need to skip it
-        if not assert_type == "notasks":
+        if assert_type != "notasks":
             assert (
                 expected_project.get_project_title(expected_project.default_locale)
                 == project_response["projectInfo"]["name"]
@@ -491,7 +500,9 @@ class TestPatchProjectRestAPI(BaseTestCase):
         super().setUp()
         self.test_project, self.test_author = create_canned_project()
         self.url = f"/api/v2/projects/{self.test_project.id}/"
-        self.test_user = return_canned_user(username="Test User", id=11111)
+        self.test_user = return_canned_user(
+            username=TEST_USER_USERNAME, id=TEST_USER_ID
+        )
         self.test_user.create()
         test_organistion = create_canned_organisation()
         self.test_project.organisation = test_organistion
@@ -1407,8 +1418,8 @@ class TestProjectsAllAPI(BaseTestCase):
         campaign_dto = CampaignProjectDTO()
         campaign_dto.campaign_id = test_campaign_1.id
         campaign_dto.project_id = self.test_project_1.id
-
         CampaignService.create_campaign_project(campaign_dto)
+
         campaign_dto.campaign_id = test_campaign_2.id
         campaign_dto.project_id = self.test_project_2.id
         CampaignService.create_campaign_project(campaign_dto)
@@ -1777,7 +1788,7 @@ class TestSearchProjectByBBOX(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.url = "/api/v2/projects/queries/bbox/"
-        self.test_user = return_canned_user("test_user", 11111)
+        self.test_user = return_canned_user(TEST_USER_USERNAME, TEST_USER_ID)
         self.test_user.create()
         self.test_project_1, self.test_author = create_canned_project()
         self.test_project_1.status = ProjectStatus.PUBLISHED.value
@@ -1999,30 +2010,22 @@ class TestProjectsQueriesPriorityAreasAPI(BaseTestCase):
 
         :type test_case: :py:class:`unittest.TestCase` object
         """
-        is_root = not "__trace" in kwargs
-        trace = kwargs.pop("__trace", "ROOT")
-        try:
-            if isinstance(expected, (int, float, complex)):
-                self.assertAlmostEqual(expected, actual, *args, **kwargs)
-            elif isinstance(expected, (list, tuple)):
-                self.assertEqual(len(expected), len(actual))
-                for index in range(len(expected)):
-                    v1, v2 = expected[index], actual[index]
-                    self.assertDeepAlmostEqual(
-                        v1, v2, __trace=repr(index), *args, **kwargs
-                    )
-            elif isinstance(expected, dict):
-                self.assertEqual(set(expected), set(actual))
-                for key in expected:
-                    self.assertDeepAlmostEqual(
-                        expected[key], actual[key], __trace=repr(key), *args, **kwargs
-                    )
-            else:
-                self.assertEqual(expected, actual)
-        except AssertionError as exc:
-            if is_root:
-                exc = AssertionError(f"{exc}")
-            raise exc
+        kwargs.pop("__trace", "ROOT")
+        if isinstance(expected, (int, float, complex)):
+            self.assertAlmostEqual(expected, actual, *args, **kwargs)
+        elif isinstance(expected, (list, tuple)):
+            self.assertEqual(len(expected), len(actual))
+            for index in range(len(expected)):
+                v1, v2 = expected[index], actual[index]
+                self.assertDeepAlmostEqual(v1, v2, __trace=repr(index), *args, **kwargs)
+        elif isinstance(expected, dict):
+            self.assertEqual(set(expected), set(actual))
+            for key in expected:
+                self.assertDeepAlmostEqual(
+                    expected[key], actual[key], __trace=repr(key), *args, **kwargs
+                )
+        else:
+            self.assertEqual(expected, actual)
 
     def returns_404_if_project_doesnt_exist(self):
         """
@@ -2103,11 +2106,11 @@ class TestProjectsQueriesOwnerAPI(BaseTestCase):
         # Add organisation to project
         self.test_project.organisation = self.test_organisation
         self.test_project.save()
-        self.test_user = return_canned_user("TEST_USER", 111111)
+        self.test_user = return_canned_user(TEST_USER_USERNAME, TEST_USER_ID)
         self.test_user.create()
         self.user_session_token = generate_encoded_token(self.test_user.id)
         self.author_session_token = generate_encoded_token(self.test_author.id)
-        self.url = f"/api/v2/projects/queries/myself/owner/"
+        self.url = "/api/v2/projects/queries/myself/owner/"
 
     def test_returns_401_if_user_not_logged_in(self):
         """
@@ -2150,7 +2153,7 @@ class TestProjectsQueriesNoTasksAPI(BaseTestCase):
         self.test_project.status = ProjectStatus.PUBLISHED.value
         self.test_project.organisation = self.test_organisation
         self.test_project.save()
-        self.test_user = return_canned_user("TEST_USER", 111111)
+        self.test_user = return_canned_user(TEST_USER_USERNAME, TEST_USER_ID)
         self.test_user.create()
         self.user_session_token = generate_encoded_token(self.test_user.id)
         self.author_session_token = generate_encoded_token(self.test_author.id)
