@@ -1,6 +1,6 @@
 import React from 'react';
+import { useLocation } from '@reach/router';
 import { useSelector } from 'react-redux';
-import ReactPlaceholder from 'react-placeholder';
 
 import useForceUpdate from '../hooks/UseForceUpdate';
 import {
@@ -25,6 +25,7 @@ export const ContributionsPage = (props) => {
     pagination: { hasNext: false, hasPrev: false, page: 1 },
   };
 
+  const location = useLocation();
   const userToken = useSelector((state) => state.auth.token);
   //eslint-disable-next-line
   const [contributionsQuery, setContributionsQuery] = useTaskContributionQueryParams();
@@ -32,8 +33,10 @@ export const ContributionsPage = (props) => {
   const [state] = useTaskContributionAPI(initialData, contributionsQuery, forceUpdated);
 
   if (!userToken) {
-    /* use replace to so the back button does not get interrupted */
-    props.navigate('/login', { replace: true });
+    props.navigate('/login', {
+      replace: true,
+      state: { from: location.pathname },
+    });
   }
 
   return (
