@@ -64,7 +64,7 @@ class SetProjectFavouriteAPI(BaseTestCase):
 
     def test_returns_404_if_project_does_not_exist(self):
         # Arrange
-        url = "/api/v2/projects/999/favorite/"
+        url = "/api/v2/projects/99999/favorite/"
         # Act
         response = self.client.post(
             url, headers={"Authorization": self.test_author_session_token}
@@ -99,7 +99,7 @@ class UnsetProjectFavouriteAPI(BaseTestCase):
 
     def test_returns_404_if_project_does_not_exist(self):
         # Arrange
-        url = "/api/v2/projects/999/favorite/"
+        url = "/api/v2/projects/999999/favorite/"
         # Act
         response = self.client.delete(
             url, headers={"Authorization": self.test_author_session_token}

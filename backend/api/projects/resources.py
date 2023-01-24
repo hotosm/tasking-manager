@@ -781,16 +781,15 @@ class ProjectsQueriesBboxAPI(Resource):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                authenticated_user_id
-            )
-            if len(orgs_dto.organisations) < 1:
-                raise ValueError("UserPermissionError- User not a project manager")
-        except ValueError as e:
-            error_msg = f"ProjectsQueriesBboxAPI GET: {str(e)}"
-            return {"Error": error_msg}, 403
+        authenticated_user_id = token_auth.current_user()
+        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+            authenticated_user_id
+        )
+        if len(orgs_dto.organisations) < 1:
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
 
         try:
             search_dto = ProjectSearchBBoxDTO()
@@ -862,16 +861,15 @@ class ProjectsQueriesOwnerAPI(ProjectSearchBase):
             500:
                 description: Internal Server Error
         """
-        try:
-            authenticated_user_id = token_auth.current_user()
-            orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
-                authenticated_user_id
-            )
-            if len(orgs_dto.organisations) < 1:
-                raise ValueError("UserPermissionError- User not a project manager")
-        except ValueError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
-
+        authenticated_user_id = token_auth.current_user()
+        orgs_dto = OrganisationService.get_organisations_managed_by_user_as_dto(
+            authenticated_user_id
+        )
+        if len(orgs_dto.organisations) < 1:
+            return {
+                "Error": "User is not a manager of the project",
+                "SubCode": "UserPermissionError",
+            }, 403
         try:
             search_dto = self.setup_search_dto()
             admin_projects = ProjectAdminService.get_projects_for_admin(
@@ -1096,9 +1094,10 @@ class ProjectsQueriesNoTasksAPI(Resource):
             if not ProjectAdminService.is_user_action_permitted_on_project(
                 token_auth.current_user(), project_id
             ):
-                raise ValueError("UserPermissionError- User not a project manager")
-        except ValueError as e:
-            return {"Error": str(e).split("-")[1], "SubCode": str(e).split("-")[0]}, 403
+                return {
+                    "Error": "User is not a manager of the project",
+                    "SubCode": "UserPermissionError",
+                }, 403
         except NotFound:
             return {"Error": "Project Not Found", "SubCode": "NotFound"}, 404
         try:

@@ -791,10 +791,11 @@ class Project(db.Model):
                 .group_by(nz.c.zoom)
                 .all()
             )
-            mapping_time = sum([t.avg.total_seconds() for t in mapped_avg]) / len(
-                mapped_avg
-            )
-            project_stats.average_mapping_time = mapping_time
+            if len(mapped_avg) != 0:
+                mapping_time = sum([t.avg.total_seconds() for t in mapped_avg]) / len(
+                    mapped_avg
+                )
+                project_stats.average_mapping_time = mapping_time
 
         if project_stats.average_validation_time <= 0:
             val_avg = (
@@ -803,10 +804,11 @@ class Project(db.Model):
                 .group_by(nz.c.zoom)
                 .all()
             )
-            validation_time = sum([t.avg.total_seconds() for t in val_avg]) / len(
-                val_avg
-            )
-            project_stats.average_validation_time = validation_time
+            if len(val_avg) != 0:
+                validation_time = sum([t.avg.total_seconds() for t in val_avg]) / len(
+                    val_avg
+                )
+                project_stats.average_validation_time = validation_time
 
         time_to_finish_mapping = (
             self.total_tasks
