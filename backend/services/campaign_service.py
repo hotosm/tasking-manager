@@ -14,9 +14,9 @@ from backend.models.postgis.campaign import (
     campaign_organisations,
 )
 from backend.models.postgis.utils import NotFound
-from backend.models.postgis.project import Project
 from backend.models.postgis.organisation import Organisation
 from backend.services.organisation_service import OrganisationService
+from backend.services.project_service import ProjectService
 
 
 class CampaignService:
@@ -63,6 +63,8 @@ class CampaignService:
     @staticmethod
     def get_project_campaigns_as_dto(project_id: int) -> CampaignListDTO:
         """Gets all the campaigns for a specified project"""
+        # Test if project exists
+        ProjectService.get_project_by_id(project_id)
         query = (
             Campaign.query.join(campaign_projects)
             .filter(campaign_projects.c.project_id == project_id)
@@ -74,8 +76,11 @@ class CampaignService:
     @staticmethod
     def delete_project_campaign(project_id: int, campaign_id: int):
         """Delete campaign for a project"""
-        campaign = Campaign.query.get(campaign_id)
-        project = Project.query.get(project_id)
+        campaign = CampaignService.get_campaign(campaign_id)
+        project = ProjectService.get_project_by_id(project_id)
+        project_campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
+        if campaign.id not in [i["id"] for i in project_campaigns["campaigns"]]:
+            raise NotFound()
         project.campaign.remove(campaign)
         db.session.commit()
         new_campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
@@ -110,6 +115,8 @@ class CampaignService:
     @staticmethod
     def create_campaign_project(dto: CampaignProjectDTO):
         """Assign a campaign with a project"""
+        ProjectService.get_project_by_id(dto.project_id)
+        CampaignService.get_campaign(dto.campaign_id)
         statement = campaign_projects.insert().values(
             campaign_id=dto.campaign_id, project_id=dto.project_id
         )

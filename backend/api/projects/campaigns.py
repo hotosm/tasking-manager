@@ -54,13 +54,12 @@ class ProjectsCampaignsAPI(Resource):
             if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
-
+                return {
+                    "Error": "User is not a manager of the project",
+                    "SubCode": "UserPermissionError",
+                }, 403
+        except NotFound:
+            return {"Error": "User or Project not found", "SubCode": "NotFound"}, 404
         try:
             campaign_project_dto = CampaignProjectDTO()
             campaign_project_dto.campaign_id = campaign_id
@@ -76,6 +75,11 @@ class ProjectsCampaignsAPI(Resource):
                 campaign_id, project_id
             )
             return ({"Success": message}, 200)
+        except NotFound:
+            return {
+                "Error": "Campaign or Project not found",
+                "SubCode": "NotFound",
+            }, 404
         except Exception as e:
             error_msg = f"ProjectsCampaignsAPI POST - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -110,7 +114,7 @@ class ProjectsCampaignsAPI(Resource):
             campaigns = CampaignService.get_project_campaigns_as_dto(project_id)
             return campaigns.to_primitive(), 200
         except NotFound:
-            return {"Error": "No campaign found", "SubCode": "NotFound"}, 404
+            return {"Error": "Project not found", "SubCode": "NotFound"}, 404
         except Exception as e:
             error_msg = f"Messages GET - unhandled error: {str(e)}"
             current_app.logger.critical(error_msg)
@@ -156,19 +160,16 @@ class ProjectsCampaignsAPI(Resource):
             500:
                 description: Internal Server Error
         """
+        authenticated_user_id = token_auth.current_user()
         try:
-            authenticated_user_id = token_auth.current_user()
             if not ProjectAdminService.is_user_action_permitted_on_project(
                 authenticated_user_id, project_id
             ):
-                raise ValueError()
-        except ValueError:
-            return {
-                "Error": "User is not a manager of the project",
-                "SubCode": "UserPermissionError",
-            }, 403
+                return {
+                    "Error": "User is not a manager of the project",
+                    "SubCode": "UserPermissionError",
+                }, 403
 
-        try:
             CampaignService.delete_project_campaign(project_id, campaign_id)
             return {"Success": "Campaigns Deleted"}, 200
         except NotFound:

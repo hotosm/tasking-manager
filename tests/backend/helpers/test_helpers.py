@@ -317,16 +317,13 @@ def return_canned_campaign(
 
 
 def create_canned_campaign(
-    campaign_name=TEST_CAMPAIGN_NAME,
-    campaign_description=None,
-    test_logo=None,
+    id=TEST_CAMPAIGN_ID,
+    name=TEST_CAMPAIGN_NAME,
+    description=None,
+    logo=None,
 ) -> Campaign:
-    """Returns test campaign without writing to db"""
-    test_campaign = return_canned_campaign(
-        campaign_name=campaign_name,
-        campaign_description=campaign_description,
-        test_logo=test_logo,
-    )
+    """Creates test campaign without writing to db"""
+    test_campaign = return_canned_campaign(id, name, description, logo)
     test_campaign.create()
 
     return test_campaign
