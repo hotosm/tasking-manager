@@ -113,7 +113,7 @@ export const SocialMedia = ({ data }) => {
   );
 };
 
-const MyContributionsNav = ({ username, authUser }) => {
+export const MyContributionsNav = ({ username, authUser }) => {
   const items = [
     { url: `/contributions`, label: <FormattedMessage {...messages.myStats} /> },
     {
