@@ -1,10 +1,20 @@
 import { rest } from 'msw';
 
-import { getProjectSummary, getProjectStats, projects } from './mockData/projects';
+import {
+  getProjectSummary,
+  getProjectStats,
+  projects,
+  userTouchedProjects,
+} from './mockData/projects';
 import { featuredProjects } from './mockData/featuredProjects';
-import { newUsersStats } from './mockData/userStats';
+import { newUsersStats, osmStatsProd, userStats } from './mockData/userStats';
 import { projectContributions, projectContributionsByDay } from './mockData/contributions';
-import { usersList, levelUpdationSuccess, roleUpdationSuccess } from './mockData/userList';
+import {
+  usersList,
+  levelUpdationSuccess,
+  roleUpdationSuccess,
+  userQueryDetails,
+} from './mockData/userList';
 import {
   license,
   licenseCreationSuccess,
@@ -33,6 +43,7 @@ import {
   teamUpdationSuccess,
   teamDeletionSuccess,
 } from './mockData/teams';
+import { userTasks } from './mockData/tasksStats';
 import { homepageStats } from './mockData/homepageStats';
 import { countries } from './mockData/miscellaneous';
 import tasksGeojson from '../../utils/tests/snippets/tasksGeometry';
@@ -62,14 +73,21 @@ const handlers = [
   rest.get(API_URL + 'projects/queries/featured/', async (req, res, ctx) => {
     return res(ctx.json(featuredProjects));
   }),
+  rest.get(API_URL + 'projects/queries/:username/touched', async (req, res, ctx) => {
+    return res(ctx.json(userTouchedProjects));
+  }),
   rest.delete(API_URL + 'notifications/delete-multiple/', async (req, res, ctx) => {
     return res(ctx.json({ Success: 'Message deleted' }));
   }),
+  // USER
   rest.get(API_URL + 'users/statistics/', async (req, res, ctx) => {
     return res(ctx.json(newUsersStats));
   }),
   rest.get(API_URL + 'tasks/statistics/', async (req, res, ctx) => {
     return res(ctx.json(newUsersStats));
+  }),
+  rest.get(API_URL + 'users/queries/:username', async (req, res, ctx) => {
+    return res(ctx.json(userQueryDetails));
   }),
   rest.get(API_URL + 'users', async (req, res, ctx) => {
     return res(ctx.json(usersList));
@@ -80,6 +98,13 @@ const handlers = [
   rest.patch(API_URL + 'users/:username/actions/set-role/:role', (req, res, ctx) => {
     return res(ctx.json(roleUpdationSuccess));
   }),
+  rest.get(API_URL + 'users/:userId/tasks/', async (req, res, ctx) => {
+    return res(ctx.json(userTasks));
+  }),
+  rest.get(API_URL + 'users/:username/statistics/', async (req, res, ctx) => {
+    return res(ctx.json(userStats));
+  }),
+  // ORGANIZATIONS
   rest.get(API_URL + 'organisations', (req, res, ctx) => {
     return res(ctx.json(organisations));
   }),
@@ -111,6 +136,7 @@ const handlers = [
   rest.delete(API_URL + 'teams/:id', (req, res, ctx) => {
     return res(ctx.json(teamDeletionSuccess));
   }),
+  // LICENSES
   rest.get(API_URL + 'licenses', (req, res, ctx) => {
     return res(ctx.json(licenses));
   }),
@@ -126,6 +152,7 @@ const handlers = [
   rest.post(API_URL + 'licenses', (req, res, ctx) => {
     return res(ctx.json(licenseCreationSuccess));
   }),
+  // CAMPAIGNS
   rest.get(API_URL + 'campaigns', (req, res, ctx) => {
     return res(ctx.json(campaigns));
   }),
@@ -141,6 +168,7 @@ const handlers = [
   rest.delete(API_URL + 'campaigns/:id', (req, res, ctx) => {
     return res(ctx.json(campaignDeletionSuccess));
   }),
+  // INTERESTS
   rest.get(API_URL + 'interests', (req, res, ctx) => {
     return res(ctx.json(interests));
   }),
@@ -163,6 +191,12 @@ const handlers = [
   rest.get('https://osmstats-api.hotosm.org/wildcard', (req, res, ctx) => {
     return res(ctx.json(homepageStats));
   }),
+  rest.get(
+    'https://osm-stats-production-api.azurewebsites.net/users/:username',
+    (req, res, ctx) => {
+      return res(ctx.json(osmStatsProd));
+    },
+  ),
 ];
 
 export { handlers };
