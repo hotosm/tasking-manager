@@ -33,7 +33,7 @@ export const TaskResults = (props) => {
         </div>
       )}
       <div className={`cf db`}>
-        <ReactPlaceholder ready={!state.isLoading} type="media" rows={10}>
+        <ReactPlaceholder showLoadingAnimation ready={!state.isLoading} type="media" rows={10}>
           <TaskCards pageOfCards={state.tasks} />
         </ReactPlaceholder>
       </div>

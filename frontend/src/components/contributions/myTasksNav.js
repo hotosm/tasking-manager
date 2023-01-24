@@ -7,7 +7,7 @@ import { useTaskContributionQueryParams, stringify } from '../../hooks/UseTaskCo
 import MyTasksOrderDropdown from './myTasksOrderDropdown';
 import MyProjectsDropdown from './myProjectsDropdown';
 
-const isActiveButton = (buttonName, contributionQuery) => {
+export const isActiveButton = (buttonName, contributionQuery) => {
   let isActive = false;
   try {
     if (contributionQuery.status.includes(buttonName)) {
