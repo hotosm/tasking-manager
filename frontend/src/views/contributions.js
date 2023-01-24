@@ -1,9 +1,8 @@
 import React from 'react';
+import { useLocation } from '@reach/router';
 import { useSelector } from 'react-redux';
-import ReactPlaceholder from 'react-placeholder';
 
 import useForceUpdate from '../hooks/UseForceUpdate';
-// import { useInboxQueryAPI, useInboxQueryParams } from '../hooks/UseInboxQueryAPI';
 import {
   useTaskContributionAPI,
   useTaskContributionQueryParams,
@@ -26,6 +25,7 @@ export const ContributionsPage = (props) => {
     pagination: { hasNext: false, hasPrev: false, page: 1 },
   };
 
+  const location = useLocation();
   const userToken = useSelector((state) => state.auth.token);
   //eslint-disable-next-line
   const [contributionsQuery, setContributionsQuery] = useTaskContributionQueryParams();
@@ -33,26 +33,18 @@ export const ContributionsPage = (props) => {
   const [state] = useTaskContributionAPI(initialData, contributionsQuery, forceUpdated);
 
   if (!userToken) {
-    /* use replace to so the back button does not get interrupted */
-    props.navigate('/login', { replace: true });
+    props.navigate('/login', {
+      replace: true,
+      state: { from: location.pathname },
+    });
   }
 
   return (
-    <>
-      <div className="pb5 pt180 pull-center">
-        {
-          props.children
-          /* This is where the full task body component is rendered
-        using the router, as a child route.
-        */
-        }
-        <section className="cf">
-          <MyTasksNav />
-          <TaskResults retryFn={forceUpdate} state={state} />
-          <ProjectCardPaginator projectAPIstate={state} setQueryParam={setContributionsQuery} />
-        </section>
-      </div>
-    </>
+    <section className="pb5 pt180 pull-center">
+      <MyTasksNav />
+      <TaskResults retryFn={forceUpdate} state={state} />
+      <ProjectCardPaginator projectAPIstate={state} setQueryParam={setContributionsQuery} />
+    </section>
   );
 };
 
@@ -67,17 +59,9 @@ export const ContributionsPageIndex = (props) => {
   );
 };
 
-export const UserStats = (props) => {
+export const UserStats = () => {
   useSetTitleTag('My stats');
   const userDetails = useSelector((state) => state.auth.userDetails);
-  return (
-    <ReactPlaceholder
-      type="media"
-      showLoadingAnimation={true}
-      rows={5}
-      ready={userDetails !== undefined}
-    >
-      <UserDetail username={userDetails.username} withHeader={false} />
-    </ReactPlaceholder>
-  );
+
+  return <UserDetail username={userDetails.username} withHeader={false} />;
 };

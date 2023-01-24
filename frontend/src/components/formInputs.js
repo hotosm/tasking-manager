@@ -240,6 +240,8 @@ export const TextField = ({ value, placeholderMsg, onChange, onCloseIconClick })
               />
               <CloseIcon
                 onClick={onCloseIconClick}
+                role="button"
+                aria-label="clear"
                 className={`absolute w1 h1 top-0 pt2 pointer pr2 right-0 red ${
                   !value ? 'pr2 right-0 dn ' : 'pr2 right-0'
                 }`}

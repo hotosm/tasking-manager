@@ -20,7 +20,7 @@ describe('Manage Projects Top Navigation Bar', () => {
     const { container } = render(
       <QueryParamProvider reachHistory={globalHistory}>
         <ReduxIntlProviders>
-          <MyProjectNav />
+          <MyProjectNav management={false} />
         </ReduxIntlProviders>
       </QueryParamProvider>,
     );
@@ -38,6 +38,14 @@ describe('Manage Projects Top Navigation Bar', () => {
     expect(screen.queryAllByRole('combobox').length).toBe(0);
     // Check for SVGs for dropdowns and list/vard view toggle
     expect(container.querySelectorAll('svg').length).toBe(3);
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /sort by/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /contributed/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /favorited/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /managed by me/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /created by me/i })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    expect(screen.queryByRole('graphics-symbol')).not.toBeInTheDocument();
   });
 
   it('should render correct details for management view', () => {
@@ -67,7 +75,10 @@ describe('Manage Projects Top Navigation Bar', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('combobox').length).toBe(2);
+    expect(screen.queryByRole('button', { name: /contributed/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /favorited/i })).not.toBeInTheDocument();
     expect(container.querySelectorAll('svg').length).toBe(8);
+    expect(screen.getAllByRole('graphics-symbol').length).toBe(2);
   });
 
   it('should navigate to new project creation page on button click', async () => {
@@ -100,7 +111,6 @@ describe('Filter Button Component', () => {
 
   it('should display correct classes for inactive buttons', () => {
     render(<FilterButton isActive={false}>Click me!</FilterButton>);
-    expect(screen.getByText(/click me!/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /click me!/i }).getAttribute('class')).toMatch(
       'bg-white blue-grey',
     );

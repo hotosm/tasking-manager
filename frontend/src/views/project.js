@@ -15,7 +15,6 @@ import {
   useExploreProjectsQueryParams,
   stringify,
 } from '../hooks/UseProjectsQueryAPI';
-import { useTagAPI } from '../hooks/UseTagAPI';
 import useForceUpdate from '../hooks/UseForceUpdate';
 import { useFetch } from '../hooks/UseFetch';
 import { useSetTitleTag } from '../hooks/UseMetaTags';
@@ -99,7 +98,6 @@ export const UserProjectsPage = (props) => {
   const [fullProjectsQuery, setProjectQuery] = useExploreProjectsQueryParams();
   const [forceUpdated, forceUpdate] = useForceUpdate();
   const [state] = useProjectsQueryAPI(initialData, fullProjectsQuery, forceUpdated);
-  const [orgAPIState] = useTagAPI([], 'organisations');
 
   const isMapShown = useSelector((state) => state.preferences['mapShown']);
   const searchResultWidth = isMapShown ? 'two-column' : 'one-column';
@@ -121,18 +119,7 @@ export const UserProjectsPage = (props) => {
 
   return (
     <div className="pull-center">
-      <MyProjectNav
-        location={props.location}
-        orgAPIState={orgAPIState}
-        management={props.management}
-      >
-        {
-          props.children
-          /* This is where the MoreFilters component is rendered
-        using the router, as a child route.
-        */
-        }
-      </MyProjectNav>
+      <MyProjectNav location={props.location} management={props.management} />
       <section className={`${searchResultWidth} explore-projects-container`}>
         <div className="">
           <ProjectSearchResults

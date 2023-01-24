@@ -220,7 +220,6 @@ export const MyProjectNav = (props) => {
           {props.management && <ProjetListViewToggle />}
         </div>
       </div>
-      {props.children}
     </header>
   );
 };

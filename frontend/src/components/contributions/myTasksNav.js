@@ -7,7 +7,7 @@ import { useTaskContributionQueryParams, stringify } from '../../hooks/UseTaskCo
 import MyTasksOrderDropdown from './myTasksOrderDropdown';
 import MyProjectsDropdown from './myProjectsDropdown';
 
-const isActiveButton = (buttonName, contributionQuery) => {
+export const isActiveButton = (buttonName, contributionQuery) => {
   let isActive = false;
   try {
     if (contributionQuery.status.includes(buttonName)) {
@@ -94,7 +94,6 @@ export const MyTasksNav = (props) => {
           <FormattedMessage {...messages.archived} />
         </Link>
       </div>
-      {props.children}
     </header>
   );
 };

@@ -9,9 +9,10 @@ import { useSetTitleTag } from '../hooks/UseMetaTags';
 import { ORG_LOGO, ORG_NAME, ORG_CODE } from '../config';
 import logo from '../assets/img/main-logo.svg';
 
-export function Login({ redirectTo }: Object) {
+export function Login({ redirectTo, location }: Object) {
   useSetTitleTag('Login');
   const userIsloggedIn = useSelector((state) => state.auth.token);
+
   if (!userIsloggedIn) {
     return (
       <div className="cf w-100 bg-white blue-dark pv5">
@@ -33,13 +34,13 @@ export function Login({ redirectTo }: Object) {
           <AuthButtons
             logInStyle="blue-dark bg-white"
             signUpStyle="bg-blue-dark white ml1 v-mid"
-            redirectTo={redirectTo || '/welcome'}
+            redirectTo={redirectTo || location.state.from || '/welcome'}
             alternativeSignUpText={true}
           />
         </div>
       </div>
     );
   } else {
-    return <Redirect to={redirectTo || '/welcome'} noThrow />;
+    return <Redirect to={redirectTo || location.state.from || '/welcome'} noThrow />;
   }
 }

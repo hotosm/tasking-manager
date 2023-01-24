@@ -36,12 +36,14 @@ export const ProjetListViewToggle = (props) => {
       <ListIcon
         height="25"
         width="25"
+        role="graphics-symbol"
         className={`dib pointer v-mid ph1 ${listViewIsActive ? 'blue-grey' : 'blue-light'}`}
         onClick={() => dispatch({ type: 'TOGGLE_LIST_VIEW' })}
       />
       <GripIcon
         height="20"
         width="20"
+        role="graphics-symbol"
         className={`dib pointer v-mid ph1 ${!listViewIsActive ? 'blue-grey' : 'blue-light'}`}
         onClick={() => dispatch({ type: 'TOGGLE_CARD_VIEW' })}
       />

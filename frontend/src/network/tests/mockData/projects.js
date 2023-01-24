@@ -92,14 +92,14 @@ export const projects = {
       difficulty: 'EASY',
       priority: 'MEDIUM',
       organisationName: 'IFRC',
-      organisationLogo: "https://dummyimage.com/600x400/000/fff",
+      organisationLogo: 'https://dummyimage.com/600x400/000/fff',
       campaigns: [{ id: 74, name: 'Banke Nepal' }],
       percentMapped: 75,
       percentValidated: 5,
       status: 'PUBLISHED',
       activeMappers: 0,
       lastUpdated: '2020-05-01T11:03:43.689732Z',
-      dueDate: "2023-03-10T21:00:00.000000Z",
+      dueDate: '2023-03-10T21:00:00.000000Z',
       totalContributors: 50,
       country: ['Nepal'],
     },
@@ -134,4 +134,20 @@ export const projects = {
     perPage: 14,
     total: 2,
   },
+};
+
+export const userTouchedProjects = {
+  mappedProjects: [
+    {
+      projectId: 8629,
+      name: 'tessttt',
+      tasksMapped: 1,
+      tasksValidated: 0,
+      status: 'DRAFT',
+      centroid: {
+        type: 'Point',
+        coordinates: [47.119799174, 14.300025921],
+      },
+    },
+  ],
 };
